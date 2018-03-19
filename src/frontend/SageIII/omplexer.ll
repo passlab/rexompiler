@@ -137,6 +137,7 @@ update          {return cond_return ( UPDATE ); }
 map             {return cond_return ( MAP ); }
 device          {return cond_return ( DEVICE ); }
 alloc           {return cond_return ( ALLOC ); }
+allocate        {return cond_return ( ALLOCATE ); }
 to              {return cond_return ( TO ); /* change the user level keyword to conform to  OpenMP 4.0 */}
 from            {return cond_return ( FROM ); }
 tofrom          {return cond_return ( TOFROM ); }

@@ -115,7 +115,7 @@ corresponding C type is union name defaults to YYSTYPE.
   Liao*/
 %token  OMP PARALLEL IF NUM_THREADS ORDERED SCHEDULE STATIC DYNAMIC GUIDED RUNTIME SECTIONS SINGLE NOWAIT SECTION
         FOR MASTER CRITICAL BARRIER ATOMIC FLUSH TARGET UPDATE DIST_DATA BLOCK DUPLICATE CYCLIC
-        THREADPRIVATE PRIVATE COPYPRIVATE FIRSTPRIVATE LASTPRIVATE SHARED DEFAULT NONE REDUCTION COPYIN 
+        THREADPRIVATE PRIVATE COPYPRIVATE FIRSTPRIVATE LASTPRIVATE SHARED DEFAULT NONE REDUCTION COPYIN ALLOCATE
         TASK TASKWAIT UNTIED COLLAPSE AUTO DECLARE DATA DEVICE MAP ALLOC TO FROM TOFROM PROC_BIND CLOSE SPREAD
         SIMD SAFELEN ALIGNED LINEAR UNIFORM INBRANCH NOTINBRANCH MPI MPI_ALL MPI_MASTER TARGET_BEGIN TARGET_END
         '(' ')' ',' ':' '+' '*' '-' '&' '^' '|' LOGAND LOGOR SHLEFT SHRIGHT PLUSPLUS MINUSMINUS PTR_TO '.'
@@ -218,6 +218,7 @@ parallel_clause : if_clause
                 | copyin_clause
                 | reduction_clause
                 | proc_bind_clause
+                | allocate_clause                
                 ;
 
 copyin_clause: COPYIN {
@@ -253,6 +254,7 @@ for_clause: private_clause
            | collapse_clause
            | ordered_clause
            | nowait_clause  
+		       | allocate_clause	   
           ; 
 
 /* use this for the combined for simd directive */
@@ -265,6 +267,7 @@ for_or_simd_clause : ordered_clause
            | collapse_clause
            | unique_simd_clause
            | nowait_clause  
+		       | allocate_clause	   
           ;
 
 schedule_chunk_opt: /* empty */
@@ -465,6 +468,7 @@ parallel_for_clause : if_clause
                     | schedule_clause 
                     | collapse_clause
                     | ordered_clause
+					          | allocate_clause		
                    ;
 
 parallel_for_simd_directive : /* #pragma */ OMP PARALLEL FOR SIMD { 
@@ -495,6 +499,7 @@ parallel_for_simd_clause: copyin_clause
                     | if_clause
                     | num_threads_clause
                     | proc_bind_clause
+					          | allocate_clause							
                    ; 
  
 parallel_sections_directive : /* #pragma */ OMP PARALLEL SECTIONS { 
@@ -523,6 +528,7 @@ parallel_sections_clause : copyin_clause
                          | if_clause
                          | num_threads_clause
                          | proc_bind_clause
+						             | allocate_clause					 
                          ;
 
 master_directive : /* #pragma */ OMP MASTER { 
@@ -643,6 +649,11 @@ lastprivate_clause : LASTPRIVATE {
 
 share_clause : SHARED {
                         ompattribute->addClause(e_shared); omptype = e_shared; 
+                      } '(' {b_within_variable_list = true;} variable_list ')' {b_within_variable_list = false;}
+                    ;
+
+allocate_clause : ALLOCATE {
+                        ompattribute->addClause(e_allocate); omptype = e_allocate; 
                       } '(' {b_within_variable_list = true;} variable_list ')' {b_within_variable_list = false;}
                     ;
 
@@ -857,6 +868,7 @@ simd_clause: safelen_clause
            | lastprivate_clause
            | reduction_clause
            | collapse_clause
+		       | allocate_clause
             ;
 
 
