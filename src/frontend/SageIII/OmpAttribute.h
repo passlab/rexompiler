@@ -110,8 +110,8 @@ namespace OmpSupport
     e_atomic_clause, 
     e_inbranch,
     e_notinbranch,
-	e_allocate,
-	e_deallocate,
+	  e_allocate,
+	  e_deallocate,
 	
     e_depend, // OpenMP 4.0 task clauses
 
