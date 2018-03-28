@@ -577,6 +577,7 @@ SgOmpAtomicClause
 SgOmpInbranchClause
 SgOmpNotinbranchClause
 SgOmpDependClause
+SgOmpAllocateClause
 SgOpenclAccessModeModifier
 SgOpenStatement
 SgOptions

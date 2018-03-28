@@ -414,6 +414,8 @@ namespace OmpSupport
       // ordered (n): optional (n)
       if (clause_expression == NULL && clause_type == e_ordered_clause)
          return NULL; 
+      if (clause_expression == NULL && clause_type == e_allocate_clause)
+         return NULL; 
       ROSE_ASSERT(clause_expression != NULL);
       bool returnNewExpression = false;
       if( isSgTypeUnknown( clause_expression->get_type( ) ) )
@@ -511,7 +513,14 @@ namespace OmpSupport
           result = new SgOmpOrderedClause(param);
           break;
         }
- 
+
+      case e_allocate_clause:
+        {
+          SgExpression* param = checkOmpExpressionClause( att->getExpression(e_allocate_clause).second, global, e_allocate_clause);
+          result = new SgOmpAllocateClause(param);
+          break;
+        }
+  
       case e_collapse:
         {
           SgExpression* collapseParam = checkOmpExpressionClause( att->getExpression(e_collapse).second, global, e_collapse );
@@ -622,6 +631,17 @@ namespace OmpSupport
     return result;
   }
 #endif
+  SgOmpAllocateClause * buildOmpAllocateClause(OmpAttribute* att)
+  {
+    ROSE_ASSERT(att != NULL);
+    if (!att->hasClause(e_untied))
+      return NULL;
+    SgOmpAllocateClause* result = new SgOmpAllocateClause(NULL, NULL);
+    ROSE_ASSERT(result);
+    setOneSourcePositionForTransformation(result);
+    return result;
+  }
+
   SgOmpUntiedClause * buildOmpUntiedClause(OmpAttribute* att)
   {
     ROSE_ASSERT(att != NULL);
@@ -1143,7 +1163,12 @@ namespace OmpSupport
           result = buildOmpOrderedClause(att); 
           break;
         }
-#endif        
+#endif      
+      case e_allocate_clause:
+        {
+          result = buildOmpAllocateClause(att);
+          break;
+        }  
       case e_schedule:
         {
           result = buildOmpScheduleClause(att);
@@ -1182,6 +1207,7 @@ namespace OmpSupport
           result = buildOmpExpressionClause(att, c_clause_type);
           break;
         }
+      //case e_allocate_clause:
       case e_copyin:  
       case e_copyprivate:  
       case e_firstprivate:  

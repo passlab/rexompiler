@@ -254,7 +254,7 @@ for_clause: private_clause
            | collapse_clause
            | ordered_clause
            | nowait_clause  
-		       | allocate_clause	   
+	   | allocate_clause	   
           ; 
 
 /* use this for the combined for simd directive */
@@ -267,7 +267,7 @@ for_or_simd_clause : ordered_clause
            | collapse_clause
            | unique_simd_clause
            | nowait_clause  
-		       | allocate_clause	   
+           | allocate_clause	   
           ;
 
 schedule_chunk_opt: /* empty */
@@ -283,6 +283,12 @@ ordered_clause: ORDERED {
                ;
 
 ordered_parameter_opt: /* empty */
+                | '(' expression ')' {
+                    addExpression("");
+                   }
+                 ;
+
+allocate_parameter_opt: /* empty */
                 | '(' expression ')' {
                     addExpression("");
                    }
@@ -468,7 +474,7 @@ parallel_for_clause : if_clause
                     | schedule_clause 
                     | collapse_clause
                     | ordered_clause
-					          | allocate_clause		
+					| allocate_clause		
                    ;
 
 parallel_for_simd_directive : /* #pragma */ OMP PARALLEL FOR SIMD { 
@@ -499,7 +505,7 @@ parallel_for_simd_clause: copyin_clause
                     | if_clause
                     | num_threads_clause
                     | proc_bind_clause
-					          | allocate_clause							
+					| allocate_clause							
                    ; 
  
 parallel_sections_directive : /* #pragma */ OMP PARALLEL SECTIONS { 
@@ -528,7 +534,7 @@ parallel_sections_clause : copyin_clause
                          | if_clause
                          | num_threads_clause
                          | proc_bind_clause
-						             | allocate_clause					 
+			 | allocate_clause					 
                          ;
 
 master_directive : /* #pragma */ OMP MASTER { 
@@ -653,7 +659,7 @@ share_clause : SHARED {
                     ;
 
 allocate_clause : ALLOCATE {
-                        ompattribute->addClause(e_allocate); omptype = e_allocate; 
+                        ompattribute->addClause(e_allocate_clause); omptype = e_allocate_clause; 
                       } '(' {b_within_variable_list = true;} variable_list ')' {b_within_variable_list = false;}
                     ;
 
@@ -868,7 +874,7 @@ simd_clause: safelen_clause
            | lastprivate_clause
            | reduction_clause
            | collapse_clause
-		       | allocate_clause
+           | allocate_clause
             ;
 
 

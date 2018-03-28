@@ -42,6 +42,7 @@ Grammar::setUpNodes ()
            SgOmpClause  {define all enum types here}
              // simplest clause
            * SgOmpOrderedClause
+           * SgOmpAllocateClause
            * SgOmpNowaitClause
            * SgOmpUntiedClause
            * SgOmpBeginClause // experimental nodes for MPI begin..end segments
@@ -68,6 +69,7 @@ Grammar::setUpNodes ()
            *** SgOmpReductionClause
         */
      NEW_TERMINAL_MACRO (OmpOrderedClause, "OmpOrderedClause", "OmpOrderedClauseTag" );
+     NEW_TERMINAL_MACRO (OmpAllocateClause, "OmpAllocateClause", "OmpAllocateClauseTag" );
      NEW_TERMINAL_MACRO (OmpNowaitClause, "OmpNowaitClause", "OmpNowaitClauseTag" );
      NEW_TERMINAL_MACRO (OmpBeginClause, "OmpBeginClause", "OmpBeginClauseTag" );
      NEW_TERMINAL_MACRO (OmpEndClause, "OmpEndClause", "OmpEndClauseTag" );
@@ -88,7 +90,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpSafelenClause, "OmpSafelenClause", "OmpSafelenTag" );
      NEW_TERMINAL_MACRO (OmpSimdlenClause, "OmpSimdlenClause", "OmpSimdlenTag" );
 
-     NEW_NONTERMINAL_MACRO (OmpExpressionClause, OmpOrderedClause | OmpCollapseClause | OmpIfClause | OmpNumThreadsClause | OmpDeviceClause |
+     NEW_NONTERMINAL_MACRO (OmpExpressionClause, OmpOrderedClause | OmpAllocateClause | OmpCollapseClause | OmpIfClause | OmpNumThreadsClause | OmpDeviceClause |
                             OmpSafelenClause | OmpSimdlenClause | OmpFinalClause | OmpPriorityClause
          ,"OmpExpressionClause", "OmpExpressionClauseTag",false );
 
