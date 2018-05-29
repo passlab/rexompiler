@@ -1,4 +1,4 @@
-4.26657d773d6dd73dac6875dbf76015694924aa4d
+4.52988e64da30f4e595db6588174f12a7a909da29
 
 ## Wordaround for dealing with EDG issue. 
 This file is used to specify a hash value for downloading EDG binary
