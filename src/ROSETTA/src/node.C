@@ -102,6 +102,8 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpCopyinClause, "OmpCopyinClause", "OmpCopyinClauseTag" );
      NEW_TERMINAL_MACRO (OmpLastprivateClause, "OmpLastprivateClause", "OmpLastprivateClauseTag" );
      NEW_TERMINAL_MACRO (OmpReductionClause, "OmpReductionClause", "OmpReductionClauseTag" );
+     // tracking in_reduction
+     NEW_TERMINAL_MACRO (OmpInReductionClause, "OmpInReductionClause", "OmpInReductionClauseTag" );
      NEW_TERMINAL_MACRO (OmpDependClause,    "OmpDependClause", "OmpDependClauseTag" );
 
      NEW_TERMINAL_MACRO (OmpMapClause, "OmpMapClause", "OmpMapClauseTag" );
@@ -110,7 +112,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpAlignedClause, "OmpAlignedClause", "OmpAlignedClauseTag" );
 
      NEW_NONTERMINAL_MACRO (OmpVariablesClause, OmpCopyprivateClause| OmpPrivateClause |OmpFirstprivateClause|
-         OmpSharedClause |OmpCopyinClause| OmpLastprivateClause| OmpReductionClause | OmpMapClause | 
+         OmpSharedClause |OmpCopyinClause| OmpLastprivateClause| OmpReductionClause | OmpInReductionClause | OmpMapClause | // tracking in_reduction 
          OmpUniformClause | OmpAlignedClause | OmpLinearClause | OmpDependClause ,
          "OmpVariablesClause", "OmpVariablesClauseTag", false);
 
@@ -1857,6 +1859,10 @@ Grammar::setUpNodes ()
 
      // reduction(op:variables) 
      OmpReductionClause.setDataPrototype("SgOmpClause::omp_reduction_operator_enum", "operation", "=e_omp_reduction_unknown",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // tracking in_reduction(op:variables) 
+     OmpInReductionClause.setDataPrototype("SgOmpClause::omp_reduction_operator_enum", "operation", "=e_omp_reduction_unknown",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      
      // depend(type:variables) 

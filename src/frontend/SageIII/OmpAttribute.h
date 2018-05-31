@@ -163,6 +163,10 @@ namespace OmpSupport
     e_reduction_ior,
     e_reduction_ieor,
 
+    // tracking in_reduction
+    e_in_reduction,
+    
+
     //5 schedule policies for
     //---------------------
     e_schedule_none,

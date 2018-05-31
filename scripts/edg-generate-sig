@@ -108,10 +108,6 @@ generate_edg_hash() {
 
 #------------------------------------------------------------------------------------------------------------------------
 
-edg_hash=$(head -n1 "$ROSE_SRC/EDG-submodule-sha1.md")
-echo $edg_hash
-exit 0
-
 check_directories
 generate_edg_hash
 exit 0

@@ -931,6 +931,26 @@ namespace OmpSupport
     setClauseVariableList(result, att, reduction_op); 
     return result;
   }
+
+  // tracking build in_reduction clause
+  SgOmpInReductionClause* buildOmpInReductionClause(OmpAttribute* att, omp_construct_enum reduction_op)
+  {
+    ROSE_ASSERT(att !=NULL);
+    if (!att->hasReductionOperator(reduction_op))
+      return NULL;
+    SgOmpClause::omp_reduction_operator_enum  sg_op = toSgOmpClauseReductionOperator(reduction_op); 
+    SgExprListExp* explist=buildExprListExp();
+    SgOmpInReductionClause* result = new SgOmpInReductionClause(explist, sg_op);
+    ROSE_ASSERT(result != NULL);
+    explist->set_parent(result);
+    setOneSourcePositionForTransformation(result);
+    
+    // build variable list
+    setClauseVariableList(result, att, reduction_op); 
+    return result;
+  }
+
+
   //! A helper function to convert OmpAttribute depend type operator to SgClause's one 
   //TODO move to sageInterface?
   static   SgOmpClause::omp_dependence_type_enum toSgOmpClauseDependenceType(omp_construct_enum at_op)
@@ -1112,6 +1132,12 @@ namespace OmpSupport
           printf("error: buildOmpVariableClause() does not handle reduction\n");
           ROSE_ASSERT(false);
         }
+     // tracking
+     case e_in_reduction:
+        {
+          printf("error: buildOmpVariableClause() does not handle in_reduction\n");
+          ROSE_ASSERT(false);
+        }
       default:
         {
           cerr<<"error: buildOmpVariableClause() Unacceptable clause type:"
@@ -1223,6 +1249,13 @@ namespace OmpSupport
      case e_reduction:
         {
           printf("error: buildOmpNonReductionClause() does not handle reduction. Please use buildOmpReductionClause().\n");
+          ROSE_ASSERT(false);
+          break;
+        }
+    // tracking
+     case e_in_reduction:
+        {
+          printf("error: buildOmpNonReductionClause() does not handle in_reduction. Please use buildOmpReductionClause().\n");
           ROSE_ASSERT(false);
           break;
         }
@@ -1411,6 +1444,22 @@ namespace OmpSupport
           sgclause->set_parent(target);
         }
       }
+
+      // tracking special handling for in_reduction
+      else if (c_clause == e_in_reduction) 
+      {
+        std::vector<omp_construct_enum> rops  = att->getReductionOperators();
+        ROSE_ASSERT(rops.size()!=0);
+        std::vector<omp_construct_enum>::iterator iter;
+        for (iter=rops.begin(); iter!=rops.end();iter++)
+        {
+          omp_construct_enum rop = *iter;
+          SgOmpClause* sgclause = buildOmpInReductionClause(att, rop);
+          target->get_clauses().push_back(sgclause);
+          sgclause->set_parent(target);
+        }
+      }
+
       // special handling for depend(type:varlist)
       else if (c_clause == e_depend) 
       {
@@ -1741,6 +1790,23 @@ namespace OmpSupport
             {
               omp_construct_enum rop = *iter;
               SgOmpClause* sgclause = buildOmpReductionClause(att, rop);
+              ROSE_ASSERT(sgclause != NULL);
+              isSgOmpClauseBodyStatement(second_stmt)->get_clauses().push_back(sgclause);
+              sgclause->set_parent(second_stmt);
+            }
+            break;
+          }
+
+      // tracking in_reduction
+        case e_in_reduction: //special handling for reduction
+          {
+            std::vector<omp_construct_enum> rops  = att->getReductionOperators();
+            ROSE_ASSERT(rops.size()!=0);
+            std::vector<omp_construct_enum>::iterator iter;
+            for (iter=rops.begin(); iter!=rops.end();iter++)
+            {
+              omp_construct_enum rop = *iter;
+              SgOmpClause* sgclause = buildOmpInReductionClause(att, rop);
               ROSE_ASSERT(sgclause != NULL);
               isSgOmpClauseBodyStatement(second_stmt)->get_clauses().push_back(sgclause);
               sgclause->set_parent(second_stmt);
