@@ -260,7 +260,7 @@ PASSING_C_CXX_ACC_TEST_OUTPUT_DIFF=$(addsuffix .diff, $(PASSING_C_CXX_ACC_TEST_O
 REFERENCE_PATH=$(top_srcdir)/tests/nonsmoke/functional/CompileTests/OpenMP_tests/referenceResults
 
 $(PASSING_C_CXX_ACC_TEST_OUTPUT_DIFF): %.diff:%
-	if diff $(@:.output.diff=.output) $(REFERENCE_PATH)/$(@:.output.diff=.output) > $@ ; then echo "Test Passed" ; else echo "Files differ; test falied"; rm -rf $@; exit 1; fi
+	if diff $(@:.output.diff=.output) $(REFERENCE_PATH)/$(@:.output.diff=.output) > $@ ; then echo "Test Passed"; rm -rf $@ ; else echo "Files differ; test falied"; cat $@; exit 1; fi
 
 gen-output: $(PASSING_C_CXX_ACC_TEST_OUTPUT)
 
