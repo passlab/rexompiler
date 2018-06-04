@@ -356,14 +356,15 @@ namespace OmpSupport
     varString=varExp->unparseToString();
 
     //Special handling for reduction clauses
-    if (targetConstruct == e_reduction)
+    if (targetConstruct == e_reduction | targetConstruct == e_in_reduction)
     {
+      addClause(targetConstruct);
       cerr<<"Fatal: cannot add variables into e_reduction, You have to specify e_reduction_operatorX instead!"<<endl;
       assert(false);
     } 
     if (isReductionOperator(targetConstruct))
     {
-      addClause(e_reduction);
+      // addClause(e_reduction);
       setReductionOperator(targetConstruct);
     }  
 
@@ -416,14 +417,15 @@ namespace OmpSupport
   {
     SgVariableSymbol* symbol = NULL;
     //Special handling for reduction clauses
-    if (targetConstruct == e_reduction)
+    if (targetConstruct == e_reduction | targetConstruct == e_in_reduction)
     {
+      addClause(targetConstruct);
       cerr<<"Fatal: cannot add variables into e_reduction, You have to specify e_reduction_operatorX instead!"<<endl;
       assert(false);
     } 
     if (isReductionOperator(targetConstruct))
     {
-      addClause(e_reduction);
+      // addClause(e_reduction);
       setReductionOperator(targetConstruct);
     }  
     // Try to resolve the variable if SgInitializedName is not provided
