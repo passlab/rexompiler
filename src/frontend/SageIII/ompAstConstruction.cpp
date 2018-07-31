@@ -634,7 +634,7 @@ namespace OmpSupport
   SgOmpAllocateClause * buildOmpAllocateClause(OmpAttribute* att)
   {
     ROSE_ASSERT(att != NULL);
-    if (!att->hasClause(e_untied))
+    if (!att->hasClause(e_allocate_clause))
       return NULL;
     SgOmpAllocateClause* result = new SgOmpAllocateClause(NULL, NULL);
     ROSE_ASSERT(result);

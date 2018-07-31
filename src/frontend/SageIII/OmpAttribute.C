@@ -801,8 +801,9 @@ namespace OmpSupport
       case e_reduction_ior: result = "ior"; break;
       case e_reduction_ieor: result = "ieor"; break;
 
-    // tracking in_reduction
+    // tracking new clauses
       case e_in_reduction: result = "in_reduction"; break; 
+      case e_allocate_clause: result = "allocate"; break; 
 
 
       case e_schedule_none: result = "not-specified"; break;
@@ -1166,8 +1167,9 @@ namespace OmpSupport
       case e_ordered_clause:
       case e_reduction:
 
-      // tracking in_reduction
+      // tracking new clauses
       case e_in_reduction:
+      case e_allocate_clause:
 
       case e_schedule:
       case e_collapse:
@@ -1364,7 +1366,8 @@ namespace OmpSupport
           (omp_type == e_linear)||
           (omp_type == e_uniform)||
           (omp_type == e_aligned)||
-          (omp_type == e_lastprivate)
+          (omp_type == e_lastprivate)||
+          (omp_type == e_allocate_clause)
           )
       {
 

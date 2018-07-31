@@ -124,6 +124,7 @@ corresponding C type is union name defaults to YYSTYPE.
         XOR_ASSIGN2 OR_ASSIGN2 DEPEND IN OUT INOUT MERGEABLE
         LEXICALERROR IDENTIFIER MIN MAX
         READ WRITE CAPTURE SIMDLEN FINAL PRIORITY
+        INSCAN
 /*We ignore NEWLINE since we only care about the pragma string , We relax the syntax check by allowing it as part of line continuation */
 %token <itype> ICONSTANT   
 %token <stype> EXPRESSION ID_EXPRESSION 
@@ -660,13 +661,25 @@ share_clause : SHARED {
 
 allocate_clause : ALLOCATE {
                         ompattribute->addClause(e_allocate_clause); omptype = e_allocate_clause; 
-                      } '(' {b_within_variable_list = true;} variable_list ')' {b_within_variable_list = false;}
+                      } '(' {b_within_variable_list = true; } clause_with_special_variable ')' {b_within_variable_list = false;}
+                    ;
+
+clause_with_special_variable : ID_EXPRESSION ':' { 
+                      } {b_within_variable_list = true;} variable_list {b_within_variable_list = false;}
+                      | {b_within_variable_list = true;} variable_list {b_within_variable_list = false;}
                     ;
 
 reduction_clause : REDUCTION { 
                           ompattribute->addClause(e_reduction);
-                        } '(' reduction_operator ':' {b_within_variable_list = true;} variable_list ')' {b_within_variable_list = false;}
+                        } '(' reduction_with_opt_attribute ')'
                       ;
+
+reduction_with_opt_attribute: opt_attribute ',' {
+                        } reduction_operator ':' {b_within_variable_list = true;} variable_list {b_within_variable_list = false;
+                        }
+                        | reduction_operator ':' {b_within_variable_list = true;} variable_list {b_within_variable_list = false;
+                        }
+            ;
 
 reduction_operator : '+' {
                        ompattribute->setReductionOperator(e_reduction_plus); 
@@ -804,10 +817,26 @@ end_clause: TARGET_END {
 if_clause: IF {
                            ompattribute->addClause(e_if);
                            omptype = e_if;
-             } '(' expression ')' {
-                            addExpression("");
+             } '(' clause_with_opt_attribute ')' {
+                        //    addExpression("");
              }
              ;
+
+clause_with_opt_attribute: opt_attribute ':' expression {
+                        addExpression("");
+                        }
+                      | expression {
+                        addExpression("");
+                        }
+            ;
+
+opt_attribute: PARALLEL {
+             ;
+            }
+            | INSCAN
+            | TASK
+            | DEFAULT
+            ;
 
 num_threads_clause: NUM_THREADS {
                            ompattribute->addClause(e_num_threads);
