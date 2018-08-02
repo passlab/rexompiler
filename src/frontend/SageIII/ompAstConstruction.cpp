@@ -922,7 +922,7 @@ namespace OmpSupport
       return NULL;
     SgOmpClause::omp_reduction_operator_enum  sg_op = toSgOmpClauseReductionOperator(reduction_op); 
     SgExprListExp* explist=buildExprListExp();
-    SgOmpReductionClause* result = new SgOmpReductionClause(explist, sg_op);
+    SgOmpReductionClause* result = new SgOmpReductionClause(explist, SgOmpClause::e_omp_reduction_modifier_unknown, sg_op);
     ROSE_ASSERT(result != NULL);
     explist->set_parent(result);
     setOneSourcePositionForTransformation(result);

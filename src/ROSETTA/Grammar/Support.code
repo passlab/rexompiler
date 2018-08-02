@@ -94,6 +94,15 @@ HEADER_OMP_CLAUSE_START
             e_omp_reduction_last
         };
 
+        enum omp_reduction_modifier_enum
+        {
+            e_omp_reduction_modifier_unknown,
+            e_omp_reduction_inscan,
+            e_omp_reduction_close,
+            e_omp_reduction_master
+        };
+
+
         enum omp_dependence_type_enum
         {
             e_omp_depend_unknown,
