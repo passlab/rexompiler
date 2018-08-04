@@ -163,6 +163,11 @@ namespace OmpSupport
     e_reduction_ior,
     e_reduction_ieor,
 
+    // reduction modifiers in OpenMP 5.0
+    e_reduction_inscan,
+    e_reduction_task,
+    e_reduction_default,
+
     // tracking in_reduction
     e_in_reduction,
     

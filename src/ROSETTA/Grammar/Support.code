@@ -98,8 +98,8 @@ HEADER_OMP_CLAUSE_START
         {
             e_omp_reduction_modifier_unknown,
             e_omp_reduction_inscan,
-            e_omp_reduction_close,
-            e_omp_reduction_master
+            e_omp_reduction_task,
+            e_omp_reduction_default
         };
 
 
