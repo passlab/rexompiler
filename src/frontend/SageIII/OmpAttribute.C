@@ -279,6 +279,34 @@ namespace OmpSupport
     }
   }
 
+  void OmpAttribute::addComplexClause(omp_construct_enum clause_type)
+  {
+    if (isClause(clause_type))
+    {
+      //We only store a clause type once
+      //Logically, the content will be merged into the first occurrence.
+      if (!hasClause(clause_type))
+      { 
+        clause_map[clause_type]=true;
+        clauses.push_back(clause_type);
+        //        cout<<"adding a clause:"<< OmpSupport::toString(clause_type)<<" to attr:"<< this<<endl;
+        //      cout<<"clauses have member count="<<clauses.size()<<endl;
+        ROSE_ASSERT(clause_type == clauses[clauses.size()-1]);
+      }
+
+      // initialize an empty tuple for the complex clause.
+      complex_clause_modifier.push_back(e_unknown);
+      complex_clause_identifier.push_back(e_unknown);
+      complex_clause_variable_list.push_back(new std::vector<std::pair<std::string, SgNode*> >);
+
+    }
+    else
+    {
+      cerr<<"OmpAttribute::addClause(): Unrecognized clause type:"<<OmpSupport::toString(clause_type)<<endl;
+      ROSE_ASSERT(false);
+    }
+  }
+
   //! Get a vector of clauses existing in the directive
   // We only maintain a map internally, so generated the vector on the fly   
   // This implementation detail is hidden from users, can be changed any time   
@@ -490,6 +518,47 @@ namespace OmpSupport
     return symbol;   
   }
 
+  SgVariableSymbol* OmpAttribute::addComplexClauseVariable(omp_construct_enum targetConstruct, const std::string& varString, SgInitializedName* sgvar/*=NULL*/)
+  {
+    SgVariableSymbol* symbol = NULL;
+    // Try to resolve the variable if SgInitializedName is not provided
+    if ((sgvar == NULL)&&(mNode!=NULL))
+    {
+      SgScopeStatement* scope = SageInterface::getScope(mNode);
+     
+      ROSE_ASSERT(scope!=NULL);
+      //resolve the variable here
+      symbol = lookupVariableSymbolInParentScopes (varString, scope);
+      if (symbol == NULL)          
+      {
+        cerr<<"Error: OmpAttribute::addVariable() cannot find symbol for variable:"<<varString<<endl;
+        ROSE_ASSERT(symbol!= NULL);
+      }
+      else 
+        sgvar = symbol->get_declaration();
+    } 
+
+    if (sgvar != NULL)
+    {
+      symbol = isSgVariableSymbol(sgvar->get_symbol_from_symbol_table());
+      // Liao, 3/7/2013. this may end up with infinite search through cyclic graph.
+      //symbol = isSgVariableSymbol(sgvar->search_for_symbol_from_symbol_table ());
+    }
+
+    //debug clause var_list
+    // if (targetConstruct== e_copyin) cout<<"debug: adding variable to copyin()"<<endl;
+
+    complex_clause_variable_list.back()->push_back(make_pair(varString, sgvar));
+
+    //variable_lists[targetConstruct].push_back(make_pair(varString, sgvar));
+    // maintain the var-clause map also
+    //var_clauses[varString].push_back(targetConstruct);
+    // Don't forget this! But directive like threadprivate could have variable list also
+    //if (isClause(targetConstruct)) 
+    //  addClause(targetConstruct);
+    return symbol;   
+  }
+
   //! Set name for named critical section
   void OmpAttribute::setCriticalName(const std::string & varname)
   {
@@ -594,6 +663,33 @@ namespace OmpSupport
     if (hit == reduction_operators.end())   
       reduction_operators.push_back(operatorx);
   }
+
+  void OmpAttribute::setComplexClauseModifier(omp_construct_enum modifier)
+  {
+    /*
+    assert(isReductionOperator(operatorx));
+    std::vector<omp_construct_enum>::iterator hit = 
+      find(reduction_operators.begin(),reduction_operators.end(), operatorx); 
+    if (hit == reduction_operators.end())   
+      reduction_operators.push_back(operatorx);
+    */
+
+    complex_clause_modifier.back() = modifier;
+  }
+
+  void OmpAttribute::setComplexClauseIdentifier(omp_construct_enum identifier)
+  {
+    /*
+    assert(isReductionOperator(operatorx));
+    std::vector<omp_construct_enum>::iterator hit = 
+      find(reduction_operators.begin(),reduction_operators.end(), operatorx); 
+    if (hit == reduction_operators.end())   
+      reduction_operators.push_back(operatorx);
+    */
+
+    complex_clause_identifier.back() = identifier;
+  }
+
   // 
   std::vector<omp_construct_enum> OmpAttribute::getReductionOperators()
   {

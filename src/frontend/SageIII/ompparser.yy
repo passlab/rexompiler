@@ -96,6 +96,11 @@ static SgExpression* length_exp = NULL;
 // 
 static bool arraySection=true; 
 
+// mark whether it is complex clause.
+static bool is_complex_clause = false;
+
+static bool addComplexVar(const char* var);
+
 %}
 
 %locations
@@ -670,8 +675,11 @@ clause_with_special_variable : ID_EXPRESSION ':' {
                     ;
 
 reduction_clause : REDUCTION { 
-                          ompattribute->addClause(e_reduction);
-                        } '(' reduction_with_opt_attribute ')'
+                          //ompattribute->addClause(e_reduction);
+                        ompattribute->addComplexClause(e_reduction);
+                        omptype = e_reduction;
+                        is_complex_clause = true;
+                        } '(' reduction_with_opt_attribute {is_complex_clause = false;} ')'
                       ;
 
 reduction_with_opt_attribute: opt_attribute ',' {
@@ -682,8 +690,9 @@ reduction_with_opt_attribute: opt_attribute ',' {
             ;
 
 reduction_operator : '+' {
-                       ompattribute->setReductionOperator(e_reduction_plus); 
-                       omptype = e_reduction_plus; /*variables are stored for each operator*/
+                       //ompattribute->setReductionOperator(e_reduction_plus); 
+                       //omptype = e_reduction_plus; /*variables are stored for each operator*/
+                        ompattribute->setComplexClauseIdentifier(e_reduction_plus);
                      }
                    | '*' {
                        ompattribute->setReductionOperator(e_reduction_mul);  
@@ -833,7 +842,7 @@ clause_with_opt_attribute: opt_attribute ':' expression {
 opt_attribute: PARALLEL {
              ;
             }
-            | INSCAN
+            | INSCAN { ompattribute->setComplexClauseModifier(e_reduction_inscan); }
             | TASK
             | DEFAULT
             ;
@@ -1349,8 +1358,29 @@ variable-list : identifier
 */
 
 /* in C++ (we use the C++ version) */ 
-variable_list : ID_EXPRESSION { if (!addVar((const char*)$1)) YYABORT; }
-              | variable_list ',' ID_EXPRESSION { if (!addVar((const char*)$3)) YYABORT; }
+variable_list : ID_EXPRESSION {
+              if (is_complex_clause) {
+                addComplexVar((const char*)$1);
+              }
+              else {
+                if (!addVar((const char*)$1)) {
+                    YYABORT;
+                };
+              }
+            }
+              | variable_list ',' ID_EXPRESSION {
+              if (is_complex_clause) {
+                addComplexVar((const char*)$3);
+              }
+              else {
+                if (!addVar((const char*)$3)) {
+                    YYABORT;
+                };
+              }
+            }
+
+
+//if (!addVar((const char*)$3)) YYABORT; }
               ;
 
 /*  depend( array1[i][k], array2[p][l]), real array references in the list  */
@@ -1445,6 +1475,11 @@ void omp_parser_init(SgNode* aNode, const char* str) {
 
 static bool addVar(const char* var)  {
     array_symbol = ompattribute->addVariable(omptype,var);
+    return true;
+}
+
+static bool addComplexVar(const char* var)  {
+    array_symbol = ompattribute->addComplexClauseVariable(omptype,var);
     return true;
 }
 

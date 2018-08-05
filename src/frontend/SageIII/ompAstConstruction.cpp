@@ -2546,6 +2546,8 @@ This is no perfect solution until we handle preprocessing information as structu
     // parse OpenMP directives and attach OmpAttributeList to relevant SgNode
     attachOmpAttributeInfo(sageFilePtr);
 
+    printf("Parsing is done.\n");
+
     // Additional processing of the AST after parsing
     // 
     postParsingProcessing (sageFilePtr);

@@ -17,6 +17,7 @@
 #include <map>
 #include <cassert>
 #include <vector>
+//#include <tuple>
 class SgNode;
 /** Types and functions to support OpenMP
 *
@@ -354,12 +355,18 @@ namespace OmpSupport
       //! Get all existing clauses
       std::vector<omp_construct_enum> getClauses();
 
+      void addComplexClause (omp_construct_enum clause_type);
+      SgVariableSymbol* addComplexVariable (omp_construct_enum, const std::string&, SgInitializedName*);
+
       //!--------var list --------------
       //! Add a variable into a variable list of an OpenMP construct ,return the symbol of the variable added, if possible
       SgVariableSymbol* addVariable(omp_construct_enum targetConstruct, const std::string& varString, SgInitializedName* sgvar=NULL);
 
       //! Add a variable ref expression to a clause: this is useful for  array reference expression. A single variable symbol is not sufficient 
       SgVariableSymbol* addVariable(omp_construct_enum targetConstruct, SgExpression* varExp);
+
+      // add variable for the complex clause.
+      SgVariableSymbol* addComplexClauseVariable(omp_construct_enum targetConstruct, const std::string& varString, SgInitializedName* sgvar=NULL);
 
       //! Check if a variable list is associated with a construct
       bool hasVariableList(omp_construct_enum);
@@ -403,6 +410,9 @@ namespace OmpSupport
 
       // Add a new reduction clause with the specified operator
       void setReductionOperator(omp_construct_enum operatorx);
+
+      void setComplexClauseModifier(omp_construct_enum modifier);
+      void setComplexClauseIdentifier(omp_construct_enum identifier);
 
       //! Get reduction clauses for each operations,  reduction(op:kind)
       std::vector<omp_construct_enum> getReductionOperators();
@@ -463,6 +473,7 @@ namespace OmpSupport
       //!
       bool get_isUserDefined() {return isUserDefined; }
 
+
       //! Convert OmpAttribute to a legal OpenMP pragma string, 
       //not named toString() to void ambiguous with OmpAttribute::toString()
       std::string toOpenMPString();
@@ -515,6 +526,13 @@ namespace OmpSupport
       // Some clauses are allowed to appear more than once, merge the content into the first occurrence in our implementation.
       std::vector<omp_construct_enum> clauses;
       std::map<omp_construct_enum,bool> clause_map;
+
+      // Clauses with modifier and/or identifier.
+      // Since C++ 11 support is not enabled, std::tuple is not available.
+      // To avoid Boost, 3 vectors are used instead of tuple.
+      std::vector<omp_construct_enum> complex_clause_modifier;
+      std::vector<omp_construct_enum> complex_clause_identifier;
+      std::vector < std::vector < std::pair < std::string, SgNode* > >* > complex_clause_variable_list;
 
       // Multiple reduction clauses, each has a different operator
       //value for reduction operation: + -, * & | etc
