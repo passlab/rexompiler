@@ -7391,6 +7391,35 @@ static std::string reductionOperatorToString(SgOmpClause::omp_reduction_operator
   return result;
 }
 
+static std::string reductionModifierToString(SgOmpClause::omp_reduction_modifier_enum rm)
+{
+  string result;
+  switch (rm)
+  {
+    case SgOmpClause::e_omp_reduction_inscan: 
+      {
+        result = "inscan";
+        break;
+      }
+    case SgOmpClause::e_omp_reduction_task: 
+      {
+        result = "task";
+        break;
+      }
+    case SgOmpClause::e_omp_reduction_default:   
+      {
+        result = "default";
+        break;
+      }
+    default:
+      {
+        cerr<<"Error: unhandled operator type reductionOperatorToString():"<< rm <<endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
+
 //! A helper function to convert dependence type to strings
 // TODO put into a better place and expose it to users.
 static std::string dependenceTypeToString(SgOmpClause::omp_dependence_type_enum ro)
@@ -7546,6 +7575,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
       {
         curprint(string(" reduction("));
         //reductionOperatorToString() will handle language specific issues 
+        SgOmpClause::omp_reduction_modifier_enum modifier = isSgOmpReductionClause(c)->get_modifier();
+        if (modifier != SgOmpClause::e_omp_reduction_modifier_unknown) {
+            curprint(reductionModifierToString(modifier));
+            curprint(string(", "));
+        };
         curprint(reductionOperatorToString(isSgOmpReductionClause(c)->get_operation()));
         curprint(string(" : "));
         break;

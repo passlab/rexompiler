@@ -19,6 +19,9 @@ extern void omp_parser_init(SgNode* aNode, const char* str);
 //Fortran OpenMP parser interface
 void parse_fortran_openmp(SgSourceFile *sageFilePtr);
 
+int complex_clause_index = 0;
+static bool is_complex_clause = false;
+
 using namespace std;
 using namespace SageInterface;
 using namespace SageBuilder;
@@ -915,20 +918,22 @@ namespace OmpSupport
   }
 
   //! Try to build a reduction clause with a given operation type from OmpAttribute
-  SgOmpReductionClause* buildOmpReductionClause(OmpAttribute* att, omp_construct_enum reduction_op)
+  SgOmpReductionClause* buildOmpReductionClause(OmpAttribute* att, omp_construct_enum modifier, omp_construct_enum reduction_op)
   {
     ROSE_ASSERT(att !=NULL);
-    if (!att->hasReductionOperator(reduction_op))
-      return NULL;
+    //if (!att->hasReductionOperator(reduction_op))
+    //  return NULL;
+    //  Later it needs to handle no modifier case.
+    SgOmpClause::omp_reduction_modifier_enum  sg_modifier = SgOmpClause::e_omp_reduction_inscan; 
     SgOmpClause::omp_reduction_operator_enum  sg_op = toSgOmpClauseReductionOperator(reduction_op); 
     SgExprListExp* explist=buildExprListExp();
-    SgOmpReductionClause* result = new SgOmpReductionClause(explist, SgOmpClause::e_omp_reduction_modifier_unknown, sg_op);
+    SgOmpReductionClause* result = new SgOmpReductionClause(explist, sg_modifier, sg_op);
     ROSE_ASSERT(result != NULL);
     explist->set_parent(result);
     setOneSourcePositionForTransformation(result);
     
     // build variable list
-    setClauseVariableList(result, att, reduction_op); 
+    setClauseVariableList(result, att, e_unknown); 
     return result;
   }
 
@@ -1433,6 +1438,7 @@ namespace OmpSupport
       // special handling for reduction
       if (c_clause == e_reduction) 
       {
+        /*
         std::vector<omp_construct_enum> rops  = att->getReductionOperators();
         ROSE_ASSERT(rops.size()!=0);
         std::vector<omp_construct_enum>::iterator iter;
@@ -1443,6 +1449,18 @@ namespace OmpSupport
           target->get_clauses().push_back(sgclause);
           sgclause->set_parent(target);
         }
+        */
+
+        // process each reduction clause individually.
+        is_complex_clause = true;
+        omp_construct_enum current_modifier = att->getComplexClauseModifier();
+        omp_construct_enum current_identifier = att->getComplexClauseIdentifier();
+        SgOmpClause* sgclause = buildOmpReductionClause(att, current_modifier, current_identifier);
+        complex_clause_index++;
+        is_complex_clause = false;
+        target->get_clauses().push_back(sgclause);
+        sgclause->set_parent(target);
+
       }
 
       // tracking special handling for in_reduction
@@ -1781,8 +1799,10 @@ namespace OmpSupport
             sgclause->set_parent(second_stmt);
             break;
           }
+
+        // There could be some unknown issues since the code is simply copied from PARALLEL. 
         case e_reduction: //special handling for reduction
-          {
+          {/*
             std::vector<omp_construct_enum> rops  = att->getReductionOperators();
             ROSE_ASSERT(rops.size()!=0);
             std::vector<omp_construct_enum>::iterator iter;
@@ -1793,7 +1813,16 @@ namespace OmpSupport
               ROSE_ASSERT(sgclause != NULL);
               isSgOmpClauseBodyStatement(second_stmt)->get_clauses().push_back(sgclause);
               sgclause->set_parent(second_stmt);
-            }
+            } */
+            is_complex_clause = true;
+            omp_construct_enum current_modifier = att->getComplexClauseModifier();
+            omp_construct_enum current_identifier = att->getComplexClauseIdentifier();
+            SgOmpClause* sgclause = buildOmpReductionClause(att, current_modifier, current_identifier);
+            complex_clause_index++;
+            is_complex_clause = false;
+            isSgOmpClauseBodyStatement(second_stmt)->get_clauses().push_back(sgclause);
+            sgclause->set_parent(second_stmt);
+
             break;
           }
 

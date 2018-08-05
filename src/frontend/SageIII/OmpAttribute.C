@@ -11,6 +11,9 @@
 #include <iostream>
 #include <string>
 
+// counter for complex clause.
+extern int complex_clause_index;
+
 using namespace std;
 using namespace SageInterface;
 using namespace SageBuilder;
@@ -688,6 +691,14 @@ namespace OmpSupport
     */
 
     complex_clause_identifier.back() = identifier;
+  }
+
+  omp_construct_enum OmpAttribute::getComplexClauseModifier () {
+      return complex_clause_modifier.at(complex_clause_index);
+  }
+
+  omp_construct_enum OmpAttribute::getComplexClauseIdentifier () {
+      return complex_clause_identifier.at(complex_clause_index);
   }
 
   // 
@@ -1631,12 +1642,13 @@ namespace OmpSupport
   std::vector<std::pair<std::string,SgNode* > > 
     OmpAttribute::getVariableList(omp_construct_enum targetConstruct)
     {
-      std::vector<std::pair<std::string,SgNode* > > * result = new std::vector<std::pair<std::string,SgNode* > >; 
+      //std::vector<std::pair<std::string,SgNode* > > * result = new std::vector<std::pair<std::string,SgNode* > >; 
       // e_reduction is a collective concept, 
       // There may have multiple reduction clauses for different operations.
       // return all of them. Return special one if e_reduction_operatorX is used
-      if (targetConstruct==e_reduction)
-      {
+      //if (targetConstruct==e_reduction)
+      if (targetConstruct == e_unknown)
+      {/*
         std::vector<omp_construct_enum> ops = getReductionOperators();
         std::vector<omp_construct_enum>::iterator iter = ops.begin();
         for (;iter!=ops.end(); iter++) // for each reduction operator
@@ -1648,7 +1660,8 @@ namespace OmpSupport
           for (;iter2!=temp.end(); iter2++)
             result->push_back(*iter2);
         }  
-        return *result;
+        return *result;*/
+        return *complex_clause_variable_list[complex_clause_index];
       } 
       else
         return variable_lists[targetConstruct];

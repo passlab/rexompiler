@@ -413,6 +413,8 @@ namespace OmpSupport
 
       void setComplexClauseModifier(omp_construct_enum modifier);
       void setComplexClauseIdentifier(omp_construct_enum identifier);
+      omp_construct_enum getComplexClauseModifier ();
+      omp_construct_enum getComplexClauseIdentifier ();
 
       //! Get reduction clauses for each operations,  reduction(op:kind)
       std::vector<omp_construct_enum> getReductionOperators();
