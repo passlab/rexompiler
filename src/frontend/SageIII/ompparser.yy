@@ -682,24 +682,22 @@ reduction_clause : REDUCTION {
                         } '(' reduction_with_opt_attribute {is_complex_clause = false;} ')'
                       ;
 
-reduction_with_opt_attribute: opt_attribute ',' {
-                        } reduction_operator ':' {b_within_variable_list = true;} variable_list {b_within_variable_list = false;
+reduction_with_opt_attribute: reduction_modifier ',' {
+                        } reduction_identifier ':' {b_within_variable_list = true;} variable_list {b_within_variable_list = false;
                         }
-                        | reduction_operator ':' {b_within_variable_list = true;} variable_list {b_within_variable_list = false;
+                        | reduction_identifier ':' {b_within_variable_list = true;} variable_list {b_within_variable_list = false;
                         }
             ;
 
-reduction_operator : '+' {
-                       //ompattribute->setReductionOperator(e_reduction_plus); 
-                       //omptype = e_reduction_plus; /*variables are stored for each operator*/
+reduction_identifier : '+' {
                         ompattribute->setComplexClauseIdentifier(e_reduction_plus);
                      }
                    | '*' {
-                       ompattribute->setReductionOperator(e_reduction_mul);  
+                       ompattribute->setComplexClauseIdentifier(e_reduction_mul);  
                        omptype = e_reduction_mul;
                      }
                    | '-' {
-                       ompattribute->setReductionOperator(e_reduction_minus); 
+                       ompattribute->setComplexClauseIdentifier(e_reduction_minus); 
                        omptype = e_reduction_minus;
                       }
                    | MIN {
@@ -711,23 +709,23 @@ reduction_operator : '+' {
                        omptype = e_reduction_max;
                       }
                    | '&' {
-                       ompattribute->setReductionOperator(e_reduction_bitand);  
+                       ompattribute->setComplexClauseIdentifier(e_reduction_bitand);  
                        omptype = e_reduction_bitand;
                       }
                    | '^' {
-                       ompattribute->setReductionOperator(e_reduction_bitxor);  
+                       ompattribute->setComplexClauseIdentifier(e_reduction_bitxor);  
                        omptype = e_reduction_bitxor;
                       }
                    | '|' {
-                       ompattribute->setReductionOperator(e_reduction_bitor);  
+                       ompattribute->setComplexClauseIdentifier(e_reduction_bitor);  
                        omptype = e_reduction_bitor;
                       }
                    | LOGAND /* && */ {
-                       ompattribute->setReductionOperator(e_reduction_logand);  
+                       ompattribute->setComplexClauseIdentifier(e_reduction_logand);  
                        omptype = e_reduction_logand;
                      }
                    | LOGOR /* || */ {
-                       ompattribute->setReductionOperator(e_reduction_logor); 
+                       ompattribute->setComplexClauseIdentifier(e_reduction_logor); 
                        omptype = e_reduction_logor;
                      }
                    ;
@@ -839,12 +837,14 @@ clause_with_opt_attribute: opt_attribute ':' expression {
                         }
             ;
 
+reduction_modifier : INSCAN { ompattribute->setComplexClauseModifier(e_reduction_inscan); }
+            | TASK { ompattribute->setComplexClauseModifier(e_reduction_task); }
+            | DEFAULT { ompattribute->setComplexClauseModifier(e_reduction_default); }
+            ;
+
 opt_attribute: PARALLEL {
              ;
             }
-            | INSCAN { ompattribute->setComplexClauseModifier(e_reduction_inscan); }
-            | TASK
-            | DEFAULT
             ;
 
 num_threads_clause: NUM_THREADS {

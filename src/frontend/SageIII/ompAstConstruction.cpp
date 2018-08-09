@@ -770,6 +770,40 @@ namespace OmpSupport
 
   //! A helper function to convert OmpAttribute reduction operator to SgClause reduction operator
   //TODO move to sageInterface?
+  static   SgOmpClause::omp_reduction_modifier_enum toSgOmpClauseReductionModifier(omp_construct_enum modifier)
+  {
+    SgOmpClause::omp_reduction_modifier_enum result = SgOmpClause::e_omp_reduction_modifier_unknown;
+    switch (modifier)
+    {
+      case e_reduction_inscan:
+        {
+          result = SgOmpClause::e_omp_reduction_inscan;
+          break;
+        }
+      case e_reduction_task:
+        {
+          result = SgOmpClause::e_omp_reduction_task;
+          break;
+        }
+      case e_reduction_default:
+        {
+          result = SgOmpClause::e_omp_reduction_default;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for reduction modifier conversion:%s\n", OmpSupport::toString(modifier).c_str());
+          ROSE_ASSERT(false);
+          break;
+        }
+    }
+    ROSE_ASSERT(result != SgOmpClause::e_omp_reduction_modifier_unknown);
+    return result;
+  }
+
+
+  //! A helper function to convert OmpAttribute reduction operator to SgClause reduction operator
+  //TODO move to sageInterface?
   static   SgOmpClause::omp_reduction_operator_enum toSgOmpClauseReductionOperator(omp_construct_enum at_op)
   {
     SgOmpClause::omp_reduction_operator_enum result = SgOmpClause::e_omp_reduction_unknown;
@@ -918,13 +952,13 @@ namespace OmpSupport
   }
 
   //! Try to build a reduction clause with a given operation type from OmpAttribute
-  SgOmpReductionClause* buildOmpReductionClause(OmpAttribute* att, omp_construct_enum modifier, omp_construct_enum reduction_op)
+  SgOmpReductionClause* buildOmpReductionClause(OmpAttribute* att, omp_construct_enum reduction_modifier, omp_construct_enum reduction_op)
   {
     ROSE_ASSERT(att !=NULL);
     //if (!att->hasReductionOperator(reduction_op))
     //  return NULL;
-    //  Later it needs to handle no modifier case.
-    SgOmpClause::omp_reduction_modifier_enum  sg_modifier = SgOmpClause::e_omp_reduction_inscan; 
+    // SgOmpClause::omp_reduction_modifier_enum  sg_modifier = SgOmpClause::e_omp_reduction_inscan; 
+    SgOmpClause::omp_reduction_modifier_enum  sg_modifier = toSgOmpClauseReductionModifier(reduction_modifier); 
     SgOmpClause::omp_reduction_operator_enum  sg_op = toSgOmpClauseReductionOperator(reduction_op); 
     SgExprListExp* explist=buildExprListExp();
     SgOmpReductionClause* result = new SgOmpReductionClause(explist, sg_modifier, sg_op);
