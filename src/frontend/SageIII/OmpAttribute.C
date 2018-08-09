@@ -668,7 +668,7 @@ namespace OmpSupport
       reduction_operators.push_back(operatorx);
   }
 
-  void OmpAttribute::setComplexClauseModifier(omp_construct_enum modifier)
+  void OmpAttribute::setComplexClauseFirstParameter(omp_construct_enum parameter)
   {
     /*
     assert(isReductionOperator(operatorx));
@@ -679,10 +679,10 @@ namespace OmpSupport
     */
 
     //complex_clause_modifier.back() = modifier;
-    complex_clauses.back()->first_attribute = modifier;
+    complex_clauses.back()->first_parameter = parameter;
   }
 
-  void OmpAttribute::setComplexClauseIdentifier(omp_construct_enum identifier)
+  void OmpAttribute::setComplexClauseSecondParameter(omp_construct_enum parameter)
   {
     /*
     assert(isReductionOperator(operatorx));
@@ -693,7 +693,7 @@ namespace OmpSupport
     */
 
     //complex_clause_identifier.back() = identifier;
-    complex_clauses.back()->second_attribute = identifier;
+    complex_clauses.back()->second_parameter = parameter;
   }
 
   omp_construct_enum OmpAttribute::getComplexClauseModifier () {

@@ -248,15 +248,18 @@ namespace OmpSupport
   //! Check if an OpenMP construct is a dependence type for omp task depend 
   bool isDependenceType(omp_construct_enum omp_type);
 
-  // customized class to store complex clause
-  class ComplexClause {
+  // We use objects of this class to store parameters of those clauses that take one or two additional
+  // parameters other than variable or expression list. E.g. reduction([reduction_modifier,]reduction_identifier:list).
+  // We call this kind of clause as ComplexClause, compared with other clauses which just take one parameter or a list
+  // of variable/expression.
+  class ComplexClauseParameters {
 
     public:
-      omp_construct_enum first_attribute;
-      omp_construct_enum second_attribute;
+      omp_construct_enum first_parameter;
+      omp_construct_enum second_parameter;
       std::vector < std::pair < std::string, SgNode* > > variable_list;
 
-      ComplexClause(omp_construct_enum first=e_unknown, omp_construct_enum second=e_unknown) : first_attribute(first), second_attribute(second) {}; 
+      ComplexClauseParameters(omp_construct_enum first=e_unknown, omp_construct_enum second=e_unknown) : first_parameter(first), second_parameter(second) {};
 
   };
 
@@ -367,7 +370,7 @@ namespace OmpSupport
       //! Get all existing clauses
       std::vector<omp_construct_enum> getClauses();
 
-      void addComplexClause (omp_construct_enum clause_type);
+      void addComplexClauseParameters (omp_construct_enum clause_type);
       SgVariableSymbol* addComplexVariable (omp_construct_enum, const std::string&, SgInitializedName*);
 
       //!--------var list --------------
@@ -378,7 +381,7 @@ namespace OmpSupport
       SgVariableSymbol* addVariable(omp_construct_enum targetConstruct, SgExpression* varExp);
 
       // add variable for the complex clause.
-      SgVariableSymbol* addComplexClauseVariable(omp_construct_enum targetConstruct, const std::string& varString, SgInitializedName* sgvar=NULL);
+      SgVariableSymbol* addComplexClauseParametersVariable(omp_construct_enum targetConstruct, const std::string& varString, SgInitializedName* sgvar=NULL);
 
       //! Check if a variable list is associated with a construct
       bool hasVariableList(omp_construct_enum);
@@ -423,10 +426,10 @@ namespace OmpSupport
       // Add a new reduction clause with the specified operator
       void setReductionOperator(omp_construct_enum operatorx);
 
-      void setComplexClauseModifier(omp_construct_enum modifier);
-      void setComplexClauseIdentifier(omp_construct_enum identifier);
-      omp_construct_enum getComplexClauseModifier ();
-      omp_construct_enum getComplexClauseIdentifier ();
+      void setComplexClauseParametersModifier(omp_construct_enum modifier);
+      void setComplexClauseParametersIdentifier(omp_construct_enum identifier);
+      omp_construct_enum getComplexClauseParametersModifier ();
+      omp_construct_enum getComplexClauseParametersIdentifier ();
 
       //! Get reduction clauses for each operations,  reduction(op:kind)
       std::vector<omp_construct_enum> getReductionOperators();
@@ -444,8 +447,7 @@ namespace OmpSupport
       //! Check if a depend type exists
       bool hasDependenceType(omp_construct_enum operatorx);
 
-
-      // map clause is similar to reduction clause, 
+      // map clause is similar to reduction clause,
       //
       // Add a new map clauses with the specified variant type
       void setMapVariant(omp_construct_enum operatorx);
@@ -541,13 +543,7 @@ namespace OmpSupport
       std::vector<omp_construct_enum> clauses;
       std::map<omp_construct_enum,bool> clause_map;
 
-      // Clauses with modifier and/or identifier.
-      // Since C++ 11 support is not enabled, std::tuple is not available.
-      // To avoid Boost, 3 vectors are used instead of tuple.
-      std::vector<ComplexClause*> complex_clauses;
-      // std::vector<omp_construct_enum> complex_clause_modifier;
-      // std::vector<omp_construct_enum> complex_clause_identifier;
-      // std::vector < std::vector < std::pair < std::string, SgNode* > >* > complex_clause_variable_list;
+      std::vector<ComplexClauseParameters*> complex_clauses;
 
       // Multiple reduction clauses, each has a different operator
       //value for reduction operation: + -, * & | etc

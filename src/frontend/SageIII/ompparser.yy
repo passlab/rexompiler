@@ -675,19 +675,24 @@ clause_with_special_variable : ID_EXPRESSION ':' {
                     ;
 
 reduction_clause : REDUCTION { 
-                          //ompattribute->addClause(e_reduction);
                         ompattribute->addComplexClause(e_reduction);
                         omptype = e_reduction;
                         is_complex_clause = true;
-                        } '(' reduction_with_opt_attribute {is_complex_clause = false;} ')'
+                        } '(' reduction_parameters {is_complex_clause = false;} ')'
                       ;
 
-reduction_with_opt_attribute: reduction_modifier ',' {
+reduction_parameters: reduction_modifier ',' {
                         } reduction_identifier ':' {b_within_variable_list = true;} variable_list {b_within_variable_list = false;
                         }
                         | reduction_identifier ':' {b_within_variable_list = true;} variable_list {b_within_variable_list = false;
                         }
             ;
+
+reduction_modifier : INSCAN { ompattribute->setComplexClauseFirstParameter(e_reduction_inscan); }
+            | TASK { ompattribute->setComplexClauseModifier(e_reduction_task); }
+            | DEFAULT { ompattribute->setComplexClauseModifier(e_reduction_default); }
+            ;
+
 
 reduction_identifier : '+' {
                         ompattribute->setComplexClauseIdentifier(e_reduction_plus);
@@ -835,11 +840,6 @@ clause_with_opt_attribute: opt_attribute ':' expression {
                       | expression {
                         addExpression("");
                         }
-            ;
-
-reduction_modifier : INSCAN { ompattribute->setComplexClauseModifier(e_reduction_inscan); }
-            | TASK { ompattribute->setComplexClauseModifier(e_reduction_task); }
-            | DEFAULT { ompattribute->setComplexClauseModifier(e_reduction_default); }
             ;
 
 opt_attribute: PARALLEL {
