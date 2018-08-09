@@ -248,6 +248,18 @@ namespace OmpSupport
   //! Check if an OpenMP construct is a dependence type for omp task depend 
   bool isDependenceType(omp_construct_enum omp_type);
 
+  // customized class to store complex clause
+  class ComplexClause {
+
+    public:
+      omp_construct_enum first_attribute;
+      omp_construct_enum second_attribute;
+      std::vector < std::pair < std::string, SgNode* > > variable_list;
+
+      ComplexClause(omp_construct_enum first=e_unknown, omp_construct_enum second=e_unknown) : first_attribute(first), second_attribute(second) {}; 
+
+  };
+
   class OmpAttribute;
   //! Some utility functions to manipulate OmpAttribute
   //
@@ -532,9 +544,10 @@ namespace OmpSupport
       // Clauses with modifier and/or identifier.
       // Since C++ 11 support is not enabled, std::tuple is not available.
       // To avoid Boost, 3 vectors are used instead of tuple.
-      std::vector<omp_construct_enum> complex_clause_modifier;
-      std::vector<omp_construct_enum> complex_clause_identifier;
-      std::vector < std::vector < std::pair < std::string, SgNode* > >* > complex_clause_variable_list;
+      std::vector<ComplexClause*> complex_clauses;
+      // std::vector<omp_construct_enum> complex_clause_modifier;
+      // std::vector<omp_construct_enum> complex_clause_identifier;
+      // std::vector < std::vector < std::pair < std::string, SgNode* > >* > complex_clause_variable_list;
 
       // Multiple reduction clauses, each has a different operator
       //value for reduction operation: + -, * & | etc

@@ -298,9 +298,10 @@ namespace OmpSupport
       }
 
       // initialize an empty tuple for the complex clause.
-      complex_clause_modifier.push_back(e_unknown);
-      complex_clause_identifier.push_back(e_unknown);
-      complex_clause_variable_list.push_back(new std::vector<std::pair<std::string, SgNode*> >);
+      complex_clauses.push_back(new ComplexClause()); 
+      //complex_clause_modifier.push_back(e_unknown);
+      //complex_clause_identifier.push_back(e_unknown);
+      //complex_clause_variable_list.push_back(new std::vector<std::pair<std::string, SgNode*> >);
 
     }
     else
@@ -551,7 +552,7 @@ namespace OmpSupport
     //debug clause var_list
     // if (targetConstruct== e_copyin) cout<<"debug: adding variable to copyin()"<<endl;
 
-    complex_clause_variable_list.back()->push_back(make_pair(varString, sgvar));
+    complex_clauses.back()->variable_list.push_back(make_pair(varString, sgvar));
 
     //variable_lists[targetConstruct].push_back(make_pair(varString, sgvar));
     // maintain the var-clause map also
@@ -677,7 +678,8 @@ namespace OmpSupport
       reduction_operators.push_back(operatorx);
     */
 
-    complex_clause_modifier.back() = modifier;
+    //complex_clause_modifier.back() = modifier;
+    complex_clauses.back()->first_attribute = modifier;
   }
 
   void OmpAttribute::setComplexClauseIdentifier(omp_construct_enum identifier)
@@ -690,15 +692,18 @@ namespace OmpSupport
       reduction_operators.push_back(operatorx);
     */
 
-    complex_clause_identifier.back() = identifier;
+    //complex_clause_identifier.back() = identifier;
+    complex_clauses.back()->second_attribute = identifier;
   }
 
   omp_construct_enum OmpAttribute::getComplexClauseModifier () {
-      return complex_clause_modifier.at(complex_clause_index);
+      //return complex_clause_modifier.at(complex_clause_index);
+      return complex_clauses.at(complex_clause_index)->first_attribute;
   }
 
   omp_construct_enum OmpAttribute::getComplexClauseIdentifier () {
-      return complex_clause_identifier.at(complex_clause_index);
+      //return complex_clause_identifier.at(complex_clause_index);
+      return complex_clauses.at(complex_clause_index)->second_attribute;
   }
 
   // 
@@ -1661,7 +1666,7 @@ namespace OmpSupport
             result->push_back(*iter2);
         }  
         return *result;*/
-        return *complex_clause_variable_list[complex_clause_index];
+        return complex_clauses[complex_clause_index]->variable_list;
       } 
       else
         return variable_lists[targetConstruct];
