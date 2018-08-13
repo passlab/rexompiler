@@ -804,9 +804,9 @@ namespace OmpSupport
 
   //! A helper function to convert OmpAttribute reduction operator to SgClause reduction operator
   //TODO move to sageInterface?
-  static   SgOmpClause::omp_reduction_operator_enum toSgOmpClauseReductionOperator(omp_construct_enum at_op)
+  static   SgOmpClause::omp_reduction_identifier_enum toSgOmpClauseReductionOperator(omp_construct_enum at_op)
   {
-    SgOmpClause::omp_reduction_operator_enum result = SgOmpClause::e_omp_reduction_unknown;
+    SgOmpClause::omp_reduction_identifier_enum result = SgOmpClause::e_omp_reduction_unknown;
     switch (at_op)
     {
       case e_reduction_plus: //+
@@ -959,7 +959,7 @@ namespace OmpSupport
     //  return NULL;
     // SgOmpClause::omp_reduction_modifier_enum  sg_modifier = SgOmpClause::e_omp_reduction_inscan; 
     SgOmpClause::omp_reduction_modifier_enum  sg_modifier = toSgOmpClauseReductionModifier(reduction_modifier); 
-    SgOmpClause::omp_reduction_operator_enum  sg_op = toSgOmpClauseReductionOperator(reduction_op); 
+    SgOmpClause::omp_reduction_identifier_enum  sg_op = toSgOmpClauseReductionOperator(reduction_op); 
     SgExprListExp* explist=buildExprListExp();
     SgOmpReductionClause* result = new SgOmpReductionClause(explist, sg_modifier, sg_op);
     ROSE_ASSERT(result != NULL);
@@ -977,7 +977,7 @@ namespace OmpSupport
     ROSE_ASSERT(att !=NULL);
     if (!att->hasReductionOperator(reduction_op))
       return NULL;
-    SgOmpClause::omp_reduction_operator_enum  sg_op = toSgOmpClauseReductionOperator(reduction_op); 
+    SgOmpClause::omp_reduction_identifier_enum  sg_op = toSgOmpClauseReductionOperator(reduction_op); 
     SgExprListExp* explist=buildExprListExp();
     SgOmpInReductionClause* result = new SgOmpInReductionClause(explist, sg_op);
     ROSE_ASSERT(result != NULL);

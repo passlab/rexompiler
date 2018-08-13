@@ -4600,9 +4600,9 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
   }
 
    //! Return a reduction variable's reduction operation type
-   SgOmpClause::omp_reduction_operator_enum getReductionOperationType(SgInitializedName* init_name, SgOmpClauseBodyStatement* clause_stmt)
+   SgOmpClause::omp_reduction_identifier_enum getReductionOperationType(SgInitializedName* init_name, SgOmpClauseBodyStatement* clause_stmt)
    {
-     SgOmpClause::omp_reduction_operator_enum result = SgOmpClause::e_omp_reduction_unknown;
+     SgOmpClause::omp_reduction_identifier_enum result = SgOmpClause::e_omp_reduction_unknown;
      bool found = false;
      ROSE_ASSERT(init_name != NULL);
      ROSE_ASSERT(clause_stmt!= NULL);
@@ -4621,7 +4621,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
        SgInitializedNamePtrList::const_iterator iter = find (var_list.begin(), var_list.end(), init_name);
        if (iter != var_list.end())
        {
-         result = r_clause->get_operation();
+         result = r_clause->get_identifier();
          found = true;
          break;
        }
@@ -4632,7 +4632,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
    }  
 
    //! Create an initial value according to reduction operator type
-   SgExpression* createInitialValueExp(SgOmpClause::omp_reduction_operator_enum r_operator)
+   SgExpression* createInitialValueExp(SgOmpClause::omp_reduction_identifier_enum r_operator)
    {
      SgExpression * result = NULL;
      switch (r_operator )
@@ -4806,7 +4806,7 @@ static void insertOmpLastprivateCopyBackStmts(SgStatement* ompStmt, vector <SgSt
   //    shared = shared op local;
   //    GOMP_atomic_end ();
   // We use the 2nd method only for now for simplicity and portability
-static void insertOmpReductionCopyBackStmts (SgOmpClause::omp_reduction_operator_enum r_operator, vector <SgStatement* >& end_stmt_list,  SgBasicBlock* bb1, SgInitializedName* orig_var, SgVariableDeclaration* local_decl)
+static void insertOmpReductionCopyBackStmts (SgOmpClause::omp_reduction_identifier_enum r_operator, vector <SgStatement* >& end_stmt_list,  SgBasicBlock* bb1, SgInitializedName* orig_var, SgVariableDeclaration* local_decl)
 {
 #ifdef ENABLE_XOMP
   SgExprStatement* atomic_start_stmt = buildFunctionCallStmt("XOMP_atomic_start", buildVoidType(), NULL, bb1); 
@@ -4868,7 +4868,7 @@ static void insertOmpReductionCopyBackStmts (SgOmpClause::omp_reduction_operator
 
 //! Liao 2/12/2013. Insert the thread-block inner level reduction statement into the end of the end_stmt_list
 // e.g.  xomp_inner_block_reduction_float (local_error, per_block_error, XOMP_REDUCTION_PLUS);
-static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_enum r_operator, vector <SgStatement* >& end_stmt_list,  SgBasicBlock* bb1
+static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifier_enum r_operator, vector <SgStatement* >& end_stmt_list,  SgBasicBlock* bb1
 , SgInitializedName* orig_var, SgVariableDeclaration* local_decl, SgVariableDeclaration* per_block_decl)
 {
    ROSE_ASSERT (bb1 && orig_var && local_decl && per_block_decl);  
@@ -5185,7 +5185,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
    
       // a local private copy
       SgVariableDeclaration* local_decl = NULL;
-      SgOmpClause::omp_reduction_operator_enum r_operator = SgOmpClause::e_omp_reduction_unknown  ;
+      SgOmpClause::omp_reduction_identifier_enum r_operator = SgOmpClause::e_omp_reduction_unknown  ;
       bool isReductionVar = isInClauseVariableList(orig_var, clause_stmt,V_SgOmpReductionClause);
 
       // step 1. Insert local declaration for private, firstprivate, lastprivate and reduction

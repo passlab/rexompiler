@@ -1862,11 +1862,11 @@ Grammar::setUpNodes ()
                                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
      // reduction(op:variables) 
-     OmpReductionClause.setDataPrototype("SgOmpClause::omp_reduction_operator_enum", "operation", "=e_omp_reduction_unknown",
+     OmpReductionClause.setDataPrototype("SgOmpClause::omp_reduction_identifier_enum", "identifier", "=e_omp_reduction_unknown",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
      // tracking in_reduction(op:variables)
-     OmpInReductionClause.setDataPrototype("SgOmpClause::omp_reduction_operator_enum", "operation", "=e_omp_reduction_unknown",
+     OmpInReductionClause.setDataPrototype("SgOmpClause::omp_reduction_identifier_enum", "identifier", "=e_omp_reduction_unknown",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      
      // depend(type:variables) 

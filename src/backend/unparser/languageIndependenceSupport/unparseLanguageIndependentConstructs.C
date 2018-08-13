@@ -7288,7 +7288,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpScheduleClause(SgOmpClause*
 #if 1
 //! A helper function to convert reduction operators to strings
 // TODO put into a better place and expose it to users.
-static std::string reductionOperatorToString(SgOmpClause::omp_reduction_operator_enum ro)
+static std::string reductionIdentifierToString(SgOmpClause::omp_reduction_identifier_enum ro)
 {
   string result;
   switch (ro)
@@ -7384,7 +7384,7 @@ static std::string reductionOperatorToString(SgOmpClause::omp_reduction_operator
       }
     default:
       {
-        cerr<<"Error: unhandled operator type reductionOperatorToString():"<< ro <<endl;
+        cerr<<"Error: unhandled operator type reductionIdentifierToString():"<< ro <<endl;
         ROSE_ASSERT(false);
       }
   }
@@ -7413,7 +7413,7 @@ static std::string reductionModifierToString(SgOmpClause::omp_reduction_modifier
       }
     default:
       {
-        cerr<<"Error: unhandled operator type reductionOperatorToString():"<< rm <<endl;
+        cerr<<"Error: unhandled operator type reductionIdentifierToString():"<< rm <<endl;
         ROSE_ASSERT(false);
       }
   }
@@ -7574,13 +7574,13 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
     case V_SgOmpReductionClause:
       {
         curprint(string(" reduction("));
-        //reductionOperatorToString() will handle language specific issues 
+        //reductionIdentifierToString() will handle language specific issues 
         SgOmpClause::omp_reduction_modifier_enum modifier = isSgOmpReductionClause(c)->get_modifier();
         if (modifier != SgOmpClause::e_omp_reduction_modifier_unknown) {
             curprint(reductionModifierToString(modifier));
             curprint(string(", "));
         };
-        curprint(reductionOperatorToString(isSgOmpReductionClause(c)->get_operation()));
+        curprint(reductionIdentifierToString(isSgOmpReductionClause(c)->get_identifier()));
         curprint(string(" : "));
         break;
       }
@@ -7588,8 +7588,8 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
     case V_SgOmpInReductionClause:
       {
         curprint(string(" in_reduction("));
-        //reductionOperatorToString() will handle language specific issues 
-        curprint(reductionOperatorToString(isSgOmpInReductionClause(c)->get_operation()));
+        //reductionIdentifierToString() will handle language specific issues 
+        curprint(reductionIdentifierToString(isSgOmpInReductionClause(c)->get_identifier()));
         curprint(string(" : "));
         break;
       }

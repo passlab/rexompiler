@@ -2785,11 +2785,11 @@ SgOmpLastprivateClause* SgOmpLastprivateClause::build_node_from_nonlist_children
 /* #line 1 "/home/dquinlan/ROSE/git-dq-edg49-fortran-rc/src/ROSETTA/Grammar/grammarAtermConstructorDefinitionMacros.macro" */
 
 // Generated static function for building IR nodes for Aterm support (like a constructor).
-SgOmpReductionClause* SgOmpReductionClause::build_node_from_nonlist_children (Sg_File_Info* startOfConstruct, SgExprListExp* variables, SgOmpClause::omp_reduction_modifier_enum modifier, SgOmpClause::omp_reduction_operator_enum operation)
+SgOmpReductionClause* SgOmpReductionClause::build_node_from_nonlist_children (Sg_File_Info* startOfConstruct, SgExprListExp* variables, SgOmpClause::omp_reduction_modifier_enum modifier, SgOmpClause::omp_reduction_identifier_enum operation)
    {
 #if 0
   // debugging information!
-     printf ("In SgOmpReductionClause::build_node_from_nonlist_children (Sg_File_Info* startOfConstruct, SgOmpClause::omp_reduction_operator_enum operation): this = %p = %s \n",this,this->class_name().c_str());
+     printf ("In SgOmpReductionClause::build_node_from_nonlist_children (Sg_File_Info* startOfConstruct, SgOmpClause::omp_reduction_identifier_enum operation): this = %p = %s \n",this,this->class_name().c_str());
 #endif
 
      SgOmpReductionClause* returnNode = NULL;
