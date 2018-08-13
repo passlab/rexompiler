@@ -1487,8 +1487,8 @@ namespace OmpSupport
 
         // process each reduction clause individually.
         is_complex_clause = true;
-        omp_construct_enum current_modifier = att->getComplexClauseModifier();
-        omp_construct_enum current_identifier = att->getComplexClauseIdentifier();
+        omp_construct_enum current_modifier = att->getComplexClauseFirstParameter();
+        omp_construct_enum current_identifier = att->getComplexClauseSecondParameter();
         SgOmpClause* sgclause = buildOmpReductionClause(att, current_modifier, current_identifier);
         complex_clause_index++;
         is_complex_clause = false;
@@ -1849,8 +1849,8 @@ namespace OmpSupport
               sgclause->set_parent(second_stmt);
             } */
             is_complex_clause = true;
-            omp_construct_enum current_modifier = att->getComplexClauseModifier();
-            omp_construct_enum current_identifier = att->getComplexClauseIdentifier();
+            omp_construct_enum current_modifier = att->getComplexClauseFirstParameter();
+            omp_construct_enum current_identifier = att->getComplexClauseSecondParameter();
             SgOmpClause* sgclause = buildOmpReductionClause(att, current_modifier, current_identifier);
             complex_clause_index++;
             is_complex_clause = false;

@@ -426,10 +426,10 @@ namespace OmpSupport
       // Add a new reduction clause with the specified operator
       void setReductionOperator(omp_construct_enum operatorx);
 
-      void setComplexClauseParametersModifier(omp_construct_enum modifier);
-      void setComplexClauseParametersIdentifier(omp_construct_enum identifier);
-      omp_construct_enum getComplexClauseParametersModifier ();
-      omp_construct_enum getComplexClauseParametersIdentifier ();
+      void setComplexClauseFirstParameter(omp_construct_enum parameter);
+      void setComplexClauseSecondParameter(omp_construct_enum parameter);
+      omp_construct_enum getComplexClauseFirstParameter ();
+      omp_construct_enum getComplexClauseSecondParameter ();
 
       //! Get reduction clauses for each operations,  reduction(op:kind)
       std::vector<omp_construct_enum> getReductionOperators();

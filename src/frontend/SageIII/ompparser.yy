@@ -675,7 +675,7 @@ clause_with_special_variable : ID_EXPRESSION ':' {
                     ;
 
 reduction_clause : REDUCTION { 
-                        ompattribute->addComplexClause(e_reduction);
+                        ompattribute->addComplexClauseParameters(e_reduction);
                         omptype = e_reduction;
                         is_complex_clause = true;
                         } '(' reduction_parameters {is_complex_clause = false;} ')'
@@ -689,20 +689,20 @@ reduction_parameters: reduction_modifier ',' {
             ;
 
 reduction_modifier : INSCAN { ompattribute->setComplexClauseFirstParameter(e_reduction_inscan); }
-            | TASK { ompattribute->setComplexClauseModifier(e_reduction_task); }
-            | DEFAULT { ompattribute->setComplexClauseModifier(e_reduction_default); }
+            | TASK { ompattribute->setComplexClauseFirstParameter(e_reduction_task); }
+            | DEFAULT { ompattribute->setComplexClauseFirstParameter(e_reduction_default); }
             ;
 
 
 reduction_identifier : '+' {
-                        ompattribute->setComplexClauseIdentifier(e_reduction_plus);
+                        ompattribute->setComplexClauseSecondParameter(e_reduction_plus);
                      }
                    | '*' {
-                       ompattribute->setComplexClauseIdentifier(e_reduction_mul);  
+                       ompattribute->setComplexClauseSecondParameter(e_reduction_mul);  
                        omptype = e_reduction_mul;
                      }
                    | '-' {
-                       ompattribute->setComplexClauseIdentifier(e_reduction_minus); 
+                       ompattribute->setComplexClauseSecondParameter(e_reduction_minus); 
                        omptype = e_reduction_minus;
                       }
                    | MIN {
@@ -714,23 +714,23 @@ reduction_identifier : '+' {
                        omptype = e_reduction_max;
                       }
                    | '&' {
-                       ompattribute->setComplexClauseIdentifier(e_reduction_bitand);  
+                       ompattribute->setComplexClauseSecondParameter(e_reduction_bitand);  
                        omptype = e_reduction_bitand;
                       }
                    | '^' {
-                       ompattribute->setComplexClauseIdentifier(e_reduction_bitxor);  
+                       ompattribute->setComplexClauseSecondParameter(e_reduction_bitxor);  
                        omptype = e_reduction_bitxor;
                       }
                    | '|' {
-                       ompattribute->setComplexClauseIdentifier(e_reduction_bitor);  
+                       ompattribute->setComplexClauseSecondParameter(e_reduction_bitor);  
                        omptype = e_reduction_bitor;
                       }
                    | LOGAND /* && */ {
-                       ompattribute->setComplexClauseIdentifier(e_reduction_logand);  
+                       ompattribute->setComplexClauseSecondParameter(e_reduction_logand);  
                        omptype = e_reduction_logand;
                      }
                    | LOGOR /* || */ {
-                       ompattribute->setComplexClauseIdentifier(e_reduction_logor); 
+                       ompattribute->setComplexClauseSecondParameter(e_reduction_logor); 
                        omptype = e_reduction_logor;
                      }
                    ;
@@ -1479,7 +1479,7 @@ static bool addVar(const char* var)  {
 }
 
 static bool addComplexVar(const char* var)  {
-    array_symbol = ompattribute->addComplexClauseVariable(omptype,var);
+    array_symbol = ompattribute->addComplexClauseParametersVariable(omptype,var);
     return true;
 }
 

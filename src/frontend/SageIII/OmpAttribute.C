@@ -282,7 +282,7 @@ namespace OmpSupport
     }
   }
 
-  void OmpAttribute::addComplexClause(omp_construct_enum clause_type)
+  void OmpAttribute::addComplexClauseParameters(omp_construct_enum clause_type)
   {
     if (isClause(clause_type))
     {
@@ -298,7 +298,7 @@ namespace OmpSupport
       }
 
       // initialize an empty tuple for the complex clause.
-      complex_clauses.push_back(new ComplexClause()); 
+      complex_clauses.push_back(new ComplexClauseParameters()); 
       //complex_clause_modifier.push_back(e_unknown);
       //complex_clause_identifier.push_back(e_unknown);
       //complex_clause_variable_list.push_back(new std::vector<std::pair<std::string, SgNode*> >);
@@ -522,7 +522,7 @@ namespace OmpSupport
     return symbol;   
   }
 
-  SgVariableSymbol* OmpAttribute::addComplexClauseVariable(omp_construct_enum targetConstruct, const std::string& varString, SgInitializedName* sgvar/*=NULL*/)
+  SgVariableSymbol* OmpAttribute::addComplexClauseParametersVariable(omp_construct_enum targetConstruct, const std::string& varString, SgInitializedName* sgvar/*=NULL*/)
   {
     SgVariableSymbol* symbol = NULL;
     // Try to resolve the variable if SgInitializedName is not provided
@@ -696,14 +696,14 @@ namespace OmpSupport
     complex_clauses.back()->second_parameter = parameter;
   }
 
-  omp_construct_enum OmpAttribute::getComplexClauseModifier () {
+  omp_construct_enum OmpAttribute::getComplexClauseFirstParameter () {
       //return complex_clause_modifier.at(complex_clause_index);
-      return complex_clauses.at(complex_clause_index)->first_attribute;
+      return complex_clauses.at(complex_clause_index)->first_parameter;
   }
 
-  omp_construct_enum OmpAttribute::getComplexClauseIdentifier () {
+  omp_construct_enum OmpAttribute::getComplexClauseSecondParameter () {
       //return complex_clause_identifier.at(complex_clause_index);
-      return complex_clauses.at(complex_clause_index)->second_attribute;
+      return complex_clauses.at(complex_clause_index)->second_parameter;
   }
 
   // 
