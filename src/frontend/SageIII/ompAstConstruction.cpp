@@ -957,15 +957,13 @@ namespace OmpSupport
   }
 
   //! Try to build a reduction clause with a given operation type from OmpAttribute
-  SgOmpReductionClause* buildOmpReductionClause(OmpAttribute* att, omp_construct_enum reduction_modifier, omp_construct_enum reduction_op)
+  SgOmpReductionClause* buildOmpReductionClause(OmpAttribute* att, omp_construct_enum reduction_modifier, omp_construct_enum reduction_identifier)
   {
     ROSE_ASSERT(att !=NULL);
-    //if (!att->hasReductionOperator(reduction_op))
-    //  return NULL;
-    // SgOmpClause::omp_reduction_modifier_enum  sg_modifier = SgOmpClause::e_omp_reduction_inscan; 
-    SgOmpClause::omp_reduction_modifier_enum  sg_modifier = toSgOmpClauseReductionModifier(reduction_modifier); 
-    SgOmpClause::omp_reduction_identifier_enum  sg_identifier = toSgOmpClauseReductionOperator(reduction_op);
+    SgOmpClause::omp_reduction_modifier_enum sg_modifier = toSgOmpClauseReductionModifier(reduction_modifier); 
+    SgOmpClause::omp_reduction_identifier_enum sg_identifier = toSgOmpClauseReductionOperator(reduction_identifier);
     SgExpression* user_identifier = NULL;
+    // build user defined identifier if there's one.
     if (sg_identifier == SgOmpClause::e_omp_reduction_user_defined_identifier) {
         SgGlobal* global = SageInterface::getGlobalScope(att->getNode());
         user_identifier = checkOmpExpressionClause(att->getUserDefinedExpression().second, global, e_reduction);

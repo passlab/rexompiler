@@ -7582,12 +7582,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
         };
         SgOmpClause::omp_reduction_identifier_enum identifier = isSgOmpReductionClause(c)->get_identifier();
         if (identifier != SgOmpClause::e_omp_reduction_user_defined_identifier) {
-            curprint(reductionIdentifierToString(isSgOmpReductionClause(c)->get_identifier()));
+            curprint(reductionIdentifierToString(identifier));
         }
         else {
-            SgUnparse_Info newinfo(info);
-            //newinfo.set_SkipBaseType();
-            unparseExpression(isSgOmpReductionClause(c)->get_user_defined_identifier(), newinfo);
+            SgUnparse_Info new_info(info);
+            unparseExpression(isSgOmpReductionClause(c)->get_user_defined_identifier(), new_info);
         };
         curprint(string(" : "));
         break;

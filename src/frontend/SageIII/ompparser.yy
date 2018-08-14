@@ -1505,8 +1505,6 @@ static bool addExpression(const char* expr) {
 }
 
 static bool addUserDefinedExpression(const char* expr) {
-    // ompattribute->addExpression(omptype,std::string(expr),NULL);
-    // std::cout<<"debug: current expression is:"<<current_exp->unparseToString()<<std::endl;
     assert (current_exp != NULL);
     ompattribute->addUserDefinedExpression(omptype,std::string(expr), current_exp);
     return true;

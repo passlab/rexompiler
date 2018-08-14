@@ -419,7 +419,7 @@ namespace OmpSupport
       std::pair<std::string, SgExpression*>  
         getExpression(omp_construct_enum targetConstruct);
 
-      void addUserDefinedExpression(omp_construct_enum targetConstruct, const std::string& expString, SgExpression*    sgexp=NULL);
+      void addUserDefinedExpression(omp_construct_enum targetConstruct, const std::string& expString, SgExpression* sgexp=NULL);
 
       //! Get expression of a clause
       std::pair<std::string, SgExpression*> getUserDefinedExpression();
