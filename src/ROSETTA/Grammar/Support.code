@@ -91,7 +91,9 @@ HEADER_OMP_CLAUSE_START
             e_omp_reduction_iand,
             e_omp_reduction_ior,
             e_omp_reduction_ieor,
-            e_omp_reduction_last
+            e_omp_reduction_last,
+
+            e_omp_reduction_user_defined_identifier
         };
 
         enum omp_reduction_modifier_enum

@@ -578,10 +578,24 @@ namespace OmpSupport
       sgexp->set_parent(mNode); // a little hack here, we not yet extend the SgPragmaDeclaration to have expression children.
   }
 
+  //! User defined expression
+  void OmpAttribute::addUserDefinedExpression(omp_construct_enum targetConstruct, const std::string& expString, SgExpression* sgexp/* =NULL */)
+  {
+    complex_clauses.back()->user_defined_parameter = make_pair(expString, sgexp);
+    if (sgexp != NULL)
+      sgexp->set_parent(mNode); // a little hack here, we not yet extend the SgPragmaDeclaration to have expression children.
+    // Do we need to implement this?
+  }
+
   std::pair<std::string, SgExpression*>
     OmpAttribute::getExpression(omp_construct_enum targetConstruct)
     {
       return expressions[targetConstruct];
+    }
+
+  std::pair<std::string, SgExpression*>
+    OmpAttribute::getUserDefinedExpression() {
+        return complex_clauses.at(complex_clause_index)->user_defined_parameter;
     }
 
   // default () value

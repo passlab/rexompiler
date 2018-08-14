@@ -898,6 +898,11 @@ namespace OmpSupport
           result = SgOmpClause::e_omp_reduction_ieor;
           break;
         }
+      case e_reduction_user_defined_identifier:
+        {
+          result = SgOmpClause::e_omp_reduction_user_defined_identifier;
+          break;
+        }
       default:
         {
           printf("error: unacceptable omp construct enum for reduction operator conversion:%s\n", OmpSupport::toString(at_op).c_str());
@@ -959,9 +964,14 @@ namespace OmpSupport
     //  return NULL;
     // SgOmpClause::omp_reduction_modifier_enum  sg_modifier = SgOmpClause::e_omp_reduction_inscan; 
     SgOmpClause::omp_reduction_modifier_enum  sg_modifier = toSgOmpClauseReductionModifier(reduction_modifier); 
-    SgOmpClause::omp_reduction_identifier_enum  sg_op = toSgOmpClauseReductionOperator(reduction_op); 
-    SgExprListExp* explist=buildExprListExp();
-    SgOmpReductionClause* result = new SgOmpReductionClause(explist, sg_modifier, sg_op);
+    SgOmpClause::omp_reduction_identifier_enum  sg_identifier = toSgOmpClauseReductionOperator(reduction_op);
+    SgExpression* user_identifier = NULL;
+    if (sg_identifier == SgOmpClause::e_omp_reduction_user_defined_identifier) {
+        SgGlobal* global = SageInterface::getGlobalScope(att->getNode());
+        user_identifier = checkOmpExpressionClause(att->getUserDefinedExpression().second, global, e_reduction);
+    };
+    SgExprListExp* explist = buildExprListExp();
+    SgOmpReductionClause* result = new SgOmpReductionClause(explist, sg_modifier, sg_identifier, user_identifier);
     ROSE_ASSERT(result != NULL);
     explist->set_parent(result);
     setOneSourcePositionForTransformation(result);

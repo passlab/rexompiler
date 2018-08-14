@@ -60,6 +60,7 @@ static bool addVarExp(SgExpression* var);
 
 //Insert expression into some clause
 static bool addExpression(const char* expr);
+static bool addUserDefinedExpression(const char* expr);
 
 // The current AST annotation being built
 static OmpAttribute* ompattribute = NULL;
@@ -733,6 +734,10 @@ reduction_identifier : '+' {
                        ompattribute->setComplexClauseSecondParameter(e_reduction_logor); 
                        omptype = e_reduction_logor;
                      }
+                   | expression {
+                       ompattribute->setComplexClauseSecondParameter(e_reduction_user_defined_identifier);
+                       addUserDefinedExpression("");
+                    }
                    ;
 
 target_data_directive: /* pragma */ OMP TARGET DATA {
@@ -1496,6 +1501,14 @@ static bool addExpression(const char* expr) {
     // std::cout<<"debug: current expression is:"<<current_exp->unparseToString()<<std::endl;
     assert (current_exp != NULL);
     ompattribute->addExpression(omptype,std::string(expr),current_exp);
+    return true;
+}
+
+static bool addUserDefinedExpression(const char* expr) {
+    // ompattribute->addExpression(omptype,std::string(expr),NULL);
+    // std::cout<<"debug: current expression is:"<<current_exp->unparseToString()<<std::endl;
+    assert (current_exp != NULL);
+    ompattribute->addUserDefinedExpression(omptype,std::string(expr), current_exp);
     return true;
 }
 
