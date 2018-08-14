@@ -120,6 +120,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	reduction.c \
 	reduction-classic.c \
 	reduction_min_max.c \
+	reduction_user_identifier.c \
 	rice1.c \
 	section.c \
 	section1.c \
