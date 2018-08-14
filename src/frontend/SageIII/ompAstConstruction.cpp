@@ -960,7 +960,10 @@ namespace OmpSupport
   SgOmpReductionClause* buildOmpReductionClause(OmpAttribute* att, omp_construct_enum reduction_modifier, omp_construct_enum reduction_identifier)
   {
     ROSE_ASSERT(att !=NULL);
-    SgOmpClause::omp_reduction_modifier_enum sg_modifier = toSgOmpClauseReductionModifier(reduction_modifier); 
+    SgOmpClause::omp_reduction_modifier_enum sg_modifier = SgOmpClause::e_omp_reduction_modifier_unknown;
+    if (reduction_modifier != e_unknown) {
+        sg_modifier = toSgOmpClauseReductionModifier(reduction_modifier); 
+    }
     SgOmpClause::omp_reduction_identifier_enum sg_identifier = toSgOmpClauseReductionOperator(reduction_identifier);
     SgExpression* user_identifier = NULL;
     // build user defined identifier if there's one.
