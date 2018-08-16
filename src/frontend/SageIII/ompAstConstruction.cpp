@@ -1954,6 +1954,8 @@ This is no perfect solution until we handle preprocessing information as structu
       vector <OmpAttribute* >::iterator i = ompattlist.begin();
       for (; i!=ompattlist.end(); i++)
       {
+        // reset complex clause index for each OmpAttribute object.
+        complex_clause_index = 0;
         OmpAttribute* oa = *i;
         omp_construct_enum omp_type = oa->getOmpDirectiveType();
         ROSE_ASSERT(isDirective(omp_type));
