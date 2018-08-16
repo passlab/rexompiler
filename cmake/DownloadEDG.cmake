@@ -21,7 +21,7 @@ endif()
 # Detect compiler by asking GCC what version it is
 set(compiler "")
 set(min_supported "4.4")
-set(max_supported "5.2")
+set(max_supported "5.4")
 execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion
                 OUTPUT_VARIABLE GCC_version)
 # strip patch version; we only care about major & minor
@@ -33,6 +33,10 @@ if(GCC_version VERSION_GREATER max_supported OR
     "ROSE only supports GCC versions ${min_supported} to ${max_supported}.\n"
     "<gcc -dumpversion> reported ${GCC_version}")
 endif()
+if(GCC_version VERSION_EQUAL 5.4)
+  set(compiler "gnu-5.4")
+if(GCC_version VERSION_EQUAL 5.3)
+  set(compiler "gnu-5.3")
 if(GCC_version VERSION_EQUAL 5.2)
   set(compiler "gnu-5.2")
 elseif(GCC_version VERSION_EQUAL 5.1)
