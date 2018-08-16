@@ -337,6 +337,11 @@ namespace OmpSupport
     return clauses;
   }
 
+  std::vector<ComplexClauseParameters*> OmpAttribute::getComplexClauses () {
+
+    return complex_clauses;
+  }
+
   //! Get the associated SgPragmaDeclaration
   SgPragmaDeclaration* OmpAttribute::getPragmaDeclaration()
   {
@@ -1483,7 +1488,7 @@ namespace OmpSupport
       } 
       // optional variable lists
       else if ((omp_type == e_copyprivate)||
-          (omp_type ==e_private)||
+          (omp_type == e_private)||
           (omp_type == e_firstprivate)||
           (omp_type == e_shared)||
           (omp_type == e_copyin)||

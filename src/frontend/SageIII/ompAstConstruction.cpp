@@ -1439,19 +1439,18 @@ namespace OmpSupport
       // special handling for reduction
       if (c_clause == e_reduction) 
       {
-        /*
-        std::vector<omp_construct_enum> rops  = att->getReductionOperators();
-        ROSE_ASSERT(rops.size()!=0);
-        std::vector<omp_construct_enum>::iterator iter;
-        for (iter=rops.begin(); iter!=rops.end();iter++)
-        {
+        // Temporary workaround to process all REDUCTION clauses. Must fix later.
+        std::vector<ComplexClauseParameters*> reduction_clauses = att->getComplexClauses();
+        ROSE_ASSERT(reduction_clauses.size()!=0);
+        std::vector<ComplexClauseParameters*>::iterator iter;
+        for (iter=reduction_clauses.begin(); iter!=reduction_clauses.end();iter++)
+        {/*
           omp_construct_enum rop = *iter;
           SgOmpClause* sgclause = buildOmpReductionClause(att, rop);
           target->get_clauses().push_back(sgclause);
           sgclause->set_parent(target);
         }
         */
-
         // process each reduction clause individually.
         is_complex_clause = true;
         omp_construct_enum current_modifier = att->getComplexClauseFirstParameter();
@@ -1461,7 +1460,7 @@ namespace OmpSupport
         is_complex_clause = false;
         target->get_clauses().push_back(sgclause);
         sgclause->set_parent(target);
-
+        }
       }
 
       // special handling for depend(type:varlist)
@@ -1788,27 +1787,21 @@ namespace OmpSupport
 
         // There could be some unknown issues since the code is simply copied from PARALLEL. 
         case e_reduction: //special handling for reduction
-          {/*
-            std::vector<omp_construct_enum> rops  = att->getReductionOperators();
-            ROSE_ASSERT(rops.size()!=0);
-            std::vector<omp_construct_enum>::iterator iter;
-            for (iter=rops.begin(); iter!=rops.end();iter++)
-            {
-              omp_construct_enum rop = *iter;
-              SgOmpClause* sgclause = buildOmpReductionClause(att, rop);
-              ROSE_ASSERT(sgclause != NULL);
-              isSgOmpClauseBodyStatement(second_stmt)->get_clauses().push_back(sgclause);
-              sgclause->set_parent(second_stmt);
-            } */
-            is_complex_clause = true;
-            omp_construct_enum current_modifier = att->getComplexClauseFirstParameter();
-            omp_construct_enum current_identifier = att->getComplexClauseSecondParameter();
-            SgOmpClause* sgclause = buildOmpReductionClause(att, current_modifier, current_identifier);
-            complex_clause_index++;
-            is_complex_clause = false;
-            isSgOmpClauseBodyStatement(second_stmt)->get_clauses().push_back(sgclause);
-            sgclause->set_parent(second_stmt);
-
+          {
+            // Temporary workaround to process all REDUCTION clauses. Must fix later.
+            std::vector<ComplexClauseParameters*> reduction_clauses = att->getComplexClauses();
+            ROSE_ASSERT(reduction_clauses.size()!=0);
+            std::vector<ComplexClauseParameters*>::iterator iter;
+            for (iter=reduction_clauses.begin(); iter!=reduction_clauses.end();iter++) {
+                is_complex_clause = true;
+                omp_construct_enum current_modifier = att->getComplexClauseFirstParameter();
+                omp_construct_enum current_identifier = att->getComplexClauseSecondParameter();
+                SgOmpClause* sgclause = buildOmpReductionClause(att, current_modifier, current_identifier);
+                complex_clause_index++;
+                is_complex_clause = false;
+                isSgOmpClauseBodyStatement(second_stmt)->get_clauses().push_back(sgclause);
+                sgclause->set_parent(second_stmt);
+            }
             break;
           }
 
