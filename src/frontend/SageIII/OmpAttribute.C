@@ -584,7 +584,7 @@ namespace OmpSupport
   }
 
   //! User defined expression
-  void OmpAttribute::addUserDefinedExpression(omp_construct_enum targetConstruct, const std::string& expString, SgExpression* sgexp/* =NULL */)
+  void OmpAttribute::addUserDefinedParameter(omp_construct_enum targetConstruct, const std::string& expString, SgExpression* sgexp/* =NULL */)
   {
     complex_clauses.back()->user_defined_parameter = make_pair(expString, sgexp);
     if (sgexp != NULL)
