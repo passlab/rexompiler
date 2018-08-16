@@ -7591,15 +7591,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
         curprint(string(" : "));
         break;
       }
-    // tracking in_reduction
-    case V_SgOmpInReductionClause:
-      {
-        curprint(string(" in_reduction("));
-        //reductionIdentifierToString() will handle language specific issues 
-        curprint(reductionIdentifierToString(isSgOmpInReductionClause(c)->get_identifier()));
-        curprint(string(" : "));
-        break;
-      }
 
     case V_SgOmpDependClause:
       {
@@ -7789,8 +7780,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     curprint(string(" safelen("));
   else if (isSgOmpSimdlenClause(c))
     curprint(string(" simdlen("));
-  else if (isSgOmpAllocateClause(c))
-    curprint(string(" allocate("));
   else {
     cerr<<"Error: unacceptable clause type within unparseOmpExpressionClause():"<< clause->class_name()<<endl;
     ROSE_ASSERT(false);
@@ -7887,7 +7876,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpSafelenClause:  
     case V_SgOmpSimdlenClause:  
     case V_SgOmpOrderedClause:
-    case V_SgOmpAllocateClause:
       //case V_SgOmpExpressionClause: // there should be no instance for this clause
       {
         unparseOmpExpressionClause(isSgOmpExpressionClause(clause), info);
@@ -7899,7 +7887,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpLastprivateClause:
     case V_SgOmpPrivateClause:
     case V_SgOmpReductionClause:
-    case V_SgOmpInReductionClause: // tracking in_reduction
     case V_SgOmpDependClause:
     case V_SgOmpMapClause:
     case V_SgOmpSharedClause:

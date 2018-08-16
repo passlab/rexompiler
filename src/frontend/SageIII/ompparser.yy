@@ -666,7 +666,7 @@ share_clause : SHARED {
                     ;
 
 allocate_clause : ALLOCATE {
-                        ompattribute->addClause(e_allocate_clause); omptype = e_allocate_clause; 
+                        ;
                       } '(' {b_within_variable_list = true; } clause_with_special_variable ')' {b_within_variable_list = false;}
                     ;
 

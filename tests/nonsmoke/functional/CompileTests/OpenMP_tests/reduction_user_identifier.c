@@ -4,7 +4,7 @@
 3. Local copies are reduced into a single value and combined with the original global value.
 
 */
-//#include <stdio.h>
+#include <stdio.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -26,12 +26,7 @@ int main()
   long sum=0;
   int total=100;
 
-/*
-#pragma omp declare reduction \
-    (rwz:int:omp_out=mymax(omp_out,omp_in)) \
-    initializer(omp_priv=0)
-*/
-    m = 0;
+  m = 0;
 #pragma omp parallel reduction(rwz:m)
     {
         m = mymax(m, total);

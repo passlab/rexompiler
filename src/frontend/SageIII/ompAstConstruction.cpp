@@ -417,8 +417,6 @@ namespace OmpSupport
       // ordered (n): optional (n)
       if (clause_expression == NULL && clause_type == e_ordered_clause)
          return NULL; 
-      if (clause_expression == NULL && clause_type == e_allocate_clause)
-         return NULL; 
       ROSE_ASSERT(clause_expression != NULL);
       bool returnNewExpression = false;
       if( isSgTypeUnknown( clause_expression->get_type( ) ) )
@@ -517,13 +515,6 @@ namespace OmpSupport
           break;
         }
 
-      case e_allocate_clause:
-        {
-          SgExpression* param = checkOmpExpressionClause( att->getExpression(e_allocate_clause).second, global, e_allocate_clause);
-          result = new SgOmpAllocateClause(param);
-          break;
-        }
-  
       case e_collapse:
         {
           SgExpression* collapseParam = checkOmpExpressionClause( att->getExpression(e_collapse).second, global, e_collapse );
@@ -634,16 +625,6 @@ namespace OmpSupport
     return result;
   }
 #endif
-  SgOmpAllocateClause * buildOmpAllocateClause(OmpAttribute* att)
-  {
-    ROSE_ASSERT(att != NULL);
-    if (!att->hasClause(e_allocate_clause))
-      return NULL;
-    SgOmpAllocateClause* result = new SgOmpAllocateClause(NULL, NULL);
-    ROSE_ASSERT(result);
-    setOneSourcePositionForTransformation(result);
-    return result;
-  }
 
   SgOmpUntiedClause * buildOmpUntiedClause(OmpAttribute* att)
   {
@@ -982,25 +963,6 @@ namespace OmpSupport
     return result;
   }
 
-  // tracking build in_reduction clause
-  SgOmpInReductionClause* buildOmpInReductionClause(OmpAttribute* att, omp_construct_enum reduction_op)
-  {
-    ROSE_ASSERT(att !=NULL);
-    if (!att->hasReductionOperator(reduction_op))
-      return NULL;
-    SgOmpClause::omp_reduction_identifier_enum  sg_op = toSgOmpClauseReductionOperator(reduction_op); 
-    SgExprListExp* explist=buildExprListExp();
-    SgOmpInReductionClause* result = new SgOmpInReductionClause(explist, sg_op);
-    ROSE_ASSERT(result != NULL);
-    explist->set_parent(result);
-    setOneSourcePositionForTransformation(result);
-    
-    // build variable list
-    setClauseVariableList(result, att, reduction_op); 
-    return result;
-  }
-
-
   //! A helper function to convert OmpAttribute depend type operator to SgClause's one 
   //TODO move to sageInterface?
   static   SgOmpClause::omp_dependence_type_enum toSgOmpClauseDependenceType(omp_construct_enum at_op)
@@ -1240,11 +1202,6 @@ namespace OmpSupport
           break;
         }
 #endif      
-      case e_allocate_clause:
-        {
-          result = buildOmpAllocateClause(att);
-          break;
-        }  
       case e_schedule:
         {
           result = buildOmpScheduleClause(att);
@@ -1283,7 +1240,6 @@ namespace OmpSupport
           result = buildOmpExpressionClause(att, c_clause_type);
           break;
         }
-      //case e_allocate_clause:
       case e_copyin:  
       case e_copyprivate:  
       case e_firstprivate:  
@@ -1506,21 +1462,6 @@ namespace OmpSupport
         target->get_clauses().push_back(sgclause);
         sgclause->set_parent(target);
 
-      }
-
-      // tracking special handling for in_reduction
-      else if (c_clause == e_in_reduction) 
-      {
-        std::vector<omp_construct_enum> rops  = att->getReductionOperators();
-        ROSE_ASSERT(rops.size()!=0);
-        std::vector<omp_construct_enum>::iterator iter;
-        for (iter=rops.begin(); iter!=rops.end();iter++)
-        {
-          omp_construct_enum rop = *iter;
-          SgOmpClause* sgclause = buildOmpInReductionClause(att, rop);
-          target->get_clauses().push_back(sgclause);
-          sgclause->set_parent(target);
-        }
       }
 
       // special handling for depend(type:varlist)
@@ -1871,22 +1812,6 @@ namespace OmpSupport
             break;
           }
 
-      // tracking in_reduction
-        case e_in_reduction: //special handling for reduction
-          {
-            std::vector<omp_construct_enum> rops  = att->getReductionOperators();
-            ROSE_ASSERT(rops.size()!=0);
-            std::vector<omp_construct_enum>::iterator iter;
-            for (iter=rops.begin(); iter!=rops.end();iter++)
-            {
-              omp_construct_enum rop = *iter;
-              SgOmpClause* sgclause = buildOmpInReductionClause(att, rop);
-              ROSE_ASSERT(sgclause != NULL);
-              isSgOmpClauseBodyStatement(second_stmt)->get_clauses().push_back(sgclause);
-              sgclause->set_parent(second_stmt);
-            }
-            break;
-          }
 #if 0           
         case e_map: //special handling for map , no such thing for combined parallel directives. 
           {

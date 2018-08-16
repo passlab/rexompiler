@@ -183,13 +183,6 @@ namespace OmpSupport
       rt_val = e_reduction;
     }
 
-// tracking in_reduction
-    else if (isInClauseVariableList( iname, omp_clause_body_stmt, V_SgOmpInReductionClause))
-    {
-      rt_val = e_in_reduction;
-    }
-
-
     else if (isInClauseVariableList( iname, omp_clause_body_stmt, V_SgOmpCopyinClause))
     {
       rt_val = e_copyin;
