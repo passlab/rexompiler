@@ -1440,9 +1440,9 @@ namespace OmpSupport
       if (c_clause == e_reduction) 
       {
         // Temporary workaround to process all REDUCTION clauses. Must fix later.
-        std::vector<ComplexClauseParameters*> reduction_clauses = att->getComplexClauses();
+        std::vector<ComplexClause*> reduction_clauses = att->getComplexClauses();
         ROSE_ASSERT(reduction_clauses.size()!=0);
-        std::vector<ComplexClauseParameters*>::iterator iter;
+        std::vector<ComplexClause*>::iterator iter;
         for (iter=reduction_clauses.begin(); iter!=reduction_clauses.end();iter++)
         {/*
           omp_construct_enum rop = *iter;
@@ -1789,9 +1789,9 @@ namespace OmpSupport
         case e_reduction: //special handling for reduction
           {
             // Temporary workaround to process all REDUCTION clauses. Must fix later.
-            std::vector<ComplexClauseParameters*> reduction_clauses = att->getComplexClauses();
+            std::vector<ComplexClause*> reduction_clauses = att->getComplexClauses();
             ROSE_ASSERT(reduction_clauses.size()!=0);
-            std::vector<ComplexClauseParameters*>::iterator iter;
+            std::vector<ComplexClause*>::iterator iter;
             for (iter=reduction_clauses.begin(); iter!=reduction_clauses.end();iter++) {
                 is_complex_clause = true;
                 omp_construct_enum current_modifier = att->getComplexClauseFirstParameter();

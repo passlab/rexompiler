@@ -654,7 +654,7 @@ share_clause : SHARED {
                     ;
 
 reduction_clause : REDUCTION { 
-                        ompattribute->addComplexClauseParameters(e_reduction);
+                        ompattribute->addComplexClause(e_reduction);
                         omptype = e_reduction;
                         is_complex_clause = true;
                         } '(' reduction_parameters {is_complex_clause = false;} ')'
@@ -1454,7 +1454,7 @@ static bool addVar(const char* var)  {
 }
 
 static bool addComplexVar(const char* var)  {
-    array_symbol = ompattribute->addComplexClauseParametersVariable(omptype,var);
+    array_symbol = ompattribute->addComplexClauseVariable(omptype,var);
     return true;
 }
 

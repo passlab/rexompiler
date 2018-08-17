@@ -282,7 +282,7 @@ namespace OmpSupport
     }
   }
 
-  void OmpAttribute::addComplexClauseParameters(omp_construct_enum clause_type)
+  void OmpAttribute::addComplexClause(omp_construct_enum clause_type)
   {
     if (isClause(clause_type))
     {
@@ -298,7 +298,7 @@ namespace OmpSupport
       }
 
       // initialize an empty tuple for the complex clause.
-      complex_clauses.push_back(new ComplexClauseParameters()); 
+      complex_clauses.push_back(new ComplexClause()); 
       //complex_clause_modifier.push_back(e_unknown);
       //complex_clause_identifier.push_back(e_unknown);
       //complex_clause_variable_list.push_back(new std::vector<std::pair<std::string, SgNode*> >);
@@ -337,7 +337,7 @@ namespace OmpSupport
     return clauses;
   }
 
-  std::vector<ComplexClauseParameters*> OmpAttribute::getComplexClauses () {
+  std::vector<ComplexClause*> OmpAttribute::getComplexClauses () {
 
     return complex_clauses;
   }
@@ -527,7 +527,7 @@ namespace OmpSupport
     return symbol;   
   }
 
-  SgVariableSymbol* OmpAttribute::addComplexClauseParametersVariable(omp_construct_enum targetConstruct, const std::string& varString, SgInitializedName* sgvar/*=NULL*/)
+  SgVariableSymbol* OmpAttribute::addComplexClauseVariable(omp_construct_enum targetConstruct, const std::string& varString, SgInitializedName* sgvar/*=NULL*/)
   {
     SgVariableSymbol* symbol = NULL;
     // Try to resolve the variable if SgInitializedName is not provided
