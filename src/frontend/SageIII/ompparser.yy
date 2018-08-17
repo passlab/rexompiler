@@ -225,7 +225,6 @@ parallel_clause : if_clause
                 | copyin_clause
                 | reduction_clause
                 | proc_bind_clause
-                | allocate_clause                
                 ;
 
 copyin_clause: COPYIN {
@@ -261,7 +260,6 @@ for_clause: private_clause
            | collapse_clause
            | ordered_clause
            | nowait_clause  
-	   | allocate_clause	   
           ; 
 
 /* use this for the combined for simd directive */
@@ -274,7 +272,6 @@ for_or_simd_clause : ordered_clause
            | collapse_clause
            | unique_simd_clause
            | nowait_clause  
-           | allocate_clause	   
           ;
 
 schedule_chunk_opt: /* empty */
@@ -290,12 +287,6 @@ ordered_clause: ORDERED {
                ;
 
 ordered_parameter_opt: /* empty */
-                | '(' expression ')' {
-                    addExpression("");
-                   }
-                 ;
-
-allocate_parameter_opt: /* empty */
                 | '(' expression ')' {
                     addExpression("");
                    }
@@ -481,7 +472,6 @@ parallel_for_clause : if_clause
                     | schedule_clause 
                     | collapse_clause
                     | ordered_clause
-					| allocate_clause		
                    ;
 
 parallel_for_simd_directive : /* #pragma */ OMP PARALLEL FOR SIMD { 
@@ -512,7 +502,6 @@ parallel_for_simd_clause: copyin_clause
                     | if_clause
                     | num_threads_clause
                     | proc_bind_clause
-					| allocate_clause							
                    ; 
  
 parallel_sections_directive : /* #pragma */ OMP PARALLEL SECTIONS { 
@@ -541,7 +530,6 @@ parallel_sections_clause : copyin_clause
                          | if_clause
                          | num_threads_clause
                          | proc_bind_clause
-			 | allocate_clause					 
                          ;
 
 master_directive : /* #pragma */ OMP MASTER { 
@@ -665,16 +653,6 @@ share_clause : SHARED {
                       } '(' {b_within_variable_list = true;} variable_list ')' {b_within_variable_list = false;}
                     ;
 
-allocate_clause : ALLOCATE {
-                        ;
-                      } '(' {b_within_variable_list = true; } clause_with_special_variable ')' {b_within_variable_list = false;}
-                    ;
-
-clause_with_special_variable : ID_EXPRESSION ':' { 
-                      } {b_within_variable_list = true;} variable_list {b_within_variable_list = false;}
-                      | {b_within_variable_list = true;} variable_list {b_within_variable_list = false;}
-                    ;
-
 reduction_clause : REDUCTION { 
                         ompattribute->addComplexClauseParameters(e_reduction);
                         omptype = e_reduction;
@@ -700,11 +678,9 @@ reduction_identifier : '+' {
                      }
                    | '*' {
                        ompattribute->setComplexClauseSecondParameter(e_reduction_mul);  
-                       omptype = e_reduction_mul;
                      }
                    | '-' {
                        ompattribute->setComplexClauseSecondParameter(e_reduction_minus); 
-                       omptype = e_reduction_minus;
                       }
                    | MIN {
                        ompattribute->setReductionOperator(e_reduction_min); 
@@ -716,23 +692,18 @@ reduction_identifier : '+' {
                       }
                    | '&' {
                        ompattribute->setComplexClauseSecondParameter(e_reduction_bitand);  
-                       omptype = e_reduction_bitand;
                       }
                    | '^' {
                        ompattribute->setComplexClauseSecondParameter(e_reduction_bitxor);  
-                       omptype = e_reduction_bitxor;
                       }
                    | '|' {
                        ompattribute->setComplexClauseSecondParameter(e_reduction_bitor);  
-                       omptype = e_reduction_bitor;
                       }
                    | LOGAND /* && */ {
                        ompattribute->setComplexClauseSecondParameter(e_reduction_logand);  
-                       omptype = e_reduction_logand;
                      }
                    | LOGOR /* || */ {
                        ompattribute->setComplexClauseSecondParameter(e_reduction_logor); 
-                       omptype = e_reduction_logor;
                      }
                    | expression {
                        ompattribute->setComplexClauseSecondParameter(e_reduction_user_defined_identifier);
@@ -917,7 +888,6 @@ simd_clause: safelen_clause
            | lastprivate_clause
            | reduction_clause
            | collapse_clause
-           | allocate_clause
             ;
 
 
