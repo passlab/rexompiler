@@ -19,7 +19,7 @@ extern void omp_parser_init(SgNode* aNode, const char* str);
 //Fortran OpenMP parser interface
 void parse_fortran_openmp(SgSourceFile *sageFilePtr);
 
-int complex_clause_index = 0;
+//static OmpSupport::ComplexClause* current_clause;
 static bool is_complex_clause = false;
 
 using namespace std;
@@ -879,7 +879,7 @@ namespace OmpSupport
           result = SgOmpClause::e_omp_reduction_ieor;
           break;
         }
-      case e_reduction_user_defined_identifier:
+      case e_user_defined_parameter:
         {
           result = SgOmpClause::e_omp_reduction_user_defined_identifier;
           break;
@@ -937,20 +937,63 @@ namespace OmpSupport
     }
   }
 
-  //! Try to build a reduction clause with a given operation type from OmpAttribute
-  SgOmpReductionClause* buildOmpReductionClause(OmpAttribute* att, omp_construct_enum reduction_modifier, omp_construct_enum reduction_identifier)
+  //A helper function to set SgVarRefExpPtrList for complex clause.
+  static void setComplexClauseVariableList(SgOmpVariablesClause* target, ComplexClause* current_clause)
   {
+    ROSE_ASSERT(target);
+    // build variable list
+    std::vector<std::pair<std::string,SgNode* > > varlist = current_clause->variable_list;
+#if 0  
+    // Liao 6/10/2010 we relax this assertion to workaround 
+    //  shared(num_threads),  a clause keyword is used as a variable 
+    //  we skip variable list of shared() for now so shared clause will have empty variable list
+#endif  
+    ROSE_ASSERT(varlist.size()!=0);
+    std::vector<std::pair<std::string,SgNode* > >::iterator iter;
+    for (iter = varlist.begin(); iter!= varlist.end(); iter ++)
+    {
+//      cout<<"debug setClauseVariableList: " << target <<":"<<(*iter).second->class_name()  <<endl;
+      // We now start to use SgExpression* to store variables showing up in a varlist
+      if (SgInitializedName* iname = isSgInitializedName((*iter).second))
+      {
+        //target->get_variables().push_back(iname);
+        // Liao 1/27/2010, fix the empty parent pointer of the SgVarRefExp here
+        SgVarRefExp * var_ref = buildVarRefExp(iname);
+        target->get_variables()->get_expressions().push_back(var_ref);
+        var_ref->set_parent(target);
+      }
+      else if (SgPntrArrRefExp* aref= isSgPntrArrRefExp((*iter).second))
+      {
+        target->get_variables()->get_expressions().push_back(aref);
+        aref->set_parent(target);
+      }
+      else if (SgVarRefExp* vref = isSgVarRefExp((*iter).second))
+      {
+        target->get_variables()->get_expressions().push_back(vref);
+        vref->set_parent(target);
+      }
+      else
+      {
+          cerr<<"error: unhandled type of variable within a list:"<< ((*iter).second)->class_name();
+          ROSE_ASSERT(false);
+      }
+    }
+  }
+
+  //! Try to build a reduction clause with a given operation type from OmpAttribute
+  SgOmpReductionClause* buildOmpReductionClause(OmpAttribute* att, ComplexClause* current_clause) {
     ROSE_ASSERT(att !=NULL);
     SgOmpClause::omp_reduction_modifier_enum sg_modifier = SgOmpClause::e_omp_reduction_modifier_unknown;
+    omp_construct_enum reduction_modifier = current_clause->first_parameter;
     if (reduction_modifier != e_unknown) {
         sg_modifier = toSgOmpClauseReductionModifier(reduction_modifier); 
     }
-    SgOmpClause::omp_reduction_identifier_enum sg_identifier = toSgOmpClauseReductionOperator(reduction_identifier);
+    SgOmpClause::omp_reduction_identifier_enum sg_identifier = toSgOmpClauseReductionOperator(current_clause->second_parameter);
     SgExpression* user_identifier = NULL;
     // build user defined identifier if there's one.
     if (sg_identifier == SgOmpClause::e_omp_reduction_user_defined_identifier) {
         SgGlobal* global = SageInterface::getGlobalScope(att->getNode());
-        user_identifier = checkOmpExpressionClause(att->getUserDefinedExpression().second, global, e_reduction);
+        user_identifier = checkOmpExpressionClause(att->getUserDefinedParameter(current_clause).second, global, e_reduction);
     };
     SgExprListExp* explist = buildExprListExp();
     SgOmpReductionClause* result = new SgOmpReductionClause(explist, sg_modifier, sg_identifier, user_identifier);
@@ -959,7 +1002,7 @@ namespace OmpSupport
     setOneSourcePositionForTransformation(result);
     
     // build variable list
-    setClauseVariableList(result, att, e_unknown); 
+    setComplexClauseVariableList(result, current_clause); 
     return result;
   }
 
@@ -1144,12 +1187,6 @@ namespace OmpSupport
           printf("error: buildOmpVariableClause() does not handle reduction\n");
           ROSE_ASSERT(false);
         }
-     // tracking
-     case e_in_reduction:
-        {
-          printf("error: buildOmpVariableClause() does not handle in_reduction\n");
-          ROSE_ASSERT(false);
-        }
       default:
         {
           cerr<<"error: buildOmpVariableClause() Unacceptable clause type:"
@@ -1255,13 +1292,6 @@ namespace OmpSupport
      case e_reduction:
         {
           printf("error: buildOmpNonReductionClause() does not handle reduction. Please use buildOmpReductionClause().\n");
-          ROSE_ASSERT(false);
-          break;
-        }
-    // tracking
-     case e_in_reduction:
-        {
-          printf("error: buildOmpNonReductionClause() does not handle in_reduction. Please use buildOmpReductionClause().\n");
           ROSE_ASSERT(false);
           break;
         }
@@ -1437,30 +1467,18 @@ namespace OmpSupport
         // printf ("Found a clause construct:%s\n", OmpSupport::toString(c_clause).c_str());
       }
       // special handling for reduction
-      if (c_clause == e_reduction) 
-      {
-        // Temporary workaround to process all REDUCTION clauses. Must fix later.
-        std::vector<ComplexClause*> reduction_clauses = att->getComplexClauses();
-        ROSE_ASSERT(reduction_clauses.size()!=0);
-        std::vector<ComplexClause*>::iterator iter;
-        for (iter=reduction_clauses.begin(); iter!=reduction_clauses.end();iter++)
-        {/*
-          omp_construct_enum rop = *iter;
-          SgOmpClause* sgclause = buildOmpReductionClause(att, rop);
-          target->get_clauses().push_back(sgclause);
-          sgclause->set_parent(target);
-        }
-        */
-        // process each reduction clause individually.
-        is_complex_clause = true;
-        omp_construct_enum current_modifier = att->getComplexClauseFirstParameter();
-        omp_construct_enum current_identifier = att->getComplexClauseSecondParameter();
-        SgOmpClause* sgclause = buildOmpReductionClause(att, current_modifier, current_identifier);
-        complex_clause_index++;
-        is_complex_clause = false;
-        target->get_clauses().push_back(sgclause);
-        sgclause->set_parent(target);
-        }
+      if (c_clause == e_reduction) {
+        std::deque<ComplexClause>* reduction_clauses = att->getComplexClauses(e_reduction);
+        ROSE_ASSERT(reduction_clauses->size()!=0);
+        std::deque<ComplexClause>::iterator iter;
+        for (iter = reduction_clauses->begin(); iter != reduction_clauses->end(); iter++) {
+            // process each reduction clause individually.
+            is_complex_clause = true;
+            SgOmpClause* sgclause = buildOmpReductionClause(att, &*iter);
+            is_complex_clause = false;
+            target->get_clauses().push_back(sgclause);
+            sgclause->set_parent(target);
+        };
       }
 
       // special handling for depend(type:varlist)
@@ -1788,16 +1806,12 @@ namespace OmpSupport
         // There could be some unknown issues since the code is simply copied from PARALLEL. 
         case e_reduction: //special handling for reduction
           {
-            // Temporary workaround to process all REDUCTION clauses. Must fix later.
-            std::vector<ComplexClause*> reduction_clauses = att->getComplexClauses();
-            ROSE_ASSERT(reduction_clauses.size()!=0);
-            std::vector<ComplexClause*>::iterator iter;
-            for (iter=reduction_clauses.begin(); iter!=reduction_clauses.end();iter++) {
+            std::deque<ComplexClause>* reduction_clauses = att->getComplexClauses(e_reduction);
+            ROSE_ASSERT(reduction_clauses->size()!=0);
+            std::deque<ComplexClause>::iterator iter;
+            for (iter = reduction_clauses->begin(); iter != reduction_clauses->end(); iter++) {
                 is_complex_clause = true;
-                omp_construct_enum current_modifier = att->getComplexClauseFirstParameter();
-                omp_construct_enum current_identifier = att->getComplexClauseSecondParameter();
-                SgOmpClause* sgclause = buildOmpReductionClause(att, current_modifier, current_identifier);
-                complex_clause_index++;
+                SgOmpClause* sgclause = buildOmpReductionClause(att, &*iter);
                 is_complex_clause = false;
                 isSgOmpClauseBodyStatement(second_stmt)->get_clauses().push_back(sgclause);
                 sgclause->set_parent(second_stmt);
@@ -1955,7 +1969,6 @@ This is no perfect solution until we handle preprocessing information as structu
       for (; i!=ompattlist.end(); i++)
       {
         // reset complex clause index for each OmpAttribute object.
-        complex_clause_index = 0;
         OmpAttribute* oa = *i;
         omp_construct_enum omp_type = oa->getOmpDirectiveType();
         ROSE_ASSERT(isDirective(omp_type));

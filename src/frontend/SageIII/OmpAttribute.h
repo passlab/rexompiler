@@ -17,7 +17,7 @@
 #include <map>
 #include <cassert>
 #include <vector>
-//#include <tuple>
+#include <deque>
 class SgNode;
 /** Types and functions to support OpenMP
 *
@@ -167,11 +167,9 @@ namespace OmpSupport
     e_reduction_inscan,
     e_reduction_task,
     e_reduction_default,
-
-    e_reduction_user_defined_identifier,
-    // tracking in_reduction
-    e_in_reduction,
     
+    // enum for all the user defined parameters
+    e_user_defined_parameter,
 
     //5 schedule policies for
     //---------------------
@@ -371,7 +369,7 @@ namespace OmpSupport
       //! Get all existing clauses
       std::vector<omp_construct_enum> getClauses();
 
-      void addComplexClause (omp_construct_enum clause_type);
+      ComplexClause* addComplexClause (omp_construct_enum clause_type);
       SgVariableSymbol* addComplexVariable (omp_construct_enum, const std::string&, SgInitializedName*);
 
       //!--------var list --------------
@@ -382,7 +380,7 @@ namespace OmpSupport
       SgVariableSymbol* addVariable(omp_construct_enum targetConstruct, SgExpression* varExp);
 
       // add variable for the complex clause.
-      SgVariableSymbol* addComplexClauseVariable(omp_construct_enum targetConstruct, const std::string& varString, SgInitializedName* sgvar=NULL);
+      SgVariableSymbol* addComplexClauseVariable(ComplexClause* target_clause, const std::string& varString, SgInitializedName* sgvar=NULL);
 
       //! Check if a variable list is associated with a construct
       bool hasVariableList(omp_construct_enum);
@@ -421,7 +419,7 @@ namespace OmpSupport
       void addUserDefinedParameter(omp_construct_enum targetConstruct, const std::string& expString, SgExpression* sgexp=NULL);
 
       //! Get expression of a clause
-      std::pair<std::string, SgExpression*> getUserDefinedExpression();
+      std::pair<std::string, SgExpression*> getUserDefinedParameter(ComplexClause* target_clause);
 
       //!--------values for some clauses ----------
       //
@@ -432,11 +430,11 @@ namespace OmpSupport
       // Add a new reduction clause with the specified operator
       void setReductionOperator(omp_construct_enum operatorx);
 
-      void setComplexClauseFirstParameter(omp_construct_enum parameter);
-      void setComplexClauseSecondParameter(omp_construct_enum parameter);
-      omp_construct_enum getComplexClauseFirstParameter ();
-      omp_construct_enum getComplexClauseSecondParameter ();
-      std::vector<ComplexClause*> getComplexClauses ();
+      void setComplexClauseFirstParameter(ComplexClause* target_clause, omp_construct_enum parameter);
+      void setComplexClauseSecondParameter(ComplexClause* target_clause, omp_construct_enum parameter);
+      omp_construct_enum getComplexClauseFirstParameter (ComplexClause* target_clause);
+      omp_construct_enum getComplexClauseSecondParameter (ComplexClause* target_clause);
+      std::deque<ComplexClause>* getComplexClauses (omp_construct_enum clause_type);
 
       //! Get reduction clauses for each operations,  reduction(op:kind)
       std::vector<omp_construct_enum> getReductionOperators();
@@ -550,7 +548,7 @@ namespace OmpSupport
       std::vector<omp_construct_enum> clauses;
       std::map<omp_construct_enum,bool> clause_map;
 
-      std::vector<ComplexClause*> complex_clauses;
+      std::map<omp_construct_enum, std::deque<ComplexClause>* > complex_clauses;
 
       // Multiple reduction clauses, each has a different operator
       //value for reduction operation: + -, * & | etc

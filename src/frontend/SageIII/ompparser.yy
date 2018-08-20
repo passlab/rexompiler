@@ -70,6 +70,14 @@ static OmpAttribute* ompattribute = NULL;
 // Used to indicate the OpenMP directive or clause to which a variable list or an expression should get added for the current OpenMP pragma being parsed.
 static omp_construct_enum omptype = e_unknown;
 
+// Store parameters temporarily in case of normalization.
+static omp_construct_enum first_parameter;
+static omp_construct_enum second_parameter;
+// use existing clause for normalization or create a new one.
+static ComplexClause* setupComplexClause ();
+// the clause where variables will be added.
+static ComplexClause* current_clause;
+
 // The node to which vars/expressions should get added
 //static OmpAttribute* omptype = 0;
 
@@ -654,33 +662,52 @@ share_clause : SHARED {
                     ;
 
 reduction_clause : REDUCTION { 
-                        ompattribute->addComplexClause(e_reduction);
                         omptype = e_reduction;
+                        first_parameter = e_unknown;
+                        second_parameter = e_unknown;
+                        current_clause = NULL;
                         is_complex_clause = true;
                         } '(' reduction_parameters {is_complex_clause = false;} ')'
                       ;
 
 reduction_parameters: reduction_modifier ',' {
-                        } reduction_identifier ':' {b_within_variable_list = true;} variable_list {b_within_variable_list = false;
+                        } reduction_identifier ':' {
+                            current_clause = setupComplexClause();
+                            if (second_parameter == e_user_defined_parameter) {
+                                addUserDefinedParameter("");
+                            };
+                            b_within_variable_list = true;
+                        } variable_list {b_within_variable_list = false;
                         }
-                        | reduction_identifier ':' {b_within_variable_list = true;} variable_list {b_within_variable_list = false;
+                        | reduction_identifier ':' {
+                            current_clause = setupComplexClause();
+                            if (second_parameter == e_user_defined_parameter) {
+                                addUserDefinedParameter("");
+                            };
+                            b_within_variable_list = true;} variable_list {b_within_variable_list = false;
                         }
             ;
 
-reduction_modifier : INSCAN { ompattribute->setComplexClauseFirstParameter(e_reduction_inscan); }
-            | TASK { ompattribute->setComplexClauseFirstParameter(e_reduction_task); }
-            | DEFAULT { ompattribute->setComplexClauseFirstParameter(e_reduction_default); }
+reduction_modifier : INSCAN {
+                first_parameter = e_reduction_inscan; 
+            }
+            | TASK {
+                first_parameter = e_reduction_task; 
+            }
+            | DEFAULT {
+                first_parameter = e_reduction_default;
+            }
             ;
 
 
 reduction_identifier : '+' {
-                        ompattribute->setComplexClauseSecondParameter(e_reduction_plus);
+                    second_parameter = e_reduction_plus;
                      }
                    | '*' {
-                       ompattribute->setComplexClauseSecondParameter(e_reduction_mul);  
+                    second_parameter = e_reduction_mul;
                      }
                    | '-' {
-                       ompattribute->setComplexClauseSecondParameter(e_reduction_minus); 
+                    second_parameter = e_reduction_minus;
                       }
                    | MIN {
                        ompattribute->setReductionOperator(e_reduction_min); 
@@ -691,23 +718,22 @@ reduction_identifier : '+' {
                        omptype = e_reduction_max;
                       }
                    | '&' {
-                       ompattribute->setComplexClauseSecondParameter(e_reduction_bitand);  
+                    second_parameter = e_reduction_bitand;
                       }
                    | '^' {
-                       ompattribute->setComplexClauseSecondParameter(e_reduction_bitxor);  
+                    second_parameter = e_reduction_bitxor;
                       }
                    | '|' {
-                       ompattribute->setComplexClauseSecondParameter(e_reduction_bitor);  
+                    second_parameter = e_reduction_bitor;
                       }
                    | LOGAND /* && */ {
-                       ompattribute->setComplexClauseSecondParameter(e_reduction_logand);  
+                    second_parameter = e_reduction_logand;
                      }
                    | LOGOR /* || */ {
-                       ompattribute->setComplexClauseSecondParameter(e_reduction_logor); 
+                    second_parameter = e_reduction_logor;
                      }
                    | expression {
-                       ompattribute->setComplexClauseSecondParameter(e_reduction_user_defined_identifier);
-                       addUserDefinedParameter("");
+                    second_parameter = e_user_defined_parameter;
                     }
                    ;
 
@@ -1454,7 +1480,7 @@ static bool addVar(const char* var)  {
 }
 
 static bool addComplexVar(const char* var)  {
-    array_symbol = ompattribute->addComplexClauseVariable(omptype,var);
+    array_symbol = ompattribute->addComplexClauseVariable(current_clause, var);
     return true;
 }
 
@@ -1470,13 +1496,30 @@ static bool addExpression(const char* expr) {
     // ompattribute->addExpression(omptype,std::string(expr),NULL);
     // std::cout<<"debug: current expression is:"<<current_exp->unparseToString()<<std::endl;
     assert (current_exp != NULL);
-    ompattribute->addExpression(omptype,std::string(expr),current_exp);
+    ompattribute->addExpression(omptype, std::string(expr),current_exp);
     return true;
 }
 
 static bool addUserDefinedParameter(const char* expr) {
     assert (current_exp != NULL);
-    ompattribute->addUserDefinedParameter(omptype,std::string(expr), current_exp);
+    ompattribute->addUserDefinedParameter(omptype, std::string(expr), current_exp);
     return true;
 }
 
+static ComplexClause* setupComplexClause() {
+    std::deque<ComplexClause>* inspecting_complex_clauses = ompattribute->getComplexClauses(omptype);
+    // iterate existing clauses with specific type and compare parameters.
+    if (inspecting_complex_clauses != NULL) {
+        std::deque<ComplexClause>::iterator iter;
+        for (iter = inspecting_complex_clauses->begin(); iter != inspecting_complex_clauses->end(); iter++) {
+            if ((iter->first_parameter == first_parameter) && (iter->second_parameter == second_parameter)) {
+                return &*iter;
+            }
+        }
+    };
+    // no existing clause matched. Create a new one and set two parameters.
+    ComplexClause* new_clause = ompattribute->addComplexClause(omptype);
+    new_clause->first_parameter = first_parameter;
+    new_clause->second_parameter = second_parameter;
+    return new_clause;
+}
