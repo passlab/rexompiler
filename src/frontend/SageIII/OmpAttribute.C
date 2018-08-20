@@ -11,9 +11,6 @@
 #include <iostream>
 #include <string>
 
-// counter for complex clause.
-//extern int complex_clause_index;
-
 using namespace std;
 using namespace SageInterface;
 using namespace SageBuilder;
@@ -398,21 +395,8 @@ namespace OmpSupport
     ROSE_ASSERT (varExp);
     varString=varExp->unparseToString();
 
-    //Special handling for reduction clauses
-    if (targetConstruct == e_reduction)
-    {
-      addClause(targetConstruct);
-      cerr<<"Fatal: cannot add variables into e_reduction, You have to specify e_reduction_operatorX instead!"<<endl;
-      assert(false);
-    } 
-    if (isReductionOperator(targetConstruct))
-    {
-      // addClause(e_reduction);
-      setReductionOperator(targetConstruct);
-    }  
-
     // Try to resolve the variable reference expression's symbol
-      //resolve the variable here
+    // resolve the variable here
     if (SgPntrArrRefExp * aref = isSgPntrArrRefExp(varExp))
     {
       SgExpression* lhs = NULL; 
@@ -459,18 +443,6 @@ namespace OmpSupport
   SgVariableSymbol* OmpAttribute::addVariable(omp_construct_enum targetConstruct, const std::string& varString, SgInitializedName* sgvar/*=NULL*/)
   {
     SgVariableSymbol* symbol = NULL;
-    //Special handling for reduction clauses
-    if (targetConstruct == e_reduction)
-    {
-      addClause(targetConstruct);
-      cerr<<"Fatal: cannot add variables into e_reduction, You have to specify e_reduction_operatorX instead!"<<endl;
-      assert(false);
-    } 
-    if (isReductionOperator(targetConstruct))
-    {
-      // addClause(e_reduction);
-      setReductionOperator(targetConstruct);
-    }  
     // Try to resolve the variable if SgInitializedName is not provided
     if ((sgvar == NULL)&&(mNode!=NULL))
     {
