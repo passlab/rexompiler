@@ -521,12 +521,12 @@ namespace OmpSupport
           result = new SgOmpCollapseClause(collapseParam);
           break;
         }
-      case e_if:
+      /*case e_if:
         {
           SgExpression* ifParam = checkOmpExpressionClause( att->getExpression(e_if).second, global, e_if );
           result = new SgOmpIfClause(ifParam);
           break;
-        }
+        }*/
       case e_num_threads:
         {
           SgExpression* numThreadsParam = checkOmpExpressionClause( att->getExpression(e_num_threads).second, global, e_num_threads );
@@ -980,6 +980,39 @@ namespace OmpSupport
     }
   }
 
+  //! Try to build a complex clause with a given expression from OmpAttribute
+  SgOmpExpressionClause* buildOmpExpressionComplexClause(OmpAttribute* att, ComplexClause* current_clause, omp_construct_enum clause_type) {
+    ROSE_ASSERT(att !=NULL);
+    if (!att->hasClause(clause_type)) {
+        return NULL;
+    };
+    SgOmpExpressionClause* result = NULL ;
+    SgExpression* clause_expression = NULL;
+    SgGlobal* global = SageInterface::getGlobalScope(att->getNode());
+    switch (clause_type) {
+        case e_if: {
+            SgOmpClause::omp_if_modifier_enum sg_modifier = SgOmpClause::e_omp_if_modifier_unknown;
+            omp_construct_enum if_modifier = current_clause->first_parameter;
+            if (if_modifier != e_unknown) {
+                // whether a unified conversion function should be provided instead of multiple specific ones?
+                //sg_modifier = toSgOmpClauseIfModifier(if_modifier); 
+                sg_modifier = SgOmpClause::e_omp_if_parallel; 
+            }
+            clause_expression = checkOmpExpressionClause(current_clause->expression.second, global, e_if);
+            result = new SgOmpIfClause(clause_expression, sg_modifier);
+            break;
+        }
+        default: {
+            printf("error in buildOmpExpressionClause(): unacceptable clause type:%s\n",
+            OmpSupport::toString(clause_type).c_str());
+            ROSE_ASSERT(false);
+        };
+    };
+    ROSE_ASSERT(result != NULL);
+    setOneSourcePositionForTransformation(result);
+    return result;
+  }
+
   //! Try to build a reduction clause with a given operation type from OmpAttribute
   SgOmpReductionClause* buildOmpReductionClause(OmpAttribute* att, ComplexClause* current_clause) {
     ROSE_ASSERT(att !=NULL);
@@ -1264,7 +1297,10 @@ namespace OmpSupport
           result = buildOmpNotinbranchClause(att); 
           break;
         }
-      case e_if:
+      /*case e_if: {
+        result = buildOmpExpressionComplexClause(att, current_clause, c_clause_type);
+        break;
+      }*/
       case e_final:
       case e_priority:
       case e_collapse:
@@ -1466,6 +1502,7 @@ namespace OmpSupport
       {
         // printf ("Found a clause construct:%s\n", OmpSupport::toString(c_clause).c_str());
       }
+      // later on if loop should be rewritten to switch case for efficiency.
       // special handling for reduction
       if (c_clause == e_reduction) {
         std::deque<ComplexClause>* reduction_clauses = att->getComplexClauses(e_reduction);
@@ -1480,7 +1517,21 @@ namespace OmpSupport
             sgclause->set_parent(target);
         };
       }
-
+      // add complex clause with expression.
+      // take IF clause as example.
+      else if (c_clause == e_if) {
+        std::deque<ComplexClause>* if_clauses = att->getComplexClauses(e_if);
+        ROSE_ASSERT(if_clauses->size()!=0);
+        std::deque<ComplexClause>::iterator iter;
+        for (iter = if_clauses->begin(); iter != if_clauses->end(); iter++) {
+            // process each IF clause individually.
+            is_complex_clause = true;
+            SgOmpClause* sgclause = buildOmpExpressionComplexClause(att, &*iter, e_if);
+            is_complex_clause = false;
+            target->get_clauses().push_back(sgclause);
+            sgclause->set_parent(target);
+        };
+      }
       // special handling for depend(type:varlist)
       else if (c_clause == e_depend) 
       {

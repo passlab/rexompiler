@@ -256,6 +256,7 @@ namespace OmpSupport
       omp_construct_enum first_parameter;
       omp_construct_enum second_parameter;
       std::pair < std::string, SgExpression* > user_defined_parameter;
+      std::pair < std::string, SgExpression* > expression;
       std::vector < std::pair < std::string, SgNode* > > variable_list;
 
       ComplexClause(omp_construct_enum first=e_unknown, omp_construct_enum second=e_unknown) : first_parameter(first), second_parameter(second) {};
@@ -416,9 +417,15 @@ namespace OmpSupport
       std::pair<std::string, SgExpression*>  
         getExpression(omp_construct_enum targetConstruct);
 
+      //! Add an expression to a complex clause
+      void addComplexClauseExpression(omp_construct_enum targetConstruct, const std::string& expString, SgExpression* sgexp=NULL); 
+
       void addUserDefinedParameter(omp_construct_enum targetConstruct, const std::string& expString, SgExpression* sgexp=NULL);
 
-      //! Get expression of a clause
+      //! Get expression of a complex clause
+      std::pair<std::string, SgExpression*> getComplexClauseExpression(ComplexClause* target_clause);
+
+      //! Get user defined parameter of a complex clause
       std::pair<std::string, SgExpression*> getUserDefinedParameter(ComplexClause* target_clause);
 
       //!--------values for some clauses ----------

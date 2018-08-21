@@ -154,6 +154,12 @@ HEADER_OMP_CLAUSE_START
           e_omp_atomic_clause_capture
         };
 
+        enum omp_if_modifier_enum
+        {
+            e_omp_if_modifier_unknown,
+            e_omp_if_parallel
+        };
+       
 
 
 HEADER_OMP_CLAUSE_END

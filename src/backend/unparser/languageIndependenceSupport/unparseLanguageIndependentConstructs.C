@@ -7764,8 +7764,12 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
 
   if (isSgOmpCollapseClause(c))
     curprint(string(" collapse("));
-  else if (isSgOmpIfClause(c))
+  else if (isSgOmpIfClause(c)) {
     curprint(string(" if("));
+    if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_parallel) {
+        curprint(string("parallel : "));
+    }
+  }
   else if (isSgOmpOrderedClause(c))
     curprint(string(" ordered("));
   else if (isSgOmpFinalClause(c))

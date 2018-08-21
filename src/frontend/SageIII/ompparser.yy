@@ -60,6 +60,7 @@ static bool addVarExp(SgExpression* var);
 
 //Insert expression into some clause
 static bool addExpression(const char* expr);
+static bool addComplexClauseExpression(const char* expr);
 static bool addUserDefinedParameter(const char* expr);
 
 // The current AST annotation being built
@@ -829,23 +830,27 @@ end_clause: TARGET_END {
 
                     
 if_clause: IF {
-                           ompattribute->addClause(e_if);
-                           omptype = e_if;
-             } '(' clause_with_opt_attribute ')' {
-                        //    addExpression("");
+                current_clause = ompattribute->addComplexClause(e_if);
+                omptype = e_if;
+                //first_parameter = e_unknown;
+                //second_parameter = e_unknown;
+                //current_clause = NULL;
+                is_complex_clause = true;
+             } '(' if_parameters ')' {
+                is_complex_clause = false;
              }
              ;
 
-clause_with_opt_attribute: opt_attribute ':' expression {
-                        addExpression("");
-                        }
-                      | expression {
-                        addExpression("");
-                        }
+if_parameters: if_modifier ':' { ; }  expression {
+                addComplexClauseExpression("");
+                }
+             | expression {
+                addComplexClauseExpression("");
+                }
             ;
 
-opt_attribute: PARALLEL {
-             ;
+if_modifier: PARALLEL {
+             current_clause->first_parameter = e_parallel;
             }
             ;
 
@@ -1497,6 +1502,14 @@ static bool addExpression(const char* expr) {
     // std::cout<<"debug: current expression is:"<<current_exp->unparseToString()<<std::endl;
     assert (current_exp != NULL);
     ompattribute->addExpression(omptype, std::string(expr),current_exp);
+    return true;
+}
+
+// The ROSE's string-based AST construction is not stable,
+// pass real expressions as SgExpression, Liao
+static bool addComplexClauseExpression(const char* expr) {
+    assert (current_exp != NULL);
+    ompattribute->addComplexClauseExpression(omptype, std::string(expr),current_exp);
     return true;
 }
 
