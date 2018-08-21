@@ -208,6 +208,9 @@ namespace OmpSupport
     e_depend_out, 
     e_depend_inout, 
 
+    // OpenMP 5.0 clause
+    e_allocate,
+
     // not an OpenMP construct
     e_not_omp
 

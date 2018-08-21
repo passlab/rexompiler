@@ -78,7 +78,8 @@ static omp_construct_enum second_parameter;
 static ComplexClause* setupComplexClause ();
 // the clause where variables will be added.
 static ComplexClause* current_clause;
-
+// normalize the complex clause after initial setup.
+static ComplexClause* normalizeComplexClause();
 // The node to which vars/expressions should get added
 //static OmpAttribute* omptype = 0;
 
@@ -234,6 +235,7 @@ parallel_clause : if_clause
                 | copyin_clause
                 | reduction_clause
                 | proc_bind_clause
+                | allocate_clause
                 ;
 
 copyin_clause: COPYIN {
@@ -735,6 +737,27 @@ reduction_identifier : '+' {
                      }
                    | expression {
                     second_parameter = e_user_defined_parameter;
+                    }
+                   ;
+
+allocate_clause : ALLOCATE {
+                        omptype = e_allocate;
+                        first_parameter = e_unknown;
+                        second_parameter = e_unknown;
+                        current_clause = setupComplexClause();
+                        is_complex_clause = true;
+                        } '(' {b_within_variable_list = true;} allocate_parameters {is_complex_clause = false;} ')'
+                      ;
+
+allocate_parameters : allocator {
+                            current_clause = normalizeComplexClause();
+                            addUserDefinedParameter("");
+                        } ':' variable_list {b_within_variable_list = false;}
+                    | variable_list {b_within_variable_list = false;}
+            ;
+
+allocator : expression {
+                    first_parameter = e_user_defined_parameter;
                     }
                    ;
 
@@ -1536,3 +1559,40 @@ static ComplexClause* setupComplexClause() {
     new_clause->second_parameter = second_parameter;
     return new_clause;
 }
+
+static ComplexClause* normalizeComplexClause() {
+    std::deque<ComplexClause>* inspecting_complex_clauses = ompattribute->getComplexClauses(omptype);
+    std::deque<ComplexClause>::iterator unnormalized_clause;
+    ComplexClause* normalized_clause = NULL;
+    // iterate existing clauses with specific type and find proper position to insert expression or variables.
+    if (inspecting_complex_clauses != NULL) {
+        std::deque<ComplexClause>::iterator iter;
+        for (iter = inspecting_complex_clauses->begin(); iter != inspecting_complex_clauses->end(); iter++) {
+            if ((iter->first_parameter == first_parameter) && (iter->second_parameter == second_parameter)) {
+                normalized_clause = &*iter;
+            }
+            else if (iter->first_parameter == current_clause->first_parameter && iter->second_parameter == current_clause->second_parameter) {
+                unnormalized_clause = iter;
+            }
+        }
+    };
+    // make necessary modifications to candidate position.
+    if (normalized_clause != NULL) {
+        if (unnormalized_clause->expression.first == "" && unnormalized_clause->variable_list.size() == 0) {
+            inspecting_complex_clauses->erase(unnormalized_clause);
+        };
+    }
+    else {
+        if (unnormalized_clause->expression.first == "" && unnormalized_clause->variable_list.size() == 0) {
+            normalized_clause = &*unnormalized_clause;
+            normalized_clause->first_parameter = first_parameter;
+            normalized_clause->second_parameter = second_parameter;
+        }
+        else {
+            normalized_clause = setupComplexClause();
+        };
+    };
+    return normalized_clause;
+}
+
+
