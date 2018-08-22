@@ -543,6 +543,7 @@ SgOmpTargetStatement
 SgOmpTargetDataStatement
 SgOmpSimdStatement
 SgOmpClause
+SgOmpAllocateClause
 SgOmpBeginClause
 SgOmpCollapseClause
 SgOmpCopyinClause

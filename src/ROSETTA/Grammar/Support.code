@@ -104,6 +104,11 @@ HEADER_OMP_CLAUSE_START
             e_omp_reduction_default
         };
 
+        enum omp_allocate_modifier_enum
+        {
+            e_omp_allocate_modifier_unknown,
+            e_omp_allocate_user_defined_modifier
+        };
 
         enum omp_dependence_type_enum
         {

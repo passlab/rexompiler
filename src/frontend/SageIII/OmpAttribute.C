@@ -960,6 +960,8 @@ namespace OmpSupport
       case e_final : result = "final";   break;
       case e_priority: result = "priority";   break;
 
+      case e_allocate: result = "allocate";   break;
+
       case e_not_omp: result = "not_omp"; break;
       default: 
       {
@@ -1309,6 +1311,8 @@ namespace OmpSupport
       case e_notinbranch:
 
       case e_depend:
+      // OpenMP 5.0 new clause
+      case e_allocate:
         result = true; 
         break;
       default:

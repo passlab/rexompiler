@@ -2571,7 +2571,7 @@ SgOmpCollapseClause* SgOmpCollapseClause::build_node_from_nonlist_children ( Sg_
 /* #line 1 "/home/dquinlan/ROSE/git-dq-edg49-fortran-rc/src/ROSETTA/Grammar/grammarAtermConstructorDefinitionMacros.macro" */
 
 // Generated static function for building IR nodes for Aterm support (like a constructor).
-SgOmpIfClause* SgOmpIfClause::build_node_from_nonlist_children ( Sg_File_Info* startOfConstruct, SgExpression* expression )
+SgOmpIfClause* SgOmpIfClause::build_node_from_nonlist_children ( Sg_File_Info* startOfConstruct, SgExpression* expression, SgOmpClause::omp_if_modifier_enum if_modifier)
    {
 #if 0
   // debugging information!
@@ -2793,6 +2793,14 @@ SgOmpReductionClause* SgOmpReductionClause::build_node_from_nonlist_children (Sg
 #endif
 
      SgOmpReductionClause* returnNode = NULL;
+
+     return returnNode;
+   }
+
+// Generated static function for building IR nodes for Aterm support (like a constructor).
+SgOmpAllocateClause* SgOmpAllocateClause::build_node_from_nonlist_children (Sg_File_Info* startOfConstruct, SgExprListExp* variables, SgOmpClause::omp_allocate_modifier_enum modifier, SgExpression* user_defined_modifier)
+   {
+     SgOmpAllocateClause* returnNode = NULL;
 
      return returnNode;
    }

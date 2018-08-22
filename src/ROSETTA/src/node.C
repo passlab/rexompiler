@@ -100,7 +100,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpCopyinClause, "OmpCopyinClause", "OmpCopyinClauseTag" );
      NEW_TERMINAL_MACRO (OmpLastprivateClause, "OmpLastprivateClause", "OmpLastprivateClauseTag" );
      NEW_TERMINAL_MACRO (OmpReductionClause, "OmpReductionClause", "OmpReductionClauseTag" );
-     // tracking in_reduction
+     NEW_TERMINAL_MACRO (OmpAllocateClause, "OmpAllocateClause", "OmpAllocateClauseTag" );
      NEW_TERMINAL_MACRO (OmpDependClause,    "OmpDependClause", "OmpDependClauseTag" );
 
      NEW_TERMINAL_MACRO (OmpMapClause, "OmpMapClause", "OmpMapClauseTag" );
@@ -109,7 +109,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpAlignedClause, "OmpAlignedClause", "OmpAlignedClauseTag" );
 
      NEW_NONTERMINAL_MACRO (OmpVariablesClause, OmpCopyprivateClause| OmpPrivateClause |OmpFirstprivateClause|
-         OmpSharedClause |OmpCopyinClause| OmpLastprivateClause| OmpReductionClause | OmpMapClause | // tracking in_reduction 
+         OmpSharedClause |OmpCopyinClause| OmpLastprivateClause| OmpReductionClause | OmpMapClause | OmpAllocateClause |
          OmpUniformClause | OmpAlignedClause | OmpLinearClause | OmpDependClause ,
          "OmpVariablesClause", "OmpVariablesClauseTag", false);
 
@@ -1868,6 +1868,14 @@ Grammar::setUpNodes ()
 
      // if (modifier : expression)
      OmpIfClause.setDataPrototype("SgOmpClause::omp_if_modifier_enum", "modifier", "=e_omp_if_modifier_unknown",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // allocate (modifier : variables)
+     OmpAllocateClause.setDataPrototype("SgOmpClause::omp_allocate_modifier_enum", "modifier", "=e_omp_allocate_modifier_unknown",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // allocate (user-defined modifier : variables)
+     OmpAllocateClause.setDataPrototype("SgExpression*", "user_defined_modifier", "= NULL",
                                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
      // depend(type:variables) 

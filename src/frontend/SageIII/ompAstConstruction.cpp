@@ -1013,9 +1013,49 @@ namespace OmpSupport
     return result;
   }
 
+  //! Try to build a complex clause with a given expression from OmpAttribute
+  SgOmpVariablesClause* buildOmpVariableComplexClause(OmpAttribute* att, ComplexClause* current_clause, omp_construct_enum clause_type) {
+    ROSE_ASSERT(att != NULL);
+    if (!att->hasClause(clause_type)) {
+        return NULL;
+    };
+    SgOmpVariablesClause* result = NULL ;
+    SgExpression* user_defined_parameter = NULL;
+    SgGlobal* global = SageInterface::getGlobalScope(att->getNode());
+    SgExprListExp* explist = buildExprListExp();
+    switch (clause_type) {
+        case e_allocate: {
+            SgOmpClause::omp_allocate_modifier_enum sg_modifier = SgOmpClause::e_omp_allocate_modifier_unknown;
+            omp_construct_enum allocate_modifier = current_clause->first_parameter;
+            if (allocate_modifier != e_unknown) {
+                // whether a unified conversion function should be provided instead of multiple specific ones?
+                //sg_modifier = toSgOmpClauseAllocateModifier(allocate_modifier);
+                sg_modifier = SgOmpClause::e_omp_allocate_user_defined_modifier;
+                user_defined_parameter = checkOmpExpressionClause(current_clause->user_defined_parameter.second, global, e_allocate);
+            }
+            result = new SgOmpAllocateClause(explist, sg_modifier, user_defined_parameter);
+            break;
+        }
+        default: {
+            printf("error in buildOmpVariableComplexClause(): unacceptable clause type:%s\n",
+            OmpSupport::toString(clause_type).c_str());
+            ROSE_ASSERT(false);
+        };
+    };
+
+    ROSE_ASSERT(result != NULL);
+    explist->set_parent(result);
+    setOneSourcePositionForTransformation(result);
+
+    // build variable list
+    setComplexClauseVariableList(result, current_clause);
+
+    return result;
+  }
+
   //! Try to build a reduction clause with a given operation type from OmpAttribute
   SgOmpReductionClause* buildOmpReductionClause(OmpAttribute* att, ComplexClause* current_clause) {
-    ROSE_ASSERT(att !=NULL);
+    ROSE_ASSERT(att != NULL);
     SgOmpClause::omp_reduction_modifier_enum sg_modifier = SgOmpClause::e_omp_reduction_modifier_unknown;
     omp_construct_enum reduction_modifier = current_clause->first_parameter;
     if (reduction_modifier != e_unknown) {
@@ -1527,6 +1567,21 @@ namespace OmpSupport
             // process each IF clause individually.
             is_complex_clause = true;
             SgOmpClause* sgclause = buildOmpExpressionComplexClause(att, &*iter, e_if);
+            is_complex_clause = false;
+            target->get_clauses().push_back(sgclause);
+            sgclause->set_parent(target);
+        };
+      }
+      // add complex clause with variable list.
+      // take ALLOCATE clause as example.
+      else if (c_clause == e_allocate) {
+        std::deque<ComplexClause>* allocate_clauses = att->getComplexClauses(e_allocate);
+        ROSE_ASSERT(allocate_clauses->size()!=0);
+        std::deque<ComplexClause>::iterator iter;
+        for (iter = allocate_clauses->begin(); iter != allocate_clauses->end(); iter++) {
+            // process each IF clause individually.
+            is_complex_clause = true;
+            SgOmpClause* sgclause = buildOmpVariableComplexClause(att, &*iter, e_allocate);
             is_complex_clause = false;
             target->get_clauses().push_back(sgclause);
             sgclause->set_parent(target);
