@@ -814,6 +814,7 @@ namespace sg
     GEN_VISIT(SgOmpCopyinClause)
     GEN_VISIT(SgOmpLastprivateClause)
     GEN_VISIT(SgOmpReductionClause)
+    GEN_VISIT(SgOmpAllocateClause)
     GEN_VISIT(SgOmpVariablesClause)
     GEN_VISIT(SgOmpScheduleClause)
     GEN_VISIT(SgOmpDependClause)
