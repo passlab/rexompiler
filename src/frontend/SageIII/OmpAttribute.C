@@ -533,10 +533,11 @@ namespace OmpSupport
 
     //debug clause var_list
     // if (targetConstruct== e_copyin) cout<<"debug: adding variable to copyin()"<<endl;
-
-    target_clause->variable_list.push_back(make_pair(varString, sgvar));
-
-    //variable_lists[targetConstruct].push_back(make_pair(varString, sgvar));
+    std::pair <std::string, SgNode*> current_variable = make_pair(varString, sgvar);
+    // check if there's duplicated variable in O(n) time, which is simple but not efficient.
+    if (std::find(target_clause->variable_list.begin(), target_clause->variable_list.end(), current_variable) == target_clause->variable_list.end()) {
+        target_clause->variable_list.push_back(current_variable);
+    };
     // maintain the var-clause map also
     //var_clauses[varString].push_back(targetConstruct);
     // Don't forget this! But directive like threadprivate could have variable list also

@@ -9,27 +9,13 @@
 #include <omp.h>
 #endif
 
-int mymax(int r,int n) {
-    int m;
-    if (n>r) {
-        m = n;
-    } else {
-        m = r;
-    }
-    return m;
-}
-
-
 int main()
 {
-  int i, m;
-  long sum=0;
-  int total=100;
+  int a, b, c;
 
-  m = 0;
-#pragma omp parallel reduction(rwz:m)
+#pragma omp parallel reduction (user_iden:a, b) reduction (user_iden:a, c)
     {
-        m = mymax(m, total);
+        printf("This is only for testing parser and AST construction.\n");
     }
 
   return 0;
