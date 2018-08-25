@@ -141,6 +141,7 @@ corresponding C type is union name defaults to YYSTYPE.
         LEXICALERROR IDENTIFIER MIN MAX
         READ WRITE CAPTURE SIMDLEN FINAL PRIORITY
         INSCAN
+        OMP_DEFAULT_MEM_ALLOC OMP_LARGE_CAP_MEM_ALLOC OMP_CONST_MEM_ALLOC OMP_HIGH_BW_MEM_ALLOC OMP_LOW_LAT_MEM_ALLOC OMP_CGROUP_MEM_ALLOC OMP_PTEAM_MEM_ALLOC OMP_THREAD_MEM_ALLOC
 /*We ignore NEWLINE since we only care about the pragma string , We relax the syntax check by allowing it as part of line continuation */
 %token <itype> ICONSTANT   
 %token <stype> EXPRESSION ID_EXPRESSION 
@@ -756,10 +757,34 @@ allocate_parameters : allocator {
                     | variable_list {b_within_variable_list = false;}
             ;
 
-allocator : expression {
-                    first_parameter = e_user_defined_parameter;
-                    }
-                   ;
+allocator  :  OMP_DEFAULT_MEM_ALLOC {
+                first_parameter = e_allocate_default_mem_alloc;
+                }
+            | OMP_LARGE_CAP_MEM_ALLOC {
+                first_parameter = e_allocate_large_cap_mem_alloc;
+                }
+            | OMP_CONST_MEM_ALLOC {
+                first_parameter = e_allocate_const_mem_alloc;
+                }
+            | OMP_HIGH_BW_MEM_ALLOC {
+                first_parameter = e_allocate_high_bw_mem_alloc;
+                }
+            | OMP_LOW_LAT_MEM_ALLOC {
+                first_parameter = e_allocate_low_lat_mem_alloc;
+                }
+            | OMP_CGROUP_MEM_ALLOC {
+                first_parameter = e_allocate_cgroup_mem_alloc;
+                }
+            | OMP_PTEAM_MEM_ALLOC {
+                first_parameter = e_allocate_pteam_mem_alloc;
+                }
+            | OMP_THREAD_MEM_ALLOC {
+                first_parameter = e_allocate_thread_mem_alloc;
+                }
+            | expression {
+                first_parameter = e_user_defined_parameter;
+                }
+            ;
 
 target_data_directive: /* pragma */ OMP TARGET DATA {
                        ompattribute = buildOmpAttribute(e_target_data, gNode,true);

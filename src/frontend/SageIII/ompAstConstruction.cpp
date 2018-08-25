@@ -894,6 +894,69 @@ namespace OmpSupport
     ROSE_ASSERT(result != SgOmpClause::e_omp_reduction_unknown);
     return result;
   }
+
+  //! A helper function to convert OmpAttribute ALLOCATE modifier to SgClause ALLOCATE modifier
+  static   SgOmpClause::omp_allocate_modifier_enum toSgOmpClauseAllocateModifier(omp_construct_enum modifier)
+  {
+    SgOmpClause::omp_allocate_modifier_enum result = SgOmpClause::e_omp_allocate_modifier_unknown;
+    switch (modifier)
+    {
+      case e_allocate_default_mem_alloc:
+        {
+          result = SgOmpClause::e_omp_allocate_default_mem_alloc;
+          break;
+        }
+      case e_allocate_large_cap_mem_alloc:
+        {
+          result = SgOmpClause::e_omp_allocate_large_cap_mem_alloc;
+          break;
+        }
+      case e_allocate_const_mem_alloc:
+        {
+          result = SgOmpClause::e_omp_allocate_const_mem_alloc;
+          break;
+        }
+      case e_allocate_high_bw_mem_alloc:
+        {
+          result = SgOmpClause::e_omp_allocate_high_bw_mem_alloc;
+          break;
+        }
+      case e_allocate_low_lat_mem_alloc:
+        {
+          result = SgOmpClause::e_omp_allocate_low_lat_mem_alloc;
+          break;
+        }
+      case e_allocate_cgroup_mem_alloc:
+        {
+          result = SgOmpClause::e_omp_allocate_cgroup_mem_alloc;
+          break;
+        }
+      case e_allocate_pteam_mem_alloc:
+        {
+          result = SgOmpClause::e_omp_allocate_pteam_mem_alloc;
+          break;
+        }
+      case e_allocate_thread_mem_alloc:
+        {
+          result = SgOmpClause::e_omp_allocate_thread_mem_alloc;
+          break;
+        }
+      case e_user_defined_parameter:
+        {
+          result = SgOmpClause::e_omp_allocate_user_defined_modifier;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for allocate modifier conversion:%s\n", OmpSupport::toString(modifier).c_str());
+          ROSE_ASSERT(false);
+          break;
+        }
+    }
+    ROSE_ASSERT(result != SgOmpClause::e_omp_allocate_modifier_unknown);
+    return result;
+  }
+
   //A helper function to set SgVarRefExpPtrList  from OmpAttribute's construct-varlist map
   static void setClauseVariableList(SgOmpVariablesClause* target, OmpAttribute* att, omp_construct_enum key)
   {
@@ -1028,9 +1091,7 @@ namespace OmpSupport
             SgOmpClause::omp_allocate_modifier_enum sg_modifier = SgOmpClause::e_omp_allocate_modifier_unknown;
             omp_construct_enum allocate_modifier = current_clause->first_parameter;
             if (allocate_modifier != e_unknown) {
-                // whether a unified conversion function should be provided instead of multiple specific ones?
-                //sg_modifier = toSgOmpClauseAllocateModifier(allocate_modifier);
-                sg_modifier = SgOmpClause::e_omp_allocate_user_defined_modifier;
+                sg_modifier = toSgOmpClauseAllocateModifier(allocate_modifier);
                 user_defined_parameter = checkOmpExpressionClause(current_clause->user_defined_parameter.second, global, e_allocate);
             }
             result = new SgOmpAllocateClause(explist, sg_modifier, user_defined_parameter);

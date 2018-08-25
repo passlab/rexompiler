@@ -210,6 +210,14 @@ namespace OmpSupport
 
     // OpenMP 5.0 clause
     e_allocate,
+    e_allocate_default_mem_alloc,
+    e_allocate_large_cap_mem_alloc,
+    e_allocate_const_mem_alloc,
+    e_allocate_high_bw_mem_alloc,
+    e_allocate_low_lat_mem_alloc,
+    e_allocate_cgroup_mem_alloc,
+    e_allocate_pteam_mem_alloc,
+    e_allocate_thread_mem_alloc,
 
     // not an OpenMP construct
     e_not_omp

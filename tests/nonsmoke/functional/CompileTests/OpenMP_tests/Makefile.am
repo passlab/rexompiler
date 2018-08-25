@@ -100,6 +100,8 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	ordered.c \
 	orphaned-directives.c \
 	parallel.c \
+	parallel_allocate_predefined_modifier.c \
+	parallel_allocate_user_modifier.c \
 	parallel-if.c \
 	parallel-if-numthreads.c \
 	parallel-numthreads.c \

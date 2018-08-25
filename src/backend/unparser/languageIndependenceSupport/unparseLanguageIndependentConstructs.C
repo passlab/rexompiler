@@ -7420,6 +7420,60 @@ static std::string reductionModifierToString(SgOmpClause::omp_reduction_modifier
   return result;
 }
 
+static std::string allocateModifierToString(SgOmpClause::omp_allocate_modifier_enum modifier)
+{
+  string result;
+  switch (modifier)
+  {
+    case SgOmpClause::e_omp_allocate_default_mem_alloc:
+      {
+        result = "omp_default_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_allocate_large_cap_mem_alloc:
+      {
+        result = "omp_large_cap_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_allocate_const_mem_alloc:
+      {
+        result = "omp_const_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_allocate_high_bw_mem_alloc:
+      {
+        result = "omp_high_bw_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_allocate_low_lat_mem_alloc:
+      {
+        result = "omp_low_lat_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_allocate_cgroup_mem_alloc:
+      {
+        result = "omp_cgroup_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_allocate_pteam_mem_alloc:
+      {
+        result = "omp_pteam_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_allocate_thread_mem_alloc:
+      {
+        result = "omp_thread_mem_alloc";
+        break;
+      }
+    default:
+      {
+        cerr << "Error: unhandled operator type allocateModifierToString():" << modifier << endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
+
 //! A helper function to convert dependence type to strings
 // TODO put into a better place and expose it to users.
 static std::string dependenceTypeToString(SgOmpClause::omp_dependence_type_enum ro)
@@ -7767,7 +7821,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesComplexClause(SgOm
                 unparseExpression(isSgOmpAllocateClause(c)->get_user_defined_modifier(), new_info);
             }
             else {
-                //curprint(allocateModifierToString(modifier));
+                curprint(allocateModifierToString(modifier));
             }
             curprint(string(" : "));
         }

@@ -107,6 +107,16 @@ HEADER_OMP_CLAUSE_START
         enum omp_allocate_modifier_enum
         {
             e_omp_allocate_modifier_unknown,
+
+            e_omp_allocate_default_mem_alloc,
+            e_omp_allocate_large_cap_mem_alloc,
+            e_omp_allocate_const_mem_alloc,
+            e_omp_allocate_high_bw_mem_alloc,
+            e_omp_allocate_low_lat_mem_alloc,
+            e_omp_allocate_cgroup_mem_alloc,
+            e_omp_allocate_pteam_mem_alloc,
+            e_omp_allocate_thread_mem_alloc,
+
             e_omp_allocate_user_defined_modifier
         };
 
