@@ -104,6 +104,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	parallel_allocate_user_modifier.c \
 	parallel-if.c \
 	parallel-if-numthreads.c \
+	parallel_if_parallel.c \
 	parallel-numthreads.c \
 	parallel-reduction.c \
 	parallel-reduction2.c \
@@ -122,6 +123,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	reduction.c \
 	reduction-classic.c \
 	reduction_min_max.c \
+	reduction_modifier.c \
 	reduction_user_identifier.c \
 	rice1.c \
 	section.c \

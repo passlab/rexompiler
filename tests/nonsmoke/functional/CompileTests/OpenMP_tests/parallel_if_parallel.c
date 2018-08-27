@@ -6,8 +6,9 @@
 int main()
 {
   int a, b, c;
+  a = 0;
 
-#pragma omp parallel allocate (user_modi:a, b) allocate (user_modi:a, c)
+#pragma omp parallel if (parallel : a == 0) if (a != 0)
     {
         printf("This is for testing parser and AST construction, which could be only syntax correct.\n");
 
