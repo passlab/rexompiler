@@ -1,2 +1,0 @@
-#pragma omp parallel  reduction(+ : a)
-#pragma omp task  in_reduction(+ : a)

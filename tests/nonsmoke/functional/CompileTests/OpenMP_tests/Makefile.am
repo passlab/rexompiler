@@ -147,7 +147,6 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	task_dep3.c \
 	task_dep.load.compute.c \
 	task_final.c \
-	task_in_reduction.c \
 	task_largenumber.c \
 	task_mergeable.c \
 	task_orphaned.c \

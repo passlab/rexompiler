@@ -2720,8 +2720,6 @@ This is no perfect solution until we handle preprocessing information as structu
     // parse OpenMP directives and attach OmpAttributeList to relevant SgNode
     attachOmpAttributeInfo(sageFilePtr);
 
-    printf("Parsing is done.\n");
-
     // Additional processing of the AST after parsing
     // 
     postParsingProcessing (sageFilePtr);
@@ -2738,8 +2736,6 @@ This is no perfect solution until we handle preprocessing information as structu
 
     // Build OpenMP AST nodes based on parsing results
     build_OpenMP_AST(sageFilePtr);
-
-    printf("AST is generated!\n");
 
     // stop here if only OpenMP AST construction is requested
     if (sageFilePtr->get_openmp_ast_only())
