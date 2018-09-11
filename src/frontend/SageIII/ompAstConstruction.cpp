@@ -1928,7 +1928,20 @@ namespace OmpSupport
       switch (c_clause)
       {
         // clauses allocated to omp parallel
-        case e_if:
+        case e_if: {
+            std::deque<ComplexClause>* if_clauses = att->getComplexClauses(e_if);
+            ROSE_ASSERT(if_clauses->size()!=0);
+            std::deque<ComplexClause>::iterator iter;
+            for (iter = if_clauses->begin(); iter != if_clauses->end(); iter++) {
+                // process each IF clause individually.
+                is_complex_clause = true;
+                SgOmpClause* sgclause = buildOmpExpressionComplexClause(att, &*iter, e_if);
+                is_complex_clause = false;
+                first_stmt->get_clauses().push_back(sgclause);
+                sgclause->set_parent(first_stmt);
+            };
+            break;
+        };
         case e_num_threads:
         case e_default:
         case e_shared:
