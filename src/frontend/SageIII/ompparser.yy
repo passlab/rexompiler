@@ -671,8 +671,13 @@ lastprivate_clause : LASTPRIVATE {
                               ;
 
 share_clause : SHARED {
-                        ompattribute->addClause(e_shared); omptype = e_shared; 
-                      } '(' {b_within_variable_list = true;} variable_list ')' {b_within_variable_list = false;}
+                        omptype = e_shared;
+                        first_parameter = e_unknown;
+                        second_parameter = e_unknown;
+                        third_parameter = e_unknown;
+                        current_clause = setupComplexClause();
+                        is_complex_clause = true;
+                        } '(' {b_within_variable_list = true;} variable_list ')' {is_complex_clause = false; b_within_variable_list = false;}
                     ;
 
 reduction_clause : REDUCTION { 

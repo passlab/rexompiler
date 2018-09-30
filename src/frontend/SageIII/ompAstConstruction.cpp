@@ -1110,6 +1110,10 @@ namespace OmpSupport
             result = new SgOmpPrivateClause(explist);
             break;
         }
+        case e_shared: {
+            result = new SgOmpSharedClause(explist);
+            break;
+        }
         default: {
             printf("error in buildOmpVariableComplexClause(): unacceptable clause type:%s\n",
             OmpSupport::toString(clause_type).c_str());
@@ -1297,11 +1301,6 @@ namespace OmpSupport
           result = new SgOmpLastprivateClause(explist);
           break;
         }
-      case e_shared:
-        {
-          result = new SgOmpSharedClause(explist);
-          break;
-        }
      case e_linear: // TODO: need better solution for clauses with both variable list and expression. 
         { // TODO checkOmpExpressionClause() to handle macro
           SgExpression* stepExp= att->getExpression(e_linear).second;
@@ -1420,7 +1419,6 @@ namespace OmpSupport
       case e_copyin:  
       case e_copyprivate:  
       case e_lastprivate:
-      case e_shared:
       case e_linear:
       case e_aligned:
         {
@@ -1633,7 +1631,8 @@ namespace OmpSupport
             // add complex clause with variable list.
             case e_allocate: 
             case e_firstprivate:
-            case e_private: {
+            case e_private:
+            case e_shared: {
                 std::deque<ComplexClause>* var_clauses = att->getComplexClauses(c_clause);
                 ROSE_ASSERT(var_clauses->size()!=0);
                 std::deque<ComplexClause>::iterator iter;
@@ -1941,7 +1940,6 @@ namespace OmpSupport
             break;
         };
         case e_default:
-        case e_shared:
         case e_copyin:
           {
             SgOmpClause* sgclause = buildOmpNonReductionClause(att, c_clause);
@@ -1979,7 +1977,8 @@ namespace OmpSupport
           }
         case e_allocate:
         case e_firstprivate:
-        case e_private: {
+        case e_private:
+        case e_shared: {
             std::deque<ComplexClause>* var_clauses = att->getComplexClauses(c_clause);
             ROSE_ASSERT(var_clauses->size()!=0);
             std::deque<ComplexClause>::iterator iter;
