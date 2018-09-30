@@ -1595,97 +1595,92 @@ namespace OmpSupport
     // must copy those clauses here, since they will be deallocated later on
     vector<omp_construct_enum> clause_vector = att->getClauses();
     std::vector<omp_construct_enum>::iterator citer;
-    for (citer = clause_vector.begin(); citer != clause_vector.end(); citer++)
-    {
-      omp_construct_enum c_clause = *citer;
-      if (!isClause(c_clause))
-      {
-        //      printf ("Found a construct which is not a clause:%s\n within attr:%p\n", OmpSupport::toString(c_clause).c_str(), att);
-        ROSE_ASSERT(isClause(c_clause));
-        continue;
-      }
-      else
-      {
-        // printf ("Found a clause construct:%s\n", OmpSupport::toString(c_clause).c_str());
-      }
-      // later on if loop should be rewritten to switch case for efficiency.
-      // special handling for reduction
-      if (c_clause == e_reduction) {
-        std::deque<ComplexClause>* reduction_clauses = att->getComplexClauses(e_reduction);
-        ROSE_ASSERT(reduction_clauses->size()!=0);
-        std::deque<ComplexClause>::iterator iter;
-        for (iter = reduction_clauses->begin(); iter != reduction_clauses->end(); iter++) {
-            // process each reduction clause individually.
-            is_complex_clause = true;
-            SgOmpClause* sgclause = buildOmpReductionClause(att, &*iter);
-            is_complex_clause = false;
-            target->get_clauses().push_back(sgclause);
-            sgclause->set_parent(target);
-        };
-      }
-      // add complex clause with expression.
-      // take IF clause as example.
-      else if (c_clause == e_if || c_clause == e_num_threads) {
-        std::deque<ComplexClause>* expr_clauses = att->getComplexClauses(c_clause);
-        ROSE_ASSERT(expr_clauses->size()!=0);
-        std::deque<ComplexClause>::iterator iter;
-        for (iter = expr_clauses->begin(); iter != expr_clauses->end(); iter++) {
-            // process each clause individually.
-            is_complex_clause = true;
-            SgOmpClause* sgclause = buildOmpExpressionComplexClause(att, &*iter, c_clause);
-            is_complex_clause = false;
-            target->get_clauses().push_back(sgclause);
-            sgclause->set_parent(target);
-        };
-      }
-      // add complex clause with variable list.
-      // take ALLOCATE clause as example.
-      else if (c_clause == e_allocate) {
-        std::deque<ComplexClause>* allocate_clauses = att->getComplexClauses(e_allocate);
-        ROSE_ASSERT(allocate_clauses->size()!=0);
-        std::deque<ComplexClause>::iterator iter;
-        for (iter = allocate_clauses->begin(); iter != allocate_clauses->end(); iter++) {
-            // process each IF clause individually.
-            is_complex_clause = true;
-            SgOmpClause* sgclause = buildOmpVariableComplexClause(att, &*iter, e_allocate);
-            is_complex_clause = false;
-            target->get_clauses().push_back(sgclause);
-            sgclause->set_parent(target);
-        };
-      }
-      // special handling for depend(type:varlist)
-      else if (c_clause == e_depend) 
-      {
-        std::vector<omp_construct_enum> rops  = att->getDependenceTypes();
-        ROSE_ASSERT(rops.size()!=0);
-        std::vector<omp_construct_enum>::iterator iter;
-        for (iter=rops.begin(); iter!=rops.end();iter++)
-        {
-          omp_construct_enum rop = *iter;
-          SgOmpClause* sgclause = buildOmpDependClause(att, rop);
-          target->get_clauses().push_back(sgclause);
-          sgclause->set_parent(target);
+    for (citer = clause_vector.begin(); citer != clause_vector.end(); citer++) {
+        omp_construct_enum c_clause = *citer;
+        if (!isClause(c_clause)) {
+            ROSE_ASSERT(isClause(c_clause));
+            continue;
         }
-      }
-      else if (c_clause == e_map)
-      {
-        std::vector<omp_construct_enum> rops  = att->getMapVariants();
-        ROSE_ASSERT(rops.size()!=0);
-        std::vector<omp_construct_enum>::iterator iter;
-        for (iter=rops.begin(); iter!=rops.end();iter++)
-        {
-          omp_construct_enum rop = *iter;
-          SgOmpClause* sgclause = buildOmpMapClause(att, rop);
-          target->get_clauses().push_back(sgclause);
-          sgclause->set_parent(target);
+        // later on if loop should be rewritten to switch case for efficiency.
+        // special handling for reduction
+        switch (c_clause) {
+            case e_reduction: {
+                std::deque<ComplexClause>* reduction_clauses = att->getComplexClauses(e_reduction);
+                ROSE_ASSERT(reduction_clauses->size()!=0);
+                std::deque<ComplexClause>::iterator iter;
+                for (iter = reduction_clauses->begin(); iter != reduction_clauses->end(); iter++) {
+                    // process each reduction clause individually.
+                    is_complex_clause = true;
+                    SgOmpClause* sgclause = buildOmpReductionClause(att, &*iter);
+                    is_complex_clause = false;
+                    target->get_clauses().push_back(sgclause);
+                    sgclause->set_parent(target);
+                };
+                break;
+            }
+            // add complex clause with expression.
+            case e_if:
+            case e_num_threads: {
+                std::deque<ComplexClause>* expr_clauses = att->getComplexClauses(c_clause);
+                ROSE_ASSERT(expr_clauses->size()!=0);
+                std::deque<ComplexClause>::iterator iter;
+                for (iter = expr_clauses->begin(); iter != expr_clauses->end(); iter++) {
+                    // process each clause individually.
+                    is_complex_clause = true;
+                    SgOmpClause* sgclause = buildOmpExpressionComplexClause(att, &*iter, c_clause);
+                    is_complex_clause = false;
+                    target->get_clauses().push_back(sgclause);
+                    sgclause->set_parent(target);
+                };
+                break;
+            }
+            // add complex clause with variable list.
+            // take ALLOCATE clause as example.
+            case e_allocate: {
+                std::deque<ComplexClause>* allocate_clauses = att->getComplexClauses(e_allocate);
+                ROSE_ASSERT(allocate_clauses->size()!=0);
+                std::deque<ComplexClause>::iterator iter;
+                for (iter = allocate_clauses->begin(); iter != allocate_clauses->end(); iter++) {
+                    // process each IF clause individually.
+                    is_complex_clause = true;
+                    SgOmpClause* sgclause = buildOmpVariableComplexClause(att, &*iter, e_allocate);
+                    is_complex_clause = false;
+                    target->get_clauses().push_back(sgclause);
+                    sgclause->set_parent(target);
+                };
+                break;
+            }
+            // special handling for depend(type:varlist)
+            case e_depend: {
+                std::vector<omp_construct_enum> rops  = att->getDependenceTypes();
+                ROSE_ASSERT(rops.size()!=0);
+                std::vector<omp_construct_enum>::iterator iter;
+                for (iter=rops.begin(); iter!=rops.end();iter++) {
+                    omp_construct_enum rop = *iter;
+                    SgOmpClause* sgclause = buildOmpDependClause(att, rop);
+                    target->get_clauses().push_back(sgclause);
+                    sgclause->set_parent(target);
+                };
+                break;
+            }
+            case e_map: {
+                std::vector<omp_construct_enum> rops  = att->getMapVariants();
+                ROSE_ASSERT(rops.size()!=0);
+                std::vector<omp_construct_enum>::iterator iter;
+                for (iter=rops.begin(); iter!=rops.end();iter++) {
+                    omp_construct_enum rop = *iter;
+                    SgOmpClause* sgclause = buildOmpMapClause(att, rop);
+                    target->get_clauses().push_back(sgclause);
+                    sgclause->set_parent(target);
+                };
+                break;
+            }
+            default: {
+                SgOmpClause* sgclause = buildOmpNonReductionClause(att, c_clause);
+                target->get_clauses().push_back(sgclause);
+                sgclause->set_parent(target); // is This right?
+            }
         }
-      }
-      else 
-      {
-        SgOmpClause* sgclause = buildOmpNonReductionClause(att, c_clause);
-        target->get_clauses().push_back(sgclause);
-        sgclause->set_parent(target); // is This right?
-      }
     }
   }
 
@@ -1933,8 +1928,8 @@ namespace OmpSupport
       switch (c_clause)
       {
         // clauses allocated to omp parallel
-        case e_if: {
-        case e_num_threads:
+        case e_if:
+        case e_num_threads: {
             std::deque<ComplexClause>* expr_clauses = att->getComplexClauses(c_clause);
             ROSE_ASSERT(expr_clauses->size()!=0);
             std::deque<ComplexClause>::iterator iter;

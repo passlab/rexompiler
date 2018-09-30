@@ -300,7 +300,7 @@ namespace OmpSupport
         }
         else {
             cerr<<"OmpAttribute::addClause(): Unrecognized clause type:"<<OmpSupport::toString(clause_type)<<endl;
-        ROSE_ASSERT(false);
+            ROSE_ASSERT(false);
         }
     }
 
