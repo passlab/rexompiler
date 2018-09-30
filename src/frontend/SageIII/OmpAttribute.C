@@ -279,36 +279,30 @@ namespace OmpSupport
     }
   }
 
-  ComplexClause* OmpAttribute::addComplexClause(omp_construct_enum clause_type)
-  {
-    if (isClause(clause_type))
-    {
-      //We only store a clause type once
-      //Logically, the content will be merged into the first occurrence.
-      if (!hasClause(clause_type))
-      { 
-        clause_map[clause_type]=true;
-        clauses.push_back(clause_type);
-        // initialize an empty deque of specific clause.
-        complex_clauses[clause_type] = new std::deque<ComplexClause>;
-        //        cout<<"adding a clause:"<< OmpSupport::toString(clause_type)<<" to attr:"<< this<<endl;
-        //      cout<<"clauses have member count="<<clauses.size()<<endl;
-        ROSE_ASSERT(clause_type == clauses[clauses.size()-1]);
-      }
+    ComplexClause* OmpAttribute::addComplexClause(omp_construct_enum clause_type) {
+        if (isClause(clause_type)) {
+        //We only store a clause type once
+        //Logically, the content will be merged into the first occurrence.
+            if (!hasClause(clause_type)) {
+                clause_map[clause_type]=true;
+                clauses.push_back(clause_type);
+                // initialize an empty deque of specific clause.
+                complex_clauses[clause_type] = new std::deque<ComplexClause>;
+                ROSE_ASSERT(clause_type == clauses[clauses.size()-1]);
+            }
 
-        // initialize an empty clause in specific clause deque.
-        ComplexClause* new_clause = new ComplexClause();
-        complex_clauses[clause_type]->push_back(*new_clause);
-        // garbage collection.
-        delete new_clause;
-        return &complex_clauses[clause_type]->back();
+            // initialize an empty clause in specific clause deque.
+            ComplexClause* new_clause = new ComplexClause();
+            complex_clauses[clause_type]->push_back(*new_clause);
+            // garbage collection.
+            delete new_clause;
+            return &complex_clauses[clause_type]->back();
+        }
+        else {
+            cerr<<"OmpAttribute::addClause(): Unrecognized clause type:"<<OmpSupport::toString(clause_type)<<endl;
+        ROSE_ASSERT(false);
+        }
     }
-    else
-    {
-      cerr<<"OmpAttribute::addClause(): Unrecognized clause type:"<<OmpSupport::toString(clause_type)<<endl;
-      ROSE_ASSERT(false);
-    }
-  }
 
   //! Get a vector of clauses existing in the directive
   // We only maintain a map internally, so generated the vector on the fly   
@@ -678,40 +672,20 @@ namespace OmpSupport
       reduction_operators.push_back(operatorx);
   }
 
-  void OmpAttribute::setComplexClauseFirstParameter(ComplexClause* target_clause, omp_construct_enum parameter)
-  {
-    /*
-    assert(isReductionOperator(operatorx));
-    std::vector<omp_construct_enum>::iterator hit = 
-      find(reduction_operators.begin(),reduction_operators.end(), operatorx); 
-    if (hit == reduction_operators.end())   
-      reduction_operators.push_back(operatorx);
-    */
-
+  void OmpAttribute::setComplexClauseFirstParameter(ComplexClause* target_clause, omp_construct_enum parameter) {
     target_clause->first_parameter = parameter;
   }
 
-  void OmpAttribute::setComplexClauseSecondParameter(ComplexClause* target_clause, omp_construct_enum parameter)
-  {
-    /*
-    assert(isReductionOperator(operatorx));
-    std::vector<omp_construct_enum>::iterator hit = 
-      find(reduction_operators.begin(),reduction_operators.end(), operatorx); 
-    if (hit == reduction_operators.end())   
-      reduction_operators.push_back(operatorx);
-    */
-
+  void OmpAttribute::setComplexClauseSecondParameter(ComplexClause* target_clause, omp_construct_enum parameter) {
     target_clause->second_parameter = parameter;
   }
 
   omp_construct_enum OmpAttribute::getComplexClauseFirstParameter (ComplexClause* target_clause) {
-      //return complex_clause_modifier.at(complex_clause_index);
-      return target_clause->first_parameter;
+    return target_clause->first_parameter;
   }
 
   omp_construct_enum OmpAttribute::getComplexClauseSecondParameter (ComplexClause* target_clause) {
-      //return complex_clause_identifier.at(complex_clause_index);
-      return target_clause->second_parameter;
+    return target_clause->second_parameter;
   }
 
   // 

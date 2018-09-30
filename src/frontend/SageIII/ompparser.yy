@@ -714,12 +714,10 @@ reduction_identifier : '+' {
                     second_parameter = e_reduction_minus;
                       }
                    | MIN {
-                       ompattribute->setReductionOperator(e_reduction_min); 
-                       omptype = e_reduction_min;
+                    second_parameter = e_reduction_min;
                       }
                    | MAX {
-                       ompattribute->setReductionOperator(e_reduction_max); 
-                       omptype = e_reduction_max;
+                    second_parameter = e_reduction_max;
                       }
                    | '&' {
                     second_parameter = e_reduction_bitand;
@@ -878,15 +876,12 @@ end_clause: TARGET_END {
 
                     
 if_clause: IF {
-                current_clause = ompattribute->addComplexClause(e_if);
                 omptype = e_if;
-                //first_parameter = e_unknown;
-                //second_parameter = e_unknown;
-                //current_clause = NULL;
+                current_clause = ompattribute->addComplexClause(omptype);
                 is_complex_clause = true;
-             } '(' if_parameters ')' {
+            } '(' if_parameters ')' {
                 is_complex_clause = false;
-             }
+            }
              ;
 
 if_parameters: if_modifier ':' { ; }  expression {
@@ -903,12 +898,14 @@ if_modifier: PARALLEL {
             ;
 
 num_threads_clause: NUM_THREADS {
-                           ompattribute->addClause(e_num_threads);
-                           omptype = e_num_threads;
-                         } '(' expression ')' {
-                            addExpression("");
-                         }
-                      ;
+                omptype = e_num_threads;
+                current_clause = ompattribute->addComplexClause(omptype);
+                is_complex_clause = true;
+            } '(' expression ')' {
+                addComplexClauseExpression("");
+                is_complex_clause = false;
+            }
+            ;
 map_clause: MAP {
                           ompattribute->addClause(e_map);
                            omptype = e_map; // use as a flag to see if it will be reset later

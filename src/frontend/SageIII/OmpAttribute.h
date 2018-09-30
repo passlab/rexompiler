@@ -264,8 +264,9 @@ namespace OmpSupport
   class ComplexClause {
 
     public:
-      omp_construct_enum first_parameter;
-      omp_construct_enum second_parameter;
+      omp_construct_enum first_parameter = e_unknown;
+      omp_construct_enum second_parameter = e_unknown;
+      omp_construct_enum third_parameter = e_unknown;
       std::pair < std::string, SgExpression* > user_defined_parameter;
       std::pair < std::string, SgExpression* > expression;
       std::vector < std::pair < std::string, SgNode* > > variable_list;

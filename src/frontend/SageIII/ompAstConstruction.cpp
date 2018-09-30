@@ -1061,8 +1061,13 @@ namespace OmpSupport
                 //sg_modifier = toSgOmpClauseIfModifier(if_modifier); 
                 sg_modifier = SgOmpClause::e_omp_if_parallel; 
             }
-            clause_expression = checkOmpExpressionClause(current_clause->expression.second, global, e_if);
+            clause_expression = checkOmpExpressionClause(current_clause->expression.second, global, clause_type);
             result = new SgOmpIfClause(clause_expression, sg_modifier);
+            break;
+        }
+        case e_num_threads: {
+            clause_expression = checkOmpExpressionClause(current_clause->expression.second, global, clause_type);
+            result = new SgOmpNumThreadsClause(clause_expression);
             break;
         }
         default: {
@@ -1620,14 +1625,14 @@ namespace OmpSupport
       }
       // add complex clause with expression.
       // take IF clause as example.
-      else if (c_clause == e_if) {
-        std::deque<ComplexClause>* if_clauses = att->getComplexClauses(e_if);
-        ROSE_ASSERT(if_clauses->size()!=0);
+      else if (c_clause == e_if || c_clause == e_num_threads) {
+        std::deque<ComplexClause>* expr_clauses = att->getComplexClauses(c_clause);
+        ROSE_ASSERT(expr_clauses->size()!=0);
         std::deque<ComplexClause>::iterator iter;
-        for (iter = if_clauses->begin(); iter != if_clauses->end(); iter++) {
-            // process each IF clause individually.
+        for (iter = expr_clauses->begin(); iter != expr_clauses->end(); iter++) {
+            // process each clause individually.
             is_complex_clause = true;
-            SgOmpClause* sgclause = buildOmpExpressionComplexClause(att, &*iter, e_if);
+            SgOmpClause* sgclause = buildOmpExpressionComplexClause(att, &*iter, c_clause);
             is_complex_clause = false;
             target->get_clauses().push_back(sgclause);
             sgclause->set_parent(target);
@@ -1929,20 +1934,20 @@ namespace OmpSupport
       {
         // clauses allocated to omp parallel
         case e_if: {
-            std::deque<ComplexClause>* if_clauses = att->getComplexClauses(e_if);
-            ROSE_ASSERT(if_clauses->size()!=0);
+        case e_num_threads:
+            std::deque<ComplexClause>* expr_clauses = att->getComplexClauses(c_clause);
+            ROSE_ASSERT(expr_clauses->size()!=0);
             std::deque<ComplexClause>::iterator iter;
-            for (iter = if_clauses->begin(); iter != if_clauses->end(); iter++) {
-                // process each IF clause individually.
+            for (iter = expr_clauses->begin(); iter != expr_clauses->end(); iter++) {
+                // process each clause individually.
                 is_complex_clause = true;
-                SgOmpClause* sgclause = buildOmpExpressionComplexClause(att, &*iter, e_if);
+                SgOmpClause* sgclause = buildOmpExpressionComplexClause(att, &*iter, c_clause);
                 is_complex_clause = false;
                 first_stmt->get_clauses().push_back(sgclause);
                 sgclause->set_parent(first_stmt);
             };
             break;
         };
-        case e_num_threads:
         case e_default:
         case e_shared:
         case e_copyin:
