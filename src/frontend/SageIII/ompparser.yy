@@ -241,9 +241,13 @@ parallel_clause : if_clause
                 ;
 
 copyin_clause: COPYIN {
-                           ompattribute->addClause(e_copyin);
-                           omptype = e_copyin;
-                         } '(' {b_within_variable_list = true;} variable_list ')' {b_within_variable_list = false;}
+                        omptype = e_copyin;
+                        first_parameter = e_unknown;
+                        second_parameter = e_unknown;
+                        third_parameter = e_unknown;
+                        current_clause = setupComplexClause();
+                        is_complex_clause = true;
+                        } '(' {b_within_variable_list = true;} variable_list ')' {is_complex_clause = false; b_within_variable_list = false;}
                 ;
 
 

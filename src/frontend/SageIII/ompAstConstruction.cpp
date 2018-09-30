@@ -1102,6 +1102,10 @@ namespace OmpSupport
             result = new SgOmpAllocateClause(explist, sg_modifier, user_defined_parameter);
             break;
         }
+        case e_copyin: {
+            result = new SgOmpCopyinClause(explist);
+            break;
+        }
         case e_firstprivate: {
             result = new SgOmpFirstprivateClause(explist);
             break;
@@ -1286,11 +1290,6 @@ namespace OmpSupport
     ROSE_ASSERT(explist != NULL);
     switch (clause_type) 
     {
-      case e_copyin:
-        {
-          result = new SgOmpCopyinClause(explist);
-          break;
-        }
       case e_copyprivate:
         {
           result = new SgOmpCopyprivateClause(explist);
@@ -1400,10 +1399,6 @@ namespace OmpSupport
           result = buildOmpNotinbranchClause(att); 
           break;
         }
-      /*case e_if: {
-        result = buildOmpExpressionComplexClause(att, current_clause, c_clause_type);
-        break;
-      }*/
       case e_final:
       case e_priority:
       case e_collapse:
@@ -1416,7 +1411,6 @@ namespace OmpSupport
           result = buildOmpExpressionClause(att, c_clause_type);
           break;
         }
-      case e_copyin:  
       case e_copyprivate:  
       case e_lastprivate:
       case e_linear:
@@ -1629,7 +1623,8 @@ namespace OmpSupport
                 break;
             }
             // add complex clause with variable list.
-            case e_allocate: 
+            case e_allocate:
+            case e_copyin:
             case e_firstprivate:
             case e_private:
             case e_shared: {
@@ -1940,7 +1935,6 @@ namespace OmpSupport
             break;
         };
         case e_default:
-        case e_copyin:
           {
             SgOmpClause* sgclause = buildOmpNonReductionClause(att, c_clause);
             ROSE_ASSERT(sgclause != NULL);
@@ -1976,6 +1970,7 @@ namespace OmpSupport
             break;
           }
         case e_allocate:
+        case e_copyin:
         case e_firstprivate:
         case e_private:
         case e_shared: {
