@@ -645,8 +645,13 @@ default_clause : DEFAULT '(' SHARED ')' {
 
                    
 private_clause : PRIVATE {
-                              ompattribute->addClause(e_private); omptype = e_private;
-                            } '(' {b_within_variable_list = true;} variable_list ')' {b_within_variable_list = false;}
+                        omptype = e_private;
+                        first_parameter = e_unknown;
+                        second_parameter = e_unknown;
+                        third_parameter = e_unknown;
+                        current_clause = setupComplexClause();
+                        is_complex_clause = true;
+                        } '(' {b_within_variable_list = true;} variable_list ')' {is_complex_clause = false; b_within_variable_list = false;}
                           ;
 
 firstprivate_clause : FIRSTPRIVATE { 

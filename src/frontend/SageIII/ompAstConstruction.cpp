@@ -1106,6 +1106,10 @@ namespace OmpSupport
             result = new SgOmpFirstprivateClause(explist);
             break;
         }
+        case e_private: {
+            result = new SgOmpPrivateClause(explist);
+            break;
+        }
         default: {
             printf("error in buildOmpVariableComplexClause(): unacceptable clause type:%s\n",
             OmpSupport::toString(clause_type).c_str());
@@ -1293,11 +1297,6 @@ namespace OmpSupport
           result = new SgOmpLastprivateClause(explist);
           break;
         }
-      case e_private:
-        {
-          result = new SgOmpPrivateClause(explist);
-          break;
-        }
       case e_shared:
         {
           result = new SgOmpSharedClause(explist);
@@ -1421,7 +1420,6 @@ namespace OmpSupport
       case e_copyin:  
       case e_copyprivate:  
       case e_lastprivate:
-      case e_private:
       case e_shared:
       case e_linear:
       case e_aligned:
@@ -1634,7 +1632,8 @@ namespace OmpSupport
             }
             // add complex clause with variable list.
             case e_allocate: 
-            case e_firstprivate: {
+            case e_firstprivate:
+            case e_private: {
                 std::deque<ComplexClause>* var_clauses = att->getComplexClauses(c_clause);
                 ROSE_ASSERT(var_clauses->size()!=0);
                 std::deque<ComplexClause>::iterator iter;
@@ -1968,7 +1967,6 @@ namespace OmpSupport
               ROSE_ASSERT(false);
             }
           }
-        case e_private:
         case e_lastprivate:
           // case e_nowait: // nowait should not appear with combined directives
           {
@@ -1980,7 +1978,8 @@ namespace OmpSupport
             break;
           }
         case e_allocate:
-        case e_firstprivate: {
+        case e_firstprivate:
+        case e_private: {
             std::deque<ComplexClause>* var_clauses = att->getComplexClauses(c_clause);
             ROSE_ASSERT(var_clauses->size()!=0);
             std::deque<ComplexClause>::iterator iter;
