@@ -1102,6 +1102,10 @@ namespace OmpSupport
             result = new SgOmpAllocateClause(explist, sg_modifier, user_defined_parameter);
             break;
         }
+        case e_firstprivate: {
+            result = new SgOmpFirstprivateClause(explist);
+            break;
+        }
         default: {
             printf("error in buildOmpVariableComplexClause(): unacceptable clause type:%s\n",
             OmpSupport::toString(clause_type).c_str());
@@ -1284,11 +1288,6 @@ namespace OmpSupport
           result = new SgOmpCopyprivateClause(explist);
           break;
         }
-      case e_firstprivate:
-        {
-          result = new SgOmpFirstprivateClause(explist);
-          break;
-        }
       case e_lastprivate:
         {
           result = new SgOmpLastprivateClause(explist);
@@ -1421,7 +1420,6 @@ namespace OmpSupport
         }
       case e_copyin:  
       case e_copyprivate:  
-      case e_firstprivate:  
       case e_lastprivate:
       case e_private:
       case e_shared:
@@ -1635,15 +1633,15 @@ namespace OmpSupport
                 break;
             }
             // add complex clause with variable list.
-            // take ALLOCATE clause as example.
-            case e_allocate: {
-                std::deque<ComplexClause>* allocate_clauses = att->getComplexClauses(e_allocate);
-                ROSE_ASSERT(allocate_clauses->size()!=0);
+            case e_allocate: 
+            case e_firstprivate: {
+                std::deque<ComplexClause>* var_clauses = att->getComplexClauses(c_clause);
+                ROSE_ASSERT(var_clauses->size()!=0);
                 std::deque<ComplexClause>::iterator iter;
-                for (iter = allocate_clauses->begin(); iter != allocate_clauses->end(); iter++) {
-                    // process each IF clause individually.
+                for (iter = var_clauses->begin(); iter != var_clauses->end(); iter++) {
+                    // process each clause individually.
                     is_complex_clause = true;
-                    SgOmpClause* sgclause = buildOmpVariableComplexClause(att, &*iter, e_allocate);
+                    SgOmpClause* sgclause = buildOmpVariableComplexClause(att, &*iter, c_clause);
                     is_complex_clause = false;
                     target->get_clauses().push_back(sgclause);
                     sgclause->set_parent(target);
@@ -1971,7 +1969,6 @@ namespace OmpSupport
             }
           }
         case e_private:
-        case e_firstprivate:
         case e_lastprivate:
           // case e_nowait: // nowait should not appear with combined directives
           {
@@ -1982,6 +1979,22 @@ namespace OmpSupport
             sgclause->set_parent(second_stmt);
             break;
           }
+        case e_allocate:
+        case e_firstprivate: {
+            std::deque<ComplexClause>* var_clauses = att->getComplexClauses(c_clause);
+            ROSE_ASSERT(var_clauses->size()!=0);
+            std::deque<ComplexClause>::iterator iter;
+            for (iter = var_clauses->begin(); iter != var_clauses->end(); iter++) {
+                // process each clause individually.
+                is_complex_clause = true;
+                SgOmpClause* sgclause = buildOmpVariableComplexClause(att, &*iter, c_clause);
+                is_complex_clause = false;
+                ROSE_ASSERT(sgclause != NULL);
+                isSgOmpClauseBodyStatement(second_stmt)->get_clauses().push_back(sgclause);
+                sgclause->set_parent(second_stmt);
+            };
+            break;
+        };
 
         // There could be some unknown issues since the code is simply copied from PARALLEL. 
         case e_reduction: //special handling for reduction

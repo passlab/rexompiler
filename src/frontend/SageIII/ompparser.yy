@@ -74,6 +74,7 @@ static omp_construct_enum omptype = e_unknown;
 // Store parameters temporarily in case of normalization.
 static omp_construct_enum first_parameter;
 static omp_construct_enum second_parameter;
+static omp_construct_enum third_parameter;
 // use existing clause for normalization or create a new one.
 static ComplexClause* setupComplexClause ();
 // the clause where variables will be added.
@@ -649,9 +650,13 @@ private_clause : PRIVATE {
                           ;
 
 firstprivate_clause : FIRSTPRIVATE { 
-                                 ompattribute->addClause(e_firstprivate); 
-                                 omptype = e_firstprivate;
-                               } '(' {b_within_variable_list = true;} variable_list ')' {b_within_variable_list = false;}
+                        omptype = e_firstprivate;
+                        first_parameter = e_unknown;
+                        second_parameter = e_unknown;
+                        third_parameter = e_unknown;
+                        current_clause = setupComplexClause();
+                        is_complex_clause = true;
+                        } '(' {b_within_variable_list = true;} variable_list ')' {is_complex_clause = false; b_within_variable_list = false;}
                              ;
 
 lastprivate_clause : LASTPRIVATE { 
@@ -669,6 +674,7 @@ reduction_clause : REDUCTION {
                         omptype = e_reduction;
                         first_parameter = e_unknown;
                         second_parameter = e_unknown;
+                        third_parameter = e_unknown;
                         current_clause = NULL;
                         is_complex_clause = true;
                         } '(' reduction_parameters {is_complex_clause = false;} ')'
@@ -743,6 +749,7 @@ allocate_clause : ALLOCATE {
                         omptype = e_allocate;
                         first_parameter = e_unknown;
                         second_parameter = e_unknown;
+                        third_parameter = e_unknown;
                         current_clause = setupComplexClause();
                         is_complex_clause = true;
                         } '(' {b_within_variable_list = true;} allocate_parameters {is_complex_clause = false;} ')'
@@ -1570,7 +1577,7 @@ static ComplexClause* setupComplexClause() {
     if (inspecting_complex_clauses != NULL) {
         std::deque<ComplexClause>::iterator iter;
         for (iter = inspecting_complex_clauses->begin(); iter != inspecting_complex_clauses->end(); iter++) {
-            if ((iter->first_parameter == first_parameter) && (iter->second_parameter == second_parameter)) {
+            if ((iter->first_parameter == first_parameter) && (iter->second_parameter == second_parameter) && (iter->third_parameter == third_parameter)) {
                 return &*iter;
             }
         }
@@ -1579,6 +1586,7 @@ static ComplexClause* setupComplexClause() {
     ComplexClause* new_clause = ompattribute->addComplexClause(omptype);
     new_clause->first_parameter = first_parameter;
     new_clause->second_parameter = second_parameter;
+    new_clause->third_parameter = third_parameter;
     return new_clause;
 }
 
@@ -1590,10 +1598,10 @@ static ComplexClause* normalizeComplexClause() {
     if (inspecting_complex_clauses != NULL) {
         std::deque<ComplexClause>::iterator iter;
         for (iter = inspecting_complex_clauses->begin(); iter != inspecting_complex_clauses->end(); iter++) {
-            if ((iter->first_parameter == first_parameter) && (iter->second_parameter == second_parameter)) {
+            if ((iter->first_parameter == first_parameter) && (iter->second_parameter == second_parameter) && (iter->third_parameter == third_parameter)) {
                 normalized_clause = &*iter;
             }
-            else if (iter->first_parameter == current_clause->first_parameter && iter->second_parameter == current_clause->second_parameter) {
+            else if (iter->first_parameter == current_clause->first_parameter && iter->second_parameter == current_clause->second_parameter && iter->third_parameter == current_clause->third_parameter) {
                 unnormalized_clause = iter;
             }
         }
@@ -1609,6 +1617,7 @@ static ComplexClause* normalizeComplexClause() {
             normalized_clause = &*unnormalized_clause;
             normalized_clause->first_parameter = first_parameter;
             normalized_clause->second_parameter = second_parameter;
+            normalized_clause->third_parameter = third_parameter;
         }
         else {
             normalized_clause = setupComplexClause();
