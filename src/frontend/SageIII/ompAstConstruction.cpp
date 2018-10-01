@@ -234,13 +234,13 @@ namespace OmpSupport
   //----------------------------------------------------------
 
   //! Build SgOmpDefaultClause from OmpAttribute, if any
-  SgOmpDefaultClause * buildOmpDefaultClause(OmpAttribute* att)
+  SgOmpDefaultClause * buildOmpDefaultClause(OmpAttribute* att, ComplexClause* current_clause)
   {
     ROSE_ASSERT(att != NULL);
     if (!att->hasClause(e_default))
       return NULL;
     //grab default option  
-    omp_construct_enum dv = att->getDefaultValue();
+    omp_construct_enum dv = current_clause->first_parameter;
     SgOmpClause::omp_default_option_enum sg_dv;
     switch (dv)
     {
@@ -1347,11 +1347,6 @@ namespace OmpSupport
       return NULL;
     switch (c_clause_type) 
     {
-      case e_default:
-        {
-          result = buildOmpDefaultClause(att); 
-          break;
-        }
        case e_atomic_clause:
         {
           result = buildOmpAtomicClause(att); 
@@ -1631,6 +1626,19 @@ namespace OmpSupport
                     is_complex_clause = true;
                     SgOmpClause* sgclause = buildOmpVariableComplexClause(att, &*iter, c_clause);
                     is_complex_clause = false;
+                    target->get_clauses().push_back(sgclause);
+                    sgclause->set_parent(target);
+                };
+                break;
+            }
+            case e_default: {
+                std::deque<ComplexClause>* attr_clauses = att->getComplexClauses(c_clause);
+                ROSE_ASSERT(attr_clauses->size()!=0);
+                std::deque<ComplexClause>::iterator iter;
+                for (iter = attr_clauses->begin(); iter != attr_clauses->end(); iter++) {
+                    // process each clause individually.
+                    SgOmpClause* sgclause = buildOmpDefaultClause(att, &*iter);
+                    ROSE_ASSERT(sgclause != NULL);
                     target->get_clauses().push_back(sgclause);
                     sgclause->set_parent(target);
                 };
@@ -1943,12 +1951,17 @@ namespace OmpSupport
             };
             break;
         };
-        case e_default:
-          {
-            SgOmpClause* sgclause = buildOmpNonReductionClause(att, c_clause);
-            ROSE_ASSERT(sgclause != NULL);
-            first_stmt->get_clauses().push_back(sgclause);
-            sgclause->set_parent(first_stmt);
+        case e_default: {
+            std::deque<ComplexClause>* var_clauses = att->getComplexClauses(c_clause);
+            ROSE_ASSERT(var_clauses->size()!=0);
+            std::deque<ComplexClause>::iterator iter;
+            for (iter = var_clauses->begin(); iter != var_clauses->end(); iter++) {
+                // process each clause individually.
+                SgOmpClause* sgclause = buildOmpDefaultClause(att, &*iter);
+                ROSE_ASSERT(sgclause != NULL);
+                first_stmt->get_clauses().push_back(sgclause);
+                sgclause->set_parent(first_stmt);
+            };
             break;
           }
           // unique clauses allocated to omp for  or omp for simd

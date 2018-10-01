@@ -641,12 +641,14 @@ threadprivate_directive : /* #pragma */ OMP THREADPRIVATE {
                         ;
 
 default_clause : DEFAULT '(' SHARED ')' { 
-                        ompattribute->addClause(e_default);
-                        ompattribute->setDefaultValue(e_default_shared); 
+                        omptype = e_default;
+                        current_clause = ompattribute->addComplexClause(omptype);
+                        current_clause->first_parameter = e_default_shared;
                       }
                     | DEFAULT '(' NONE ')' {
-                        ompattribute->addClause(e_default);
-                        ompattribute->setDefaultValue(e_default_none);
+                        omptype = e_default;
+                        current_clause = ompattribute->addComplexClause(omptype);
+                        current_clause->first_parameter = e_default_none;
                       }
                     ;
 
