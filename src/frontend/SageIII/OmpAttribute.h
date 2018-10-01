@@ -111,7 +111,7 @@ namespace OmpSupport
     e_atomic_clause, 
     e_inbranch,
     e_notinbranch,
-	
+
     e_depend, // OpenMP 4.0 task clauses
 
     // Simple values for some clauses

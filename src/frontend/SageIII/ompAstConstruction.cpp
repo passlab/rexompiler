@@ -2005,8 +2005,14 @@ namespace OmpSupport
                 SgOmpClause* sgclause = buildOmpVariableComplexClause(att, &*iter, c_clause);
                 is_complex_clause = false;
                 ROSE_ASSERT(sgclause != NULL);
-                isSgOmpClauseBodyStatement(second_stmt)->get_clauses().push_back(sgclause);
-                sgclause->set_parent(second_stmt);
+                if (c_clause == e_shared || c_clause == e_copyin) {
+                    isSgOmpClauseBodyStatement(first_stmt)->get_clauses().push_back(sgclause);
+                    sgclause->set_parent(first_stmt);
+                }
+                else {
+                    isSgOmpClauseBodyStatement(second_stmt)->get_clauses().push_back(sgclause);
+                    sgclause->set_parent(second_stmt);
+                };
             };
             break;
         };
