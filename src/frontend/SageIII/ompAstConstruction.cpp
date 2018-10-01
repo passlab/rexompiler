@@ -270,14 +270,14 @@ namespace OmpSupport
   }
     
    //! Build SgOmpProcBindClause from OmpAttribute, if any
-  SgOmpProcBindClause * buildOmpProcBindClause(OmpAttribute* att)
+  SgOmpProcBindClause * buildOmpProcBindClause(OmpAttribute* att, ComplexClause* current_clause)
   {
     ROSE_ASSERT(att != NULL);
     if (!att->hasClause(e_proc_bind))
       return NULL;
 
     //grab policy
-    omp_construct_enum dv = att->getProcBindPolicy();
+    omp_construct_enum dv = current_clause->first_parameter;
     SgOmpClause::omp_proc_bind_policy_enum sg_dv;
     switch (dv)
     {
@@ -1352,11 +1352,6 @@ namespace OmpSupport
           result = buildOmpDefaultClause(att); 
           break;
         }
-      case e_proc_bind:
-        {
-          result = buildOmpProcBindClause(att); 
-          break;
-        }
        case e_atomic_clause:
         {
           result = buildOmpAtomicClause(att); 
@@ -1661,6 +1656,20 @@ namespace OmpSupport
                 for (iter=rops.begin(); iter!=rops.end();iter++) {
                     omp_construct_enum rop = *iter;
                     SgOmpClause* sgclause = buildOmpMapClause(att, rop);
+                    target->get_clauses().push_back(sgclause);
+                    sgclause->set_parent(target);
+                };
+                break;
+            }
+            case e_proc_bind: {
+                std::deque<ComplexClause>* attr_clauses = att->getComplexClauses(c_clause);
+                ROSE_ASSERT(attr_clauses->size()!=0);
+                std::deque<ComplexClause>::iterator iter;
+                for (iter = attr_clauses->begin(); iter != attr_clauses->end(); iter++) {
+                    // process each clause individually.
+                    is_complex_clause = true;
+                    SgOmpClause* sgclause = buildOmpProcBindClause(att, &*iter);
+                    is_complex_clause = false;
                     target->get_clauses().push_back(sgclause);
                     sgclause->set_parent(target);
                 };

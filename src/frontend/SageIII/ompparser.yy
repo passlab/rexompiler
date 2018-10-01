@@ -214,16 +214,19 @@ parallel_clause_seq : parallel_clause
                     ;
 
 proc_bind_clause : PROC_BIND '(' MASTER ')' { 
-                        ompattribute->addClause(e_proc_bind);
-                        ompattribute->setProcBindPolicy (e_proc_bind_master); 
-                      }
+                        omptype = e_proc_bind;
+                        current_clause = ompattribute->addComplexClause(omptype);
+                        current_clause->first_parameter = e_proc_bind_master;
+                    }
                     | PROC_BIND '(' CLOSE ')' {
-                        ompattribute->addClause(e_proc_bind);
-                        ompattribute->setProcBindPolicy (e_proc_bind_close); 
+                        omptype = e_proc_bind;
+                        current_clause = ompattribute->addComplexClause(omptype);
+                        current_clause->first_parameter = e_proc_bind_close;
                       }
                     | PROC_BIND '(' SPREAD ')' {
-                        ompattribute->addClause(e_proc_bind);
-                        ompattribute->setProcBindPolicy (e_proc_bind_spread); 
+                        omptype = e_proc_bind;
+                        current_clause = ompattribute->addComplexClause(omptype);
+                        current_clause->first_parameter = e_proc_bind_spread;
                       }
                     ;
 
