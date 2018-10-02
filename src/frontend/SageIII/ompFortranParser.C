@@ -577,7 +577,7 @@ static bool ofs_match_clause_varlist(omp_construct_enum clausetype)
     assert (ompattribute != NULL);
     omptype = clausetype;
     if (is_complex_clause) {
-       current_clause = setupComplexClause();
+        current_clause = setupComplexClause();
     }
     else {
         ompattribute->addClause(clausetype);
@@ -640,9 +640,11 @@ static bool ofs_match_clause_expression (omp_construct_enum clausetype)
   // verify and convert clause type to clause name string
   switch (clausetype)
   {
-    case e_collapse:
     case e_if:
-    case e_num_threads:
+    case e_num_threads: {
+        is_complex_clause = true;
+    }
+    case e_collapse:
       {
         strcpy (clause_name, OmpSupport::toString(clausetype).c_str());
         break;
@@ -657,15 +659,33 @@ static bool ofs_match_clause_expression (omp_construct_enum clausetype)
   if (ofs_match_substr(clause_name,false)) // We don't check for trail here, they are handled later on
   {
     assert (ompattribute != NULL);
-    ompattribute->addClause(clausetype);
     omptype = clausetype;
+    if (is_complex_clause) {
+        current_clause = ompattribute->addComplexClause(omptype);
+    }
+    else {
+        ompattribute->addClause(omptype);
+    };
     ofs_skip_whitespace();
     if (ofs_match_char('('))
     {
+        // check possible parameters.
+        ofs_skip_whitespace();
+        if (is_complex_clause && ofs_match_substr("parallel", false)) {
+            current_clause->first_parameter = e_parallel;
+            ofs_match_char(':');
+            ofs_skip_whitespace();
+        };
+      // continue to the expression.
       if(ofs_match_expression())
       {
         assert(current_exp != NULL);
-        ompattribute->addExpression(omptype,"", current_exp);
+        if (is_complex_clause) {
+            ompattribute->addComplexClauseExpression(omptype, "", current_exp);
+        }
+        else {
+            ompattribute->addExpression(omptype, "", current_exp);
+        };
       }
       else
       {
@@ -686,11 +706,13 @@ static bool ofs_match_clause_expression (omp_construct_enum clausetype)
       assert(false);
     }
 
+    is_complex_clause = false;
     return true;
   }
   else
     c_char= old_char;
 
+  is_complex_clause = false;
   return false;
 }
 
@@ -1592,5 +1614,11 @@ static ComplexClause* normalizeComplexClause() {
         };
     };
     return normalized_clause;
+}
+
+static bool addComplexClauseExpression(const char* expr) {
+    assert (current_exp != NULL);
+    ompattribute->addComplexClauseExpression(omptype, std::string(expr),current_exp);
+    return true;
 }
 
