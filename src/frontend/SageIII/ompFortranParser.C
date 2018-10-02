@@ -31,6 +31,9 @@ static OmpSupport::OmpAttribute* ompattribute = NULL; // the current attribute (
 static omp_construct_enum omptype= e_unknown; // the current clause (or reduction operation type) being filled out
 static SgExpression * current_exp = NULL; // the current expression AST tree being built
 
+// Customized variables for PASS lab updates.
+static ComplexClause* current_clause;
+
 //--------------omp fortran scanner (ofs) functions------------------
 //
 // note: ofs_skip_xxx() optional skip 0 or more patterns
@@ -718,7 +721,7 @@ static bool ofs_match_clause_default()
   const char* old_char = c_char;
   if  (ofs_match_substr("default",false))// no space is required after the match
   {
-    ompattribute->addClause(e_default);
+    current_clause = ompattribute->addComplexClause(e_default);
     if (!ofs_match_char('('))
     {
       printf("error in default(xx) match: no starting '(' is found for %s.\n",old_char);
@@ -726,13 +729,13 @@ static bool ofs_match_clause_default()
     }
     // match values
     if (ofs_match_substr("private",false))
-      ompattribute->setDefaultValue(e_default_private);
+        current_clause->first_parameter = e_default_private;
     else if (ofs_match_substr("firstprivate",false))
-      ompattribute->setDefaultValue(e_default_firstprivate);
+        current_clause->first_parameter = e_default_firstprivate;
     else if (ofs_match_substr("shared",false))
-      ompattribute->setDefaultValue(e_default_shared);
+        current_clause->first_parameter = e_default_shared;
     else if  (ofs_match_substr("none",false))
-      ompattribute->setDefaultValue(e_default_none);
+        current_clause->first_parameter = e_default_none;
     else
     {
       printf("error in matching default(value):no legal value is found for %s\n", old_char);
