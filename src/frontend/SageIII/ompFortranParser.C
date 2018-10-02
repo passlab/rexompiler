@@ -32,7 +32,17 @@ static omp_construct_enum omptype= e_unknown; // the current clause (or reductio
 static SgExpression * current_exp = NULL; // the current expression AST tree being built
 
 // Customized variables for PASS lab updates.
+// the clause where variables will be added.
 static ComplexClause* current_clause;
+static bool is_complex_clause = false;
+// Store parameters temporarily in case of normalization.
+static omp_construct_enum first_parameter;
+static omp_construct_enum second_parameter;
+static omp_construct_enum third_parameter;
+// use existing clause for normalization or create a new one.
+static ComplexClause* setupComplexClause ();
+// normalize the complex clause after initial setup.
+static ComplexClause* normalizeComplexClause();
 
 //--------------omp fortran scanner (ofs) functions------------------
 //
@@ -465,8 +475,12 @@ static void ofs_add_block_variables (char* block_name)
     SgVariableSymbol * symbol = isSgVariableSymbol(var_exp->get_symbol());
     assert (symbol!=NULL);
 //    cout<<"adding variable:"<< symbol->get_name().getString() <<" to "<<OmpSupport::toString(omptype)<<endl;
-    ompattribute->addVariable(omptype,symbol->get_name(), 
-                symbol->get_declaration());
+        if (is_complex_clause) {
+            ompattribute->addComplexClauseVariable(current_clause, symbol->get_name(), symbol->get_declaration());
+        }
+        else {
+            ompattribute->addVariable(omptype, symbol->get_name(), symbol->get_declaration());
+        };
     exp_iter++;
   }
 
@@ -493,10 +507,17 @@ static bool ofs_match_varlist()
 
     if (ofs_match_anyname(buffer)||(isCommonblock=ofs_match_common_block(buffer)))
     {
-      if (isCommonblock)
-        ofs_add_block_variables(buffer);
-      else
-        ompattribute->addVariable(omptype, buffer);
+        if (isCommonblock) {
+            ofs_add_block_variables(buffer);
+        }
+        else {
+            if (is_complex_clause) {
+                ompattribute->addComplexClauseVariable(current_clause, buffer);
+            }
+            else {
+                ompattribute->addVariable(omptype, buffer);
+            }
+        };
       // look for the next variable/or common block
       if (ofs_match_char(','))
         continue;
@@ -533,11 +554,13 @@ static bool ofs_match_clause_varlist(omp_construct_enum clausetype)
   switch (clausetype)
   {
     case e_copyin:
-    case e_copyprivate:
     case e_firstprivate:
-    case e_lastprivate:
     case e_private:
-    case e_shared:
+    case e_shared: {
+        is_complex_clause = true;
+    }
+    case e_copyprivate:
+    case e_lastprivate:
       {
         strcpy (clause_name, OmpSupport::toString(clausetype).c_str());
         break;
@@ -551,9 +574,14 @@ static bool ofs_match_clause_varlist(omp_construct_enum clausetype)
 
   if (ofs_match_substr(clause_name,false)) // We don't check for trail here, they are handled later on
   {
-    assert (ompattribute != NULL); 
-    ompattribute->addClause(clausetype);
+    assert (ompattribute != NULL);
     omptype = clausetype;
+    if (is_complex_clause) {
+       current_clause = setupComplexClause();
+    }
+    else {
+        ompattribute->addClause(clausetype);
+    };
     ofs_skip_whitespace();
     if (ofs_match_char('('))
     {
@@ -564,11 +592,13 @@ static bool ofs_match_clause_varlist(omp_construct_enum clausetype)
       printf("error in clause(varlist) match: no starting '(' is found for %s.\n",old_char);
       assert(false);
     }
+    is_complex_clause = false;
     return true;
   }
   else
     c_char= old_char;
 
+  is_complex_clause = false;
   return false;
 }
 
@@ -1505,3 +1535,62 @@ void parse_fortran_openmp(SgSourceFile *sageFilePtr)
     }
   } //end for located nodes
 }
+
+// Customized PASS lab functions.
+
+
+static ComplexClause* setupComplexClause() {
+    std::deque<ComplexClause>* inspecting_complex_clauses = ompattribute->getComplexClauses(omptype);
+    // iterate existing clauses with specific type and compare parameters.
+    if (inspecting_complex_clauses != NULL) {
+        std::deque<ComplexClause>::iterator iter;
+        for (iter = inspecting_complex_clauses->begin(); iter != inspecting_complex_clauses->end(); iter++) {
+            if ((iter->first_parameter == first_parameter) && (iter->second_parameter == second_parameter) && (iter->third_parameter == third_parameter)) {
+                return &*iter;
+            }
+        }
+    };
+    // no existing clause matched. Create a new one and set two parameters.
+    ComplexClause* new_clause = ompattribute->addComplexClause(omptype);
+    new_clause->first_parameter = first_parameter;
+    new_clause->second_parameter = second_parameter;
+    new_clause->third_parameter = third_parameter;
+    return new_clause;
+}
+
+static ComplexClause* normalizeComplexClause() {
+    std::deque<ComplexClause>* inspecting_complex_clauses = ompattribute->getComplexClauses(omptype);
+    std::deque<ComplexClause>::iterator unnormalized_clause;
+    ComplexClause* normalized_clause = NULL;
+    // iterate existing clauses with specific type and find proper position to insert expression or variables.
+    if (inspecting_complex_clauses != NULL) {
+        std::deque<ComplexClause>::iterator iter;
+        for (iter = inspecting_complex_clauses->begin(); iter != inspecting_complex_clauses->end(); iter++) {
+            if ((iter->first_parameter == first_parameter) && (iter->second_parameter == second_parameter) && (iter->third_parameter == third_parameter)) {
+                normalized_clause = &*iter;
+            }
+            else if (iter->first_parameter == current_clause->first_parameter && iter->second_parameter == current_clause->second_parameter && iter->third_parameter == current_clause->third_parameter) {
+                unnormalized_clause = iter;
+            }
+        }
+    };
+    // make necessary modifications to candidate position.
+    if (normalized_clause != NULL) {
+        if (unnormalized_clause->expression.first == "" && unnormalized_clause->variable_list.size() == 0) {
+            inspecting_complex_clauses->erase(unnormalized_clause);
+        };
+    }
+    else {
+        if (unnormalized_clause->expression.first == "" && unnormalized_clause->variable_list.size() == 0) {
+            normalized_clause = &*unnormalized_clause;
+            normalized_clause->first_parameter = first_parameter;
+            normalized_clause->second_parameter = second_parameter;
+            normalized_clause->third_parameter = third_parameter;
+        }
+        else {
+            normalized_clause = setupComplexClause();
+        };
+    };
+    return normalized_clause;
+}
+
