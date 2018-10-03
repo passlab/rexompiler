@@ -43,6 +43,8 @@ static omp_construct_enum third_parameter;
 static ComplexClause* setupComplexClause ();
 // normalize the complex clause after initial setup.
 static ComplexClause* normalizeComplexClause();
+// add user defined parameter as expression string.
+static bool addUserDefinedParameter(const char* expr);
 
 //--------------omp fortran scanner (ofs) functions------------------
 //
@@ -808,89 +810,93 @@ static bool ofs_match_clause_default()
 
 //! Match a Fortran reduction clause
 // reduction({operator|intrinsic_procedure_name}:varlist)
-static bool ofs_match_clause_reduction()
-{
-  const char* old_char = c_char;
-  if (ofs_match_substr("reduction",false)) // no space etc. is needed after it
-  {
-    assert (ompattribute != NULL);
-    ompattribute->addClause(e_reduction);
-    omptype = e_unknown; // we need the reduction operator type to associate varlist, not just reduction
-    if (!ofs_match_char('('))
-    {
-      printf("error in clause(varlist) match: no starting '(' is found for %s.\n",old_char);  
-      assert(false); 
-    }
-    // match operator/intrinsics
-    // match single character operator first
-    // 3 of them in total
-    if (ofs_match_char('+'))
-    {
-      ompattribute->setReductionOperator(e_reduction_plus);
-      omptype = e_reduction_plus; /*variables are stored for each kind of operators*/
-    } 
-    else if (ofs_match_char('*'))
-    {
-      ompattribute->setReductionOperator(e_reduction_mul);
-      omptype = e_reduction_mul;
-    } 
-    else if (ofs_match_char('-'))
-    {
-      ompattribute->setReductionOperator(e_reduction_minus);
-      omptype = e_reduction_minus; 
-    } 
-    // match multi-char operator/intrinsics 
-    // 9 of them in total
-    // we tend to not share the enumerate types between C/C++ and Fortran operators
-    else if (ofs_match_substr(".and.",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_and);
-      omptype = e_reduction_and; 
-    } 
-    else if (ofs_match_substr(".or.",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_or);
-      omptype = e_reduction_or; 
-    } 
-    else if (ofs_match_substr(".eqv.",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_eqv);
-      omptype = e_reduction_eqv; 
-    } 
-    else if (ofs_match_substr(".neqv.",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_neqv);
-      omptype = e_reduction_neqv; 
-    } 
-    else if (ofs_match_substr("max",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_max);
-      omptype = e_reduction_max; 
-    } 
-    else if (ofs_match_substr("min",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_min);
-      omptype = e_reduction_min; 
-    } 
-    else if (ofs_match_substr("iand",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_iand);
-      omptype = e_reduction_iand; 
-    } 
-    else if (ofs_match_substr("ior",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_ior);
-      omptype = e_reduction_ior; 
-    }
-    else  if (ofs_match_substr("ieor",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_ieor);
-      omptype = e_reduction_ieor; 
-    } else
-    {
-      printf("error: cannot find a legal reduction operator for %s\n",old_char);
-      assert(false);
-    }
+static bool ofs_match_clause_reduction() {
+    const char* old_char = c_char;
+    if (ofs_match_substr("reduction",false)) { // no space etc. is needed after it
+        assert (ompattribute != NULL);
+        omptype = e_reduction;
+        first_parameter = e_unknown;
+        second_parameter = e_unknown;
+        third_parameter = e_unknown;
+        current_clause = NULL;
+        is_complex_clause = true;
+        if (!ofs_match_char('(')) {
+            printf("error in clause(varlist) match: no starting '(' is found for %s.\n",old_char);
+            assert(false);
+        };
+
+        // match modifiers.
+        if (ofs_match_substr("inscan", false)) {
+            first_parameter = e_reduction_inscan;
+            ofs_match_char(',');
+        }
+        else if (ofs_match_substr("task", false)) {
+            first_parameter = e_reduction_task;
+            ofs_match_char(',');
+        }
+        else if (ofs_match_substr("default", false)) {
+            first_parameter = e_reduction_default;
+            ofs_match_char(',');
+        };
+        ofs_skip_whitespace();
+        // match modifiers end.
+
+        // match operator/intrinsics
+        // match single character operator first
+        // 3 of them in total
+        if (ofs_match_char('+')) {
+            second_parameter = e_reduction_plus;
+        }
+        else if (ofs_match_char('*')) {
+            second_parameter = e_reduction_mul;
+        }
+        else if (ofs_match_char('-')) {
+            second_parameter = e_reduction_minus;
+        }
+        // match multi-char operator/intrinsics
+        // 9 of them in total
+        // we tend to not share the enumerate types between C/C++ and Fortran operators
+        else if (ofs_match_substr(".and.",false)) {
+            second_parameter = e_reduction_and;
+        }
+        else if (ofs_match_substr(".or.",false)) {
+            second_parameter = e_reduction_or;
+        }
+        else if (ofs_match_substr(".eqv.",false)) {
+            second_parameter = e_reduction_eqv;
+        }
+        else if (ofs_match_substr(".neqv.",false)) {
+            second_parameter = e_reduction_neqv;
+        }
+        else if (ofs_match_substr("max",false)) {
+            second_parameter = e_reduction_max;
+        }
+        else if (ofs_match_substr("min",false)) {
+            second_parameter = e_reduction_min;
+        }
+        else if (ofs_match_substr("iand",false)) {
+            second_parameter = e_reduction_iand;
+        }
+        else if (ofs_match_substr("ior",false)) {
+            second_parameter = e_reduction_ior;
+        }
+        else if (ofs_match_substr("ieor",false)) {
+            second_parameter = e_reduction_ieor;
+        }
+        // check if there's user defined parameter
+        else if (ofs_match_expression()) {
+            second_parameter = e_user_defined_parameter;
+        }
+        else {
+            printf("error: cannot find a legal reduction identifier for %s\n",old_char);
+            assert(false);
+        }
+
+        // Create clause with collected modifier and identifier.
+        current_clause = setupComplexClause();
+        if (second_parameter == e_user_defined_parameter) {
+            addUserDefinedParameter("");
+        };
 
     // match ':' in between
     if (!ofs_match_char(':'))
@@ -907,12 +913,14 @@ static bool ofs_match_clause_reduction()
     else
     {
       omptype = e_unknown; // restore it to unknown
+      is_complex_clause = false;
       return true; // all pass! return here!
     }
 
   } // end if (reduction)
 
   c_char = old_char;
+  is_complex_clause = false;
   return false;
 }
 
@@ -1619,6 +1627,12 @@ static ComplexClause* normalizeComplexClause() {
 static bool addComplexClauseExpression(const char* expr) {
     assert (current_exp != NULL);
     ompattribute->addComplexClauseExpression(omptype, std::string(expr),current_exp);
+    return true;
+}
+
+static bool addUserDefinedParameter(const char* expr) {
+    assert (current_exp != NULL);
+    ompattribute->addUserDefinedParameter(omptype, std::string(expr), current_exp);
     return true;
 }
 
