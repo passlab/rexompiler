@@ -808,6 +808,89 @@ static bool ofs_match_clause_default()
   return false;
 }
 
+//! Match a Fortran allocate clause
+// allocate({identifier|intrinsic_procedure_name}:varlist)
+static bool ofs_match_clause_allocate() {
+    const char* old_char = c_char;
+    if (ofs_match_substr("allocate",false)) { // no space etc. is needed after it
+        assert (ompattribute != NULL);
+        omptype = e_allocate;
+        first_parameter = e_unknown;
+        second_parameter = e_unknown;
+        third_parameter = e_unknown;
+        current_clause = NULL;
+        is_complex_clause = true;
+        if (!ofs_match_char('(')) {
+            printf("error in clause(varlist) match: no starting '(' is found for %s.\n",old_char);
+            assert(false);
+        };
+
+        // Only when there's colon, modifiers need to be matched.
+        if (strchr(c_char, ':')) {
+            if (ofs_match_substr("omp_default_mem_alloc", false)) {
+                first_parameter = e_allocate_default_mem_alloc;
+            }
+            else if (ofs_match_substr("omp_large_cap_mem_alloc", false)) {
+                first_parameter = e_allocate_large_cap_mem_alloc;
+            }
+            else if (ofs_match_substr("omp_const_mem_alloc", false)) {
+                first_parameter = e_allocate_const_mem_alloc;
+            }
+            else if (ofs_match_substr("omp_high_bw_mem_alloc", false)) {
+                first_parameter = e_allocate_high_bw_mem_alloc;
+            }
+            else if (ofs_match_substr("omp_low_lat_mem_alloc", false)) {
+                first_parameter = e_allocate_low_lat_mem_alloc;
+            }
+            else if (ofs_match_substr("omp_cgroup_mem_alloc", false)) {
+                first_parameter = e_allocate_cgroup_mem_alloc;
+            }
+            else if (ofs_match_substr("omp_pteam_mem_alloc", false)) {
+                first_parameter = e_allocate_pteam_mem_alloc;
+            }
+            else if (ofs_match_substr("omp_thread_mem_alloc", false)) {
+                first_parameter = e_allocate_thread_mem_alloc;
+            }
+            else if (ofs_match_expression()) {
+                first_parameter = e_user_defined_parameter;
+            }
+            else {
+                printf("error: cannot find a legal allocate identifier for %s\n",old_char);
+                assert(false);
+            }
+            ofs_skip_whitespace();
+        };
+        // Matching modifiers ends.
+
+        // Create clause with collected identifier.
+        current_clause = setupComplexClause();
+        if (first_parameter == e_user_defined_parameter) {
+            addUserDefinedParameter("");
+        };
+
+        // match ':' in between
+        if (first_parameter != e_unknown && !ofs_match_char(':')) {
+            printf("error in allocate(modifier:varlist) match: no ':' is found for %s\n",old_char);
+            assert(false);
+        };
+        // match the rest "varlist)"
+        if (!ofs_match_varlist()) {
+            printf("error in allocate(op:valist) match during varlist for %s \n",old_char);
+            assert(false);
+        }
+        else {
+            omptype = e_unknown; // restore it to unknown
+            is_complex_clause = false;
+            return true; // all pass! return here!
+        };
+
+    } // end if (allocate)
+
+    c_char = old_char;
+    is_complex_clause = false;
+    return false;
+}
+
 //! Match a Fortran reduction clause
 // reduction({operator|intrinsic_procedure_name}:varlist)
 static bool ofs_match_clause_reduction() {
@@ -977,10 +1060,12 @@ static bool ofs_match_omp_directive_end()
 #define BV_CLAUSE_SCHEDULE      (1<<12)
 #define BV_CLAUSE_SHARED        (1<<13)
 #define BV_CLAUSE_UNTIED        (1<<14)
+#define BV_CLAUSE_ALLOCATE      (1<<15)
 
 // common bit vector values for some directive's allowed clauses
 #define BV_OMP_PARALLEL_CLAUSES \
-( BV_CLAUSE_COPYIN \
+( BV_CLAUSE_ALLOCATE \
+| BV_CLAUSE_COPYIN \
 | BV_CLAUSE_DEFAULT \
 | BV_CLAUSE_FIRSTPRIVATE \
 | BV_CLAUSE_IF \
@@ -1069,6 +1154,11 @@ static bool ofs_match_omp_clauses(int bitvector)
     // reduction clause 
     if((bitvector&BV_CLAUSE_REDUCTION)&& (ofs_match_clause_reduction()))
       continue;
+
+    // allocate clause
+    if((bitvector&BV_CLAUSE_ALLOCATE)&& (ofs_match_clause_allocate())) {
+        continue;
+    };
 
     //match clauses with expressions, 
     if((bitvector&BV_CLAUSE_COLLAPSE)&& (ofs_match_clause_collapse()))

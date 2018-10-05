@@ -1,6 +1,8 @@
 include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 
 F77_TESTCODES_TO_PASS = \
+	allocate_predefined_modifiers.f \
+	allocate_user_defined_modifiers.f \
     array-one.f \
     array_initialize.f \
     default.f \

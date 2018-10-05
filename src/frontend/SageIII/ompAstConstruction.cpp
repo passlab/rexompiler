@@ -1097,6 +1097,8 @@ namespace OmpSupport
             omp_construct_enum allocate_modifier = current_clause->first_parameter;
             if (allocate_modifier != e_unknown) {
                 sg_modifier = toSgOmpClauseAllocateModifier(allocate_modifier);
+            };
+            if (sg_modifier == SgOmpClause::e_omp_allocate_user_defined_modifier) {
                 user_defined_parameter = checkOmpExpressionClause(current_clause->user_defined_parameter.second, global, e_allocate);
             }
             result = new SgOmpAllocateClause(explist, sg_modifier, user_defined_parameter);
