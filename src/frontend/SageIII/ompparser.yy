@@ -436,25 +436,23 @@ unique_task_clause : FINAL {
                    ;
                    
 depend_clause : DEPEND { 
-                          ompattribute->addClause(e_depend);
+                        omptype = e_depend;
+                        current_clause = ompattribute->addComplexClause(omptype);
                         } '(' dependence_type ':' {b_within_variable_list = true; array_symbol=NULL; } variable_exp_list ')' 
                         {
-                          assert ((ompattribute->getVariableList(omptype)).size()>0); /* I believe that depend() must have variables */
+                          assert ((current_clause->variable_list).size()>0); /* I believe that depend() must have variables */
                           b_within_variable_list = false;
                         }
                       ;
 
 dependence_type : IN {
-                       ompattribute->setDependenceType(e_depend_in); 
-                       omptype = e_depend_in; /*variables are stored for each operator*/
+                    current_clause->first_parameter = e_depend_in;
                      }
                    | OUT {
-                       ompattribute->setDependenceType(e_depend_out);  
-                       omptype = e_depend_out;
+                    current_clause->first_parameter = e_depend_out;
                      }
                    | INOUT {
-                       ompattribute->setDependenceType(e_depend_inout); 
-                       omptype = e_depend_inout;
+                    current_clause->first_parameter = e_depend_inout;
                       }
                    ;
 

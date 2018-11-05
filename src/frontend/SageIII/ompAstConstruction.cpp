@@ -1196,12 +1196,11 @@ namespace OmpSupport
     return result;
   }
   //! Try to build a depend clause with a given operation type from OmpAttribute
-  SgOmpDependClause* buildOmpDependClause(OmpAttribute* att, omp_construct_enum dep_type)
-  {
-    ROSE_ASSERT(att !=NULL);
-    if (!att->hasDependenceType(dep_type))
+  SgOmpDependClause* buildOmpDependClause(OmpAttribute* att, ComplexClause* current_clause) {
+    ROSE_ASSERT(att != NULL);
+    if (!att->hasDependenceType(current_clause->first_parameter))
       return NULL;
-    SgOmpClause::omp_dependence_type_enum  sg_op = toSgOmpClauseDependenceType(dep_type); 
+    SgOmpClause::omp_dependence_type_enum  sg_op = toSgOmpClauseDependenceType(current_clause->first_parameter);
     SgExprListExp* explist=buildExprListExp();
     SgOmpDependClause* result = new SgOmpDependClause(explist, sg_op);
     ROSE_ASSERT(result != NULL);
@@ -1209,7 +1208,7 @@ namespace OmpSupport
     setOneSourcePositionForTransformation(result);
     
     // build variable list
-    setClauseVariableList(result, att, dep_type); 
+    setComplexClauseVariableList(result, current_clause);
 
     //this is somewhat inefficient. 
     // since the attribute has dimension info for all map clauses
@@ -1648,12 +1647,13 @@ namespace OmpSupport
             }
             // special handling for depend(type:varlist)
             case e_depend: {
-                std::vector<omp_construct_enum> rops  = att->getDependenceTypes();
-                ROSE_ASSERT(rops.size()!=0);
-                std::vector<omp_construct_enum>::iterator iter;
-                for (iter=rops.begin(); iter!=rops.end();iter++) {
-                    omp_construct_enum rop = *iter;
-                    SgOmpClause* sgclause = buildOmpDependClause(att, rop);
+                std::deque<ComplexClause>* attr_clauses = att->getComplexClauses(c_clause);
+                ROSE_ASSERT(attr_clauses->size()!=0);
+                std::deque<ComplexClause>::iterator iter;
+                for (iter = attr_clauses->begin(); iter != attr_clauses->end(); iter++) {
+                    // process each clause individually.
+                    SgOmpClause* sgclause = buildOmpDependClause(att, &*iter);
+                    ROSE_ASSERT(sgclause != NULL);
                     target->get_clauses().push_back(sgclause);
                     sgclause->set_parent(target);
                 };
