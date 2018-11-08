@@ -521,18 +521,6 @@ namespace OmpSupport
           result = new SgOmpCollapseClause(collapseParam);
           break;
         }
-      /*case e_if:
-        {
-          SgExpression* ifParam = checkOmpExpressionClause( att->getExpression(e_if).second, global, e_if );
-          result = new SgOmpIfClause(ifParam);
-          break;
-        }*/
-      case e_num_threads:
-        {
-          SgExpression* numThreadsParam = checkOmpExpressionClause( att->getExpression(e_num_threads).second, global, e_num_threads );
-          result = new SgOmpNumThreadsClause(numThreadsParam);
-          break;
-        }
       case e_device:
         {
           SgExpression* param = checkOmpExpressionClause( att->getExpression(e_device).second, global, e_device );
@@ -1070,6 +1058,16 @@ namespace OmpSupport
             result = new SgOmpNumThreadsClause(clause_expression);
             break;
         }
+        case e_final: {
+            clause_expression = checkOmpExpressionClause(current_clause->expression.second, global, clause_type);
+            result = new SgOmpFinalClause(clause_expression);
+            break;
+        }
+        case e_priority: {
+            clause_expression = checkOmpExpressionClause(current_clause->expression.second, global, clause_type);
+            result = new SgOmpPriorityClause(clause_expression);
+            break;
+        }
         default: {
             printf("error in buildOmpExpressionClause(): unacceptable clause type:%s\n",
             OmpSupport::toString(clause_type).c_str());
@@ -1598,8 +1596,10 @@ namespace OmpSupport
                 break;
             }
             // add complex clause with expression.
+            case e_final:
             case e_if:
-            case e_num_threads: {
+            case e_num_threads:
+            case e_priority: {
                 std::deque<ComplexClause>* expr_clauses = att->getComplexClauses(c_clause);
                 ROSE_ASSERT(expr_clauses->size()!=0);
                 std::deque<ComplexClause>::iterator iter;

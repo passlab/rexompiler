@@ -416,22 +416,28 @@ task_clause : unique_task_clause
             ;
 
 unique_task_clause : FINAL { 
-                       ompattribute->addClause(e_final);
-                       omptype = e_final; 
+                        omptype = e_final;
+                        current_clause = ompattribute->addComplexClause(omptype);
+                        is_complex_clause = true;
                      } '(' expression ')' { 
-                       addExpression("");
+                        addComplexClauseExpression("");
+                        is_complex_clause = false;
                      }
                    | PRIORITY { 
-                       ompattribute->addClause(e_priority);
-                       omptype = e_priority; 
+                        omptype = e_priority;
+                        current_clause = ompattribute->addComplexClause(omptype);
+                        is_complex_clause = true;
                      } '(' expression ')' { 
-                       addExpression("");
+                        addComplexClauseExpression("");
+                        is_complex_clause = false;
                      }
                    | UNTIED {
-                       ompattribute->addClause(e_untied);
+                        omptype = e_untied;
+                        current_clause = ompattribute->addComplexClause(omptype);
                      }
                    | MERGEABLE {
-                       ompattribute->addClause(e_mergeable);
+                        omptype = e_mergeable;
+                        current_clause = ompattribute->addComplexClause(omptype);
                      }
                    ;
                    

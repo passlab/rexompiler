@@ -760,8 +760,14 @@ static bool ofs_match_clause_naked (omp_construct_enum clausetype)
   if (ofs_match_substr(clause_name,true)) 
   {
     assert (ompattribute != NULL); 
-    ompattribute->addClause(clausetype);
-    omptype = clausetype;
+    if (clausetype == e_untied) {
+        omptype = clausetype;
+        ompattribute->addComplexClause(clausetype);
+    }
+    else {
+        ompattribute->addClause(clausetype);
+        omptype = clausetype;
+    }
     return true;
   }
   else
