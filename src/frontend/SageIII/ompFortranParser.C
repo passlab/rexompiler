@@ -557,12 +557,12 @@ static bool ofs_match_clause_varlist(omp_construct_enum clausetype)
   {
     case e_copyin:
     case e_firstprivate:
+    case e_lastprivate:
     case e_private:
     case e_shared: {
         is_complex_clause = true;
     }
     case e_copyprivate:
-    case e_lastprivate:
       {
         strcpy (clause_name, OmpSupport::toString(clausetype).c_str());
         break;

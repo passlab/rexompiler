@@ -1096,6 +1096,10 @@ namespace OmpSupport
             result = new SgOmpFirstprivateClause(explist);
             break;
         }
+        case e_lastprivate: {
+            result = new SgOmpLastprivateClause(explist);
+            break;
+        }
         case e_private: {
             result = new SgOmpPrivateClause(explist);
             break;
@@ -1280,11 +1284,6 @@ namespace OmpSupport
           result = new SgOmpCopyprivateClause(explist);
           break;
         }
-      case e_lastprivate:
-        {
-          result = new SgOmpLastprivateClause(explist);
-          break;
-        }
      case e_linear: // TODO: need better solution for clauses with both variable list and expression. 
         { // TODO checkOmpExpressionClause() to handle macro
           SgExpression* stepExp= att->getExpression(e_linear).second;
@@ -1354,6 +1353,16 @@ namespace OmpSupport
           result = buildOmpScheduleClause(att);
           break;
         }
+      case e_untied:
+        {
+          result = buildOmpUntiedClause(att);
+          break;
+        }
+      case e_mergeable:
+        {
+          result = buildOmpMergeableClause(att);
+          break;
+        }
       case e_inbranch:
         {
           result = buildOmpInbranchClause(att); 
@@ -1368,13 +1377,11 @@ namespace OmpSupport
       case e_device:
       case e_safelen:
       case e_simdlen:
-      case e_ordered_clause:
         {
           result = buildOmpExpressionClause(att, c_clause_type);
           break;
         }
       case e_copyprivate:  
-      case e_lastprivate:
       case e_linear:
       case e_aligned:
         {
@@ -1591,6 +1598,7 @@ namespace OmpSupport
             case e_allocate:
             case e_copyin:
             case e_firstprivate:
+            case e_lastprivate:
             case e_private:
             case e_shared: {
                 std::deque<ComplexClause>* var_clauses = att->getComplexClauses(c_clause);
@@ -1957,7 +1965,6 @@ namespace OmpSupport
               ROSE_ASSERT(false);
             }
           }
-        case e_lastprivate:
           // case e_nowait: // nowait should not appear with combined directives
           {
             SgOmpClause* sgclause = buildOmpNonReductionClause(att, c_clause);
@@ -1967,9 +1974,11 @@ namespace OmpSupport
             sgclause->set_parent(second_stmt);
             break;
           }
+
         case e_allocate:
         case e_copyin:
         case e_firstprivate:
+        case e_lastprivate:
         case e_private:
         case e_shared: {
             std::deque<ComplexClause>* var_clauses = att->getComplexClauses(c_clause);

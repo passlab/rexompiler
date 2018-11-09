@@ -677,13 +677,17 @@ firstprivate_clause : FIRSTPRIVATE {
                         current_clause = setupComplexClause();
                         is_complex_clause = true;
                         } '(' {b_within_variable_list = true;} variable_list ')' {is_complex_clause = false; b_within_variable_list = false;}
-                             ;
+                        ;
 
 lastprivate_clause : LASTPRIVATE { 
-                                  ompattribute->addClause(e_lastprivate); 
-                                  omptype = e_lastprivate;
-                                } '(' {b_within_variable_list = true;} variable_list ')' {b_within_variable_list = false;}
-                              ;
+                        omptype = e_lastprivate;
+                        first_parameter = e_unknown;
+                        second_parameter = e_unknown;
+                        third_parameter = e_unknown;
+                        current_clause = setupComplexClause();
+                        is_complex_clause = true;
+                        } '(' {b_within_variable_list = true;} variable_list ')' {is_complex_clause = false; b_within_variable_list = false;}
+                        ;
 
 share_clause : SHARED {
                         omptype = e_shared;
