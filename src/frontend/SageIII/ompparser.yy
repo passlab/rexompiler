@@ -377,7 +377,8 @@ single_clause_seq : single_clause
                   | single_clause_seq ',' single_clause
                   ;
 nowait_clause: NOWAIT {
-                  ompattribute->addClause(e_nowait);
+                omptype = e_nowait;
+                current_clause = ompattribute->addComplexClause(omptype);
                 }
               ;
 
