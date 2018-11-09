@@ -508,13 +508,6 @@ namespace OmpSupport
     SgGlobal* global = SageInterface::getGlobalScope( att->getNode() );
     switch (clause_type)
     {
-      case e_ordered_clause:
-        {
-          SgExpression* param = checkOmpExpressionClause( att->getExpression(e_ordered_clause).second, global, e_ordered_clause);
-          result = new SgOmpOrderedClause(param);
-          break;
-        }
-
       case e_collapse:
         {
           SgExpression* collapseParam = checkOmpExpressionClause( att->getExpression(e_collapse).second, global, e_collapse );
@@ -537,18 +530,6 @@ namespace OmpSupport
         {
           SgExpression* param = checkOmpExpressionClause( att->getExpression(e_simdlen).second, global, e_simdlen );
           result = new SgOmpSimdlenClause(param);
-          break;
-        }
-       case e_final:
-        {
-          SgExpression* Param = checkOmpExpressionClause( att->getExpression(e_final).second, global, e_final );
-          result = new SgOmpFinalClause(Param);
-          break;
-        }
-       case e_priority:
-        {
-          SgExpression* Param = checkOmpExpressionClause( att->getExpression(e_priority).second, global, e_priority );
-          result = new SgOmpPriorityClause(Param);
           break;
         }
  
@@ -1063,6 +1044,11 @@ namespace OmpSupport
             result = new SgOmpFinalClause(clause_expression);
             break;
         }
+        case e_ordered_clause: {
+            clause_expression = checkOmpExpressionClause(current_clause->expression.second, global, clause_type);
+            result = new SgOmpOrderedClause(clause_expression);
+            break;
+        }
         case e_priority: {
             clause_expression = checkOmpExpressionClause(current_clause->expression.second, global, clause_type);
             result = new SgOmpPriorityClause(clause_expression);
@@ -1368,16 +1354,6 @@ namespace OmpSupport
           result = buildOmpScheduleClause(att);
           break;
         }
-      case e_untied:
-        {
-          result = buildOmpUntiedClause(att); 
-          break;
-        }
-      case e_mergeable:
-        {
-          result = buildOmpMergeableClause(att); 
-          break;
-        }
       case e_inbranch:
         {
           result = buildOmpInbranchClause(att); 
@@ -1388,10 +1364,7 @@ namespace OmpSupport
           result = buildOmpNotinbranchClause(att); 
           break;
         }
-      case e_final:
-      case e_priority:
       case e_collapse:
-      case e_num_threads:
       case e_device:
       case e_safelen:
       case e_simdlen:
@@ -1599,6 +1572,7 @@ namespace OmpSupport
             case e_final:
             case e_if:
             case e_num_threads:
+            case e_ordered_clause:
             case e_priority: {
                 std::deque<ComplexClause>* expr_clauses = att->getComplexClauses(c_clause);
                 ROSE_ASSERT(expr_clauses->size()!=0);
@@ -1939,7 +1913,8 @@ namespace OmpSupport
       {
         // clauses allocated to omp parallel
         case e_if:
-        case e_num_threads: {
+        case e_num_threads:
+        case e_ordered_clause: {
             std::deque<ComplexClause>* expr_clauses = att->getComplexClauses(c_clause);
             ROSE_ASSERT(expr_clauses->size()!=0);
             std::deque<ComplexClause>::iterator iter;
@@ -1969,7 +1944,6 @@ namespace OmpSupport
           // unique clauses allocated to omp for  or omp for simd
         case e_schedule:
         case e_collapse:
-        case e_ordered_clause:
         case e_safelen:
         case e_simdlen:
         case e_uniform:

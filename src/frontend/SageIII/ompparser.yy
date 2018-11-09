@@ -301,14 +301,16 @@ schedule_chunk_opt: /* empty */
                 ; 
 
 ordered_clause: ORDERED {
-                      ompattribute->addClause(e_ordered_clause);
-                      omptype = e_ordered_clause;
+                    omptype = e_ordered_clause;
+                    current_clause = ompattribute->addComplexClause(omptype);
+                    is_complex_clause = true;
                 } ordered_parameter_opt
                ;
 
 ordered_parameter_opt: /* empty */
                 | '(' expression ')' {
-                    addExpression("");
+                    addComplexClauseExpression("");
+                    is_complex_clause = false;
                    }
                  ;
 
