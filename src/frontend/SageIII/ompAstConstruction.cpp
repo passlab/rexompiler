@@ -1099,6 +1099,11 @@ namespace OmpSupport
             result = new SgOmpLastprivateClause(explist);
             break;
         }
+        case e_linear: {
+            SgExpression* stepExp = current_clause->expression.second;
+            result = new SgOmpLinearClause(explist, stepExp);
+            break;
+        }
         case e_private: {
             result = new SgOmpPrivateClause(explist);
             break;
@@ -1283,12 +1288,6 @@ namespace OmpSupport
           result = new SgOmpCopyprivateClause(explist);
           break;
         }
-     case e_linear: // TODO: need better solution for clauses with both variable list and expression. 
-        { // TODO checkOmpExpressionClause() to handle macro
-          SgExpression* stepExp= att->getExpression(e_linear).second;
-          result = new SgOmpLinearClause(explist, stepExp);
-          break;
-        }
      case e_aligned:
         {
           SgExpression* alignExp= att->getExpression(e_aligned).second;
@@ -1380,7 +1379,6 @@ namespace OmpSupport
           break;
         }
       case e_copyprivate:  
-      case e_linear:
       case e_aligned:
         {
           result = buildOmpVariableClause(att, c_clause_type);
@@ -1518,7 +1516,17 @@ namespace OmpSupport
             result = buildOmpExpressionClause(att, c_clause);
             break;
           }
-        case e_linear:
+        case e_linear: {
+            std::deque<ComplexClause>* var_clauses = att->getComplexClauses(c_clause);
+            std::deque<ComplexClause>::iterator iter;
+            for (iter = var_clauses->begin(); iter != var_clauses->end(); iter++) {
+                // process each clause individually.
+                is_complex_clause = true;
+                SgOmpClause* sgclause = buildOmpVariableComplexClause(att, &*iter, c_clause);
+                is_complex_clause = false;
+            };
+            break;
+        }
         case e_aligned:
         case e_uniform: 
           {
@@ -1598,6 +1606,7 @@ namespace OmpSupport
             case e_copyin:
             case e_firstprivate:
             case e_lastprivate:
+            case e_linear:
             case e_private:
             case e_shared: {
                 std::deque<ComplexClause>* var_clauses = att->getComplexClauses(c_clause);
@@ -1955,7 +1964,6 @@ namespace OmpSupport
         case e_simdlen:
         case e_uniform:
         case e_aligned:
-        case e_linear:
           {
             if (!isSgOmpForStatement(second_stmt) && !isSgOmpForSimdStatement(second_stmt) && !isSgOmpDoStatement(second_stmt))
             {
@@ -1978,6 +1986,7 @@ namespace OmpSupport
         case e_copyin:
         case e_firstprivate:
         case e_lastprivate:
+        case e_linear:
         case e_private:
         case e_shared: {
             std::deque<ComplexClause>* var_clauses = att->getComplexClauses(c_clause);

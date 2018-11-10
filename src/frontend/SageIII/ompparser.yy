@@ -1080,9 +1080,10 @@ aligned_clause_alignment: ':' expression {addExpression(""); }
 
 
 linear_clause :  LINEAR { 
-                         ompattribute->addClause(e_linear);
-                         omptype = e_linear; 
-                        }
+                    omptype = e_linear;
+                    current_clause = ompattribute->addComplexClause(omptype);
+                    is_complex_clause = true;
+                    }
                        '(' {b_within_variable_list = true;} variable_list {b_within_variable_list =false;}  linear_clause_step_optseq ')'
                 ;
 
@@ -1090,7 +1091,11 @@ linear_clause_step_optseq: /* empty */
                         | linear_clause_step
                         ;
 
-linear_clause_step: ':' expression {addExpression(""); } 
+linear_clause_step: ':' expression {
+                    addComplexClauseExpression("");
+                    is_complex_clause = false;
+                }
+                ;
 
 /* parsing real expressions here, Liao, 10/12/2008
    */       
