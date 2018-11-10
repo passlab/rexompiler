@@ -322,10 +322,12 @@ schedule_clause: SCHEDULE '(' schedule_kind {
                  ;
 
 collapse_clause: COLLAPSE {
-                      ompattribute->addClause(e_collapse);
-                      omptype = e_collapse;
+                    omptype = e_collapse;
+                    current_clause = ompattribute->addComplexClause(omptype);
+                    is_complex_clause = true;
                     } '(' expression ')' { 
-                      addExpression("");
+                    addComplexClauseExpression("");
+                    is_complex_clause = false;
                     }
                   ;
  

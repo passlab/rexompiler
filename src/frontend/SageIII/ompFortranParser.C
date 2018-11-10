@@ -642,15 +642,13 @@ static bool ofs_match_clause_expression (omp_construct_enum clausetype)
   // verify and convert clause type to clause name string
   switch (clausetype)
   {
+    case e_collapse:
     case e_if:
     case e_num_threads: {
         is_complex_clause = true;
-    }
-    case e_collapse:
-      {
         strcpy (clause_name, OmpSupport::toString(clausetype).c_str());
         break;
-      }
+    }
     default:
       {
         printf("Unaccepted clause type :%s for clause(expr) match!\n",OmpSupport::toString(clausetype).c_str());

@@ -508,12 +508,6 @@ namespace OmpSupport
     SgGlobal* global = SageInterface::getGlobalScope( att->getNode() );
     switch (clause_type)
     {
-      case e_collapse:
-        {
-          SgExpression* collapseParam = checkOmpExpressionClause( att->getExpression(e_collapse).second, global, e_collapse );
-          result = new SgOmpCollapseClause(collapseParam);
-          break;
-        }
       case e_device:
         {
           SgExpression* param = checkOmpExpressionClause( att->getExpression(e_device).second, global, e_device );
@@ -1022,6 +1016,11 @@ namespace OmpSupport
     SgExpression* clause_expression = NULL;
     SgGlobal* global = SageInterface::getGlobalScope(att->getNode());
     switch (clause_type) {
+        case e_collapse: {
+            clause_expression = checkOmpExpressionClause(current_clause->expression.second, global, clause_type);
+            result = new SgOmpCollapseClause(clause_expression);
+            break;
+        }
         case e_if: {
             SgOmpClause::omp_if_modifier_enum sg_modifier = SgOmpClause::e_omp_if_modifier_unknown;
             omp_construct_enum if_modifier = current_clause->first_parameter;
@@ -1373,7 +1372,6 @@ namespace OmpSupport
           result = buildOmpNotinbranchClause(att); 
           break;
         }
-      case e_collapse:
       case e_device:
       case e_safelen:
       case e_simdlen:
@@ -1576,6 +1574,7 @@ namespace OmpSupport
                 break;
             }
             // add complex clause with expression.
+            case e_collapse:
             case e_final:
             case e_if:
             case e_num_threads:
@@ -1920,6 +1919,7 @@ namespace OmpSupport
       switch (c_clause)
       {
         // clauses allocated to omp parallel
+        case e_collapse:
         case e_if:
         case e_num_threads:
         case e_ordered_clause: {
@@ -1951,7 +1951,6 @@ namespace OmpSupport
           }
           // unique clauses allocated to omp for  or omp for simd
         case e_schedule:
-        case e_collapse:
         case e_safelen:
         case e_simdlen:
         case e_uniform:
