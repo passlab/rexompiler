@@ -295,9 +295,10 @@ for_or_simd_clause : ordered_clause
           ;
 
 schedule_chunk_opt: /* empty */
-                | ',' expression { 
-                     addExpression("");
-                 }
+                | ',' expression {
+                    addComplexClauseExpression("");
+                    is_complex_clause = false;
+                }
                 ; 
 
 ordered_clause: ORDERED {
@@ -314,12 +315,12 @@ ordered_parameter_opt: /* empty */
                    }
                  ;
 
-schedule_clause: SCHEDULE '(' schedule_kind {
-                      ompattribute->addClause(e_schedule);
-                      ompattribute->setScheduleKind(static_cast<omp_construct_enum>($3));
-                      omptype = e_schedule; }
-                    schedule_chunk_opt  ')' 
-                 ;
+schedule_clause: SCHEDULE {
+                    omptype = e_schedule;
+                    current_clause = ompattribute->addComplexClause(omptype);
+                    is_complex_clause = true;
+                } '(' schedule_kind schedule_chunk_opt ')'
+                ;
 
 collapse_clause: COLLAPSE {
                     omptype = e_collapse;
@@ -331,11 +332,11 @@ collapse_clause: COLLAPSE {
                     }
                   ;
  
-schedule_kind : STATIC  { $$ = e_schedule_static; }
-              | DYNAMIC { $$ = e_schedule_dynamic; }
-              | GUIDED  { $$ = e_schedule_guided; }
-              | AUTO    { $$ = e_schedule_auto; }
-              | RUNTIME { $$ = e_schedule_runtime; }
+schedule_kind : STATIC  { current_clause->first_parameter = e_schedule_static; }
+              | DYNAMIC { current_clause->first_parameter = e_schedule_dynamic; }
+              | GUIDED  { current_clause->first_parameter = e_schedule_guided; }
+              | AUTO    { current_clause->first_parameter = e_schedule_auto; }
+              | RUNTIME { current_clause->first_parameter = e_schedule_runtime; }
               ;
 
 sections_directive : /* #pragma */ OMP SECTIONS { 

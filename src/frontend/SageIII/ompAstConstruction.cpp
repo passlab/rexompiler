@@ -635,13 +635,12 @@ namespace OmpSupport
   }
 
   //Build SgOmpScheduleClause from OmpAttribute, if any
-  SgOmpScheduleClause* buildOmpScheduleClause(OmpAttribute* att)
-  {
+  SgOmpScheduleClause* buildOmpScheduleClause(OmpAttribute* att, ComplexClause* current_clause) {
     ROSE_ASSERT(att != NULL);
     if (!att->hasClause(e_schedule))
       return NULL;
     // convert OmpAttribute schedule kind to SgOmpClause schedule kind
-    omp_construct_enum oa_kind = att->getScheduleKind();
+    omp_construct_enum oa_kind = current_clause->first_parameter;
     SgOmpClause::omp_schedule_kind_enum sg_kind;
     switch (oa_kind)
     {
@@ -667,7 +666,7 @@ namespace OmpSupport
           ROSE_ASSERT(false) ;  
         }
     }
-    SgExpression* chunksize_exp = att->getExpression(e_schedule).second;
+    SgExpression* chunksize_exp = current_clause->expression.second;
     // ROSE_ASSERT(chunksize_exp != NULL); // chunk size is optional
     // finally build the node
     SgOmpScheduleClause* result = new SgOmpScheduleClause(sg_kind, chunksize_exp);
@@ -1320,6 +1319,7 @@ namespace OmpSupport
   }
 
   // Build a single SgOmpClause from OmpAttribute for type c_clause_type, excluding reduction clauses
+  // Later on this function will be modified to cover all the clauses other than regular expression and variable list clauses.
   SgOmpClause* buildOmpNonReductionClause(OmpAttribute* att, omp_construct_enum c_clause_type)
   {
     SgOmpClause* result = NULL;
@@ -1347,8 +1347,8 @@ namespace OmpSupport
         }
 #endif      
       case e_schedule:
-        {
-          result = buildOmpScheduleClause(att);
+        { // place holder, not valid.
+          // result = buildOmpScheduleClause(att);
           break;
         }
       case e_untied:
@@ -1522,10 +1522,14 @@ namespace OmpSupport
             for (iter = var_clauses->begin(); iter != var_clauses->end(); iter++) {
                 // process each clause individually.
                 is_complex_clause = true;
-                SgOmpClause* sgclause = buildOmpVariableComplexClause(att, &*iter, c_clause);
+                SgOmpClause* result = buildOmpVariableComplexClause(att, &*iter, c_clause);
                 is_complex_clause = false;
+                ROSE_ASSERT(result != NULL);
+                setOneSourcePositionForTransformation(result);
+                target->get_clauses().push_back(result);
+                result->set_parent(target); // is This right?
             };
-            break;
+            return;
         }
         case e_aligned:
         case e_uniform: 
@@ -1630,6 +1634,20 @@ namespace OmpSupport
                     // process each clause individually.
                     SgOmpClause* sgclause = buildOmpDefaultClause(att, &*iter);
                     ROSE_ASSERT(sgclause != NULL);
+                    target->get_clauses().push_back(sgclause);
+                    sgclause->set_parent(target);
+                };
+                break;
+            }
+            case e_schedule: {
+                std::deque<ComplexClause>* attr_clauses = att->getComplexClauses(c_clause);
+                ROSE_ASSERT(attr_clauses->size()!=0);
+                std::deque<ComplexClause>::iterator iter;
+                for (iter = attr_clauses->begin(); iter != attr_clauses->end(); iter++) {
+                    // process each clause individually.
+                    SgOmpClause* sgclause = buildOmpScheduleClause(att, &*iter);
+                    ROSE_ASSERT(sgclause != NULL);
+                    setOneSourcePositionForTransformation(sgclause);
                     target->get_clauses().push_back(sgclause);
                     sgclause->set_parent(target);
                 };
@@ -1959,7 +1977,24 @@ namespace OmpSupport
             break;
           }
           // unique clauses allocated to omp for  or omp for simd
-        case e_schedule:
+        case e_schedule: {
+            std::deque<ComplexClause>* var_clauses = att->getComplexClauses(c_clause);
+            ROSE_ASSERT(var_clauses->size()!=0);
+            std::deque<ComplexClause>::iterator iter;
+            for (iter = var_clauses->begin(); iter != var_clauses->end(); iter++) {
+                if (!isSgOmpForStatement(second_stmt) && !isSgOmpForSimdStatement(second_stmt) && !isSgOmpDoStatement(second_stmt)) {
+                printf("Error: buildOmpParallelStatementFromCombinedDirectives(): unacceptable clauses for parallel for/do [simd]\n");
+                att->print();
+                ROSE_ASSERT(false);
+                };
+                SgOmpClause* sgclause = buildOmpScheduleClause(att, &*iter);
+                ROSE_ASSERT(sgclause != NULL);
+                setOneSourcePositionForTransformation(sgclause);
+                isSgOmpClauseBodyStatement(second_stmt)->get_clauses().push_back(sgclause);
+                sgclause->set_parent(second_stmt);
+            };
+            break;
+        }
         case e_safelen:
         case e_simdlen:
         case e_uniform:

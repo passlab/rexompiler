@@ -333,8 +333,8 @@ static bool ofs_match_clause_schedule()
 
   if  (ofs_match_substr("schedule",false))// no space is required after the match
   {
-    ompattribute->addClause(e_schedule);
     omptype = e_schedule;
+    current_clause = ompattribute->addComplexClause(omptype);
 
     if (!ofs_match_char('('))
     {
@@ -368,7 +368,7 @@ static bool ofs_match_clause_schedule()
       assert(false);
     }
     //  set schedule kind matched
-    ompattribute->setScheduleKind(matched_kind);
+    current_clause->first_parameter = matched_kind;
 
     // match optional ",chunk_size"
     if (matched_kind == e_schedule_static || matched_kind == e_schedule_dynamic
@@ -376,10 +376,9 @@ static bool ofs_match_clause_schedule()
     {
       if (ofs_match_char(','))
       {
-        if (ofs_match_expression())
-        {
-          assert (current_exp != NULL);
-          ompattribute->addExpression(omptype, "", current_exp);
+        if (ofs_match_expression()) {
+            assert (current_exp != NULL);
+            ompattribute->addComplexClauseExpression(omptype, "", current_exp);
         }
         else
         {
