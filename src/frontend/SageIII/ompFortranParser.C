@@ -555,17 +555,15 @@ static bool ofs_match_clause_varlist(omp_construct_enum clausetype)
   switch (clausetype)
   {
     case e_copyin:
+    case e_copyprivate:
     case e_firstprivate:
     case e_lastprivate:
     case e_private:
     case e_shared: {
         is_complex_clause = true;
-    }
-    case e_copyprivate:
-      {
         strcpy (clause_name, OmpSupport::toString(clausetype).c_str());
         break;
-      }
+    }
     default:
       {
         printf("Unaccepted clause type :%s for clause(varlist) match!\n",OmpSupport::toString(clausetype).c_str());

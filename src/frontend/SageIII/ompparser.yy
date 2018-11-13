@@ -391,10 +391,14 @@ single_clause : unique_single_clause
               | nowait_clause
               ;
 unique_single_clause : COPYPRIVATE { 
-                         ompattribute->addClause(e_copyprivate);
-                         omptype = e_copyprivate; 
+                        omptype = e_copyprivate;
+                        first_parameter = e_unknown;
+                        second_parameter = e_unknown;
+                        third_parameter = e_unknown;
+                        current_clause = setupComplexClause();
+                        is_complex_clause = true;
                        }
-                       '(' {b_within_variable_list = true;} variable_list ')' {b_within_variable_list =false;}
+                       '(' {b_within_variable_list = true;} variable_list ')' {b_within_variable_list = false; is_complex_clause = false;}
 
 task_directive : /* #pragma */ OMP TASK {
                    ompattribute = buildOmpAttribute(e_task,gNode,true);

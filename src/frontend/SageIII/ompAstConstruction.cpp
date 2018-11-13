@@ -670,7 +670,7 @@ namespace OmpSupport
     // ROSE_ASSERT(chunksize_exp != NULL); // chunk size is optional
     // finally build the node
     SgOmpScheduleClause* result = new SgOmpScheduleClause(sg_kind, chunksize_exp);
-    //  setOneSourcePositionForTransformation(result);
+    setOneSourcePositionForTransformation(result);
     ROSE_ASSERT(result != NULL);
     return  result;
   }
@@ -1088,6 +1088,10 @@ namespace OmpSupport
         }
         case e_copyin: {
             result = new SgOmpCopyinClause(explist);
+            break;
+        }
+        case e_copyprivate: {
+            result = new SgOmpCopyprivateClause(explist);
             break;
         }
         case e_firstprivate: {
@@ -1608,6 +1612,7 @@ namespace OmpSupport
             // add complex clause with variable list.
             case e_allocate:
             case e_copyin:
+            case e_copyprivate:
             case e_firstprivate:
             case e_lastprivate:
             case e_linear:
@@ -1989,7 +1994,6 @@ namespace OmpSupport
                 };
                 SgOmpClause* sgclause = buildOmpScheduleClause(att, &*iter);
                 ROSE_ASSERT(sgclause != NULL);
-                setOneSourcePositionForTransformation(sgclause);
                 isSgOmpClauseBodyStatement(second_stmt)->get_clauses().push_back(sgclause);
                 sgclause->set_parent(second_stmt);
             };
