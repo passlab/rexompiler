@@ -2370,7 +2370,7 @@ This is no perfect solution until we handle preprocessing information as structu
        {
          if (end_att->hasClause(e_nowait))
          {
-           begin_att->addClause(e_nowait);
+           begin_att->addComplexClause(e_nowait);
          }
          break;
        }
@@ -2380,15 +2380,15 @@ This is no perfect solution until we handle preprocessing information as structu
    // Merge possible copyrpivate (list) from end single
    if ((end_type == e_end_single) && end_att ->hasClause(e_copyprivate)) 
    {
-     begin_att->addClause (e_copyprivate);
-     std::vector<std::pair<std::string,SgNode* > > varList = end_att->getVariableList(e_copyprivate);
+     ComplexClause* current_clause = begin_att->addComplexClause(e_copyprivate);
+     std::vector<std::pair<std::string,SgNode* > > varList = end_att->getComplexClauses(e_copyprivate)->front().variable_list;
      std::vector<std::pair<std::string,SgNode* > >::iterator iter;
      for (iter = varList.begin(); iter != varList.end(); iter++)
      {
        std::pair<std::string,SgNode* > element = *iter;
        SgInitializedName* i_name = isSgInitializedName(element.second);
        ROSE_ASSERT (i_name != NULL);
-       begin_att->addVariable(e_copyprivate, element.first, i_name);
+       begin_att->addComplexClauseVariable(current_clause, element.first, i_name);
      }
    }  
  }
