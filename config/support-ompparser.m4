@@ -1,15 +1,15 @@
 dnl Tests for OpenMPIR.h and libompparser
+
 AC_DEFUN([ROSE_SUPPORT_LIBOMPPARSER],[
 
     dnl Parse configure command-line switches for libompparser and/or obtain the value from the cache.
     AC_ARG_WITH([ompparser],
                 [AC_HELP_STRING([[[[--with-ompparser[=PREFIX]]]]], dnl yes, we really need 4 quotes (autoconf 2.6.1)!
-		                [Use libompparser available from http://sourceforge.net/projects/libompparser for free.
-                                 On Debian-based systems it's available with the apt tools. The PREFIX, if specified,
-				 should be the prefix used to install libompparser, such as "/usr/local".  The default
-				 is the empty prefix, in which case the headers and library must be installed in a
-				 place where they will be found. Saying "no" for the prefix is the same as saying
-				 "--without-ompparser".])],
+		                [Use libompparser available from https://github.com/passlab/ompparser.
+				 The PREFIX, if specified, should be the prefix used to install libompparser, 
+				 such as "/usr/local".  The default is the empty prefix, in which case the headers 
+				 and library must be installed in a place where they will be found. 
+				 Saying "no" for the prefix is the same as saying "--without-ompparser".])],
                 [ac_cv_use_ompparser=$withval],
 		[ac_cv_use_ompparser=no])
     AC_CACHE_CHECK([whether to use ompparser], [ac_cv_use_ompparser], [ac_cv_use_ompparser=no])
