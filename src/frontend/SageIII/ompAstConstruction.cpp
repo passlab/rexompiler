@@ -9,6 +9,9 @@
 #include "sageBuilder.h"
 #include "OmpAttribute.h"
 #include "ompAstConstruction.h"
+
+#include "OpenMPIR.h"
+extern OpenMPDirective* parseOpenMP(const char*);
 //void processOpenMP(SgSourceFile* sageFilePtr);
 
 //Liao, 10/27/2008: parsing OpenMP pragma here
@@ -2780,6 +2783,11 @@ This is no perfect solution until we handle preprocessing information as structu
     // As a result of the Fortran processing some OMP pragmas will cause
     // transformation (e.g. declaration of private variables will add variables
     // to the local scope).  So this function has side-effects for all languages.
+
+    // test standalone parser
+    const char* input_string = "omp parallel shared (a, b, c[1:10])";
+    parseOpenMP(input_string);
+    // test end
 
     if (SgProject::get_verbose() > 1)
     {

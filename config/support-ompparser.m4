@@ -2,6 +2,8 @@ dnl Tests for OpenMPIR.h and libompparser
 
 AC_DEFUN([ROSE_SUPPORT_LIBOMPPARSER],[
 
+    ROSE_CONFIGURE_SECTION([OMPPARSER Library])
+
     dnl Parse configure command-line switches for libompparser and/or obtain the value from the cache.
     AC_ARG_WITH([ompparser],
                 [AC_HELP_STRING([[[[--with-ompparser[=PREFIX]]]]], dnl yes, we really need 4 quotes (autoconf 2.6.1)!
@@ -18,14 +20,15 @@ AC_DEFUN([ROSE_SUPPORT_LIBOMPPARSER],[
     ROSE_HAVE_LIBOMPPARSER=
     if test $ac_cv_use_ompparser = yes; then
         ROSE_LIBOMPPARSER_PREFIX=
-	AC_CHECK_LIB(ompparser, ompparser_open,
+	AC_CHECK_LIB(ompparser, parseOpenMP,
 		     [AC_DEFINE(ROSE_HAVE_LIBOMPPARSER, [], [Defined when libompparser is available.])
 		     ROSE_HAVE_LIBOMPPARSER=yes])
     elif test -n "$ac_cv_use_ompparser" -a "$ac_cv_use_ompparser" != no; then
         ROSE_LIBOMPPARSER_PREFIX="$ac_cv_use_ompparser"
 	old_LDFLAGS="$LDFLAGS"
+    ls $ROSE_LIBOMPPARSER_PREFIX
 	LDFLAGS="$LDFLAGS -L$ROSE_LIBOMPPARSER_PREFIX/lib"
-	AC_CHECK_LIB(ompparser, ompparser_open,
+	AC_CHECK_LIB(ompparser, parseOpenMP,
 	             [AC_DEFINE(ROSE_HAVE_LIBOMPPARSER, [], [Defined when libompparser is available.])
 		      ROSE_HAVE_LIBOMPPARSER=yes])
         LDFLAGS="$old_LDFLAGS"
