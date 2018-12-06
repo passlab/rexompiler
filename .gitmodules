@@ -1,4 +1,4 @@
 [submodule "src/frontend/CxxFrontend/EDG"]
 	path = src/frontend/CxxFrontend/EDG
-	url = git@github.com:passlab/EDG.git
+	url = https://github.com/passlab/EDG.git
 	branch = vanderbrugge1/rose-1447-dev
