@@ -11,7 +11,7 @@
 #include "ompAstConstruction.h"
 
 #include "OpenMPIR.h"
-extern OpenMPDirective* parseOpenMP(const char*);
+extern OpenMPDirective* parseOpenMP(const char*, void * _exprParse(const char*));
 //void processOpenMP(SgSourceFile* sageFilePtr);
 
 //Liao, 10/27/2008: parsing OpenMP pragma here
@@ -2786,7 +2786,7 @@ This is no perfect solution until we handle preprocessing information as structu
 
     // test standalone parser
     const char* input_string = "omp parallel shared (a, b, c[1:10])";
-    parseOpenMP(input_string);
+    parseOpenMP(input_string, NULL);
     // test end
 
     if (SgProject::get_verbose() > 1)
