@@ -32,6 +32,7 @@ in the build tree
 #endif
 
 using namespace OmpSupport;
+using namespace SageInterface;
 
 /* Parser - BISON */
 
@@ -82,6 +83,9 @@ static ComplexClause* current_clause;
 // normalize the complex clause after initial setup.
 static ComplexClause* normalizeComplexClause();
 // The node to which vars/expressions should get added
+// add ompparser var
+static bool addOmpVar(const char*);
+std::vector<std::pair<std::string, SgExpression*> > omp_variable_list;
 //static OmpAttribute* omptype = 0;
 
 // The context node with the pragma annotation being parsed
@@ -112,6 +116,9 @@ static bool arraySection=true;
 static bool is_complex_clause = false;
 
 static bool addComplexVar(const char* var);
+
+// mark whether it is for ompparser
+static bool is_ompparser = false;
 
 %}
 
@@ -194,7 +201,14 @@ openmp_directive : parallel_directive
                  | target_directive
                  | target_data_directive
                  | simd_directive
+                 | omp_varlist
                  ;
+
+omp_varlist : OMP {
+                    is_ompparser = true; 
+                    omptype = e_unknown; 
+                    cur_omp_directive = omptype; b_within_variable_list = true;} variable_list {b_within_variable_list = false; is_ompparser = false; }
+               ;
 
 parallel_directive : /* #pragma */ OMP PARALLEL {
                        ompattribute = buildOmpAttribute(e_parallel,gNode,true);
@@ -1462,6 +1476,9 @@ variable_list : ID_EXPRESSION {
               if (is_complex_clause) {
                 addComplexVar((const char*)$1);
               }
+              else if (is_ompparser) {
+                addOmpVar((const char*)$1);
+              }
               else {
                 if (!addVar((const char*)$1)) {
                     YYABORT;
@@ -1471,6 +1488,9 @@ variable_list : ID_EXPRESSION {
               | variable_list ',' ID_EXPRESSION {
               if (is_complex_clause) {
                 addComplexVar((const char*)$3);
+              }
+              else if (is_ompparser) {
+                addOmpVar((const char*)$3);
               }
               else {
                 if (!addVar((const char*)$3)) {
@@ -1582,6 +1602,22 @@ static bool addComplexVar(const char* var)  {
     array_symbol = ompattribute->addComplexClauseVariable(current_clause, var);
     return true;
 }
+
+static bool addOmpVar(const char* var)  {
+    SgInitializedName* sgvar = NULL;
+    SgVariableSymbol* symbol = NULL;
+    SgScopeStatement* scope = SageInterface::getScope(gNode);
+    symbol = lookupVariableSymbolInParentScopes (var, scope);
+    sgvar = symbol->get_declaration();
+    if (sgvar != NULL) {
+        symbol = isSgVariableSymbol(sgvar->get_symbol_from_symbol_table());
+    };
+    omp_variable_list->push_back(make_pair(var, sgvar));
+
+
+    return true;
+}
+
 
 static bool addVarExp(SgExpression* exp)  { // new interface to add variables, supporting array reference expressions
     array_symbol = ompattribute->addVariable(omptype,exp);

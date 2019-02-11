@@ -11,6 +11,7 @@
 #include "ompAstConstruction.h"
 
 #include "OpenMPIR.h"
+#include <deque>
 extern OpenMPDirective* parseOpenMP(const char*, void * _exprParse(const char*));
 //void processOpenMP(SgSourceFile* sageFilePtr);
 
@@ -24,6 +25,15 @@ void parse_fortran_openmp(SgSourceFile *sageFilePtr);
 
 //static OmpSupport::ComplexClause* current_clause;
 static bool is_complex_clause = false;
+static void parseExpression (const char*);
+static OpenMPDirective* ompparser_ast;
+static deque<OpenMPDirective*> omp_ast_list;
+static void convertAST();
+static SgOmpBodyStatement* convertDirective(OpenMPDirective*);
+static void convertClause(SgOmpClauseBodyStatement*, OpenMPDirective*, OpenMPClause*);
+static SgPragmaDeclaration* current_pragma;
+// store temporary expression pairs for ompparser.
+extern std::vector<std::pair<std::string, SgExpression*> > omp_variable_list;
 
 using namespace std;
 using namespace SageInterface;
@@ -182,6 +192,7 @@ namespace OmpSupport
           // #pragma omp task can shown up before a single statement body of a for loop, 
           // In this case, the frontend will insert a basic block under the loop
           // and put both the pragma and the single statement into the block.
+
           // AstPostProcessing() will reset the transformation flag for the pragma
           // since its parent(the block) is transformation generated, not in the original code
           ROSE_ASSERT(pragmaDeclaration->get_file_info()->isTransformation() ==false  || pragmaDeclaration->get_file_info()->get_filename()!=string("transformation"));
@@ -206,13 +217,27 @@ namespace OmpSupport
           {
             // Call parser
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-            omp_parser_init(pragmaDeclaration,pragmaString.c_str());
-            omp_parse();
+
+            // parse expression
+            // Get the object that ompparser AST.
+            //const char* input_string = "omp parallel shared (a, b, c)";
+            //ompparser_ast = parseOpenMP(input_string, NULL);
+            ompparser_ast = parseOpenMP(pragmaString.c_str(), NULL);
+            omp_ast_list.push_back(ompparser_ast);
+            std::vector<OpenMPClause *> *omp_clauses = ompparser_ast->getClauses(OMPC_shared);
+            std::cout << omp_clauses->size() << "\n";
+            //const char* omp_expr = "omp aaa, bbb, ccc";
+            //const char* omp_expr = "99";
+            //omp_parser_init(pragmaDeclaration, omp_expr);
+            //omp_parse();
+
+            //omp_parser_init(pragmaDeclaration,pragmaString.c_str());
+            //omp_parse();
 #endif
-            OmpAttribute* attribute = getParsedDirective();
+            //OmpAttribute* attribute = getParsedDirective();
             //cout<<"sage_gen_be.C:23758 debug:\n"<<pragmaString<<endl;
             //attribute->print();//debug only for now
-            addOmpAttribute(attribute,pragmaDeclaration);
+            //addOmpAttribute(attribute,pragmaDeclaration);
             //cout<<"debug: attachOmpAttributeInfo() for a pragma:"<<pragmaString<<"at address:"<<pragmaDeclaration<<endl;
             //cout<<"file info for it is:"<<pragmaDeclaration->get_file_info()->get_filename()<<endl;
 
@@ -220,13 +245,13 @@ namespace OmpSupport
             //user-defined and compiler-generated OmpAttribute.
             // We attach the attribute redundantly on affected loops also
             // for easier loop handling later on in autoTuning's outlining step (reproducing lost pragmas)
-            if (attribute->getOmpDirectiveType() ==e_for ||attribute->getOmpDirectiveType() ==e_parallel_for)
-            {
-              SgForStatement* forstmt = isSgForStatement(getNextStatement(pragmaDeclaration));
-              ROSE_ASSERT(forstmt != NULL);
+            //if (attribute->getOmpDirectiveType() ==e_for ||attribute->getOmpDirectiveType() ==e_parallel_for)
+            //{
+              //SgForStatement* forstmt = isSgForStatement(getNextStatement(pragmaDeclaration));
+              //ROSE_ASSERT(forstmt != NULL);
               //forstmt->addNewAttribute("OmpAttribute",attribute);
-              addOmpAttribute(attribute,forstmt);
-            }
+              //addOmpAttribute(attribute,forstmt);
+            //}
 #endif
           }
         }
@@ -1007,6 +1032,8 @@ namespace OmpSupport
       }
     }
   }
+
+
 
   //! Try to build a complex clause with a given expression from OmpAttribute
   SgOmpExpressionClause* buildOmpExpressionComplexClause(OmpAttribute* att, ComplexClause* current_clause, omp_construct_enum clause_type) {
@@ -2785,8 +2812,25 @@ This is no perfect solution until we handle preprocessing information as structu
     // to the local scope).  So this function has side-effects for all languages.
 
     // test standalone parser
-    const char* input_string = "omp parallel shared (a, b, c[1:10])";
-    parseOpenMP(input_string, NULL);
+    // if Fortran flag is off and PARALLEL directive is on, call ompparser
+    // otherwise, use original Sage parser.
+    //const char* input_string = "omp parallel shared (a, b, c[1:10])";
+    /*
+     * Expression parsing function probably shouldn't be used,
+     * since it returns a SageNode object, which is not included in ompparser.
+     * Therefore, it would be better to parse the expressions during Sage AST construction.
+     */
+    // Get the object that ompparser AST.
+    //OpenMPDirective* ompparser_ast = parseOpenMP(input_string, NULL);
+    //std::vector<OpenMPClause *> *omp_clauses = ompparser_ast->getClauses(OMPC_shared);
+    //std::cout << omp_clauses->size() << "\n";
+    
+    // parse omp expressions
+    // const char* omp_expr = "abcd";
+    // parseExpression(omp_expr);
+
+    //convertAST(sageFilePtr, ompparser_ast);
+
     // test end
 
     if (SgProject::get_verbose() > 1)
@@ -2809,7 +2853,13 @@ This is no perfect solution until we handle preprocessing information as structu
 
     // Additional processing of the AST after parsing
     // 
-    postParsingProcessing (sageFilePtr);
+    //postParsingProcessing (sageFilePtr);
+    //
+
+    // convert OpenMP AST to Sage AST.
+    // omp_ast_list is global.
+    convertAST();
+    return;
 
     // stop here if only OpenMP parsing is requested
     if (sageFilePtr->get_openmp_parse_only())
@@ -2838,3 +2888,88 @@ This is no perfect solution until we handle preprocessing information as structu
   }
 
 } // end of the namespace
+
+void convertAST() {
+    //deque<OpenMPDirective*> omp_ast_list
+    std::deque<OpenMPDirective*>::iterator iter;
+    std::list<SgPragmaDeclaration*>::iterator pragma_iter = omp_pragma_list.begin();
+    for (iter = omp_ast_list.begin(); iter != omp_ast_list.end(); iter++) {
+        current_pragma = *pragma_iter;
+        convertDirective(*iter);
+        pragma_iter++;
+    }
+
+}
+
+SgOmpBodyStatement* convertDirective(OpenMPDirective* current_omp_directive) {
+    
+    OpenMPDirectiveKind directive_kind = current_omp_directive->getKind();
+    SgStatement* body = NULL;
+    SgOmpBodyStatement* result = NULL;
+
+    switch (directive_kind) {
+        case OMPD_parallel:
+            result = new SgOmpParallelStatement(NULL, body);
+            break;
+        default:
+            printf("Unknown directive is found.\n");
+    }
+    //body->setParent(result);
+    std::map<OpenMPClauseKind, std::vector<OpenMPClause *> *>* all_clauses = current_omp_directive->getAllClauses();
+    std::map<OpenMPClauseKind, std::vector<OpenMPClause *> *>::iterator iter;
+    for (iter = all_clauses->begin(); iter != all_clauses->end(); iter++){
+        std::vector<OpenMPClause*>* current_clauses = iter->second;
+        std::vector<OpenMPClause*>::iterator clause_iter;
+        for (clause_iter = current_clauses->begin(); clause_iter != current_clauses->end(); clause_iter++) {
+            convertClause(isSgOmpClauseBodyStatement(result), current_omp_directive, *clause_iter);
+        }
+    }
+    
+    return result;
+}
+
+void convertClause(SgOmpClauseBodyStatement* clause_body, OpenMPDirective* current_omp_directive, OpenMPClause* current_omp_clause) {
+    omp_variable_list.clear();
+    SgOmpVariablesClause* result = NULL;
+    OpenMPClauseKind clause_kind = current_omp_clause->getKind();
+    std::vector<const char*> current_expressions = current_omp_clause->getExpressions();
+    if (current_expressions.size() != 0) {
+        std::vector<const char*>::iterator iter;
+        for (iter = current_expressions.begin(); iter != current_expressions.end(); iter++) {
+            char* expr_string = NULL;
+            sprintf(expr_string, "omp %s", *iter);
+            //std::string expr_string = "omp " + *iter;
+            omp_parser_init(current_pragma, (const char*)expr_string);
+            omp_parse();
+        }
+    }
+
+    SgExprListExp* explist = buildExprListExp();
+    switch (clause_kind) {
+        case OMPC_shared:
+            result = new SgOmpSharedClause(explist);
+            break;
+        default:
+            printf("Unknown Clause!\n");
+    }
+
+
+    ;
+
+}
+
+void buildVariableList() {
+
+    ;
+
+}
+
+void parseExpression (const char* omp_expression) {
+
+    //omp_parser_init();
+    ;
+ 
+
+}
+
+
