@@ -85,7 +85,7 @@ static ComplexClause* normalizeComplexClause();
 // The node to which vars/expressions should get added
 // add ompparser var
 static bool addOmpVar(const char*);
-std::vector<std::pair<std::string, SgExpression*> > omp_variable_list;
+std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
 //static OmpAttribute* omptype = 0;
 
 // The context node with the pragma annotation being parsed
@@ -1477,6 +1477,7 @@ variable_list : ID_EXPRESSION {
                 addComplexVar((const char*)$1);
               }
               else if (is_ompparser) {
+                std::cout << "Got expression: " << $1 << "\n";
                 addOmpVar((const char*)$1);
               }
               else {
@@ -1490,6 +1491,7 @@ variable_list : ID_EXPRESSION {
                 addComplexVar((const char*)$3);
               }
               else if (is_ompparser) {
+                std::cout << "Got expression: " << $3 << "\n";
                 addOmpVar((const char*)$3);
               }
               else {
@@ -1607,12 +1609,13 @@ static bool addOmpVar(const char* var)  {
     SgInitializedName* sgvar = NULL;
     SgVariableSymbol* symbol = NULL;
     SgScopeStatement* scope = SageInterface::getScope(gNode);
+    ROSE_ASSERT(scope != NULL);
     symbol = lookupVariableSymbolInParentScopes (var, scope);
     sgvar = symbol->get_declaration();
     if (sgvar != NULL) {
         symbol = isSgVariableSymbol(sgvar->get_symbol_from_symbol_table());
     };
-    omp_variable_list->push_back(make_pair(var, sgvar));
+    omp_variable_list.push_back(std::make_pair(var, sgvar));
 
 
     return true;

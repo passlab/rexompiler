@@ -30,10 +30,12 @@ static OpenMPDirective* ompparser_ast;
 static deque<OpenMPDirective*> omp_ast_list;
 static void convertAST();
 static SgOmpBodyStatement* convertDirective(OpenMPDirective*);
-static void convertClause(SgOmpClauseBodyStatement*, OpenMPDirective*, OpenMPClause*);
+static SgStatement* getOpenMPBlockBody();
+static SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement*, OpenMPDirective*, OpenMPClause*);
+static void buildVariableList(SgOmpVariablesClause*);
 static SgPragmaDeclaration* current_pragma;
 // store temporary expression pairs for ompparser.
-extern std::vector<std::pair<std::string, SgExpression*> > omp_variable_list;
+extern std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
 
 using namespace std;
 using namespace SageInterface;
@@ -224,8 +226,6 @@ namespace OmpSupport
             //ompparser_ast = parseOpenMP(input_string, NULL);
             ompparser_ast = parseOpenMP(pragmaString.c_str(), NULL);
             omp_ast_list.push_back(ompparser_ast);
-            std::vector<OpenMPClause *> *omp_clauses = ompparser_ast->getClauses(OMPC_shared);
-            std::cout << omp_clauses->size() << "\n";
             //const char* omp_expr = "omp aaa, bbb, ccc";
             //const char* omp_expr = "99";
             //omp_parser_init(pragmaDeclaration, omp_expr);
@@ -2904,8 +2904,13 @@ void convertAST() {
 SgOmpBodyStatement* convertDirective(OpenMPDirective* current_omp_directive) {
     
     OpenMPDirectiveKind directive_kind = current_omp_directive->getKind();
-    SgStatement* body = NULL;
+    SgStatement* body = getOpenMPBlockBody();
+    removeStatement(body,false);
+    if (body == NULL) {
+        printf("Body is NULL!\n");
+    }
     SgOmpBodyStatement* result = NULL;
+    SgOmpClause* sg_clause;
 
     switch (directive_kind) {
         case OMPD_parallel:
@@ -2914,21 +2919,39 @@ SgOmpBodyStatement* convertDirective(OpenMPDirective* current_omp_directive) {
         default:
             printf("Unknown directive is found.\n");
     }
-    //body->setParent(result);
+    body->set_parent(result);
     std::map<OpenMPClauseKind, std::vector<OpenMPClause *> *>* all_clauses = current_omp_directive->getAllClauses();
     std::map<OpenMPClauseKind, std::vector<OpenMPClause *> *>::iterator iter;
     for (iter = all_clauses->begin(); iter != all_clauses->end(); iter++){
         std::vector<OpenMPClause*>* current_clauses = iter->second;
         std::vector<OpenMPClause*>::iterator clause_iter;
         for (clause_iter = current_clauses->begin(); clause_iter != current_clauses->end(); clause_iter++) {
-            convertClause(isSgOmpClauseBodyStatement(result), current_omp_directive, *clause_iter);
+            sg_clause = convertClause(isSgOmpClauseBodyStatement(result), current_omp_directive, *clause_iter);
+            //body->get_clauses().push_back(sg_clause);
+            //printf("77712345\n");
+            //sg_clause->set_parent(body);
         }
     }
+
+    setOneSourcePositionForTransformation(result);
+    // handle the SgFilePtr
+    copyStartFileInfo (current_pragma, result, NULL);
+    copyEndFileInfo (current_pragma, result, NULL);
+    replaceOmpPragmaWithOmpStatement(current_pragma, result);
     
     return result;
 }
 
-void convertClause(SgOmpClauseBodyStatement* clause_body, OpenMPDirective* current_omp_directive, OpenMPClause* current_omp_clause) {
+SgStatement* getOpenMPBlockBody() {
+
+    SgStatement* result = NULL;
+    result = getNextStatement(current_pragma);
+    return result;
+
+}
+
+
+SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, OpenMPDirective* current_omp_directive, OpenMPClause* current_omp_clause) {
     omp_variable_list.clear();
     SgOmpVariablesClause* result = NULL;
     OpenMPClauseKind clause_kind = current_omp_clause->getKind();
@@ -2936,10 +2959,13 @@ void convertClause(SgOmpClauseBodyStatement* clause_body, OpenMPDirective* curre
     if (current_expressions.size() != 0) {
         std::vector<const char*>::iterator iter;
         for (iter = current_expressions.begin(); iter != current_expressions.end(); iter++) {
-            char* expr_string = NULL;
-            sprintf(expr_string, "omp %s", *iter);
-            //std::string expr_string = "omp " + *iter;
-            omp_parser_init(current_pragma, (const char*)expr_string);
+      //      char* expr_string[500];
+            //const char* expr_string = "omp g\n";
+    //        sprintf(expr_string, "omp %s\n", *iter);
+            std::string expr_string = std::string() + "omp " + *iter + "\n";
+            //std::cout << current_pragma->get_pragma()->get_pragma() << "\n";
+            //omp_parser_init(current_pragma, (const char*)expr_string);
+            omp_parser_init(current_pragma, expr_string.c_str());
             omp_parse();
         }
     }
@@ -2948,19 +2974,47 @@ void convertClause(SgOmpClauseBodyStatement* clause_body, OpenMPDirective* curre
     switch (clause_kind) {
         case OMPC_shared:
             result = new SgOmpSharedClause(explist);
+            setOneSourcePositionForTransformation(result);
+            buildVariableList(result);
+            printf("Shared Clause added!\n");
             break;
         default:
             printf("Unknown Clause!\n");
     }
+    explist->set_parent(result);
+
+    // reconsider the location of following code to attach clause
+    SgOmpClause* sg_clause = result; 
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
 
 
-    ;
+    return result;
 
 }
 
-void buildVariableList() {
+void buildVariableList(SgOmpVariablesClause* current_omp_clause) {
 
-    ;
+    std::vector<std::pair<std::string, SgNode*> >::iterator iter;
+    for (iter = omp_variable_list.begin(); iter != omp_variable_list.end(); iter++) {
+        if (SgInitializedName* iname = isSgInitializedName((*iter).second)) {
+            SgVarRefExp * var_ref = buildVarRefExp(iname);
+            current_omp_clause->get_variables()->get_expressions().push_back(var_ref);
+            var_ref->set_parent(current_omp_clause);
+        }
+        else if (SgPntrArrRefExp* aref= isSgPntrArrRefExp((*iter).second)) {
+            current_omp_clause->get_variables()->get_expressions().push_back(aref);
+            aref->set_parent(current_omp_clause);
+        }
+        else if (SgVarRefExp* vref = isSgVarRefExp((*iter).second)) {
+            current_omp_clause->get_variables()->get_expressions().push_back(vref);
+            vref->set_parent(current_omp_clause);
+        }
+        else {
+            cerr << "error: unhandled type of variable within a list:" << ((*iter).second)->class_name();
+        }
+    }
+
 
 }
 
