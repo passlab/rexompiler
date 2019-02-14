@@ -26,14 +26,11 @@ void parse_fortran_openmp(SgSourceFile *sageFilePtr);
 //static OmpSupport::ComplexClause* current_clause;
 static bool is_complex_clause = false;
 static void parseExpression (const char*);
-static OpenMPDirective* ompparser_ast;
-static deque<OpenMPDirective*> omp_ast_list;
 static void convertAST();
-static SgOmpBodyStatement* convertDirective(OpenMPDirective*);
-static SgStatement* getOpenMPBlockBody();
-static SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement*, OpenMPDirective*, OpenMPClause*);
+static SgOmpBodyStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
+static SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
+static SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static void buildVariableList(SgOmpVariablesClause*);
-static SgPragmaDeclaration* current_pragma;
 // store temporary expression pairs for ompparser.
 extern std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
 
@@ -153,7 +150,11 @@ static bool copyEndFileInfo (SgNode* src, SgNode* dest, OmpAttribute* oa)
 namespace OmpSupport
 { 
   // an internal data structure to avoid redundant AST traversal to find OpenMP pragmas
-  static std::list<SgPragmaDeclaration* > omp_pragma_list; 
+  static std::list<SgPragmaDeclaration* > omp_pragma_list;
+
+    // the vector of pairs of OpenMP pragma and Ompparser IR.
+    static std::vector<std::pair<SgPragmaDeclaration*, OpenMPDirective*> > OpenMPIR_list;
+    static OpenMPDirective* ompparser_OpenMPIR;
 
   // a similar list to save encountered Fortran comments which are OpenMP directives
   std::list<OmpAttribute* > omp_comment_list; 
@@ -221,15 +222,9 @@ namespace OmpSupport
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 
             // parse expression
-            // Get the object that ompparser AST.
-            //const char* input_string = "omp parallel shared (a, b, c)";
-            //ompparser_ast = parseOpenMP(input_string, NULL);
-            ompparser_ast = parseOpenMP(pragmaString.c_str(), NULL);
-            omp_ast_list.push_back(ompparser_ast);
-            //const char* omp_expr = "omp aaa, bbb, ccc";
-            //const char* omp_expr = "99";
-            //omp_parser_init(pragmaDeclaration, omp_expr);
-            //omp_parse();
+            // Get the object that ompparser IR.
+            ompparser_OpenMPIR = parseOpenMP(pragmaString.c_str(), NULL);
+            OpenMPIR_list.push_back(std::make_pair(pragmaDeclaration, ompparser_OpenMPIR));
 
             //omp_parser_init(pragmaDeclaration,pragmaString.c_str());
             //omp_parse();
@@ -2890,25 +2885,20 @@ This is no perfect solution until we handle preprocessing information as structu
 } // end of the namespace
 
 void convertAST() {
-    //deque<OpenMPDirective*> omp_ast_list
-    std::deque<OpenMPDirective*>::iterator iter;
-    std::list<SgPragmaDeclaration*>::iterator pragma_iter = omp_pragma_list.begin();
-    for (iter = omp_ast_list.begin(); iter != omp_ast_list.end(); iter++) {
-        current_pragma = *pragma_iter;
+
+    std::vector<std::pair<SgPragmaDeclaration*, OpenMPDirective*> >::iterator iter;
+    for (iter = OpenMPIR_list.begin(); iter != OpenMPIR_list.end(); iter++) {
         convertDirective(*iter);
-        pragma_iter++;
     }
 
 }
 
-SgOmpBodyStatement* convertDirective(OpenMPDirective* current_omp_directive) {
+SgOmpBodyStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR) {
     
-    OpenMPDirectiveKind directive_kind = current_omp_directive->getKind();
-    SgStatement* body = getOpenMPBlockBody();
+    OpenMPDirectiveKind directive_kind = current_OpenMPIR.second->getKind();
+    // directives like parallel and for have a following code block beside the pragma itself.
+    SgStatement* body = getOpenMPBlockBody(current_OpenMPIR);
     removeStatement(body,false);
-    if (body == NULL) {
-        printf("Body is NULL!\n");
-    }
     SgOmpBodyStatement* result = NULL;
     SgOmpClause* sg_clause;
 
@@ -2920,38 +2910,38 @@ SgOmpBodyStatement* convertDirective(OpenMPDirective* current_omp_directive) {
             printf("Unknown directive is found.\n");
     }
     body->set_parent(result);
-    std::map<OpenMPClauseKind, std::vector<OpenMPClause *> *>* all_clauses = current_omp_directive->getAllClauses();
+    std::map<OpenMPClauseKind, std::vector<OpenMPClause *> *>* all_clauses = current_OpenMPIR.second->getAllClauses();
     std::map<OpenMPClauseKind, std::vector<OpenMPClause *> *>::iterator iter;
     for (iter = all_clauses->begin(); iter != all_clauses->end(); iter++){
         std::vector<OpenMPClause*>* current_clauses = iter->second;
         std::vector<OpenMPClause*>::iterator clause_iter;
         for (clause_iter = current_clauses->begin(); clause_iter != current_clauses->end(); clause_iter++) {
-            sg_clause = convertClause(isSgOmpClauseBodyStatement(result), current_omp_directive, *clause_iter);
+            sg_clause = convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
             //body->get_clauses().push_back(sg_clause);
-            //printf("77712345\n");
             //sg_clause->set_parent(body);
         }
     }
 
+
     setOneSourcePositionForTransformation(result);
     // handle the SgFilePtr
-    copyStartFileInfo (current_pragma, result, NULL);
-    copyEndFileInfo (current_pragma, result, NULL);
-    replaceOmpPragmaWithOmpStatement(current_pragma, result);
+    copyStartFileInfo (current_OpenMPIR.first, result, NULL);
+    copyEndFileInfo (current_OpenMPIR.first, result, NULL);
+    replaceOmpPragmaWithOmpStatement(current_OpenMPIR.first, result);
     
     return result;
 }
 
-SgStatement* getOpenMPBlockBody() {
+SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR) {
 
     SgStatement* result = NULL;
-    result = getNextStatement(current_pragma);
+    result = getNextStatement(current_OpenMPIR.first);
     return result;
 
 }
 
 
-SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, OpenMPDirective* current_omp_directive, OpenMPClause* current_omp_clause) {
+SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR, OpenMPClause* current_omp_clause) {
     omp_variable_list.clear();
     SgOmpVariablesClause* result = NULL;
     OpenMPClauseKind clause_kind = current_omp_clause->getKind();
@@ -2959,13 +2949,8 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, OpenM
     if (current_expressions.size() != 0) {
         std::vector<const char*>::iterator iter;
         for (iter = current_expressions.begin(); iter != current_expressions.end(); iter++) {
-      //      char* expr_string[500];
-            //const char* expr_string = "omp g\n";
-    //        sprintf(expr_string, "omp %s\n", *iter);
             std::string expr_string = std::string() + "omp " + *iter + "\n";
-            //std::cout << current_pragma->get_pragma()->get_pragma() << "\n";
-            //omp_parser_init(current_pragma, (const char*)expr_string);
-            omp_parser_init(current_pragma, expr_string.c_str());
+            omp_parser_init(current_OpenMPIR.first, expr_string.c_str());
             omp_parse();
         }
     }
