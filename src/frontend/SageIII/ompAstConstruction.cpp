@@ -21,11 +21,13 @@ extern int omp_parse();
 extern OmpSupport::OmpAttribute* getParsedDirective();
 extern void omp_parser_init(SgNode* aNode, const char* str);
 //Fortran OpenMP parser interface
-void parse_fortran_openmp(SgSourceFile *sageFilePtr);
+static void parse_fortran_openmp(SgSourceFile *sageFilePtr);
+static OpenMPDirective* ompparser_OpenMPIR;
 
 //static OmpSupport::ComplexClause* current_clause;
 static bool is_complex_clause = false;
 static void parseExpression (const char*);
+static void parseFortran(SgSourceFile*);
 static void convertAST();
 static SgOmpBodyStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
@@ -81,10 +83,13 @@ static bool copyStartFileInfo (SgNode* src, SgNode* dest, OmpAttribute* oa)
 // Adjustment for Fortran, the AST node attaching the Fortran comment will not actual give out the accurate line number for the comment
   if (is_Fortran_language())
   {
+    /*
     ROSE_ASSERT (oa != NULL);
     PreprocessingInfo *currentPreprocessingInfoPtr = oa->getPreprocessingInfo();
     ROSE_ASSERT (currentPreprocessingInfoPtr != NULL);
-    int commentLine = currentPreprocessingInfoPtr->getLineNumber(); 
+    int commentLine = currentPreprocessingInfoPtr->getLineNumber();
+    */
+    int commentLine = ompparser_OpenMPIR->getLine();
     ldest->get_file_info()->set_line(commentLine);
   }
     
@@ -154,7 +159,7 @@ namespace OmpSupport
 
     // the vector of pairs of OpenMP pragma and Ompparser IR.
     static std::vector<std::pair<SgPragmaDeclaration*, OpenMPDirective*> > OpenMPIR_list;
-    static OpenMPDirective* ompparser_OpenMPIR;
+    //static OpenMPDirective* ompparser_OpenMPIR;
 
   // a similar list to save encountered Fortran comments which are OpenMP directives
   std::list<OmpAttribute* > omp_comment_list; 
@@ -173,7 +178,13 @@ namespace OmpSupport
     if (sageFilePtr->get_Fortran_only()||sageFilePtr->get_F77_only()||sageFilePtr->get_F90_only()||
         sageFilePtr->get_F95_only() || sageFilePtr->get_F2003_only())
     {
-      parse_fortran_openmp(sageFilePtr);
+        //original rose Fortran parser
+        //parse_fortran_openmp(sageFilePtr);
+        // use ompparser to process Fortran.
+        printf("Preparing ompparser\n");
+        parseFortran(sageFilePtr);
+        //ompparser_OpenMPIR = parseOpenMP(pragmaString.c_str(), NULL);
+        //OpenMPIR_list.push_back(std::make_pair(pragmaDeclaration, ompparser_OpenMPIR));
     } //end if (fortran)
     else
     {
@@ -2894,6 +2905,7 @@ void convertAST() {
 }
 
 SgOmpBodyStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR) {
+            printf("ompparser directive is ready.\n");
     
     OpenMPDirectiveKind directive_kind = current_OpenMPIR.second->getKind();
     // directives like parallel and for have a following code block beside the pragma itself.
@@ -2903,11 +2915,16 @@ SgOmpBodyStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
     SgOmpClause* sg_clause;
 
     switch (directive_kind) {
-        case OMPD_parallel:
+        case OMPD_parallel: {
             result = new SgOmpParallelStatement(NULL, body);
             break;
-        default:
+        }
+        case OMPD_end: {
+            return result;
+        }
+        default: {
             printf("Unknown directive is found.\n");
+        }
     }
     body->set_parent(result);
     std::map<OpenMPClauseKind, std::vector<OpenMPClause *> *>* all_clauses = current_OpenMPIR.second->getAllClauses();
@@ -2942,13 +2959,14 @@ SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDirective*
 
 
 SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR, OpenMPClause* current_omp_clause) {
+            printf("ompparser clause is ready.\n");
     omp_variable_list.clear();
     SgOmpVariablesClause* result = NULL;
     OpenMPClauseKind clause_kind = current_omp_clause->getKind();
-    std::vector<const char*> current_expressions = current_omp_clause->getExpressions();
-    if (current_expressions.size() != 0) {
+    std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
+    if (current_expressions->size() != 0) {
         std::vector<const char*>::iterator iter;
-        for (iter = current_expressions.begin(); iter != current_expressions.end(); iter++) {
+        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
             std::string expr_string = std::string() + "omp " + *iter + "\n";
             omp_parser_init(current_OpenMPIR.first, expr_string.c_str());
             omp_parse();
@@ -3011,4 +3029,125 @@ void parseExpression (const char* omp_expression) {
 
 }
 
+
+void parseFortran(SgSourceFile *sageFilePtr)
+{
+  std::vector <SgNode*> loc_nodes = NodeQuery::querySubTree(sageFilePtr, V_SgLocatedNode);
+  std::vector <SgNode*>::iterator iter;
+  for (iter= loc_nodes.begin(); iter!= loc_nodes.end(); iter++)
+  {
+    SgLocatedNode* locNode= isSgLocatedNode(*iter);
+    ROSE_ASSERT(locNode);
+    AttachedPreprocessingInfoType *comments = locNode->getAttachedPreprocessingInfo ();
+    if (comments)
+    {
+      printf("Entering comments\n");
+      AttachedPreprocessingInfoType::iterator iter, previter = comments->end();
+
+      std::list<std::string> comment_list;
+      int idx = 0;
+      std::vector<int> idxs;
+      for (iter = comments->begin(); iter!=comments->end(); iter++)
+      {
+        PreprocessingInfo * pinfo = *iter;
+        /*
+        if (pinfo->getTypeOfDirective()==PreprocessingInfo::FortranStyleComment)
+        {
+          string buffer = pinfo->getString();
+          // Change to lower case
+          std::transform(buffer.begin(), buffer.end(), buffer.begin(), ::tolower);
+          // We are not interested in other comments
+          {
+            if (previter!= comments->end())
+            {
+              printf("error: Found a none-OpenMP comment after a pending OpenMP comment with a line continuation\n");
+              assert(false);
+            }
+            continue;
+          }
+
+          // remove possible comments also:
+          // merge with possible previous line with &
+          if (previter!= comments->end())
+          {
+            //            cout<<"previous line:"<<(*previter)->getString()<<endl;
+            buffer = (*previter)->getString()+buffer;
+            // remove "& !omp [&]" within the merged line
+            //            cout<<"merged line:"<<buffer<<endl;
+            (*previter)->setString(""); // erase previous line with & at the end
+          }
+
+           pinfo->setString(buffer); //save the changed buffer back
+
+           // Now we have a line without line-continuation & , we can proceed to parse it
+            previter = comments->end(); // clear this flag for a pending line with &
+            // original Fortran parser
+            //OmpSupport::OmpAttribute* att= omp_fortran_parse(locNode, pinfo->getString().c_str());
+            */
+            // use ompparser to process Fortran
+            OmpSupport::OmpAttribute* att = NULL;
+            SgStatement* stmt = isSgStatement(locNode);
+            SgScopeStatement * scope = stmt->get_scope();
+            printf("Entering ompparser\n");
+            ompparser_OpenMPIR = parseOpenMP(pinfo->getString().c_str(), NULL);
+            if (ompparser_OpenMPIR->getKind() == OMPD_end) {
+                ;
+            } else {
+            ompparser_OpenMPIR->setLine(pinfo->getLineNumber());
+            std::cout << ompparser_OpenMPIR->generatePragmaString("omp ", "", "") << "\n";
+            SgPragmaDeclaration * p_decl = buildPragmaDeclaration(ompparser_OpenMPIR->generatePragmaString("omp ", "", ""), scope);
+            copyStartFileInfo (locNode, p_decl, att);
+            OpenMPIR_list.push_back(std::make_pair(p_decl, ompparser_OpenMPIR));
+
+      PreprocessingInfo::RelativePositionType position = pinfo->getRelativePosition ();
+      if (position == PreprocessingInfo::before)
+      {
+        // Don't automatically move comments here!
+        if (isSgBasicBlock(stmt) && isSgFortranDo (stmt->get_parent()))
+        {// special handling for the body of SgFortranDo.  The comments will be attached before the body
+         // But we cannot insert the pragma before the body. So we prepend it into the body instead
+          prependStatement(p_decl, isSgBasicBlock(stmt));
+        }
+        else
+          insertStatementBefore (stmt, p_decl, false);
+      }
+      else if (position == PreprocessingInfo::inside)
+      {
+        SgScopeStatement* scope = isSgScopeStatement(stmt);
+        ROSE_ASSERT (scope != NULL);
+        appendStatement(p_decl, scope);
+      }
+      else if (position == PreprocessingInfo::after)
+      {
+        insertStatementAfter(stmt, p_decl, false);
+      }
+      else
+      {
+        cerr<<"ompAstConstruction.cpp , illegal PreprocessingInfo::RelativePositionType:"<<position<<endl;
+        ROSE_ASSERT (false);
+      }
+            /*
+            if (att)
+            {
+              att->setPreprocessingInfo(pinfo);
+              addOmpAttribute(att, locNode);
+              ROSE_ASSERT (locNode->getAttachedPreprocessingInfo ()->size() != 0);
+             // cout<<"debug at ompFortranParser.C:"<<locNode<<" "<< locNode->getAttachedPreprocessingInfo ()->size() <<endl;
+              omp_comment_list.push_back(att);
+              ROSE_ASSERT (att->getPreprocessingInfo() != NULL);
+            }
+            */
+        //}
+      }
+      idxs.push_back(idx);
+      idx += 1;
+      //comments->erase(iter);
+      } //end for all preprocessing info
+      for (int i = 0; i < idx; i++) {
+          comments->pop_back();
+          std::cout << "pop once\n";
+      }
+    }
+  } //end for located nodes
+}
 
