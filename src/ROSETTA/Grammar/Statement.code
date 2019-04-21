@@ -20120,6 +20120,12 @@ SgOmpParallelStatement::post_construction_initialization()
    {}
 SOURCE_OMP_PARALLEL_STATEMENT_END
 
+SOURCE_OMP_METADIRECTIVE_STATEMENT_START
+void
+SgOmpMetadirectiveStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_METADIRECTIVE_STATEMENT_END
+
 SOURCE_OMP_MASTER_STATEMENT_START
 void
 SgOmpMasterStatement::post_construction_initialization()

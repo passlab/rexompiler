@@ -2803,6 +2803,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                  // Generic OpenMP directives with a format of : begin-directive, begin-clauses, body, end-directive , end-clauses
                     case V_SgOmpCriticalStatement:
                     case V_SgOmpMasterStatement:
+                    case V_SgOmpMetadirectiveStatement:
                     case V_SgOmpOrderedStatement:
                     case V_SgOmpSectionsStatement:
                     case V_SgOmpParallelStatement:
@@ -8278,6 +8279,12 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
       {
         unparseOmpPrefix(info);
         curprint(string ("barrier "));
+        break;
+      }
+    case V_SgOmpMetadirectiveStatement:
+      {
+        unparseOmpPrefix(info);
+        curprint(string ("metadirective "));
         break;
       }
     case V_SgOmpParallelStatement:

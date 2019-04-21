@@ -2919,6 +2919,10 @@ SgOmpBodyStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
             result = new SgOmpParallelStatement(NULL, body);
             break;
         }
+        case OMPD_metadirective: {
+            result = new SgOmpMetadirectiveStatement(NULL, body);
+            break;
+        }
         case OMPD_end: {
             return result;
         }

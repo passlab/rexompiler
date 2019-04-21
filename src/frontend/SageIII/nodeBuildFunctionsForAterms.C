@@ -7222,6 +7222,18 @@ SgOmpParallelStatement* SgOmpParallelStatement::build_node_from_nonlist_children
      return returnNode;
    }
 
+// Generated static function for building IR nodes for Aterm support (like a constructor).
+SgOmpMetadirectiveStatement* SgOmpMetadirectiveStatement::build_node_from_nonlist_children ( Sg_File_Info* startOfConstruct, SgStatement* body )
+   {
+#if 0
+  // debugging information!
+     printf ("In SgOmpParallelStatement::build_node_from_nonlist_children (Sg_File_Info* startOfConstruct, SgStatement* body): this = %p = %s \n",this,this->class_name().c_str());
+#endif
+
+     SgOmpMetadirectiveStatement* returnNode = NULL;
+
+     return returnNode;
+   }
 
 /* #line 6102 "../../../src/frontend/SageIII//Cxx_GrammarAtermNodeBuildFunctions.C" */
 

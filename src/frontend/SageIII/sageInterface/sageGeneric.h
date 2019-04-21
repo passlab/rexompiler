@@ -338,6 +338,7 @@ namespace sg
     GEN_VISIT(SgUpcBarrierStatement)
     GEN_VISIT(SgUpcFenceStatement)
     GEN_VISIT(SgUpcForAllStatement)
+    GEN_VISIT(SgOmpMetadirectiveStatement)
     GEN_VISIT(SgOmpParallelStatement)
     GEN_VISIT(SgOmpSingleStatement)
     GEN_VISIT(SgOmpSimdStatement)
