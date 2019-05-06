@@ -2653,6 +2653,14 @@ SgOmpSafelenClause* SgOmpSafelenClause::build_node_from_nonlist_children ( Sg_Fi
      return returnNode;
    }
 
+// Generated static function for building IR nodes for Aterm support (like a constructor).
+SgOmpWhenClause* SgOmpWhenClause::build_node_from_nonlist_children (Sg_File_Info* startOfConstruct, SgExpression* user_condition, SgNode* variant_directive)
+   {
+     SgOmpWhenClause* returnNode = NULL;
+
+     return returnNode;
+   }
+
 
 /* #line 2556 "../../../src/frontend/SageIII//Cxx_GrammarAtermNodeBuildFunctions.C" */
 

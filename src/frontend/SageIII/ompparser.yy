@@ -83,9 +83,6 @@ static ComplexClause* current_clause;
 // normalize the complex clause after initial setup.
 static ComplexClause* normalizeComplexClause();
 // The node to which vars/expressions should get added
-// add ompparser var
-static bool addOmpVar(const char*);
-std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
 //static OmpAttribute* omptype = 0;
 
 // The context node with the pragma annotation being parsed
@@ -118,7 +115,12 @@ static bool is_complex_clause = false;
 static bool addComplexVar(const char* var);
 
 // mark whether it is for ompparser
-static bool is_ompparser = false;
+static bool is_ompparser_variable = false;
+static bool is_ompparser_expression = false;
+// add ompparser var
+static bool addOmpVariable(const char*);
+std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
+static bool addOmpExpression(const char*);
 
 %}
 
@@ -202,13 +204,26 @@ openmp_directive : parallel_directive
                  | target_data_directive
                  | simd_directive
                  | omp_varlist
+                 | omp_expression
                  ;
 
 omp_varlist : OMP {
-                    is_ompparser = true; 
+                    is_ompparser_variable = true;
                     omptype = e_unknown; 
-                    cur_omp_directive = omptype; b_within_variable_list = true;} variable_list {b_within_variable_list = false; is_ompparser = false; }
+                    cur_omp_directive = omptype; b_within_variable_list = true;} variable_list {b_within_variable_list = false; is_ompparser_variable = false; }
                ;
+
+omp_expression : EXPRESSION {
+                is_ompparser_expression = true;
+                omptype = e_unknown;
+                current_clause = ompattribute->addComplexClause(omptype);
+                is_complex_clause = true;
+            } expression {
+                addComplexClauseExpression("");
+                is_complex_clause = false;
+                is_ompparser_variable = false;
+            }
+            ;
 
 parallel_directive : /* #pragma */ OMP PARALLEL {
                        ompattribute = buildOmpAttribute(e_parallel,gNode,true);
@@ -1476,9 +1491,9 @@ variable_list : ID_EXPRESSION {
               if (is_complex_clause) {
                 addComplexVar((const char*)$1);
               }
-              else if (is_ompparser) {
+              else if (is_ompparser_variable) {
                 std::cout << "Got expression: " << $1 << "\n";
-                addOmpVar((const char*)$1);
+                addOmpVariable((const char*)$1);
               }
               else {
                 if (!addVar((const char*)$1)) {
@@ -1490,9 +1505,9 @@ variable_list : ID_EXPRESSION {
               if (is_complex_clause) {
                 addComplexVar((const char*)$3);
               }
-              else if (is_ompparser) {
+              else if (is_ompparser_variable) {
                 std::cout << "Got expression: " << $3 << "\n";
-                addOmpVar((const char*)$3);
+                addOmpVariable((const char*)$3);
               }
               else {
                 if (!addVar((const char*)$3)) {
@@ -1605,7 +1620,7 @@ static bool addComplexVar(const char* var)  {
     return true;
 }
 
-static bool addOmpVar(const char* var)  {
+static bool addOmpVariable(const char* var)  {
     SgInitializedName* sgvar = NULL;
     SgVariableSymbol* symbol = NULL;
     SgScopeStatement* scope = SageInterface::getScope(gNode);
@@ -1616,8 +1631,6 @@ static bool addOmpVar(const char* var)  {
         symbol = isSgVariableSymbol(sgvar->get_symbol_from_symbol_table());
     };
     omp_variable_list.push_back(std::make_pair(var, sgvar));
-
-
     return true;
 }
 

@@ -114,10 +114,11 @@ Grammar::setUpNodes ()
          "OmpVariablesClause", "OmpVariablesClauseTag", false);
 
      NEW_TERMINAL_MACRO (OmpScheduleClause, "OmpScheduleClause", "OmpScheduleClauseTag" );
+     NEW_TERMINAL_MACRO (OmpWhenClause, "OmpWhenClause", "OmpWhenClauseTag" );
 
      NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpBeginClause |OmpEndClause | OmpUntiedClause |
          OmpDefaultClause | OmpAtomicClause | OmpProcBindClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause |
-         OmpVariablesClause | OmpScheduleClause | OmpMergeableClause ,
+         OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause ,
          "OmpClause", "OmpClauseTag", false);
 #endif
      
@@ -1826,6 +1827,13 @@ Grammar::setUpNodes ()
      OmpScheduleClause.setDataPrototype ( "SgExpression*", "chunk_size", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
  
+     // when (user = {condition(boolean expr)} : variant-directive)
+     OmpWhenClause.setDataPrototype("SgExpression*", "user_condition", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpWhenClause.setDataPrototype("SgNode*", "variant_directive", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+
+
      // clauses with variable lists 
      // Liao 9/27/2010, per user's report, modeling the variable reference use SgVarRefExp
      //OmpVariablesClause.setDataPrototype ( "SgInitializedNamePtrList", "variables", "",

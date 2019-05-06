@@ -1842,6 +1842,7 @@ addAssociatedNodes ( SgNode* node, set<SgNode*> & nodeList, bool markMemberNodes
           case V_SgOmpUntiedClause      : 
           case V_SgOmpMergeableClause      : 
           case V_SgOmpVariablesClause   : 
+          case V_SgOmpWhenClause        :
           case V_SgOmpWorkshareStatement:
             {
               //TODO real code to support AST merge

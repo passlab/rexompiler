@@ -2961,9 +2961,18 @@ SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDirective*
 
 }
 
+SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR, OpenMPClause* current_omp_clause) {
+    printf("when clause is coming.\n");
+    std::string user_condition_string = ((OpenMPWhenClause*)current_omp_clause)->getUserCondition();
+    user_condition_string = "omp " + user_condition_string + "\n";
+    omp_parser_init(current_OpenMPIR.first, user_condition_string.c_str());
+    omp_parse();
+
+}
+
 
 SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR, OpenMPClause* current_omp_clause) {
-            printf("ompparser clause is ready.\n");
+    printf("ompparser clause is ready.\n");
     omp_variable_list.clear();
     SgOmpVariablesClause* result = NULL;
     OpenMPClauseKind clause_kind = current_omp_clause->getKind();
