@@ -21,11 +21,13 @@ extern int omp_parse();
 extern OmpSupport::OmpAttribute* getParsedDirective();
 extern void omp_parser_init(SgNode* aNode, const char* str);
 //Fortran OpenMP parser interface
-static void parse_fortran_openmp(SgSourceFile *sageFilePtr);
+void parse_fortran_openmp(SgSourceFile *sageFilePtr);
 static OpenMPDirective* ompparser_OpenMPIR;
 
 //static OmpSupport::ComplexClause* current_clause;
 static bool is_complex_clause = false;
+static bool use_ompparser = false;
+static bool checkOpenMPIR(OpenMPDirective*);
 static void parseExpression (const char*);
 static void parseFortran(SgSourceFile*);
 static void convertAST();
@@ -83,13 +85,11 @@ static bool copyStartFileInfo (SgNode* src, SgNode* dest, OmpAttribute* oa)
 // Adjustment for Fortran, the AST node attaching the Fortran comment will not actual give out the accurate line number for the comment
   if (is_Fortran_language())
   {
-    /*
     ROSE_ASSERT (oa != NULL);
     PreprocessingInfo *currentPreprocessingInfoPtr = oa->getPreprocessingInfo();
     ROSE_ASSERT (currentPreprocessingInfoPtr != NULL);
     int commentLine = currentPreprocessingInfoPtr->getLineNumber();
-    */
-    int commentLine = ompparser_OpenMPIR->getLine();
+    //int commentLine = ompparser_OpenMPIR->getLine();
     ldest->get_file_info()->set_line(commentLine);
   }
     
@@ -179,10 +179,10 @@ namespace OmpSupport
         sageFilePtr->get_F95_only() || sageFilePtr->get_F2003_only())
     {
         //original rose Fortran parser
-        //parse_fortran_openmp(sageFilePtr);
+        parse_fortran_openmp(sageFilePtr);
         // use ompparser to process Fortran.
-        printf("Preparing ompparser\n");
-        parseFortran(sageFilePtr);
+        //printf("Preparing ompparser\n");
+        //parseFortran(sageFilePtr);
         //ompparser_OpenMPIR = parseOpenMP(pragmaString.c_str(), NULL);
         //OpenMPIR_list.push_back(std::make_pair(pragmaDeclaration, ompparser_OpenMPIR));
     } //end if (fortran)
@@ -235,30 +235,33 @@ namespace OmpSupport
             // parse expression
             // Get the object that ompparser IR.
             ompparser_OpenMPIR = parseOpenMP(pragmaString.c_str(), NULL);
-            OpenMPIR_list.push_back(std::make_pair(pragmaDeclaration, ompparser_OpenMPIR));
-
-            //omp_parser_init(pragmaDeclaration,pragmaString.c_str());
-            //omp_parse();
+            use_ompparser = checkOpenMPIR(ompparser_OpenMPIR);
+            if (use_ompparser) {
+                OpenMPIR_list.push_back(std::make_pair(pragmaDeclaration, ompparser_OpenMPIR));
+            } else {
+                omp_parser_init(pragmaDeclaration, pragmaString.c_str());
+                omp_parse();
+            };
 #endif
-            //OmpAttribute* attribute = getParsedDirective();
+            if (!use_ompparser) {
+                OmpAttribute* attribute = getParsedDirective();
             //cout<<"sage_gen_be.C:23758 debug:\n"<<pragmaString<<endl;
             //attribute->print();//debug only for now
-            //addOmpAttribute(attribute,pragmaDeclaration);
+                addOmpAttribute(attribute,pragmaDeclaration);
             //cout<<"debug: attachOmpAttributeInfo() for a pragma:"<<pragmaString<<"at address:"<<pragmaDeclaration<<endl;
             //cout<<"file info for it is:"<<pragmaDeclaration->get_file_info()->get_filename()<<endl;
-
 #if 1 // Liao, 2/12/2010, this could be a bad idea. It causes trouble in comparing 
             //user-defined and compiler-generated OmpAttribute.
             // We attach the attribute redundantly on affected loops also
             // for easier loop handling later on in autoTuning's outlining step (reproducing lost pragmas)
-            //if (attribute->getOmpDirectiveType() ==e_for ||attribute->getOmpDirectiveType() ==e_parallel_for)
-            //{
-              //SgForStatement* forstmt = isSgForStatement(getNextStatement(pragmaDeclaration));
-              //ROSE_ASSERT(forstmt != NULL);
+                if (attribute->getOmpDirectiveType() ==e_for ||attribute->getOmpDirectiveType() ==e_parallel_for) {
+                    SgForStatement* forstmt = isSgForStatement(getNextStatement(pragmaDeclaration));
+                    ROSE_ASSERT(forstmt != NULL);
               //forstmt->addNewAttribute("OmpAttribute",attribute);
-              //addOmpAttribute(attribute,forstmt);
-            //}
+                    addOmpAttribute(attribute,forstmt);
+                };
 #endif
+            };
           }
         }
       }// end for
@@ -2194,6 +2197,7 @@ This is no perfect solution until we handle preprocessing information as structu
     for (end_iter=omp_end_pragma_list.rbegin(); end_iter!=omp_end_pragma_list.rend(); end_iter ++)
       removeStatement (*end_iter);
 #endif
+    int OpenMPIR_index = 0;
     for (iter = omp_pragma_list.rbegin(); iter != omp_pragma_list.rend(); iter ++)
     {
       // Liao, 11/18/2009
@@ -2216,6 +2220,14 @@ This is no perfect solution until we handle preprocessing information as structu
       if (decl->get_file_info()->get_filename()!= sageFilePtr->get_file_info()->get_filename()
           && !(decl->get_file_info()->isTransformation()))
         continue;
+
+      // OmpAttibute* could be empty due to ompparser.
+      if (getOmpAttribute(decl) == NULL) {
+          convertDirective(OpenMPIR_list[OpenMPIR_index]);
+          OpenMPIR_index++;
+          continue;
+      };
+
        // Liao 10/19/2010
        // We now support OpenMP AST construction for both C/C++ and Fortran
        // But we allow Fortran End directives to exist after -rose:openmp:ast_only
@@ -2227,6 +2239,7 @@ This is no perfect solution until we handle preprocessing information as structu
       //cout<<"debug: convert_OpenMP_pragma_to_AST() handling pragma at "<<decl<<endl;  
       //ROSE_ASSERT (decl->get_file_info()->get_filename() != string("transformation"));
       OmpAttributeList* oattlist= getOmpAttributeList(decl);
+
       ROSE_ASSERT (oattlist != NULL) ;
       vector <OmpAttribute* > ompattlist = oattlist->ompAttriList;
       ROSE_ASSERT (ompattlist.size() != 0) ;
@@ -2751,6 +2764,11 @@ This is no perfect solution until we handle preprocessing information as structu
       //cout<<"debug: convert_OpenMP_pragma_to_AST() handling pragma at "<<decl<<endl;  
       //ROSE_ASSERT (decl->get_file_info()->get_filename() != string("transformation"));
       OmpAttributeList* oattlist= getOmpAttributeList(decl);                                                                               
+      // oattlist could be empty due to ompparser
+      // need a way to determine the actual cause.
+      if (oattlist == NULL) {
+          continue;
+      };
       ROSE_ASSERT (oattlist != NULL) ;                                                                                                     
       vector <OmpAttribute* > ompattlist = oattlist->ompAttriList;                                                                         
       ROSE_ASSERT (ompattlist.size() != 0) ;                                                                                               
@@ -2859,13 +2877,17 @@ This is no perfect solution until we handle preprocessing information as structu
 
     // Additional processing of the AST after parsing
     // 
-    //postParsingProcessing (sageFilePtr);
-    //
-
+    //if (use_ompparser) {
     // convert OpenMP AST to Sage AST.
     // omp_ast_list is global.
-    convertAST();
-    return;
+    //    convertAST();
+        use_ompparser = false;
+    //    return;
+    //};
+
+    postParsingProcessing (sageFilePtr);
+    //
+
 
     // stop here if only OpenMP parsing is requested
     if (sageFilePtr->get_openmp_parse_only())
@@ -3032,6 +3054,38 @@ void buildVariableList(SgOmpVariablesClause* current_omp_clause) {
     }
 
 
+}
+
+bool checkOpenMPIR(OpenMPDirective* directive) {
+    //return false;
+    if (directive == NULL) {
+        return false;
+    };
+    OpenMPDirectiveKind directive_kind = directive->getKind();
+    switch (directive_kind) {
+        case OMPD_parallel: {
+            break;
+        }
+        default: {
+            return false;
+        }
+    };
+    std::map<OpenMPClauseKind, std::vector<OpenMPClause*>* >* clauses = directive->getAllClauses();
+    if (clauses != NULL) {
+        std::map<OpenMPClauseKind, std::vector<OpenMPClause*>* >::iterator it;
+        for (it = clauses->begin(); it != clauses->end(); it++) {
+            switch (it->first) {
+                case OMPC_shared: {
+                    break;
+                }
+                default: {
+                    return false;
+                }
+            };
+        };
+    };
+
+    return true;
 }
 
 void parseExpression (const char* omp_expression) {
