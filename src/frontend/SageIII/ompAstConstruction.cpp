@@ -31,7 +31,8 @@ static bool checkOpenMPIR(OpenMPDirective*);
 static void parseExpression (const char*);
 static void parseFortran(SgSourceFile*);
 static void convertAST();
-static SgOmpBodyStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
+static SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
+static SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static void buildVariableList(SgOmpVariablesClause*);
@@ -2926,8 +2927,31 @@ void convertAST() {
 
 }
 
-SgOmpBodyStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR) {
-            printf("ompparser directive is ready.\n");
+SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR) {
+    printf("ompparser directive is ready.\n");
+    OpenMPDirectiveKind directive_kind = current_OpenMPIR.second->getKind();
+    SgStatement* result = NULL;
+
+    switch (directive_kind) {
+        case OMPD_parallel: {
+            result = convertBodyDirective(current_OpenMPIR);
+            break;
+        }
+        default: {
+            printf("Unknown directive is found.\n");
+        }
+    }
+    setOneSourcePositionForTransformation(result);
+    // handle the SgFilePtr
+    copyStartFileInfo (current_OpenMPIR.first, result, NULL);
+    copyEndFileInfo (current_OpenMPIR.first, result, NULL);
+    replaceOmpPragmaWithOmpStatement(current_OpenMPIR.first, result);
+
+    return result;
+}
+
+
+SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR) {
     
     OpenMPDirectiveKind directive_kind = current_OpenMPIR.second->getKind();
     // directives like parallel and for have a following code block beside the pragma itself.
@@ -2960,15 +2984,8 @@ SgOmpBodyStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
         std::vector<OpenMPClause*>::iterator clause_iter;
         for (clause_iter = current_clauses->begin(); clause_iter != current_clauses->end(); clause_iter++) {
             sg_clause = convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
-            //body->get_clauses().push_back(sg_clause);
-            //sg_clause->set_parent(body);
         }
-    }
-    setOneSourcePositionForTransformation((SgStatement*)result);
-    // handle the SgFilePtr
-    copyStartFileInfo (current_OpenMPIR.first, (SgStatement*)result, NULL);
-    copyEndFileInfo (current_OpenMPIR.first, (SgStatement*)result, NULL);
-    replaceOmpPragmaWithOmpStatement(current_OpenMPIR.first, (SgStatement*)result);
+    };
     
     return result;
 }
@@ -3008,14 +3025,37 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
 
     SgExprListExp* explist = buildExprListExp();
     switch (clause_kind) {
-        case OMPC_shared:
+        case OMPC_copyin: {
+            result = new SgOmpCopyinClause(explist);
+            setOneSourcePositionForTransformation(result);
+            buildVariableList(result);
+            printf("Copyin Clause added!\n");
+            break;
+        }
+        case OMPC_firstprivate: {
+            result = new SgOmpFirstprivateClause(explist);
+            setOneSourcePositionForTransformation(result);
+            buildVariableList(result);
+            printf("Firstprivate Clause added!\n");
+            break;
+        }
+        case OMPC_private: {
+            result = new SgOmpPrivateClause(explist);
+            setOneSourcePositionForTransformation(result);
+            buildVariableList(result);
+            printf("Private Clause added!\n");
+            break;
+        }
+        case OMPC_shared: {
             result = new SgOmpSharedClause(explist);
             setOneSourcePositionForTransformation(result);
             buildVariableList(result);
             printf("Shared Clause added!\n");
             break;
-        default:
+        }
+        default: {
             printf("Unknown Clause!\n");
+        }
     }
     explist->set_parent(result);
 
@@ -3023,7 +3063,6 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
     SgOmpClause* sg_clause = result; 
     clause_body->get_clauses().push_back(sg_clause);
     sg_clause->set_parent(clause_body);
-
 
     return result;
 
@@ -3073,6 +3112,9 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         std::map<OpenMPClauseKind, std::vector<OpenMPClause*>* >::iterator it;
         for (it = clauses->begin(); it != clauses->end(); it++) {
             switch (it->first) {
+                case OMPC_copyin:
+                case OMPC_firstprivate:
+                case OMPC_private:
                 case OMPC_shared: {
                     break;
                 }
