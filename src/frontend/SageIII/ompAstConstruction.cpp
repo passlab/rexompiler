@@ -36,8 +36,11 @@ static SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, 
 static SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static void buildVariableList(SgOmpVariablesClause*);
+static SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 // store temporary expression pairs for ompparser.
 extern std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
+extern SgExpression* omp_expression;
+static SgExpression* parseOmpExpression(SgPragmaDeclaration*, std::string);
 
 using namespace std;
 using namespace SageInterface;
@@ -746,6 +749,31 @@ namespace OmpSupport
         }
     }
     ROSE_ASSERT(result != SgOmpClause::e_omp_map_unknown);
+    return result;
+  }
+
+  //! A helper function to convert OpenMPIfClause modifier to SgClause if modifier
+  static SgOmpClause::omp_if_modifier_enum toSgOmpClauseIfModifier(OpenMPIfClauseModifier modifier)
+  {
+    SgOmpClause::omp_if_modifier_enum result;
+    switch (modifier)
+    {
+      case OMPC_IF_MODIFIER_parallel:
+        {
+          result = SgOmpClause::e_omp_if_parallel;
+          break;
+        }
+      case OMPC_IF_MODIFIER_unspecified:
+        {
+          result = SgOmpClause::e_omp_if_modifier_unknown;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for if modifier conversion:%d\n", modifier);
+          ROSE_ASSERT(false);
+        }
+    }
     return result;
   }
 
@@ -2958,7 +2986,7 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
     SgStatement* body = getOpenMPBlockBody(current_OpenMPIR);
     removeStatement(body,false);
     SgOmpBodyStatement* result = NULL;
-    SgOmpClause* sg_clause;
+    OpenMPClauseKind clause_kind;
 
     switch (directive_kind) {
         case OMPD_parallel: {
@@ -2983,8 +3011,18 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         std::vector<OpenMPClause*>* current_clauses = iter->second;
         std::vector<OpenMPClause*>::iterator clause_iter;
         for (clause_iter = current_clauses->begin(); clause_iter != current_clauses->end(); clause_iter++) {
-            sg_clause = convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
-        }
+            clause_kind = (*clause_iter)->getKind();
+            switch (clause_kind) {
+                case OMPC_if:
+                case OMPC_num_threads: {
+                    convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+                    break;
+                }
+                default: {
+                    convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+                }
+            };
+        };
     };
     
     return result;
@@ -3068,6 +3106,58 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
 
 }
 
+SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR, OpenMPClause* current_omp_clause) {
+    printf("ompparser expression clause is ready.\n");
+    SgOmpExpressionClause* result = NULL;
+    SgExpression* clause_expression;
+    SgGlobal* global = SageInterface::getGlobalScope(current_OpenMPIR.first);
+    OpenMPClauseKind clause_kind = current_omp_clause->getKind();
+    std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
+    if (current_expressions->size() != 0) {
+        std::vector<const char*>::iterator iter;
+        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
+            clause_expression = parseOmpExpression(current_OpenMPIR.first, *iter);
+        }
+    }
+
+    switch (clause_kind) {
+        case OMPC_if: {
+            OpenMPIfClauseModifier if_modifier = ((OpenMPIfClause*)current_omp_clause)->getModifier();
+            SgOmpClause::omp_if_modifier_enum sg_modifier = toSgOmpClauseIfModifier(if_modifier);
+            SgExpression* if_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
+            result = new SgOmpIfClause(if_expression, sg_modifier);
+            printf("If Clause added!\n");
+            break;
+        }
+        case OMPC_num_threads: {
+            SgExpression* num_threads_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
+            result = new SgOmpNumThreadsClause(num_threads_expression);
+            printf("Num_threads Clause added!\n");
+            break;
+        }
+        default: {
+            printf("Unknown Clause!\n");
+        }
+    }
+    setOneSourcePositionForTransformation(result);
+
+    // reconsider the location of following code to attach clause
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+
+    return result;
+
+}
+
+SgExpression* parseOmpExpression(SgPragmaDeclaration* directive, std::string expression) {
+    std::string expr_string = std::string() + "expression " + expression + "\n";
+    omp_parser_init(directive, expr_string.c_str());
+    omp_parse();
+
+    return omp_expression;
+}
+
 void buildVariableList(SgOmpVariablesClause* current_omp_clause) {
 
     std::vector<std::pair<std::string, SgNode*> >::iterator iter;
@@ -3114,6 +3204,8 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
             switch (it->first) {
                 case OMPC_copyin:
                 case OMPC_firstprivate:
+                case OMPC_if:
+                case OMPC_num_threads:
                 case OMPC_private:
                 case OMPC_shared: {
                     break;

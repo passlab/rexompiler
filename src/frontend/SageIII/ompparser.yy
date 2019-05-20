@@ -121,7 +121,7 @@ static bool is_ompparser_expression = false;
 static bool addOmpVariable(const char*);
 std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
 static bool addOmpExpression(const char*);
-
+SgExpression* omp_expression = NULL;
 %}
 
 %locations
@@ -216,12 +216,9 @@ omp_varlist : OMP {
 omp_expression : EXPRESSION {
                 is_ompparser_expression = true;
                 omptype = e_unknown;
-                current_clause = ompattribute->addComplexClause(omptype);
-                is_complex_clause = true;
             } expression {
-                addComplexClauseExpression("");
-                is_complex_clause = false;
-                is_ompparser_variable = false;
+                addOmpExpression("");
+                is_ompparser_expression = false;
             }
             ;
 
@@ -1650,6 +1647,15 @@ static bool addExpression(const char* expr) {
     ompattribute->addExpression(omptype, std::string(expr),current_exp);
     return true;
 }
+
+
+static bool addOmpExpression(const char* expr) {
+    assert (current_exp != NULL);
+    omp_expression = current_exp;
+    omp_expression->set_parent(gNode);
+    return true;
+}
+
 
 // The ROSE's string-based AST construction is not stable,
 // pass real expressions as SgExpression, Liao
