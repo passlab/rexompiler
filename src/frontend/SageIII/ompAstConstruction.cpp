@@ -2197,7 +2197,7 @@ This is no perfect solution until we handle preprocessing information as structu
     for (end_iter=omp_end_pragma_list.rbegin(); end_iter!=omp_end_pragma_list.rend(); end_iter ++)
       removeStatement (*end_iter);
 #endif
-    int OpenMPIR_index = 0;
+    int OpenMPIR_index = OpenMPIR_list.size()-1;
     for (iter = omp_pragma_list.rbegin(); iter != omp_pragma_list.rend(); iter ++)
     {
       // Liao, 11/18/2009
@@ -2224,7 +2224,7 @@ This is no perfect solution until we handle preprocessing information as structu
       // OmpAttibute* could be empty due to ompparser.
       if (getOmpAttribute(decl) == NULL) {
           convertDirective(OpenMPIR_list[OpenMPIR_index]);
-          OpenMPIR_index++;
+          OpenMPIR_index--;
           continue;
       };
 
@@ -2964,13 +2964,11 @@ SgOmpBodyStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
             //sg_clause->set_parent(body);
         }
     }
-
-
-    setOneSourcePositionForTransformation(result);
+    setOneSourcePositionForTransformation((SgStatement*)result);
     // handle the SgFilePtr
-    copyStartFileInfo (current_OpenMPIR.first, result, NULL);
-    copyEndFileInfo (current_OpenMPIR.first, result, NULL);
-    replaceOmpPragmaWithOmpStatement(current_OpenMPIR.first, result);
+    copyStartFileInfo (current_OpenMPIR.first, (SgStatement*)result, NULL);
+    copyEndFileInfo (current_OpenMPIR.first, (SgStatement*)result, NULL);
+    replaceOmpPragmaWithOmpStatement(current_OpenMPIR.first, (SgStatement*)result);
     
     return result;
 }
