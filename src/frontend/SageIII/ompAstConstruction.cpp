@@ -985,6 +985,73 @@ namespace OmpSupport
     return result;
   }
 
+  //! A helper function to convert OpenMPIR ALLOCATE allocator to SgClause ALLOCATE modifier
+  static SgOmpClause::omp_allocate_modifier_enum toSgOmpClauseAllocateAllocator(OpenMPAllocateClauseAllocator allocator)
+  {
+    SgOmpClause::omp_allocate_modifier_enum result;
+    switch (allocator)
+    {
+      case OMPC_ALLOCATE_ALLOCATOR_default:
+        {
+          result = SgOmpClause::e_omp_allocate_default_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATE_ALLOCATOR_large_cap:
+        {
+          result = SgOmpClause::e_omp_allocate_large_cap_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATE_ALLOCATOR_cons_mem:
+        {
+          result = SgOmpClause::e_omp_allocate_const_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATE_ALLOCATOR_high_bw:
+        {
+          result = SgOmpClause::e_omp_allocate_high_bw_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATE_ALLOCATOR_low_lat:
+        {
+          result = SgOmpClause::e_omp_allocate_low_lat_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATE_ALLOCATOR_cgroup:
+        {
+          result = SgOmpClause::e_omp_allocate_cgroup_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATE_ALLOCATOR_pteam:
+        {
+          result = SgOmpClause::e_omp_allocate_pteam_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATE_ALLOCATOR_thread:
+        {
+          result = SgOmpClause::e_omp_allocate_thread_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATE_ALLOCATOR_user:
+        {
+          result = SgOmpClause::e_omp_allocate_user_defined_modifier;
+          break;
+        }
+      case OMPC_ALLOCATE_ALLOCATOR_unknown:
+        {
+          result = SgOmpClause::e_omp_allocate_modifier_unknown;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for allocate modifier conversion:%d\n", allocator);
+          ROSE_ASSERT(false);
+          break;
+        }
+    }
+
+    return result;
+  }
+
   //A helper function to set SgVarRefExpPtrList  from OmpAttribute's construct-varlist map
   static void setClauseVariableList(SgOmpVariablesClause* target, OmpAttribute* att, omp_construct_enum key)
   {
@@ -3051,6 +3118,7 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
     omp_variable_list.clear();
     SgOmpVariablesClause* result = NULL;
     OpenMPClauseKind clause_kind = current_omp_clause->getKind();
+    SgGlobal* global = SageInterface::getGlobalScope(current_OpenMPIR.first);
     std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
     if (current_expressions->size() != 0) {
         std::vector<const char*>::iterator iter;
@@ -3063,31 +3131,35 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
 
     SgExprListExp* explist = buildExprListExp();
     switch (clause_kind) {
+        case OMPC_allocate: {
+            OpenMPAllocateClauseAllocator allocate_allocator = ((OpenMPAllocateClause*)current_omp_clause)->getAllocator();
+            SgOmpClause::omp_allocate_modifier_enum sg_modifier = toSgOmpClauseAllocateAllocator(allocate_allocator);
+            SgExpression* user_defined_parameter = NULL;
+            if (sg_modifier == SgOmpClause::e_omp_allocate_user_defined_modifier) {
+                SgExpression* clause_expression = parseOmpExpression(current_OpenMPIR.first, ((OpenMPAllocateClause*)current_omp_clause)->getUserDefinedAllocator());
+                user_defined_parameter = checkOmpExpressionClause(clause_expression, global, e_allocate);
+            }
+            result = new SgOmpAllocateClause(explist, sg_modifier, user_defined_parameter);
+            printf("Allocate Clause added!\n");
+            break;
+        }
         case OMPC_copyin: {
             result = new SgOmpCopyinClause(explist);
-            setOneSourcePositionForTransformation(result);
-            buildVariableList(result);
             printf("Copyin Clause added!\n");
             break;
         }
         case OMPC_firstprivate: {
             result = new SgOmpFirstprivateClause(explist);
-            setOneSourcePositionForTransformation(result);
-            buildVariableList(result);
             printf("Firstprivate Clause added!\n");
             break;
         }
         case OMPC_private: {
             result = new SgOmpPrivateClause(explist);
-            setOneSourcePositionForTransformation(result);
-            buildVariableList(result);
             printf("Private Clause added!\n");
             break;
         }
         case OMPC_shared: {
             result = new SgOmpSharedClause(explist);
-            setOneSourcePositionForTransformation(result);
-            buildVariableList(result);
             printf("Shared Clause added!\n");
             break;
         }
@@ -3095,6 +3167,8 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
             printf("Unknown Clause!\n");
         }
     }
+    setOneSourcePositionForTransformation(result);
+    buildVariableList(result);
     explist->set_parent(result);
 
     // reconsider the location of following code to attach clause
@@ -3109,7 +3183,7 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
 SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR, OpenMPClause* current_omp_clause) {
     printf("ompparser expression clause is ready.\n");
     SgOmpExpressionClause* result = NULL;
-    SgExpression* clause_expression;
+    SgExpression* clause_expression = NULL;
     SgGlobal* global = SageInterface::getGlobalScope(current_OpenMPIR.first);
     OpenMPClauseKind clause_kind = current_omp_clause->getKind();
     std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
@@ -3202,6 +3276,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         std::map<OpenMPClauseKind, std::vector<OpenMPClause*>* >::iterator it;
         for (it = clauses->begin(); it != clauses->end(); it++) {
             switch (it->first) {
+                case OMPC_allocate:
                 case OMPC_copyin:
                 case OMPC_firstprivate:
                 case OMPC_if:
