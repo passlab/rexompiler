@@ -810,6 +810,40 @@ namespace OmpSupport
     return result;
   }
 
+  //! A helper function to convert OpenMPIR reduction modifier to SgClause reduction modifier
+  static SgOmpClause::omp_reduction_modifier_enum toSgOmpClauseReductionModifier(OpenMPReductionClauseModifier modifier)
+  {
+    SgOmpClause::omp_reduction_modifier_enum result;
+    switch (modifier)
+    {
+      case OMPC_REDUCTION_MODIFIER_inscan:
+        {
+          result = SgOmpClause::e_omp_reduction_inscan;
+          break;
+        }
+      case OMPC_REDUCTION_MODIFIER_task:
+        {
+          result = SgOmpClause::e_omp_reduction_task;
+          break;
+        }
+      case OMPC_REDUCTION_MODIFIER_default:
+        {
+          result = SgOmpClause::e_omp_reduction_default;
+          break;
+        }
+      case OMPC_REDUCTION_MODIFIER_unknown:
+        {
+          result = SgOmpClause::e_omp_reduction_modifier_unknown;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for reduction modifier conversion:%d\n", modifier);
+          ROSE_ASSERT(false);
+        }
+    }
+    return result;
+  }
 
   //! A helper function to convert OmpAttribute reduction operator to SgClause reduction operator
   //TODO move to sageInterface?
@@ -915,6 +949,79 @@ namespace OmpSupport
       default:
         {
           printf("error: unacceptable omp construct enum for reduction operator conversion:%s\n", OmpSupport::toString(at_op).c_str());
+          ROSE_ASSERT(false);
+          break;
+        }
+    }
+    ROSE_ASSERT(result != SgOmpClause::e_omp_reduction_unknown);
+    return result;
+  }
+
+  //! A helper function to convert OpenMPIR reduction identifier to SgClause reduction identifier
+  static SgOmpClause::omp_reduction_identifier_enum toSgOmpClauseReductionIdentifier(OpenMPReductionClauseIdentifier identifier)
+  {
+    SgOmpClause::omp_reduction_identifier_enum result = SgOmpClause::e_omp_reduction_unknown;
+    switch (identifier)
+    {
+      case OMPC_REDUCTION_IDENTIFIER_plus: //+
+        {
+          result = SgOmpClause::e_omp_reduction_plus;
+          break;
+        }
+      case OMPC_REDUCTION_IDENTIFIER_mul:  //*
+        {
+          result = SgOmpClause::e_omp_reduction_mul;
+          break;
+        }
+      case OMPC_REDUCTION_IDENTIFIER_minus: // -
+        {
+          result = SgOmpClause::e_omp_reduction_minus;
+          break;
+        }
+        // C/C++ only
+      case OMPC_REDUCTION_IDENTIFIER_bitand: // &
+        {
+          result = SgOmpClause::e_omp_reduction_bitand;
+          break;
+        }
+      case OMPC_REDUCTION_IDENTIFIER_bitor:  // |
+        {
+          result = SgOmpClause::e_omp_reduction_bitor;
+          break;
+        }
+      case OMPC_REDUCTION_IDENTIFIER_bitxor:  // ^
+        {
+          result = SgOmpClause::e_omp_reduction_bitxor;
+          break;
+        }
+      case OMPC_REDUCTION_IDENTIFIER_logand:  // &&
+        {
+          result = SgOmpClause::e_omp_reduction_logand;
+          break;
+        }
+      case OMPC_REDUCTION_IDENTIFIER_logor:   // ||
+        {
+          result = SgOmpClause::e_omp_reduction_logor;
+          break;
+        }
+      case OMPC_REDUCTION_IDENTIFIER_max:
+        {
+          result = SgOmpClause::e_omp_reduction_max;
+          break;
+        }
+      case OMPC_REDUCTION_IDENTIFIER_min:
+        {
+          result = SgOmpClause::e_omp_reduction_min;
+          break;
+        }
+      case OMPC_REDUCTION_IDENTIFIER_user:
+        {
+          result = SgOmpClause::e_omp_reduction_user_defined_identifier;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for reduction operator conversion:%d\n", identifier);
           ROSE_ASSERT(false);
           break;
         }
@@ -3158,6 +3265,20 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
             printf("Private Clause added!\n");
             break;
         }
+        case OMPC_reduction: {
+            OpenMPReductionClauseModifier modifier = ((OpenMPReductionClause*)current_omp_clause)->getModifier();
+            SgOmpClause::omp_reduction_modifier_enum sg_modifier = toSgOmpClauseReductionModifier(modifier);
+            OpenMPReductionClauseIdentifier identifier = ((OpenMPReductionClause*)current_omp_clause)->getIdentifier();
+            SgOmpClause::omp_reduction_identifier_enum sg_identifier = toSgOmpClauseReductionIdentifier(identifier);
+            SgExpression* user_defined_identifier = NULL;
+            if (sg_identifier == SgOmpClause::e_omp_reduction_user_defined_identifier) {
+                SgExpression* clause_expression = parseOmpExpression(current_OpenMPIR.first, ((OpenMPReductionClause*)current_omp_clause)->getUserDefinedIdentifier());
+                user_defined_identifier = checkOmpExpressionClause(clause_expression, global, e_reduction);
+            }
+            result = new SgOmpReductionClause(explist, sg_modifier, sg_identifier, user_defined_identifier);
+            printf("Reduction Clause added!\n");
+            break;
+        }
         case OMPC_shared: {
             result = new SgOmpSharedClause(explist);
             printf("Shared Clause added!\n");
@@ -3221,7 +3342,6 @@ SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_
     sg_clause->set_parent(clause_body);
 
     return result;
-
 }
 
 SgExpression* parseOmpExpression(SgPragmaDeclaration* directive, std::string expression) {
@@ -3253,8 +3373,6 @@ void buildVariableList(SgOmpVariablesClause* current_omp_clause) {
             cerr << "error: unhandled type of variable within a list:" << ((*iter).second)->class_name();
         }
     }
-
-
 }
 
 bool checkOpenMPIR(OpenMPDirective* directive) {
@@ -3282,6 +3400,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_if:
                 case OMPC_num_threads:
                 case OMPC_private:
+                case OMPC_reduction:
                 case OMPC_shared: {
                     break;
                 }
