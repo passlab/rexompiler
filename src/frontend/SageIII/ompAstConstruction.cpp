@@ -3345,7 +3345,7 @@ SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_
 }
 
 SgExpression* parseOmpExpression(SgPragmaDeclaration* directive, std::string expression) {
-    std::string expr_string = std::string() + "expression " + expression + "\n";
+    std::string expr_string = std::string() + "expression (" + expression + ")\n";
     omp_parser_init(directive, expr_string.c_str());
     omp_parse();
 

@@ -216,9 +216,11 @@ omp_varlist : OMP {
 omp_expression : EXPRESSION {
                 is_ompparser_expression = true;
                 omptype = e_unknown;
-            } expression {
+                b_within_variable_list = true;
+            } '(' expression ')' {
                 addOmpExpression("");
                 is_ompparser_expression = false;
+                b_within_variable_list = false;
             }
             ;
 
