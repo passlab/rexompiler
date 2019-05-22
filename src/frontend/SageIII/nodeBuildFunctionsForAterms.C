@@ -2517,7 +2517,7 @@ SgOmpMergeableClause* SgOmpMergeableClause::build_node_from_nonlist_children ( S
 /* #line 1 "/home/dquinlan/ROSE/git-dq-edg49-fortran-rc/src/ROSETTA/Grammar/grammarAtermConstructorDefinitionMacros.macro" */
 
 // Generated static function for building IR nodes for Aterm support (like a constructor).
-SgOmpDefaultClause* SgOmpDefaultClause::build_node_from_nonlist_children ( Sg_File_Info* startOfConstruct, SgOmpClause::omp_default_option_enum data_sharing )
+SgOmpDefaultClause* SgOmpDefaultClause::build_node_from_nonlist_children ( Sg_File_Info* startOfConstruct, SgOmpClause::omp_default_option_enum data_sharing, SgNode* )
    {
 #if 0
   // debugging information!

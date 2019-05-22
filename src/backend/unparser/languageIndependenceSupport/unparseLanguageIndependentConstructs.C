@@ -31,6 +31,8 @@ Sawyer::Message::Facility UnparseLanguageIndependentConstructs::mlog;
 
 // DQ (12/5/2014): Adding support to track transitions between unparsing via the AST and unparsing via the Token Stream.
 SgStatement* global_lastStatementUnparsed = NULL;
+// global flag for variant directive
+bool isVariant = false;
 
 UnparseLanguageIndependentConstructs::unparsed_as_enum_type global_unparsed_as = UnparseLanguageIndependentConstructs::e_unparsed_as_error;
 
@@ -7157,11 +7159,21 @@ void UnparseLanguageIndependentConstructs::unparseOmpDefaultClause(SgOmpClause* 
         curprint(string("firstprivate"));
         break; 
       }
+    case SgOmpClause::e_omp_default_variant:
+      {
+        SgStatement* variant_directive = (SgStatement*)c->get_variant_directive();
+        if (variant_directive != NULL) {
+          isVariant = true;
+          unparseOmpGenericStatement(variant_directive, info);
+          isVariant = false;
+        };
+        break;
+      }
     default:
       cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpDefaultClause() meets unacceptable default option value:"<<dv<<endl;
       ROSE_ASSERT (false);
       break;
-  }    
+  }
   curprint(string(")"));
 }
 
@@ -8236,78 +8248,69 @@ void UnparseLanguageIndependentConstructs::unparseOmpThreadprivateStatement(SgSt
 void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgStatement* stmt,     SgUnparse_Info& info)
 {
   ROSE_ASSERT(stmt != NULL);
-  unp->u_sage->curprint_newline();
+  if (!isVariant) {
+    unp->u_sage->curprint_newline();
+    unparseOmpPrefix(info);
+  };
   switch (stmt->variantT())
   {
       case V_SgOmpAtomicStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("atomic "));
         break;
       }
       case V_SgOmpSectionStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("section "));
         break;
       }
       case V_SgOmpTaskStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("task "));
         break;
       }
        case V_SgOmpTaskwaitStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("taskwait "));
         break;
       }
      case V_SgOmpFlushStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("flush "));
         break;
       }
       case V_SgOmpThreadprivateStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("threadprivate "));
         break;
       }
      case V_SgOmpBarrierStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("barrier "));
         break;
       }
     case V_SgOmpMetadirectiveStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("metadirective "));
         break;
       }
     case V_SgOmpParallelStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("parallel "));
         break;
       }
     case V_SgOmpTargetStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("target "));
         break;
       }
     case V_SgOmpTargetDataStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("target data "));
         break;
       }
      case V_SgOmpCriticalStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("critical "));
         if (isSgOmpCriticalStatement(stmt)->get_name().getString()!="")
         {
@@ -8319,61 +8322,51 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
       }
          case V_SgOmpForStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("for "));
         break;
       }
          case V_SgOmpForSimdStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("for simd "));
         break;
       }
         case V_SgOmpDoStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("do "));
         break;
       }
        case V_SgOmpMasterStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("master "));
         break;
       }
       case V_SgOmpOrderedStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("ordered "));
         break;
       }
     case V_SgOmpWorkshareStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("workshare "));
         break;
       }
       case V_SgOmpSingleStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("single "));
         break;
       }
       case V_SgOmpSimdStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("simd"));
         break;
       }
       case V_SgOmpDeclareSimdStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("declare simd"));
         break;
       }
      case V_SgOmpSectionsStatement:
       {
-        unparseOmpPrefix(info);
         curprint(string ("sections "));
         break;
       }
@@ -8418,11 +8411,12 @@ void UnparseLanguageIndependentConstructs::unparseOmpGenericStatement (SgStateme
   unparseOmpDirectivePrefixAndName (stmt, info);
   // unparse the begin directive's clauses
   unparseOmpBeginDirectiveClauses(stmt, info);
-  unp->u_sage->curprint_newline();
-
+  if (!isVariant) {
+    unp->u_sage->curprint_newline();
+  };
   // unparse the body, if exists. 
   SgOmpBodyStatement* b_stmt = isSgOmpBodyStatement(stmt);
-  if (b_stmt)
+  if (!isVariant && b_stmt)
   {
     SgUnparse_Info ninfo(info);
     unparseStatement(b_stmt->get_body(), ninfo);

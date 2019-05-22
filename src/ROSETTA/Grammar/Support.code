@@ -46,6 +46,7 @@ HEADER_OMP_CLAUSE_START
        // Liao (5/30/2009): Added support for reduction clauses within an OpenMP directive
 	enum omp_default_option_enum{
 	  e_omp_default_unknown =0,
+	  e_omp_default_variant,
 	  //4 values for default clause
 	  //C/C++ default values
 	  e_omp_default_none,

@@ -32,11 +32,14 @@ static void parseExpression (const char*);
 static void parseFortran(SgSourceFile*);
 static void convertAST();
 static SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
+static SgStatement* convertVariantDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
+static SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static void buildVariableList(SgOmpVariablesClause*);
 static SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 // store temporary expression pairs for ompparser.
 extern std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
 extern SgExpression* omp_expression;
@@ -304,7 +307,7 @@ namespace OmpSupport
           ROSE_ASSERT(false) ;  
         }
     }//end switch
-    SgOmpDefaultClause* result = new SgOmpDefaultClause(sg_dv);
+    SgOmpDefaultClause* result = new SgOmpDefaultClause(sg_dv, NULL);
     setOneSourcePositionForTransformation(result);
     ROSE_ASSERT(result);
     return result;
@@ -3135,6 +3138,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
     SgStatement* result = NULL;
 
     switch (directive_kind) {
+        case OMPD_metadirective:
         case OMPD_parallel: {
             result = convertBodyDirective(current_OpenMPIR);
             break;
@@ -3152,6 +3156,28 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
     return result;
 }
 
+SgStatement* convertVariantDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR) {
+    printf("ompparser variant directive is ready.\n");
+    OpenMPDirectiveKind directive_kind = current_OpenMPIR.second->getKind();
+    SgStatement* result = NULL;
+
+    switch (directive_kind) {
+        case OMPD_parallel: {
+            result = convertVariantBodyDirective(current_OpenMPIR);
+            break;
+        }
+        default: {
+            printf("Unknown directive is found.\n");
+        }
+    }
+    setOneSourcePositionForTransformation(result);
+    // handle the SgFilePtr
+    //copyStartFileInfo (current_OpenMPIR.first, result, NULL);
+    //copyEndFileInfo (current_OpenMPIR.first, result, NULL);
+    //replaceOmpPragmaWithOmpStatement(current_OpenMPIR.first, result);
+
+    return result;
+}
 
 SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR) {
     
@@ -3192,6 +3218,59 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
                     convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
                     break;
                 }
+                case OMPC_default: {
+                    convertDefaultClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+                    break;
+                }
+                default: {
+                    convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+                }
+            };
+        };
+    };
+
+    return result;
+}
+
+SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR) {
+
+    OpenMPDirectiveKind directive_kind = current_OpenMPIR.second->getKind();
+    // directives like parallel and for have a following code block beside the pragma itself.
+    //SgStatement* body = getOpenMPBlockBody(current_OpenMPIR);
+    //removeStatement(body,false);
+    SgOmpBodyStatement* result = NULL;
+    OpenMPClauseKind clause_kind;
+
+    switch (directive_kind) {
+        case OMPD_parallel: {
+            result = new SgOmpParallelStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_metadirective: {
+            result = new SgOmpMetadirectiveStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_end: {
+            return result;
+        }
+        default: {
+            printf("Unknown directive is found.\n");
+        }
+    }
+    //body->set_parent(result);
+    std::map<OpenMPClauseKind, std::vector<OpenMPClause *> *>* all_clauses = current_OpenMPIR.second->getAllClauses();
+    std::map<OpenMPClauseKind, std::vector<OpenMPClause *> *>::iterator iter;
+    for (iter = all_clauses->begin(); iter != all_clauses->end(); iter++){
+        std::vector<OpenMPClause*>* current_clauses = iter->second;
+        std::vector<OpenMPClause*>::iterator clause_iter;
+        for (clause_iter = current_clauses->begin(); clause_iter != current_clauses->end(); clause_iter++) {
+            clause_kind = (*clause_iter)->getKind();
+            switch (clause_kind) {
+                case OMPC_if:
+                case OMPC_num_threads: {
+                    convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+                    break;
+                }
                 default: {
                     convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
                 }
@@ -3208,6 +3287,56 @@ SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDirective*
     result = getNextStatement(current_OpenMPIR.first);
     return result;
 
+}
+
+  //! Build SgOmpDefaultClause from OmpAttribute, if any
+SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR, OpenMPClause* current_omp_clause) {
+    OpenMPDefaultClauseKind default_kind = ((OpenMPDefaultClause*)current_omp_clause)->getDefaultClauseKind();
+    SgOmpClause::omp_default_option_enum sg_dv;
+    SgStatement* variant_directive = NULL;
+    switch (default_kind) {
+      case OMPC_DEFAULT_none: {
+        sg_dv = SgOmpClause::e_omp_default_none;
+        break;
+      }
+      case OMPC_DEFAULT_shared: {
+        sg_dv = SgOmpClause::e_omp_default_shared;
+        break;
+      }
+      case OMPC_DEFAULT_private: {
+        sg_dv = SgOmpClause::e_omp_default_private;
+        break;
+      }
+      case OMPC_DEFAULT_firstprivate: {
+        sg_dv = SgOmpClause::e_omp_default_firstprivate;
+        break;
+      }
+      case OMPC_DEFAULT_variant: {
+        sg_dv = SgOmpClause::e_omp_default_variant;
+        OpenMPDirective* variant_OpenMPIR = ((OpenMPDefaultClause*)current_omp_clause)->getVariantDirective();
+        //std::pair<SgPragmaDeclaration*, OpenMPDirective*> paired_variant_OpenMPIR = make_pair(new SgPragmaDeclaration(), variant_OpenMPIR);
+        std::pair<SgPragmaDeclaration*, OpenMPDirective*> paired_variant_OpenMPIR = make_pair(current_OpenMPIR.first, variant_OpenMPIR);
+        variant_directive = convertVariantDirective(paired_variant_OpenMPIR);
+        break;
+      }
+      default:
+        {
+          cerr << "error: buildOmpDefaultClase() Unacceptable default option from OpenMPIR:" << default_kind;
+          ROSE_ASSERT(false);
+        }
+    }//end switch
+    SgOmpDefaultClause* result = new SgOmpDefaultClause(sg_dv, variant_directive);
+    setOneSourcePositionForTransformation(result);
+    if (variant_directive != NULL) {
+        variant_directive->set_parent(result);
+    };
+
+    // reconsider the location of following code to attach clause
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+
+    return result;
 }
 
 SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR, OpenMPClause* current_omp_clause) {
@@ -3382,6 +3511,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
     };
     OpenMPDirectiveKind directive_kind = directive->getKind();
     switch (directive_kind) {
+        case OMPD_metadirective:
         case OMPD_parallel: {
             break;
         }
@@ -3396,6 +3526,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
             switch (it->first) {
                 case OMPC_allocate:
                 case OMPC_copyin:
+                case OMPC_default:
                 case OMPC_firstprivate:
                 case OMPC_if:
                 case OMPC_num_threads:
