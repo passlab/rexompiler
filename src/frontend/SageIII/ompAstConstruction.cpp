@@ -40,6 +40,7 @@ static SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement*, std::pair<
 static void buildVariableList(SgOmpVariablesClause*);
 static SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpProcBindClause* convertProcBindClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 // store temporary expression pairs for ompparser.
 extern std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
 extern SgExpression* omp_expression;
@@ -3222,6 +3223,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
                     convertDefaultClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
                     break;
                 }
+                case OMPC_proc_bind: {
+                    convertProcBindClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+                    break;
+                }
                 default: {
                     convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
                 }
@@ -3271,6 +3276,14 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
                     convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
                     break;
                 }
+                case OMPC_default: {
+                    convertDefaultClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+                    break;
+                }
+                case OMPC_proc_bind: {
+                    convertProcBindClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+                    break;
+                }
                 default: {
                     convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
                 }
@@ -3289,7 +3302,7 @@ SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDirective*
 
 }
 
-  //! Build SgOmpDefaultClause from OmpAttribute, if any
+  //! Build SgOmpDefaultClause from OpenMPIR
 SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR, OpenMPClause* current_omp_clause) {
     OpenMPDefaultClauseKind default_kind = ((OpenMPDefaultClause*)current_omp_clause)->getDefaultClauseKind();
     SgOmpClause::omp_default_option_enum sg_dv;
@@ -3314,22 +3327,52 @@ SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement* clause_body, 
       case OMPC_DEFAULT_variant: {
         sg_dv = SgOmpClause::e_omp_default_variant;
         OpenMPDirective* variant_OpenMPIR = ((OpenMPDefaultClause*)current_omp_clause)->getVariantDirective();
-        //std::pair<SgPragmaDeclaration*, OpenMPDirective*> paired_variant_OpenMPIR = make_pair(new SgPragmaDeclaration(), variant_OpenMPIR);
         std::pair<SgPragmaDeclaration*, OpenMPDirective*> paired_variant_OpenMPIR = make_pair(current_OpenMPIR.first, variant_OpenMPIR);
         variant_directive = convertVariantDirective(paired_variant_OpenMPIR);
         break;
       }
-      default:
-        {
+      default: {
           cerr << "error: buildOmpDefaultClase() Unacceptable default option from OpenMPIR:" << default_kind;
           ROSE_ASSERT(false);
-        }
-    }//end switch
+      }
+    }; //end switch
     SgOmpDefaultClause* result = new SgOmpDefaultClause(sg_dv, variant_directive);
     setOneSourcePositionForTransformation(result);
     if (variant_directive != NULL) {
         variant_directive->set_parent(result);
     };
+
+    // reconsider the location of following code to attach clause
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+
+    return result;
+}
+
+  //! Build SgOmpProcBindClause from OpenMPIR
+SgOmpProcBindClause* convertProcBindClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR, OpenMPClause* current_omp_clause) {
+    OpenMPProcBindClauseKind proc_bind_kind = ((OpenMPProcBindClause*)current_omp_clause)->getProcBindClauseKind();
+    SgOmpClause::omp_proc_bind_policy_enum sg_dv;
+    switch (proc_bind_kind) {
+      case OMPC_PROC_BIND_close: {
+        sg_dv = SgOmpClause::e_omp_proc_bind_policy_close;
+        break;
+      }
+      case OMPC_PROC_BIND_master: {
+        sg_dv = SgOmpClause::e_omp_proc_bind_policy_master;
+        break;
+      }
+      case OMPC_PROC_BIND_spread: {
+        sg_dv = SgOmpClause::e_omp_proc_bind_policy_spread;
+        break;
+      }
+      default: {
+        cerr << "error: buildOmpProcBindClause () Unacceptable default option from OpenMPIR:" << proc_bind_kind;
+      }
+    }; //end switch
+    SgOmpProcBindClause* result = new SgOmpProcBindClause(sg_dv);
+    setOneSourcePositionForTransformation(result);
 
     // reconsider the location of following code to attach clause
     SgOmpClause* sg_clause = result;
@@ -3474,7 +3517,7 @@ SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_
 }
 
 SgExpression* parseOmpExpression(SgPragmaDeclaration* directive, std::string expression) {
-    std::string expr_string = std::string() + "expression (" + expression + ")\n";
+    std::string expr_string = std::string() + "expr (" + expression + ")\n";
     omp_parser_init(directive, expr_string.c_str());
     omp_parse();
 
@@ -3531,6 +3574,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_if:
                 case OMPC_num_threads:
                 case OMPC_private:
+                case OMPC_proc_bind:
                 case OMPC_reduction:
                 case OMPC_shared: {
                     break;

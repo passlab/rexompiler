@@ -171,8 +171,6 @@ BLOCK           {return ( BLOCK ); }
 DUPLICATE       {return ( DUPLICATE ); }
 CYCLIC          {return ( CYCLIC ); }
 
-expression      { return EXPRESSION; }
-
 "="             { return ('='); }
 "("             { return ('('); }
 ")"             { return (')'); }
