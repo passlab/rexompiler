@@ -7177,6 +7177,29 @@ void UnparseLanguageIndependentConstructs::unparseOmpDefaultClause(SgOmpClause* 
   curprint(string(")"));
 }
 
+void UnparseLanguageIndependentConstructs::unparseOmpWhenClause(SgOmpClause* clause, SgUnparse_Info& info) {
+    ROSE_ASSERT(clause != NULL);
+    SgOmpWhenClause * c = isSgOmpWhenClause(clause);
+    ROSE_ASSERT(c!= NULL);
+    curprint(string(" when("));
+    SgExpression* user_condition = c->get_user_condition();
+    SgUnparse_Info ninfo(info);
+    if (user_condition) {
+        curprint(string("user=condition("));
+        unparseExpression(user_condition, ninfo);
+        curprint(string(")"));
+    };
+    curprint(string(" : "));
+
+    SgStatement* variant_directive = (SgStatement*)c->get_variant_directive();
+    if (variant_directive != NULL) {
+      isVariant = true;
+      unparseOmpGenericStatement(variant_directive, info);
+      isVariant = false;
+    };
+    curprint(string(")"));
+}
+
 void UnparseLanguageIndependentConstructs::unparseOmpProcBindClause(SgOmpClause* clause, SgUnparse_Info& info)
 {
   ROSE_ASSERT(clause != NULL);
@@ -8130,6 +8153,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         unparseOmpVariablesClause(isSgOmpVariablesClause(clause), info);
         break;
       }     
+    case V_SgOmpWhenClause:
+      {
+        unparseOmpWhenClause(isSgOmpWhenClause(clause), info);
+        break;
+      }
    default:
       {
         cerr<<"Unhandled OpenMP clause type in UnparseLanguageIndependentConstructs::unparseOmpClause():"<<clause->class_name()<<endl;
