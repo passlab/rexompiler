@@ -1827,10 +1827,12 @@ Grammar::setUpNodes ()
      OmpScheduleClause.setDataPrototype ( "SgExpression*", "chunk_size", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
  
-     // when (user = {condition(boolean expr)} : variant-directive)
+     // when (user = {condition(boolean expr)}, construct = {directive1(clause1, clause2, ...), directive2(clause1, clause2, ...), ...} : variant-directive)
      OmpWhenClause.setDataPrototype("SgExpression*", "user_condition", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-     OmpWhenClause.setDataPrototype("SgNode*", "variant_directive", "= NULL",
+     OmpWhenClause.setDataPrototype("std::list<SgStatement*>", "construct_directives", "",
+                       NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpWhenClause.setDataPrototype("SgStatement*", "variant_directive", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
 
 
@@ -1853,7 +1855,7 @@ Grammar::setUpNodes ()
       // default (private | firstprivate | shared | none)
      OmpDefaultClause.setDataPrototype("SgOmpClause::omp_default_option_enum", "data_sharing", "=e_omp_default_unknown",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     OmpDefaultClause.setDataPrototype("SgNode*", "variant_directive", "= NULL",
+     OmpDefaultClause.setDataPrototype("SgStatement*", "variant_directive", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
 
       // atomic clause is one of : read, write, update, or capture

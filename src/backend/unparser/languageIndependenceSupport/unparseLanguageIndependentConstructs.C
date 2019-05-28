@@ -33,6 +33,7 @@ Sawyer::Message::Facility UnparseLanguageIndependentConstructs::mlog;
 SgStatement* global_lastStatementUnparsed = NULL;
 // global flag for variant directive
 bool isVariant = false;
+bool isConstruct = false;
 
 UnparseLanguageIndependentConstructs::unparsed_as_enum_type global_unparsed_as = UnparseLanguageIndependentConstructs::e_unparsed_as_error;
 
@@ -7161,7 +7162,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpDefaultClause(SgOmpClause* 
       }
     case SgOmpClause::e_omp_default_variant:
       {
-        SgStatement* variant_directive = (SgStatement*)c->get_variant_directive();
+        SgStatement* variant_directive = c->get_variant_directive();
         if (variant_directive != NULL) {
           isVariant = true;
           unparseOmpGenericStatement(variant_directive, info);
@@ -7184,14 +7185,37 @@ void UnparseLanguageIndependentConstructs::unparseOmpWhenClause(SgOmpClause* cla
     curprint(string(" when("));
     SgExpression* user_condition = c->get_user_condition();
     SgUnparse_Info ninfo(info);
+    bool has_trait_set = false;
     if (user_condition) {
-        curprint(string("user=condition("));
+        curprint(string("user={condition("));
         unparseExpression(user_condition, ninfo);
-        curprint(string(")"));
+        curprint(string(")}"));
+        has_trait_set = true;
+    };
+    std::list<SgStatement*> construct_directives = c->get_construct_directives();
+    if (construct_directives.size()) {
+        if (has_trait_set) {
+            curprint(string(", "));
+        };
+        curprint(string("construct={"));
+        std::list<SgStatement*>::iterator iter;
+        bool has_trait_selector = false;
+        for (iter = construct_directives.begin(); iter != construct_directives.end(); iter++) {
+            if (has_trait_selector) {
+                curprint(string(", "));
+            };
+            isVariant = true;
+            isConstruct = true;
+            unparseOmpGenericStatement(*iter, info);
+            isConstruct = false;
+            isVariant = false;
+            has_trait_selector = true;
+        };
+        curprint(string("}"));
     };
     curprint(string(" : "));
 
-    SgStatement* variant_directive = (SgStatement*)c->get_variant_directive();
+    SgStatement* variant_directive = c->get_variant_directive();
     if (variant_directive != NULL) {
       isVariant = true;
       unparseOmpGenericStatement(variant_directive, info);
@@ -8437,8 +8461,16 @@ void UnparseLanguageIndependentConstructs::unparseOmpGenericStatement (SgStateme
   ROSE_ASSERT(stmt != NULL);
   // unparse the begin directive
   unparseOmpDirectivePrefixAndName (stmt, info);
+  // unparse the parentheses of construct directive
+  if (isConstruct) {
+    curprint(string ("("));
+  };
   // unparse the begin directive's clauses
   unparseOmpBeginDirectiveClauses(stmt, info);
+  // unparse the parentheses of construct directive
+  if (isConstruct) {
+    curprint(string (")"));
+  };
   if (!isVariant) {
     unp->u_sage->curprint_newline();
   };

@@ -3406,6 +3406,18 @@ SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement* clause_body, std::p
     };
 
     SgOmpWhenClause* result = new SgOmpWhenClause(user_condition, variant_directive);
+    std::vector<OpenMPDirective*>* construct_directive = ((OpenMPWhenClause*)current_omp_clause)->getConstructDirective();
+    if (construct_directive->size()) {
+        std::list<SgStatement*> sg_construct_directives;
+        SgStatement* sg_construct_directive = NULL;
+        for (int i = 0; i < construct_directive->size(); i++) {
+            std::pair<SgPragmaDeclaration*, OpenMPDirective*> paired_construct_OpenMPIR = make_pair(current_OpenMPIR.first, construct_directive->at(i));
+            sg_construct_directive = convertVariantDirective(paired_construct_OpenMPIR);
+            sg_construct_directives.push_back(sg_construct_directive);
+        };
+        result->set_construct_directives(sg_construct_directives);
+    };
+
     setOneSourcePositionForTransformation(result);
     if (variant_directive != NULL) {
         variant_directive->set_parent(result);
