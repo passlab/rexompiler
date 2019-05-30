@@ -7212,7 +7212,176 @@ void UnparseLanguageIndependentConstructs::unparseOmpWhenClause(SgOmpClause* cla
             has_trait_selector = true;
         };
         curprint(string("}"));
+        has_trait_set = true;
     };
+    bool has_device = false;
+    SgExpression* device_arch = c->get_device_arch();
+    if (device_arch != NULL) {
+        if (has_trait_set) {
+            curprint(string(", "));
+        };
+        if (!has_device) {
+            curprint(string("device={"));
+            has_device = true;
+        };
+        curprint(string("arch("));
+        unparseExpression(device_arch, ninfo);
+        curprint(string(")"));
+    };
+    SgExpression* device_isa = c->get_device_isa();
+    if (device_isa != NULL) {
+        if (has_trait_set) {
+            curprint(string(", "));
+        };
+        if (!has_device) {
+            curprint(string("device={"));
+            has_device = true;
+        };
+        curprint(string("isa("));
+        unparseExpression(device_isa, ninfo);
+        curprint(string(")"));
+    };
+    SgOmpClause::omp_when_context_kind_enum device_kind = c->get_device_kind();
+    if (device_kind != SgOmpClause::e_omp_when_context_kind_unknown) {
+        if (has_trait_set) {
+            curprint(string(", "));
+        };
+        if (!has_device) {
+            curprint(string("device={"));
+            has_device = true;
+        };
+        curprint(string("kind("));
+        switch (device_kind) {
+            case SgOmpClause::e_omp_when_context_kind_host: {
+                curprint(string("host"));
+                break;
+            }
+            case SgOmpClause::e_omp_when_context_kind_nohost: {
+                curprint(string("nohost"));
+                break;
+            }
+            case SgOmpClause::e_omp_when_context_kind_any: {
+                curprint(string("any"));
+                break;
+            }
+            case SgOmpClause::e_omp_when_context_kind_cpu: {
+                curprint(string("cpu"));
+                break;
+            }
+            case SgOmpClause::e_omp_when_context_kind_gpu: {
+                curprint(string("gpu"));
+                break;
+            }
+            case SgOmpClause::e_omp_when_context_kind_fpga: {
+                curprint(string("fpga"));
+                break;
+            }
+            default: {
+                ;
+            }
+        };
+        curprint(string(")"));
+    }
+    if (has_device) {
+        curprint(string("}"));
+        has_device = false;
+    };
+
+    bool has_implementation = false;
+    SgOmpClause::omp_when_context_vendor_enum implementation_vendor = c->get_implementation_vendor();
+    if (implementation_vendor != SgOmpClause::e_omp_when_context_vendor_unspecified) {
+        if (has_trait_set) {
+            curprint(string(", "));
+        };
+        if (!has_implementation) {
+            curprint(string("implementation={"));
+            has_implementation = true;
+        };
+        curprint(string("vendor("));
+        switch (implementation_vendor) {
+            case SgOmpClause::e_omp_when_context_vendor_amd: {
+                curprint(string("amd"));
+                break;
+            }
+            case SgOmpClause::e_omp_when_context_vendor_arm: {
+                curprint(string("arm"));
+                break;
+            }
+            case SgOmpClause::e_omp_when_context_vendor_bsc: {
+                curprint(string("bsc"));
+                break;
+            }
+            case SgOmpClause::e_omp_when_context_vendor_cray: {
+                curprint(string("cray"));
+                break;
+            }
+            case SgOmpClause::e_omp_when_context_vendor_fujitsu: {
+                curprint(string("fujitsu"));
+                break;
+            }
+            case SgOmpClause::e_omp_when_context_vendor_gnu: {
+                curprint(string("gnu"));
+                break;
+            }
+            case SgOmpClause::e_omp_when_context_vendor_ibm: {
+                curprint(string("ibm"));
+                break;
+            }
+            case SgOmpClause::e_omp_when_context_vendor_intel: {
+                curprint(string("intel"));
+                break;
+            }
+            case SgOmpClause::e_omp_when_context_vendor_llvm: {
+                curprint(string("llvm"));
+                break;
+            }
+            case SgOmpClause::e_omp_when_context_vendor_pgi: {
+                curprint(string("pgi"));
+                break;
+            }
+            case SgOmpClause::e_omp_when_context_vendor_ti: {
+                curprint(string("ti"));
+                break;
+            }
+            case SgOmpClause::e_omp_when_context_vendor_unknown: {
+                curprint(string("unknown"));
+                break;
+            }
+            default: {
+                ;
+            }
+        };
+        curprint(string(")"));
+    };
+    SgExpression* implementation_user_defined = c->get_implementation_user_defined();
+    if (implementation_user_defined != NULL) {
+        if (has_trait_set) {
+            curprint(string(", "));
+        };
+        if (!has_implementation) {
+            curprint(string("implementation={"));
+            has_implementation = true;
+        };
+        unparseExpression(implementation_user_defined, ninfo);
+    };
+    SgExpression* implementation_extension = c->get_implementation_extension();
+    if (implementation_extension != NULL) {
+        if (has_trait_set) {
+            curprint(string(", "));
+        };
+        if (!has_implementation) {
+            curprint(string("implementation={"));
+            has_implementation = true;
+        };
+        curprint(string("extension("));
+        unparseExpression(implementation_extension, ninfo);
+        curprint(string(")"));
+    };
+    if (has_implementation) {
+        curprint(string("}"));
+        has_device = false;
+    };
+
     curprint(string(" : "));
 
     SgStatement* variant_directive = c->get_variant_directive();

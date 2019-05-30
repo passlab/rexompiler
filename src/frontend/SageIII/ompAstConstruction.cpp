@@ -24,7 +24,6 @@ extern void omp_parser_init(SgNode* aNode, const char* str);
 void parse_fortran_openmp(SgSourceFile *sageFilePtr);
 static OpenMPDirective* ompparser_OpenMPIR;
 
-//static OmpSupport::ComplexClause* current_clause;
 static bool is_complex_clause = false;
 static bool use_ompparser = false;
 static bool checkOpenMPIR(OpenMPDirective*);
@@ -3399,13 +3398,125 @@ SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement* clause_body, std::p
         std::pair<SgPragmaDeclaration*, OpenMPDirective*> paired_variant_OpenMPIR = make_pair(current_OpenMPIR.first, variant_OpenMPIR);
         variant_directive = convertVariantDirective(paired_variant_OpenMPIR);
     };
+
     SgExpression* user_condition = NULL;
     std::string user_condition_string = ((OpenMPWhenClause*)current_omp_clause)->getUserCondition();
     if (user_condition_string.size()) {
         user_condition = parseOmpExpression(current_OpenMPIR.first, user_condition_string.c_str());
     };
 
-    SgOmpWhenClause* result = new SgOmpWhenClause(user_condition, variant_directive);
+    SgExpression* device_arch = NULL;
+    std::string device_arch_string = ((OpenMPWhenClause*)current_omp_clause)->getArchExpression();
+    if (device_arch_string.size()) {
+        device_arch = parseOmpExpression(current_OpenMPIR.first, device_arch_string.c_str());
+    };
+
+    SgExpression* device_isa = NULL;
+    std::string device_isa_string = ((OpenMPWhenClause*)current_omp_clause)->getIsaExpression();
+    if (device_isa_string.size()) {
+        device_isa = parseOmpExpression(current_OpenMPIR.first, device_isa_string.c_str());
+    };
+
+    SgOmpClause::omp_when_context_kind_enum sg_device_kind = SgOmpClause::e_omp_when_context_kind_unknown;
+    OpenMPClauseContextKind device_kind = ((OpenMPWhenClause*)current_omp_clause)->getContextKind();
+    switch (device_kind) {
+        case OMPC_CONTEXT_KIND_host: {
+            sg_device_kind = SgOmpClause::e_omp_when_context_kind_host;
+            break;
+        }
+        case OMPC_CONTEXT_KIND_nohost: {
+            sg_device_kind = SgOmpClause::e_omp_when_context_kind_nohost;
+            break;
+        }
+        case OMPC_CONTEXT_KIND_any: {
+            sg_device_kind = SgOmpClause::e_omp_when_context_kind_any;
+            break;
+        }
+        case OMPC_CONTEXT_KIND_cpu: {
+            sg_device_kind = SgOmpClause::e_omp_when_context_kind_cpu;
+            break;
+        }
+        case OMPC_CONTEXT_KIND_gpu: {
+            sg_device_kind = SgOmpClause::e_omp_when_context_kind_gpu;
+            break;
+        }
+        case OMPC_CONTEXT_KIND_fpga: {
+            sg_device_kind = SgOmpClause::e_omp_when_context_kind_fpga;
+            break;
+        }
+        default: {
+            ;
+        }
+    };
+    SgOmpClause::omp_when_context_vendor_enum sg_implementation_vendor = SgOmpClause::e_omp_when_context_vendor_unspecified;
+    OpenMPClauseContextVendor implementation_vendor = ((OpenMPWhenClause*)current_omp_clause)->getImplementationKind();
+    switch (implementation_vendor) {
+        case OMPC_CONTEXT_VENDOR_amd: {
+            sg_implementation_vendor = SgOmpClause::e_omp_when_context_vendor_amd;
+            break;
+        }
+        case OMPC_CONTEXT_VENDOR_arm: {
+            sg_implementation_vendor = SgOmpClause::e_omp_when_context_vendor_arm;
+            break;
+        }
+        case OMPC_CONTEXT_VENDOR_bsc: {
+            sg_implementation_vendor = SgOmpClause::e_omp_when_context_vendor_bsc;
+            break;
+        }
+        case OMPC_CONTEXT_VENDOR_cray: {
+            sg_implementation_vendor = SgOmpClause::e_omp_when_context_vendor_cray;
+            break;
+        }
+        case OMPC_CONTEXT_VENDOR_fujitsu: {
+            sg_implementation_vendor = SgOmpClause::e_omp_when_context_vendor_fujitsu;
+            break;
+        }
+        case OMPC_CONTEXT_VENDOR_gnu: {
+            sg_implementation_vendor = SgOmpClause::e_omp_when_context_vendor_gnu;
+            break;
+        }
+        case OMPC_CONTEXT_VENDOR_ibm: {
+            sg_implementation_vendor = SgOmpClause::e_omp_when_context_vendor_ibm;
+            break;
+        }
+        case OMPC_CONTEXT_VENDOR_intel: {
+            sg_implementation_vendor = SgOmpClause::e_omp_when_context_vendor_intel;
+            break;
+        }
+        case OMPC_CONTEXT_VENDOR_llvm: {
+            sg_implementation_vendor = SgOmpClause::e_omp_when_context_vendor_llvm;
+            break;
+        }
+        case OMPC_CONTEXT_VENDOR_pgi: {
+            sg_implementation_vendor = SgOmpClause::e_omp_when_context_vendor_pgi;
+            break;
+        }
+        case OMPC_CONTEXT_VENDOR_ti: {
+            sg_implementation_vendor = SgOmpClause::e_omp_when_context_vendor_ti;
+            break;
+        }
+        case OMPC_CONTEXT_VENDOR_unknown: {
+            sg_implementation_vendor = SgOmpClause::e_omp_when_context_vendor_unknown;
+            break;
+        }
+        default: {
+            ;
+        }
+    };
+
+    SgExpression* implementation_user_defined = NULL;
+    std::string implementation_user_defined_string = ((OpenMPWhenClause*)current_omp_clause)->getImplementationExpression();
+    if (implementation_user_defined_string.size()) {
+        implementation_user_defined = parseOmpExpression(current_OpenMPIR.first, implementation_user_defined_string.c_str());
+    };
+
+    SgExpression* implementation_extension = NULL;
+    std::string implementation_extension_string = ((OpenMPWhenClause*)current_omp_clause)->getExtensionExpression();
+    if (implementation_extension_string.size()) {
+        implementation_extension = parseOmpExpression(current_OpenMPIR.first, implementation_extension_string.c_str());
+    };
+
+    SgOmpWhenClause* result = new SgOmpWhenClause(user_condition, device_arch, device_isa, sg_device_kind, sg_implementation_vendor, implementation_user_defined, implementation_extension, variant_directive);
     std::vector<OpenMPDirective*>* construct_directive = ((OpenMPWhenClause*)current_omp_clause)->getConstructDirective();
     if (construct_directive->size()) {
         std::list<SgStatement*> sg_construct_directives;

@@ -2654,7 +2654,7 @@ SgOmpSafelenClause* SgOmpSafelenClause::build_node_from_nonlist_children ( Sg_Fi
    }
 
 // Generated static function for building IR nodes for Aterm support (like a constructor).
-SgOmpWhenClause* SgOmpWhenClause::build_node_from_nonlist_children (Sg_File_Info* startOfConstruct, SgExpression* user_condition, SgStatement* variant_directive)
+SgOmpWhenClause* SgOmpWhenClause::build_node_from_nonlist_children (Sg_File_Info* startOfConstruct, SgExpression* user_condition, SgExpression* device_arch, SgExpression* device_isa, SgOmpClause::omp_when_context_kind_enum device_kind, SgOmpClause::omp_when_context_vendor_enum implementation_vendor, SgExpression* implementation_user_defined, SgExpression* implementation_extension, SgStatement* variant_directive)
    {
      SgOmpWhenClause* returnNode = NULL;
 

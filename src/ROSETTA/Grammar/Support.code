@@ -105,6 +105,34 @@ HEADER_OMP_CLAUSE_START
             e_omp_reduction_default
         };
 
+        enum omp_when_context_kind_enum
+        {
+            e_omp_when_context_kind_unknown = 0,
+            e_omp_when_context_kind_host,
+            e_omp_when_context_kind_nohost,
+            e_omp_when_context_kind_any,
+            e_omp_when_context_kind_cpu,
+            e_omp_when_context_kind_gpu,
+            e_omp_when_context_kind_fpga
+        };
+
+        enum omp_when_context_vendor_enum
+        {
+            e_omp_when_context_vendor_unspecified = 0,
+            e_omp_when_context_vendor_amd,
+            e_omp_when_context_vendor_arm,
+            e_omp_when_context_vendor_bsc,
+            e_omp_when_context_vendor_cray,
+            e_omp_when_context_vendor_fujitsu,
+            e_omp_when_context_vendor_gnu,
+            e_omp_when_context_vendor_ibm,
+            e_omp_when_context_vendor_intel,
+            e_omp_when_context_vendor_llvm,
+            e_omp_when_context_vendor_pgi,
+            e_omp_when_context_vendor_ti,
+            e_omp_when_context_vendor_unknown
+        };
+
         enum omp_allocate_modifier_enum
         {
             e_omp_allocate_modifier_unknown,

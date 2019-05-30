@@ -1832,9 +1832,20 @@ Grammar::setUpNodes ()
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
      OmpWhenClause.setDataPrototype("std::list<SgStatement*>", "construct_directives", "",
                        NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpWhenClause.setDataPrototype("SgExpression*", "device_arch", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpWhenClause.setDataPrototype("SgExpression*", "device_isa", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpWhenClause.setDataPrototype("SgOmpClause::omp_when_context_kind_enum", "device_kind", "= e_omp_when_context_kind_unknown",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpWhenClause.setDataPrototype("SgOmpClause::omp_when_context_vendor_enum", "implementation_vendor", "= e_omp_when_context_vendor_unspecified",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpWhenClause.setDataPrototype("SgExpression*", "implementation_user_defined", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpWhenClause.setDataPrototype("SgExpression*", "implementation_extension", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
      OmpWhenClause.setDataPrototype("SgStatement*", "variant_directive", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-
 
      // clauses with variable lists 
      // Liao 9/27/2010, per user's report, modeling the variable reference use SgVarRefExp
