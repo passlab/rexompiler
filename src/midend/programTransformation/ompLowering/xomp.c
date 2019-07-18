@@ -571,7 +571,7 @@ void xomp_loop_default (int* lower, int* upper, int* stride, int *n_lower, int *
 // input upper bound is inclusive (loop normalized with <= or >=)
 // output n_upper is also inclusive 
 // stride is positive for incremental, negative for decremental iteration space
-extern void XOMP_loop_default(int lower, int upper, int stride, long* n_lower, long* n_upper)
+extern void XOMP_loop_default(unsigned int lower, unsigned int upper, unsigned int stride, long* n_lower, long* n_upper)
 {
   int _p_lower;
   int _p_upper;

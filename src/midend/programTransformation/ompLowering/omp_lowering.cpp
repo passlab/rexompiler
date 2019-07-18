@@ -5212,11 +5212,11 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
           // But here is one exception: an array type firstprivate variable should
           // be initialized element-by-element
           // Liao, 4/12/2010
-          if (isInClauseVariableList(orig_var, clause_stmt,V_SgOmpFirstprivateClause) && !isSgArrayType(orig_type) )
-          {  
+          if (isInClauseVariableList(orig_var, clause_stmt, V_SgOmpFirstprivateClause) && !isSgArrayType(orig_type) )
+          {
             init = buildAssignInitializer(buildVarRefExp(orig_var, bb1));
           }
-          
+
           string private_name;
           if (SageInterface::is_Fortran_language() )
           {
