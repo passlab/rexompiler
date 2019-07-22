@@ -1,4 +1,4 @@
 [submodule "src/frontend/CxxFrontend/EDG"]
 	path = src/frontend/CxxFrontend/EDG
-	url = git@github.com:passlab/EDG.git
-	branch = dquinlan/dq-development-dev
+	url = git@github.com:tristanvdb/rose-edg.git
+	branch = v0.9.11.0
