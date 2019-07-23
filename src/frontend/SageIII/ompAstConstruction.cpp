@@ -3400,25 +3400,25 @@ SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement* clause_body, std::p
     };
 
     SgExpression* user_condition = NULL;
-    std::string user_condition_string = ((OpenMPWhenClause*)current_omp_clause)->getUserCondition();
+    std::string user_condition_string = ((OpenMPWhenClause*)current_omp_clause)->getUserCondition()->second;
     if (user_condition_string.size()) {
         user_condition = parseOmpExpression(current_OpenMPIR.first, user_condition_string.c_str());
     };
 
     SgExpression* device_arch = NULL;
-    std::string device_arch_string = ((OpenMPWhenClause*)current_omp_clause)->getArchExpression();
+    std::string device_arch_string = ((OpenMPWhenClause*)current_omp_clause)->getArchExpression()->second;
     if (device_arch_string.size()) {
         device_arch = parseOmpExpression(current_OpenMPIR.first, device_arch_string.c_str());
     };
 
     SgExpression* device_isa = NULL;
-    std::string device_isa_string = ((OpenMPWhenClause*)current_omp_clause)->getIsaExpression();
+    std::string device_isa_string = ((OpenMPWhenClause*)current_omp_clause)->getIsaExpression()->second;
     if (device_isa_string.size()) {
         device_isa = parseOmpExpression(current_OpenMPIR.first, device_isa_string.c_str());
     };
 
     SgOmpClause::omp_when_context_kind_enum sg_device_kind = SgOmpClause::e_omp_when_context_kind_unknown;
-    OpenMPClauseContextKind device_kind = ((OpenMPWhenClause*)current_omp_clause)->getContextKind();
+    OpenMPClauseContextKind device_kind = ((OpenMPWhenClause*)current_omp_clause)->getContextKind()->second;
     switch (device_kind) {
         case OMPC_CONTEXT_KIND_host: {
             sg_device_kind = SgOmpClause::e_omp_when_context_kind_host;
@@ -3449,7 +3449,7 @@ SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement* clause_body, std::p
         }
     };
     SgOmpClause::omp_when_context_vendor_enum sg_implementation_vendor = SgOmpClause::e_omp_when_context_vendor_unspecified;
-    OpenMPClauseContextVendor implementation_vendor = ((OpenMPWhenClause*)current_omp_clause)->getImplementationKind();
+    OpenMPClauseContextVendor implementation_vendor = ((OpenMPWhenClause*)current_omp_clause)->getImplementationKind()->second;
     switch (implementation_vendor) {
         case OMPC_CONTEXT_VENDOR_amd: {
             sg_implementation_vendor = SgOmpClause::e_omp_when_context_vendor_amd;
@@ -3505,24 +3505,24 @@ SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement* clause_body, std::p
     };
 
     SgExpression* implementation_user_defined = NULL;
-    std::string implementation_user_defined_string = ((OpenMPWhenClause*)current_omp_clause)->getImplementationExpression();
+    std::string implementation_user_defined_string = ((OpenMPWhenClause*)current_omp_clause)->getImplementationExpression()->second;
     if (implementation_user_defined_string.size()) {
         implementation_user_defined = parseOmpExpression(current_OpenMPIR.first, implementation_user_defined_string.c_str());
     };
 
     SgExpression* implementation_extension = NULL;
-    std::string implementation_extension_string = ((OpenMPWhenClause*)current_omp_clause)->getExtensionExpression();
+    std::string implementation_extension_string = ((OpenMPWhenClause*)current_omp_clause)->getExtensionExpression()->second;
     if (implementation_extension_string.size()) {
         implementation_extension = parseOmpExpression(current_OpenMPIR.first, implementation_extension_string.c_str());
     };
 
     SgOmpWhenClause* result = new SgOmpWhenClause(user_condition, device_arch, device_isa, sg_device_kind, sg_implementation_vendor, implementation_user_defined, implementation_extension, variant_directive);
-    std::vector<OpenMPDirective*>* construct_directive = ((OpenMPWhenClause*)current_omp_clause)->getConstructDirective();
+    std::vector<std::pair<std::string, OpenMPDirective*> >* construct_directive = ((OpenMPWhenClause*)current_omp_clause)->getConstructDirective();
     if (construct_directive->size()) {
         std::list<SgStatement*> sg_construct_directives;
         SgStatement* sg_construct_directive = NULL;
         for (int i = 0; i < construct_directive->size(); i++) {
-            std::pair<SgPragmaDeclaration*, OpenMPDirective*> paired_construct_OpenMPIR = make_pair(current_OpenMPIR.first, construct_directive->at(i));
+            std::pair<SgPragmaDeclaration*, OpenMPDirective*> paired_construct_OpenMPIR = make_pair(current_OpenMPIR.first, construct_directive->at(i).second);
             sg_construct_directive = convertVariantDirective(paired_construct_OpenMPIR);
             sg_construct_directives.push_back(sg_construct_directive);
         };
