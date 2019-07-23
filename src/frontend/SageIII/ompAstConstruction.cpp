@@ -3404,6 +3404,11 @@ SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement* clause_body, std::p
     if (user_condition_string.size()) {
         user_condition = parseOmpExpression(current_OpenMPIR.first, user_condition_string.c_str());
     };
+    SgExpression* user_condition_score = NULL;
+    std::string user_condition_score_string = ((OpenMPWhenClause*)current_omp_clause)->getUserCondition()->first;
+    if (user_condition_score_string.size()) {
+        user_condition_score = parseOmpExpression(current_OpenMPIR.first, user_condition_score_string.c_str());
+    };
 
     SgExpression* device_arch = NULL;
     std::string device_arch_string = ((OpenMPWhenClause*)current_omp_clause)->getArchExpression()->second;
@@ -3516,7 +3521,7 @@ SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement* clause_body, std::p
         implementation_extension = parseOmpExpression(current_OpenMPIR.first, implementation_extension_string.c_str());
     };
 
-    SgOmpWhenClause* result = new SgOmpWhenClause(user_condition, device_arch, device_isa, sg_device_kind, sg_implementation_vendor, implementation_user_defined, implementation_extension, variant_directive);
+    SgOmpWhenClause* result = new SgOmpWhenClause(user_condition, user_condition_score, device_arch, device_isa, sg_device_kind, sg_implementation_vendor, implementation_user_defined, implementation_extension, variant_directive);
     std::vector<std::pair<std::string, OpenMPDirective*> >* construct_directive = ((OpenMPWhenClause*)current_omp_clause)->getConstructDirective();
     if (construct_directive->size()) {
         std::list<SgStatement*> sg_construct_directives;

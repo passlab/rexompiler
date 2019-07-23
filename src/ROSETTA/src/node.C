@@ -1830,6 +1830,8 @@ Grammar::setUpNodes ()
      // when (user = {condition(boolean expr)}, construct = {directive1(clause1, clause2, ...), directive2(clause1, clause2, ...), ...} : variant-directive)
      OmpWhenClause.setDataPrototype("SgExpression*", "user_condition", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpWhenClause.setDataPrototype("SgExpression*", "user_condition_score", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
      OmpWhenClause.setDataPrototype("std::list<SgStatement*>", "construct_directives", "",
                        NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      OmpWhenClause.setDataPrototype("SgExpression*", "device_arch", "= NULL",

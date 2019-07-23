@@ -7184,10 +7184,17 @@ void UnparseLanguageIndependentConstructs::unparseOmpWhenClause(SgOmpClause* cla
     ROSE_ASSERT(c!= NULL);
     curprint(string(" when("));
     SgExpression* user_condition = c->get_user_condition();
+    SgExpression* score = NULL;
     SgUnparse_Info ninfo(info);
     bool has_trait_set = false;
     if (user_condition) {
         curprint(string("user={condition("));
+        score = c->get_user_condition_score();
+        if (score) {
+            curprint(string("score("));
+            unparseExpression(score, ninfo);
+            curprint(string("): "));
+        }
         unparseExpression(user_condition, ninfo);
         curprint(string(")}"));
         has_trait_set = true;
