@@ -2471,6 +2471,42 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
 
    // SageInterface::deepDelete(target);
   }
+
+void transOmpMetadirective(SgNode* node)
+  {
+    std::cout << "Lowering starts.......\n";
+    ROSE_ASSERT(node != NULL);
+    SgOmpMetadirectiveStatement* target = isSgOmpMetadirectiveStatement(node);
+    ROSE_ASSERT (target != NULL);
+
+    SgFunctionDefinition * func_def = NULL;
+    if (SageInterface::is_Fortran_language() )
+    {
+      func_def = getEnclosingFunctionDefinition(target);
+      ROSE_ASSERT (func_def != NULL);
+    }
+    SgStatement * body =  target->get_body();
+    ROSE_ASSERT(body != NULL);
+    // Save preprocessing info as early as possible, avoiding mess up from the outliner
+    AttachedPreprocessingInfoType save_buf1, save_buf2, save_buf_inside;
+    cutPreprocessingInfo(target, PreprocessingInfo::before, save_buf1) ;
+    cutPreprocessingInfo(target, PreprocessingInfo::after, save_buf2) ;
+
+    cutPreprocessingInfo(target, PreprocessingInfo::inside, save_buf_inside) ;
+    std::cout << "Metadirective IR is caught.\n";
+
+    //SgStatement* variant_directive = c->get_variant_directive();
+    //if (variant_directive != NULL)
+    {
+      //pastePreprocessingInfo(variant_directive, PreprocessingInfo::after, save_buf2);
+      //removeStatement(target, false);
+      SageInterface::replaceStatement(target,body, true);
+      pastePreprocessingInfo(body, PreprocessingInfo::after, save_buf2);
+      pastePreprocessingInfo(body, PreprocessingInfo::before, save_buf1);
+
+      //movePreprocessingInfo(body, variant_directive, PreprocessingInfo::before, PreprocessingInfo::after);
+    }
+  }
   
 //! A helper function to categorize variables collected from map clauses
 
@@ -6105,6 +6141,15 @@ void lower_omp(SgSourceFile* file)
     //debug the order of the statements
     //    cout<<"Debug lower_omp(). stmt:"<<node<<" "<<node->class_name() <<" "<< node->get_file_info()->get_line()<<endl;
 
+    // check if it is a variant
+      std::cout << "About to start switching: " << node->variantT() << ".\n";
+    bool isVariant = isSgOmpWhenClause(node->get_parent()) || isSgOmpDefaultClause(node->get_parent());
+    if (isVariant)
+    {
+      std::cout << "It is a variant.\n";
+      break;
+    }
+      std::cout << "It is NOT a variant.\n";
 
     /*Winnie, handle Collapse clause.*/
     if(  isSgOmpClauseBodyStatement(node) != NULL && hasClause(isSgOmpClauseBodyStatement(node), V_SgOmpCollapseClause))
@@ -6225,9 +6270,15 @@ void lower_omp(SgSourceFile* file)
           transOmpTargetData(node);
           break;
         }
-
+      case V_SgOmpMetadirectiveStatement:
+        {
+          std::cout << "switch here....\n";
+          transOmpMetadirective(node);
+          break;
+        }
       default:
         {
+          std::cout << "Nothing happened.\n";
           // do nothing here    
         }
     }// switch
