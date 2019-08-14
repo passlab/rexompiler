@@ -2495,12 +2495,37 @@ void transOmpMetadirective(SgNode* node)
     cutPreprocessingInfo(target, PreprocessingInfo::inside, save_buf_inside) ;
     std::cout << "Metadirective IR is caught.\n";
 
+    SgIfStmt* root_if_statement = NULL;
+    if (hasClause(target, V_SgOmpWhenClause))
+    {
+      Rose_STL_Container<SgOmpClause*> clauses = getClause(target, V_SgOmpWhenClause);
+      SgOmpWhenClause* when_clause = isSgOmpWhenClause (clauses[0]);
+      SgExpression* condition_expression = when_clause->get_user_condition();
+      SgExprStatement* condition_statement = buildExprStatement(condition_expression);
+      SgIfStmt* if_stmt = NULL;
+      SgIfStmt* previous_if_stmt = NULL;
+      if_stmt = buildIfStmt(condition_statement, body, NULL);
+      root_if_statement = if_stmt;
+      for (unsigned int i = 1; i < clauses.size(); i++)
+      {
+        previous_if_stmt = if_stmt;
+        when_clause = isSgOmpWhenClause (clauses[i]);
+        condition_expression = when_clause->get_user_condition();
+        condition_statement = buildExprStatement(condition_expression);
+        if_stmt = buildIfStmt(condition_statement, body, NULL);
+        previous_if_stmt->set_false_body(if_stmt);
+      }
+      //ROSE_ASSERT (numThreads_clause->get_expression() != NULL);
+      //numThreadsSpecified = copyExpression(numThreads_clause->get_expression());
+    }
+
     //SgStatement* variant_directive = c->get_variant_directive();
     //if (variant_directive != NULL)
     {
       //pastePreprocessingInfo(variant_directive, PreprocessingInfo::after, save_buf2);
       //removeStatement(target, false);
-      SageInterface::replaceStatement(target,body, true);
+      //SageInterface::replaceStatement(target,body, true);
+      SageInterface::replaceStatement(target, root_if_statement, true);
       pastePreprocessingInfo(body, PreprocessingInfo::after, save_buf2);
       pastePreprocessingInfo(body, PreprocessingInfo::before, save_buf1);
 
