@@ -2496,15 +2496,49 @@ void transOmpMetadirective(SgNode* node)
     std::cout << "Metadirective IR is caught.\n";
 
     SgIfStmt* root_if_statement = NULL;
+    SgStatement* variant_directive;
+    SgStatement* variant_body = copyStatement(body);
+    ROSE_ASSERT(variant_body != NULL);
+    SgIfStmt* if_stmt = NULL;
+    SgIfStmt* previous_if_stmt = NULL;
     if (hasClause(target, V_SgOmpWhenClause))
     {
       Rose_STL_Container<SgOmpClause*> clauses = getClause(target, V_SgOmpWhenClause);
       SgOmpWhenClause* when_clause = isSgOmpWhenClause (clauses[0]);
       SgExpression* condition_expression = when_clause->get_user_condition();
       SgExprStatement* condition_statement = buildExprStatement(condition_expression);
-      SgIfStmt* if_stmt = NULL;
-      SgIfStmt* previous_if_stmt = NULL;
-      if_stmt = buildIfStmt(condition_statement, body, NULL);
+      variant_directive = when_clause->get_variant_directive();
+        if (variant_directive)
+        {
+          variant_body->set_parent(variant_directive);
+            switch (variant_directive->variantT())
+            {
+              case V_SgOmpParallelStatement:
+              {
+                std::cout << "Lowering Variant Parallel Statement.\n";
+                ((SgOmpParallelStatement*)variant_directive)->set_body(variant_body);
+                break;
+                // check if this parallel region is under "omp target"
+                SgNode* parent = variant_directive->get_parent();
+                ROSE_ASSERT (parent != NULL);
+                if (isSgBasicBlock(parent)) // skip the padding block in between.
+                  parent = parent->get_parent();
+                if (isSgOmpTargetStatement(parent))
+                  transOmpTargetParallel(node);
+                else
+                  transOmpParallel(variant_directive);
+                break;
+              }
+              default:
+                std::cout << "Nothing.\n";
+            }
+          if_stmt = buildIfStmt(condition_statement, variant_directive, NULL);
+        }
+        else
+        {
+          if_stmt = buildIfStmt(condition_statement, body, NULL);
+        }
+      //if_stmt = buildIfStmt(condition_statement, body, NULL);
       root_if_statement = if_stmt;
       for (unsigned int i = 1; i < clauses.size(); i++)
       {
@@ -2512,7 +2546,43 @@ void transOmpMetadirective(SgNode* node)
         when_clause = isSgOmpWhenClause (clauses[i]);
         condition_expression = when_clause->get_user_condition();
         condition_statement = buildExprStatement(condition_expression);
-        if_stmt = buildIfStmt(condition_statement, body, NULL);
+        variant_directive = when_clause->get_variant_directive();
+        variant_body = copyStatement(body);
+        ROSE_ASSERT(variant_body != NULL);
+        if (variant_directive)
+        {
+          variant_body->set_parent(variant_directive);
+            switch (variant_directive->variantT())
+            {
+              case V_SgOmpParallelStatement:
+              {
+                // check if this parallel region is under "omp target"
+                std::cout << "Lowering Variant Parallel Statement 2.\n";
+                ((SgOmpParallelStatement*)variant_directive)->set_body(variant_body);
+                break;
+                SgNode* parent = variant_directive->get_parent();
+                ROSE_ASSERT (parent != NULL);
+                if (isSgBasicBlock(parent)) // skip the padding block in between.
+                  parent= parent->get_parent();
+                if (isSgOmpTargetStatement(parent))
+                  transOmpTargetParallel(variant_directive);
+                else
+                {
+                  ((SgOmpParallelStatement*)variant_directive)->set_body(variant_body);
+                  transOmpParallel(variant_directive);
+                }
+                break;
+              }
+              default:
+                //
+                std::cout << "Nothing.\n";
+            }
+          if_stmt = buildIfStmt(condition_statement, variant_directive, NULL);
+        }
+        else
+        {
+          if_stmt = buildIfStmt(condition_statement, body, NULL);
+        }
         previous_if_stmt->set_false_body(if_stmt);
       }
       //ROSE_ASSERT (numThreads_clause->get_expression() != NULL);
@@ -2526,8 +2596,8 @@ void transOmpMetadirective(SgNode* node)
       //removeStatement(target, false);
       //SageInterface::replaceStatement(target,body, true);
       SageInterface::replaceStatement(target, root_if_statement, true);
-      pastePreprocessingInfo(body, PreprocessingInfo::after, save_buf2);
-      pastePreprocessingInfo(body, PreprocessingInfo::before, save_buf1);
+      pastePreprocessingInfo(root_if_statement, PreprocessingInfo::after, save_buf2);
+      pastePreprocessingInfo(root_if_statement, PreprocessingInfo::before, save_buf1);
 
       //movePreprocessingInfo(body, variant_directive, PreprocessingInfo::before, PreprocessingInfo::after);
     }
@@ -6168,18 +6238,20 @@ void lower_omp(SgSourceFile* file)
 
     // check if it is a variant
       std::cout << "About to start switching: " << node->variantT() << ".\n";
+    //bool isVariant = isSgOmpMetadirectiveStatement(node->get_parent()) || !node->get_parent() || isSgOmpWhenClause(node->get_parent()) || isSgOmpDefaultClause(node->get_parent());
     bool isVariant = isSgOmpWhenClause(node->get_parent()) || isSgOmpDefaultClause(node->get_parent());
     if (isVariant)
     {
       std::cout << "It is a variant.\n";
-      break;
-    }
-      std::cout << "It is NOT a variant.\n";
+      //continue;
+    } //else
+      //std::cout << "It is NOT a variant.\n";
 
     /*Winnie, handle Collapse clause.*/
     if(  isSgOmpClauseBodyStatement(node) != NULL && hasClause(isSgOmpClauseBodyStatement(node), V_SgOmpCollapseClause))
       transOmpCollapse(isSgOmpClauseBodyStatement(node));
 #if 1 // debugging code after collapsing the loops     
+    if (!isVariant)
     switch (node->variantT())
     {
       case V_SgOmpParallelStatement:

@@ -3346,6 +3346,7 @@ SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement* clause_body, 
     }; //end switch
     SgOmpDefaultClause* result = new SgOmpDefaultClause(sg_dv, variant_directive);
     setOneSourcePositionForTransformation(result);
+
     if (variant_directive != NULL) {
         variant_directive->set_parent(result);
     };
