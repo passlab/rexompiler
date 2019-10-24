@@ -1062,7 +1062,8 @@ Unparser::unparseFile ( SgSourceFile* file, SgUnparse_Info& info, SgScopeStateme
                u_fortran_locatedNode->unparseStatement(globalScope, info);
                break;
              }
-
+// for rexompiler
+#if 0
           case SgFile::e_Java_language:
              {
             // printf ("Error: SgFile::e_Java_language detected in unparser (unparser not implemented, unparsing ignored) \n");
@@ -1148,7 +1149,7 @@ Unparser::unparseFile ( SgSourceFile* file, SgUnparse_Info& info, SgScopeStateme
             // ROSE_ASSERT(false);
                break;
              }
-
+#endif
           case SgFile::e_last_language:
              {
                printf ("Error: SgFile::e_last_language detected in unparser \n");

@@ -1,17 +1,11 @@
 include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 
 SUBDIRS = \
-  SageIII \
-  X10_ROSE_Connection
+  SageIII 
 
 # Note that CXX and C are either both defined or both undefined.
 if ROSE_BUILD_CXX_LANGUAGE_SUPPORT
    SUBDIRS += CxxFrontend
-endif
-
-# Rasmussen (01/21/2018): Adding general support for experimental languages
-if ROSE_BUILD_ATERM_SUPPORT
-   SUBDIRS += Experimental_General_Language_Support
 endif
 
 if ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
@@ -28,40 +22,7 @@ if ROSE_EXPERIMENTAL_OFP_ROSE_CONNECTION
    SUBDIRS += Experimental_OpenFortranParser_ROSE_Connection
 endif
 
-if ROSE_EXPERIMENTAL_CSHARP_ROSE_CONNECTION
-   SUBDIRS += Experimental_Csharp_ROSE_Connection
-endif
-
-if ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION
-   SUBDIRS += Experimental_Ada_ROSE_Connection
-endif
-
-if ROSE_EXPERIMENTAL_JOVIAL_ROSE_CONNECTION
-   SUBDIRS += Experimental_Jovial_ROSE_Connection
-endif
-
-if ROSE_EXPERIMENTAL_COBOL_ROSE_CONNECTION
-   SUBDIRS += Experimental_Cobol_ROSE_Connection
-endif
-
-if ROSE_EXPERIMENTAL_MATLAB_ROSE_CONNECTION
-   SUBDIRS += Experimental_Matlab_ROSE_Connection
-endif
-
-
-SUBDIRS += ECJ_ROSE_Connection
-
 SUBDIRS += Disassemblers BinaryFormats BinaryLoader Partitioner2
-
-if ROSE_BUILD_PHP_LANGUAGE_SUPPORT
-   SUBDIRS += PHPFrontend
-endif
-
-if ROSE_BUILD_PYTHON_LANGUAGE_SUPPORT
-   SUBDIRS += PythonFrontend
-endif
-
-SUBDIRS += DLX
 
 # Until we revisit this this, we want to include specific documentation that has been put into this directory.
 # Note that OpenFortranParser_SAGE_Connection has the newer work to support Fortran in ROSE.  This work
@@ -101,3 +62,4 @@ nobase_pkginclude_HEADERS=			\
 	Partitioner2/Semantics.h		\
 	Partitioner2/Thunk.h			\
 	Partitioner2/Utility.h
+

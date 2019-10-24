@@ -21,7 +21,7 @@ if !ROSE_USE_SANITIZER
 endif
 
 if !ROSE_USE_INSURE
-   SUBDIRS += roseHPCToolkitTests 
+#   SUBDIRS += roseHPCToolkitTests 
 endif
 
 # TOO (2/16/2011): Errors with Thrifty (GCC 3.4.4) backend compiler. We can gradually
@@ -52,10 +52,6 @@ if !ROSE_USE_INSURE
 # SUBDIRS += roseHPCToolkitTests utilTests
 # SUBDIRS += roseHPCToolkitTests
 
-endif
-
-if ROSE_BUILD_PHP_LANGUAGE_SUPPORT
-   SUBDIRS += PHPTests
 endif
 
 check-local:

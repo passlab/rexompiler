@@ -51,10 +51,6 @@ endif
 endif
 endif
 
-# DQ (7/28/2014): Moved to after the C and C++ langauge tests.
-SUBDIRS += x10_tests
-
-
 if !ROSE_USE_SANITIZER
 # DQ (7/25/2010): These should not be at the end, but it is easier to split out Fortran support this way.
 if ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
@@ -81,7 +77,7 @@ if ROSE_BUILD_CXX_LANGUAGE_SUPPORT
 # DQ (2/19/2017): Added the more complex logic to control this for different compilers, and versions of EDG.
 if ROSE_USE_EDG_VERSION_4_9
 if USING_GNU_COMPILER
-SUBDIRS += OpenMP_tests FailSafe_tests
+#SUBDIRS += OpenMP_tests FailSafe_tests
 else # NOT USING_GNU_COMPILER
 if USING_CLANG_COMPILER
 # Exclude this list of files in the case of CLANG compiler.
@@ -97,27 +93,20 @@ endif # USING_CLANG_COMPILER
 endif # USING_GNU_COMPILER
 else # NOT ROSE_USE_EDG_VERSION_4_9
 if USING_GNU_COMPILER
-SUBDIRS += OpenMP_tests FailSafe_tests
+#SUBDIRS += OpenMP_tests FailSafe_tests
 else # NOT USING_GNU_COMPILER
 if USING_CLANG_COMPILER
 # Exclude this list of files in the case of CLANG compiler.
 else # NOT USING_CLANG_COMPILER
 if USING_INTEL_COMPILER
 # Exclude this list of files in the case of Intel compiler.
-SUBDIRS += OpenMP_tests FailSafe_tests
+SUBDIRS += OpenMP_tests 
 else # NOT USING_INTEL_COMPILER
 # This is an unknown compiler.
 endif # USING_INTEL_COMPILER
 endif # USING_CLANG_COMPILER
 endif # USING_GNU_COMPILER
 endif # ROSE_USE_EDG_VERSION_4_9
-
-if ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
-if !ROSE_USE_SANITIZER
-#Switch Java_tests to seperate run due to issues with large number of processors
-   SUBDIRS += MicrosoftWindows_Java_tests
-endif
-endif
 
 # DQ (10/19/2010): Moved basic languge test to the front of the list.
 if ROSE_BUILD_CXX_LANGUAGE_SUPPORT
@@ -163,10 +152,6 @@ endif # ROSE_BUILD_CXX_LANGUAGE_SUPPORT
 # end of !ROSE_USE_CLANG_FRONTEND
 endif
 
-if ROSE_BUILD_PYTHON_LANGUAGE_SUPPORT
-   SUBDIRS += Python_tests
-endif
-
 # DQ (1/15/2017): Added conditional support to avoid these tests when ROSE is configured for binary only support, failing in ROSE matrix testing).
 if ROSE_BUILD_CXX_LANGUAGE_SUPPORT
 SUBDIRS += CudaTests
@@ -183,31 +168,6 @@ if ROSE_USE_VXWORKS
 # DQ (5/21/2017): Adding VX Works support.
 SUBDIRS += vxworks_tests
 endif
-endif
-
-# DQ (8/23/2017): Adding support for testing experimental Charp support.
-if ROSE_EXPERIMENTAL_CSHARP_ROSE_CONNECTION
-SUBDIRS += experimental_csharp_tests
-endif
-
-# DQ (8/23/2017): Adding support for testing experimental Ada support.
-if ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION
-SUBDIRS += experimental_ada_tests
-endif
-
-# DQ (8/23/2017): Adding support for testing experimental Jovial support.
-if ROSE_EXPERIMENTAL_JOVIAL_ROSE_CONNECTION
-SUBDIRS += experimental_jovial_tests
-endif
-
-# DQ (8/23/2017): Adding support for testing experimental Cobol support.
-if ROSE_EXPERIMENTAL_COBOL_ROSE_CONNECTION
-SUBDIRS += experimental_cobol_tests
-endif
-
-# Rasmussen (11/4/2017): Adding support for testing experimental Matlab support.
-if ROSE_EXPERIMENTAL_MATLAB_ROSE_CONNECTION
-SUBDIRS += experimental_matlab_tests
 endif
 
 if ROSE_USE_GNAT
