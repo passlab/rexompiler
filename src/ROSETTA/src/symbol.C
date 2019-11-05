@@ -84,13 +84,6 @@ Grammar::setUpSymbols ()
      NEW_NONTERMINAL_MACRO ( MemberFunctionSymbol,TemplateMemberFunctionSymbol,"MemberFunctionSymbol","MEMBER_FUNC_NAME", true);
      NEW_NONTERMINAL_MACRO ( FunctionSymbol, MemberFunctionSymbol | TemplateFunctionSymbol | RenameSymbol,"FunctionSymbol","FUNCTION_NAME", true);
 
-  // DQ (5/3/2010): Added symbol table support to the binary analysis within ROSE.  Values that
-  // are addresses or references to data will have symbols in a function symbol table.  All other 
-  // values are assumed to be literals and will not have associated symbols.
-     NEW_TERMINAL_MACRO ( AsmBinaryAddressSymbol,  "AsmBinaryAddressSymbol",  "BINARY_ADDRESS_SYMBOL" );
-     NEW_TERMINAL_MACRO ( AsmBinaryDataSymbol,     "AsmBinaryDataSymbol",     "BINARY_DATA_SYMBOL" );
-
-
   // DQ (9/26/2008): Added support for references to symbols to support: "use" declaration in F90, "using" declaration in C++, and "namespace aliasing" in C++.
      NEW_TERMINAL_MACRO ( AliasSymbol,          "AliasSymbol",         "ALIAS_SYMBOL" );
 
@@ -101,7 +94,7 @@ Grammar::setUpSymbols ()
           ClassSymbol      | TemplateSymbol         | EnumSymbol             | EnumFieldSymbol    | 
           TypedefSymbol    | LabelSymbol            | DefaultSymbol          | NamespaceSymbol    |
           IntrinsicSymbol  | ModuleSymbol           | InterfaceSymbol        | CommonSymbol       | 
-          AliasSymbol      | AsmBinaryAddressSymbol | AsmBinaryDataSymbol    | JavaLabelSymbol /* | RenameSymbol*/,
+          AliasSymbol      | JavaLabelSymbol /* | RenameSymbol*/,
           "Symbol","SymbolTag", false);
 
   // ***********************************************************************
@@ -295,21 +288,6 @@ Grammar::setUpSymbols ()
      RenameSymbol.setDataPrototype       ( "SgName", "new_name", "= \"\"",
                    CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-  // DQ (5/3/2010): Added symbol table support to the binary analysis within ROSE.  Values that
-  // are addresses or references to data will have symbols in a function symbol table.  All other 
-  // values are assumed to be literals and will not have associated symbols.
-     AsmBinaryAddressSymbol.setFunctionPrototype ( "HEADER_ASM_BINARY_ADDRESS_SYMBOL", "../Grammar/Symbol.code" );
-     AsmBinaryAddressSymbol.setDataPrototype     ( "SgName", "address_name", "= \"\"",
-                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AsmBinaryAddressSymbol.setDataPrototype     ( "SgAsmInstruction*", "address", "= NULL",
-                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AsmBinaryDataSymbol.setFunctionPrototype ( "HEADER_ASM_BINARY_DATA_SYMBOL",    "../Grammar/Symbol.code" );
-     AsmBinaryDataSymbol.setDataPrototype     ( "SgName", "variable_name", "= \"\"",
-                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AsmBinaryDataSymbol.setDataPrototype     ( "SgAsmInstruction*", "address", "= NULL",
-                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
   // ***********************************************************************
   // ***********************************************************************
   //                       Source Code Definition
@@ -432,7 +410,5 @@ Grammar::setUpSymbols ()
   // DQ (5/3/2010): Added symbol table support to the binary analysis within ROSE.  Values that
   // are addresses or references to data will have symbols in a function symbol table.  All other 
   // values are assumed to be literals and will not have associated symbols.
-     AsmBinaryAddressSymbol.setFunctionSource ( "SOURCE_ASM_BINARY_ADDRESS_SYMBOL", "../Grammar/Symbol.code" );
-     AsmBinaryDataSymbol.setFunctionSource    ( "SOURCE_ASM_BINARY_DATA_SYMBOL",    "../Grammar/Symbol.code" );
    }
 

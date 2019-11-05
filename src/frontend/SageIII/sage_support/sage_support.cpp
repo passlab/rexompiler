@@ -9,9 +9,7 @@
  *---------------------------------------------------------------------------*/
 #include "sage3basic.h"
 #include "sage_support.h"
-#include "dwarfSupport.h"
 #include "keep_going.h"
-#include "failSafePragma.h"
 #include "cmdline.h"
 #include "FileSystem.h"
 #include <CommandLine.h>
@@ -1337,84 +1335,6 @@ determineFileType ( vector<string> argv, int & nextErrorCode, SgProject* project
                                 // Note that file->get_requires_C_preprocessor() should be false.
                                    ROSE_ASSERT(file->get_requires_C_preprocessor() == false);
                                    sourceFile->initializeGlobalScope();
-#ifdef ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-                                } else if (true) {
-                                   // This is not a source file recognized by ROSE, so it is either a binary executable or
-                                   // library archive or something that we can't process.
-                                   static bool didWarn = false;
-                                   if (!didWarn) {
-                                       mlog[WARN]
-                                           <<"global \"::frontend\" is being used for parsing binary analysis inputs\n"
-                                           <<"  It is better to use the Rose::BinaryAnaysis::Partitioner2::Engine interface\n"
-                                           <<"  which is dedicated to binary analysis and has more features and better\n"
-                                           <<"  control over the details. The closest replacement to \"::frontend\" is\n"
-                                           <<"  Rose::BinaryAnalysis::Partitioner2::Engine::frontend.\n";
-                                       didWarn = true;
-                                   }
-
-                                   // Build a SgBinaryComposite to represent either the binary executable or the library
-                                   // archive.
-                                   SgBinaryComposite *binary = new SgBinaryComposite(argv,  project);
-                                   file = binary;
-                                   file->set_sourceFileUsesBinaryFileExtension(true);
-                                   file->set_outputLanguage(SgFile::e_Binary_language);
-                                   file->set_inputLanguage(SgFile::e_Binary_language);
-
-                                   // If this is an object file being processed for binary analysis then mark it as an object
-                                   // file so that we can trigger analysis to mark the sections that will be disassembled.
-                                   string binaryFileName = file->get_sourceFileNameWithPath();
-                                   if (CommandlineProcessing::isObjectFilename(binaryFileName))
-                                       file->set_isObjectFile(true);
-
-                                   // DQ (2/5/2009): Put this at both the SgProject and SgFile levels.
-                                   // DQ (2/4/2009):  This is now a data member on the SgProject instead of on the SgFile.
-                                   file->set_binary_only(true);
-
-                                   // DQ (5/18/2008): Set this to false (since binaries are never preprocessed using the C
-                                   // preprocessor.
-                                   file->set_requires_C_preprocessor(false);
-                                   ASSERT_not_null(file->get_file_info());
-
-                                   if (isLibraryArchiveFile(sourceFilename)) {
-                                       // WARNING: Static archives aren't handled correctly here (called from ::frontend)
-                                       // because we're already at too low a level in the call chain to really do things
-                                       // properly. They should have been either linked to form an executable or replaced by a
-                                       // list of object files that all go into one SgAsmInterpretation. It's better to handle
-                                       // binary analysis command-line arguments with the
-                                       // Rose::BinaryAnalysis::Partitioner2::Engine interface.
-#ifdef _MSC_VER
-                                       /* The following block of code deals with *.a library archives files found on Unix
-                                        * systems. I added better temporary file and directory names, but this block of code
-                                        * also has commands that likely won't run on Windows systems, so I'm commenting out the
-                                        * whole block. [RPM 2010-11-03] */
-                                       ASSERT_not_implemented("Windows not supported");
-#endif
-                                       // This is the case of processing a library archive (*.a) file. We want to process these
-                                       // files so that we can test the library identification mechanism to build databases of
-                                       // the binary functions in libraries (so that we detect these in staticaly linked
-                                       // binaries).
-                                       ROSE_ASSERT(!isBinaryExecutableFile(sourceFilename));
-
-                                       // Note that since a archive can contain many *.o files each of these will be a
-                                       // SgAsmGenericFile object and the SgBinaryComposite will contain a list of
-                                       // SgAsmGenericFile objects to hold them all.
-                                       string archiveName = file->get_sourceFileNameWithPath();
-                                       file->set_isLibraryArchive(true);
-
-                                       // Extract the archive into a temporary directory and create a file in that directory
-                                       // that will have the names of objects stored in the archive.  We have to be careful
-                                       // about name choices since this function could be called multiple times from one
-                                       // process, and by multiple processes.
-                                       boost::filesystem::path tmpDirectory =
-                                           boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
-                                       boost::filesystem::create_directory(tmpDirectory);
-                                       std::vector<boost::filesystem::path> memberNames =
-                                           BinaryAnalysis::Partitioner2::ModulesElf::extractStaticArchive(tmpDirectory,
-                                                                                                          archiveName);
-                                       BOOST_FOREACH (const boost::filesystem::path &memberName, memberNames)
-                                           binary->get_libraryArchiveObjectFileNameList().push_back(memberName.native());
-                                   }
-#endif // ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
                                }
                               else
                                {
@@ -2163,14 +2083,6 @@ SgSourceFile::callFrontEnd()
    }
 
 int
-SgBinaryComposite::callFrontEnd()
-   {
-     int frontendErrorLevel = SgFile::callFrontEnd();
-  // DQ (1/21/2008): This must be set for all languages
-     return frontendErrorLevel;
-   }
-
-int
 SgUnknownFile::callFrontEnd()
    {
   // DQ (2/3/2009): This function is defined, but should never be called.
@@ -2179,32 +2091,6 @@ SgUnknownFile::callFrontEnd()
 
      return 0;
    }
-
-SgBinaryComposite::SgBinaryComposite ( vector<string> & argv ,  SgProject* project )
-    : p_genericFileList(NULL), p_interpretations(NULL)
-{
-#ifdef ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-    p_interpretations = new SgAsmInterpretationList();
-    p_interpretations->set_parent(this);
-
-    p_genericFileList = new SgAsmGenericFileList();
-    p_genericFileList->set_parent(this);
-
-  // DQ (2/3/2009): This data member has disappeared (in favor of a list).
-  // p_binaryFile = NULL;
-
-  // printf ("In the SgBinaryComposite constructor \n");
-
-  // This constructor actually makes the call to EDG to build the AST (via callFrontEnd()).
-  // printf ("In SgBinaryComposite::SgBinaryComposite(): Calling doSetupForConstructor() \n");
-     doSetupForConstructor(argv,  project);
-
-  // printf ("Leaving SgBinaryComposite constructor \n");
-#else
-     printf ("Binary analysis not supported in this distribution (turned off in this restricted distribution) \n");
-     ROSE_ASSERT(false);
-#endif
-}
 
 int
 SgProject::RunFrontend()
@@ -2984,12 +2870,6 @@ SgSourceFile::doSetupForConstructor(const vector<string>& argv, SgProject* proje
    }
 
 void
-SgBinaryComposite::doSetupForConstructor(const vector<string>& argv, SgProject* project)
-   {
-     SgFile::doSetupForConstructor(argv, project);
-   }
-
-void
 SgUnknownFile::doSetupForConstructor(const vector<string>& argv, SgProject* project)
    {
      SgFile::doSetupForConstructor(argv, project);
@@ -3375,13 +3255,6 @@ SgFile::callFrontEnd()
                        {
                          SgSourceFile* sourceFile = const_cast<SgSourceFile*>(isSgSourceFile(this));
                          frontendErrorLevel = sourceFile->buildAST(localCopy_argv, inputCommandLine);
-                         break;
-                       }
-
-                    case V_SgBinaryComposite:
-                       {
-                         SgBinaryComposite* binary = const_cast<SgBinaryComposite*>(isSgBinaryComposite(this));
-                         frontendErrorLevel = binary->buildAST(localCopy_argv, inputCommandLine);
                          break;
                        }
 
@@ -6070,163 +5943,6 @@ SgSourceFile::build_Cobol_AST( vector<string> argv, vector<string> inputCommandL
    }
 
 
-/* Parses a single binary file and adds a SgAsmGenericFile node under this SgBinaryComposite node. */
-void
-SgBinaryComposite::buildAsmAST(string executableFileName)
-   {
-#ifdef ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-     if ( get_verbose() > 0 || SgProject::get_verbose() > 0)
-          printf ("Disassemble executableFileName = %s \n",executableFileName.c_str());
-
-  // Parse the binary container, but do not disassemble instructions yet.
-     SgAsmGenericFile *file = SgAsmExecutableFileFormat::parseBinaryFormat(executableFileName.c_str());
-     ROSE_ASSERT(file != NULL);
-
-  // Attach the file to this node
-     get_genericFileList()->get_files().push_back(file);
-     file->set_parent(get_genericFileList());
-
-  // Add a disassembly interpretation for each header. Actual disassembly will occur later.
-  // NOTE: This probably isn't the right place to add interpretation nodes, but I'm leaving it here for the time being. We
-  //       probably don't want an interpretation for each header if we're doing dynamic linking. [RPM 2009-09-17]
-     const SgAsmGenericHeaderPtrList &headers = file->get_headers()->get_headers();
-     for (size_t i = 0; i < headers.size(); ++i)
-        {
-          SgAsmInterpretation* interp = new SgAsmInterpretation();
-          get_interpretations()->get_interpretations().push_back(interp);
-          interp->set_parent(get_interpretations());
-          interp->get_headers()->get_headers().push_back(headers[i]);
-        }
-
-#ifdef ROSE_HAVE_LIBDWARF
-  // DQ (3/14/2009): Dwarf support now works within ROSE when used with Intel Pin
-  // (was a huge problem until everything (e.g. libdwarf) was dynamically linked).
-  // DQ (11/7/2008): New Dwarf support in ROSE (Dwarf IR nodes are generated in the AST).
-     readDwarf(file);
-#endif
-
-  // Make sure this node is correctly parented
-     SgProject* project = SageInterface::getEnclosingNode<SgProject>(this);
-     ROSE_ASSERT(project != NULL);
-#else
-  // DQ (2/21/2016): Added "error: " to allow this to be caught by the ROSE Matrix Testing.
-     ROSE_ASSERT (! "[FATAL] [ROSE] [frontend] [Binary analysis] "
-                    "error: ROSE was not configured to support the binary analysis frontend.");
-#endif
-
-#if 0
-     printf ("At base of SgBinaryComposite::buildAsmAST(): exiting... \n");
-     ROSE_ASSERT(false);
-#endif
-   }
-
-/* Builds the entire AST under the SgBinaryComposite node:
- *    - figures out what binary files are needed
- *    - parses binary container of each file (SgAsmGenericFile nodes)
- *    - optionally disassembles instructions (SgAsmInterpretation nodes) */
-int
-SgBinaryComposite::buildAST(vector<string> /*argv*/, vector<string> /*inputCommandLine*/)
-   {
-#ifdef ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-    /* Parse the specified binary file to create the AST. Do not disassemble instructions yet. If the file is dynamically
-     * linked then optionally load (i.e., parse the container, map sections into process address space, and perform relocation
-     * fixups) all dependencies also.  See the BinaryLoader class for details. */
-     if (get_isLibraryArchive()) {
-        ROSE_ASSERT(get_libraryArchiveObjectFileNameList().empty() == false);
-        ROSE_ASSERT(get_libraryArchiveObjectFileNameList().empty() == (get_isLibraryArchive() == false));
-
-        for (size_t i = 0; i < get_libraryArchiveObjectFileNameList().size(); i++) {
-            printf("Build binary AST for get_libraryArchiveObjectFileNameList()[%" PRIuPTR "] = %s \n",
-                    i, get_libraryArchiveObjectFileNameList()[i].c_str());
-            string filename = get_libraryArchiveObjectFileNameList()[i];
-            printf("Build SgAsmGenericFile from: %s \n", filename.c_str());
-            buildAsmAST(filename);
-        }
-    } else {
-        ROSE_ASSERT(get_libraryArchiveObjectFileNameList().empty());
-        BinaryAnalysis::BinaryLoader::load(this, get_read_executable_file_format_only());
-    }
-
-    // Disassemble each interpretation
-    if (!get_read_executable_file_format_only()) {
-        namespace P2 = Rose::BinaryAnalysis::Partitioner2;
-        const SgAsmInterpretationPtrList &interps = get_interpretations()->get_interpretations();
-        for (size_t i=0; i<interps.size(); i++)
-            Rose::BinaryAnalysis::Partitioner2::Engine::disassembleForRoseFrontend(interps[i]);
-    }
-
-    // DQ (1/22/2008): The generated unparsed assemble code can not currently be compiled because the
-    // addresses are unparsed (see Jeremiah for details).
-    // Skip running gnu assemble on the output since we include text that would make this a problem.
-     if (get_verbose() > 1)
-          printf("set_skipfinalCompileStep(true) because we are on a binary '%s'\n", this->get_sourceFileNameWithoutPath().c_str());
-
-     this->set_skipfinalCompileStep(true);
-
-    // This is now done below in the Secondary file processing phase.
-    // Generate the ELF executable format structure into the AST
-    // generateBinaryExecutableFileInformation(executableFileName,asmFile);
-#else
-  // DQ (2/21/2016): Added "error: " to allow this to be caught by the ROSE Matrix Testing.
-     ROSE_ASSERT (! "[FATAL] [ROSE] [frontend] [Binary analysis] "
-                    "error: ROSE was not configured to support the binary analysis frontend.");
-#endif
-
-     int frontendErrorLevel = 0;
-     return frontendErrorLevel;
-   }
-
-
-#if 0
-/* Builds the entire AST under the SgBinaryFile node:
- *    - figures out what binary files are needed
- *    - parses binary container of each file (SgAsmGenericFile nodes)
- *    - optionally disassembles instructions (SgAsmInterpretation nodes) */
-int
-SgBinaryFile::buildAST(vector<string> /*argv*/, vector<string> /*inputCommandLine*/)
-{
-    if (get_isLibraryArchive()) {
-        ROSE_ASSERT(get_libraryArchiveObjectFileNameList().empty() == false);
-        ROSE_ASSERT(get_libraryArchiveObjectFileNameList().empty() == (get_isLibraryArchive() == false));
-
-        for (size_t i = 0; i < get_libraryArchiveObjectFileNameList().size(); i++) {
-            printf("Build binary AST for get_libraryArchiveObjectFileNameList()[%" PRIuPTR "] = %s \n",
-                    i, get_libraryArchiveObjectFileNameList()[i].c_str());
-            string filename = "tmp_objects/" + get_libraryArchiveObjectFileNameList()[i];
-            printf("Build SgAsmGenericFile from: %s \n", filename.c_str());
-            buildAsmAST(filename);
-        }
-    } else {
-        ROSE_ASSERT(get_libraryArchiveObjectFileNameList().empty() == true);
-        buildAsmAST(this->get_sourceFileNameWithPath());
-    }
-
-    /* Disassemble each interpretation */
-    if (get_read_executable_file_format_only()) {
-        printf ("\nWARNING: Skipping instruction disassembly \n\n");
-    } else {
-        const SgAsmInterpretationPtrList &interps = get_interpretations()->get_interpretations();
-        for (size_t i=0; i<interps.size(); i++) {
-            Partitioner::disassembleInterpretation(interps[i]);
-        }
-    }
-
-    // DQ (1/22/2008): The generated unparsed assemble code can not currently be compiled because the
-    // addresses are unparsed (see Jeremiah for details).
-    // Skip running gnu assemble on the output since we include text that would make this a problem.
-    if (get_verbose() > 1)
-        printf("set_skipfinalCompileStep(true) because we are on a binary '%s'\n", this->get_sourceFileNameWithoutPath().c_str());
-    this->set_skipfinalCompileStep(true);
-
-    // This is now done below in the Secondary file processing phase.
-    // Generate the ELF executable format structure into the AST
-    // generateBinaryExecutableFileInformation(executableFileName,asmFile);
-
-    int frontendErrorLevel = 0;
-    return frontendErrorLevel;
-}
-#endif
-
 int
 SgSourceFile::buildAST( vector<string> argv, vector<string> inputCommandLine )
    {
@@ -7960,12 +7676,6 @@ size_t
 SgSourceFile::numberOfNodesInSubtree()
    {
      return get_globalScope()->numberOfNodesInSubtree() + 1;
-   }
-
-size_t
-SgBinaryComposite::numberOfNodesInSubtree()
-   {
-     return get_binaryFile()->numberOfNodesInSubtree() + 1;
    }
 #endif
 

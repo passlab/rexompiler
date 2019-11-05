@@ -6267,41 +6267,6 @@ HEADER_HEADER_FILE_REPORT_START
 
 HEADER_HEADER_FILE_REPORT_END
 
-
-HEADER_APPLICATION_BINARY_FILE_START
-        private:
-                friend class boost::serialization::access;
-
-                template<class S>
-                void serialize(S &s, const unsigned /*version*/) {
-                     s & BOOST_SERIALIZATION_BASE_OBJECT_NVP(SgFile);
-                     s & BOOST_SERIALIZATION_NVP(p_genericFileList);
-                     s & BOOST_SERIALIZATION_NVP(p_interpretations);
-                }
-
-     public:
-       // SgBinaryComposite ( int & argc, char** & argv, int & errorCode, int fileNameIndex = 0, SgProject* project = NULL );
-          SgBinaryComposite(std::vector<std::string>& argv,  SgProject* project = NULL);
-       // SgBinaryComposite ( const SgBinaryFile & X );
-
-          virtual int callFrontEnd() $ROSE_OVERRIDE;
-      //  Default constructor (not meant to be used)
-      //  JJW (9/5/2008): the normal constructor has defaults for all of its arguments, so this is ambiguous
-      //  SgBinaryComposite() ROSE_DEPRECATED_FUNCTION;
-
-          virtual void doSetupForConstructor(const std::vector<std::string>& argv, SgProject* project) $ROSE_OVERRIDE;
-
-          virtual int buildAST( std::vector<std::string> argv, std::vector<std::string> inputCommandLine ) $ROSE_OVERRIDE;
-
-      //! However, now we have a list of them to support library archives which contain multiple object files (*.o's).
-          const SgAsmGenericFile* get_binaryFile() const;
-          SgAsmGenericFile* get_binaryFile();
-          void set_binaryFile( SgAsmGenericFile* file );
-
-       //! This is refactored code, called once for a binary executable, and called on each object file for a library archive.
-          void buildAsmAST( std::string executableFileName );
-HEADER_APPLICATION_BINARY_FILE_END
-
 HEADER_APPLICATION_UNKNOWN_FILE_START
      public:
           SgUnknownFile(std::vector<std::string>& argv, SgProject* project = NULL);
@@ -15744,8 +15709,6 @@ SgFile::SgFile ( const SgFile & X )
      ROSE_ASSERT(false);
    }
 
-#include "Disassembler.h"
-
 void
 SgFile::initialization()
    {
@@ -15999,7 +15962,6 @@ X sourceFileUsesFortran77FileExtension
 X sourceFileUsesFortran90FileExtension
 X sourceFileUsesFortran95FileExtension
 X sourceFileUsesPHPFileExtension
-X sourceFileUsesBinaryFileExtension
 X binaryFile
 X read_executable_file_format_only
 X read_instructions_only
@@ -17892,31 +17854,6 @@ SgHeaderFileReport::display( const string & label) const
 
 SOURCE_HEADER_FILE_REPORT_END
 
-
-SOURCE_APPLICATION_BINARY_FILE_START
-
-const SgAsmGenericFile* 
-SgBinaryComposite::get_binaryFile() const
-   {
-     assert(p_genericFileList->get_files().size() == 1);
-     return p_genericFileList->get_files()[0];
-   }
-
-SgAsmGenericFile*
-SgBinaryComposite::get_binaryFile()
-   {
-     assert(p_genericFileList->get_files().size() == 1);
-     return p_genericFileList->get_files()[0];
-   }
-
-void
-SgBinaryComposite::set_binaryFile( SgAsmGenericFile* file )
-   {
-     assert(p_genericFileList->get_files().empty() == true);
-     p_genericFileList->get_files().push_back(file);
-   }
-
-SOURCE_APPLICATION_BINARY_FILE_END
 
 SOURCE_APPLICATION_UNKNOWN_FILE_START
 SgUnknownFile::SgUnknownFile ( vector<string> & argv ,  SgProject* project )

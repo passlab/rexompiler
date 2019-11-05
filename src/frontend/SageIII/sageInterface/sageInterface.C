@@ -1967,7 +1967,6 @@ SageInterface::get_name ( const SgSupport* node )
        // DQ (5/31/2007): Implemented case for SgFile
        // case V_SgFile:
           case V_SgSourceFile:
-          case V_SgBinaryComposite:
              {
                name = "_file_";
 
@@ -4718,7 +4717,6 @@ SageInterface::generateFileList()
   // traverse just the SgFile nodes (both the SgSourceFile and SgBinaryComposite IR nodes)!
   // SgFile::visitRepresentativeNode(fileTraversal);
      SgSourceFile::traverseMemoryPoolNodes(fileTraversal);
-     SgBinaryComposite::traverseMemoryPoolNodes(fileTraversal);
 
   // This would alternatively traverse all IR nodes in thememory pool!
   // fileTraversal.traverseMemoryPool();
@@ -16859,46 +16857,6 @@ void SageInterface::replaceSubexpressionWithStatement(SgExpression* from, Statem
     ROSE_ASSERT (!"Bad kind return in getIntegerConstantValue");
         return 0;
   }
-
-
-// tps : 28 Oct 2008 - support for finding the main interpretation
-// rpm : 18 Sep 2009 - rewritten to support multiple files per interpretation
-/** Returns the "main" interpretation. "Main" is defined as the first interpretation that points to a header of the supplied
- *  file. If the supplied file has more than one header then the interpretation must point to this file's PE header. */
-SgAsmInterpretation *
-SageInterface::getMainInterpretation(SgAsmGenericFile *file)
-{
-    SgBinaryComposite *binary = getEnclosingNode<SgBinaryComposite>(file);
-    ROSE_ASSERT(binary!=NULL);
-
-    /* Find the only header or the PE header of this file */
-    SgAsmGenericHeader *requisite_header = NULL; /*the returned interpretation must point to this header*/
-    const SgAsmGenericHeaderPtrList &headers = file->get_headers()->get_headers();
-    if (1==headers.size()) {
-        requisite_header = headers[0];
-    } else {
-        for (SgAsmGenericHeaderPtrList::const_iterator hi=headers.begin(); hi!=headers.end(); ++hi) {
-            if (isSgAsmPEFileHeader(*hi)) {
-                requisite_header = isSgAsmPEFileHeader(*hi);
-                break;
-            }
-        }
-    }
-    ROSE_ASSERT(requisite_header!=NULL);
-
-    /* Find an interpretation that points to this header */
-    const SgAsmInterpretationPtrList &interps = binary->get_interpretations()->get_interpretations();
-    for (SgAsmInterpretationPtrList::const_iterator ii=interps.begin(); ii!=interps.end(); ++ii) {
-        const SgAsmGenericHeaderPtrList &headers = (*ii)->get_headers()->get_headers();
-        for (SgAsmGenericHeaderPtrList::const_iterator hi=headers.begin(); hi!=headers.end(); ++hi) {
-            if ((*hi)==requisite_header)
-                return *ii;
-        }
-    }
-
-    ROSE_ASSERT(!"no appropriate interpretation");
-    return NULL;
-}
 
 class CollectDependentDeclarationsCopyType : public SgCopyHelp
    {

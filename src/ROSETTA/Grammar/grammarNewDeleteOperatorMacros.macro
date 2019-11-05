@@ -133,8 +133,6 @@ void *$CLASSNAME::operator new ( size_t Size )
             printf("Inside of $CLASSNAME::operator new: sizeof(SgSharedVector<unsigned char>)(%" PRIuPTR ")\n",
                    sizeof(SgSharedVector<unsigned char>));
             printf("Inside of $CLASSNAME::operator new: sizeof(SgFileContentList)(%" PRIuPTR ")\n", sizeof(SgFileContentList));
-            printf("Inside of $CLASSNAME::operator new: sizeof(SgAsmGenericFormat::fileDetails)(%" PRIuPTR ")\n",
-                   sizeof(SgAsmGenericFormat::fileDetails));
 #           endif
 
             void *mem = ROSE_MALLOC(Size);

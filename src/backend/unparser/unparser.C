@@ -17,10 +17,6 @@
 // Interestingly it must be at the top of the list of include files.
 #include "rose_config.h"
 
-#ifdef ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-   #include "AsmUnparser_compat.h"
-#endif
-
 #include <string.h>
 #if _MSC_VER
 #include <direct.h>
@@ -1662,128 +1658,6 @@ Unparser::unparseFileUsingTokenStream ( SgSourceFile* file )
      ROSE_RawTokenStream_OutputFile.flush();
 #endif
    }
-
-
-
-
-
-/** Unparses a single physical, binary file.
- *
- *  Recreates the original binary file from the container representation under the SgAsmGenericFile node. This does not
- *  include instruction nodes since they're under the SgAsmInterpretation.  Instead, for any section that contained machine
- *  instructions, we simply write those bytes back to the new file.
- *
- *  If the AST has not been modified since the binary file was parsed, then the result should be byte-for-byte identical with
- *  the original. This tests that we have completely represented the binary file format in ROSE. Any transformations to parts
- *  of the binary file format in the AST will be represented in the regenerated binary.
- *  
- *  The name of the new file is created by appending ".new" to the original file name. Leading path components are stripped so
- *  that the file is created in the current working directory. */
-void
-Unparser::unparseAsmFile(SgAsmGenericFile *file, SgUnparse_Info &info)
-{
-     if ( SgProject::get_verbose() > 0 )
-          printf ("In Unparser::unparseAsmFile... file = %p = %s \n",file,file->class_name().c_str());
-
-#ifdef ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-    ROSE_ASSERT(file!=NULL);
-
-    /* Genenerate an ASCII dump of the entire file contents.  Generate the dump before unparsing because unparsing may perform
-     * certain relocations and normalization to the AST. */
-    // DQ (8/30/2008): This is temporary, we should review how we want to name the files 
-    // generated in the unparse phase of processing a binary.
-    file->dump_all(true, ".dump");
-
-    /* Generate file name for uparser output */
-    // DQ (8/30/2008): This is temporary, we should review how we want to name the files 
-    // generated in the unparse phase of processing a binary.
-    std::string output_name = file->get_name() + ".new";
-    size_t slash = output_name.find_last_of('/');
-    if (slash!=output_name.npos)
-        output_name.replace(0, slash+1, "");
-    if (SgProject::get_verbose() >= 1)
-        std::cout << "output re-generated binary as: " << output_name << std::endl;
-
-    /* Unparse the file to create a new executable */
-    SgAsmExecutableFileFormat::unparseBinaryFormat(output_name, file);
-#endif
-}
-
-void
-Unparser::unparseFile(SgBinaryComposite *binary, SgUnparse_Info &info)
-{
-     if ( SgProject::get_verbose() > 0 )
-        {
-          printf ("In Unparser::unparseFile(SgBinaryComposite *binary, SgUnparse_Info &info): file = %p = %s \n",binary,binary->class_name().c_str());
-        }
-
-#ifdef ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-    ROSE_ASSERT(binary != NULL);
-    ROSE_ASSERT(binary->get_binary_only()) ;
-
-    /* Unparse each file and create an ASCII dump as well */
-    const SgAsmGenericFilePtrList &files = binary->get_genericFileList()->get_files();
-    ROSE_ASSERT(!files.empty());
-
-#if 0
-    printf ("In Unparser::unparseFile(SgBinaryComposite,SgUnparse_Info): files.size() = %zu \n",files.size());
-#endif
-
-    for (size_t i=0; i<files.size(); i++) {
-        unparseAsmFile(files[i], info);
-    }
-
-    /* Generate an ASCII dump of disassembled instructions for interpretations that we didn't already dump in
-     * unparseAsmFile(). In other words, dump interpretations that span multiple files. */
-    size_t nwritten=0;
-    const SgAsmInterpretationPtrList &interps = binary->get_interpretations()->get_interpretations();
-    for (size_t i=0; i<interps.size(); i++) {
-        SgAsmGenericFilePtrList interp_files = interps[i]->get_files();
-        if (interp_files.size()>1) {
-            char interp_name[64];
-            sprintf(interp_name, "interp-%03zu.dump", nwritten++);
-            FILE *interp_file = fopen(interp_name, "wb");
-            ROSE_ASSERT(interp_file!=NULL);
-            fprintf(interp_file, "Interpretation spanning these input files:\n");
-            for (size_t j=0; j<interp_files.size(); j++) {
-                fprintf(interp_file, "  %s\n", interp_files[j]->get_name().c_str());
-            }
-            fputs(unparseAsmInterpretation(interps[i]).c_str(), interp_file);
-            fclose(interp_file);
-        }
-    }
-
-    /* Generate the rose_*.s (get_unparse_output_filename()) assembly file. It will contain all the interpretations. */
-     if (binary->get_unparse_output_filename()!="") 
-        {
-#if 0
-          printf ("In Unparser::unparseFile(SgBinaryComposite,SgUnparse_Info): opening file: %s \n",binary->get_unparse_output_filename().c_str());
-#endif
-          FILE *asm_file = fopen(binary->get_unparse_output_filename().c_str(), "wb");
-          if (asm_file!=NULL) 
-             {
-               for (size_t i=0; i<interps.size(); i++) 
-                  {
-#if 1
-                 // Original code.
-                    fputs(unparseAsmInterpretation(interps[i]).c_str(), asm_file);
-#else
-                 // Debugging support.
-                    string s = unparseAsmInterpretation(interps[i]);
-                    printf ("In Unparser::unparseFile(SgBinaryComposite,SgUnparse_Info): output result from unparseAsmInterpretation(): \ns = %s \n",s.c_str());
-                    fputs(s.c_str(), asm_file);
-#endif
-                  }
-#if 0
-               printf ("In Unparser::unparseFile(SgBinaryComposite,SgUnparse_Info): call fclose() \n");
-#endif
-
-               fclose(asm_file);
-             }
-        }
-#endif
-}
-
 
 string
 unparseStatementWithoutBasicBlockToString ( SgStatement* statement )
@@ -3869,19 +3743,6 @@ unparseFile ( SgFile* file, UnparseFormatHelp *unparseHelp, UnparseDelegate* unp
                  // roseUnparser.unparseFile(sourceFile,inheritedAttributeInfo, unparseScope);
                  // roseUnparser.unparseFile(sourceFile,inheritedAttributeInfo, NULL);
                     roseUnparser.unparseFile(sourceFile,inheritedAttributeInfo, unparseScope);
-                    break;
-                  }
-
-               case V_SgBinaryComposite:
-                  {
-                    SgBinaryComposite* binary = isSgBinaryComposite(file);
-#if 0
-                    printf ("In unparseFile(SgFile*): Output binary file as generated assembly \n");
-#endif
-                    roseUnparser.unparseFile(binary,inheritedAttributeInfo);
-#if 0
-                    printf ("DOEN: In unparseFile(SgFile*): Output binary file as generated assembly \n");
-#endif
                     break;
                   }
 

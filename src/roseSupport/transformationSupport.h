@@ -207,7 +207,6 @@ class ROSE_DLL_API TransformationSupport
           static SgDirectory* getDirectory( const SgNode* astNode);
           static SgFile* getFile( const SgNode* astNode);
           static SgSourceFile* getSourceFile( const SgNode* astNode);
-          static SgBinaryComposite* getBinaryFile( const SgNode* astNode);
           static SgGlobal* getGlobalScope( const SgNode* astNode);
           static SgStatement* getStatement(const SgNode* astNode);
           static SgFunctionDeclaration* getFunctionDeclaration( const SgNode* astNode);

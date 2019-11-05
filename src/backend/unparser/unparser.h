@@ -253,10 +253,6 @@ class Unparser
        // void unparseProject ( SgProject* project, SgUnparse_Info& info );
        // void unparseFile       ( SgFile* file, SgUnparse_Info& info );
           void unparseFile ( SgSourceFile* file, SgUnparse_Info& info, SgScopeStatement* unparseScope = NULL );
-          void unparseFile ( SgBinaryComposite*, SgUnparse_Info& info );
-
-       // Unparses a single physical file
-          void unparseAsmFile ( SgAsmGenericFile* asmFile, SgUnparse_Info & info );
 
       //! remove unneccessary white space to build a condensed string
           static std::string removeUnwantedWhiteSpace ( const std::string & X );

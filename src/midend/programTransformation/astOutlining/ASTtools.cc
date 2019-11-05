@@ -245,7 +245,6 @@ ASTtools::isC99 (const SgNode* n)
         break;
    // case V_SgFile:
       case V_SgSourceFile:
-      case V_SgBinaryComposite:
         {
           const SgFile* file = isSgFile (n);
           ROSE_ASSERT (file);

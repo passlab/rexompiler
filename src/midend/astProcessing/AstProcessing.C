@@ -43,7 +43,7 @@ SgTreeTraversal_inFileToTraverse(SgNode* node, bool traversalConstraint, SgFile*
 
        // DQ (11/20/2013): Added SgJavaImportStatementList and SgJavaClassDeclarationList to the exception list since they don't have a source position field.
        // if (isSgProject(node) == NULL && isSgAsmNode(node) == NULL)
-          if (isSgProject(node) == NULL && isSgAsmNode(node) == NULL && isSgJavaImportStatementList(node) == NULL && isSgJavaClassDeclarationList(node) == NULL)
+          if (isSgProject(node) == NULL )
              {
                printf ("Error: SgTreeTraversal_inFileToTraverse() --- node->get_file_info() == NULL: node = %p = %s \n",node,node->class_name().c_str());
                SageInterface::dumpInfo(node);

@@ -31,7 +31,6 @@
    #include "astMergeAPI.h"
 #endif
 
-#include "BinaryLoader.h"
 #include "sageBuilder.h"
 
 #include "CollectionHelper.h"

@@ -124,18 +124,6 @@ void AstPostProcessing (SgNode* node)
                break;
              }
 
-       // Test for a binary executable, object file, etc.
-          case V_SgBinaryComposite:
-             {
-               SgBinaryComposite* file = isSgBinaryComposite(node);
-               ROSE_ASSERT(file != NULL);
-
-               printf ("Error: AstPostProcessing of SgBinaryFile is not defined \n");
-               ROSE_ASSERT(false);
-
-               break;
-             }
-
           default:
              {
             // list general post-processing fixup here ...

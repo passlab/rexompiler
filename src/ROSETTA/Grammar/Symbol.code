@@ -120,12 +120,6 @@ HEADER_NAMESPACE_SYMBOL_START
 HEADER_NAMESPACE_SYMBOL_END
 
 
-HEADER_ASM_BINARY_ADDRESS_SYMBOL_START
-HEADER_ASM_BINARY_ADDRESS_SYMBOL_END
-
-HEADER_ASM_BINARY_DATA_SYMBOL_START
-HEADER_ASM_BINARY_DATA_SYMBOL_END
-
 // #########################################################
 // #########################################################
 //                      SOURCE CODE

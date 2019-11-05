@@ -522,23 +522,6 @@ class Grammar
        // MS: generates the code to implement the creation of the treeTraversalSuccessorContainer in Sage
           void buildTreeTraversalFunctions(AstNodeClass & node, Rose::StringUtility::FileWithLineNumbers & outputFile);
 
-       // DQ (10/4/2014): Adding ATerm support to be automatically generated via ROSETTA.
-       // Rasmussen (04/17/2019): Support for ATerms has been deprecated.
-#define BUILD_ATERM_SUPPORT 0
-#if BUILD_ATERM_SUPPORT
-          void buildAtermSupportFunctions(AstNodeClass& node, Rose::StringUtility::FileWithLineNumbers& outputFile);
-          void buildAtermGenerationSupportFunctions(AstNodeClass& node, Rose::StringUtility::FileWithLineNumbers& outputFile);
-          void buildAtermConsumerSupportFunctions(AstNodeClass& node, Rose::StringUtility::FileWithLineNumbers& outputFile);
-          void buildDataMember(AstNodeClass & node, GrammarString* grammarString, bool & firstAterm, bool & firstConstructorParameter, 
-                               bool & lastDataMemberWasConstructorParameter, bool & isInConstructorParameterList, 
-                               std::string & constructorArgumentsString, std::string & atermArgumentsSubstring, std::string & atermPatternSubstring, 
-                               std::string & dataMemberString, std::string & dataMemberString_post, int integer_counter );
-          Rose::StringUtility::FileWithLineNumbers buildAtermConstructor ( AstNodeClass & node );
-          void buildAtermBuildFunctionsSourceFile( AstNodeClass & node, Rose::StringUtility::FileWithLineNumbers & outputFile );
-          bool isIntegerKind(const std::string & typenameString);
-       // void generateAtermSupport(GrammarString* gs, StringUtility::FileWithLineNumbers & outputFile);
-#endif // BUILD_ATERM_SUPPORT
-
        // MS: create source code for enums used in traversal functions to access synthesized attribute values
           void buildEnumForNode(AstNodeClass& node, std::string& enumString);
           std::string EnumStringForNode(AstNodeClass& node,std::string s);

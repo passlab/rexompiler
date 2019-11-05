@@ -371,21 +371,12 @@ Grammar::setUpNodes ()
      AstNodeClass & Symbol  = *lookupTerminal(terminalList, "Symbol");
      AstNodeClass & Support = *lookupTerminal(terminalList, "Support");
 
-  // DQ (3/14/2007): Added IR support for binaries
-     AstNodeClass & AsmNode = *lookupTerminal(terminalList, "AsmNode");
-
   // printf ("nonTerminalList.size() = %" PRIuPTR " \n",nonTerminalList.size());
 
-  // DQ (4/20/2014): Adding more support for ATerm library.
-  // Rasmussen (04/17/2019): Support for ATerms has been deprecated.
-  // NEW_TERMINAL_MACRO (Aterm, "Aterm", "ATERM" );
-
-  // DQ (3/14/2007): Added IR support for binaries
   // NEW_NONTERMINAL_MACRO (Node, Type | Symbol | LocatedNode | Support, "Node", "NodeTag" );
   // NEW_NONTERMINAL_MACRO (Node, Support | Type | LocatedNode | Symbol | AsmNode, "Node", "NodeTag", false );
   // NEW_NONTERMINAL_MACRO (Node, Type | Symbol | LocatedNode | Support, "Node", "NodeTag" );
-  // NEW_NONTERMINAL_MACRO (Node, Support | Type | LocatedNode | Symbol | AsmNode | Aterm, "Node", "NodeTag", false );
-     NEW_NONTERMINAL_MACRO (Node, Support | Type | LocatedNode | Symbol | AsmNode, "Node", "NodeTag", false );
+     NEW_NONTERMINAL_MACRO (Node, Support | Type | LocatedNode | Symbol, "Node", "NodeTag", false );
 
   // ***********************************************************************
   // ***********************************************************************
@@ -620,28 +611,6 @@ Grammar::setUpNodes ()
   // DQ (9/3/2014): Adding support for C++11 lambda expresions.
      LambdaCapture.setFunctionPrototype     ( "HEADER_LAMBDA_CAPTURE", "../Grammar/LocatedNode.code");
      LambdaCaptureList.setFunctionPrototype ( "HEADER_LAMBDA_CAPTURE_LIST", "../Grammar/LocatedNode.code");
-
-
-  // ***************************************************************************************
-  // ***************************************************************************************
-  //                                 ATerm IR Node Support
-  // ***************************************************************************************
-  // ***************************************************************************************
-  // DQ (4/20/2014): Added support for ATerms in the IR.  The goal is to support a new level
-  // of reading ATerms (previously demonstrated in projects/AtermTranslation directory).
-  // This level of support reads the Aterms and represents the Aterms in a ROSE AST using
-  // specific SgAterm IR nodes that as fundamentally simpler then the more commonly use
-  // ROSE IR nodes.  This work is in contrast to the Aterm API for the ROSE AST which has
-  // become problematic to support beyond a specific level.  Current level of support for
-  // the ATerm API in ROSE is limited to the demonstration using ATerm specific tools that
-  // generate DOT graph files from any Aterm and can be make to work on the ROSE AST as 
-  // well though the use of the ATerm API in ROSE (all this is demonstrated in the examples
-  // in the projects/AtermTranslation directory).
-
-  // Rasmussen (04/17/2019): Support for ATerms has been deprecated.
-  // Aterm.setFunctionPrototype ( "HEADER_ATERM_NODE", "../Grammar/LocatedNode.code");
-  // Aterm.setDataPrototype     ( "std::string", "name", "= \"\"",
-  //              CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // ***************************************************************************************
   // ***************************************************************************************
@@ -1626,16 +1595,6 @@ Grammar::setUpNodes ()
   // DQ (9/3/2014): Adding support for C++11 lambda expresions.
      LambdaCapture.setFunctionSource ( "SOURCE_LAMBDA_CAPTURE", "../Grammar/LocatedNode.code");
      LambdaCaptureList.setFunctionSource ( "SOURCE_LAMBDA_CAPTURE_LIST", "../Grammar/LocatedNode.code");
-
-  // ***************************************************************************************
-  // ***************************************************************************************
-  //                                 ATerm IR Node Support
-  // ***************************************************************************************
-  // ***************************************************************************************
-  // DQ (4/20/2014): Added support for ATerms in the IR.
-
-  // Rasmussen (04/17/2019): Support for ATerms has been deprecated.
-  // Aterm.setFunctionSource    ( "SOURCE_ATERM_NODE", "../Grammar/LocatedNode.code");
 
   // ***************************************************************************************
   // ***************************************************************************************

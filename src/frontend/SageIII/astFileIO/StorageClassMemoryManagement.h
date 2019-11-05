@@ -136,16 +136,6 @@ class EasyStorage<std::string>
      std::string rebuildDataStoredInEasyStorageClass() const;
    };
 
-// EasyStorage for Sawyer bit vectors
-template<>
-class EasyStorage<Sawyer::Container::BitVector>: public StorageClassMemoryManagement<Sawyer::Container::BitVector::Word> {
-    typedef StorageClassMemoryManagement<Sawyer::Container::BitVector::Word> Base;
-public:
-    EasyStorage() {}
-    void storeDataInEasyStorageClass(const Sawyer::Container::BitVector &data_);
-    Sawyer::Container::BitVector rebuildDataStoredInEasyStorageClass() const;
-};
-
 // EasyStorage concerning STL vectors and lists of plain data, not sets ! 
 template <class BASIC_TYPE, template <class A> class CONTAINER >
 class EasyStorage <CONTAINER<BASIC_TYPE> > 
@@ -1194,26 +1184,6 @@ class EasyStorage<SgSharedVector<BASIC_TYPE> >: public StorageClassMemoryManagem
     EasyStorage() {}
     void storeDataInEasyStorageClass(const SgSharedVector<BASIC_TYPE>& data_);
     SgSharedVector<BASIC_TYPE> rebuildDataStoredInEasyStorageClass() const;
-};
-
-/** Maps an ExtentMap to/from file representation. */
-template<>
-class EasyStorage<ExtentMap>: public StorageClassMemoryManagement<rose_addr_t> {
-    typedef StorageClassMemoryManagement<rose_addr_t> Base;
-  public:
-    EasyStorage() {}
-    void storeDataInEasyStorageClass(const ExtentMap&);
-    ExtentMap rebuildDataStoredInEasyStorageClass() const;
-};
-
-/** Maps an AddressIntervalSet to/from file representation. */
-template<>
-class EasyStorage<AddressIntervalSet>: public StorageClassMemoryManagement<rose_addr_t> {
-    typedef StorageClassMemoryManagement<rose_addr_t> Base;
-  public:
-    EasyStorage() {}
-    void storeDataInEasyStorageClass(const AddressIntervalSet&);
-    AddressIntervalSet rebuildDataStoredInEasyStorageClass() const;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -56,14 +56,6 @@ else
    OPT_SQLITE3_LDFLAGS =
 endif
 
-libroseBinaryLibraries =                                                     \
-        $(top_builddir)/src/frontend/BinaryFormats/libroseBinaryFormats.la      \
-        $(top_builddir)/src/frontend/BinaryLoader/libroseBinaryLoader.la        \
-        $(top_builddir)/src/midend/BinaryAnalysis/libbinaryMidend.la            \
-        $(top_builddir)/src/frontend/Disassemblers/libroseDisassemblers.la      \
-        $(top_builddir)/src/frontend/Partitioner2/libPartitioner.la
-
-
 # TOO (11/22/2011): flattening midend Makefiles => TODO: move conditional compilation to Makefile.
 # TODO: correct list!
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
@@ -77,8 +69,7 @@ libroseLibraries = \
    $(top_builddir)/src/util/support/libsupport.la \
    $(top_builddir)/src/util/graphs/libgraphs.la \
    $(top_builddir)/src/util/libroseutil.la \
-   $(top_builddir)/src/util/libroseSawyer.la \
-   $(libroseBinaryLibraries)
+   $(top_builddir)/src/util/libroseSawyer.la
 # DQ (12/18/2016): Moved below to make POET optional.
 #  $(top_builddir)/src/3rdPartyLibraries/POET/libpoet.la
 else
@@ -99,8 +90,7 @@ libroseLibraries = \
    $(top_builddir)/src/util/graphs/libgraphs.la \
    $(top_builddir)/src/util/libroseutil.la \
    $(top_builddir)/src/util/libroseSawyer.la \
-   $(libroseSqlite3xConnection) \
-   $(libroseBinaryLibraries)
+   $(libroseSqlite3xConnection)
 
 if ROSE_WITH_LIBHARU
 libroseLibraries += \

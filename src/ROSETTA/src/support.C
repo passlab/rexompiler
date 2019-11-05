@@ -98,12 +98,10 @@ Grammar::setUpSupport ()
   // can be related to a source file (and many source files).  The mapping is left
   // to an analysis phase to define and not defined in the structure of the AST.
      NEW_TERMINAL_MACRO (SourceFile, "SourceFile", "SourceFileTag" );
-     NEW_TERMINAL_MACRO (BinaryComposite, "BinaryComposite", "BinaryCompositeTag" );
-     BinaryComposite.isBoostSerializable(true);
      NEW_TERMINAL_MACRO (UnknownFile, "UnknownFile", "UnknownFileTag" );
 
   // Mark this as being able to be an IR node for now and later make it false.
-     NEW_NONTERMINAL_MACRO (File, SourceFile | BinaryComposite | UnknownFile , "File", "FileTag", false);
+     NEW_NONTERMINAL_MACRO (File, SourceFile | UnknownFile , "File", "FileTag", false);
 #endif
      NEW_TERMINAL_MACRO (FileList, "FileList", "FileListTag" );
      NEW_TERMINAL_MACRO (Directory, "Directory", "DirectoryTag" );
@@ -398,8 +396,6 @@ Grammar::setUpSupport ()
 
      SourceFile.setFunctionPrototype          ( "HEADER_APPLICATION_SOURCE_FILE", "../Grammar/Support.code");
   // SourceFile.setAutomaticGenerationOfConstructor(false);
-
-     BinaryComposite.setFunctionPrototype          ( "HEADER_APPLICATION_BINARY_FILE", "../Grammar/Support.code");
 
      UnknownFile.setFunctionPrototype          ( "HEADER_APPLICATION_UNKNOWN_FILE", "../Grammar/Support.code");
 
@@ -1431,20 +1427,6 @@ Grammar::setUpSupport ()
   // (this is part of the internal testing of the new (experimental) Fortran support).
      File.setDataPrototype("bool", "experimental_fortran_frontend_OFP_test", "= false",
             NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // To be consistent with the use of binaryFile we will implement get_binaryFile() and set_binaryFile()
-  // functions so that we can support the more common (previous) interface where there was only a single
-  // SgAsmFile pointers called "binaryFile".
-     BinaryComposite.setDataPrototype("SgAsmGenericFileList*", "genericFileList", "= NULL",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     BinaryComposite.setDataPrototype("SgAsmInterpretationList*","interpretations","= NULL",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-  // DQ (11/5/2008): This should maybe be added to the SgAsmGenericFile instead of the SgBinaryFile, if so
-  // we will move it.  For now we can't add it to SgAsmGenericFile becuase we could not traverse both a
-  // list and a data member in the definition of an AST traversal.
-  // BinaryFile.setDataPrototype("SgAsmDwarfCompilationUnit*","dwarf_info","= NULL",
-  //             NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
   // DQ (8/16/2008): parse binary executable file format only (some uses of ROSE may only do analysis of
   // the binary executable file format and not the instructions).  This is also useful for testing.
@@ -2852,7 +2834,6 @@ Specifiers that can have only one value (implemented with a protected enum varia
      DirectoryList.setFunctionSource   ( "SOURCE_APPLICATION_DIRECTORY_LIST", "../Grammar/Support.code");
      File.setFunctionSource            ( "SOURCE_APPLICATION_FILE", "../Grammar/Support.code");
      SourceFile.setFunctionSource      ( "SOURCE_APPLICATION_SOURCE_FILE", "../Grammar/Support.code");
-     BinaryComposite.setFunctionSource ( "SOURCE_APPLICATION_BINARY_FILE", "../Grammar/Support.code");
      FileList.setFunctionSource        ( "SOURCE_APPLICATION_FILE_LIST", "../Grammar/Support.code");
      UnknownFile.setFunctionSource     ( "SOURCE_APPLICATION_UNKNOWN_FILE", "../Grammar/Support.code");
 

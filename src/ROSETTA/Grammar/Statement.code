@@ -1146,7 +1146,7 @@ StatementListInsertChild( SgStatement *parent, Rose_STL_Container<Elemtype*>& st
                   }
 #endif
 
-               SgBasicBlock *bn = extractFromBasicBlock? isSgBasicBlock(n) : NULL; 
+               SgBasicBlock *bn = extractFromBasicBlock ? isSgBasicBlock(n) : NULL; 
                if (bn == NULL)
                   {
                     assert(n == 0 || dynamic_cast<Elemtype*>(n) != 0);

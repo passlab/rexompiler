@@ -8,10 +8,6 @@
 #include "transformationTracking.h"
 #include "wholeAST.h"
 
-#ifdef ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-   #include "AsmUnparser_compat.h"
-#endif
-
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
    #include "merge.h"
 #endif
@@ -1073,26 +1069,6 @@ CustomMemoryPoolDOTGeneration::symbolFilter(SgNode* node)
    }
 
 void
-CustomMemoryPoolDOTGeneration::asmFileFormatFilter(SgNode* node)
-   {
-  // DQ (10/18/2009): Added support to skip output of binary file format in generation of AST visualization.
-     if (isSgAsmExecutableFileFormat(node) != NULL)
-        {
-          skipNode(node);
-        }
-   }
-
-void
-CustomMemoryPoolDOTGeneration::asmTypeFilter(SgNode* node)
-   {
-  // DQ (10/18/2009): Added support to skip output of binary expression type information in generation of AST visualization.
-     if (isSgAsmType(node) != NULL)
-        {
-          skipNode(node);
-        }
-   }
-
-void
 CustomMemoryPoolDOTGeneration::emptySymbolTableFilter(SgNode* node)
    {
   // This function skips the representation of types and IR nodes associated with types
@@ -1186,72 +1162,6 @@ CustomMemoryPoolDOTGeneration::ctorInitializerListFilter(SgNode* node)
         {
           skipNode(node);
         }
-   }
-
-
-void
-CustomMemoryPoolDOTGeneration::binaryExecutableFormatFilter(SgNode* node)
-   {
-  // This function skips the representation of specific kinds of IR nodes 
-#if 0
-     if (isSgAsmElfSectionTableEntry(node) != NULL)
-        {
-          skipNode(node);
-        }
-#endif
-#if 0
-     if (isSgAsmPESectionTableEntry(node) != NULL)
-        {
-          skipNode(node);
-        }
-#endif
-#if 0
-     if (isSgAsmPERVASizePair(node) != NULL)
-        {
-          skipNode(node);
-        }
-#endif
-#if 0
-     if (isSgAsmPEImportHintName(node) != NULL)
-        {
-          skipNode(node);
-        }
-#endif
-#if 0
-     if (isSgAsmElfSymbolList(node) != NULL)
-        {
-          skipNode(node);
-        }
-#endif
-#if 0
-     if (isSgAsmGenericFile(node) != NULL)
-        {
-          skipNode(node);
-        }
-#endif
-#if 0
-     if (isSgAsmCoffSymbol(node) != NULL)
-        {
-          skipNode(node);
-        }
-#endif
-#if 0
-  // Use this as a way to reduce the number of IR nodes in the generated AST to simplify debugging.
-     SgAsmElfSection* elfSection = isSgAsmElfSection(node);
-     SgAsmElfDynamicSection* elfDynamicSection = isSgAsmElfDynamicSection(node);
-     if (elfSection != NULL && elfSection->get_name()->get_string() != ".text" && elfSection->get_name()->get_string() != ".data" && elfDynamicSection == NULL )
-        {
-          skipNode(node);
-        }
-#endif
-#if 0
-     SgAsmGenericSymbol* symbol = isSgAsmGenericSymbol(node);
-  // if (symbol != NULL && symbol->get_name() != ".text" && symbol->get_name() != ".data" && symbol->get_name().find("start") == std::string::npos)
-     if (symbol != NULL && symbol->get_name()->get_string() != ".text" && symbol->get_name()->get_string() != ".data" && symbol->get_name()->get_string().find("__s") == std::string::npos)
-        {
-          skipNode(node);
-        }
-#endif
    }
 
 void
@@ -1487,9 +1397,6 @@ CustomMemoryPoolDOTGeneration::defaultFilter(SgNode* node)
 #endif
      if (filterFlags->m_commentAndDirective == 1)
           commentAndDirectiveFilter(node);
-
-     if (filterFlags->m_binaryExecutableFormat == 1)
-          binaryExecutableFormatFilter(node);
 
      if (filterFlags->m_edge == 1)
         {
@@ -2096,7 +2003,6 @@ CustomMemoryPoolDOTGeneration::defaultColorFilter(SgNode* node)
 
             // case V_SgFile:
                case V_SgSourceFile:
-               case V_SgBinaryComposite:
                   {
                     SgFile* file = isSgFile(node);
                     additionalNodeOptions = "shape=ellipse,regular=0,URL=\"\\N\",tooltip=\"more info at \\N\",sides=5,peripheries=2,color=\"blue\",fillcolor=pink,fontname=\"7x13bold\",fontcolor=black,style=filled";
@@ -2380,148 +2286,6 @@ CustomMemoryPoolDOTGeneration::defaultColorFilter(SgNode* node)
 #endif
         }
 
-     if (isSgAsmType(node) != NULL)
-        {
-          string additionalNodeOptions = "shape=polygon,regular=0,URL=\"\\N\",tooltip=\"more info at \\N\",sides=3,peripheries=1,color=\"blue\",fillcolor=yellow,fontname=\"7x13bold\",fontcolor=black,style=filled";
-
-       // Make this statement different in the generated dot graph
-       // string labelWithSourceCode = string("\\n  ") + node->unparseToString() + "  ";
-          string labelWithSourceCode;
-       // printf ("Graph this node (%s) \n",node->class_name().c_str());
-          if (isSgClassType(node) == NULL)
-             {
-            // printf ("Graph this node (%s) \n",node->class_name().c_str());
-            // labelWithSourceCode = string("\\n  ") + node->unparseToString() + "  ";
-             }
-
-       // labelWithSourceCode = string("\\n  ") + StringUtility::numberToString(node) + "  ";
-          labelWithSourceCode = string("\\n  ") + StringUtility::numberToString(node) + "  ";
-
-          NodeType graphNode(node,labelWithSourceCode,additionalNodeOptions);
-          addNode(graphNode);
-        }
-
-     if (isSgAsmNode(node) != NULL)
-        {
-#ifdef ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-       // Color selection for the binary file format and binary instruction IR nodes.
-
-          string additionalNodeOptions;
-
-       // Make this statement different in the generated dot graph
-          string labelWithSourceCode;
-
-          switch(node->variantT())
-             {
-               case V_SgAsmElfSection:
-               case V_SgAsmPESection:
-               case V_SgAsmNESection:
-               case V_SgAsmLESection:
-                  {
-                    SgAsmGenericSection* genericSection = isSgAsmGenericSection(node);
-                    additionalNodeOptions = "shape=polygon,regular=0,URL=\"\\N\",tooltip=\"more info at \\N\",sides=5,peripheries=1,color=\"blue\",fillcolor=royalblue,fontname=\"7x13bold\",fontcolor=black,style=filled";
-                    labelWithSourceCode = string("\\n  ") + genericSection->get_name()->get_string() +
-                                          "\\n  " +  StringUtility::numberToString(genericSection) + "  ";
-                 // printf ("########## genericSection->get_name() = %s \n",genericSection->get_name().c_str());
-                    break;
-                  }
-
-               case V_SgAsmElfFileHeader:
-               case V_SgAsmPEFileHeader:
-               case V_SgAsmNEFileHeader:
-               case V_SgAsmLEFileHeader:
-               case V_SgAsmDOSFileHeader:
-                  {
-                    SgAsmGenericHeader* genericHeader = isSgAsmGenericHeader(node);
-                    additionalNodeOptions = "shape=polygon,regular=0,URL=\"\\N\",tooltip=\"more info at \\N\",sides=8,peripheries=2,color=\"blue\",fillcolor=green,fontname=\"7x13bold\",fontcolor=black,style=filled";
-                    labelWithSourceCode = "\\n  " + genericHeader->get_name()->get_string() + 
-                                          "\\n  " +  StringUtility::numberToString(genericHeader) + "  ";
-                    break;
-                  }
-
-               case V_SgAsmElfSectionTableEntry:
-               case V_SgAsmPESectionTableEntry:
-               case V_SgAsmNESectionTableEntry:
-               case V_SgAsmLESectionTableEntry:
-                  {
-                    additionalNodeOptions = "shape=house,regular=0,URL=\"\\N\",tooltip=\"more info at \\N\",sides=5,peripheries=1,color=\"blue\",fillcolor=darkturquoise,fontname=\"7x13bold\",fontcolor=black,style=filled";
-                    labelWithSourceCode = "\\n  " +  StringUtility::numberToString(node) + "  ";
-                    break;
-                  }
-
-               case V_SgAsmElfSegmentTableEntry:
-                  {
-                    additionalNodeOptions = "shape=house,regular=0,URL=\"\\N\",tooltip=\"more info at \\N\",sides=5,peripheries=1,color=\"blue\",fillcolor=red,fontname=\"7x13bold\",fontcolor=black,style=filled";
-                    labelWithSourceCode = "\\n  " +  StringUtility::numberToString(node) + "  ";
-                    break;
-                  }
-
-               case V_SgAsmElfSymbol:
-               case V_SgAsmCoffSymbol:
-                  {
-                    SgAsmGenericSymbol* genericSymbol = isSgAsmGenericSymbol(node);
-                    additionalNodeOptions = "shape=circle,regular=0,URL=\"\\N\",tooltip=\"more info at \\N\",sides=5,peripheries=1,color=\"blue\",fillcolor=yellow,fontname=\"7x13bold\",fontcolor=black,style=filled";
-                    labelWithSourceCode = "\\n  " + genericSymbol->get_name()->get_string() + 
-                                          "\\n  " +  StringUtility::numberToString(genericSymbol) + "  ";
-                    break;
-                  }
-
-               default:
-                  {
-                 // It appears that we can't unparse one of these (not implemented)
-                    additionalNodeOptions = "shape=polygon,regular=0,URL=\"\\N\",tooltip=\"more info at \\N\",sides=5,peripheries=1,color=\"blue\",fillcolor=skyblue,fontname=\"7x13bold\",fontcolor=black,style=filled";
-                 // labelWithSourceCode = string("\\n  ") + functionDeclaration->get_name().getString() + "  ";
-                    labelWithSourceCode = string("\\n  ") + StringUtility::numberToString(node) + "  ";
-#if 0
-                 // DQ (5/14/2006): this is an error when processing stdio.h
-                 // DQ (5/14/2006): This fails for SgClassDeclaration
-                 // if (isSgVariableDefinition(statement) == NULL)
-                    if ( (isSgVariableDefinition(statement) == NULL) && (isSgClassDeclaration(node) == NULL) )
-                         labelWithSourceCode = string("\\n  ") + node->unparseToString() + "  ";
-#endif
-                    break;
-                  }
-             }
-
-       // DQ (10/18/2009): Added support to provide more information in the generated graphs of the AST.
-          SgAsmInstruction* asmInstruction = isSgAsmInstruction(node);
-          if (asmInstruction != NULL)
-             {
-            // string mnemonicString      = asmInstruction->get_mnemonic();
-
-            // Note that unparsing of instructions is inconsistant with the rest of ROSE.
-            // string unparsedInstruction = asmInstruction->unparseToString();
-
-               string unparsedInstruction = unparseInstruction(asmInstruction);
-
-               string addressString       = StringUtility::numberToString( (void*) asmInstruction->get_address() );
-
-               additionalNodeOptions = "shape=polygon,regular=0,URL=\"\\N\",tooltip=\"more info at \\N\",sides=8,peripheries=2,color=\"blue\",fillcolor=skyblue,fontname=\"7x13bold\",fontcolor=black,style=filled";
-               labelWithSourceCode = "\\n  " + unparsedInstruction + 
-                                     "\\n  address: " + addressString +
-                                     "\\n  (generated label: " +  StringUtility::numberToString(asmInstruction) + ")  ";
-             }
-
-       // DQ (10/18/2009): Added support to provide more information in the generated graphs of the AST.
-          SgAsmExpression* asmExpression = isSgAsmExpression(node);
-          if (asmExpression != NULL)
-             {
-               string unparsedExpression = unparseExpression(asmExpression, NULL, NULL);
-
-               additionalNodeOptions = "shape=polygon,regular=0,URL=\"\\N\",tooltip=\"more info at \\N\",sides=8,peripheries=2,color=\"blue\",fillcolor=skyblue,fontname=\"7x13bold\",fontcolor=black,style=filled";
-               labelWithSourceCode = "\\n  " + unparsedExpression + 
-                                     "\\n  (generated label: " +  StringUtility::numberToString(asmExpression) + ")  ";
-             }
-
-
-          NodeType graphNode(node,labelWithSourceCode,additionalNodeOptions);
-          addNode(graphNode);
-#else
-          printf ("Warning: In wholeAST.C ROSE_BUILD_BINARY_ANALYSIS_SUPPORT is not defined \n");
-#endif
-        }
-
-
 #if 0
   // DQ (3/5/2007): Mark the parent edge in a different color, this does not appear to work!!!!
      if (node->get_parent() != NULL)
@@ -2586,9 +2350,6 @@ void
 CustomMemoryPoolDOTGeneration::s_Filter_Flags::setDefault()
    {
   // Initial values for the filters
-     m_asmFileFormat = 0;         /*asmFileFormatFilter()*/
-     m_asmType = 0;               /* asmTypeFilter()*/
-     m_binaryExecutableFormat = 0;/*binaryExecutableFormatFilter()*/
      m_commentAndDirective = 1;   /* commentAndDirectiveFilter()*/
      m_ctorInitializer = 0;       /*ctorInitializerListFilter()*/
 
@@ -2629,9 +2390,6 @@ void CustomMemoryPoolDOTGeneration::s_Filter_Flags::print_filter_flags ()
 {
   printf ("Current filter flags' values are: \n");
 
-  printf ("\t m_asmFileFormat = %d \n", m_asmFileFormat);
-  printf ("\t m_asmType = %d \n", m_asmType);
-  printf ("\t m_binaryExecutableFormat = %d \n", m_binaryExecutableFormat);
   printf ("\t m_commentAndDirective = %d \n", m_commentAndDirective);
   printf ("\t m_ctorInitializer = %d \n", m_ctorInitializer);
 
@@ -2661,9 +2419,6 @@ CustomMemoryPoolDOTGeneration::s_Filter_Flags::s_Filter_Flags(std::vector <std::
      if ( argvList.size() == 0)
           return;
 
-     CommandlineProcessing::isOptionWithParameter(argvList, "-rose:dotgraph:","asmFileFormatFilter", m_asmFileFormat, true);
-     CommandlineProcessing::isOptionWithParameter(argvList, "-rose:dotgraph:","asmTypeFilter", m_asmType, true);
-     CommandlineProcessing::isOptionWithParameter(argvList, "-rose:dotgraph:","binaryExecutableFormatFilter", m_binaryExecutableFormat, true);
      CommandlineProcessing::isOptionWithParameter(argvList, "-rose:dotgraph:","commentAndDirectiveFilter", m_commentAndDirective, true);
      CommandlineProcessing::isOptionWithParameter(argvList, "-rose:dotgraph:","ctorInitializerListFilter", m_ctorInitializer, true);
 
@@ -2705,9 +2460,6 @@ CustomMemoryPoolDOTGeneration::s_Filter_Flags::print_commandline_help()
 {
   cout<<"   -rose:help                     show this help message"<<endl;
 
-  cout<<"   -rose:dotgraph:asmFileFormatFilter              [0|1]  Disable or enable asmFileFormat filter"<<endl;
-  cout<<"   -rose:dotgraph:asmTypeFilter                    [0|1]  Disable or enable asmType filter"<<endl;
-  cout<<"   -rose:dotgraph:binaryExecutableFormatFilter     [0|1]  Disable or enable binaryExecutableFormat filter"<<endl;
   cout<<"   -rose:dotgraph:commentAndDirectiveFilter        [0|1]  Disable or enable commentAndDirective filter"<<endl;
   cout<<"   -rose:dotgraph:ctorInitializerListFilter        [0|1]  Disable or enable ctorInitializerList filter"<<endl;
 
@@ -2932,19 +2684,6 @@ SimpleColorMemoryPoolTraversal::visit(SgNode* node)
           if ( filterFlags->m_symbol == 1) 
              {
                symbolFilter(node);
-             }
-#endif
-
-#if 1
-  // DQ (10/18/2009): Added support to skip output of binary file format in generation of AST visualization.
-          if ( filterFlags->m_asmFileFormat == 1) 
-             {
-               asmFileFormatFilter(node);
-             }
-
-          if ( filterFlags->m_asmType == 1) 
-             {
-               asmTypeFilter(node);
              }
 #endif
 

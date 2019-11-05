@@ -3206,14 +3206,6 @@ AttachPreprocessingInfoTreeTrav::evaluateSynthesizedAttribute(
 
                switch (n->variantT())
                   {
-                 // SgBinaryComposite need not be in the switch since we don't attach CPP directives or comments to it.
-                    case V_SgBinaryComposite:
-                        {
-                          printf ("Error: SgBinaryComposite need not be in the switch since we don't attach CPP directives or comments to it ... \n");
-                          ROSE_ASSERT(false);
-                          break;
-                        }
-
                  // I wanted to leave the SgFile case in the switch statement rather 
                  // than separating it out in a conditional statement at the top of the file.
                  // case V_SgFile:

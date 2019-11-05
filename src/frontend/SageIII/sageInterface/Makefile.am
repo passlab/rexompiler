@@ -19,13 +19,6 @@ libsageInterface_la_SOURCES      = \
      sageBuilder_untypedNodes.C \
      untypedBuilder.C 
 
-if ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-   libsageInterface_la_SOURCES += \
-     sageInterfaceAsm.C \
-     sageInterface_asm.C \
-     SageBuilderAsm.C
-endif
-
 libsageInterface_la_LIBADD       =
 libsageInterface_la_DEPENDENCIES =
 
@@ -36,8 +29,17 @@ pkginclude_HEADERS = \
      sageFunctors.h \
      integerOps.h \
      untypedBuilder.h \
-     abiStuff.h \
-     sageInterfaceAsm.h \
-     SageBuilderAsm.h
+     abiStuff.h
+#     highLevelInterface.h
+#     loopHelpers.h
+
+#libsageInterface.la: $(libastFixup_la_OBJECTS) $(libastFixup_la_DEPENDENCIES)
+#	-rm -f $@
+#	$(CXX_SHARED_LIB_UPDATE) $@ $(libastFixup_la_OBJECTS) $(libastFixup_la_LIBADD)
+#	test -f $@ || exit 1
+
+
+# noinst_PROGRAMS = testForBug
+# testForBug_SOURCES = testForBug.C
 
 EXTRA_DIST = CMakeLists.txt

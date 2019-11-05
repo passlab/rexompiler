@@ -1418,18 +1418,6 @@ GrammarString::containerElementTypeString(AstNodeClass & node) const
                goto done;
              }
 
-          if (typenameString == "SgAsmStatementPtrList")
-             {
-               returnString = "SgAsmStatement";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmExpressionPtrList")
-             {
-               returnString = "SgAsmExpression";
-               goto done;
-             }
-
           if (typenameString == "SgUntypedInitializedNamePtrList")
              {
                returnString = "SgUntypedInitializedName";
@@ -1484,173 +1472,6 @@ GrammarString::containerElementTypeString(AstNodeClass & node) const
                goto done;
              }
 
-          if (typenameString == "SgAsmRegisterReferenceExpressionPtrList")
-             {
-               returnString = "SgAsmRegisterReferenceExpression";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmNEEntryPointPtrList")
-             {
-               returnString = "SgAsmNEEntryPoint";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmNERelocEntryPtrList")
-             {
-               returnString = "SgAsmNERelocEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmLEPageTableEntryPtrList")
-             {
-               returnString = "SgAsmLEPageTableEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmLEEntryPointPtrList")
-             {
-               returnString = "SgAsmLEEntryPoint";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmLERelocEntryPtrList")
-             {
-            // This is a typedef in Node.code: 
-            //      typedef SgAsmNERelocEntry SgAsmLERelocEntry;
-            // I think this is thus missing from the header files we use for this file.
-            // returnString = "SgAsmLERelocEntry";
-               returnString = "SgAsmNERelocEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmGenericSectionPtrList")
-             {
-               returnString = "SgAsmGenericSection";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmGenericHeaderPtrList")
-             {
-               returnString = "SgAsmGenericHeader";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmElfSymbolPtrList")
-             {
-               returnString = "SgAsmElfSymbol";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmElfRelocEntryPtrList")
-             {
-               returnString = "SgAsmElfRelocEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmPEExportEntryPtrList")
-             {
-               returnString = "SgAsmPEExportEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmElfSegmentTableEntryPtrList")
-             {
-               returnString = "SgAsmElfSegmentTableEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmElfSymverEntryPtrList")
-             {
-               returnString = "SgAsmElfSymverEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmElfSymverNeededEntryPtrList")
-             {
-               returnString = "SgAsmElfSymverNeededEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmCoffSymbolPtrList")
-             {
-               returnString = "SgAsmCoffSymbol";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmPERVASizePairPtrList")
-             {
-               returnString = "SgAsmPERVASizePair";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmPEImportDirectoryPtrList")
-             {
-               returnString = "SgAsmPEImportDirectory";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmDwarfMacroPtrList")
-             {
-               returnString = "SgAsmDwarfMacro";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmDwarfLinePtrList")
-             {
-               returnString = "SgAsmDwarfLine";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmDwarfCompilationUnitPtrList")
-             {
-               returnString = "SgAsmDwarfCompilationUnit";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmDwarfConstructPtrList")
-             {
-               returnString = "SgAsmDwarfConstruct";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmPEImportItemPtrList")
-             {
-               returnString = "SgAsmPEImportItem";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmInterpretationPtrList")
-             {
-               returnString = "SgAsmInterpretation";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmElfSymverDefinedEntryPtrList")
-             {
-               returnString = "SgAsmElfSymverDefinedEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmElfSymverNeededAuxPtrList")
-             {
-               returnString = "SgAsmElfSymverNeededAux";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmGenericFilePtrList")
-             {
-               returnString = "SgAsmGenericFile";
-               goto done;
-             }
-
-
-          if (typenameString == "SgAsmElfSymverDefinedAuxPtrList")
-             {
-               returnString = "SgAsmElfSymverDefinedAux";
-               goto done;
-             }
-
        // DQ (12/10/2014): We need to add this to C++11 IR node to support code generation for the ATerms support.
           if (typenameString == "SgLambdaCapturePtrList")
              {
@@ -1664,16 +1485,6 @@ GrammarString::containerElementTypeString(AstNodeClass & node) const
                returnString = "SgIncludeFile";
                goto done;
              }
-
-#if 0
-          if (typenameString == "SgAsmElfSymverDefinedAuxList")
-             {
-            // This node is a problem, not clear what to return.
-            // returnString = "SgAsmElfSymverDefinedAux";
-               returnString = "SgNode";
-               goto done;
-             }
-#endif
 #if 0
           if (typenameString == "")
              {
@@ -1823,18 +1634,6 @@ GrammarString::containerAppendFunctionNameString(AstNodeClass & node) const
                goto done;
              }
 
-          if (typenameString == "SgAsmStatementPtrList")
-             {
-               // returnString = "SgAsmStatement";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmExpressionPtrList")
-             {
-               // returnString = "SgAsmExpression";
-               goto done;
-             }
-
           if (typenameString == "SgUntypedInitializedNamePtrList")
              {
                // returnString = "SgUntypedInitializedName";
@@ -1889,172 +1688,6 @@ GrammarString::containerAppendFunctionNameString(AstNodeClass & node) const
                goto done;
              }
 
-          if (typenameString == "SgAsmRegisterReferenceExpressionPtrList")
-             {
-               // returnString = "SgAsmRegisterReferenceExpression";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmNEEntryPointPtrList")
-             {
-               // returnString = "SgAsmNEEntryPoint";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmNERelocEntryPtrList")
-             {
-               // returnString = "SgAsmNERelocEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmLEPageTableEntryPtrList")
-             {
-               // returnString = "SgAsmLEPageTableEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmLEEntryPointPtrList")
-             {
-               // returnString = "SgAsmLEEntryPoint";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmLERelocEntryPtrList")
-             {
-            // This is a typedef in Node.code: 
-            //      typedef SgAsmNERelocEntry SgAsmLERelocEntry;
-            // I think this is thus missing from the header files we use for this file.
-            // returnString = "SgAsmLERelocEntry";
-               // returnString = "SgAsmNERelocEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmGenericSectionPtrList")
-             {
-               // returnString = "SgAsmGenericSection";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmGenericHeaderPtrList")
-             {
-               // returnString = "SgAsmGenericHeader";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmElfSymbolPtrList")
-             {
-               // returnString = "SgAsmElfSymbol";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmElfRelocEntryPtrList")
-             {
-               // returnString = "SgAsmElfRelocEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmPEExportEntryPtrList")
-             {
-               // returnString = "SgAsmPEExportEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmElfSegmentTableEntryPtrList")
-             {
-               // returnString = "SgAsmElfSegmentTableEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmElfSymverEntryPtrList")
-             {
-               // returnString = "SgAsmElfSymverEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmElfSymverNeededEntryPtrList")
-             {
-               // returnString = "SgAsmElfSymverNeededEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmCoffSymbolPtrList")
-             {
-               // returnString = "SgAsmCoffSymbol";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmPERVASizePairPtrList")
-             {
-               // returnString = "SgAsmPERVASizePair";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmPEImportDirectoryPtrList")
-             {
-               // returnString = "SgAsmPEImportDirectory";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmDwarfMacroPtrList")
-             {
-               // returnString = "SgAsmDwarfMacro";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmDwarfLinePtrList")
-             {
-               // returnString = "SgAsmDwarfLine";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmDwarfCompilationUnitPtrList")
-             {
-               // returnString = "SgAsmDwarfCompilationUnit";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmDwarfConstructPtrList")
-             {
-               // returnString = "SgAsmDwarfConstruct";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmPEImportItemPtrList")
-             {
-               // returnString = "SgAsmPEImportItem";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmInterpretationPtrList")
-             {
-               // returnString = "SgAsmInterpretation";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmElfSymverDefinedEntryPtrList")
-             {
-               // returnString = "SgAsmElfSymverDefinedEntry";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmElfSymverNeededAuxPtrList")
-             {
-               // returnString = "SgAsmElfSymverNeededAux";
-               goto done;
-             }
-
-          if (typenameString == "SgAsmGenericFilePtrList")
-             {
-               // returnString = "SgAsmGenericFile";
-               goto done;
-             }
-
-
-          if (typenameString == "SgAsmElfSymverDefinedAuxPtrList")
-             {
-               // returnString = "SgAsmElfSymverDefinedAux";
-               goto done;
-             }
           if (typenameString == "SgLambdaCapturePtrList")
             {
             goto done;
@@ -2067,16 +1700,6 @@ GrammarString::containerAppendFunctionNameString(AstNodeClass & node) const
                // returnString = "SgIncludeFile";
                goto done;
              }
-
-#if 0
-          if (typenameString == "SgAsmElfSymverDefinedAuxList")
-             {
-            // This node is a problem, not clear what to return.
-            // returnString = "SgAsmElfSymverDefinedAux";
-               returnString = "SgNode";
-               goto done;
-             }
-#endif
 #if 0
           if (typenameString == "")
              {
