@@ -179,16 +179,6 @@ if ROSE_BUILD_PYTHON_LANGUAGE_SUPPORT
 else
 	@echo "Automake conditional ROSE_BUILD_PYTHON_LANGUAGE_SUPPORT: NOT defined"
 endif
-if ROSE_BUILD_PROJECTS_DIRECTORY_SUPPORT
-	@echo "Automake conditional ROSE_BUILD_PROJECTS_DIRECTORY_SUPPORT: DEFINED"
-else
-	@echo "Automake conditional ROSE_BUILD_PROJECTS_DIRECTORY_SUPPORT: NOT defined"
-endif
-if ROSE_BUILD_ROSEHPCT
-	@echo "Automake conditional ROSE_BUILD_ROSEHPCT: DEFINED"
-else
-	@echo "Automake conditional ROSE_BUILD_ROSEHPCT: NOT defined"
-endif
 if ROSE_BUILD_TESTS_DIRECTORY_SUPPORT
 	@echo "Automake conditional ROSE_BUILD_TESTS_DIRECTORY_SUPPORT: DEFINED"
 else
@@ -249,6 +239,7 @@ if ROSE_USE_ETHER
 else
 	@echo "Automake conditional ROSE_USE_ETHER: NOT defined"
 endif
+endif
 if ROSE_USE_GCC_OMP
 	@echo "Automake conditional ROSE_USE_GCC_OMP: DEFINED"
 else
@@ -258,11 +249,6 @@ if ROSE_USE_GRAPHVIZ_DOT
 	@echo "Automake conditional ROSE_USE_GRAPHVIZ_DOT: DEFINED"
 else
 	@echo "Automake conditional ROSE_USE_GRAPHVIZ_DOT: NOT defined"
-endif
-if ROSE_USE_IDA
-	@echo "Automake conditional ROSE_USE_IDA: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_IDA: NOT defined"
 endif
 if ROSE_USE_INDENT
 	@echo "Automake conditional ROSE_USE_INDENT: DEFINED"
@@ -278,11 +264,6 @@ if ROSE_USE_INTERNAL_JAVA_SUPPORT_AM_CONDITIONAL
 	@echo "Automake conditional ROSE_USE_INTERNAL_JAVA_SUPPORT_AM_CONDITIONAL: DEFINED"
 else
 	@echo "Automake conditional ROSE_USE_INTERNAL_JAVA_SUPPORT_AM_CONDITIONAL: NOT defined"
-endif
-if ROSE_USE_LIBFFI
-	@echo "Automake conditional ROSE_USE_LIBFFI: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_LIBFFI: NOT defined"
 endif
 if ROSE_USE_LLVM
 	@echo "Automake conditional ROSE_USE_LLVM: DEFINED"
@@ -508,11 +489,6 @@ if ROSE_WITH_ROSEQT
 	@echo "Automake conditional ROSE_WITH_ROSEQT: DEFINED"
 else
 	@echo "Automake conditional ROSE_WITH_ROSEQT: NOT defined"
-endif
-if USE_GCJ
-	@echo "Automake conditional USE_GCJ: DEFINED"
-else
-	@echo "Automake conditional USE_GCJ: NOT defined"
 endif
 if USE_HASKELL
 	@echo "Automake conditional USE_HASKELL: DEFINED"

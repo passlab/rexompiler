@@ -165,21 +165,6 @@ ROSE_SUPPORT_COBOL
 ROSE_SUPPORT_OCTAVE
 #########################################################################################
 
-
-# *******************************************************
-# ROSE/projects directory compilation & testing
-# *******************************************************
-ROSE_ARG_ENABLE(
-  [projects-directory],
-  [if we should enable the ROSE/projects directory],
-  [Toggle compilation and testing of the the ROSE/projects directory (disabled by default)],
-  [no])
-
-if test "x$ROSE_ENABLE_PROJECTS_DIRECTORY" = "xyes"; then
-   AC_DEFINE([ROSE_BUILD_PROJECTS_DIRECTORY_SUPPORT], [], [Build ROSE projects directory])
-fi
-AM_CONDITIONAL(ROSE_BUILD_PROJECTS_DIRECTORY_SUPPORT, [test "x$ROSE_ENABLE_PROJECTS_DIRECTORY" = "xyes"])
-
 # ****************************************************
 # ROSE/tests directory compilation & testing
 # ****************************************************
@@ -966,20 +951,6 @@ AM_CONDITIONAL(ROSE_USE_VXWORKS,test ! "$with_vxworks" = no)
 # DQ (4/10/2010): Added configure support for Backstroke project.
 # ROSE_SUPPORT_BACKSTROKE
 
-#Call supporting macro for IDA PRO
-ROSE_SUPPORT_IDA
-
-# Setup Automake conditional in projects/AstEquivalence/Makefile.am
-AM_CONDITIONAL(ROSE_USE_IDA,test ! "$with_ida" = no)
-
-# Call supporting macro for libffi (Foreign Function Interface library)
-# This library is used by Peter's work on the Interpreter in ROSE.
-ROSE_SUPPORT_LIBFFI
-
-# Setup Automake conditional in projects/interpreter/Makefile.am
-AM_CONDITIONAL(ROSE_USE_LIBFFI,test ! "$with_libffi" = no)
-
-
 # DQ (3/13/2009): Trying to get Intel Pin and ROSE to both use the same version of libdwarf.
 # DQ (3/10/2009): The Dwarf support in Intel Pin conflicts with the Dwarf support in ROSE.
 # Maybe there is a way to fix this later, for now we want to disallow it.
@@ -1623,22 +1594,6 @@ export with_PERFORMANCE_TESTS;
 #   AC_CONFIG_SUBDIRS(TESTS/PerformanceTests/BenchmarkBase)
 # fi
 
-dnl # PC (8/16/2006): Now we test for GCJ since MOPS uses it
-dnl AC_ARG_WITH([gcj],
-dnl [  --with-gcj .................. Specify use of Java (gcj must be in path, required for use with ROSE/projects/FiniteStateModelChecker which uses MOPS internally)], [
-dnl    AM_PROG_GCJ
-dnl    echo "GCJ = '$GCJ'"
-dnl    if test "x$GCJ" == "x" ; then
-dnl      echo "gcj not found in path; please add gcj to path or omit --with-gcj option"
-dnl      exit 1
-dnl    fi
-dnl    with_gcj=yes
-dnl ],[
-dnl    _AM_IF_OPTION([no-dependencies],, [_AM_DEPENDENCIES(GCJ)])
-dnl ])
-with_gcj=no ; # JJW 5-22-2008 The code that was here before broke if gcj was not present, even if the --with-gcj flag was absent
-AM_CONDITIONAL(USE_GCJ,test "$with_gcj" = yes)
-
 ROSE_CONFIGURE_SECTION([Checking system capabilities])
 
 AC_SEARCH_LIBS(clock_gettime, [rt], [
@@ -1778,17 +1733,6 @@ AC_DEFINE_UNQUOTED([ROSE_SOURCE_TREE_PATH],"$res_top_src",[Location of ROSE Sour
 # kelly64 (6/26/2013): Compass2 xml configuration files require fully-resolved
 #                      absolute paths.
 AC_SUBST(res_top_src)
-
-# This is silly, but it is done to hide an include command (in
-# projects/compass/Makefile.am, including compass-makefile.inc in the build
-# tree) from Automake because the needed include file does not exist when
-# automake is run
-INCLUDE_COMPASS_MAKEFILE_INC="include compass_makefile.inc"
-AC_SUBST(INCLUDE_COMPASS_MAKEFILE_INC)
-
-# ROSE-HPCT module -- note that this needs the XML check to have already
-# happened
-ACROSE_ENABLE_ROSEHPCT
 
 # PC (08/20/2009): Symbolic links need to be resolved for the callgraph analysis tests
 res_top_pwd=$(cd "$top_pwd" && pwd -P)
@@ -2004,200 +1948,20 @@ exampleTranslators/documentedExamples/Makefile
 exampleTranslators/documentedExamples/dataBaseExamples/Makefile
 exampleTranslators/documentedExamples/simpleTranslatorExamples/Makefile
 exampleTranslators/documentedExamples/simpleTranslatorExamples/exampleMakefile
-LicenseInformation/Makefile
-projects/ArithmeticMeasureTool/Makefile
-projects/BinaryCloneDetection/Makefile
-projects/BinaryCloneDetection/compression/Makefile
-projects/BinaryCloneDetection/semantic/Makefile
-projects/BinaryCloneDetection/syntactic/Makefile
-projects/BinaryCloneDetection/syntactic/gui/Makefile
-projects/CertSecureCodeProject/Makefile
-projects/CloneDetection/Makefile
-projects/RaaS/Makefile
-projects/RaaS/src/Makefile
-projects/RaaS/include/nlohmann/Makefile
-projects/RaaS/examples/demo/Makefile
-projects/RaaS/examples/demo/compile_commands.json
-projects/CompilationDB/Makefile
-projects/CompilationDB/scripts/Makefile
-projects/CompilationDB/examples/demo/Makefile
-projects/CompilationDB/examples/demo/compile_commands.json
-projects/CompilationDB/examples/kripke/Makefile
-projects/CompilationDB/examples/doxygen/Makefile
-projects/CompilationDB/static/js/Makefile
-projects/CompilationDB/static/css/Makefile
-projects/EditDistanceMetric/Makefile
-projects/Fortran_to_C/Makefile
-projects/Fortran_to_C/src/Makefile
-projects/Fortran_to_C/tests/Makefile
-projects/Jovial_to_C/Makefile
-projects/Jovial_to_C/src/Makefile
-projects/Jovial_to_C/tests/Makefile
-projects/HeaderFilesInclusion/HeaderFilesGraphGenerator/Makefile
-projects/HeaderFilesInclusion/HeaderFilesNotIncludedList/Makefile
-projects/HeaderFilesInclusion/Makefile
-projects/MPI_Tools/MPICodeMotion/Makefile
-projects/MPI_Tools/MPIDeterminismAnalysis/Makefile
-projects/MPI_Tools/Makefile
-projects/Makefile
-projects/ManyCoreRuntime/Makefile
-projects/ManyCoreRuntime/docs/Makefile
-projects/MapleDSL/Makefile
-projects/QtDesignerPlugins/Makefile
-projects/RTED/CppRuntimeSystem/DebuggerQt/Makefile
-projects/RTED/CppRuntimeSystem/Makefile
-projects/RTED/Makefile
-projects/RoseBlockLevelTracing/Makefile
-projects/RoseBlockLevelTracing/src/Makefile
-projects/RoseQt/AstViewer/Makefile
-projects/RoseQt/Makefile
-projects/SMTPathFeasibility/Makefile
-projects/ShiftCalculus4/Makefile
-projects/TemplateAnalysis/Makefile
-projects/TemplateAnalysis/include/ROSE/Analysis/Template/Makefile
-projects/TemplateAnalysis/include/ROSE/proposed/Makefile
-projects/TemplateAnalysis/include/nlohmann/Makefile
-projects/TemplateAnalysis/lib/ROSE/Analysis/Template/Makefile
-projects/TemplateAnalysis/lib/ROSE/proposed/Makefile
-projects/TemplateAnalysis/src/Makefile
-projects/TemplateAnalysis/examples/Makefile
-projects/TemplateAnalysis/examples/inspect-autovar/Makefile
-projects/TileK/Makefile
-projects/TileK/doc/Makefile
-projects/TileK/doc/dlx.doxy
-projects/TileK/doc/index.html
-projects/TileK/doc/klt-rtl.doxy
-projects/TileK/doc/klt.doxy
-projects/TileK/doc/mdcg.doxy
-projects/TileK/doc/mfb.doxy
-projects/TileK/doc/tilek-basic.doxy
-projects/TileK/doc/tilek-cuda.doxy
-projects/TileK/doc/tilek-opencl.doxy
-projects/TileK/doc/tilek-rtl-basic.doxy
-projects/TileK/doc/tilek-rtl-cuda.doxy
-projects/TileK/doc/tilek-rtl-opencl.doxy
-projects/TileK/doc/tilek-rtl-threads.doxy
-projects/TileK/doc/tilek-threads.doxy
-projects/TileK/include/DLX/TileK/Makefile
-projects/TileK/include/RTL/Host/Makefile
-projects/TileK/include/RTL/Kernel/CUDA/Makefile
-projects/TileK/include/RTL/Kernel/OpenCL/Makefile
-projects/TileK/lib/Makefile
-projects/TileK/src/Makefile
-projects/TileK/tests/accelerator/CUDA/Makefile
-projects/TileK/tests/accelerator/Makefile
-projects/TileK/tests/accelerator/OpenCL/Makefile
-projects/TileK/tests/basic/Makefile
-projects/TileK/tests/rtl/Makefile
-projects/TileK/tests/threads/Makefile
-projects/UpcTranslation/Makefile
-projects/UpcTranslation/tests/Makefile
-projects/Viz/Makefile
-projects/Viz/examples/Makefile
-projects/Viz/include/Makefile
-projects/Viz/include/Viz/Makefile
-projects/Viz/include/Viz/Traversals/Makefile
-projects/Viz/lib/Makefile
-projects/Viz/src/Makefile
-projects/Viz/tools/Makefile
-projects/amrShiftDSLcompiler/AMRShift/Makefile
-projects/amrShiftDSLcompiler/Makefile
-projects/arrayDSLcompiler/Makefile
-projects/POET_ROSE/Makefile
-projects/POET_ROSE/test/Makefile
-projects/POET_ROSE/manycore-stencil/Makefile
-projects/POET_ROSE/manycore-stencil/include/Makefile
-projects/POET_ROSE/manycore-stencil/benchmarks/Makefile
-projects/arrayOptimization/Makefile
-projects/arrayOptimization/test/Makefile
-projects/autoParallelization/Makefile
-projects/autoParallelization/tests/Makefile
-projects/autoParallelization/difftests/Makefile
-projects/autoTuning/Makefile
-projects/autoTuning/doc/Makefile
-projects/autoTuning/tests/Makefile
-projects/compass/Makefile
-projects/compass/src/Makefile
-projects/compass/src/compassSupport/Makefile
-projects/compass/src/util/C-API/Makefile
-projects/compass/src/util/MPIAbstraction/Makefile
-projects/compass/src/util/MPIAbstraction/alt-mpi-headers/Makefile
-projects/compass/src/util/MPIAbstraction/alt-mpi-headers/mpich-1.2.7p1/Makefile
-projects/compass/src/util/MPIAbstraction/alt-mpi-headers/mpich-1.2.7p1/include/Makefile
-projects/compass/src/util/MPIAbstraction/alt-mpi-headers/mpich-1.2.7p1/include/mpi2c++/Makefile
-projects/compass/src/util/Makefile
-projects/compass/tools/Makefile
-projects/compass/tools/compass/Makefile
-projects/compass/tools/compass/buildInterpreter/Makefile
-projects/compass/tools/compass/doc/Makefile
-projects/compass/tools/compass/doc/compass.tex
-projects/compass/tools/compass/gui/Makefile
-projects/compass/tools/compass/gui2/Makefile
-projects/compass/tools/compass/tests/Compass_C_tests/Makefile
-projects/compass/tools/compass/tests/Compass_Cxx_tests/Makefile
-projects/compass/tools/compass/tests/Compass_OpenMP_tests/Makefile
-projects/compass/tools/compass/tests/Makefile
-projects/compass/tools/compassVerifier/Makefile
-projects/compass/tools/sampleCompassSubset/Makefile
-projects/dsl_infrastructure/Makefile
-projects/extractMPISkeleton/Makefile
-projects/extractMPISkeleton/src/Makefile
-projects/extractMPISkeleton/tests/Makefile
-projects/fuse/Makefile
-projects/fuse/src/Makefile
-projects/fuse/tests/Makefile
-projects/interpreter/Makefile
-projects/palette/Makefile
-projects/pragmaParsing/Makefile
-projects/xgenTranslator/Makefile
-python/Makefile
-python/Rose/Makefile
-python/Rose/BinaryAnalysis/Makefile
-python/Rose/BinaryAnalysis/Partitioner2/Makefile
-python/Rose/BinaryAnalysis/Unparser/Makefile
 scripts/Makefile
 src/3rdPartyLibraries/MSTL/Makefile
 src/3rdPartyLibraries/Makefile
 src/3rdPartyLibraries/antlr-jars/Makefile
 src/3rdPartyLibraries/flang-parser/Makefile
 src/3rdPartyLibraries/fortran-parser/Makefile
-src/3rdPartyLibraries/java-parser/Makefile
-src/3rdPartyLibraries/qrose/Components/Common/Makefile
-src/3rdPartyLibraries/qrose/Components/Common/icons/Makefile
-src/3rdPartyLibraries/qrose/Components/Makefile
-src/3rdPartyLibraries/qrose/Components/QueryBox/Makefile
-src/3rdPartyLibraries/qrose/Components/SourceBox/Makefile
-src/3rdPartyLibraries/qrose/Components/TreeBox/Makefile
-src/3rdPartyLibraries/qrose/Framework/Makefile
-src/3rdPartyLibraries/qrose/Makefile
-src/3rdPartyLibraries/qrose/QRoseLib/Makefile
-src/3rdPartyLibraries/qrose/Widgets/Makefile
 src/Makefile
 src/ROSETTA/Makefile
 src/ROSETTA/src/Makefile
 src/backend/Makefile
-src/frontend/BinaryFormats/Makefile
-src/frontend/BinaryLoader/Makefile
 src/frontend/CxxFrontend/Clang/Makefile
 src/frontend/CxxFrontend/Makefile
-src/frontend/DLX/Makefile
-src/frontend/DLX/include/DLX/Core/Makefile
-src/frontend/DLX/lib/core/Makefile
-src/frontend/Disassemblers/Makefile
-src/frontend/ECJ_ROSE_Connection/Makefile
-src/frontend/Experimental_General_Language_Support/Makefile
-src/frontend/Experimental_General_Language_Support/ATerm/Makefile
-src/frontend/Experimental_OpenFortranParser_ROSE_Connection/Makefile
-src/frontend/Experimental_Flang_ROSE_Connection/Makefile
-src/frontend/Experimental_Csharp_ROSE_Connection/Makefile
-src/frontend/Experimental_Ada_ROSE_Connection/Makefile
-src/frontend/Experimental_Jovial_ROSE_Connection/Makefile
-src/frontend/Experimental_Cobol_ROSE_Connection/Makefile
-src/frontend/Experimental_Matlab_ROSE_Connection/Makefile
 src/frontend/Makefile
 src/frontend/OpenFortranParser_SAGE_Connection/Makefile
-src/frontend/PHPFrontend/Makefile
-src/frontend/Partitioner2/Makefile
 src/frontend/PythonFrontend/Makefile
 src/frontend/SageIII/GENERATED_CODE_DIRECTORY_Cxx_Grammar/Makefile
 src/frontend/SageIII/Makefile
@@ -2213,29 +1977,7 @@ src/frontend/SageIII/includeDirectivesProcessing/Makefile
 src/frontend/SageIII/sage.docs
 src/frontend/SageIII/sageInterface/Makefile
 src/frontend/SageIII/virtualCFG/Makefile
-src/frontend/X10_ROSE_Connection/Makefile
-src/midend/KLT/Makefile
-src/midend/KLT/include/KLT/Core/Makefile
-src/midend/KLT/include/KLT/DLX/Makefile
-src/midend/KLT/include/KLT/MDCG/Makefile
-src/midend/KLT/include/KLT/RTL/Makefile
-src/midend/KLT/lib/core/Makefile
-src/midend/KLT/lib/mdcg/Makefile
-src/midend/KLT/lib/rtl/Makefile
-src/midend/MDCG/Makefile
-src/midend/MDCG/include/MDCG/Model/Makefile
-src/midend/MDCG/include/MDCG/Tools/Makefile
-src/midend/MDCG/lib/model/Makefile
-src/midend/MDCG/lib/tools/Makefile
-src/midend/MFB/Makefile
-src/midend/MFB/include/MFB/KLT/Makefile
-src/midend/MFB/include/MFB/Makefile
-src/midend/MFB/include/MFB/Sage/Makefile
-src/midend/MFB/lib/klt/Makefile
-src/midend/MFB/lib/sage/Makefile
-src/midend/MFB/lib/utils/Makefile
 src/midend/Makefile
-src/midend/BinaryAnalysis/Makefile
 src/midend/programAnalysis/Makefile
 src/midend/programAnalysis/ssaUnfilteredCfg/Makefile
 src/midend/programAnalysis/staticSingleAssignment/Makefile
@@ -2244,62 +1986,7 @@ src/midend/programTransformation/extractFunctionArgumentsNormalization/Makefile
 src/midend/programTransformation/loopProcessing/Makefile
 src/midend/programTransformation/singleStatementToBlockNormalization/Makefile
 src/roseExtensions/Makefile
-src/roseExtensions/dataStructureTraversal/Makefile
-src/roseExtensions/failSafe/Makefile
-src/roseExtensions/highLevelGrammar/Makefile
-src/roseExtensions/qtWidgets/AsmInstructionBar/Makefile
-src/roseExtensions/qtWidgets/AsmView/Makefile
-src/roseExtensions/qtWidgets/AstBrowserWidget/Makefile
-src/roseExtensions/qtWidgets/AstGraphWidget/Makefile
-src/roseExtensions/qtWidgets/AstProcessing/Makefile
-src/roseExtensions/qtWidgets/BeautifiedAst/Makefile
-src/roseExtensions/qtWidgets/FlopCounter/Makefile
-src/roseExtensions/qtWidgets/InstructionCountAnnotator/Makefile
-src/roseExtensions/qtWidgets/KiviatView/Makefile
-src/roseExtensions/qtWidgets/Makefile
-src/roseExtensions/qtWidgets/MetricFilter/Makefile
-src/roseExtensions/qtWidgets/MetricsConfig/Makefile
-src/roseExtensions/qtWidgets/MetricsKiviat/Makefile
-src/roseExtensions/qtWidgets/NodeInfoWidget/Makefile
-src/roseExtensions/qtWidgets/ProjectManager/Makefile
-src/roseExtensions/qtWidgets/PropertyTreeWidget/Makefile
-src/roseExtensions/qtWidgets/QCodeEditWidget/Makefile
-src/roseExtensions/qtWidgets/QCodeEditWidget/QCodeEdit/Makefile
-src/roseExtensions/qtWidgets/QCodeEditWidget/QCodeEdit/document/Makefile
-src/roseExtensions/qtWidgets/QCodeEditWidget/QCodeEdit/qnfa/Makefile
-src/roseExtensions/qtWidgets/QCodeEditWidget/QCodeEdit/widgets/Makefile
-src/roseExtensions/qtWidgets/QtGradientEditor/Makefile
-src/roseExtensions/qtWidgets/RoseCodeEdit/Makefile
-src/roseExtensions/qtWidgets/RoseFileSelector/Makefile
-src/roseExtensions/qtWidgets/SrcBinView/Makefile
-src/roseExtensions/qtWidgets/TaskSystem/Makefile
-src/roseExtensions/qtWidgets/TreeModel/Makefile
-src/roseExtensions/qtWidgets/WidgetCreator/Makefile
-src/roseExtensions/qtWidgets/util/Makefile
-src/roseExtensions/roseHPCToolkit/Makefile
-src/roseExtensions/roseHPCToolkit/docs/Makefile
-src/roseExtensions/roseHPCToolkit/include/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/gprof/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/profir/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/profir2sage/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/sage/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/util/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/xml-xercesc/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/xml/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/xml2profir/Makefile
-src/roseExtensions/roseHPCToolkit/src/Makefile
-src/roseExtensions/roseHPCToolkit/src/gprof/Makefile
-src/roseExtensions/roseHPCToolkit/src/profir/Makefile
-src/roseExtensions/roseHPCToolkit/src/profir2sage/Makefile
-src/roseExtensions/roseHPCToolkit/src/sage/Makefile
-src/roseExtensions/roseHPCToolkit/src/util/Makefile
-src/roseExtensions/roseHPCToolkit/src/xml-xercesc/Makefile
-src/roseExtensions/roseHPCToolkit/src/xml/Makefile
-src/roseExtensions/roseHPCToolkit/src/xml2profir/Makefile
 src/roseExtensions/sqlite3x/Makefile
-src/roseIndependentSupport/Makefile
-src/roseIndependentSupport/dot2gml/Makefile
 src/roseSupport/Makefile
 src/util/Makefile
 src/util/commandlineProcessing/Makefile
@@ -2500,61 +2187,9 @@ tools/globalVariablesInLambdas/Makefile
 tools/classMemberVariablesInLambdas/Makefile
 tools/checkFortranInterfaces/Makefile
 tutorial/Makefile
-tutorial/binaryAnalysis/Makefile
 tutorial/exampleMakefile
-tutorial/intelPin/Makefile
 tutorial/outliner/Makefile
-tutorial/roseHPCT/Makefile
 ])
-
-# DQ (3/8/2017): Removed these directories from testing (pre-smoke and pre-nonsmoke test directories.
-# tests/CompileTests/Makefile
-# tests/CompileTests/OpenMP_tests/Makefile
-# tests/CompileTests/x10_tests/Makefile
-
-# DQ (11/14/2017): Removed GNAT test directory since it is redundant with the ADA test directory.
-# tests/nonsmoke/functional/CompileTests/gnat_tests/Makefile
-
-# Liao, 1/16/2014, comment out a few directories which are turned off for EDG 4.x upgrade
-#projects/BinaryDataStructureRecognition/Makefile
-#tests/nonsmoke/functional/CompileTests/CAF2_tests/Makefile
-
-
-# DQ (10/27/2010): New Fortran tests (from gfortan test suite).
-# tests/nonsmoke/functional/CompileTests/Fortran_tests/gfortranTestSuite/Makefile
-# tests/nonsmoke/functional/CompileTests/Fortran_tests/gfortranTestSuite/gfortran.fortran-torture/Makefile
-# tests/nonsmoke/functional/CompileTests/Fortran_tests/gfortranTestSuite/gfortran.dg/Makefile
-
-# DQ (8/12/2010): We want to get permission to distribute these files as test codes.
-# tests/nonsmoke/functional/CompileTests/Fortran_tests/LANL_POP/Makefile
-
-# DQ (10/24/2009): We don't need to support EDG 3.10 anymore.
-# src/frontend/CxxFrontend/EDG_3.10/Makefile
-# src/frontend/CxxFrontend/EDG_3.10/misc/Makefile
-# src/frontend/CxxFrontend/EDG_3.10/src/Makefile
-# src/frontend/CxxFrontend/EDG_3.10/src/disp/Makefile
-# src/frontend/CxxFrontend/EDG_3.10/lib/Makefile
-
-# DQ (12/31/2008): Skip these, since we don't have SPEC and NAS benchmarks setup yet.
-# developersScratchSpace/Dan/Fortran_tests/NPB3.2-SER/Makefile
-# developersScratchSpace/Dan/Fortran_tests/NPB3.2-SER/BT/Makefile
-# developersScratchSpace/Dan/SpecCPU2006/Makefile
-# developersScratchSpace/Dan/SpecCPU2006/config/Makefile
-# developersScratchSpace/Dan/SpecCPU2006/config/rose.cfg
-
-# DQ (9/12/2008): Removed older version of QRose (now an external project)
-# src/roseIndependentSupport/graphicalUserInterface/Makefile
-# src/roseIndependentSupport/graphicalUserInterface/src/Makefile
-# src/roseIndependentSupport/graphicalUserInterface/src/QRTree/Makefile
-# src/roseIndependentSupport/graphicalUserInterface/src/QRCodeBox/Makefile
-# src/roseIndependentSupport/graphicalUserInterface/src/QRGui/Makefile
-# src/roseIndependentSupport/graphicalUserInterface/src/QRGui/icons22/Makefile
-# src/roseIndependentSupport/graphicalUserInterface/src/QRQueryBox/Makefile
-# exampleTranslators/graphicalUserInterfaceExamples/Makefile
-# exampleTranslators/graphicalUserInterfaceExamples/slicing/Makefile
-# exampleTranslators/graphicalUserInterfaceExamples/attributes/Makefile
-# exampleTranslators/graphicalUserInterfaceExamples/query/Makefile
-# exampleTranslators/graphicalUserInterfaceExamples/layout/Makefile
 
 # End macro ROSE_SUPPORT_ROSE_PART_6.
 ]

@@ -1,5 +1,4 @@
 include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
-include $(top_srcdir)/projects/compass/src/compassSupport/compass_dirs.inc
 EXTRA_DIST =
 
 # DQ "config" and "src" must preceed any other directories, and 
@@ -29,21 +28,6 @@ if !ROSE_USE_INSURE
 # DQ (4/23/2011): Ignoring all of these whole directories might be over kill.  But I have had problems with 
 # Insure++ compilation specific to Hudson and want to start small and work to grow the number of parts of ROSE
 # used by Insure.  Except on Hudson (e.g. on my machine) Insure++ can be used to compiler nearly all of ROSE.
-if ROSE_BUILD_PROJECTS_DIRECTORY_SUPPORT
-   SUBDIRS += projects
-endif
-
-# The MatrixTestingProject is not compiled as part of ROSE but serves as a simple example of an external project.
-# Matrix testing will need to access this project and compile it after installing ROSE and deleting the ROSE source
-# and build trees. Therefore, this project's source code should be installed as part of the ROSE installation. These
-# rules are at this high level of the source code because this project must be installed even if the "projects'
-# subdirectory doesn't participate in the $(SUBDIRS).
-testprojdir = ${datarootdir}/test-project
-testproj_DATA =						\
-	projects/MatrixTestingProject/Makefile		\
-	projects/MatrixTestingProject/README		\
-	projects/MatrixTestingProject/test-rose.C
-EXTRA_DIST += $(testproj_DATA)
 
 # DQ (2/6/2017): Added test to detect if the default mode of the C++ frontend compiler for rOSE is C++11 or not.
 # Ultimately we want this test to only apply to the GNU 4.8 compiler in C++11 mode (which can have internal errors 
@@ -87,20 +71,7 @@ core:
 tools:
 	$(MAKE) -C $(top_builddir)/tools
 	$(MAKE) -C $(top_builddir)/exampleTranslators
-	$(MAKE) -C $(top_builddir)/projects/compass
-	$(MAKE) -C $(top_builddir)/projects/autoParallelization
-	$(MAKE) -C $(top_builddir)/projects/arrayOptimization
-	$(MAKE) -C $(top_builddir)/projects/autoTuning
-	$(MAKE) -C $(top_builddir)/projects/extractMPISkeleton
-	$(MAKE) -C $(top_builddir)/projects/pragmaParsing
-	$(MAKE) -C $(top_builddir)/projects/UpcTranslation
-	$(MAKE) -C $(top_builddir)/projects/ArithmeticMeasureTool
-if ROSE_FRONTEND_COMPILER_DEFAULT_IS_CXX11
-	$(MAKE) -C $(top_builddir)/projects/typeforge
-endif
-if ROSE_BUILD_PROJECTS_DIRECTORY_SUPPORT
 	$(MAKE) -C $(top_builddir)/tutorial
-endif
 
 install-core: core rosePublicConfig.h
 	$(MAKE) install-data-local
@@ -110,20 +81,7 @@ install-core: core rosePublicConfig.h
 install-tools: install-core tools
 	$(MAKE) install -C $(top_builddir)/tools
 	$(MAKE) install -C $(top_builddir)/exampleTranslators
-	$(MAKE) install -C $(top_builddir)/projects/compass
-	$(MAKE) install -C $(top_builddir)/projects/autoParallelization
-	$(MAKE) install -C $(top_builddir)/projects/arrayOptimization
-	$(MAKE) install -C $(top_builddir)/projects/autoTuning
-	$(MAKE) install -C $(top_builddir)/projects/extractMPISkeleton
-	$(MAKE) install -C $(top_builddir)/projects/pragmaParsing
-	$(MAKE) install -C $(top_builddir)/projects/UpcTranslation
-	$(MAKE) install -C $(top_builddir)/projects/ArithmeticMeasureTool
-if ROSE_FRONTEND_COMPILER_DEFAULT_IS_CXX11
-	$(MAKE) install -C $(top_builddir)/projects/typeforge
-endif
-if ROSE_BUILD_PROJECTS_DIRECTORY_SUPPORT
 	$(MAKE) install -C $(top_builddir)/tutorial
-endif
 
 check-recursive:
 	@true
@@ -166,24 +124,7 @@ check-hard:
 check-tools: tools
 	$(MAKE) check -C $(top_builddir)/tools
 	$(MAKE) check -C $(top_builddir)/exampleTranslators
-	$(MAKE) check -C $(top_builddir)/projects/compass
-	$(MAKE) check -C $(top_builddir)/projects/autoParallelization
-	$(MAKE) check -C $(top_builddir)/projects/arrayOptimization
-	$(MAKE) check -C $(top_builddir)/projects/autoTuning
-	$(MAKE) check -C $(top_builddir)/projects/extractMPISkeleton
-	$(MAKE) check -C $(top_builddir)/projects/pragmaParsing
-	$(MAKE) check -C $(top_builddir)/projects/UpcTranslation
-	$(MAKE) check -C $(top_builddir)/projects/ArithmeticMeasureTool
-if ROSE_FRONTEND_COMPILER_DEFAULT_IS_CXX11
-	$(MAKE) check -C $(top_builddir)/projects/typeforge
-endif
-if ROSE_BUILD_PROJECTS_DIRECTORY_SUPPORT
 	$(MAKE) check -C $(top_builddir)/tutorial
-endif
-
-install-compass: install-core
-	$(MAKE) -C $(top_builddir)/projects/compass
-	$(MAKE) install -C $(top_builddir)/projects/compass
 
 # Install ONLY the library components (no examples, no tests, no projects). This is even more "core" than "core" but I'm
 # not changing "install-core" because users use that and expect certain behavior. The purpose of this target is mainly for
@@ -390,12 +331,6 @@ else
   DISTCHECK_CONFIGURE_FLAGS += --disable-fortran
 endif
 
-# DQ (7/25/2008): If ROSE was originallly configured to use the HPC Toolkit
-# then make sure it is tested as part of the distcheck rule.
-if ROSE_BUILD_ROSEHPCT
-  DISTCHECK_CONFIGURE_FLAGS += --enable-rosehpct
-endif
-
 # DQ (7/25/2008): If ROSE was originallly configured to use the javaport
 # work (generation of Java interface functions for ROSE using SWIG) then 
 # make sure it is tested as part of the distcheck rule.
@@ -487,10 +422,7 @@ docs: FORCE_DOCS_TO_BE_MADE
 	   $(MAKE) -Ctests/nonsmoke/functional/roseTests/astInterfaceTests check && \
 	   $(MAKE) -Ctests/nonsmoke/functional/roseTests/ompLoweringTests check && \
 	   $(MAKE) -Ctests/nonsmoke/functional/CompileTests/UPC_tests check && \
-	   $(MAKE) -Cprojects/UpcTranslation/tests check && \
-	   $(MAKE) -Cprojects/autoParallelization/tests check && \
 	   $(MAKE) -Cdocs docs && \
-	   $(MAKE) -C$(compass_build_tooldir)/compass docs; \
 	else \
 	   echo "Please look at the ROSE web site for documentation (www.roseCompiler.org)"; \
 	fi
@@ -744,15 +676,6 @@ lcov:
 -d src/util/graphs/.libs \
 -d src/3rdPartyLibraries/MSTL/.libs \
 -d src/ROSETTA/src \
--d src/roseExtensions/roseHPCToolkit/src/util/.libs \
--d src/roseExtensions/roseHPCToolkit/src/xml/.libs \
--d src/roseExtensions/roseHPCToolkit/src/profir/.libs \
--d src/roseExtensions/roseHPCToolkit/src/gprof/.libs \
--d src/roseExtensions/roseHPCToolkit/src/xml2profir/.libs \
--d src/roseExtensions/roseHPCToolkit/src/sage/.libs \
--d src/roseExtensions/roseHPCToolkit/src/profir2sage/.libs \
--d src/roseExtensions/roseHPCToolkit/src/.libs \
--d src/roseExtensions/failSafe/.libs \
 -d src/frontend/SageIII/.libs \
 -d src/frontend/SageIII/astFixup \
 -d src/frontend/SageIII/astPostProcessing \
@@ -775,19 +698,10 @@ lcov:
 -d src/frontend/SageIII/astFromString/.libs \
 -d src/frontend/SageIII/includeDirectivesProcessing/.libs \
 -d src/frontend/SageIII/sage_support/.libs \
--d src/frontend/MatlabFrontend \
 -d src/frontend/CxxFrontend/EDG/EDG_4.7/misc \
 -d src/frontend/CxxFrontend/EDG/EDG_4.7/src/.libs \
 -d src/frontend/CxxFrontend/EDG/edgRose/.libs \
 -d src/frontend/OpenFortranParser_SAGE_Connection/.libs \
--d src/frontend/ECJ_ROSE_Connection/.libs \
--d src/frontend/X10_ROSE_Connection/.libs \
--d src/frontend/PHPFrontend/.libs \
--d src/frontend/BinaryLoader/.libs \
--d src/frontend/BinaryFormats/.libs \
--d src/frontend/Disassemblers/.libs \
--d src/frontend/Partitioner2/.libs \
--d src/midend/BinaryAnalysis/.libs \
 -d src/midend/programAnalysis/.libs \
 -d src/midend/programAnalysis/staticSingleAssignment/.libs \
 -d src/midend/programAnalysis/ssaUnfilteredCfg/.libs \
@@ -873,8 +787,6 @@ librose-lcov.info: all-lcov.info
 	lcov --remove librose-lcov.info \
         "$(top_srcdir)/src/frontend/CxxFrontend/EDG/edgRose/debugging.*" \
         "$(top_srcdir)/src/frontend/CxxFrontend/EDG/edgRose/edgGraph.*" \
-        "$(top_srcdir)/src/backend/unparser/PythonCodeGeneration/*" \
-        "$(top_srcdir)/src/backend/unparser/PHPCodeGeneration/*" \
         "$(top_srcdir)/src/midend/programAnalysis/OAWrap/*" \
         "$(top_srcdir)/src/midend/programAnalysis/OpenAnalysis/*" \
         "$(top_srcdir)/src/midend/programAnalysis/genericDataflow/*" \
@@ -892,7 +804,6 @@ librose-lcov.info: all-lcov.info
         "$(top_srcdir)/src/midend/programTransformation/implicitCodeGeneration/*" \
         "$(top_srcdir)/src/midend/programTransformation/singleStatementToBlockNormalization/*" \
         "$(top_srcdir)/src/roseSupport/stringify.C" \
-        "$(top_srcdir)/src/roseExtensions/roseHPCToolkit/*" \
         "$(top_srcdir)/src/frontend/SageIII/nodeBuildFunctionsForAterms.C" \
         "$(top_srcdir)/src/frontend/SageIII/astVisualization/*" \
         "$(top_srcdir)/src/midend/astProcessing/AstProcessing.h" \

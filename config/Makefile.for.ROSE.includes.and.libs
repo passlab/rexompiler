@@ -94,14 +94,6 @@ if ROSE_USE_QT
 # ROSE_QT_LIB_FILE = libqt.a
 endif
 
-# ROSE-HPCToolkit module
-if ROSE_BUILD_ROSEHPCT
-  ROSE_ROSEHPCT_INCLUDES = -I$(top_srcdir)/src/roseExtensions/roseHPCToolkit/include
-  ROSE_ROSEHPCT_LIBS = -lrosehpct
-  ROSE_ROSEHPCT_LIBS_WITH_PATH = $(top_builddir)/src/roseExtensions/roseHPCToolkit/src/librosehpct.la
-# ROSE_ROSEHPCT_LIB_FILE = librosehpct.so
-endif
-
 # ROSE-YICES Package (destributed by SRI as a static library)
 if ROSE_HAVE_LIBYICES
   ROSE_YICES_INCLUDES = -I@ROSE_YICES_PREFIX@/include
