@@ -181,16 +181,6 @@ librose_la_LIBADD = $(BOOST_LDFLAGS) $(libroseLibraries) $(JAVA_JVM_FLAGS) $(LIB
 # Added this library to the libroseLibraries rule farther above in this file.
 endif
 
-# libelf is a prerequisite for using libdwarf
-if ROSE_HAVE_LIBELF
-   librose_la_LIBADD += $(ROSE_ELF_LIBS_WITH_PATH)
-endif
-
-# DQ (6/5/2010): Suggested change by Peter to support dwarf that would simplify use with Haskell
-if ROSE_HAVE_LIBDWARF
-   librose_la_LIBADD += $(ROSE_DWARF_LIBS_WITH_PATH)
-endif
-
 if ROSE_USE_GCC_OMP
    librose_la_LIBADD += lgomp
 endif

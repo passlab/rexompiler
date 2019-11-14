@@ -131,12 +131,8 @@ fi
 
 AC_MSG_NOTICE([GFORTRAN_PATH = "$GFORTRAN_PATH"])
 
-# Call supporting macro for X10 language compiler path
-
 #########################################################################################
 ##
-
-  ROSE_SUPPORT_X10()
 
   ROSE_SUPPORT_LANGUAGE_CONFIG_OPTIONS
 
@@ -144,26 +140,10 @@ AC_MSG_NOTICE([GFORTRAN_PATH = "$GFORTRAN_PATH"])
   AC_CHECK_LIB([curl], [Curl_connect], [HAVE_CURL=yes], [HAVE_CURL=no])
   AM_CONDITIONAL([HAS_LIBRARY_CURL], [test "x$HAVE_CURL" = "xyes"])
 
-  ROSE_SUPPORT_UPC
-  ROSE_SUPPORT_COMPASS2
   ROSE_SUPPORT_GMP
   ROSE_SUPPORT_ISL
   ROSE_SUPPORT_MPI
   ROSE_SUPPORT_SPOT
-
-##
-#########################################################################################
-
-
-## Rasmussen (10/24/2017): Support for linking with the GnuCOBOL parse-tree library.
-#
-ROSE_SUPPORT_COBOL
-#########################################################################################
-
-## Rasmussen (11/19/2017): Support for using the modified GNU Octave parser.
-#
-ROSE_SUPPORT_OCTAVE
-#########################################################################################
 
 # ****************************************************
 # ROSE/tests directory compilation & testing
@@ -318,134 +298,6 @@ if test "x$enable_debug_output_for_experimental_fortran_frontend" = "xyes"; then
   AC_DEFINE([ROSE_DEBUG_EXPERIMENTAL_OFP_ROSE_CONNECTION], [], [Controls large volumes of output spew useful for debugging new OFP/ROSE connection code])
 fi
 
-# Added support for Fortran front-end development using the flang (F18) compiler [Rasmussen 8/12/2019]
-AC_ARG_ENABLE(experimental_flang_frontend,
-    AS_HELP_STRING([--enable-experimental_flang_frontend], [Enable experimental fortran frontend development using flang]))
-AM_CONDITIONAL(ROSE_EXPERIMENTAL_FLANG_ROSE_CONNECTION, [test "x$enable_experimental_flang_frontend" = xyes])
-if test "x$enable_experimental_flang_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode enables the experimental fortran flang front-end (internal development only)!])
-  AC_DEFINE([ROSE_EXPERIMENTAL_FLANG_ROSE_CONNECTION], [], [Enables development of experimental fortran flang frontend])
-fi
-
-# DQ (8/23/2017): Added support for new csharp front-end development.
-AC_ARG_ENABLE(experimental_csharp_frontend,
-    AS_HELP_STRING([--enable-experimental_csharp_frontend], [Enable experimental csharp frontend development]))
-AM_CONDITIONAL(ROSE_EXPERIMENTAL_CSHARP_ROSE_CONNECTION, [test "x$enable_experimental_csharp_frontend" = xyes])
-if test "x$enable_experimental_csharp_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode enables experimental csharp front-end (internal development only)!])
-  AC_DEFINE([ROSE_EXPERIMENTAL_CSHARP_ROSE_CONNECTION], [], [Enables development of experimental csharp frontend])
-
-# DQ (8/23/2017): Need to review now to get the MONO_HOME and ROSLYN_HOME environment variables.
-# mono_home=$MONO_HOME
-# rosyln_home=$ROSYLN_HOME
-
-  mono_home=`roslyn-config mono-home`
-  roslyn_home=`roslyn-config csharp-home`
-
-  AC_MSG_NOTICE([Mono home   = "$mono_home"])
-  AC_MSG_NOTICE([Roslyn home = "$rosyln_home"])
-
-  AC_DEFINE_UNQUOTED([ROSE_EXPERIMENTAL_CSHARP_ROSE_CONNECTION_MONO_HOME], ["$mono_home"], [Path to Mono Csharp compiler used in development of experimental csharp frontend])
-  AC_DEFINE_UNQUOTED([ROSE_EXPERIMENTAL_CSHARP_ROSE_CONNECTION_ROSLYN_HOME], ["$roslyn_home"], [Path to Roslyn Csharp library used in development of experimental csharp frontend])
-
-  AC_SUBST(mono_home)
-  AC_SUBST(rosyln_home)
-fi
-
-# DQ (6/7/2013): Added support for debugging new csharp front-end development.
-AC_ARG_ENABLE(debug_output_for_experimental_csharp_frontend,
-    AS_HELP_STRING([--enable-debug_output_for_experimental_csharp_frontend], [Enable debugging output (spew) of new CSHARP/ROSE connection]))
-AM_CONDITIONAL(ROSE_DEBUG_EXPERIMENTAL_CSHARP_ROSE_CONNECTION, [test "x$enable_debug_output_for_experimental_csharp_frontend" = xyes])
-if test "x$enable_debug_output_for_experimental_csharp_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode causes large volumes of output spew (internal debugging only)!])
-  AC_DEFINE([ROSE_DEBUG_EXPERIMENTAL_CSHARP_ROSE_CONNECTION], [], [Controls large volumes of output spew useful for debugging new CSHARP/ROSE connection code])
-fi
-
-# DQ (8/23/2017): Added support for new Ada front-end development.
-AC_ARG_ENABLE(experimental_ada_frontend,
-    AS_HELP_STRING([--enable-experimental_ada_frontend], [Enable experimental ada frontend development]))
-AM_CONDITIONAL(ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION, [test "x$enable_experimental_ada_frontend" = xyes])
-if test "x$enable_experimental_ada_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode enables experimental ada front-end (internal development only)!])
-  AC_DEFINE([ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION], [], [Enables development of experimental ada frontend])
-fi
-
-# DQ (6/7/2013): Added support for debugging new ada front-end development.
-AC_ARG_ENABLE(debug_output_for_experimental_ada_frontend,
-    AS_HELP_STRING([--enable-debug_output_for_experimental_ada_frontend], [Enable debugging output (spew) of new ADA/ROSE connection]))
-AM_CONDITIONAL(ROSE_DEBUG_EXPERIMENTAL_ADA_ROSE_CONNECTION, [test "x$enable_debug_output_for_experimental_ada_frontend" = xyes])
-if test "x$enable_debug_output_for_experimental_ada_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode causes large volumes of output spew (internal debugging only)!])
-  AC_DEFINE([ROSE_DEBUG_EXPERIMENTAL_ADA_ROSE_CONNECTION], [], [Controls large volumes of output spew useful for debugging new ADA/ROSE connection code])
-fi
-
-# DQ (6/8/2017): Adding ADA support using GNAT ASIS tool chain.
-ROSE_SUPPORT_GNAT
-
-# Setup Automake conditional.
-AM_CONDITIONAL(ROSE_USE_GNAT,test ! "$with_gnat" = no)
-
-if test "x$enable_experimental_ada_frontend" = "xyes"; then
-  gnat_home=$with_gnat
-  AC_MSG_NOTICE([GNAT home = "$gnat_home"])
-  AC_DEFINE_UNQUOTED([ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION_GNAT_HOME], ["$with_gnat"], [Path to GNAT Ada compiler used in development of experimental ada frontend])
-  AC_SUBST(gnat_home)
-fi
-
-# DQ (8/23/2017): Added support for new Jovial front-end development.
-AC_ARG_ENABLE(experimental_jovial_frontend,
-    AS_HELP_STRING([--enable-experimental_jovial_frontend], [Enable experimental jovial frontend development]))
-AM_CONDITIONAL(ROSE_EXPERIMENTAL_JOVIAL_ROSE_CONNECTION, [test "x$enable_experimental_jovial_frontend" = xyes])
-if test "x$enable_experimental_jovial_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode enables experimental jovial front-end (internal development only)!])
-  AC_DEFINE([ROSE_EXPERIMENTAL_JOVIAL_ROSE_CONNECTION], [], [Enables development of experimental jovial frontend])
-fi
-
-# DQ (8/23/2017): Added support for debugging new jovial front-end development.
-AC_ARG_ENABLE(debug_output_for_experimental_jovial_frontend,
-    AS_HELP_STRING([--enable-debug_output_for_experimental_jovial_frontend], [Enable debugging output (spew) of new JOVIAL/ROSE connection]))
-AM_CONDITIONAL(ROSE_DEBUG_EXPERIMENTAL_JOVIAL_ROSE_CONNECTION, [test "x$enable_debug_output_for_experimental_jovial_frontend" = xyes])
-if test "x$enable_debug_output_for_experimental_jovial_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode causes large volumes of output spew (internal debugging only)!])
-  AC_DEFINE([ROSE_DEBUG_EXPERIMENTAL_JOVIAL_ROSE_CONNECTION], [], [Controls large volumes of output spew useful for debugging new JOVIAL/ROSE connection code])
-fi
-
-# DQ (8/23/2017): Added support for new Cobol front-end development.
-AC_ARG_ENABLE(experimental_cobol_frontend,
-    AS_HELP_STRING([--enable-experimental_cobol_frontend], [Enable experimental cobol frontend development]))
-AM_CONDITIONAL(ROSE_EXPERIMENTAL_COBOL_ROSE_CONNECTION, [test "x$enable_experimental_cobol_frontend" = xyes])
-if test "x$enable_experimental_cobol_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode enables experimental cobol front-end (internal development only)!])
-  AC_DEFINE([ROSE_EXPERIMENTAL_COBOL_ROSE_CONNECTION], [], [Enables development of experimental cobol frontend])
-fi
-
-# DQ (8/23/2017): Added support for debugging new Cobol front-end development.
-AC_ARG_ENABLE(debug_output_for_experimental_cobol_frontend,
-    AS_HELP_STRING([--enable-debug_output_for_experimental_cobol_frontend], [Enable debugging output (spew) of new COBOL/ROSE connection]))
-AM_CONDITIONAL(ROSE_DEBUG_EXPERIMENTAL_COBOL_ROSE_CONNECTION, [test "x$enable_debug_output_for_experimental_cobol_frontend" = xyes])
-if test "x$enable_debug_output_for_experimental_cobol_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode causes large volumes of output spew (internal debugging only)!])
-  AC_DEFINE([ROSE_DEBUG_EXPERIMENTAL_COBOL_ROSE_CONNECTION], [], [Controls large volumes of output spew useful for debugging new COBOL/ROSE connection code])
-fi
-
-# Rasmussen (10/30/2017): Added support for new Octave/Matlab front-end development.
-AC_ARG_ENABLE([experimental_matlab_frontend],
-    AS_HELP_STRING([--enable-experimental_matlab_frontend], [Enable experimental Octave/Matlab frontend development (default=no)]))
-AM_CONDITIONAL(ROSE_EXPERIMENTAL_MATLAB_ROSE_CONNECTION, [test "x$enable_experimental_matlab_frontend" = xyes])
-if test "x$enable_experimental_matlab_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode enables experimental Octave/Matlab front-end (internal development only)!])
-  AC_DEFINE([ROSE_EXPERIMENTAL_MATLAB_ROSE_CONNECTION], [], [Enables development of experimental Octave/Matlab frontend])
-fi
-
-# Rasmussen (10/30/2017): Added support for debugging new Octave/Matlab front-end development.
-AC_ARG_ENABLE(debug_output_for_experimental_matlab_frontend,
-    AS_HELP_STRING([--enable-debug_output_for_experimental_matlab_frontend], [Enable debugging output (spew) of new Octave/Matlab ROSE connection]))
-AM_CONDITIONAL(ROSE_DEBUG_EXPERIMENTAL_MATLAB_ROSE_CONNECTION, [test "x$enable_debug_output_for_experimental_matlab_frontend" = xyes])
-if test "x$enable_debug_output_for_experimental_matlab_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode causes large volumes of output spew (internal debugging only)!])
-  AC_DEFINE([ROSE_DEBUG_EXPERIMENTAL_MATLAB_ROSE_CONNECTION], [], [Controls large volumes of output spew useful for debugging new Octave/Matlab ROSE connection code])
-fi
-
 # DQ (8/18/2009): Removed this conditional macro.
 # DQ (4/23/2009): Added support for commandline specification of using new graph IR nodes.
 # AC_ARG_ENABLE(newGraphNodes, AS_HELP_STRING([--enable-newGraphNodes], [Enable new (experimental) graph IR nodes]))
@@ -463,7 +315,6 @@ if test "x$enable_use_new_graph_node_backward_compatability" = "xyes"; then
   AC_MSG_WARN([using the new graph IR nodes in ROSE (experimental)!])
   AC_DEFINE([ROSE_USING_GRAPH_IR_NODES_FOR_BACKWARD_COMPATABILITY], [], [Whether to use the new graph IR nodes compatability option with older API])
 fi
-
 
 # Set up for use of bison to build dot2gml tool in directory
 # src/roseIndependentSupport/dot2gml.  This is made optional
@@ -624,15 +475,7 @@ ROSE_HOME=.
 AC_SUBST(ROSE_HOME)
 # echo "In ROSE/configure: ROSE_HOME = $ROSE_HOME"
 
-# This does not appear to exist any more (not distributed in ROSE)
-# Support for Gabriel's QRose GUI Library
-# ROSE_SUPPORT_QROSE
-#AM_CONDITIONAL(ROSE_USE_QROSE,test "$with_qrose" = true)
-
 AC_LANG(C++)
-
-# Python check must occur before boost check since -lboost_python depends on python
-ROSE_SUPPORT_PYTHON
 
 ROSE_SUPPORT_BOOST
 
@@ -860,29 +703,11 @@ ROSE_SUPPORT_LONG_MAKE_CHECK_RULE
 # Make the use of longer test optional where it is used in some ROSE/tests directories
 AM_CONDITIONAL(ROSE_USE_LONG_MAKE_CHECK_RULE,test "$with_ROSE_LONG_MAKE_CHECK_RULE" = yes)
 
-# The libxml2 library is availabe in /usr/lib on most Linux systems, however this is not
-# enough when using the Intel compilers.  So we need to turn it on explicitly when we
-# expect it to work with a specific platform/compiler combination.
-
-# JJW -- use standard version in /usr/share/aclocal, and configure XML only
-# once for roseHPCT and BinaryContextLookup
-with_xml="no"
-AM_PATH_XML2(2.0.0, [with_xml="yes"])
-
-# Make the use of libxml2 explicitly controlled.
-AM_CONDITIONAL(ROSE_USE_XML,test "$with_xml" != no)
-
 # DQ (10/17/2009): This is a bug introduced (again) into ROSE which disables the Java support.
 # See elsewhere in this file where this macro is commented out and the reason explained in
 # more details.
 # AS Check for ssl for the binary clone detection work
 # CHECK_SSL
-
-# Check for objdump for BinaryContextLookup since it doesn't normally exist on
-# Mac
-AC_CHECK_TOOL(ROSE_OBJDUMP_PATH, [objdump], [no])
-AM_CONDITIONAL(ROSE_USE_OBJDUMP, [test "$ROSE_OBJDUMP_PATH" != "no"])
-AM_CONDITIONAL(ROSE_USE_BINARYCONTEXTLOOKUP, [test "$with_xml" != "no" -a "$ROSE_OBJDUMP_PATH" != "no"])
 
 # Check for availability of wget (used for downloading the EDG binaries used in ROSE).
 AC_CHECK_TOOL(ROSE_WGET_PATH, [wget], [no])
@@ -910,12 +735,6 @@ AC_ARG_WITH(wave-default, [  --with-wave-default     Use Wave as the default pre
             [AC_DEFINE([ROSE_WAVE_DEFAULT], false, [Simple preprocessor as default in ROSE])]
             )
 
-# Add --disable-binary-analysis-tests flag to turn off tests that sometimes
-# sometimes break.
-# Pei-Hung (10/24/2016) use only ROSE_BUILD_BINARY_ANALYSIS_SUPPORT to control binary analysis tests
-# AC_ARG_ENABLE(binary-analysis-tests, AS_HELP_STRING([--disable-binary-analysis-tests], [Disable tests of ROSE binary analysis code]), binary_analysis_tests="$withval", binary_analysis_tests=yes)
-# AM_CONDITIONAL(USE_BINARY_ANALYSIS_TESTS, test "x$binary_analysis_tests" = "xyes")
-
 # Figure out what version of lex we have available
 # flex works better than lex (this gives a preference to flex (flex is gnu))
 AM_PROG_LEX
@@ -935,103 +754,20 @@ AC_PROG_MAKE_SET
 AC_MSG_NOTICE([testing the value of CC: (CC = "$CC")])
 AC_MSG_NOTICE([testing the value of CPPFLAGS: (CPPFLAGS = "$CPPFLAGS")])
 
-# Call supporting macro for MAPLE
-ROSE_SUPPORT_MAPLE
-
-# Setup Automake conditional in Projects/programModeling/Makefile.am
-AM_CONDITIONAL(ROSE_USE_MAPLE,test ! "$with_maple" = no)
-
-# DQ (5/21/2017): I don't think we use this anymore.
-#ROSE_SUPPORT_VXWORKS
-
-# Setup Automake conditional.
-AM_CONDITIONAL(ROSE_USE_VXWORKS,test ! "$with_vxworks" = no)
-
-# DQ (5/23/2017): I don't think we use this anymore.
-# DQ (4/10/2010): Added configure support for Backstroke project.
-# ROSE_SUPPORT_BACKSTROKE
-
-# DQ (3/13/2009): Trying to get Intel Pin and ROSE to both use the same version of libdwarf.
-# DQ (3/10/2009): The Dwarf support in Intel Pin conflicts with the Dwarf support in ROSE.
-# Maybe there is a way to fix this later, for now we want to disallow it.
-# echo "with_dwarf    = $with_dwarf"
-# echo "with_IntelPin = $with_IntelPin"
-#if test "$with_dwarf" != no && test "$with_IntelPin" != no; then
-# # echo "Support for both DWARF and Intel Pin fails, these configure options are incompatable."
-#   AC_MSG_ERROR([Support for both DWARF and Intel Pin fails, these configure options are incompatable!])
-#fi
-
-# DQ (3/14/2013): Adding support for Aterm library use in ROSE.
-ROSE_SUPPORT_ATERM
-
-# DQ (1/22/2016): Added support for stratego (need to know the path to sglri executable for Experimental Fortran support).
-ROSE_SUPPORT_STRATEGO
-
-# RASMUSSEN (11/16/2017): Removed check for OFP Stratego tools binary installation (Experimental Fortran support).
-# Now assumes that the OFP Fortran parse table (Fortran.tbl) is stored in the source directory.
-# RASMUSSEN (2/22/2017): Added support for OFP Stratego tools binary installation (Experimental Fortran support).
-# This assumes that OFP is installed from an OFP release and not imported and built with ROSE directly.
-
-#ROSE_SUPPORT_OFP_STRATEGO
-
-if test "x$enable_experimental_fortran_frontend" = "xyes"; then
-   if test "x$ATERM_LIBRARY_PATH" = "x"; then
-      AC_MSG_ERROR([support for experimental_fortran_frontend requires Aterm library support, --with-aterm=PATH must be specified])
-   fi
-   if test "x$STRATEGO_LIBRARY_PATH" = "x"; then
-      AC_MSG_ERROR([support for experimental_fortran_frontend requires Stratego library support, --with-stratego=PATH must be specified])
-   fi
-fi
-
-# Rasmussen (10/24/2017): ATerm and Stratego/XT tools binary installation required for Jovial support.
-if test "x$enable_experimental_jovial_frontend" = "xyes"; then
-   if test "x$ATERM_LIBRARY_PATH" = "x"; then
-      AC_MSG_ERROR([support for experimental_jovial_frontend requires Aterm library support, --with-aterm=PATH must be specified!])
-   fi
-   if test "x$STRATEGO_LIBRARY_PATH" = "x"; then
-      AC_MSG_ERROR([support for experimental_jovial_frontend requires Stratego library support, --with-stratego=PATH must be specified!])
-   fi
-fi
-
-# Rasmussen (10/24/2017): GnuCobol parse-tree library installation required for Cobol support.
-if test "x$enable_experimental_cobol_frontend" = "xyes"; then
-   if test "x$COBPT_LIBRARY_PATH" = "x"; then
-      AC_MSG_ERROR([support for experimental_cobol_frontend requires GnuCobol parse-tree library support, --with-cobpt=PATH must be specified!])
-   fi
-fi
-
-# Rasmussen (11/19/2017): Octave/Matlab parser installation required for Matlab support.
-if test "x$enable_experimental_matlab_frontend" = "xyes"; then
-   if test "x$OCTAVE_PARSER_INSTALL_TARFILE" = "x"; then
-      AC_MSG_ERROR([support for experimental_matlab_frontend requires the modified GNU Octave parser, --with-octave-parser=PATH must be specified!])
-   fi
-fi
-
 ROSE_SUPPORT_LIBOMPPARSER
 
-ROSE_SUPPORT_MINT
+ROSE_SUPPORT_SAT
+ROSE_SUPPORT_LIBGCRYPT
+ROSE_SUPPORT_YICES
+ROSE_SUPPORT_LIBPQXX
 
 ROSE_SUPPORT_VECTORIZATION
 
-# Pei-Hung (12/17/2014): Adding support for POCC.
-ROSE_SUPPORT_POCC
-
 ROSE_SUPPORT_LIBHARU
-
-ROSE_SUPPORT_PHP
-
-AM_CONDITIONAL(ROSE_USE_PHP,test ! "$with_php" = no)
-
 #ASR
 ROSE_SUPPORT_LLVM
 
 AM_CONDITIONAL(ROSE_USE_LLVM,test ! "$with_llvm" = no)
-
-# Call supporting macro for Windows Source Code Analysis
-ROSE_SUPPORT_WINDOWS_ANALYSIS
-
-# Setup Automake conditional in Projects/programModeling/Makefile.am
-AM_CONDITIONAL(ROSE_USE_WINDOWS_ANALYSIS_SUPPORT,test ! "$with_wine" = no)
 
 # Control use of debugging support to convert most unions in EDG to structs.
 ROSE_SUPPORT_EDG_DEBUGGING
@@ -1049,7 +785,6 @@ ROSE_SUPPORT_GCC_OMP
 
 # Configuration commandline support for OpenMP in ROSE
 AM_CONDITIONAL(ROSE_USE_GCC_OMP,test ! "$with_parallel_ast_traversal_omp" = no)
-
 
 # JJW and TP (3-17-2008) -- added MPI support
 AC_ARG_WITH(parallel_ast_traversal_mpi,
@@ -1077,76 +812,6 @@ if test "x$with_pch" = xyes; then
 else
   AC_MSG_NOTICE("PCH disabled: no Support for PCH")
 fi
-
-
-
-
-
-# TP (2-27-2009) -- support for RTED
-ROSE_SUPPORT_RTED
-
-AM_CONDITIONAL(ROSE_USE_RTED,test ! "$with_rted" = no)
-
-# TP SUPPORT FOR OPENGL
-#AC_DEFINE([openGL],1,[By default OpenGL is disabled.])
-AC_ARG_ENABLE([rose-openGL],
-  [  --enable-rose-openGL  enable openGL],
-  [  rose_openGL=${enableval}
-AC_PATH_X dnl We need to do this by hand for some reason
-
-# DQ (9/26/2015): Using more recent autoconf macro to avoid warnings.
-# MDL_HAVE_OPENGL
-AC_FIND_OPENGL
-
-AC_MSG_NOTICE([have_GL = "$have_GL" and have_glut = "$have_glut" and rose_openGL = "$rose_openGL"])
-#AM_CONDITIONAL(ROSE_USE_OPENGL, test ! "x$have_GL" = xno -a ! "x$openGL" = xno)
-if test ! "x$rose_openGL" = xno; then
-   AC_MSG_NOTICE([checking OpenGL dependencies..."])
-  if test "x$have_GL" = xyes; then
-    AC_MSG_NOTICE([OpenGL enabled: found OpenGL])
-  else
-    AC_MSG_ERROR([OpenGL not found])
-  fi
- if test "x$have_glut" = xyes; then
-    AC_MSG_NOTICE([OpenGL enabled: found GLUT])
- else
-   AC_MSG_NOTICE([OpenGL GLUT not found; please use --with-glut])
- fi
-fi
-], [ rose_openGL=no
-  AC_MSG_NOTICE([OpenGL disabled])
-])
-AM_CONDITIONAL(ROSE_USE_OPENGL, test ! "x$have_GL" = xno -a ! "x$rose_openGL" = xno)
-
-
-AM_CONDITIONAL(USE_ROSE_GLUT_SUPPORT, false)
-
-AC_ARG_WITH(glut,
-[  --with-glut=PATH     Configure option to have GLUT enabled.],
-,
-if test ! "$with_glut" ; then
-   with_glut=no
-fi
-)
-
-AC_MSG_NOTICE([in ROSE SUPPORT MACRO: with_glut = "$with_glut"])
-
-if test "$with_glut" = no; then
-   # If dwarf is not specified, then don't use it.
-   AC_MSG_NOTICE([skipping use of GLUT support])
-else
-   AM_CONDITIONAL(USE_ROSE_GLUT_SUPPORT, true)
-   glut_path=$with_glut
-   AC_MSG_NOTICE([setup GLUT support in ROSE. path = "$glut_path"])
-   AC_DEFINE([USE_ROSE_GLUT_SUPPORT],1,[Controls use of ROSE support for GLUT library.])
-fi
-
-
-AC_SUBST(glut_path)
-
-
-
-AC_CHECK_PROGS(PERL, [perl])
 
 # DQ (9/4/2009): Added checking for indent command (common in Linux, but not on some platforms).
 # This command is used in the tests/nonsmoke/functional/roseTests/astInterfaceTests/Makefile.am file.
@@ -1193,9 +858,6 @@ if test "x$with_javaport" = "xyes"; then
 # AC_DEFINE([ROSE_USE_SWIG_SUPPORT], [], [Whether to use SWIG support or not within ROSE])
 fi
 
-# Call supporting macro for Haskell
-ROSE_SUPPORT_HASKELL
-
 ROSE_SUPPORT_CUDA
 
 # if swi-prolog is available
@@ -1204,12 +866,6 @@ ROSE_SUPPORT_SWIPL
 # Call support macro for Z3
 
 ROSE_SUPPORT_Z3
-
-# Call supporting macro for bddbddb
-ROSE_SUPPORT_BDDBDDB
-
-# Setup Automake conditional in Projects/DatalogAnalysis/Makefile.am
-AM_CONDITIONAL(ROSE_USE_BDDBDDB,test ! "$with_bddbddb" = no)
 
 # Call supporting macro for VISUALIZATION (FLTK and GraphViz)
 ROSE_SUPPORT_VISUALIZATION
@@ -1748,79 +1404,6 @@ export with_png
 with_zlib=no
 export with_zlib
 
-# DQ (4/11/2010): This seems to have to appear before the Qt macros
-# because the "AC PATH QT" are defined in config/qrose_indigo_1.m4.
-# *****************************************************
-#  Support for QRose Qt GUI (work at Imperial College)
-# *****************************************************
-
-# GMY (9/3/2008) QT4 & QROSE Optional Packages
-AC_ARG_WITH(QRose, [  --with-QRose=PATH     prefix of QRose installation],
-   [QROSE_PREFIX=$with_QRose
-    if test "x$with_QRose" = xyes; then
-       AC_MSG_FAILURE([--with-QRose=PATH must be specified to use option --with-QRose (a valid QRose intallation)])
-    fi
-    if test "x$with_QRose" = x; then
-       AC_MSG_FAILURE([empty path used in --with-QRose=PATH must be specified to use option --with-QRose (a valid Qt intallation)])
-    fi
-   ],
-        [with_QRose=no])
-
-AC_SUBST(QROSE_PREFIX)
-AM_CONDITIONAL(ROSE_USE_QROSE,test "x$with_QRose" != xno)
-
-AC_MSG_NOTICE([with_QRose = "$with_QRose"])
-
-#AM_CONDITIONAL(USE_QROSE, test "$with_QRose" != no)
-#QROSE_LDFLAGS="-L${QROSE_PREFIX}/lib -lqrose"
-#QROSE_CXXFLAGS="-I${QROSE_PREFIX}/include"
-#AC_SUBST(QROSE_LDFLAGS)
-#AC_SUBST(QROSE_CXXFLAGS)
-
-
-# DQ (4/11/2010): Organized the Qt configure support.
-# ****************************************************
-#         Support for Qt (General GUI support)
-# ****************************************************
-
-# These are defined in config/qrose_indigo_1.m4, they
-# are not standard AC macros.
-AC_PATH_QT
-AC_PATH_QT_MOC
-AC_PATH_QT_RCC
-AC_PATH_QT_UIC
-
-# The code to set ROSEQT is in this macro's definition.
-AC_PATH_QT_VERSION
-
-AC_MSG_NOTICE([with_qt     = "$with_qt"])
-AM_CONDITIONAL(ROSE_USE_QT,test x"$with_qt" != x"no")
-if test "x$with_qt" = xyes; then
-   AC_MSG_FAILURE([path to Qt not specified (usage: --with-qt=PATH)])
-fi
-
-# If QRose was specified then make sure that Qt was specified.
-if test "x$with_QRose" != xno; then
-   if test "x$with_qt" = xno; then
-      AC_MSG_FAILURE([QRose requires valid specification of Qt installation (requires option: --with-qt=PATH)])
-   fi
-fi
-
-# *****************************************************
-#   Support for RoseQt GUI (ROSE specific Qt widgets)
-# *****************************************************
-
-# ROSE_SUPPORT_ROSEQT
-# echo "with_roseQt = $with_roseQt"
-# AM_CONDITIONAL(ROSE_WITH_ROSEQT,test x"$with_roseQt" != x"no")
-
-# ****************************************************
-#   Support for Assembly Semantics (binary analysis)
-ROSE_SUPPORT_BINARY
-# ****************************************************
-
-ROSE_SUPPORT_PYTHON_API
-
 # Added support for detection of libnuma, a NUMA aware memory allocation mechanism for many-core optimizations.
 AC_CHECK_HEADERS(numa.h, [found_libnuma=yes])
 
@@ -1962,7 +1545,6 @@ src/frontend/CxxFrontend/Clang/Makefile
 src/frontend/CxxFrontend/Makefile
 src/frontend/Makefile
 src/frontend/OpenFortranParser_SAGE_Connection/Makefile
-src/frontend/PythonFrontend/Makefile
 src/frontend/SageIII/GENERATED_CODE_DIRECTORY_Cxx_Grammar/Makefile
 src/frontend/SageIII/Makefile
 src/frontend/SageIII/astFileIO/Makefile
@@ -1998,12 +1580,6 @@ tests/Makefile
 tests/nonsmoke/ExamplesForTestWriters/Makefile
 tests/nonsmoke/Makefile
 tests/nonsmoke/acceptance/Makefile
-tests/nonsmoke/functional/BinaryAnalysis/Dwarf_tests/Makefile
-tests/nonsmoke/functional/BinaryAnalysis/Makefile
-tests/nonsmoke/functional/BinaryAnalysis/Pin_tests/Makefile
-tests/nonsmoke/functional/BinaryAnalysis/libraryIdentification_tests/Makefile
-tests/nonsmoke/functional/BinaryAnalysis/Concolic/Makefile
-tests/nonsmoke/functional/BinaryAnalysis/Concolic/crsh/Makefile
 tests/nonsmoke/functional/CompileTests/A++Code/Makefile
 tests/nonsmoke/functional/CompileTests/A++Tests/Makefile
 tests/nonsmoke/functional/CompileTests/C_tests/Makefile
@@ -2022,37 +1598,21 @@ tests/nonsmoke/functional/CompileTests/ElsaTestCases/gnu/Makefile
 tests/nonsmoke/functional/CompileTests/ElsaTestCases/kandr/Makefile
 tests/nonsmoke/functional/CompileTests/ElsaTestCases/std/Makefile
 tests/nonsmoke/functional/CompileTests/ExpressionTemplateExample_tests/Makefile
-tests/nonsmoke/functional/CompileTests/FailSafe_tests/Makefile
 tests/nonsmoke/functional/CompileTests/Fortran_tests/LANL_POP/Makefile
 tests/nonsmoke/functional/CompileTests/Fortran_tests/Makefile
 tests/nonsmoke/functional/CompileTests/Fortran_tests/experimental_frontend_tests/Makefile
 tests/nonsmoke/functional/CompileTests/Fortran_tests/gfortranTestSuite/Makefile
 tests/nonsmoke/functional/CompileTests/Fortran_tests/gfortranTestSuite/gfortran.dg/Makefile
 tests/nonsmoke/functional/CompileTests/Fortran_tests/gfortranTestSuite/gfortran.fortran-torture/Makefile
-tests/nonsmoke/functional/CompileTests/Java_tests/Makefile
-tests/nonsmoke/functional/CompileTests/Java_tests/unit_tests/Makefile
-tests/nonsmoke/functional/CompileTests/experimental_csharp_tests/Makefile
-tests/nonsmoke/functional/CompileTests/experimental_ada_tests/Makefile
-tests/nonsmoke/functional/CompileTests/experimental_fortran_tests/Makefile
-tests/nonsmoke/functional/CompileTests/experimental_jovial_tests/Makefile
-tests/nonsmoke/functional/CompileTests/experimental_cobol_tests/Makefile
-tests/nonsmoke/functional/CompileTests/experimental_matlab_tests/Makefile
 tests/nonsmoke/functional/CompileTests/Makefile
-tests/nonsmoke/functional/CompileTests/MicrosoftWindows_C_tests/Makefile
-tests/nonsmoke/functional/CompileTests/MicrosoftWindows_Cxx_tests/Makefile
-tests/nonsmoke/functional/CompileTests/MicrosoftWindows_Java_tests/Makefile
-tests/nonsmoke/functional/CompileTests/MicrosoftWindows_tests/Makefile
 tests/nonsmoke/functional/CompileTests/OpenClTests/Makefile
 tests/nonsmoke/functional/CompileTests/OpenMP_tests/Makefile
 tests/nonsmoke/functional/CompileTests/OpenMP_tests/cvalidation/Makefile
 tests/nonsmoke/functional/CompileTests/OpenMP_tests/fortran/Makefile
 tests/nonsmoke/functional/CompileTests/OvertureCode/Makefile
 tests/nonsmoke/functional/CompileTests/P++Tests/Makefile
-tests/nonsmoke/functional/CompileTests/PythonExample_tests/Makefile
-tests/nonsmoke/functional/CompileTests/Python_tests/Makefile
 tests/nonsmoke/functional/CompileTests/RoseExample_tests/Makefile
 tests/nonsmoke/functional/CompileTests/STL_tests/Makefile
-tests/nonsmoke/functional/CompileTests/UPC_tests/Makefile
 tests/nonsmoke/functional/CompileTests/UnparseHeadersTests/Makefile
 tests/nonsmoke/functional/CompileTests/UnparseHeadersUsingTokenStream_tests/Makefile
 tests/nonsmoke/functional/CompileTests/boost_tests/Makefile
@@ -2067,11 +1627,9 @@ tests/nonsmoke/functional/CompileTests/sizeofOperation_tests/Makefile
 tests/nonsmoke/functional/CompileTests/sourcePosition_tests/Makefile
 tests/nonsmoke/functional/CompileTests/staticCFG_tests/Makefile
 tests/nonsmoke/functional/CompileTests/systemc_tests/Makefile
-tests/nonsmoke/functional/CompileTests/vxworks_tests/Makefile
 tests/nonsmoke/functional/CompileTests/uninitializedField_tests/Makefile
 tests/nonsmoke/functional/CompileTests/unparseToString_tests/Makefile
 tests/nonsmoke/functional/CompileTests/virtualCFG_tests/Makefile
-tests/nonsmoke/functional/CompileTests/x10_tests/Makefile
 tests/nonsmoke/functional/CompileTests/unparse_template_from_ast/Makefile
 tests/nonsmoke/functional/CompilerOptionsTests/Makefile
 tests/nonsmoke/functional/CompilerOptionsTests/collectAllCommentsAndDirectives_tests/Makefile
@@ -2094,13 +1652,11 @@ tests/nonsmoke/functional/RunTests/AstDeleteTests/Makefile
 tests/nonsmoke/functional/RunTests/FortranTests/LANL_POP/Makefile
 tests/nonsmoke/functional/RunTests/FortranTests/Makefile
 tests/nonsmoke/functional/RunTests/Makefile
-tests/nonsmoke/functional/RunTests/PythonTests/Makefile
 tests/nonsmoke/functional/UnitTests/Makefile
 tests/nonsmoke/functional/UnitTests/Rose/Makefile
 tests/nonsmoke/functional/UnitTests/Rose/SageBuilder/Makefile
 tests/nonsmoke/functional/Utility/Makefile
 tests/nonsmoke/functional/roseTests/Makefile
-tests/nonsmoke/functional/roseTests/PHPTests/Makefile
 tests/nonsmoke/functional/roseTests/ROSETTA/Makefile
 tests/nonsmoke/functional/roseTests/abstractMemoryObjectTests/Makefile
 tests/nonsmoke/functional/roseTests/astFileIOTests/Makefile
@@ -2138,28 +1694,14 @@ tests/nonsmoke/functional/roseTests/programAnalysisTests/variableRenamingTests/M
 tests/nonsmoke/functional/roseTests/programTransformationTests/Makefile
 tests/nonsmoke/functional/roseTests/programTransformationTests/extractFunctionArgumentsTest/Makefile
 tests/nonsmoke/functional/roseTests/programTransformationTests/singleStatementToBlockNormalization/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/01/ANALYSIS/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/01/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/01/PROFILE/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/01/PROGRAM/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/02/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/02/PROFILE/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/02/struct_ls/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/03/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/03/PROFILE/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/03/struct_ls/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/Makefile
 tests/nonsmoke/functional/roseTests/varDeclNorm/Makefile
 tests/nonsmoke/functional/testSupport/Makefile
 tests/nonsmoke/functional/testSupport/gtest/Makefile
 tests/nonsmoke/functional/translatorTests/Makefile
 tests/nonsmoke/specimens/Makefile
-tests/nonsmoke/specimens/binary/Makefile
 tests/nonsmoke/specimens/c++/Makefile
 tests/nonsmoke/specimens/c/Makefile
 tests/nonsmoke/specimens/fortran/Makefile
-tests/nonsmoke/specimens/java/Makefile
 tests/nonsmoke/unit/Makefile
 tests/nonsmoke/unit/SageInterface/Makefile
 tests/roseTests/Makefile
@@ -2168,7 +1710,6 @@ tests/roseTests/programAnalysisTests/Makefile
 tests/roseTests/programAnalysisTests/typeTraitTests/Makefile
 tests/smoke/ExamplesForTestWriters/Makefile
 tests/smoke/Makefile
-tests/smoke/functional/BinaryAnalysis/Makefile
 tests/smoke/functional/Fortran/Makefile
 tests/smoke/functional/Makefile
 tests/smoke/specimens/Makefile
@@ -2177,7 +1718,6 @@ tests/smoke/specimens/c++/Makefile
 tests/smoke/specimens/c/Makefile
 tests/smoke/specimens/fortran/Makefile
 tests/smoke/specimens/java/Makefile
-tests/smoke/unit/BinaryAnalysis/Makefile
 tests/smoke/unit/Boost/Makefile
 tests/smoke/unit/Makefile
 tests/smoke/unit/Sawyer/Makefile

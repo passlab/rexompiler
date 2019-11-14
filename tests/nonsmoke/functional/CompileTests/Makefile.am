@@ -163,17 +163,6 @@ endif
 # DQ (2/15/2014): Adding systemc tests (part of general C++ robustness tests)
 if ROSE_BUILD_CXX_LANGUAGE_SUPPORT
 SUBDIRS += systemc_tests
-
-if ROSE_USE_VXWORKS
-# DQ (5/21/2017): Adding VX Works support.
-SUBDIRS += vxworks_tests
-endif
-endif
-
-if ROSE_USE_GNAT
-# DQ (11/14/2017): Removed GNAT test directory since it is redundant with the ADA test directory.
-# DQ (6/8/2017): Adding GNAT support.
-# SUBDIRS += gnat_tests
 endif
 
 # end of ROSE_USE_CLANG_FRONTEND

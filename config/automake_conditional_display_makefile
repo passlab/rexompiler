@@ -39,11 +39,6 @@ if ENABLE_JAVAPORT
 else
 	@echo "Automake conditional ENABLE_JAVAPORT: NOT defined"
 endif
-if ROSE_HAVE_LIBYICES
-	@echo "Automake conditional ROSE_HAVE_LIBYICES: DEFINED"
-else
-	@echo "Automake conditional ROSE_HAVE_LIBYICES: NOT defined"
-endif
 if ROSE_HAVE_YICES
 	@echo "Automake conditional ROSE_HAVE_YICES: DEFINED"
 else
@@ -119,21 +114,6 @@ if OS_VENDOR_UBUNTU
 else
 	@echo "Automake conditional OS_VENDOR_UBUNTU: NOT defined"
 endif
-if QROSE_USE_MINGW32
-	@echo "Automake conditional QROSE_USE_MINGW32: DEFINED"
-else
-	@echo "Automake conditional QROSE_USE_MINGW32: NOT defined"
-endif
-if QROSE_USE_WINDOWS
-	@echo "Automake conditional QROSE_USE_WINDOWS: DEFINED"
-else
-	@echo "Automake conditional QROSE_USE_WINDOWS: NOT defined"
-endif
-if ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-	@echo "Automake conditional ROSE_BUILD_BINARY_ANALYSIS_SUPPORT: DEFINED"
-else
-	@echo "Automake conditional ROSE_BUILD_BINARY_ANALYSIS_SUPPORT: NOT defined"
-endif
 if ROSE_BUILD_C_LANGUAGE_SUPPORT
 	@echo "Automake conditional ROSE_BUILD_C_LANGUAGE_SUPPORT: DEFINED"
 else
@@ -149,11 +129,6 @@ if ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
 else
 	@echo "Automake conditional ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT: NOT defined"
 endif
-if ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
-	@echo "Automake conditional ROSE_BUILD_JAVA_LANGUAGE_SUPPORT: DEFINED"
-else
-	@echo "Automake conditional ROSE_BUILD_JAVA_LANGUAGE_SUPPORT: NOT defined"
-endif
 if ROSE_BUILD_OPENCL_LANGUAGE_SUPPORT
 	@echo "Automake conditional ROSE_BUILD_OPENCL_LANGUAGE_SUPPORT: DEFINED"
 else
@@ -168,16 +143,6 @@ if ROSE_BUILD_OS_IS_OSX
 	@echo "Automake conditional ROSE_BUILD_OS_IS_OSX: DEFINED"
 else
 	@echo "Automake conditional ROSE_BUILD_OS_IS_OSX: NOT defined"
-endif
-if ROSE_BUILD_PHP_LANGUAGE_SUPPORT
-	@echo "Automake conditional ROSE_BUILD_PHP_LANGUAGE_SUPPORT: DEFINED"
-else
-	@echo "Automake conditional ROSE_BUILD_PHP_LANGUAGE_SUPPORT: NOT defined"
-endif
-if ROSE_BUILD_PYTHON_LANGUAGE_SUPPORT
-	@echo "Automake conditional ROSE_BUILD_PYTHON_LANGUAGE_SUPPORT: DEFINED"
-else
-	@echo "Automake conditional ROSE_BUILD_PYTHON_LANGUAGE_SUPPORT: NOT defined"
 endif
 if ROSE_BUILD_TESTS_DIRECTORY_SUPPORT
 	@echo "Automake conditional ROSE_BUILD_TESTS_DIRECTORY_SUPPORT: DEFINED"
@@ -209,36 +174,10 @@ if ROSE_PCH
 else
 	@echo "Automake conditional ROSE_PCH: NOT defined"
 endif
-if ROSE_USE_BDDBDDB
-	@echo "Automake conditional ROSE_USE_BDDBDDB: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_BDDBDDB: NOT defined"
-endif
-if ROSE_USE_BINARYCONTEXTLOOKUP
-	@echo "Automake conditional ROSE_USE_BINARYCONTEXTLOOKUP: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_BINARYCONTEXTLOOKUP: NOT defined"
-endif
 if ROSE_USE_BOOST_WAVE
 	@echo "Automake conditional ROSE_USE_BOOST_WAVE: DEFINED"
 else
 	@echo "Automake conditional ROSE_USE_BOOST_WAVE: NOT defined"
-endif
-if ROSE_HAVE_LIBELF
-	@echo "Automake conditional ROSE_HAVE_LIBELF: DEFINED"
-else
-	@echo "Automake conditional ROSE_HAVE_LIBELF: NOT defined"
-endif
-if ROSE_HAVE_LIBDWARF
-	@echo "Automake conditional ROSE_HAVE_LIBDWARF: DEFINED"
-else
-	@echo "Automake conditional ROSE_HAVE_LIBDWARF: NOT defined"
-endif
-if ROSE_USE_ETHER
-	@echo "Automake conditional ROSE_USE_ETHER: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_ETHER: NOT defined"
-endif
 endif
 if ROSE_USE_GCC_OMP
 	@echo "Automake conditional ROSE_USE_GCC_OMP: DEFINED"
@@ -255,11 +194,6 @@ if ROSE_USE_INDENT
 else
 	@echo "Automake conditional ROSE_USE_INDENT: NOT defined"
 endif
-if ROSE_USE_INTEL_PIN
-	@echo "Automake conditional ROSE_USE_INTEL_PIN: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_INTEL_PIN: NOT defined"
-endif
 if ROSE_USE_INTERNAL_JAVA_SUPPORT_AM_CONDITIONAL
 	@echo "Automake conditional ROSE_USE_INTERNAL_JAVA_SUPPORT_AM_CONDITIONAL: DEFINED"
 else
@@ -275,20 +209,10 @@ if ROSE_USE_LONG_MAKE_CHECK_RULE
 else
 	@echo "Automake conditional ROSE_USE_LONG_MAKE_CHECK_RULE: NOT defined"
 endif
-if ROSE_USE_MAPLE
-	@echo "Automake conditional ROSE_USE_MAPLE: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_MAPLE: NOT defined"
-endif
 if ROSE_USE_MYSQL
 	@echo "Automake conditional ROSE_USE_MYSQL: DEFINED"
 else
 	@echo "Automake conditional ROSE_USE_MYSQL: NOT defined"
-endif
-if ROSE_USE_OBJDUMP
-	@echo "Automake conditional ROSE_USE_OBJDUMP: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_OBJDUMP: NOT defined"
 endif
 if ROSE_USE_OMNI_OPENMP
 	@echo "Automake conditional ROSE_USE_OMNI_OPENMP: DEFINED"
@@ -300,45 +224,10 @@ endif
 #else
 #	@echo "Automake conditional ROSE_USE_OPEN_FORTRAN_PARSER: NOT defined"
 #endif
-if ROSE_USE_OPENGL
-	@echo "Automake conditional ROSE_USE_OPENGL: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_OPENGL: NOT defined"
-endif
-if ROSE_USE_PHP
-	@echo "Automake conditional ROSE_USE_PHP: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_PHP: NOT defined"
-endif
-if ROSE_USE_PYTHON
-	@echo "Automake conditional ROSE_USE_PYTHON: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_PYTHON: NOT defined"
-endif
 if ROSE_USE_PPL
 	@echo "Automake conditional ROSE_USE_PPL: DEFINED"
 else
 	@echo "Automake conditional ROSE_USE_PPL: NOT defined"
-endif
-if ROSE_USE_QROSE
-	@echo "Automake conditional ROSE_USE_QROSE: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_QROSE: NOT defined"
-endif
-if ROSE_USE_QT
-	@echo "Automake conditional ROSE_USE_QT: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_QT: NOT defined"
-endif
-if ROSE_USE_RTED
-	@echo "Automake conditional ROSE_USE_RTED: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_RTED: NOT defined"
-endif
-if ROSE_USE_SAT
-	@echo "Automake conditional ROSE_USE_SAT: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_SAT: NOT defined"
 endif
 if ROSE_USE_SMALLER_GENERATED_FILES
 	@echo "Automake conditional ROSE_USE_SMALLER_GENERATED_FILES: DEFINED"
@@ -360,11 +249,6 @@ if ROSE_USE_TCLSH
 else
 	@echo "Automake conditional ROSE_USE_TCLSH: NOT defined"
 endif
-if ROSE_USE_TEST_SMT_SOLVER
-	@echo "Automake conditional ROSE_USE_TEST_SMT_SOLVER: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_TEST_SMT_SOLVER: NOT defined"
-endif
 if ROSE_USE_UNIFORM_ADVANCED_WARNINGS_SUPPORT
 	@echo "Automake conditional ROSE_USE_UNIFORM_ADVANCED_WARNINGS_SUPPORT: DEFINED"
 else
@@ -379,16 +263,6 @@ if ROSE_USE_WGET
 	@echo "Automake conditional ROSE_USE_WGET: DEFINED"
 else
 	@echo "Automake conditional ROSE_USE_WGET: NOT defined"
-endif
-if ROSE_USE_WINDOWS_ANALYSIS_SUPPORT
-	@echo "Automake conditional ROSE_USE_WINDOWS_ANALYSIS_SUPPORT: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_WINDOWS_ANALYSIS_SUPPORT: NOT defined"
-endif
-if ROSE_USE_XML
-	@echo "Automake conditional ROSE_USE_XML: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_XML: NOT defined"
 endif
 if ROSE_USING_BOOST_VERSION_1_35
 	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_35: DEFINED"
@@ -484,16 +358,6 @@ if ROSE_USING_ROSE_TRANSLATOR
 	@echo "Automake conditional ROSE_USING_ROSE_TRANSLATOR: DEFINED"
 else
 	@echo "Automake conditional ROSE_USING_ROSE_TRANSLATOR: NOT defined"
-endif
-if ROSE_WITH_ROSEQT
-	@echo "Automake conditional ROSE_WITH_ROSEQT: DEFINED"
-else
-	@echo "Automake conditional ROSE_WITH_ROSEQT: NOT defined"
-endif
-if USE_HASKELL
-	@echo "Automake conditional USE_HASKELL: DEFINED"
-else
-	@echo "Automake conditional USE_HASKELL: NOT defined"
 endif
 if USE_CUDA
 	@echo "Automake conditional USE_CUDA: DEFINED"

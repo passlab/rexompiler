@@ -15,7 +15,7 @@ EXTRA_DIST =
 # We don't want "make [all]", "make check", or "make install", etc. to recurse into the tests/nonsmoke directory (unless
 # ROSE was configured using "--with-ROSE_LONG_MAKE_CHECK_RULE"). If you want to build something in the non-smoke area
 # you should "cd" do that directory first, as in "make -C tests/nonsmoke ...".
-SUBDIRS = LicenseInformation libltdl config src python
+SUBDIRS = libltdl config src
 if ROSE_BUILD_TESTS_DIRECTORY_SUPPORT
    SUBDIRS += tests/smoke
 endif
@@ -130,11 +130,9 @@ check-tools: tools
 # not changing "install-core" because users use that and expect certain behavior. The purpose of this target is mainly for
 # ROSE project developers that have a need to install the library and other specific tools (via other install targets) but
 # don't want to install anything else (perhaps because it doesn't compile). [Robb Matzke, 2016-03-07]
-install-rose-library: install-data-local install-testprojDATA
+install-rose-library: install-data-local
 	$(MAKE) -C $(top_builddir)/src install
-	$(MAKE) -C $(top_builddir)/LicenseInformation install
-	cp rosePublicConfig.h $(DESTDIR)/$(pkgincludedir)
-	$(MAKE) -C $(top_builddir)/python install
+	cp rosePublicConfig.h $(pkgincludedir)
 
 # Build a binary release of the ROSE library.  This assumes that you're running in the RMC-2 environment because it uses
 # some "make" variables that are initialized from shell exported variables. Other build environments will need other targets.
@@ -896,7 +894,7 @@ librose_lcov_web_pages: librose-lcov.info
 # THIS INCLUDES EDG SOURCES; DO NOT DISTRIBUTE THIS DIRECTORY
 librose_lcov_web_pages: librose-lcov.info
 	genhtml                                 \
-                --title librose                 \
+                 --title librose                 \
                 --legend                        \
                 --demangle-cpp                  \
                 --rc genhtml_hi_limit=85        \
