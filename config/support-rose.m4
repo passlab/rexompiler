@@ -1357,6 +1357,8 @@ AC_CHECK_TYPE([hrtime_t],[AC_DEFINE(HAVE_HRTIME_T, 1, [Define to 1 if hrtime_t i
 #include <sys/time.h>
 #endif])
 
+AC_CHECK_HEADERS(pthread.h)
+
 AC_CHECK_FUNCS([gethrtime read_real_time time_base_to_time clock_gettime mach_absolute_time])
 
 dnl Cray UNICOS _rtc() (real-time clock) intrinsic

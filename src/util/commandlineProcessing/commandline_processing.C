@@ -1,5 +1,5 @@
 #include <rose_config.h>
-
+#include <rosePublicConfig.h>
 #include "StringUtility.h"
 #include <string.h>
 #include <iostream>

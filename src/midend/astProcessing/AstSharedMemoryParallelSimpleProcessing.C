@@ -1,9 +1,10 @@
 // Author: Gergo Barany
 // $Id: AstSharedMemoryParallelSimpleProcessing.C,v 1.1 2008/01/08 02:56:39 dquinlan Exp $
 #include "sage3basic.h"
+#include "rosePublicConfig.h"
 
 #ifdef _REENTRANT                                       // Does user want multi-thread support? (e.g., g++ -pthread)
-# ifdef HAVE_PTHREAD_H                                  // Do we have POSIX threads?
+# ifdef ROSE_HAVE_PTHREAD_H                                  // Do we have POSIX threads?
 #  include <pthread.h>
 # else
    // This should all be switched to Boost Threads instead, which is more portable.
