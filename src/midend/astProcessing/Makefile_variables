@@ -13,7 +13,8 @@ mAstProcessing_la_sources=\
 	$(mAstProcessingPath)/AstReverseSimpleProcessing.C \
 	$(mAstProcessingPath)/AstClearVisitFlags.C \
 	$(mAstProcessingPath)/AstTraversal.C \
-	$(mAstProcessingPath)/AstCombinedSimpleProcessing.C
+	$(mAstProcessingPath)/AstCombinedSimpleProcessing.C \
+	$(mAstProcessingPath)/AstSharedMemoryParallelSimpleProcessing.C
 if !ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 mAstProcessing_la_sources+=\
 	$(mAstProcessingPath)/AstRestructure.C
@@ -46,6 +47,9 @@ mAstProcessing_includeHeaders=\
 	$(mAstProcessingPath)/AstCombinedProcessingImpl.h \
 	$(mAstProcessingPath)/AstCombinedSimpleProcessing.h \
 	$(mAstProcessingPath)/StackFrameVector.h \
+	$(mAstProcessingPath)/AstSharedMemoryParallelProcessing.h \
+	$(mAstProcessingPath)/AstSharedMemoryParallelProcessingImpl.h \
+	$(mAstProcessingPath)/AstSharedMemoryParallelSimpleProcessing.h \
 	$(mAstProcessingPath)/graphProcessing.h \
 	$(mAstProcessingPath)/graphProcessingSgIncGraph.h \
 	$(mAstProcessingPath)/graphTemplate.h \
