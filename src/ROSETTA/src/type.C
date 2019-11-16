@@ -77,19 +77,6 @@ Grammar::setUpTypes ()
   // with a TemplateInstantiationType derived from it.
   //   NEW_TERMINAL_MACRO ( ClassType           , "ClassType",            "T_CLASS" );
 
-  // DQ (8/18/2011): Java specific support for generics.
-     NEW_TERMINAL_MACRO ( JavaParameterizedType , "JavaParameterizedType", "T_JAVA_PARAM" );
-     NEW_TERMINAL_MACRO ( JavaQualifiedType , "JavaQualifiedType", "T_JAVA_QUALIFIED" );
-     NEW_TERMINAL_MACRO ( JavaWildcardType, "JavaWildcardType", "T_JAVA_WILD" );
-
-  // DQ (2/10/2014): Added SgNamedType IR nodes for Philippe.
-     NEW_TERMINAL_MACRO ( JavaUnionType     , "JavaUnionType", "T_JAVA_UNION" );
-     NEW_TERMINAL_MACRO ( JavaParameterType , "JavaParameterType", "T_JAVA_PARAMETER" );
-
-  // Rasmussen (5/10/2019): Added a Table type for Jovial (tables are structs with array dimensions)
-     NEW_TERMINAL_MACRO ( JovialTableType , "JovialTableType", "T_JOVIAL_TABLE" );
-
-     //
      // [DT] 5/11/2000 -- Added TemplateType.  Should it be called TemplateInstantiationType
      //      to maintain symmetry with TemplateInstantiationDecl and TemplateInstantiationSymbol?
      //
@@ -160,22 +147,12 @@ Grammar::setUpTypes ()
   // NEW_NONTERMINAL_MACRO (NamedType,
   //                        ClassType | TemplateInstantiationType | EnumType | TypedefType,
   //                        "NamedType","T_NAME");
-#if 0
   // DQ (2/10/2014): Original code
+     NEW_TERMINAL_MACRO ( ClassType           , "ClassType",            "T_CLASS" );
      NEW_NONTERMINAL_MACRO (NamedType,
-                            ClassType | JavaParameterizedType | JavaQualifiedType | EnumType | TypedefType,
+                           ClassType | EnumType | TypedefType | NonrealType,
                             "NamedType","T_NAME", false);
-#else
-  // DQ (2/10/2014): Added SgNamedType IR nodes for Philippe.
-  // Rasmussen (5/10/2019): Added a Table type for Jovial (tables are structs with array dimensions)
-     NEW_NONTERMINAL_MACRO (ClassType,
-                            JavaParameterType | JovialTableType,
-                            "ClassType","T_CLASS", true);
-     NEW_NONTERMINAL_MACRO (NamedType,
-                            ClassType | EnumType | TypedefType | NonrealType |
-                            JavaParameterizedType | JavaQualifiedType | JavaWildcardType,
-                            "NamedType","T_NAME", false);
-#endif
+
  
   // DQ (5/11/2011): This is no longer used, and has not be used since the 3rd rewite of the name qualification
   // support in 2007.  We are now working on the 4rh rewrite of this horrible subject and it is not clear if it
@@ -205,7 +182,7 @@ Grammar::setUpTypes ()
           ReferenceType        | NamedType               | ModifierType              | FunctionType         |
           ArrayType            | TypeEllipse             | TemplateType              | QualifiedNameType    |
           TypeComplex          | TypeImaginary           | TypeDefault               | TypeCAFTeam          |
-          TypeCrayPointer      | TypeLabel               | JavaUnionType             | RvalueReferenceType  | 
+          TypeCrayPointer      | TypeLabel               | RvalueReferenceType  | 
           TypeNullptr          | DeclType                | TypeOfType                | TypeMatrix           |
           TypeTuple            | TypeChar16              | TypeChar32                | TypeFloat128         |
           AutoType,
@@ -579,21 +556,6 @@ Grammar::setUpTypes ()
   // DQ (12/4/2011): Adding support for template declarations into the AST.
   // CUSTOM_CREATE_TYPE_MACRO(ClassType,"SOURCE_CREATE_TYPE_FOR_CLASS_TYPE","SgClassDeclaration* decl = NULL");
      CUSTOM_CREATE_TYPE_MACRO(ClassType,"SOURCE_CREATE_TYPE_FOR_CLASS_TYPE","SgDeclarationStatement* decl = NULL");
-     CUSTOM_CREATE_TYPE_MACRO(JavaParameterizedType,
-            "SOURCE_CREATE_TYPE_FOR_JAVA_PARAMETERIZED_TYPE",
-            "SgClassDeclaration* decl = NULL");
-     CUSTOM_CREATE_TYPE_MACRO(JavaQualifiedType,
-            "SOURCE_CREATE_TYPE_FOR_JAVA_QUALIFIED_TYPE",
-            "SgClassDeclaration* decl = NULL");
-
-  // DQ (2/10/2014): Added SgNamedType IR nodes for Philippe.
-     CUSTOM_CREATE_TYPE_MACRO(JavaUnionType,
-            "SOURCE_CREATE_TYPE_FOR_JAVA_UNION_TYPE",
-            "SgClassDeclaration* decl = NULL");
-
-     CUSTOM_CREATE_TYPE_MACRO(JavaParameterType,
-            "SOURCE_CREATE_TYPE_FOR_JAVA_PARAMETER_TYPE",
-            "SgClassDeclaration* decl = NULL");
 
      CUSTOM_CREATE_TYPE_MACRO(JovialTableType,
             "SOURCE_CREATE_TYPE_FOR_JOVIAL_TABLE_TYPE",
@@ -606,9 +568,6 @@ Grammar::setUpTypes ()
      CUSTOM_CREATE_TYPE_MACRO(NonrealType,"SOURCE_CREATE_TYPE_FOR_NONREAL_TYPE","SgNonrealDecl* decl = NULL");
      CUSTOM_CREATE_TYPE_MACRO(AutoType,"SOURCE_CREATE_TYPE_FOR_AUTO_TYPE","SgNode* node = NULL");
 
-     CUSTOM_CREATE_TYPE_MACRO(JavaWildcardType,
-            "SOURCE_CREATE_TYPE_FOR_JAVA_WILDCARD_TYPE",
-            "SgClassDeclaration *decl = NULL");
      CUSTOM_CREATE_TYPE_MACRO(TemplateType,
             "SOURCE_CREATE_TYPE_FOR_TEMPLATE_TYPE",
             "SgTemplateInstantiationDecl* decl = NULL");
@@ -778,60 +737,6 @@ Grammar::setUpTypes ()
      AutoType.setFunctionPrototype        ( "HEADER_AUTO_TYPE",   "../Grammar/Type.code" );
 //   AutoType.excludeFunctionPrototype    ( "HEADER_GET_NAME",    "../Grammar/Type.code" );
 //   AutoType.excludeFunctionPrototype    ( "HEADER_GET_MANGLED", "../Grammar/Type.code" );
-
-     JavaParameterizedType.setFunctionPrototype ("HEADER_JAVA_PARAMETERIZED_TYPE", "../Grammar/Type.code" );
-     JavaParameterizedType.setFunctionPrototype ("HEADER_GET_NAME", "../Grammar/Type.code" );
-     JavaParameterizedType.setFunctionPrototype ("HEADER_GET_QUALIFIED_NAME", "../Grammar/Type.code" );
-     JavaParameterizedType.setDataPrototype     ("SgNamedType*","raw_type","= NULL",
-                                                CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JavaParameterizedType.setDataPrototype     ("SgTemplateParameterList*","type_list","= NULL",
-                                                CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     JavaQualifiedType.setFunctionPrototype ("HEADER_JAVA_QUALIFIED_TYPE", "../Grammar/Type.code" );
-     JavaQualifiedType.setFunctionPrototype ("HEADER_GET_NAME", "../Grammar/Type.code" );
-     JavaQualifiedType.setFunctionPrototype ("HEADER_GET_QUALIFIED_NAME", "../Grammar/Type.code" );
-     JavaQualifiedType.setDataPrototype     ("SgNamedType *","parent_type","= NULL",
-                                            CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JavaQualifiedType.setDataPrototype     ("SgNamedType *","type","= NULL",
-                                            CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     JavaWildcardType.setFunctionPrototype ("HEADER_JAVA_WILDCARD_TYPE", "../Grammar/Type.code" );
-     JavaWildcardType.setFunctionPrototype ("HEADER_GET_NAME", "../Grammar/Type.code" );
-     JavaWildcardType.setFunctionPrototype ("HEADER_GET_QUALIFIED_NAME", "../Grammar/Type.code" );
-     JavaWildcardType.setDataPrototype     ("SgType*","bound_type","= NULL",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     // JavaWildcardType.setDataPrototype     ("SgType*","extends_type","= NULL",
-     //                                    CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     // JavaWildcardType.setDataPrototype     ("SgType*","super_type","= NULL",
-     //                                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JavaWildcardType.setDataPrototype     ("bool","is_unbound","= true",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JavaWildcardType.setDataPrototype     ("bool","has_extends","= false",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JavaWildcardType.setDataPrototype     ("bool","has_super","= false",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // DQ (2/10/2014): Added SgNamedType IR nodes for Philippe.
-     JavaUnionType.setFunctionPrototype ("HEADER_JAVA_UNION_TYPE", "../Grammar/Type.code" );
-     JavaUnionType.setDataPrototype     ("SgTypePtrList","type_list","",
-                                            NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-  // DQ (3/22/2017): This is reserved for virtual function specification.
-  // JavaUnionType.setFunctionPrototype ("HEADER_GET_NAME", "../Grammar/Type.code" );
-
-     JavaParameterType.setFunctionPrototype ("HEADER_JAVA_PARAMETER_TYPE", "../Grammar/Type.code" );
-     JavaParameterType.setFunctionPrototype ("HEADER_GET_QUALIFIED_NAME", "../Grammar/Type.code" );
-     JavaParameterType.setFunctionPrototype ("HEADER_GET_NAME", "../Grammar/Type.code" );
-
-     JovialTableType.setFunctionPrototype   ("HEADER_JOVIAL_TABLE_TYPE", "../Grammar/Type.code" );
-     JovialTableType.setFunctionPrototype   ("HEADER_GET_QUALIFIED_NAME", "../Grammar/Type.code" );
-     JovialTableType.setFunctionPrototype   ("HEADER_GET_NAME", "../Grammar/Type.code" );
-
-     JovialTableType.setDataPrototype ("SgType*"       , "base_type", "= NULL",
-                                 NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS,  NO_TRAVERSAL,  NO_DELETE);
-     JovialTableType.setDataPrototype ("SgExprListExp*", "dim_info" , "= NULL",
-                                 NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, DEF_DELETE);
-     JovialTableType.setDataPrototype ("int", "rank" , "= 0",
-                                 NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS,  NO_TRAVERSAL,  NO_DELETE);
 
    // TemplateInstantiationType.setFunctionPrototype ("HEADER_TEMPLATE_INSTANTIATION_TYPE", "../Grammar/Type.code" );
      TemplateType.setFunctionPrototype ("HEADER_TEMPLATE_TYPE", "../Grammar/Type.code" );
@@ -1124,18 +1029,6 @@ Grammar::setUpTypes ()
      AutoType.excludeFunctionSource    ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
      AutoType.setFunctionSource        ( "SOURCE_AUTO_TYPE", "../Grammar/Type.code");
 
-     JavaParameterizedType.excludeFunctionSource    ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-
-     JavaQualifiedType.excludeFunctionSource    ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-
-     JavaWildcardType.excludeFunctionSource    ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-
-  // DQ (2/10/2014): Added SgNamedType IR nodes for Philippe.
-     JavaUnionType.excludeFunctionSource     ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-     JavaParameterType.excludeFunctionSource ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-
-     JovialTableType.excludeFunctionSource   ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-
   // TemplateInstantiationType.excludeFunctionSource ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
      EnumType.excludeFunctionSource     ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
 
@@ -1208,7 +1101,6 @@ Grammar::setUpTypes ()
 
   // ArrayType.editSubstitute( "MANGLED_ID_STRING", "A_" );
      TypeEllipse.editSubstitute( "MANGLED_ID_STRING", "e" );
-  // JavaWildcardType.editSubstitute( "MANGLED_ID_STRING", "?" );
 
   // DQ (8/25/2012): Avoid the default generated get_mangled_name() function for this IR node.
   // DQ (5/11/2012): We need to define this.
@@ -1228,12 +1120,6 @@ Grammar::setUpTypes ()
      FunctionType.setFunctionSource        ( "SOURCE_FUNCTION_TYPE", "../Grammar/Type.code");
 
      ClassType.setFunctionSource             ( "SOURCE_CLASS_TYPE", "../Grammar/Type.code");
-     JavaParameterizedType.setFunctionSource ( "SOURCE_JAVA_PARAMETERIZED_TYPE", "../Grammar/Type.code");
-     JavaQualifiedType.setFunctionSource     ( "SOURCE_JAVA_QUALIFIED_TYPE", "../Grammar/Type.code");
-     JavaWildcardType.setFunctionSource      ( "SOURCE_JAVA_WILDCARD_TYPE", "../Grammar/Type.code");
-
-     JavaUnionType.setFunctionSource     ( "SOURCE_JAVA_UNION_TYPE", "../Grammar/Type.code");
-     JavaParameterType.setFunctionSource ( "SOURCE_JAVA_PARAMETER_TYPE", "../Grammar/Type.code");
 
      JovialTableType.setFunctionSource   ( "SOURCE_JOVIAL_TABLE_TYPE", "../Grammar/Type.code");
 

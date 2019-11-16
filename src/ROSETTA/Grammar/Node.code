@@ -298,15 +298,6 @@ typedef SgUnsignedCharList*                  SgUnsignedCharListPtr;
 typedef Rose_STL_Container<SgModuleStatement*> SgModuleStatementPtrList;
 typedef SgModuleStatementPtrList*              SgModuleStatementPtrListPtr;
 
-// TOO1 (5/16/2013)
-typedef Rose_STL_Container<SgJavaPackageDeclaration*> SgJavaPackageDeclarationPtrList;
-
-// DQ (6/12/2013): Added to support use in Java support (in SgSourceFile).
-typedef Rose_STL_Container<SgJavaImportStatement*> SgJavaImportStatementPtrList;
-
-// DQ (6/12/2013): Added to support use in Java support (in SgSourceFile).
-typedef Rose_STL_Container<SgClassDeclaration*> SgClassDeclarationPtrList;
-
 // DQ (10/4/2008): Support for list of names or rename entries for the SgUseStatement (Fortran 90 support)
 typedef Rose_STL_Container<SgRenamePair*> SgRenamePairPtrList;
 typedef SgRenamePairPtrList*              SgRenamePairPtrListPtr;
@@ -323,10 +314,6 @@ typedef SgOmpClausePtrList*                SgOmpClausePtrListPtr;
 
 typedef Rose_STL_Container<SgOmpSectionStatement*>   SgOmpSectionStatementPtrList;
 typedef SgOmpSectionStatementPtrList*                SgOmpSectionStatementPtrListPtr;
-
-// DQ (1/13/2014): Added support for Java annotations.
-typedef Rose_STL_Container<SgJavaMemberValuePair*> SgJavaMemberValuePairPtrList;
-typedef SgJavaMemberValuePairPtrList* SgJavaMemberValuePairPtrListPtr;
 
 // DQ (3/6/2014): Added support for Untyped IR nodes.
 class SgUntypedInitializedName;
@@ -383,11 +370,6 @@ class PreviousAndNextNodeData;
 
 // DQ (11/30/2015): Added support for mapping of the AST to macro expansions.
 class MacroExpansion;
-
-#include <SgSharedVector.h>
-
-typedef SgSharedVector<unsigned char>             SgFileContentList;
-typedef SgFileContentList*                        SgFileContentListPtr;
 
 // DQ (11/20/2010): Added type for SgToken list
 // Build a type for the SgToken list.

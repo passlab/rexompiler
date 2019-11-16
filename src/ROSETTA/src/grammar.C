@@ -1219,7 +1219,6 @@ generate_override_keyword( AstNodeClass & node, GrammarString & data )
           (nodeName == "UntypedFile"                && variableNameString == "scope") ||
           (nodeName == "TemplateParameter"          && variableNameString == "type")  ||
           (nodeName == "TemplateArgument"           && variableNameString == "type")  ||
-          (nodeName == "JavaQualifiedType"          && variableNameString == "type")  ||
           (nodeName == "UntypedExprListExpression"  && variableNameString == "type")  ||
           (nodeName == "UntypedForAllStatement"     && variableNameString == "type")  ||
           (nodeName == "UntypedValueExpression"     && variableNameString == "type")  ||
@@ -1248,8 +1247,6 @@ generate_override_keyword( AstNodeClass & node, GrammarString & data )
           (nodeName == "TypeDefault"                && variableNameString == "name")  ||
           (nodeName == "TypeLabel"                  && variableNameString == "name")  ||
           (nodeName == "InitializedName"            && variableNameString == "name")  ||
-          (nodeName == "JavaMemberValuePair"        && variableNameString == "name")  ||
-          (nodeName == "JovialCompoolStatement"     && variableNameString == "name")  ||
           (nodeName == "UntypedArrayReferenceExpression" && variableNameString == "name")  ||
           (nodeName == "UntypedReferenceExpression" && variableNameString == "name")  ||
           (nodeName == "UntypedFunctionDeclaration" && variableNameString == "name")  ||
@@ -1272,7 +1269,6 @@ generate_override_keyword( AstNodeClass & node, GrammarString & data )
           (nodeName == "TypedefDeclaration"         && variableNameString == "name")  ||
           (nodeName == "ClassDeclaration"           && variableNameString == "name")  ||
           (nodeName == "FunctionDeclaration"        && variableNameString == "name")  ||
-          (nodeName == "JavaPackageStatement"       && variableNameString == "name")  ||
           (nodeName == "InquireStatement"           && variableNameString == "name")  ||
           (nodeName == "OmpCriticalStatement"       && variableNameString == "name")  ||
           (nodeName == "EnumVal"                    && variableNameString == "name")  ||
@@ -1332,7 +1328,6 @@ generate_override_keyword_for_set_functions( AstNodeClass & node, GrammarString 
           (nodeName == "UntypedFile"                && variableNameString == "scope") ||
           (nodeName == "TemplateParameter"          && variableNameString == "type")  ||
           (nodeName == "TemplateArgument"           && variableNameString == "type")  ||
-          (nodeName == "JavaQualifiedType"          && variableNameString == "type")  ||
           (nodeName == "UntypedExprListExpression"  && variableNameString == "type")  ||
           (nodeName == "UntypedForAllStatement"     && variableNameString == "type")  ||
           (nodeName == "UntypedValueExpression"     && variableNameString == "type")  ||
@@ -1346,7 +1341,6 @@ generate_override_keyword_for_set_functions( AstNodeClass & node, GrammarString 
           (nodeName == "FunctionDeclaration"        && variableNameString == "type")  ||
           (nodeName == "FunctionTypeSymbol"         && variableNameString == "type")  ||
           (nodeName == "DefaultSymbol"              && variableNameString == "type")  ||
-          (nodeName == "JavaTypeExpression"         && variableNameString == "type")  ||
           (nodeName == "TypeExpression"             && variableNameString == "type")  ||
           (nodeName == "xxx"                        && variableNameString == "type")  ||
           (nodeName == "xxx"                        && variableNameString == "type")  ||
@@ -1363,8 +1357,6 @@ generate_override_keyword_for_set_functions( AstNodeClass & node, GrammarString 
           (nodeName == "TypeDefault"                && variableNameString == "name")  ||
           (nodeName == "TypeLabel"                  && variableNameString == "name")  ||
           (nodeName == "InitializedName"            && variableNameString == "name")  ||
-          (nodeName == "JavaMemberValuePair"        && variableNameString == "name")  ||
-          (nodeName == "JovialCompoolStatement"     && variableNameString == "name")  ||
           (nodeName == "UntypedArrayReferenceExpression" && variableNameString == "name")  ||
           (nodeName == "UntypedReferenceExpression" && variableNameString == "name")  ||
           (nodeName == "UntypedFunctionDeclaration" && variableNameString == "name")  ||
@@ -1387,7 +1379,6 @@ generate_override_keyword_for_set_functions( AstNodeClass & node, GrammarString 
           (nodeName == "TypedefDeclaration"         && variableNameString == "name")  ||
           (nodeName == "ClassDeclaration"           && variableNameString == "name")  ||
           (nodeName == "FunctionDeclaration"        && variableNameString == "name")  ||
-          (nodeName == "JavaPackageStatement"       && variableNameString == "name")  ||
           (nodeName == "InquireStatement"           && variableNameString == "name")  ||
           (nodeName == "OmpCriticalStatement"       && variableNameString == "name")  ||
           (nodeName == "EnumVal"                    && variableNameString == "name")  ||

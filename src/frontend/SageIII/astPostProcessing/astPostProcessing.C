@@ -189,12 +189,8 @@ void postProcessingSupport (SgNode* node)
   // Only do AST post-processing for C/C++
   // Rasmussen (4/8/2018): Added Ada, Cobol, and Jovial. The logic should probably
   // be inverted to only process C and C++ but I don't understand interactions like OpenMP langauges.
-     bool noPostprocessing = (SageInterface::is_Ada_language()     == true) ||
-                             (SageInterface::is_Cobol_language()   == true) ||
-                             (SageInterface::is_Fortran_language() == true) ||
-                             (SageInterface::is_Jovial_language()  == true) ||
-                             (SageInterface::is_PHP_language()     == true) ||
-                             (SageInterface::is_Python_language()  == true);
+     bool noPostprocessing = 
+                             (SageInterface::is_Fortran_language() == true);
 
   // If this is C or C++ then we are using the new EDG translation and using fewer 
   // fixups should be required, some are still required.
@@ -743,7 +739,7 @@ void postProcessingSupport (SgNode* node)
 
   // DQ (4/7/2010): This was commented out to modify Fortran code, but I think it should NOT modify Fortran code.
   // DQ (5/21/2008): This only make since for C and C++ (Error, this DOES apply to Fortran where the "parameter" attribute is used!)
-     if (SageInterface::is_Fortran_language() == false && SageInterface::is_Java_language() == false)
+     if (SageInterface::is_Fortran_language() == false)
         {
        // DQ (3/20/2005): Fixup AST so that GNU g++ compile-able code will be generated
           fixupInClassDataInitialization(node);
@@ -790,11 +786,7 @@ void postProcessingSupport (SgNode* node)
   // fixup all definingDeclaration and NondefiningDeclaration pointers in SgDeclarationStatement IR nodes
   // driscoll6 (6/10/11): this traversal sets p_firstNondefiningDeclaration for defining declarations, which
   // causes justifiable failures in AstConsistencyTests. Until this is resolved, skip this test for Python.
-     if (SageInterface::is_Python_language()) {
-         //cerr << "warning: python. Skipping fixupDeclarations() in astPostProcessing.C" << endl;
-     } else {
-         fixupDeclarations(node);
-     }
+     fixupDeclarations(node);
 
   // DQ (3/17/2007): This should be empty
      ROSE_ASSERT(SgNode::get_globalMangledNameMap().size() == 0);
@@ -884,9 +876,7 @@ void postProcessingSupport (SgNode* node)
   // was found. This is only seen when compiling ROSE using ROSE and was a mysterious property of ROSE for a long 
   // time until it was identified.  This fixup traversal changes the name back to "__PRETTY_FUNCTION__" to make
   // the code generated using ROSE when compiling ROSE source code the same as if GNU processed it (e.g. using CPP).
-     if (SageInterface::is_Java_language() == false) {
-         fixupPrettyFunctionVariables(node);
-     }
+     fixupPrettyFunctionVariables(node);
 #endif
 
 #if 0

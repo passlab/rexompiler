@@ -1986,12 +1986,6 @@ Unparse_ExprStmt::unparseLanguageSpecificStatement(SgStatement* stmt, SgUnparse_
           case V_SgOmpForStatement:                      unparseOmpForStatement(stmt, info); break;
           case V_SgOmpForSimdStatement:                  unparseOmpForSimdStatement(stmt, info); break;
 
-       // DQ (4/16/2011): Added Java specific IR node until we support the Java specific unparsing.
-          case V_SgJavaImportStatement:
-               printf ("Unsupported Java specific unparsing for import statement \n");
-            // unparseForStmt(stmt, info);
-               break;
-
        // DQ (7/25/2014): Adding support for C11 static assertions.
           case V_SgStaticAssertionDeclaration:          unparseStaticAssertionDeclaration (stmt, info);    break;
 

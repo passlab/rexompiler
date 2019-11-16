@@ -558,9 +558,6 @@ HEADER_CV_TYPE_MODIFIER_START
                e_volatile,       /*!< Volatile qualifier */
                e_const_volatile, /*!< Const and Volatile qualifier */
 
-            // DQ (8/11/2011): Added support for Java "transient" modifier.
-               e_java_transient, /*!< Java transient qualifier (specifies no serialization of declaration) */
-
                e_last_modifier /*!< last value (unused, serves as upper bound on values) */
              };
 
@@ -591,11 +588,6 @@ HEADER_CV_TYPE_MODIFIER_START
           void setVolatile();
        // DQ (3/21/2005): See comment for unsetConst() above
           void unsetVolatile();
-
-       // DQ (8/11/2011): Java support.
-          bool isJavaTransient() const;
-          void setJavaTransient();
-          void unsetJavaTransient();
 
           std::string displayString() const;
           void display ( std::string label ) const;
@@ -891,12 +883,6 @@ HEADER_FUNCTION_MODIFIER_START
                e_opencl_work_group_size_hint = 32, /*!< OpenCL */
                e_opencl_work_group_size_req  = 33, /*!< OpenCL */
 
-            // DQ (8/11/2011): Added support for Java specific function modifiers.
-               e_java_native                 = 34, /*!< Java native keyword used for JNI function specification */
-               e_java_synchronized           = 35, /*!< Java synchronized keyword used to only allow one thread at a time into a particular section of code */
-               e_java_strictfp               = 36, /*!< Java strictfp keyword used to specify strict floating point evaluation by JVM */
-               e_java_initializer            = 37, /*!< Java initializer keyword used to specify that this "synthetic" function is, in fact, an initializer block */
-
             // DQ (4/13/2019): Added C++11 options for function modifiers.
                e_marked_default            = 38, /*!< marked using "= default" syntax (different from default enum value) */
                e_marked_delete             = 39, /*!< marked using "= delete" syntax */
@@ -1072,25 +1058,6 @@ HEADER_FUNCTION_MODIFIER_START
           bool hasOpenclWorkGroupSizeReq() const;
           void setOpenclWorkGroupSizeReq();
           void unsetOpenclWorkGroupSizeReq();
-
-
-       // DQ (8/11/2011): Added support for Java specific function modifiers.
-          bool isJavaNative() const;
-          void setJavaNative();
-          void unsetJavaNative();
-
-          bool isJavaSynchronized() const;
-          void setJavaSynchronized();
-          void unsetJavaSynchronized();
-
-          bool isJavaStrictfp() const;
-          void setJavaStrictfp();
-          void unsetJavaStrictfp();
-
-          bool isJavaInitializer() const;
-          void setJavaInitializer();
-          void unsetJavaInitializer();
-
 
        // DQ (4/13/2019): Added C++11 options for function modifiers.
           bool isMarkedDefault() const;
@@ -1271,9 +1238,6 @@ HEADER_DECLARATION_MODIFIER_START
                e_final         = 7,  /*!< PHP, Java, and C++11 support for specification to not be extended */
                e_override      = 8,  /*!< C++11 support for specification to not be extended */
 
-            // DQ (8/11/2011): Added support for Java "abstract" declaration modifier.
-               e_java_abstract = 9,  /*!< abstract keyword for Java functions, classes and interfaces */
-
                e_ms_declspec_align        = 10, /*!< Microsoft declspec() attributes */
                e_ms_declspec_allocate     = 11, /*!< Microsoft declspec() attributes */
                e_ms_declspec_appdomain    = 12, /*!< Microsoft declspec() attributes */
@@ -1371,11 +1335,6 @@ HEADER_DECLARATION_MODIFIER_START
           bool isOverride() const;
           void setOverride();
           void unsetOverride();
-
-       // DQ (8/11/2011): Added Java specific "abstract" attribute.
-          bool isJavaAbstract() const;
-          void setJavaAbstract();
-          void unsetJavaAbstract();
 
        // DQ (8/16/2014): Adding non-C++ standard Microsoft specific attributes.
           bool is_ms_declspec_align() const;
@@ -2374,11 +2333,6 @@ bool $CLASSNAME::isVolatile() const { return p_modifier == e_volatile || p_modif
 void $CLASSNAME::setVolatile()      { p_modifier = (p_modifier == e_const) ? e_const_volatile : e_volatile; }
 void $CLASSNAME::unsetVolatile()    { p_modifier = (p_modifier == e_const_volatile) ? e_const : e_default; }
 
-// DQ (8/11/2011): Added support for Java "transient" keyword to disable serialization.
-bool $CLASSNAME::isJavaTransient() const { return p_modifier == e_java_transient; }
-void $CLASSNAME::setJavaTransient()      { p_modifier = e_java_transient; }
-void $CLASSNAME::unsetJavaTransient()    { setDefault(); }
-
 string
 $CLASSNAME::displayString() const
    {
@@ -2388,7 +2342,6 @@ $CLASSNAME::displayString() const
      s += std::string("isConst() = ")         + std::string(isConst()    ? "true " : "false ");
      s += std::string("isVolatile() = ")      + std::string(isVolatile() ? "true " : "false ");
 
-     s += std::string("isJavaTransient() = ") + std::string(isJavaTransient() ? "true " : "false ");
      s += ")";
      return s;
    }
@@ -2881,27 +2834,6 @@ bool SgFunctionModifier::hasOpenclWorkGroupSizeReq() const { return checkBit(e_o
 void SgFunctionModifier::setOpenclWorkGroupSizeReq()       { setBit(e_opencl_work_group_size_req,p_modifierVector);}
 void SgFunctionModifier::unsetOpenclWorkGroupSizeReq()     { unsetBit(e_opencl_work_group_size_req, p_modifierVector); }
 
-// DQ (8/11/2011): Added support for Java specific function modifiers.
-bool SgFunctionModifier::isJavaNative() const { return checkBit(e_java_native, p_modifierVector); }
-void SgFunctionModifier::setJavaNative()      { setBit(e_java_native, p_modifierVector); }
-void SgFunctionModifier::unsetJavaNative()    { unsetBit(e_java_native, p_modifierVector); }
-
-// DQ (8/11/2011): Added support for Java specific function modifiers.
-bool SgFunctionModifier::isJavaSynchronized() const { return checkBit(e_java_synchronized, p_modifierVector); }
-void SgFunctionModifier::setJavaSynchronized()      { setBit(e_java_synchronized, p_modifierVector); }
-void SgFunctionModifier::unsetJavaSynchronized()    { unsetBit(e_java_synchronized, p_modifierVector); }
-
-// DQ (8/11/2011): Added support for Java specific function modifiers.
-bool SgFunctionModifier::isJavaStrictfp() const { return checkBit(e_java_strictfp, p_modifierVector); }
-void SgFunctionModifier::setJavaStrictfp()      { setBit(e_java_strictfp, p_modifierVector); }
-void SgFunctionModifier::unsetJavaStrictfp()    { unsetBit(e_java_strictfp, p_modifierVector); }
-
-// PC (07/24/2012): Added support for Java specific feature: Initializer blocks.
-bool SgFunctionModifier::isJavaInitializer() const { return checkBit(e_java_initializer, p_modifierVector); }
-void SgFunctionModifier::setJavaInitializer()      { setBit(e_java_initializer, p_modifierVector); }
-void SgFunctionModifier::unsetJavaInitializer()    { unsetBit(e_java_initializer, p_modifierVector); }
-
-
 // DQ (4/13/2019): Added C++11 options for function modifiers.
 bool SgFunctionModifier::isMarkedDefault() const { return checkBit(e_marked_default, p_modifierVector); }
 void SgFunctionModifier::setMarkedDefault()      { setBit(e_marked_default, p_modifierVector); }
@@ -2948,10 +2880,6 @@ SgFunctionModifier::displayString() const
      s += std::string("isGnuAttributeNoThrow() = ")              + std::string(isGnuAttributeNoThrow() ? "true " : "false ");
      s += std::string("isGnuAttributeWeakReference() = ")        + std::string(isGnuAttributeWeakReference() ? "true " : "false ");
 
-     s += std::string("isJavaNative() = ")       + std::string(isJavaNative()       ? "true " : "false ");
-     s += std::string("isJavaSynchronized() = ") + std::string(isJavaSynchronized() ? "true " : "false ");
-     s += std::string("isJavaStrictfp() = ")     + std::string(isJavaStrictfp()     ? "true " : "false ");
-     s += std::string("isJavaInitializer() = ")  + std::string(isJavaInitializer()  ? "true " : "false ");
      s += ")";
      return s;
    }
@@ -3021,10 +2949,6 @@ bool operator== (const $CLASSNAME& lhs, const $CLASSNAME& rhs)
 	       (lhs.hasOpenclVecTypeHint()       == rhs.hasOpenclVecTypeHint()      ) &&
 	       (lhs.hasOpenclWorkGroupSizeHint() == rhs.hasOpenclWorkGroupSizeHint()) &&
 	       (lhs.hasOpenclWorkGroupSizeReq()  == rhs.hasOpenclWorkGroupSizeReq() ) &&
-	       (lhs.isJavaNative()               == rhs.isJavaNative()              ) &&
-	       (lhs.isJavaSynchronized()         == rhs.isJavaSynchronized()        ) &&
-	       (lhs.isJavaStrictfp()             == rhs.isJavaStrictfp()            ) &&
-	       (lhs.isJavaInitializer()          == rhs.isJavaInitializer()         ) &&
 		   true;
    }
 
@@ -3039,11 +2963,6 @@ void SgFunctionModifier::reset()
      unsetExplicit();
   // unsetBind();
      unsetPure();
-
-     unsetJavaNative();
-     unsetJavaSynchronized();
-     unsetJavaStrictfp();
-     unsetJavaInitializer();
 
   // Set this bit to indicate the default value (we want a value of all zero bits to be an error)
      setDefault();
@@ -3317,11 +3236,6 @@ bool SgDeclarationModifier::isOverride() const { return checkBit(e_override,p_mo
 void SgDeclarationModifier::setOverride()      { setBit(e_override,p_modifierVector); }
 void SgDeclarationModifier::unsetOverride()    { unsetBit(e_override,p_modifierVector); }
 
-// DQ (8/11/2011): Added support for Java "abstract" declaration modifier.
-bool SgDeclarationModifier::isJavaAbstract() const { return checkBit(e_java_abstract,p_modifierVector); }
-void SgDeclarationModifier::setJavaAbstract()      { setBit(e_java_abstract,p_modifierVector); }
-void SgDeclarationModifier::unsetJavaAbstract()    { unsetBit(e_java_abstract,p_modifierVector); }
-
 // DQ (8/16/2014): Adding non-C++ standard Microsoft specific attributes.
 bool SgDeclarationModifier::is_ms_declspec_align() const { return checkBit(e_ms_declspec_align,p_modifierVector); }
 void SgDeclarationModifier::set_ms_declspec_align()      { setBit(e_ms_declspec_align,p_modifierVector); }
@@ -3444,7 +3358,6 @@ SgDeclarationModifier::displayString() const
      s += std::string("isThrow() = ")        + std::string(isThrow()        ? "true " : "false ");
      s += std::string("isBind() = ")         + std::string(isBind()         ? "true " : "false ");
      s += std::string("isFinal() = ")        + std::string(isFinal()        ? "true " : "false ");
-     s += std::string("isJavaAbstract() = ") + std::string(isJavaAbstract() ? "true " : "false ");
      s += std::string("\n     ") + get_typeModifier().displayString()   + " ";
      s += std::string("\n     ") + get_accessModifier().displayString() + " ";
      s += std::string("\n     ") + get_storageModifier().displayString();
@@ -3479,7 +3392,6 @@ bool operator== (const $CLASSNAME& lhs, const $CLASSNAME& rhs)
 	       (lhs.isThrow()             == rhs.isThrow()  ) &&
 	       (lhs.isBind()              == rhs.isBind()   ) &&
 	       (lhs.isFinal()             == rhs.isFinal()  ) &&
-	       (lhs.isJavaAbstract()      == rhs.isJavaAbstract() ) &&
           true;
    }
 
@@ -4514,8 +4426,6 @@ HEADER_SYMBOL_TABLE_START
           SgEnumSymbol*      find_enum(const SgName & name);       //! Complexity O(log n) for first match against name, then O(n)
           SgEnumFieldSymbol* find_enum_field(const SgName & name); //! Complexity O(log n) for first match against name, then O(n)
           SgLabelSymbol*     find_label(const SgName & name);      //! Complexity O(log n) for first match against name, then O(n)
-          SgJavaLabelSymbol* find_java_label(const SgName & name); //! Complexity O(log n) for first match against name, then O(n)
-                                                                   // charles4: added 09/12/2011 for Java
           SgNamespaceSymbol* find_namespace(const SgName & name);  //! Complexity O(log n) for first match against name, then O(n)
 
 #if 0
@@ -5775,17 +5685,7 @@ public:
                e_default_language, /*!< default value (uses filename extension to determine the output format, f77: fixed, F90 and later: free) */
                e_C_language,       /*!< value used to specify output of C (for testing C unparser) */
                e_Cxx_language,     /*!< value used to specify output of C++ (for testing C++ unparser) */
-               e_Binary_language,  /*!< value used to specify output of Binary ISA */
                e_Fortran_language, /*!< value used to specify output of Fortran (for testing the Fortran unparser) */
-               e_Java_language,    /*!< value used to specify output of Java (for testing Java unparser) */
-               e_X10_language,     /*!< value used to specify output of X10 (for testing X10 unparser) */
-               e_Promela_language, /*!< value used to specify output of Promela for uses with SPIN (unsupported option) */
-               e_PHP_language,     /*!< value used to specify output of PHP    */
-               e_Python_language,  /*!< value used to specify output of Python */
-               e_Csharp_language,  /*!< value used to specify output of Csharp */
-               e_Ada_language,     /*!< value used to specify output of Ada    */
-               e_Jovial_language,  /*!< value used to specify output of Jovial */
-               e_Cobol_language,   /*!< value used to specify output of Cobol  */
                e_last_language     /*!< upper bound on the range of values supported for the outputLanguageOption_enum */
              };
 
@@ -6163,19 +6063,8 @@ HEADER_APPLICATION_SOURCE_FILE_START
       //! Divide up the handling of different languages
           int build_Fortran_AST( std::vector<std::string> argv, std::vector<std::string> inputCommandLine );
 
-      //! Support for processing Java source files.
-          int build_Java_AST( std::vector<std::string> argv, std::vector<std::string> inputCommandLine );
 // #endif
           int build_C_and_Cxx_AST( std::vector<std::string> argv, std::vector<std::string> inputCommandLine );
-          int build_PHP_AST();
-          int build_Python_AST();
-          int build_X10_AST(const std::vector<std::string>& p_argv);
-
-       // DQ (8/25/2017): Adding multiple langauge support (function definitions in src/frontend/SageIII/sage_support/sage_support.cpp).
-          int build_Csharp_AST( std::vector<std::string> argv, std::vector<std::string> inputCommandLine );
-          int build_Ada_AST( std::vector<std::string> argv, std::vector<std::string> inputCommandLine );
-          int build_Jovial_AST( std::vector<std::string> argv, std::vector<std::string> inputCommandLine );
-          int build_Cobol_AST( std::vector<std::string> argv, std::vector<std::string> inputCommandLine );
 
           virtual void doSetupForConstructor(const std::vector<std::string>& argv, SgProject* project) $ROSE_OVERRIDE;
 
@@ -6301,19 +6190,6 @@ HEADER_APPLICATION_DIRECTORY_LIST_START
      public:
 
 HEADER_APPLICATION_DIRECTORY_LIST_END
-
-
-HEADER_JAVA_IMPORT_STATEMENT_LIST_START
-     public:
-
-HEADER_JAVA_IMPORT_STATEMENT_LIST_END
-
-
-HEADER_JAVA_CLASS_DECLARATION_LIST_START
-     public:
-
-HEADER_JAVA_CLASS_DECLARATION_LIST_END
-
 
 HEADER_APPLICATION_PROJECT_START
 
@@ -6509,12 +6385,6 @@ HEADER_APPLICATION_PROJECT_START
           bool get_CoArrayFortran_only (void) const;
 
 
-          bool get_PHP_only(void) const;
-
-          bool get_Python_only(void) const;
-
-          bool get_Java_only (void) const;
-          void set_Java_only (bool value);
           std::list<std::string> get_Java_classpath (void) const;
           void set_Java_classpath (std::list<std::string> param);
           std::list<std::string> get_Java_sourcepath (void) const;
@@ -6523,28 +6393,6 @@ HEADER_APPLICATION_PROJECT_START
           void set_Java_destdir (std::string param);
           std::string get_Java_source_destdir (void) const;
           void set_Java_source_destdir (std::string param);
-
-          bool get_X10_only (void) const;
-          void set_X10_only (bool value);
-
-       // DQ (8/25/2017): Added more language support.
-          bool get_Csharp_only (void) const;
-       // void set_Csharp_only (bool value);
-
-       // DQ (8/25/2017): Added more language support.
-          bool get_Ada_only (void) const;
-       // void set_Ada_only (bool value);
-
-       // DQ (8/25/2017): Added more language support.
-          bool get_Jovial_only (void) const;
-       // void set_Jovial_only (bool value);
-
-       // DQ (8/25/2017): Added more language support.
-          bool get_Cobol_only (void) const;
-       // void set_Cobol_only (bool value);
-
-       // DQ (2/4/2009): This is now a data member at the SgProject and so is automatically generated asa member function.
-       // bool get_binary_only (void) const;
 
           void display ( const std::string & label ) const;
 
@@ -7620,19 +7468,9 @@ SgSymbolTable::get_name( const SgNode* node) const
                break;
              }
 
-          case V_SgJavaLabelStatement: // charles4: 09/13/2011 added for Java support
-             {
-               const SgJavaLabelStatement* labelStatement = isSgJavaLabelStatement(node); 
-               ROSE_ASSERT (labelStatement->get_label() != NULL);
-               name = labelStatement->get_label();
-               break;
-             }
-
           case V_SgClassDeclaration:
           case V_SgDerivedTypeStatement:
           case V_SgModuleStatement:
-          case V_SgJavaPackageDeclaration:
-          case V_SgJovialTableStatement:
              {
                const SgClassDeclaration* classDeclaration = isSgClassDeclaration(node);
                name = classDeclaration->get_name();
@@ -8655,7 +8493,6 @@ SgSymbolTable::exists ( const SgName & nm, SgSymbol *sp ) const
       SgEnumSymbol*      find_enum(const SgName &);
       SgEnumFieldSymbol* find_enum_field(const SgName &);
       SgLabelSymbol*     find_label(const SgName &) const;
-      SgJavaLabelSymbol* find_label(const SgName &) const; // charles4: added 9/12/2011 for Java
       SgNamespaceSymbol* find_namespace(const SgName &);
 */
 
@@ -9682,17 +9519,6 @@ SgSymbolTable::find_label(const SgName & nm)
   // return find_symbol_support<SgLabelSymbol>(nm);
      bool filterTemplateSymbols = false;
      return find_symbol_with_type_support<SgLabelSymbol>(nm,NULL,NULL,NULL,filterTemplateSymbols);
-   }
-
-//
-// charles4: added this function for the Java case...
-//
-SgJavaLabelSymbol*
-SgSymbolTable::find_java_label(const SgName & nm)
-   {
-  // return find_symbol_support<SgJavaLabelSymbol>(nm);
-     bool filterTemplateSymbols = false;
-     return find_symbol_with_type_support<SgJavaLabelSymbol>(nm,NULL,NULL,NULL,filterTemplateSymbols);
    }
 
 // DQ (1/30/2007): Added these back into ROSE.
@@ -13216,10 +13042,7 @@ SgName::assembleQualifiedName(const SgName & scopeQualifiedName, const SgName & 
        else 
         {
           std::string scopeDelimiter;
-          if (SageInterface::is_Java_language())
-              scopeDelimiter = ".";
-          else
-              scopeDelimiter = "::";
+          scopeDelimiter = "::";
 
        // Trap out the case of global scope to avoid building "::::"
           if ( scopeQualifiedName == scopeDelimiter )
@@ -15583,18 +15406,7 @@ SgFile::get_outputLanguageOptionName ( SgFile::languageOption_enum lang )
           case SgFile::e_default_language: s = "default"; break;
           case SgFile::e_C_language:       s = "C";       break;
           case SgFile::e_Cxx_language:     s = "C++";     break;
-          case SgFile::e_Binary_language:  s = "Binary";  break;
           case SgFile::e_Fortran_language: s = "Fortran"; break;
-          case SgFile::e_Java_language:    s = "Java";    break;
-          case SgFile::e_X10_language:     s = "X10";     break;
-          case SgFile::e_PHP_language:     s = "PHP";     break;
-          case SgFile::e_Python_language:  s = "Python";  break;
-          case SgFile::e_Csharp_language:  s = "Csharp";  break;
-          case SgFile::e_Ada_language:     s = "Ada";     break;
-          case SgFile::e_Jovial_language:  s = "Jovial";  break;
-          case SgFile::e_Cobol_language:   s = "Cobol";   break;
-          case SgFile::e_Promela_language: s = "Promela"; break;
-
           default:
              {
                printf ("In SgFile::outputLanguageOption(): lang = %" PRIuPTR " \n",(size_t)lang);
@@ -15808,24 +15620,7 @@ SgFile::initialization()
   // DQ (1/23/2009): Added CoArray Fortran support.
      p_CoArrayFortran_only     = false;
 
-     p_PHP_only                = false;
-
-     p_Python_only             = false;
-
-  // DQ (8/25/2017): Added more language support.
-     p_Csharp_only             = false;
-     p_Ada_only                = false;
-     p_Jovial_only             = false;
-     p_Cobol_only              = false;
-
      p_requires_C_preprocessor = false;
-
-  // DQ (2/5/2009): Putting this back now, so we have one at the SgProject and one at the SgFile.
-  // DQ (2/4/2009): This was moved to the SgProject
-     p_binary_only             = false;
-
-  // DQ (2/5/2009): Support binary analysis of object files.
-     p_isObjectFile            = false;
 
      p_inputFormat             = SgFile::e_unknown_output_format;
      p_outputFormat            = SgFile::e_unknown_output_format;
@@ -16059,13 +15854,6 @@ X aggressive
 
   // DQ (1/23/2009): Added support for Co-Array Fortran (file extensions)
      p_sourceFileUsesCoArrayFortranFileExtension = false;     
-
-     p_sourceFileUsesPHPFileExtension = false;
-
-  // DQ (10/11/2010): Adding Java support.
-     p_sourceFileUsesJavaFileExtension = false;
-
-     p_sourceFileUsesBinaryFileExtension = false;
 
   // This will cause only the binary file format to be read and skipps instruction disassembly
      p_read_executable_file_format_only = false;
@@ -16579,13 +16367,6 @@ SgFile::generateOutputFileName() const
 
 #endif
 
-  // DQ (4/2/2011): Added support for Java.
-     if (get_Java_only() == true)
-        {
-       // Java output files are *.class files.
-          objectFileName = baseFileNameWithoutSuffix + ".class";
-        }
-       else
         {
        // DQ (8/12/2007): Newer simpler code, made possible because of better internal support.  
        // This version is also now language independent and so supports the Fortran work.
@@ -16676,24 +16457,12 @@ SgFile::display ( const std::string & label ) const
 
   // DQ (3/28/2013): Added support to specify C89 support, so that default can be C99 support (same as EDG3x branch).
      printf ("     p_Cxx_only()                                = %s \n",(p_Cxx_only == true) ? "true" : "false");
-     printf ("     p_Java_only()                               = %s \n",(p_Java_only == true) ? "true" : "false");
      printf ("     p_Fortran_only()                            = %s \n",(p_Fortran_only == true) ? "true" : "false");
      printf ("     p_CoArrayFortran_only()                     = %s \n",(p_CoArrayFortran_only == true) ? "true" : "false");
-     printf ("     p_PHP_only()                                = %s \n",(p_PHP_only == true) ? "true" : "false");
-     printf ("     p_Python_only()                             = %s \n",(p_Python_only == true) ? "true" : "false");
-
-  // DQ (8/25/2017): Added more language support.
-     printf ("     p_Csharp_only()                             = %s \n",(p_Csharp_only == true) ? "true" : "false");
-     printf ("     p_Ada_only()                                = %s \n",(p_Ada_only == true) ? "true" : "false");
-     printf ("     p_Jovial_only()                             = %s \n",(p_Jovial_only == true) ? "true" : "false");
-     printf ("     p_Cobol_only()                              = %s \n",(p_Cobol_only == true) ? "true" : "false");
 
      printf ("     p_requires_C_preprocessor                   = %s \n",(p_requires_C_preprocessor == true) ? "true" : "false");
 
   // DQ (2/5/2009): Putting this back now, so we have one at the SgProject and one at the SgFile.
-     printf ("     p_binary_only()                             = %s \n",(p_binary_only == true) ? "true" : "false");
-     printf ("     p_isObjectFile()                            = %s \n",(p_isObjectFile == true) ? "true" : "false");
-
      string inputFormatName;
      switch(p_inputFormat)
         {
@@ -16813,9 +16582,6 @@ SgFile::display ( const std::string & label ) const
      printf ("     p_sourceFileUsesFortran77FileExtension      = %s \n",(p_sourceFileUsesFortran77FileExtension == true) ? "true" : "false");
      printf ("     p_sourceFileUsesFortran90FileExtension      = %s \n",(p_sourceFileUsesFortran90FileExtension == true) ? "true" : "false");
      printf ("     p_sourceFileUsesFortran95FileExtension      = %s \n",(p_sourceFileUsesFortran95FileExtension == true) ? "true" : "false");
-     printf ("     p_sourceFileUsesPHPFileExtension            = %s \n",(p_sourceFileUsesPHPFileExtension == true) ? "true" : "false");
-     printf ("     p_sourceFileUsesJavaFileExtension           = %s \n",(p_sourceFileUsesJavaFileExtension == true) ? "true" : "false");
-     printf ("     p_sourceFileUsesBinaryFileExtension         = %s \n",(p_sourceFileUsesBinaryFileExtension == true) ? "true" : "false");
      printf ("     p_read_executable_file_format_only          = %s \n",(p_read_executable_file_format_only == true) ? "true" : "false");
      printf ("     p_read_instructions_only                    = %s \n",(p_read_instructions_only == true) ? "true" : "false");
 
@@ -16863,10 +16629,7 @@ X F77_only
 X F90_only
 X F95_only
 X F2003_only
-X PHP_only
-X Python_only
 X requires_C_preprocessor
-X binary_only
 X inputFormat
 X outputFormat
 X backendCompileFormat
@@ -17929,15 +17692,6 @@ SOURCE_APPLICATION_DIRECTORY_LIST_START
 SOURCE_APPLICATION_DIRECTORY_LIST_END
 
 
-SOURCE_JAVA_IMPORT_STATEMENT_LIST_START
-SOURCE_JAVA_IMPORT_STATEMENT_LIST_END
-
-
-SOURCE_JAVA_CLASS_DECLARATION_LIST_START
-SOURCE_JAVA_CLASS_DECLARATION_LIST_END
-
-
-
 SOURCE_APPLICATION_PROJECT_START
 
 //! Declaration of space for static variables
@@ -18115,14 +17869,7 @@ SgProject::initialization()
 
      p_Fortran_only          = false;
      p_addCppDirectivesToAST = false;
-     p_Java_only             = false;
 
-  // DQ (11/10/2016): Added initialization for data member that appeared to be missing.
-     p_X10_only              = false;
-     p_Java_batch_mode       = false;
-     p_Java_nowarn             = false;
-     p_Java_verbose            = false;
-     p_Java_deprecation        = false;
      p_addCppDirectivesToAST   = false;
 
   // DQ (9/18/2011): Added support for using more constant AST to select to use or not use frontend specific constant folding.
@@ -18952,52 +18699,6 @@ SgProject::get_CoArrayFortran_only (void) const
      return result;
    }
 
-bool
-SgProject::get_PHP_only (void) const
-   {
-  // look at how the files are set
-     bool result = false;
-     for (int i = 0; i < numberOfFiles(); i++)
-        {
-          SgFile & file = get_file(i);
-          result = result || (bool) file.get_PHP_only();
-        }
-     return result;
-   }
-
-bool
-SgProject::get_Python_only (void) const
-   {
-  // look at how the files are set
-     bool result = false;
-     for (int i = 0; i < numberOfFiles(); i++)
-        {
-          SgFile & file = get_file(i);
-          result = result || (bool) file.get_Python_only();
-        }
-     return result;
-   }
-
-void
-SgProject::set_Java_only (bool value)
-   {
-     ROSE_ASSERT(this != NULL);
-     p_Java_only = value;
-   }
-
-bool
-SgProject::get_Java_only (void) const
-   {
-  // look at how the files are set.
-     bool result = p_Java_only;
-     for (int i = 0; i < numberOfFiles(); i++)
-        {
-          SgFile & file = get_file(i);
-          result = result || (bool) file.get_Java_only();
-        }
-     return result;
-   }
-
 void
 SgProject::set_Java_classpath (std::list<std::string> param)
    {
@@ -19038,26 +18739,6 @@ SgProject::get_Java_destdir (void) const
    }
 
 void
-SgProject::set_X10_only (bool value)
-{
-  ROSE_ASSERT(this != NULL);
-  p_X10_only = value;
-}
-
-bool
-SgProject::get_X10_only (void) const
-{
-  // look at how the files are set.
-  bool result = p_X10_only;
-  for (int i = 0; i < numberOfFiles(); i++)
-  {
-      SgFile & file = get_file(i);
-      result = result || (bool) file.get_X10_only();
-  }
-  return result;
-}
-
-void
 SgProject::set_Java_source_destdir (std::string param)
    {
      p_Java_source_destdir = param;
@@ -19072,81 +18753,6 @@ SgProject::get_Java_source_destdir (void) const
     return p_Java_source_destdir;
   }
 
-bool
-SgProject::get_Csharp_only (void) const
-   {
-  // DQ (8/25/2017): Added more language support.
-
-  // look at how the files are set
-     bool result = false;
-     for (int i = 0; i < numberOfFiles(); i++)
-        {
-          SgFile & file = get_file(i);
-          result = result || (bool) file.get_Csharp_only();
-        }
-     return result;
-   }
-
-bool
-SgProject::get_Ada_only (void) const
-   {
-  // DQ (8/25/2017): Added more language support.
-
-  // look at how the files are set
-     bool result = false;
-     for (int i = 0; i < numberOfFiles(); i++)
-        {
-          SgFile & file = get_file(i);
-          result = result || (bool) file.get_Ada_only();
-        }
-     return result;
-   }
-
-bool
-SgProject::get_Jovial_only (void) const
-   {
-  // DQ (8/25/2017): Added more language support.
-
-  // look at how the files are set
-     bool result = false;
-     for (int i = 0; i < numberOfFiles(); i++)
-        {
-          SgFile & file = get_file(i);
-          result = result || (bool) file.get_Jovial_only();
-        }
-     return result;
-   }
-
-bool
-SgProject::get_Cobol_only (void) const
-   {
-  // DQ (8/25/2017): Added more language support.
-
-  // look at how the files are set
-     bool result = false;
-     for (int i = 0; i < numberOfFiles(); i++)
-        {
-          SgFile & file = get_file(i);
-          result = result || (bool) file.get_Cobol_only();
-        }
-     return result;
-   }
-
-#if 0
-// DQ (2/4/2009): This is now a data member at the SgProject and so is automatically generated asa member function.
-bool
-SgProject::get_binary_only (void) const
-   {
-  // look at how the files are set
-     bool result = false;
-     for (int i = 0; i < numberOfFiles(); i++)
-        {
-          SgFile & file = get_file(i);
-          result = result || (bool) file.get_binary_only();
-        }
-     return result;
-   }
-#endif
 
 void
 SgProject::skipfinalCompileStep(bool value)

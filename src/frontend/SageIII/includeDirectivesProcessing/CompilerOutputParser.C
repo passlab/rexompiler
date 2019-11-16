@@ -196,9 +196,6 @@ void CompilerOutputParser::processFile(SgFile* inputFile, bool isVerbose) {
 
     //This part is from int SgFile::compileOutput ( vector<string>& argv, int fileNameIndex )
     string compilerNameOrig = BACKEND_CXX_COMPILER_NAME_WITH_PATH;
-    if (inputFile -> get_Java_only() == true) { //TODO: We do not handle this, stop gracefully.
-        compilerNameOrig = BACKEND_JAVA_COMPILER_NAME_WITH_PATH;
-    }
     if (inputFile -> get_Fortran_only() == true) {
         compilerNameOrig = BACKEND_FORTRAN_COMPILER_NAME_WITH_PATH;
     }

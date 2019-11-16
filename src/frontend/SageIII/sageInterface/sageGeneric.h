@@ -268,7 +268,6 @@ namespace sg
     GEN_VISIT(SgTypeTable)
     GEN_VISIT(SgSupport)
     GEN_VISIT(SgForStatement)
-    GEN_VISIT(SgMatlabForStatement)
     GEN_VISIT(SgForInitStatement)
     GEN_VISIT(SgCatchStatementSeq)
     GEN_VISIT(SgFunctionParameterList)

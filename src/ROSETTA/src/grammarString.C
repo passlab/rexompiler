@@ -1345,12 +1345,6 @@ GrammarString::containerElementTypeString(AstNodeClass & node) const
                goto done;
              }
 
-          if (typenameString == "SgJavaImportStatementPtrList")
-             {
-               returnString = "SgJavaImportStatement";
-               goto done;
-             }
-
           if (typenameString == "SgClassDeclarationPtrList")
              {
                returnString = "SgClassDeclaration";
@@ -1409,12 +1403,6 @@ GrammarString::containerElementTypeString(AstNodeClass & node) const
           if (typenameString == "SgKeyDatumPairPtrList")
              {
                returnString = "SgKeyDatumPair";
-               goto done;
-             }
-
-          if (typenameString == "SgJavaMemberValuePairPtrList")
-             {
-               returnString = "SgJavaMemberValuePair";
                goto done;
              }
 
@@ -1562,12 +1550,6 @@ GrammarString::containerAppendFunctionNameString(AstNodeClass & node) const
                goto done;
              }
 
-          if (typenameString == "SgJavaImportStatementPtrList")
-             {
-               // returnString = "SgJavaImportStatement";
-               goto done;
-             }
-
           if (typenameString == "SgClassDeclarationPtrList")
              {
                // returnString = "SgClassDeclaration";
@@ -1625,12 +1607,6 @@ GrammarString::containerAppendFunctionNameString(AstNodeClass & node) const
           if (typenameString == "SgKeyDatumPairPtrList")
              {
                // returnString = "SgKeyDatumPair";
-               goto done;
-             }
-
-          if (typenameString == "SgJavaMemberValuePairPtrList")
-             {
-               // returnString = "SgJavaMemberValuePair";
                goto done;
              }
 

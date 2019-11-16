@@ -499,16 +499,9 @@ AstTests::runAllTests(SgProject* sageProject)
      if ( SgProject::get_verbose() >= DIAGNOSTICS_VERBOSE_LEVEL )
           cout << "Test return value of get_type() member functions started." << endl;
         {
-            // driscoll6 (7/25/11) Python support uses expressions that don't define get_type() (such as
-            // SgClassNameRefExp), so skip this test for python-only projects.
-            // TODO (python) define get_type for the remaining expressions ?
-            if (! sageProject->get_Python_only()) {
-                TimingPerformance timer ("AST expression type test:");
-                TestExpressionTypes expressionTypeTest;
-                expressionTypeTest.traverse(sageProject, preorder);
-            } else {
-                //cout << "warning: python. Skipping TestExpressionTypes in AstConsistencyTests.C" << endl;
-            }
+          TimingPerformance timer ("AST expression type test:");
+          TestExpressionTypes expressionTypeTest;
+          expressionTypeTest.traverse(sageProject, preorder);
         }
      if ( SgProject::get_verbose() >= DIAGNOSTICS_VERBOSE_LEVEL )
           cout << "Test return value of get_type() member functions finished." << endl;
@@ -967,7 +960,7 @@ TestAstProperties::evaluateSynthesizedAttribute(SgNode* node, SynthesizedAttribu
   // if ( !isSgFile(node) && !isSgProject(node) )
   // if ( !isSgFile(node) && !isSgProject(node) && !isSgAsmNode(node))
   // if ( !isSgFile(node) && !isSgProject(node) && !isSgAsmNode(node) && !isSgFileList(node) && !isSgDirectory(node))
-     if ( !isSgFile(node) && !isSgProject(node) && !isSgFileList(node) && !isSgDirectory(node) && !isSgJavaImportStatementList(node) && !isSgJavaClassDeclarationList(node) )
+     if ( !isSgFile(node) && !isSgProject(node) && !isSgFileList(node) && !isSgDirectory(node) ) //&& !isSgJavaImportStatementList(node) && !isSgJavaClassDeclarationList(node) )
         {
           Sg_File_Info* fileInfo = node->get_file_info();
           if ( fileInfo == NULL )
@@ -1355,12 +1348,6 @@ TestAstProperties::evaluateSynthesizedAttribute(SgNode* node, SynthesizedAttribu
                if (parentParameterList != NULL)
                   {
                     SgFunctionDeclaration* functionDeclaration = isSgFunctionDeclaration(parentParameterList->get_parent());
-
-                    if (SageInterface::is_Python_language() && isSgLambdaRefExp(parentParameterList->get_parent()))
-                       {
-                         std::cerr << "warning: python. Allowing inconsistent scope for InitializedNames in SgLambdaRefExp's parameter lists." << std::endl;
-                         break;
-                       }
 
                  // ROSE_ASSERT(functionDeclaration != NULL);
                     if (functionDeclaration != NULL)
@@ -2125,7 +2112,7 @@ TestAstForProperlyMangledNames::TestAstForProperlyMangledNames()
    }
 
 bool
-TestAstForProperlyMangledNames::isValidMangledName (string name, bool java_lang /* = false */ )
+TestAstForProperlyMangledNames::isValidMangledName (string name)
    {
   // DQ (4/3/2011): This function has been modified to permit Java specific weakened restrictions 
   // on names. The default for java_lang is false.  If a test fails the current language is 
@@ -2138,19 +2125,6 @@ TestAstForProperlyMangledNames::isValidMangledName (string name, bool java_lang 
           result = false;
         }
 
-     if (java_lang == true)
-        {
-       // The case for Java has to allow a few more characters into names (e.g. '$')
-          for (string::size_type i = 0; i < name.size (); ++i)
-             {
-            // printf ("java_lang == true: isalnum (name = %s name[i] = %c) = %s \n",name.c_str(),name[i],isalnum (name[i]) ? "true" : "false");
-               if (!isalnum (name[i]) && !(name[i] == '_' || name[i] == '$'))
-                  {
-                    result = false;
-                  }
-             }
-        }
-       else
         {
           for (string::size_type i = 0; i < name.size (); ++i)
              {
@@ -3199,19 +3173,6 @@ TestAstSymbolTables::visit ( SgNode* node )
                                  }
                               ROSE_ASSERT(local_symbol != NULL);
                             }
-                         else if (isSgJavaLabelStatement(declarationNode)) // charles4: 09/12/2011 added for Java
-                            {
-                              SgJavaLabelStatement* javaLabelStatement = (SgJavaLabelStatement *) declarationNode;
-                              SgSymbol *local_symbol = javaLabelStatement->get_symbol_from_symbol_table();
-                              if (local_symbol == NULL)
-                                 {
-                                   printf ("Error: javaLabelStatement->get_symbol_from_symbol_table() == NULL javaLabelStatement = %p = %s \n",javaLabelStatement,javaLabelStatement->get_label().str());
-                                   ROSE_ASSERT(javaLabelStatement->get_scope() != NULL);
-                                   ROSE_ASSERT(javaLabelStatement->get_scope()->get_symbol_table() != NULL);
-                                   javaLabelStatement->get_scope()->get_symbol_table()->print("debug javaLabelStatement scope");
-                                 }
-                              ROSE_ASSERT(local_symbol != NULL);
-                            }
                            else
                             {
                            // DQ (12/9/2007): Added support for fortran in SgLabelSymbol.
@@ -3342,17 +3303,6 @@ TestAstSymbolTables::visit ( SgNode* node )
                                  }
 #endif
                             }
-                         break;
-                       }
-
-                    case V_SgJavaLabelSymbol:
-                       {
-                         SgJavaLabelSymbol* labelSymbol = isSgJavaLabelSymbol(symbol);
-                         ROSE_ASSERT(labelSymbol != NULL);
-
-                      // charles4 (9/12/2011): copied from case of SgLabelSymbol for Java
-                         ROSE_ASSERT(labelSymbol->get_declaration() != NULL);
-
                          break;
                        }
 
@@ -5010,26 +4960,6 @@ TestParentPointersInMemoryPool::visit(SgNode* node)
                           ROSE_ASSERT(false);
                       }
                       break;
-                  }
-
-            // DQ (11/20/2013): Added support for checking that these are non-null (also just added code to set them to be non-null).
-               case V_SgJavaImportStatementList:
-               case V_SgJavaClassDeclarationList:
-                  {
-                    ROSE_ASSERT(support->get_parent() != NULL);
-                    break;
-                  }
-
-            // DQ (6/3/2019): Added support for SgIncludeFile (parent is a SgIncludeDirectiveStatement).
-            // case V_SgIncludeDirectiveStatement:
-               case V_SgIncludeFile:
-                  {
-                 // DQ (10/22/2019): Note that there is no parent pointer defined for this IR node, so no warning message really make sense, I think.
-#if 0
-                    printf ("NOTE: In AST Consistancy tests: TestParentPointersInMemoryPool::visit(): case SgIncludeFile: parent == NULL \n");
-#endif
-                 // ROSE_ASSERT(support->get_parent() != NULL);
-                    break;
                   }
 
                default:

@@ -9,7 +9,6 @@
 #include <iomanip>
 #include <boost/lexical_cast.hpp>
 
-
 // Helpful functions for Cxx_GrammarRTI.C
 // Probably should not be included anywhere else
 
@@ -75,21 +74,6 @@ static std::string toStringForRTI(const ExtentMap &x)
     return ss.str();
 }
 #endif
-// DQ (8/29/2008): Added the support for the Robb's SgSharedVector class.
-template <typename T>
-static std::string toStringForRTI(const SgSharedVector<T>& x)
-   {
-     std::ostringstream ss;
-     ss << "[";
-
-     printf ("Warning: SgSharedVector iterator support is not finished! \n");
-     // ROSE_ASSERT(false);
-
-  // for (typename std::vector<T>::const_iterator i = x.begin(); i != x.end(); ++i) {if (i != x.begin()) ss << ", "; ss << (*i);}
-
-     ss << "]";
-     return ss.str();
-   }
 
 static std::string toStringForRTI(const std::vector<bool>& x) {
   std::ostringstream ss;

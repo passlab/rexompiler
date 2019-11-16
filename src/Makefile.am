@@ -131,8 +131,7 @@ pkginclude_HEADERS = \
      midend/astProcessing/AstDOTGenerationImpl.C \
      frontend/SageIII/sage3basic.h \
      frontend/SageIII/sage3basic.hhh \
-     midend/astDiagnostics/AstConsistencyTests.h \
-     backend/asmUnparser/AsmUnparser_compat.h
+     midend/astDiagnostics/AstConsistencyTests.h
 
 ########################################################################################################################
 
@@ -248,16 +247,8 @@ rose_config_installed_cppflags =		\
 	-I@includedir@/rose			\
 	$(ROSE_SQLITE_DATABASE_INCLUDE)		\
 	$(ROSE_YICES_INCLUDES)			\
-	$(ROSE_Z3_INCLUDES)			\
-	$(ROSE_YAML_INCLUDES)			\
-	$(ROSE_LIBMAGIC_INCLUDES)		\
-	$(ROSE_ELF_INCLUDES)			\
-	$(ROSE_DWARF_INCLUDES)			\
-	$(ROSE_WINE_INCLUDES)			\
 	$(ROSE_PCH_INCLUDE)			\
 	$(INTEL_PIN_INCLUDE_PATHS)		\
-	$(ROSE_ETHER_INCLUDE)			\
-	$(ROSE_DLIB_INCLUDES)			\
 	$(ROSE_GCRYPT_INCLUDES)			\
 	$(BOOST_CPPFLAGS)
 
@@ -278,15 +269,8 @@ rose_config_installed_ldflags =			\
 	$(SQLITE_DATABASE_LIBS)			\
 	$(RT_LIBS)				\
 	$(ROSE_YICES_LIBS_WITH_PATH)		\
-	$(ROSE_Z3_LIBS_WITH_PATH)		\
-	$(ROSE_ELF_LIBS_WITH_PATH)		\
-	$(ROSE_DWARF_LIBS_WITH_PATH)		\
 	$(ROSE_SSL_LIBS)			\
-	$(ROSE_ETHER_LIBS)			\
 	$(ROSE_INTEL_COMPILER_MATH_LIBS)	\
-	$(ROSE_YAML_LIBS_WITH_PATH)		\
-	$(ROSE_LIBMAGIC_LIBS_WITH_PATH)		\
-	$(ROSE_DLIB_LIBS_WITH_PATH)		\
 	$(ROSE_GCRYPT_LIBS_WITH_PATH)		\
 	-lm
 if ROSE_USE_EDG_QUAD_FLOAT
@@ -323,15 +307,6 @@ if ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
   bin_PROGRAMS += rose-fortran
 endif
 # The -std= option in ROSE only support c, c++, fortran
-#if ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-#if ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
-#if ROSE_BUILD_PYTHON_LANGUAGE_SUPPORT
-#if ROSE_BUILD_PHP_LANGUAGE_SUPPORT
-#if ROSE_EXPERIMENTAL_CSHARP_ROSE_CONNECTION
-#if ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION
-#if ROSE_EXPERIMENTAL_JOVIAL_ROSE_CONNECTION
-#if ROSE_EXPERIMENTAL_COBOL_ROSE_CONNECTION
-#if ROSE_EXPERIMENTAL_MATLAB_ROSE_CONNECTION
 
 ROSEBIN_LDADD        = $(ROSE_LIBS)
 ROSEBIN_LDFLAGS      = $(ROSE_RPATHS)

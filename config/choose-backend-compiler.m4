@@ -11,7 +11,6 @@ dnl build using ROSE)
   AC_BEFORE([CHOOSE_BACKEND_COMPILER],[GENERATE_BACKEND_CXX_COMPILER_SPECIFIC_HEADERS])
 
   ROSE_CONFIGURE_SECTION([Checking ROSE backend])
-  ROSE_SUPPORT_X10_BACKEND()
 
   AC_ARG_WITH(alternate_backend_Cxx_compiler,
     [  --with-alternate_backend_Cxx_compiler=<compiler name>
@@ -60,107 +59,6 @@ AC_MSG_NOTICE([testing value of FC = "$FC"])
 	   BACKEND_FORTRAN_COMPILER="$FC"
 	 # BACKEND_FORTRAN_COMPILER="gfortran"
       AC_MSG_NOTICE([default back-end fortran compiler for generated translators to use: "$BACKEND_FORTRAN_COMPILER"])
-    ])
-
-# DQ (4/2/2011): Added option to specify backend Java compiler
-  AC_ARG_WITH(alternate_backend_java_compiler,
-    [  --with-alternate_backend_java_compiler=<compiler name>
-                                Specify an alternative java back-end compiler],
-    [
-    # Use a different compiler for the backend than for the compilation of ROSE source code
-      BACKEND_JAVA_COMPILER=$with_alternate_backend_java_compiler
-      AC_SUBST(BACKEND_JAVA_COMPILER)
-      AC_MSG_NOTICE([alternative back-end java compiler specified for generated translators to use: "$BACKEND_JAVA_COMPILER"])
-    ] ,
-    [ 
-    # Alternatively use the specified java compiler
-	   BACKEND_JAVA_COMPILER="javac"
-      AC_MSG_NOTICE([default back-end java compiler for generated translators to use: "$BACKEND_JAVA_COMPILER"])
-    ])
-
-# DQ (29/8/2017): Added option to specify backend Csharp compiler
-  AC_ARG_WITH(alternate_backend_csharp_compiler,
-    [  --with-alternate_backend_csharp_compiler=<compiler name>
-                                Specify an alternative csharp back-end compiler],
-    [
-    # Use a different compiler for the backend than for the compilation of ROSE source code
-      BACKEND_CSHARP_COMPILER=$with_alternate_backend_csharp_compiler
-      AC_SUBST(BACKEND_CSHARP_COMPILER)
-      AC_MSG_NOTICE([alternative back-end csharp compiler specified for generated translators to use: "$BACKEND_CSHARP_COMPILER"])
-    ] ,
-    [ 
-    # Alternatively use the specified Mono csharp compiler
-	   BACKEND_CSHARP_COMPILER="mcs"
-      AC_MSG_NOTICE([default back-end csharp compiler for generated translators to use: "$BACKEND_CSHARP_COMPILER"])
-    ])
-
-# DQ (29/8/2017): Added option to specify backend Ada compiler
-  AC_ARG_WITH(alternate_backend_ada_compiler,
-    [  --with-alternate_backend_ada_compiler=<compiler name>
-                                Specify an alternative ada back-end compiler],
-    [
-    # Use a different compiler for the backend than for the compilation of ROSE source code
-      BACKEND_ADA_COMPILER=$with_alternate_backend_ada_compiler
-      AC_SUBST(BACKEND_ADA_COMPILER)
-      AC_MSG_NOTICE([alternative back-end ada compiler specified for generated translators to use: "$BACKEND_ADA_COMPILER"])
-    ] ,
-    [ 
-    # Alternatively use the specified GNAT Ada compiler
-
-    # DQ (9/12/2017): Note that the command needs to be "gnat" and the "compile" option 
-    # must be added into the generated command line for the backend compiler.
-    # BACKEND_ADA_COMPILER="gnat compile"
-      BACKEND_ADA_COMPILER="gnat"
-      AC_MSG_NOTICE([default back-end ada compiler for generated translators to use: "$BACKEND_ADA_COMPILER"])
-    ])
-
-# DQ (29/8/2017): Added option to specify backend Jovial compiler
-  AC_ARG_WITH(alternate_backend_jovial_compiler,
-    [  --with-alternate_backend_jovial_compiler=<compiler name>
-                                Specify an alternative jovial back-end compiler],
-    [
-    # Use a different compiler for the backend than for the compilation of ROSE source code
-      BACKEND_ADA_COMPILER=$with_alternate_backend_jovial_compiler
-      AC_SUBST(BACKEND_JOVIAL_COMPILER)
-      AC_MSG_NOTICE([alternative back-end jovial compiler specified for generated translators to use: "$BACKEND_JOVIAL_COMPILER"])
-    ] ,
-    [ 
-    # Alternatively use the specified Jovial compiler
-	   BACKEND_JOVIAL_COMPILER="default_jovial_compiler"
-      AC_MSG_NOTICE([default back-end jovial compiler for generated translators to use: "$BACKEND_JOVIAL_COMPILER"])
-    ])
-
-# DQ (29/8/2017): Added option to specify backend Cobol compiler
-  AC_ARG_WITH(alternate_backend_cobol_compiler,
-    [  --with-alternate_backend_cobol_compiler=<compiler name>
-                                Specify an alternative cobol back-end compiler],
-    [
-    # Use a different compiler for the backend than for the compilation of ROSE source code
-      BACKEND_COBOL_COMPILER=$with_alternate_backend_cobol_compiler
-      AC_SUBST(BACKEND_COBOL_COMPILER)
-      AC_MSG_NOTICE([alternative back-end cobol compiler specified for generated translators to use: "$BACKEND_COBOL_COMPILER"])
-    ] ,
-    [ 
-    # Alternatively use the specified GNU Cobol compiler
-    # Rasmussen (10/30/2017): Changed name of GNU Cobol compiler to cobc
-           BACKEND_COBOL_COMPILER="cobc"
-      AC_MSG_NOTICE([default back-end cobol compiler for generated translators to use: "$BACKEND_COBOL_COMPILER"])
-    ])
-
-# Rasmussen (10/30/2017): Added option to specify backend MATLAB compiler
-  AC_ARG_WITH(alternate_backend_matlab_compiler,
-    [  --with-alternate_backend_matlab_compiler=<compiler name>
-                                Specify an alternative MATLAB back-end compiler],
-    [
-    # Use a different compiler for the backend than for the compilation of ROSE source code
-      BACKEND_MATLAB_COMPILER=$with_alternate_backend_matlab_compiler
-      AC_SUBST(BACKEND_MATLAB_COMPILER)
-      AC_MSG_NOTICE([alternative back-end MATLAB compiler specified for generated translators to use: "$BACKEND_MATLAB_COMPILER"])
-    ] ,
-    [
-    # Alternatively use the specified GNU MATLAB compiler
-	   BACKEND_MATLAB_COMPILER="octave"
-      AC_MSG_NOTICE([default back-end MATLAB compiler for generated translators to use: "$BACKEND_MATLAB_COMPILER"])
     ])
 
 # DQ (8/29/2005): Added support for version numbering of backend compiler
@@ -722,36 +620,10 @@ AC_MSG_NOTICE([testing value of FC = "$FC"])
   export BACKEND_FORTRAN_COMPILER
   AC_DEFINE_UNQUOTED([BACKEND_FORTRAN_COMPILER_NAME_WITH_PATH],"$BACKEND_FORTRAN_COMPILER",[Name of backend Fortran compiler including path (may or may not explicit include path; used to call backend).])
 
-# DQ (4/2/2011): Added some support for the name of the backend Java compiler.
-# This will be called to execute the backend compiler (for Java)
-  export BACKEND_JAVA_COMPILER
-  AC_DEFINE_UNQUOTED([BACKEND_JAVA_COMPILER_NAME_WITH_PATH],"$BACKEND_JAVA_COMPILER",[Name of backend Java compiler including path (may or may not explicit include path; used to call backend).])
-
-# DQ (29/8/2017): Adding more general language support.
-  export BACKEND_CSHARP_COMPILER
-  AC_DEFINE_UNQUOTED([BACKEND_CSHARP_COMPILER_NAME_WITH_PATH],"$BACKEND_CSHARP_COMPILER",[Name of backend Csharp compiler including path (may or may not explicit include path; used to call backend).])
-
-# DQ (29/8/2017): Adding more general language support.
-  export BACKEND_ADA_COMPILER
-  AC_DEFINE_UNQUOTED([BACKEND_ADA_COMPILER_NAME_WITH_PATH],"$BACKEND_ADA_COMPILER",[Name of backend Ada compiler including path (may or may not explicit include path; used to call backend).])
-
-# DQ (29/8/2017): Adding more general language support.
-  export BACKEND_JOVIAL_COMPILER
-  AC_DEFINE_UNQUOTED([BACKEND_JOVIAL_COMPILER_NAME_WITH_PATH],"$BACKEND_JOVIAL_COMPILER",[Name of backend Jovial compiler including path (may or may not explicit include path; used to call backend).])
-
-# DQ (29/8/2017): Adding more general language support.
-  export BACKEND_COBOL_COMPILER
-  AC_DEFINE_UNQUOTED([BACKEND_COBOL_COMPILER_NAME_WITH_PATH],"$BACKEND_COBOL_COMPILER",[Name of backend Cobol compiler including path (may or may not explicit include path; used to call backend).])
-
 # DQ (30/8/2017): Testing the new language support.
   AC_MSG_NOTICE([BACKEND_CXX_COMPILER     = "$BACKEND_CXX_COMPILER"])
   AC_MSG_NOTICE([BACKEND_C_COMPILER       = "$BACKEND_C_COMPILER"])
   AC_MSG_NOTICE([BACKEND_FORTRAN_COMPILER = "$BACKEND_FORTRAN_COMPILER"])
-  AC_MSG_NOTICE([BACKEND_JAVA_COMPILER    = "$BACKEND_JAVA_COMPILER"])
-  AC_MSG_NOTICE([BACKEND_CSHARP_COMPILER  = "$BACKEND_CSHARP_COMPILER"])
-  AC_MSG_NOTICE([BACKEND_ADA_COMPILER     = "$BACKEND_ADA_COMPILER"])
-  AC_MSG_NOTICE([BACKEND_JOVIAL_COMPILER  = "$BACKEND_JOVIAL_COMPILER"])
-  AC_MSG_NOTICE([BACKEND_COBOL_COMPILER   = "$BACKEND_COBOL_COMPILER"])
 
 # These are useful in handling differences between different versions of the backend compiler
 # we assume that the C and C++ compiler version number match and only record version information 

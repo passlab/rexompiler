@@ -55,9 +55,6 @@ Grammar::setUpSymbols ()
 
      NEW_TERMINAL_MACRO ( LabelSymbol,          "LabelSymbol",          "LABEL_NAME" );
 
-  // DQ (9/9/2011): Added support for JavaLabelStatement (which has a different type of support for labels than C/C++ or Fortran).
-     NEW_TERMINAL_MACRO ( JavaLabelSymbol,      "JavaLabelSymbol",      "JAVA_LABEL_NAME" );
-
   // [DT] 6/14/2000 -- Added DefaultSymbol.
      NEW_TERMINAL_MACRO ( DefaultSymbol,        "DefaultSymbol",        "DEFAULT_NAME" );
 
@@ -94,7 +91,7 @@ Grammar::setUpSymbols ()
           ClassSymbol      | TemplateSymbol         | EnumSymbol             | EnumFieldSymbol    | 
           TypedefSymbol    | LabelSymbol            | DefaultSymbol          | NamespaceSymbol    |
           IntrinsicSymbol  | ModuleSymbol           | InterfaceSymbol        | CommonSymbol       | 
-          AliasSymbol      | JavaLabelSymbol /* | RenameSymbol*/,
+          AliasSymbol      /* | RenameSymbol*/,
           "Symbol","SymbolTag", false);
 
   // ***********************************************************************
@@ -209,11 +206,6 @@ Grammar::setUpSymbols ()
   // LabelSymbol.setFunctionPrototype     ( "HEADER_EMPTY_GET_TYPE", "../Grammar/Symbol.code" );
   // LabelSymbol.setDataPrototype         ( "SgLabelStatement*", "declaration", "= NULL");
 
-
-  // DQ (9/9/2011): Added support for JavaLabelStatement (which has a different type of support for labels than C/C++ or Fortran).
-     JavaLabelSymbol.setFunctionPrototype     ( "HEADER_JAVA_LABEL_SYMBOL", "../Grammar/Symbol.code" );
-     JavaLabelSymbol.setDataPrototype         ( "SgJavaLabelStatement*", "declaration", "= NULL",
-                                            CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
   // DefaultSymbol.excludeFunctionPrototype ( "HEADER_GET_NAME", "../Grammar/Symbol.code" );
      DefaultSymbol.excludeFunctionPrototype ( "HEADER_GET_TYPE", "../Grammar/Symbol.code" );
@@ -336,9 +328,6 @@ Grammar::setUpSymbols ()
   // LabelSymbol.setFunctionSource          ( "SOURCE_EMPTY_GET_TYPE", "../Grammar/Symbol.code" );
   // LabelSymbol.setFunctionSource          ( "SOURCE_SHORT_GET_NAME", "../Grammar/Symbol.code" );
      LabelSymbol.setFunctionSource          ( "SOURCE_LABEL_SYMBOL", "../Grammar/Symbol.code" );
-
-  // DQ (9/9/2011): Added support for JavaLabelStatement (which has a different type of support for labels than C/C++ or Fortran).
-     JavaLabelSymbol.setFunctionSource      ( "SOURCE_JAVA_LABEL_SYMBOL", "../Grammar/Symbol.code" );
 
   // There is really no difference between the long and short versions (just debugging code, I think)
      VariableSymbol.setFunctionSource       ( "SOURCE_LONG_GET_NAME", "../Grammar/Symbol.code" );

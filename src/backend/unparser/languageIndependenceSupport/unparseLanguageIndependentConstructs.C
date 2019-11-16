@@ -8761,9 +8761,6 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
           case V_SgLshiftOp:         // return 11;
           case V_SgRshiftOp:         // return 11;
 
-          case V_SgJavaUnsignedRshiftOp: // return 11;
-                                     precedence_value = 11; break;
-
           case V_SgAddOp:            // return 12;
                                      precedence_value = 12; break;
 

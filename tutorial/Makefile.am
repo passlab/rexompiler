@@ -55,9 +55,6 @@ NOINST_TUTORIAL_EXAMPLES = \
    astFileIO_ReadMultipleASTs \
    ASTGraphGenerator \
    ASTGraphGeneratorCustomized \
-   bin_example \
-   binaryFileRead \
-   binaryFileWrite \
    buildFile \
    buildCFG \
    buildVFA \
@@ -81,8 +78,6 @@ NOINST_TUTORIAL_EXAMPLES = \
    dataFlowGraph \
    debuggingIRnodeToString \
    debuggingSourceCodePositionInformation \
-   dwarfAnalysis \
-   dwarfInstructionAddressToSourceLineAnalysis \
    findVariableDeclarations \
    generatingUniqueNamesFromDeclaration \
    graphGenerationOfSubtree \
@@ -133,8 +128,7 @@ NOINST_TUTORIAL_EXAMPLES = \
 if ROSE_BUILD_OS_IS_CYGWIN
   noinst_PROGRAMS += $(NOINST_TUTORIAL_EXAMPLES)
 else
-  noinst_PROGRAMS += $(NOINST_TUTORIAL_EXAMPLES) sharedMemoryTraversals
-  sharedMemoryTraversals_SOURCES = sharedMemoryTraversals.C
+  noinst_PROGRAMS += $(NOINST_TUTORIAL_EXAMPLES)
 endif
 
 #traverseSourceCFG_SOURCES = traverseSourceCFG.C
@@ -256,10 +250,6 @@ changeFunction_SOURCES = changeFunction.C
 classHierarchyGraph_SOURCES = classHierarchyGraph.C
 
 dataBaseUsage_SOURCES = dataBaseUsage.C
-
-dwarfAnalysis_SOURCES = dwarfAnalysis.C
-
-dwarfInstructionAddressToSourceLineAnalysis_SOURCES = dwarfInstructionAddressToSourceLineAnalysis.C
 
 loopNestingInfoProcessing_SOURCES = loopNestingInfoProcessing.C
 
@@ -1445,7 +1435,6 @@ EXTRA_DIST = \
    input_runtimeErrorCheck2.C \
    attributeCopyExamples.C \
    inputCode_addStruct.C \
-   rose_bin_example_backup.s \
    buffer2.bin \
    inputCode_seedBugsExample_arrayIndexing.C \
    inputCode_reductionRecognition.C \
@@ -1465,7 +1454,7 @@ endif
 # disabled this one due to problem with copy mechanism, Liao
 #   inputCode_varSubstCopy.C 
 
-CLEANFILES = rose_bin_example.s rose_bin_example.s.* callgraph.gml
+CLEANFILES = callgraph.gml
 
 docs: $(noinst_PROGRAMS) $(bin_PROGRAMS) $(generatedCodeExamples)
 	@echo ""
@@ -1483,12 +1472,12 @@ docs: $(noinst_PROGRAMS) $(bin_PROGRAMS) $(generatedCodeExamples)
 cleanDocs:
 #	This can not be called after make distclean (by make distcheck)
 #	cd outliner; $(MAKE) cleanDocs
-	rm -f rose_*.C rose_*.c rose_*.cpp *.out *.a[a-l] *.dot *.ps *.pdf *.trace *.binaryAST 
+	rm -f rose_*.C rose_*.c rose_*.cpp *.out *.a[a-l] *.dot *.ps *.pdf *.trace
 	rm -f ExampleCodeCoverage_GeneratedBinary 
 	rm -f inputCode_AST_PDF_Generator.C 
 
 clean-local: cleanDocs
-	rm -rf Templates.DB ii_files ti_files *.ti *.svg  *.new rose_bin_example.s rose_bin_example_2.s bin_example_2 *.dump
+	rm -rf Templates.DB ii_files ti_files *.ti *.svg  *.new *.dump
 	find . -depth -name \*.dSYM -exec rm -rf {} \; # OS X object file debug info
 	rm -rf $(generatedCodeExamples) *.out *.pdf *.dot
 

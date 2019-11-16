@@ -31,9 +31,6 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (LambdaCapture    , "LambdaCapture"    , "LambdaCaptureTag" );
      NEW_TERMINAL_MACRO (LambdaCaptureList, "LambdaCaptureList", "LambdaCaptureListTag" );
 
-  // DQ(1/13/2014): Added Java support for JavaMemberValuePair
-     NEW_TERMINAL_MACRO (JavaMemberValuePair, "JavaMemberValuePair", "JavaMemberValuePairTag" );
-
 #if USE_OMP_IR_NODES  // Liao, 5/30/2009 add nodes for OpenMP Clauses, 
  // they have source position info and should be traversed
      // add all terminals first, then bottom-up traverse class hierarchy to define non-terminals
@@ -343,7 +340,6 @@ Grammar::setUpNodes ()
   //                              END of Untyped IR Node Support
   // ***************************************************************************************
 
-  // DQ(1/13/2014): Added Java support for JavaMemberValuePair
   // DQ (11/26/2013): Added UntypedNode to be derived from LocatedNodeSupport.
   // DQ (10/6/2008): Migrate some of the SgSupport derived IR nodes, that truly have a position in the 
   // source code, to SgLocatedNode.  Start with some of the newer IR nodes which are traversed and thus 
@@ -354,7 +350,7 @@ Grammar::setUpNodes ()
   // NEW_NONTERMINAL_MACRO (LocatedNodeSupport, CommonBlockObject | InitializedName | InterfaceBody | HeaderFileBody | RenamePair | OmpClause , "LocatedNodeSupport", "LocatedNodeSupportTag", false );
   // NEW_NONTERMINAL_MACRO (LocatedNodeSupport, CommonBlockObject | InitializedName | InterfaceBody | HeaderFileBody | RenamePair | OmpClause | UntypedNode, "LocatedNodeSupport", "LocatedNodeSupportTag", false );
      NEW_NONTERMINAL_MACRO (LocatedNodeSupport, CommonBlockObject | InitializedName | InterfaceBody | 
-                            HeaderFileBody | RenamePair | JavaMemberValuePair | OmpClause | UntypedNode | 
+                            HeaderFileBody | RenamePair | OmpClause | UntypedNode | 
                             LambdaCapture | LambdaCaptureList, "LocatedNodeSupport", "LocatedNodeSupportTag", false );
 
   // DQ (3/24/2007): Added support for tokens in the IR (to support threading of the token stream 
@@ -1522,13 +1518,6 @@ Grammar::setUpNodes ()
      InitializedName.setDataPrototype     ( "bool", "is_pack_element", "= false",
                NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-  // DQ(1/13/2014): Added Java support for JavaMemberValuePair
-     JavaMemberValuePair.setFunctionPrototype     ( "HEADER_JAVA_MEMBER_VALUE_PAIR", "../Grammar/LocatedNode.code");
-     JavaMemberValuePair.setDataPrototype("SgName","name", "= NULL",
-          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JavaMemberValuePair.setDataPrototype("SgExpression*","value", "= NULL",
-          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
   // DQ (9/3/2014): Adding support for C++11 lambda expresions.
 #if 0
      LambdaCapture.setDataPrototype ( "SgInitializedName*", "capture_variable", "= NULL",
@@ -1758,10 +1747,6 @@ Grammar::setUpNodes ()
           printf ("NOT ADDING SPECIAL X VERSION SOURCE CODE!!! \n");
         }
 #endif
-
-
-  // DQ(1/13/2014): Added Java support for JavaMemberValuePair
-     JavaMemberValuePair.setFunctionSource ("SOURCE_JAVA_MEMBER_VALUE_PAIR", "../Grammar/LocatedNode.code");
 
 
   // ***********************************************************************

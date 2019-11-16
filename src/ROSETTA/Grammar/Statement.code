@@ -350,7 +350,6 @@ HEADER_SCOPE_STATEMENT_START
        // SgEnumFieldSymbol* lookup_enumfield_symbol  (const SgName& n) const ROSE_DEPRECATED_FUNCTION;
           SgEnumFieldSymbol* lookup_enum_field_symbol (const SgName& n) const;
           SgLabelSymbol*     lookup_label_symbol      (const SgName& n) const;
-          SgJavaLabelSymbol* lookup_java_label_symbol (const SgName& n) const; // charles4: added 09/12/2011
           SgNamespaceSymbol* lookup_namespace_symbol  (const SgName& n) const;
 
 #if 0
@@ -1423,39 +1422,6 @@ HEADER_FORALL_STATEMENT_START
 HEADER_FORALL_STATEMENT_END
 
 
-HEADER_JOVIAL_FOR_THEN_STATEMENT_START
-/*#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-          virtual unsigned int cfgIndexForEnd() const $ROSE_OVERRIDE;
-          virtual bool cfgIsIndexInteresting(unsigned int) const $ROSE_OVERRIDE;
-          virtual unsigned int cfgFindChildIndex(SgNode* n) $ROSE_OVERRIDE;
-          virtual unsigned int cfgFindNextChildIndex(SgNode* n) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
-#endif*/
-HEADER_JOVIAL_FOR_THEN_STATEMENT_END
-
-HEADER_JOVIAL_COMPOOL_STATEMENT_START
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-      virtual SgName get_mangled_name (void) const $ROSE_OVERRIDE;
-#endif
-HEADER_JOVIAL_COMPOOL_STATEMENT_END
-
-HEADER_JOVIAL_TABLE_STATEMENT_START
-      virtual SgName get_mangled_name (void) const $ROSE_OVERRIDE;
-HEADER_JOVIAL_TABLE_STATEMENT_END
-
-HEADER_MATLAB_FOR_STATEMENT_START
-/*#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-          virtual unsigned int cfgIndexForEnd() const $ROSE_OVERRIDE;
-          virtual bool cfgIsIndexInteresting(unsigned int) const $ROSE_OVERRIDE;
-          virtual unsigned int cfgFindChildIndex(SgNode* n) $ROSE_OVERRIDE;
-          virtual unsigned int cfgFindNextChildIndex(SgNode* n) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
-#endif*/
-HEADER_MATLAB_FOR_STATEMENT_END
-
-
 HEADER_RANGE_BASED_FOR_STATEMENT_START
 
        // void post_construction_initialization() $ROSE_OVERRIDE;
@@ -2342,38 +2308,6 @@ HEADER_LABEL_STATEMENT_START
 HEADER_LABEL_STATEMENT_END
 
 
-HEADER_JAVA_LABEL_STATEMENT_START
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-          virtual bool cfgIsIndexInteresting(unsigned int idx) const $ROSE_OVERRIDE;
-          virtual unsigned int cfgIndexForEnd() const $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
-#endif
-
-// CAVE3 (09/30/2011): Not sure what we need to fixup for java label
-/*
-#if ALT_FIXUP_COPY
-       // DQ (11/7/2007): These need to be called separately (see documentation)
-          virtual void fixupCopy_scopes     (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-          virtual void fixupCopy_symbols    (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-          virtual void fixupCopy_references (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-#else
-       // DQ (10/5/2007): Added fixup function to set scopes not set properly by the ROSETTA generated copy!
-          virtual void fixupCopy(SgNode* copy, SgCopyHelp & help) const;
-#endif
-*/
-      // charles4: 09/13/2011 added to support Java (DQ (2/10/2007): Marked as virtual to be consistent)
-          virtual SgSymbol* get_symbol_from_symbol_table() const $ROSE_OVERRIDE;
-
-       // DQ (8/21/2013): Added function to support calling get_type() from a SgDeclarationStatement so that the 
-       // template low-level symbol table support function would compile cleanly.  Note that it is an error to 
-       // call this function and it is not a virtual function that will cause derived class versions to be called
-       // where appropriate (and it is not always appropriate, e.g a SgNamespaceDeclaration has no assocated SgType).
-          SgType* get_type() const;
-
-HEADER_JAVA_LABEL_STATEMENT_END
-
-
 HEADER_WITH_STATEMENT_START
 HEADER_WITH_STATEMENT_END
 
@@ -2499,22 +2433,6 @@ HEADER_CASE_OPTION_STATEMENT_START
 #endif
 
 HEADER_CASE_OPTION_STATEMENT_END
-
-HEADER_ASYNC_STATEMENT_START
-HEADER_ASYNC_STATEMENT_END
-
-HEADER_FINISH_STATEMENT_START
-HEADER_FINISH_STATEMENT_END
-
-HEADER_AT_STATEMENT_START
-HEADER_AT_STATEMENT_END
-
-HEADER_ATOMIC_STATEMENT_START
-HEADER_ATOMIC_STATEMENT_END
-
-HEADER_WHEN_STATEMENT_START
-HEADER_WHEN_STATEMENT_END
-
 
 HEADER_TRY_STATEMENT_START
 
@@ -2710,41 +2628,6 @@ HEADER_ASM_STATEMENT_END
 HEADER_SPAWN_STATEMENT_START
 
 HEADER_SPAWN_STATEMENT_END
-
-
-HEADER_JAVA_THROW_STATEMENT_START
-
-HEADER_JAVA_THROW_STATEMENT_END
-
-
-HEADER_JAVA_FOREACH_STATEMENT_START
-
-       public:
-       // charles4 (9/07/2011): Added for uniform support of mangled names
-          virtual SgName get_mangled_name() const $ROSE_OVERRIDE;
-
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-          virtual bool cfgIsIndexInteresting(unsigned int idx) const $ROSE_OVERRIDE;
-          virtual unsigned int cfgFindNextChildIndex(SgNode* n) $ROSE_OVERRIDE;
-          virtual unsigned int cfgIndexForEnd() const $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
-#endif
-
-HEADER_JAVA_FOREACH_STATEMENT_END
-
-
-HEADER_JAVA_SYNCHRONIZED_STATEMENT_START
-
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-          virtual unsigned int cfgFindChildIndex(SgNode* n) $ROSE_OVERRIDE;
-          virtual unsigned int cfgIndexForEnd() const $ROSE_OVERRIDE;
-          virtual bool cfgIsIndexInteresting(unsigned int) const $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
-#endif
-
-HEADER_JAVA_SYNCHRONIZED_STATEMENT_END
 
 
 HEADER_ASSERT_STMT_START
@@ -4069,22 +3952,6 @@ HEADER_LINEMARKER_PREPROCESSOR_DIRECTIVE_STATEMENT_START
 HEADER_LINEMARKER_PREPROCESSOR_DIRECTIVE_STATEMENT_END
 
 
-HEADER_JAVA_IMPORT_STATEMENT_START
-       // We might need to be able to read this file in and process it..., but hopefully the ECJ frontend takes care of that.
-
-          virtual SgName get_mangled_name (void) const $ROSE_OVERRIDE;
-
-HEADER_JAVA_IMPORT_STATEMENT_END
-
-HEADER_JAVA_PACKAGE_DECLARATION_START
-          virtual SgName get_mangled_name() const $ROSE_OVERRIDE;
-HEADER_JAVA_PACKAGE_DECLARATION_END
-
-HEADER_JAVA_PACKAGE_STATEMENT_START
-          virtual SgName get_mangled_name() const $ROSE_OVERRIDE;
-HEADER_JAVA_PACKAGE_STATEMENT_END
-
-
 HEADER_MICROSOFT_ATTRIBUTE_DECLARATION_STATEMENT_START
 
        // We need this to be defined to avoid calling the base class version (which is an error).
@@ -4381,13 +4248,6 @@ SgStatement::get_scope(void) const
                     printf ("Error: SgStatement::get_scope(): stmt->get_parent() == NULL: stmt = %p = %s \n",stmt,stmt->class_name().c_str());
                   }
                ROSE_ASSERT (stmt->get_parent() != NULL);
-
-               if ( SageInterface::is_Python_language() && isSgLambdaRefExp(stmt->get_parent()) ) {
-                   std::cout << "warning: python. Fetching scope of lambda parameters from lambda's scope." << std::endl;
-                   returnScope = SageInterface::getScope(stmt->get_parent());
-                   ROSE_ASSERT( returnScope != NULL );
-                   break;
-               }
 
                SgFunctionDeclaration* functionDeclaration = isSgFunctionDeclaration(stmt->get_parent());
                if (functionDeclaration != NULL)
@@ -5592,18 +5452,6 @@ SgScopeStatement::lookup_label_symbol(const SgName& n) const
      return p_symbol_table->find_label(n);
    }
 
-//
-// charles4: function added 09/12/2011 identical with the same function for SgLabelSymbol
-//
-SgJavaLabelSymbol*
-SgScopeStatement::lookup_java_label_symbol(const SgName& n) const
-   {
-     ROSE_ASSERT (this != NULL);
-     ROSE_ASSERT (p_symbol_table != NULL);
-
-     return p_symbol_table->find_java_label(n);
-   }
-
 // DQ (8/10/2013): Modified API to support functions that are template instantiations to be disambiguated based on template arguments.
 // DQ (9/7/2006): Previously removed functionality, restored by request from Beata at ANL.
 // DQ (5/22/2006): I would like to restrict support of a number of functions that I 
@@ -6525,11 +6373,6 @@ SgScopeStatement::containsOnlyDeclarations() const
      bool returnValue = false;
      switch ( variantT() )
         {
-       // DQ (9/5/2011): Added support for SgJavaLabelStatement
-          case V_SgJavaLabelStatement:
-       // charles4 (9/7/2011): Added support for SgJavaForEachStatement
-          case V_SgJavaForEachStatement:
-
        // DQ (11/30/2007): Added more Fortran support.
           case V_SgAssociateStatement:
 
@@ -6548,15 +6391,6 @@ SgScopeStatement::containsOnlyDeclarations() const
 
        // DQ (11/27/2011): Adding more support for template declarations in the AST.
           case V_SgTemplateFunctionDefinition:
-
-       // Rasmussen (11/12/2018): Support for Jovial COMPOOL module
-          case V_SgJovialCompoolStatement:
-
-       // Rasmussen (10/22/2018): Adding node specific to Jovial for statements with a then construct.
-          case V_SgJovialForThenStatement:
-
-      // SK (08/06/2015): Adding SgMatlabForStatement that represents Matlab for loop
-          case V_SgMatlabForStatement:
 
           case V_SgIfStmt:
           case V_SgSwitchStatement:
@@ -7172,27 +7006,6 @@ SgScopeStatement::getStatementList ()
                break;
              }
 
-       // Rasmussen (10/22/2018): Adding node specific to Jovial for statements with a then construct.
-          case V_SgJovialForThenStatement:
-             {
-               SgJovialForThenStatement* forStatement = isSgJovialForThenStatement(currentScope);
-               ROSE_ASSERT (forStatement != NULL);
-               ROSE_ASSERT (forStatement->get_loop_body() != NULL);
-               currentStatementList = &(forStatement->get_loop_body()->getStatementList());
-               break;
-             }
-
-	     //SK(08/06/2015): Adding support for MatlabForStatement:
-	case V_SgMatlabForStatement:
-	    {
-	      SgMatlabForStatement *matlabForStatement = isSgMatlabForStatement(currentScope);
-	      ROSE_ASSERT(matlabForStatement != NULL);
-	      ROSE_ASSERT (matlabForStatement->get_body() != NULL);
-
-	      currentStatementList = &(matlabForStatement->get_body()->getStatementList());
-	      break;
-	    }
-
           default:
                printf ("ERROR: default reached in switch (getStatementList()) currentScope = %s \n",currentScope->sage_class_name());
                printf ("Note: this function is not defined for all IR nodes derived from SgScopeStatement (use SgScopeStatement::containsOnlyDeclarations() to check)\n");
@@ -7282,16 +7095,6 @@ SgScopeStatement::getStatementList () const
             // Should this be defined given that there are two SgBasicBlock objects in a SgForStatement
             // currentStatementList = forScope->get_init_stmt();
             // currentStatementList = &(forScope->get_loop_body()->getStatementList());
-               return isSgBasicBlock(forScope->get_loop_body()) ? isSgBasicBlock(forScope->get_loop_body())->getStatementList() : emptyStatementList;
-               break;
-             }
-
-          case V_SgJavaForEachStatement:
-             { 
-               const SgJavaForEachStatement* forScope = isSgJavaForEachStatement(currentScope);
-               ROSE_ASSERT (forScope != NULL);
-               ROSE_ASSERT (forScope->get_loop_body() != NULL);
-            // charles4: 9/07/2011
                return isSgBasicBlock(forScope->get_loop_body()) ? isSgBasicBlock(forScope->get_loop_body())->getStatementList() : emptyStatementList;
                break;
              }
@@ -7407,25 +7210,6 @@ SgScopeStatement::getStatementList () const
                break;
              }
 
-          case V_SgJovialForThenStatement:
-             {
-               const SgJovialForThenStatement* forStatement = isSgJovialForThenStatement(currentScope);
-               ROSE_ASSERT (forStatement != NULL);
-               ROSE_ASSERT (forStatement->get_loop_body() != NULL);
-               return forStatement->get_loop_body()->getStatementList();
-               break;
-             }
-
-	case V_SgMatlabForStatement:
-	    {
-	      const SgMatlabForStatement *matlabForStatement = isSgMatlabForStatement(currentScope);
-	      ROSE_ASSERT(matlabForStatement != NULL);
-	      ROSE_ASSERT(matlabForStatement->get_body() != NULL);
-
-	      return matlabForStatement->get_body()->getStatementList();
-	      break;
-	    }
-
           case V_SgForAllStatement:
              { 
                const SgForAllStatement* forAllScope = isSgForAllStatement(currentScope);
@@ -7445,15 +7229,6 @@ SgScopeStatement::getStatementList () const
                ROSE_ASSERT (teamScope != NULL);
                ROSE_ASSERT (teamScope->get_body() != NULL);
                return isSgBasicBlock(teamScope->get_body()) ? isSgBasicBlock(teamScope->get_body())->getStatementList() : emptyStatementList;
-               break;
-             }
-
-       // DQ (9/5/2011): Added support for SgJavaLabelStatement, but not certain if this is correct implementation.
-          case V_SgJavaLabelStatement:
-             {
-               const SgJavaLabelStatement* javaLabelStatement = isSgJavaLabelStatement(currentScope);
-               ROSE_ASSERT (javaLabelStatement != NULL);
-               return isSgBasicBlock(javaLabelStatement->get_statement()) ? isSgBasicBlock(javaLabelStatement->get_statement())->getStatementList() : emptyStatementList;
                break;
              }
 
@@ -8160,10 +7935,7 @@ SgGlobal::get_qualified_name() const
   // return SgName ("");
 
      std::string globalScopeDelimiter;
-     if (SageInterface::is_Java_language())
-         globalScopeDelimiter = "";
-     else
-         globalScopeDelimiter = "::";
+     globalScopeDelimiter = "::";
      return SgName (globalScopeDelimiter);
    }
 
@@ -8651,11 +8423,10 @@ resetTemplateNamesInScope ( SgScopeStatement* scope )
                case V_SgWhileStmt:
                case V_SgDoWhileStmt:
                case V_SgForStatement:
-               case V_SgJavaForEachStatement:
                   {
                  // Nothing to do here, I think, unless we have to reset template function names
                     break;
-                  }
+		  }
 
             // DQ (2/12/2012): Adding support for SgTemplateClassDefinition (not previously used).
                case V_SgTemplateClassDefinition:
@@ -10301,10 +10072,8 @@ SgDeclarationStatement::unparseNameToString()
                break;
              }
 
-       // PC (10/11/13):  Added case of SgJavaPackageDeclaration
        // DQ (8/11/2013): Added cases for SgFunctionDeclaration and SgMemberFunctionDeclaration
        // I forget why we needed this case...
-          case V_SgJavaPackageDeclaration:
           case V_SgFunctionDeclaration:
           case V_SgMemberFunctionDeclaration:
           case V_SgClassDeclaration:
@@ -10967,53 +10736,6 @@ SgForAllStatement::post_construction_initialization()
    }
 
 SOURCE_FORALL_STATEMENT_END
-
-
-SOURCE_JOVIAL_COMPOOL_STATEMENT_START
-void
-SgJovialCompoolStatement::post_construction_initialization()
-   {
-     // Nothing to setup here.
-   }
-
-SgName
-SgJovialCompoolStatement::get_mangled_name(void) const
-   {
-   // Don't believe name mangling required for Jovial
-      return get_name();
-   }
-SOURCE_JOVIAL_COMPOOL_STATEMENT_END
-
-SOURCE_JOVIAL_FOR_THEN_STATEMENT_START
-void
-SgJovialForThenStatement::post_construction_initialization()
-   {
-   }
-SOURCE_JOVIAL_FOR_THEN_STATEMENT_END
-
-SOURCE_JOVIAL_TABLE_STATEMENT_START
-void
-SgJovialTableStatement::post_construction_initialization()
-   {
-     // Nothing to setup here.
-   }
-
-SgName
-SgJovialTableStatement::get_mangled_name(void) const
-   {
-   // Don't believe name mangling required for Jovial
-      return get_name();
-   }
-SOURCE_JOVIAL_TABLE_STATEMENT_END
-
-
-SOURCE_MATLAB_FOR_STATEMENT_START
-void
-SgMatlabForStatement::post_construction_initialization()
-   {
-   }
-SOURCE_MATLAB_FOR_STATEMENT_END
-
 
 SOURCE_RANGE_BASED_FOR_STATEMENT_START
 
@@ -16284,41 +16006,6 @@ SgLabelStatement::replace_child(SgStatement *target,SgStatement *newstmt, bool e
 SOURCE_LABEL_STATEMENT_END
 
 
-SOURCE_JAVA_LABEL_STATEMENT_START
-
-void
-SgJavaLabelStatement::post_construction_initialization()
-   {
-   }
-
-// charles4: 09/13/2011 - Adapted from SgLabelStatement to support Java.
-// DQ (2/6/2007): Get the associated symbol from the symbol table in the stored scope
-SgSymbol*
-SgJavaLabelStatement::get_symbol_from_symbol_table() const
-   {
-#if 0
-     ROSE_ASSERT(get_scope() != NULL);
-     ROSE_ASSERT(get_scope()->get_symbol_table() != NULL);
-     return get_scope()->get_symbol_table()->find(this);
-#else
-  // return this -> get_symbol_table() -> find(this);
-     return this->find_symbol_from_declaration(this);
-#endif
-   }
-
-SgType* 
-SgJavaLabelStatement::get_type() const
-   {
-  // DQ (8/21/2013): Added function to support calling get_type() from a SgDeclarationStatement so that the 
-  // template low-level symbol table support function would compile cleanly.  Note that it is an error to 
-  // call this function and it is not a virtual function that will cause derived class versions to be called
-  // where appropriate (and it is not always appropriate, e.g a SgNamespaceDeclaration has no assocated SgType).
-     return NULL;
-   }
-
-SOURCE_JAVA_LABEL_STATEMENT_END
-
-
 SOURCE_WHILE_STATEMENT_START
 void
 SgWhileStmt::post_construction_initialization()
@@ -16554,55 +16241,6 @@ SgCaseOptionStmt::replace_child(SgStatement *target,SgStatement *newstmt,
    }
 
 SOURCE_CASE_OPTION_STATEMENT_END
-
-SOURCE_ASYNC_STATEMENT_START
-
-void
-SgAsyncStmt::post_construction_initialization() 
-   {
-   }
-
-SOURCE_ASYNC_STATEMENT_END
-
-SOURCE_FINISH_STATEMENT_START
-
-void
-SgFinishStmt::post_construction_initialization() 
-   {
-   }
-
-SOURCE_FINISH_STATEMENT_END
-
-
-SOURCE_AT_STATEMENT_START
-
-void
-SgAtStmt::post_construction_initialization()
-       {
-       }
-
-SOURCE_AT_STATEMENT_END
-
-
-SOURCE_ATOMIC_STATEMENT_START
-
-void
-SgAtomicStmt::post_construction_initialization()
-   {
-   }
-
-SOURCE_ATOMIC_STATEMENT_END
-
-
-SOURCE_WHEN_STATEMENT_START
-
-void
-SgWhenStmt::post_construction_initialization()
-       {
-       }
-
-SOURCE_WHEN_STATEMENT_END
-
 
 SOURCE_TRY_STATEMENT_START
 
@@ -17066,40 +16704,6 @@ SgSpawnStmt::post_construction_initialization()
    {}
 
 SOURCE_SPAWN_STATEMENT_END
-
-
-SOURCE_JAVA_THROW_STATEMENT_START
-
-void
-SgJavaThrowStatement::post_construction_initialization()
-   {}
-
-SOURCE_JAVA_THROW_STATEMENT_END
-
-
-SOURCE_JAVA_FOREACH_STATEMENT_START
-
-void
-SgJavaForEachStatement::post_construction_initialization()
-   {}
-
-// charles4 (9/07/2011): Added to provide uniform support of mangle names for all scopes
-SgName
-SgJavaForEachStatement::get_mangled_name(void) const
-   {
-     return SgName ("");
-   }
-
-SOURCE_JAVA_FOREACH_STATEMENT_END
-
-SOURCE_JAVA_SYNCHRONIZED_STATEMENT_START
-
-void
-SgJavaSynchronizedStatement::post_construction_initialization()
-   {}
-
-SOURCE_JAVA_SYNCHRONIZED_STATEMENT_END
-
 
 
 SOURCE_NULL_STATEMENT_START
@@ -20360,75 +19964,6 @@ SgCAFWithTeamStatement::post_construction_initialization()
 }
 
 SOURCE_WITH_TEAM_STATEMEMT_END
-
-SOURCE_JAVA_IMPORT_STATEMENT_START
-
-void
-SgJavaImportStatement::post_construction_initialization()
-   {
-  // Nothing to setup here.
-   }
-
-// DQ (2/18/2006): Added general name mangling for all declarations (and some other IR nodes).
-SgName
-SgJavaImportStatement::get_mangled_name(void) const
-   {
-  // The semantics of get_scope is that it can never be NULL (SgGlobal returns itself as its scope!)
-     SgScopeStatement* scope = get_scope();
-     ROSE_ASSERT(scope != NULL);
-
-     SgName returnName = SgName("_java_import_stmt_") + get_path();
-
-     if (get_containsWildCard() == true)
-        {
-          returnName += "_dot_regx_star_";
-        }
-
-#if 0
-     printf ("In SgJavaImportStatement::get_mangled_name(void): scope = %p = %s scope->get_qualified_name() = %s returnName = %s \n",
-          scope,scope->class_name().c_str(),scope->get_qualified_name().str(),returnName.str());
-#endif
-
-     return returnName;
-   }
-
-SOURCE_JAVA_IMPORT_STATEMENT_END
-
-SOURCE_JAVA_PACKAGE_DECLARATION_START
-void
-SgJavaPackageDeclaration::post_construction_initialization()
-   {
-     // Nothing to setup here.
-   }
-
-SgName
-SgJavaPackageDeclaration::get_mangled_name() const
-   {
-     return SgName("_package_" + SgClassDeclaration::get_mangled_name()); // PC: 06/21/2013
-   }
-SOURCE_JAVA_PACKAGE_DECLARATION_END
-
-SOURCE_JAVA_PACKAGE_STATEMENT_START
-void
-SgJavaPackageStatement::post_construction_initialization()
-   {
-     // Nothing to setup here.
-   }
-
-// DQ (2/18/2006): Added general name mangling for all declarations (and some other IR nodes).
-SgName
-SgJavaPackageStatement::get_mangled_name(void) const
-   {
-  // The semantics of get_scope is that it can never be NULL (SgGlobal returns itself as its scope!)
-     SgScopeStatement* scope = get_scope();
-     ROSE_ASSERT(scope != NULL);
-
-     SgName returnName = SgName("_java_package_stmt_") + get_name();
-
-     return returnName;
-   }
-
-SOURCE_JAVA_PACKAGE_STATEMENT_END
 
 SOURCE_OMP_SIMD_STATEMENT_START
 void

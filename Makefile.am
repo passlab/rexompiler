@@ -802,7 +802,6 @@ librose-lcov.info: all-lcov.info
         "$(top_srcdir)/src/midend/programTransformation/implicitCodeGeneration/*" \
         "$(top_srcdir)/src/midend/programTransformation/singleStatementToBlockNormalization/*" \
         "$(top_srcdir)/src/roseSupport/stringify.C" \
-        "$(top_srcdir)/src/frontend/SageIII/nodeBuildFunctionsForAterms.C" \
         "$(top_srcdir)/src/frontend/SageIII/astVisualization/*" \
         "$(top_srcdir)/src/midend/astProcessing/AstProcessing.h" \
         "$(top_srcdir)/src/frontend/SageIII/sageInterface/sageGeneric.h" \

@@ -36,12 +36,6 @@
 //Liao 5/29/2009: Add IR node support for OpenMP
 #define USE_OMP_IR_NODES 1
 
-// DQ (4/12/2011): Added Java specific IR nodes.
-#define USE_JAVA_IR_NODES 1
-
-// MH (6/11/2014): Added X10 specific IR nodes.
-#define USE_X10_IR_NODES 1
-
 #include <vector>
 
 // using namespace std;
