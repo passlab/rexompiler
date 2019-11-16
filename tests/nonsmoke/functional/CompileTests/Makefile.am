@@ -36,7 +36,7 @@ if ROSE_BUILD_CXX_LANGUAGE_SUPPORT
 if !USING_XTENSA_BACKEND_COMPILER
 # DQ (2/18/2017): We can't use the EDG 4.9 frontend with later versions of compiler because it can't parse a few of the header files from those compilers.
 # LLVM header files are actually a copy of the GNU header files (e.g. LLVM 3.5 uses GNU 4.9 headers).
-SUBDIRS += C_tests Cxx_tests C_subset_of_Cxx_tests C99_tests C11_tests Cxx11_tests Cxx14_tests UPC_tests MicrosoftWindows_C_tests MicrosoftWindows_Cxx_tests
+SUBDIRS += C_tests Cxx_tests C_subset_of_Cxx_tests C99_tests C11_tests Cxx11_tests Cxx14_tests 
 
 # DQ (1/1/2019): Only EDG 5.0 is has sufficent support for C++17 (I think).
 if ROSE_USE_EDG_VERSION_5_0
@@ -111,13 +111,13 @@ endif # ROSE_USE_EDG_VERSION_4_9
 # DQ (10/19/2010): Moved basic languge test to the front of the list.
 if ROSE_BUILD_CXX_LANGUAGE_SUPPORT
    SUBDIRS += \
-      copyAST_tests PythonExample_tests \
+      copyAST_tests \
       colorAST_tests unparseToString_tests \
       sourcePosition_tests \
       boost_tests uninitializedField_tests \
-      OvertureCode P++Tests A++Code \
+      OvertureCode \
       ExpressionTemplateExample_tests hiddenTypeAndDeclarationListTests \
-      sizeofOperation_tests MicrosoftWindows_tests nameQualificationAndTypeElaboration_tests \
+      sizeofOperation_tests nameQualificationAndTypeElaboration_tests \
       UnparseHeadersTests UnparseHeadersUsingTokenStream_tests
 
 # DQ (11/5/2016): These tests fail when testing with Address Sanitizer, but I can't see the output. 
@@ -167,13 +167,6 @@ endif
 
 # end of ROSE_USE_CLANG_FRONTEND
 endif
-
-# DQ (31/8/2017): Add test specific to just the newer experimental language support.
-test_new_languages:
-#	cd experimental_csharp_tests; $(MAKE) test
-	cd experimental_ada_tests;    $(MAKE) test
-	cd experimental_jovial_tests; $(MAKE) test
-	cd experimental_cobol_tests;  $(MAKE) test
 
 # TV (08/07/2018): Added `status` target which generate `status.csv`
 status:
