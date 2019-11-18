@@ -128,7 +128,8 @@ NOINST_TUTORIAL_EXAMPLES = \
 if ROSE_BUILD_OS_IS_CYGWIN
   noinst_PROGRAMS += $(NOINST_TUTORIAL_EXAMPLES)
 else
-  noinst_PROGRAMS += $(NOINST_TUTORIAL_EXAMPLES)
+  noinst_PROGRAMS += $(NOINST_TUTORIAL_EXAMPLES) sharedMemoryTraversals
+  sharedMemoryTraversals_SOURCES = sharedMemoryTraversals.C
 endif
 
 #traverseSourceCFG_SOURCES = traverseSourceCFG.C
@@ -798,6 +799,7 @@ generatedCodeExamples = \
    collectCommentsSkipHeaderFiles.out \
    collectCommentsAcrossHeaderFiles.out \
    collectDefineDirectives.out \
+   defuseAnalysis_pic1.pdf \
    rose_inputCode_seedBugsExample_arrayIndexing.C \
    rose_inputCode_VolatileTypeModifier.C \
    rose_inputCode_buildFile.C \
