@@ -34,11 +34,6 @@ if DOT_TO_GML_TRANSLATOR
 else
 	@echo "Automake conditional DOT_TO_GML_TRANSLATOR: NOT defined"
 endif
-if ENABLE_JAVAPORT
-	@echo "Automake conditional ENABLE_JAVAPORT: DEFINED"
-else
-	@echo "Automake conditional ENABLE_JAVAPORT: NOT defined"
-endif
 if ROSE_HAVE_LIBYICES
 	@echo "Automake conditional ROSE_HAVE_LIBYICES: DEFINED"
 else

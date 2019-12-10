@@ -827,41 +827,7 @@ AC_MSG_NOTICE([TCLSH = "$TCLSH"])
 # Call supporting macro for OFP
 ROSE_SUPPORT_OFP
 
-# DQ (3/6/2013): The major version number must match or the ac_pkg_swig.m4 will report
-# we are using the wrong version of swig (likely we need a newer version of this m4 script).
-# AC_PROG_SWIG(1.3.31)
-AC_PROG_SWIG(2.0.0)
-SWIG_ENABLE_CXX
-#AS (10/23/07): introduced conditional use of javaport
-AC_ARG_WITH(javaport,
-   [  --with-javaport ... Enable generation of Java bindings for ROSE using Swig],
-   [with_javaport=yes],
-   [with_javaport=no])
-AM_CONDITIONAL(ENABLE_JAVAPORT,test "$with_javaport" = yes)
-
-if test "x$with_javaport" = "xyes"; then
-  if test "x$USE_JAVA" = "x0"; then
-    AC_MSG_ERROR([trying to enable --with-javaport without --with-java also being set])
-  fi
-  if /bin/sh -c "$SWIG -version" >& /dev/null; then
-    :
-  else
-    AC_MSG_ERROR([trying to enable --with-javaport without SWIG installed])
-  fi
-  AC_MSG_WARN([enabling Java binding support -- SWIG produces invalid C++ code, so -fno-strict-aliasing is being added to CXXFLAGS to work around this issue.  If you are not using GCC as a compiler, this flag will need to be changed.])
-  CXXFLAGS="$CXXFLAGS -fno-strict-aliasing"
-
-# DQ (3/6/2013): Added support to permit conditional compilation for use of SWIG.
-# SWIG has restricted support for C++ and so we need to tailor ROSE to fix into
-# the subset of C++ that SWIG can support.  We only want to turn this ON when SWIG
-# is processing the ROSE source code.  So it need not generate an entry in rose_config.h.
-# AC_DEFINE([ROSE_USE_SWIG_SUPPORT], [], [Whether to use SWIG support or not within ROSE])
-fi
-
 ROSE_SUPPORT_CUDA
-
-# if swi-prolog is available
-ROSE_SUPPORT_SWIPL
 
 # Call supporting macro for VISUALIZATION (FLTK and GraphViz)
 ROSE_SUPPORT_VISUALIZATION

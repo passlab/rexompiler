@@ -329,13 +329,6 @@ else
   DISTCHECK_CONFIGURE_FLAGS += --disable-fortran
 endif
 
-# DQ (7/25/2008): If ROSE was originallly configured to use the javaport
-# work (generation of Java interface functions for ROSE using SWIG) then 
-# make sure it is tested as part of the distcheck rule.
-if ENABLE_JAVAPORT
-  DISTCHECK_CONFIGURE_FLAGS += --with-javaport
-endif
-
 # DQ (4/5/2010): Use the same version of OFP as specified on the original configure command line.
 # CER (10/10/2011): No longer needed. A specific OFP version is configured by default and distributed with ROSE.
 #DISTCHECK_CONFIGURE_FLAGS += --enable-ofp-version=@ROSE_OFP_MAJOR_VERSION_NUMBER@.@ROSE_OFP_MINOR_VERSION_NUMBER@.@ROSE_OFP_PATCH_VERSION_NUMBER@

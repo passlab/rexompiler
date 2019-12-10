@@ -39,13 +39,6 @@ else
    libroseOpenFortranParserlibraries =
 endif
 
-# Rasmussen (01/29/2018): Removed building of ATerm traversal in 3rdPartyLibraries. Replaced with C++ traversals of ATerms.
-if ROSE_EXPERIMENTAL_OFP_ROSE_CONNECTION
-   libroseExperimentalOpenFortranParserlibraries = frontend/Experimental_OpenFortranParser_ROSE_Connection/libexperimentalRoseFortran.la
-else
-   libroseExperimentalOpenFortranParserlibraries =
-endif
-
 if ROSE_USE_SQLITE_DATABASE
    libroseSqlite3xConnection = \
 		$(top_builddir)/src/roseExtensions/sqlite3x/libRoseSQLite3xDatabase.la
@@ -80,7 +73,6 @@ libroseLibraries = \
    $(libroseCxxlibraries) \
    $(top_builddir)/src/midend/libmidend.la \
    $(libroseOpenFortranParserlibraries) \
-   $(libroseExperimentalOpenFortranParserlibraries) \
    $(top_builddir)/src/midend/programAnalysis/libprogramAnalysis.la \
    $(top_builddir)/src/midend/programTransformation/loopProcessing/libLoopProcessing.la \
    $(top_builddir)/src/midend/programTransformation/extractFunctionArgumentsNormalization/libExtractFunctionArgumentsNormalization.la \
