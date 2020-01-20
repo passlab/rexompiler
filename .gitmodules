@@ -1,4 +1,3 @@
 [submodule "src/frontend/CxxFrontend/EDG"]
 	path = src/frontend/CxxFrontend/EDG
 	url = git@github.com:passlab/EDG.git 
-	branch = dquinlan/dq-development-dev
