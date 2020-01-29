@@ -36,6 +36,14 @@ sawyer_checkers =				\
 	markupUnitTests				\
 	cmdUnitTests
 
+if ROSE_HAVE_BOOST_SERIALIZATION_LIB
+sawyer_checkers += serializationUnitTests
+endif
+
+if ROSE_USE_SQLITE_DATABASE
+sawyer_checkers += databaseUnitTests
+endif
+
 # Unfortunately, automake doesn't let us use variables here, so we need to list them again.
 noinst_PROGRAMS +=				\
         attributeUnitTests			\
@@ -59,6 +67,14 @@ noinst_PROGRAMS +=				\
 	markupUnitTests				\
 	cmdUnitTests
 
+if ROSE_HAVE_BOOST_SERIALIZATION_LIB
+noinst_PROGRAMS += serializationUnitTests
+endif
+
+if ROSE_USE_SQLITE_DATABASE
+noinst_PROGRAMS += databaseUnitTests
+endif
+
 # Each checker depends on one source file, but automake doesn't let us use patterns so we list them yet again
 attributeUnitTests_SOURCES       = attributeUnitTests.C
 optionalUnitTests_SOURCES        = optionalUnitTests.C
@@ -80,6 +96,8 @@ ptrUnitTests_SOURCES		 = ptrUnitTests.C
 mesgUnitTests_SOURCES		 = mesgUnitTests.C
 markupUnitTests_SOURCES		 = markupUnitTests.C
 cmdUnitTests_SOURCES		 = cmdUnitTests.C
+serializationUnitTests_SOURCES	 = serializationUnitTests.C
+databaseUnitTests_SOURCES	 = databaseUnitTests.C
 
 # Test targets
 sawyer_targets = $(addsuffix .passed, $(sawyer_checkers))
