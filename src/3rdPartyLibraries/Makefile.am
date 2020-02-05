@@ -19,6 +19,4 @@ SUBDIRS += libharu-2.1.0
 endif
 endif
 
-endif
-
 EXTRA_DIST = CMakeLists.txt

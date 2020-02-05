@@ -1338,13 +1338,6 @@ ROSE_DLL_API SgTemplateClassDeclaration* buildTemplateClassDeclaration_nfi(const
 //! class declaration and definition (creating both the defining and nondefining declarations as required).
 ROSE_DLL_API SgDerivedTypeStatement * buildDerivedTypeStatement (const SgName& name, SgScopeStatement* scope=NULL);
 
-//! Build a Jovial table declaration statement
-ROSE_DLL_API SgJovialTableStatement * buildJovialTableStatement (const SgName& name,
-                                                                 SgClassDeclaration::class_types kind, SgScopeStatement* scope=NULL);
-
-//! Build a Jovial table type with required class definition and defining and nondefining declarations.
- ROSE_DLL_API SgJovialTableType * buildJovialTableType (const SgName& name, SgType* base_type, SgExprListExp* dim_info, SgScopeStatement* scope=NULL);
-
 //! Build a generic class declaration statement (SgClassDeclaration or subclass) with a
 //! class declaration and definition (creating both the defining and nondefining declarations as required.
 template <class DeclClass> ROSE_DLL_API

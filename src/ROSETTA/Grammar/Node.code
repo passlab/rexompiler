@@ -1196,9 +1196,6 @@ std::ostream & operator<< ( std::ostream & os, const std::set<SgSymbol*> & l );
 // tps (8/13/2007): working on binary cfg mechanism.
 //#include "virtualBinCFG.h"
 
-// Version numbers for SgAsm* nodes. Used for backward compatibility. */
-BOOST_CLASS_VERSION(SgAsmInstruction, 1);
-
 HEADER_NODE_PREDECLARATION_END
 
 HEADER_START

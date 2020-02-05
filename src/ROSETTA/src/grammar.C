@@ -3650,7 +3650,6 @@ Grammar::buildCode ()
      printf ("Exiting as a test in ROSETTA generation of ATerm support! \n");
      ROSE_ASSERT(false);
 #endif
-#endif // BUILD_ATERM_SUPPORT
 
   // ---------------------------------------------------------------------------------------------
   // generate what is necessary for SAGE support in AstProcessing classes

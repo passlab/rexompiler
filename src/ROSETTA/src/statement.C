@@ -324,9 +324,6 @@ Grammar::setUpStatements ()
      NEW_TERMINAL_MACRO (EquivalenceStatement,      "EquivalenceStatement",       "TEMP_Equivalence_Statement" );
      NEW_TERMINAL_MACRO (DerivedTypeStatement,      "DerivedTypeStatement",       "TEMP_Derived_Type_Statement" );
 
-  // Rasmussen (3/18/2019): Added new IR node for Jovial support
-     NEW_TERMINAL_MACRO (JovialTableStatement,      "JovialTableStatement",       "TEMP_Jovia_Table_Statement" );
-
   // DQ (9/4/2007): Added DIMENSION statement (for array declaration support)
   // These are the type attributes: ALLOCATABLE, DIMENSION, EXTERNAL, INTENT, INTRINSIC, OPTIONAL, PARAMETER, POINTER, SAVE, TARGET
   // These are the ones that have associated statements: ALLOCATE, DIMENSION, EXTERNAL, INTRINSIC, OPTIONAL, PARAMETER, POINTER, SAVE, TARGET
@@ -2390,10 +2387,6 @@ Grammar::setUpStatements ()
      CaseOptionStmt.setDataPrototype ( "std::string", "case_construct_name", " = \"\"",
                    NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-  // Rasmussen (8/21/2018): Added support for Jovial FALLTHRU option.
-     CaseOptionStmt.setDataPrototype ( "bool", "has_fall_through", " = false",
-                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
      TryStmt.setFunctionPrototype ( "HEADER_TRY_STATEMENT", "../Grammar/Statement.code" );
      TryStmt.editSubstitute       ( "HEADER_LIST_DECLARATIONS", "HEADER_LIST_DECLARATIONS", "../Grammar/Statement.code" );
      TryStmt.editSubstitute       ( "LIST_DATA_TYPE", "SgStatementPtrList" );
@@ -2446,10 +2439,6 @@ Grammar::setUpStatements ()
 
   // DQ (1/31/2009): Added support for named default case construct.
      DefaultOptionStmt.setDataPrototype ( "std::string", "default_construct_name", " = \"\"",
-                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // Rasmussen (8/21/2018): Added support for Jovial FALLTHRU option.
-     DefaultOptionStmt.setDataPrototype ( "bool", "has_fall_through", " = false",
                    NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
      BreakStmt.setFunctionPrototype ( "HEADER_BREAK_STATEMENT", "../Grammar/Statement.code" );
@@ -3463,9 +3452,6 @@ Grammar::setUpStatements ()
      AssignedGotoStatement.setFunctionPrototype      ("HEADER_ASSIGNED_GOTO_STATEMENT", "../Grammar/Statement.code" );
 #endif
 
-  // Rasmussen (3/18/2019): Added new IR node for Jovial support
-     JovialTableStatement.setFunctionPrototype       ("HEADER_JOVIAL_TABLE_STATEMENT",  "../Grammar/Statement.code" );
-
   // DQ (7/21/2007): More IR nodes required for Fortran support
      BlockDataStatement.setDataPrototype    ( "SgBasicBlock*", "body", "= NULL",
                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
@@ -3527,12 +3513,6 @@ Grammar::setUpStatements ()
   // DerivedTypeStatement.setDataPrototype ( "int", "end_numeric_label", "= -1",
   //              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      DerivedTypeStatement.setDataPrototype ( "SgLabelRefExp*", "end_numeric_label", "= NULL",
-                  NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // Rasmussen (3/18/2019): Added new IR node for Jovial support
-     JovialTableStatement.setDataPrototype ( "SgExpression*", "table_entry_size", "= NULL",
-                  NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JovialTableStatement.setDataPrototype ( "bool", "has_table_entry_size", "= false",
                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // DQ (9/11/2007): Added support for new IR nodes, but have not added the correct data members yet!
@@ -3657,20 +3637,6 @@ Grammar::setUpStatements ()
      C_StyleCommentStatement.setDataPrototype     ( "std::string"   , "dummyString2", "= \"\"",
                                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL);
 #endif
-
-  // Rasmussen (03/26/2019): Added support for Jovial directives and define declarations.
-
-     JovialDirectiveStatement.setFunctionPrototype ( "HEADER_JOVIAL_DIRECTIVE_STATEMENT", "../Grammar/Statement.code" );
-     JovialDirectiveStatement.setFunctionSource    ( "SOURCE_JOVIAL_DIRECTIVE_STATEMENT", "../Grammar/Statement.code" );
-     JovialDirectiveStatement.setDataPrototype     ( "std::string", "content_string", "= \"\"",
-                                                CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JovialDirectiveStatement.setDataPrototype     ( "SgJovialDirectiveStatement::directive_types", "directive_type", "= SgJovialDirectiveStatement::e_compool",
-                                                CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     JovialDefineDeclaration.setFunctionPrototype  ( "HEADER_JOVIAL_DEFINE_DECLARATION", "../Grammar/Statement.code" );
-     JovialDefineDeclaration.setFunctionSource     ( "SOURCE_JOVIAL_DEFINE_DECLARATION", "../Grammar/Statement.code" );
-     JovialDefineDeclaration.setDataPrototype      ( "std::string", "define_string", "= \"\"",
-                                                CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // DQ (11/23/2008): Added support for CPP directives as IR nodes.
      C_PreprocessorDirectiveStatement.setFunctionPrototype ( "HEADER_PREPROCESSOR_DIRECTIVE_STATEMENT", "../Grammar/Statement.code" );
@@ -4146,9 +4112,6 @@ Grammar::setUpStatements ()
      ComputedGotoStatement.setFunctionSource      ("SOURCE_COMPUTED_GOTO_STATEMENT", "../Grammar/Statement.code" );
      AssignedGotoStatement.setFunctionSource      ("SOURCE_ASSIGNED_GOTO_STATEMENT", "../Grammar/Statement.code" );
 #endif
-
-  // Rasmussen (3/18/2019): Added new IR node for Jovial support
-     JovialTableStatement.setFunctionSource       ("SOURCE_JOVIAL_TABLE_STATEMENT", "../Grammar/Statement.code" );
 
      NamelistStatement.setFunctionSource          ("SOURCE_NAMELIST_STATEMENT", "../Grammar/Statement.code" );
      ImportStatement.setFunctionSource            ("SOURCE_IMPORT_STATEMENT", "../Grammar/Statement.code" );

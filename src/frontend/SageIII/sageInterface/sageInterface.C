@@ -62,6 +62,20 @@
 #include <algorithm> // for set operations
 #include <numeric>   // for std::accumulate
 
+// DQ (11/5/2019): Added to support SageInterface::statementCanBeTransformed().
+namespace EDG_ROSE_Translation
+   {
+  // DQ (9/18/2018): Declare this map so that we can use it for the unparse header files option.
+#if defined(ROSE_BUILD_CXX_LANGUAGE_SUPPORT) && !defined(ROSE_USE_CLANG_FRONTEND)
+  // DQ (12/11/2018): Use the definition in the EDG edgRose.C file if C/C++ support IS defined.
+    extern std::map<std::string, SgIncludeFile*> edg_include_file_map;
+#else
+  // DQ (12/11/2018): Allow this to be the definition if C/C++ support is NOT defined.
+    std::map<std::string, SgIncludeFile*> edg_include_file_map;
+#endif
+  }
+
+
 // DQ (12/1/2015): Added to support macro handling.
 #include "detectMacroOrIncludeFileExpansions.h"
 
@@ -1355,18 +1369,7 @@ SageInterface::get_name ( const SgDeclarationStatement* declaration )
 
           case V_SgClassDeclaration:
           case V_SgDerivedTypeStatement:
-          case V_SgJovialTableStatement:
                name = isSgClassDeclaration(declaration)->get_name().str();
-               break;
-
-       // Rasmussen (8/2/2019): Added SgJovialDefineDeclaration and SgJovialDirectiveStatement
-       // I'm not sure class_name() is correct. Probably get_name() should be fixed.
-          case V_SgJovialDefineDeclaration:
-               name = isSgJovialDefineDeclaration(declaration)->class_name();
-               break;
-
-          case V_SgJovialDirectiveStatement:
-               name = isSgJovialDirectiveStatement(declaration)->class_name();
                break;
 
           case V_SgEnumDeclaration:

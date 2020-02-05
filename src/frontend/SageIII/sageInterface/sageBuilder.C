@@ -12232,47 +12232,6 @@ SgDerivedTypeStatement * SageBuilder::buildDerivedTypeStatement(const SgName& na
      return type_decl;
    }
 
-//! Build a Jovial table declaration statement.  A Jovial table is essentially a C struct with an optional struct size.
-SgJovialTableStatement * SageBuilder::buildJovialTableStatement(const SgName& name,
-                                                                SgClassDeclaration::class_types kind,
-                                                                SgScopeStatement* scope /*=NULL*/)
-   {
-     SgJovialTableStatement* table_decl = buildClassDeclarationStatement_nfi <SgJovialTableStatement> (name, kind, scope);
-
-     setOneSourcePositionForTransformation(table_decl);
-     ROSE_ASSERT(table_decl->get_firstNondefiningDeclaration() != NULL);
-     setOneSourcePositionForTransformation(table_decl->get_firstNondefiningDeclaration());
-
-     return table_decl;
-   }
-
-//! Build a Jovial table type with required class definition and defining and nondefining declarations.
-SgJovialTableType * SageBuilder::buildJovialTableType (const SgName& name, SgType* base_type, SgExprListExp* dim_info, SgScopeStatement* scope)
-   {
-     SgClassDeclaration::class_types kind = SgClassDeclaration::e_jovial_table;
-     SgJovialTableStatement* table_decl = buildClassDeclarationStatement_nfi <SgJovialTableStatement> (name, kind, scope);
-
-     setOneSourcePositionForTransformation(table_decl);
-     ROSE_ASSERT(table_decl->get_firstNondefiningDeclaration() != NULL);
-     setOneSourcePositionForTransformation(table_decl->get_firstNondefiningDeclaration());
-
-  // For a type declaration the parent of the nondefining declaration is the defining declaration
-     SgClassDeclaration* nondef_decl = isSgClassDeclaration(table_decl->get_firstNondefiningDeclaration());
-     ROSE_ASSERT(nondef_decl != NULL);
-     nondef_decl->set_parent(table_decl);
-
-     SgJovialTableType* table_type = new SgJovialTableType(nondef_decl);
-     ROSE_ASSERT(table_type != NULL);
-
-     table_type->set_base_type(base_type);
-     table_type->set_dim_info(dim_info);
-     table_type->set_rank(dim_info->get_expressions().size());
-
-     nondef_decl->set_type(table_type);
-
-     return table_type;
-   }
-
 //! Build a generic class declaration statement (SgClassDeclaration or subclass).
 template <class DeclClass> DeclClass *
 SageBuilder::buildClassDeclarationStatement_nfi(const SgName & name, SgClassDeclaration::class_types kind,
@@ -12385,13 +12344,6 @@ SageBuilder::buildClassDeclarationStatement_nfi(const SgName & name, SgClassDecl
                SgClassType* class_type = NULL;
                switch (kind)
                   {
-                    case SgClassDeclaration::e_java_parameter:
-                       class_type = SgJavaParameterType::createType(nondefdecl);
-                       break;
-                    case SgClassDeclaration::e_jovial_table:
-                    case SgClassDeclaration::e_jovial_block:
-                       class_type = SgJovialTableType::createType(nondefdecl);
-                       break;
                     default:
                        class_type = SgClassType::createType(nondefdecl);
                        break;

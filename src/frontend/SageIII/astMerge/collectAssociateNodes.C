@@ -307,8 +307,6 @@ addAssociatedNodes( SgType* type, set<SgNode*> & nodeList, bool markMemberNodesD
        // DQ (1/21/2018): Added support for C++11 language type.
           case V_SgRvalueReferenceType:
 
-          case V_SgJovialTableType:
-
        // These are primative types
           case V_SgTypeBool:
           case V_SgTypeChar:
@@ -1221,7 +1219,6 @@ addAssociatedNodes ( SgNode* node, set<SgNode*> & nodeList, bool markMemberNodes
 
           case V_SgClassDeclaration:
           case V_SgDerivedTypeStatement:
-          case V_SgJovialTableStatement:
        // DQ (2/10/2007): Added case for SgTemplateInstantiationDecl
           case V_SgTemplateInstantiationDecl:
              {

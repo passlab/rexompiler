@@ -2097,12 +2097,6 @@ TestAstForProperlyMangledNames::visit ( SgNode* node )
   // These are the most common cases that fail
      ROSE_ASSERT(mangledName.find('<') == string::npos);
      ROSE_ASSERT(mangledName.find('>') == string::npos);
-
-  // Jovial can have names like a'variable'name so don't disallow '\'' for Jovial [Rasmussen 2/10/2019]
-     if (!SageInterface::is_Jovial_language())
-        {
-           ROSE_ASSERT(mangledName.find('\'') == string::npos);
-        }
    }
 
 TestAstForProperlyMangledNames::TestAstForProperlyMangledNames()
@@ -3914,7 +3908,6 @@ TestExpressionTypes::visit ( SgNode* node )
                     case V_SgClassDeclaration:
                     case V_SgDerivedTypeStatement:
                     case V_SgTemplateInstantiationDecl:
-                    case V_SgJovialTableStatement:
                        {
                          SgClassDeclaration* definingClassDeclaration = isSgClassDeclaration(definingDeclaration);
                          ROSE_ASSERT(definingClassDeclaration->get_definition() != NULL);

@@ -557,10 +557,6 @@ Grammar::setUpTypes ()
   // CUSTOM_CREATE_TYPE_MACRO(ClassType,"SOURCE_CREATE_TYPE_FOR_CLASS_TYPE","SgClassDeclaration* decl = NULL");
      CUSTOM_CREATE_TYPE_MACRO(ClassType,"SOURCE_CREATE_TYPE_FOR_CLASS_TYPE","SgDeclarationStatement* decl = NULL");
 
-     CUSTOM_CREATE_TYPE_MACRO(JovialTableType,
-            "SOURCE_CREATE_TYPE_FOR_JOVIAL_TABLE_TYPE",
-            "SgClassDeclaration* decl = NULL");
-
    // DQ (11/28/2011): Make this more like the NamedType internal support.
   // CUSTOM_CREATE_TYPE_MACRO(TemplateType,"SOURCE_CREATE_TYPE_FOR_TEMPLATE_TYPE","SgTemplateInstantiationDecl* decl = NULL");
      CUSTOM_CREATE_TYPE_MACRO(TemplateType,"SOURCE_CREATE_TYPE_FOR_TEMPLATE_TYPE","SgTemplateDeclaration* decl = NULL");
@@ -1120,8 +1116,6 @@ Grammar::setUpTypes ()
      FunctionType.setFunctionSource        ( "SOURCE_FUNCTION_TYPE", "../Grammar/Type.code");
 
      ClassType.setFunctionSource             ( "SOURCE_CLASS_TYPE", "../Grammar/Type.code");
-
-     JovialTableType.setFunctionSource   ( "SOURCE_JOVIAL_TABLE_TYPE", "../Grammar/Type.code");
 
      TemplateType.setFunctionSource        ( "SOURCE_TEMPLATE_TYPE", "../Grammar/Type.code");
 
