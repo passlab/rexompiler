@@ -95,9 +95,6 @@ check-smoke:
 check-nonsmoke:
 	$(MAKE) check -C $(top_builddir)/tests/nonsmoke/functional
 
-check-java:
-	$(MAKE) check -C $(top_builddir)/tests/nonsmoke/functional/CompileTests/Java_tests
-
 # The "check" target at this top makefile is what users will normally
 # run. This should only run tests that are portable and useful to
 # users.
@@ -108,7 +105,6 @@ check-java:
 check:
 	$(MAKE) check-core
 	$(MAKE) check-smoke
-	$(MAKE) -C tests/nonsmoke/functional/BinaryAnalysis check
 	$(MAKE) -C tests/nonsmoke/functional/Utility check
 
 # The "check-hard" target is intended to run all tests for the ROSE
@@ -158,7 +154,6 @@ rose-installer-rmc2: install-rose-library
 		--contact="http://rosecompiler.org"									\
 		--prjnam=ROSE												\
 		--prjver=$(PACKAGE_VERSION)										\
-		--postinstall-bin=$(top_srcdir)/projects/MatrixTesting/lib/matrix/container-scripts/post-install-script	\
 		$(prefix)/*												\
 		$(addsuffix /*, $(filter-out / /usr /usr/local,								\
 		    $(BOOST_ROOT)											\
@@ -174,7 +169,6 @@ rose-installer-rmc2: install-rose-library
 		    $(LIBLZMA_ROOT)											\
 		    $(LIBPNG_ROOT)											\
 		    $(LIBTIFF_ROOT)											\
-		    $(PYTHON_ROOT)											\
 		    $(SPOT_ROOT)											\
 		    $(WT_ROOT)												\
 		    $(YAMLCPP_ROOT)											\
@@ -412,7 +406,6 @@ docs: FORCE_DOCS_TO_BE_MADE
            $(MAKE) -Ctests/nonsmoke/functional/testSupport check && \
 	   $(MAKE) -Ctests/nonsmoke/functional/roseTests/astInterfaceTests check && \
 	   $(MAKE) -Ctests/nonsmoke/functional/roseTests/ompLoweringTests check && \
-	   $(MAKE) -Ctests/nonsmoke/functional/CompileTests/UPC_tests check && \
 	   $(MAKE) -Cdocs docs \
 	else \
 	   echo "Please look at the ROSE web site for documentation (www.roseCompiler.org)"; \
