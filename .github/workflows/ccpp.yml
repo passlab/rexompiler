@@ -1,0 +1,110 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-18.04
+    env:
+      CC: /usr/bin/gcc-7
+      CXX: /usr/bin/g++-7
+      JAVAHOME: /usr/lib/jvm/java-8-openjdk-amd64
+      LD_LIBRARY_PATH: $JAVA_HOME/jre/lib/amd64/server:$LD_LIBRARY_PATH
+      EDG_URL: https://github.com/ouankou/rose-tools/raw/master/
+      EDG_PACKAGE: rex-edg-5.0-gcc-7.tar.gz
+      EDG_PREFIX: roseBinaryEDG-5-0-x86_64-pc-linux-gnu-gnu-7-5.
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install  -y \
+          apt-utils \
+          dialog \
+          software-properties-common && \
+          sudo apt-get install -y openjdk-8-jdk && \
+          sudo apt-get install -y \
+          autoconf \
+          automake \
+          autotools-dev \
+          bc \
+          binutils \
+          bison \
+          build-essential \
+          cmake \
+          cpufrequtils \
+          curl \
+          device-tree-compiler \
+          dkms \
+          doxygen \
+          flex \
+          gawk \
+          gcc-multilib \
+          gdb \
+          gfortran \
+          ghostscript \
+          git \
+          gperf \
+          graphviz \
+          libboost-all-dev \
+          libgmp-dev \
+          libhpdf-dev \
+          libmpc-dev \
+          libmpfr-dev \
+          libomp-dev \
+          libtool \
+          libxml2-dev \
+          patchutils \
+          python3-dev \
+          sqlite \
+          texinfo \
+          unzip \
+          wget \
+          zip \
+          zlib1g \
+          zlib1g-dev
+
+    - name: Install ompparser
+      run: |
+        cd $GITHUB_WORKSPACE/..
+        git clone -b dev https://github.com/passlab/ompparser.git
+        cd ompparser
+        mkdir build
+        cd build
+        cmake -DCMAKE_INSTALL_PREFIX=../../ompparser_install ..
+        make
+        make install
+
+    - name: Configure
+      env:
+        EDG_VERSION: $(cat $GITHUB_WORKSPACE/src/frontend/CxxFrontend/EDG_VERSION)
+        EDG_FILE: ${EDG_PREFIX}${EDG_VERSION}
+      run: |
+        cd $GITHUB_WORKSPACE
+        ./build
+        mkdir ../rex_build
+        cd ../rex_build
+        $GITHUB_WORKSPACE/configure --prefix=$GITHUB_WORKSPACE/../rex_install --with-boost=/usr --with-boost-libdir=/usr/lib/x86_64-linux-gnu/ --enable-languages=c,c++,fortran --disable-tests-directory --disable-tutorial-directory --disable-projects-directory --with-ompparser=$GITHUB_WORKSPACE/../ompparser_install
+        cd src/frontend/CxxFrontend
+        wget ${EDG_URL}${EDG_PACKAGE}
+        tar xf ${EDG_PACKAGE}
+        mv EDG ${EDG_FILE}
+        tar czf ${EDG_FILE}.tar.gz ${EDG_FILE}
+        rm -rf ${EDG_FILE}
+        rm ${EDG_PACKAGE}
+
+    - name: Build
+      run: |
+        cd $GITHUB_WORKSPACE/../rex_build
+        make core -j2
+        make install-core
+
+    - name: Test
+      run: |
+        ls $GITHUB_WORKSPACE/../rex_install/bin
+        ls $GITHUB_WORKSPACE/../rex_install/lib
