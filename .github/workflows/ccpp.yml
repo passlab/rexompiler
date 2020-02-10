@@ -7,28 +7,29 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        config:
+          - {os: ubuntu-18.04, gnu: 7}
+          #- {os: ubuntu-16.04, gnu: 5}
 
-    runs-on: ubuntu-18.04
+    runs-on: ${{ matrix.config.os }}
     env:
-      CC: /usr/bin/gcc-7
-      CXX: /usr/bin/g++-7
+      CC: /usr/bin/gcc-${{ matrix.config.gnu }}
+      CXX: /usr/bin/g++-${{ matrix.config.gnu }}
       JAVAHOME: /usr/lib/jvm/java-8-openjdk-amd64
       LD_LIBRARY_PATH: $JAVA_HOME/jre/lib/amd64/server:$LD_LIBRARY_PATH
       EDG_URL: https://github.com/ouankou/rose-tools/raw/master/
-      EDG_PACKAGE: rex-edg-5.0-gcc-7.tar.gz
-      EDG_PREFIX: roseBinaryEDG-5-0-x86_64-pc-linux-gnu-gnu-7-5.
+      EDG_PACKAGE: rex-edg-5.0-gcc-${{ matrix.config.gnu }}.tar.gz
+      EDG_PREFIX: roseBinaryEDG-5-0-x86_64-pc-linux-gnu-gnu-${{ matrix.config.gnu }}-5.
 
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install  -y \
-          apt-utils \
-          dialog \
-          software-properties-common && \
-          sudo apt-get install -y openjdk-8-jdk && \
-          sudo apt-get install -y \
+        sudo apt-get install -y openjdk-8-jdk && \
+        sudo apt-get install -y \
           autoconf \
           automake \
           autotools-dev \
@@ -37,15 +38,12 @@ jobs:
           bison \
           build-essential \
           cmake \
-          cpufrequtils \
           curl \
           device-tree-compiler \
-          dkms \
           doxygen \
           flex \
           gawk \
           gcc-multilib \
-          gdb \
           gfortran \
           ghostscript \
           git \
@@ -81,9 +79,6 @@ jobs:
         make install
 
     - name: Configure
-      env:
-        EDG_VERSION: $(cat $GITHUB_WORKSPACE/src/frontend/CxxFrontend/EDG_VERSION)
-        EDG_FILE: ${EDG_PREFIX}${EDG_VERSION}
       run: |
         cd $GITHUB_WORKSPACE
         ./build
@@ -93,6 +88,8 @@ jobs:
         cd src/frontend/CxxFrontend
         wget ${EDG_URL}${EDG_PACKAGE}
         tar xf ${EDG_PACKAGE}
+        export EDG_VERSION=$(cat $GITHUB_WORKSPACE/src/frontend/CxxFrontend/EDG_VERSION)
+        export EDG_FILE=${EDG_PREFIX}${EDG_VERSION}
         mv EDG ${EDG_FILE}
         tar czf ${EDG_FILE}.tar.gz ${EDG_FILE}
         rm -rf ${EDG_FILE}
@@ -106,5 +103,5 @@ jobs:
 
     - name: Test
       run: |
-        ls $GITHUB_WORKSPACE/../rex_install/bin
-        ls $GITHUB_WORKSPACE/../rex_install/lib
+        cd $GITHUB_WORKSPACE/../rex_build
+        make check-core
