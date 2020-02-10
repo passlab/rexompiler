@@ -17,8 +17,7 @@ jobs:
     env:
       CC: /usr/bin/gcc-${{ matrix.config.gnu }}
       CXX: /usr/bin/g++-${{ matrix.config.gnu }}
-      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
-      LD_LIBRARY_PATH: $JAVA_HOME/jre/lib/amd64/server:$LD_LIBRARY_PATH
+      LD_LIBRARY_PATH: /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server:/usr/lib/x86_64-linux-gnu
       EDG_URL: https://github.com/ouankou/rose-tools/raw/master/
       EDG_PACKAGE: rex-edg-5.0-gcc-${{ matrix.config.gnu }}.tar.gz
       EDG_PREFIX: roseBinaryEDG-5-0-x86_64-pc-linux-gnu-gnu-${{ matrix.config.gnu }}-5.
@@ -78,7 +77,7 @@ jobs:
         make
         make install
 
-    - name: Configure
+    - name: configure
       run: |
         cd $GITHUB_WORKSPACE
         ./build
@@ -95,13 +94,13 @@ jobs:
         rm -rf ${EDG_FILE}
         rm ${EDG_PACKAGE}
 
-    - name: Build
+    - name: build
       run: |
         cd $GITHUB_WORKSPACE/../rex_build
         make core -j2
         make install-core
 
-    - name: Test
+    - name: test
       run: |
         cd $GITHUB_WORKSPACE/../rex_build
         make check-core
