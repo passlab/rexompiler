@@ -11,19 +11,24 @@ jobs:
       matrix:
         config:
           - {os: ubuntu-18.04, gnu: 7}
-          #- {os: ubuntu-16.04, gnu: 5}
+          - {os: ubuntu-16.04, gnu: 5}
 
     runs-on: ${{ matrix.config.os }}
     env:
       CC: /usr/bin/gcc-${{ matrix.config.gnu }}
       CXX: /usr/bin/g++-${{ matrix.config.gnu }}
       LD_LIBRARY_PATH: /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server:/usr/lib/x86_64-linux-gnu
-      EDG_URL: https://github.com/ouankou/rose-tools/raw/master/
-      EDG_PACKAGE: rex-edg-5.0-gcc-${{ matrix.config.gnu }}.tar.gz
-      EDG_PREFIX: roseBinaryEDG-5-0-x86_64-pc-linux-gnu-gnu-${{ matrix.config.gnu }}-5.
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: Checkout submodules
+      shell: bash
+      run: |
+        git submodule sync --recursive
+        git -c "http.extraheader=Authorization: basic ${{ secrets.SUBMODULE_TOKEN }}" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+        git submodule status
+
     - name: Install dependencies
       run: |
         sudo apt-get update
@@ -77,30 +82,21 @@ jobs:
         make
         make install
 
-    - name: configure
+    - name: Configure
       run: |
         cd $GITHUB_WORKSPACE
         ./build
         mkdir ../rex_build
         cd ../rex_build
         $GITHUB_WORKSPACE/configure --prefix=$GITHUB_WORKSPACE/../rex_install --with-boost=/usr --with-boost-libdir=/usr/lib/x86_64-linux-gnu/ --enable-languages=c,c++,fortran --disable-tests-directory --disable-tutorial-directory --disable-projects-directory --with-ompparser=$GITHUB_WORKSPACE/../ompparser_install
-        cd src/frontend/CxxFrontend
-        wget ${EDG_URL}${EDG_PACKAGE}
-        tar xf ${EDG_PACKAGE}
-        export EDG_VERSION=$(cat $GITHUB_WORKSPACE/src/frontend/CxxFrontend/EDG_VERSION)
-        export EDG_FILE=${EDG_PREFIX}${EDG_VERSION}
-        mv EDG ${EDG_FILE}
-        tar czf ${EDG_FILE}.tar.gz ${EDG_FILE}
-        rm -rf ${EDG_FILE}
-        rm ${EDG_PACKAGE}
 
-    - name: build
+    - name: Build
       run: |
         cd $GITHUB_WORKSPACE/../rex_build
         make core -j2
         make install-core
 
-    - name: test
+    - name: Test
       run: |
         cd $GITHUB_WORKSPACE/../rex_build
         make check-core
