@@ -835,7 +835,7 @@ namespace OmpSupport
           result = SgOmpClause::e_omp_reduction_default;
           break;
         }
-      case OMPC_REDUCTION_MODIFIER_unknown:
+      case OMPC_REDUCTION_MODIFIER_unspecified:
         {
           result = SgOmpClause::e_omp_reduction_modifier_unknown;
           break;
@@ -1147,7 +1147,7 @@ namespace OmpSupport
           result = SgOmpClause::e_omp_allocate_user_defined_modifier;
           break;
         }
-      case OMPC_ALLOCATE_ALLOCATOR_unknown:
+      case OMPC_ALLOCATE_ALLOCATOR_unspecified:
         {
           result = SgOmpClause::e_omp_allocate_modifier_unknown;
           break;
@@ -2209,8 +2209,14 @@ namespace OmpSupport
                 is_complex_clause = true;
                 SgOmpClause* sgclause = buildOmpExpressionComplexClause(att, &*iter, c_clause);
                 is_complex_clause = false;
-                first_stmt->get_clauses().push_back(sgclause);
-                sgclause->set_parent(first_stmt);
+                if (c_clause == e_collapse || c_clause == e_ordered_clause) {
+                    isSgOmpClauseBodyStatement(second_stmt)->get_clauses().push_back(sgclause);
+                    sgclause->set_parent(second_stmt);
+                }
+                else {
+                    isSgOmpClauseBodyStatement(first_stmt)->get_clauses().push_back(sgclause);
+                    sgclause->set_parent(first_stmt);
+                };
             };
             break;
         };
