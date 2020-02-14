@@ -1495,6 +1495,7 @@ exampleTranslators/documentedExamples/Makefile
 exampleTranslators/documentedExamples/dataBaseExamples/Makefile
 exampleTranslators/documentedExamples/simpleTranslatorExamples/Makefile
 exampleTranslators/documentedExamples/simpleTranslatorExamples/exampleMakefile
+LicenseInformation/Makefile
 scripts/Makefile
 src/3rdPartyLibraries/MSTL/Makefile
 src/3rdPartyLibraries/Makefile
