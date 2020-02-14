@@ -293,6 +293,7 @@ namespace OmpSupport
 
             // initialize an empty clause in specific clause deque.
             ComplexClause* new_clause = new ComplexClause();
+            new_clause->clause_type = clause_type;
             complex_clauses[clause_type]->push_back(*new_clause);
             // garbage collection.
             delete new_clause;
@@ -501,11 +502,39 @@ namespace OmpSupport
 
   SgVariableSymbol* OmpAttribute::addComplexClauseVariable(ComplexClause* target_clause, const std::string& varString, SgInitializedName* sgvar/*=NULL*/) {
     SgVariableSymbol* symbol = NULL;
+    omp_construct_enum targetConstruct = target_clause->clause_type;
     // Try to resolve the variable if SgInitializedName is not provided
     if ((sgvar == NULL)&&(mNode!=NULL))
     {
       SgScopeStatement* scope = SageInterface::getScope(mNode);
-     
+
+      // special handling for omp declare simd directive
+      // It may have clauses referencing a variable declared in an immediately followed function's parameter list
+      if (cur_omp_directive ==e_declare_simd && ( targetConstruct==e_linear||
+          targetConstruct==e_simdlen||
+          targetConstruct==e_aligned||
+          targetConstruct==e_uniform)
+         )
+      {
+        SgStatement* cur_stmt= getEnclosingStatement(mNode);
+        ROSE_ASSERT (isSgPragmaDeclaration(cur_stmt));
+
+        // omp declare simd may show up several times before the impacted function declaration.
+        SgStatement* nstmt = getNextStatement(cur_stmt);
+        ROSE_ASSERT (nstmt); // must have next statement followed.
+        // skip possible multiple pragma declarations
+        while (isSgPragmaDeclaration(nstmt))
+        {
+          nstmt = getNextStatement (nstmt);
+          ROSE_ASSERT (nstmt);
+        }
+        // At this point, it must be a function declaration
+        SgFunctionDeclaration* func = isSgFunctionDeclaration(nstmt);
+        ROSE_ASSERT (func);
+        SgFunctionDefinition* def = func->get_definition();
+        scope = def->get_body();
+      }
+
       ROSE_ASSERT(scope!=NULL);
       //resolve the variable here
       symbol = lookupVariableSymbolInParentScopes (varString, scope);

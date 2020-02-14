@@ -264,6 +264,7 @@ namespace OmpSupport
   class ComplexClause {
 
     public:
+      omp_construct_enum clause_type;
       omp_construct_enum first_parameter;
       omp_construct_enum second_parameter;
       omp_construct_enum third_parameter;
