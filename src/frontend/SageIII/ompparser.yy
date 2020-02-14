@@ -48,6 +48,8 @@ extern void omp_parser_init(SgNode* aNode, const char* str);
 /*Treat the entire expression as a string for now
   Implemented in the scanner*/
 extern void omp_parse_expr();
+extern void omp_parse_idexpr();
+extern void omp_parse_pop_state();
 
 //The result AST representing the annotation
 extern OmpAttribute* getParsedDirective();
@@ -152,6 +154,7 @@ corresponding C type is union name defaults to YYSTYPE.
         READ WRITE CAPTURE SIMDLEN FINAL PRIORITY
         INSCAN
         OMP_DEFAULT_MEM_ALLOC OMP_LARGE_CAP_MEM_ALLOC OMP_CONST_MEM_ALLOC OMP_HIGH_BW_MEM_ALLOC OMP_LOW_LAT_MEM_ALLOC OMP_CGROUP_MEM_ALLOC OMP_PTEAM_MEM_ALLOC OMP_THREAD_MEM_ALLOC
+        VARLIST
 /*We ignore NEWLINE since we only care about the pragma string , We relax the syntax check by allowing it as part of line continuation */
 %token <itype> ICONSTANT   
 %token <stype> EXPRESSION ID_EXPRESSION 
@@ -207,20 +210,23 @@ openmp_directive : parallel_directive
                  | omp_expression
                  ;
 
-omp_varlist : OMP {
+omp_varlist : VARLIST {
                     is_ompparser_variable = true;
                     omptype = e_unknown; 
-                    cur_omp_directive = omptype; b_within_variable_list = true;} variable_list {b_within_variable_list = false; is_ompparser_variable = false; }
+                    omp_parse_idexpr();
+                    cur_omp_directive = omptype; b_within_variable_list = true;} variable_list {b_within_variable_list = false; is_ompparser_variable = false; omp_parse_pop_state(); }
                ;
 
 omp_expression : EXPRESSION {
                 is_ompparser_expression = true;
                 omptype = e_unknown;
                 b_within_variable_list = true;
+                omp_parse_idexpr();
             } '(' expression ')' {
                 addOmpExpression("");
                 is_ompparser_expression = false;
                 b_within_variable_list = false;
+                omp_parse_pop_state();
             }
             ;
 

@@ -2,6 +2,7 @@
 %option outfile="lex.yy.c"
 %option stack
 %x EXPR
+%x ID_EXPR
 
 %{
 
@@ -237,7 +238,55 @@ CYCLIC          {return ( CYCLIC ); }
                         
                 }
 
+<ID_EXPR>{digit}{digit}* { omp_lval.itype = atoi(strdup(yytext)); return (ICONSTANT); }
+<ID_EXPR>"="             { return ('='); }
+<ID_EXPR>"("             { return ('('); }
+<ID_EXPR>")"             { return (')'); }
+<ID_EXPR>"["             { return ('['); }
+<ID_EXPR>"]"             { return (']'); }
+<ID_EXPR>","             { return (','); }
+<ID_EXPR>":"             { return (':'); }
+<ID_EXPR>"+"             { return ('+'); }
+<ID_EXPR>"*"             { return ('*'); }
+<ID_EXPR>"-"             { return ('-'); }
+<ID_EXPR>"&"             { return ('&'); }
+<ID_EXPR>"^"             { return ('^'); }
+<ID_EXPR>"|"             { return ('|'); }
+<ID_EXPR>"&&"            { return (LOGAND); }
+<ID_EXPR>"||"            { return (LOGOR); }
+<ID_EXPR>"<<"            { return (SHLEFT); }
+<ID_EXPR>">>"            { return (SHRIGHT); }
+<ID_EXPR>"++"            { return (PLUSPLUS); }
+<ID_EXPR>"--"            { return (MINUSMINUS); }
+
+<ID_EXPR>">>="            {return(RIGHT_ASSIGN2); }
+<ID_EXPR>"<<="            {return(LEFT_ASSIGN2); }
+<ID_EXPR>"+="             {return(ADD_ASSIGN2); }
+<ID_EXPR>"-="             {return(SUB_ASSIGN2); }
+<ID_EXPR>"*="             {return(MUL_ASSIGN2); }
+<ID_EXPR>"/="             {return(DIV_ASSIGN2); }
+<ID_EXPR>"%="             {return(MOD_ASSIGN2); }
+<ID_EXPR>"&="             {return(AND_ASSIGN2); }
+<ID_EXPR>"^="             {return(XOR_ASSIGN2); }
+<ID_EXPR>"|="             {return(OR_ASSIGN2); }
+
+<ID_EXPR>"<"             { return ('<'); }
+<ID_EXPR>">"             { return ('>'); }
+<ID_EXPR>"<="            { return (LE_OP2);}
+<ID_EXPR>">="            { return (GE_OP2);}
+<ID_EXPR>"=="            { return (EQ_OP2);}
+<ID_EXPR>"!="            { return (NE_OP2);}
+<ID_EXPR>"\\"            { /*printf("found a backslash\n"); This does not work properly but can be ignored*/}
+
+<ID_EXPR>"->"            { return (PTR_TO); }
+<ID_EXPR>"."             { return ('.'); }
+
+<ID_EXPR>{newline}       { /* printf("found a new line\n"); */ /* return (NEWLINE); We ignore NEWLINE since we only care about the pragma string , We relax the syntax check by allowing it as part of line continuation */ }
+<ID_EXPR>{blank}*        ;
+<ID_EXPR>{id}   { omp_lval.stype = strdup(yytext); return (ID_EXPRESSION); }
+
 expr            { return (EXPRESSION); }
+varlist         { return (VARLIST); }
 identifier      { return (IDENTIFIER); /*not in use for now*/ }
 {id}            { omp_lval.stype = strdup(yytext); 
                   return (ID_EXPRESSION); }
@@ -251,6 +300,14 @@ identifier      { return (IDENTIFIER); /*not in use for now*/ }
 /* yy_push_state can't be called outside of this file, provide a wrapper */
 extern void omp_parse_expr() {
         yy_push_state(EXPR);
+}
+
+extern void omp_parse_idexpr() {
+        yy_push_state(ID_EXPR);
+}
+
+extern void omp_parse_pop_state() {
+        yy_pop_state();
 }
 
 /* entry point invoked by callers to start scanning for a string */
