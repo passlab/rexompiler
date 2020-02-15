@@ -3212,35 +3212,32 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         }
     }
     body->set_parent(result);
-    std::map<OpenMPClauseKind, std::vector<OpenMPClause *> *>* all_clauses = current_OpenMPIR.second->getAllClauses();
-    std::map<OpenMPClauseKind, std::vector<OpenMPClause *> *>::iterator iter;
-    for (iter = all_clauses->begin(); iter != all_clauses->end(); iter++){
-        std::vector<OpenMPClause*>* current_clauses = iter->second;
-        std::vector<OpenMPClause*>::iterator clause_iter;
-        for (clause_iter = current_clauses->begin(); clause_iter != current_clauses->end(); clause_iter++) {
-            clause_kind = (*clause_iter)->getKind();
-            switch (clause_kind) {
-                case OMPC_if:
-                case OMPC_num_threads: {
-                    convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
-                    break;
-                }
-                case OMPC_default: {
-                    convertDefaultClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
-                    break;
-                }
-                case OMPC_proc_bind: {
-                    convertProcBindClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
-                    break;
-                }
-                case OMPC_when: {
-                    convertWhenClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
-                    break;
-                }
-                default: {
-                    convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
-                }
-            };
+    // extract all the clauses based on the vector of clauses in the original order
+    std::vector<OpenMPClause*>* all_clauses = current_OpenMPIR.second->getOrderedClauses();
+    std::vector<OpenMPClause*>::iterator clause_iter;
+    for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end(); clause_iter++) {
+        clause_kind = (*clause_iter)->getKind();
+        switch (clause_kind) {
+            case OMPC_if:
+            case OMPC_num_threads: {
+                convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+                break;
+            }
+            case OMPC_default: {
+                convertDefaultClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+                break;
+            }
+            case OMPC_proc_bind: {
+                convertProcBindClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+                break;
+            }
+            case OMPC_when: {
+                convertWhenClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+                break;
+            }
+            default: {
+                convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+            }
         };
     };
 
@@ -3273,35 +3270,32 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         }
     }
     //body->set_parent(result);
-    std::map<OpenMPClauseKind, std::vector<OpenMPClause *> *>* all_clauses = current_OpenMPIR.second->getAllClauses();
-    std::map<OpenMPClauseKind, std::vector<OpenMPClause *> *>::iterator iter;
-    for (iter = all_clauses->begin(); iter != all_clauses->end(); iter++){
-        std::vector<OpenMPClause*>* current_clauses = iter->second;
-        std::vector<OpenMPClause*>::iterator clause_iter;
-        for (clause_iter = current_clauses->begin(); clause_iter != current_clauses->end(); clause_iter++) {
-            clause_kind = (*clause_iter)->getKind();
-            switch (clause_kind) {
-                case OMPC_if:
-                case OMPC_num_threads: {
-                    convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
-                    break;
-                }
-                case OMPC_default: {
-                    convertDefaultClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
-                    break;
-                }
-                case OMPC_proc_bind: {
-                    convertProcBindClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
-                    break;
-                }
-                case OMPC_when: {
-                    convertWhenClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
-                    break;
-                }
-                default: {
-                    convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
-                }
-            };
+    // extract all the clauses based on the vector of clauses in the original order
+    std::vector<OpenMPClause*>* all_clauses = current_OpenMPIR.second->getOrderedClauses();
+    std::vector<OpenMPClause*>::iterator clause_iter;
+    for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end(); clause_iter++) {
+        clause_kind = (*clause_iter)->getKind();
+        switch (clause_kind) {
+            case OMPC_if:
+            case OMPC_num_threads: {
+                convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+                break;
+            }
+            case OMPC_default: {
+                convertDefaultClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+                break;
+            }
+            case OMPC_proc_bind: {
+                convertProcBindClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+                break;
+            }
+            case OMPC_when: {
+                convertWhenClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+                break;
+            }
+            default: {
+                convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
+            }
         };
     };
     
