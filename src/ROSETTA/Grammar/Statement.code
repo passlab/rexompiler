@@ -19724,6 +19724,12 @@ SgOmpParallelStatement::post_construction_initialization()
    {}
 SOURCE_OMP_PARALLEL_STATEMENT_END
 
+SOURCE_OMP_TEAMS_STATEMENT_START
+void
+SgOmpTeamsStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TEAMS_STATEMENT_END
+
 SOURCE_OMP_METADIRECTIVE_STATEMENT_START
 void
 SgOmpMetadirectiveStatement::post_construction_initialization()
