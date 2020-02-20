@@ -10582,10 +10582,15 @@ SgModifierType* SageBuilder::buildModifierType(SgType * base_type /*= NULL*/)
    }
 #endif
 
-SgTypeBool * SageBuilder::buildBoolType() {
-  SgTypeBool * result =SgTypeBool::createType();
+// Rasmussen (2/20/2020): Added builder functions for type size (kind) expressions for Fortran and Jovial
+SgTypeBool * SageBuilder::buildBoolType(SgExpression* kind_expr) {
+  SgTypeBool * result = SgTypeBool::createType(kind_expr);
   ROSE_ASSERT(result);
   return result;
+}
+
+SgTypeBool * SageBuilder::buildBoolType() {
+  return buildBoolType(NULL);
 }
 
 SgTypeNullptr* SageBuilder::buildNullptrType()
@@ -10666,11 +10671,16 @@ SgTypeUnsignedLong * SageBuilder::buildUnsignedLongType()
   return result;
 }
 
-SgTypeUnsignedInt * SageBuilder::buildUnsignedIntType()
+// Rasmussen (2/20/2020): Added builder functions for type size (kind) expressions for Fortran and Jovial
+SgTypeUnsignedInt * SageBuilder::buildUnsignedIntType(SgExpression* kind_expr)
 {
   SgTypeUnsignedInt * result = SgTypeUnsignedInt::createType();
   ROSE_ASSERT(result);
   return result;
+}
+SgTypeUnsignedInt * SageBuilder::buildUnsignedIntType()
+{
+  return buildUnsignedIntType(NULL);
 }
 
 SgTypeSignedShort * SageBuilder::buildSignedShortType()
@@ -10833,21 +10843,36 @@ SgTypeString * SageBuilder::buildStringType( SgExpression* stringLengthExpressio
      return result;
    }
 
-SgTypeInt * SageBuilder::buildIntType()
+// Rasmussen (2/20/2020): Added builder functions for type size (kind) expressions for Fortran and Jovial
+SgTypeInt * SageBuilder::buildIntType(SgExpression* kind_expr)
 {
   SgTypeInt * result =SgTypeInt::createType();
   ROSE_ASSERT(result);
   return result;
 }
+SgTypeInt * SageBuilder::buildIntType()
+{
+  return buildIntType(NULL);
+}
+
 SgTypeDouble * SageBuilder::buildDoubleType()
 {
   SgTypeDouble * result =SgTypeDouble::createType();
   ROSE_ASSERT(result);
   return result;
 }
+
 SgTypeFloat * SageBuilder::buildFloatType()
 {
   SgTypeFloat * result =SgTypeFloat::createType();
+  ROSE_ASSERT(result);
+  return result;
+}
+
+// Rasmussen (2/20/2020): Added builder for Jovial fixed type
+SgTypeFixed* buildFixedType(SgExpression* fraction, SgExpression* scale)
+{
+  SgTypeFixed * result = SgTypeFixed::createType(scale, fraction);
   ROSE_ASSERT(result);
   return result;
 }
