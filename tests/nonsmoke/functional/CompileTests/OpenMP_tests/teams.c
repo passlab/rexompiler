@@ -3,7 +3,7 @@
 #include <omp.h> 
 int main() 
 {
- int res = 0, n = 0;
+ int res = 0, n = 10;
  #pragma omp teams num_teams(n) reduction(+:res)
     {
     res = omp_get_team_num();
