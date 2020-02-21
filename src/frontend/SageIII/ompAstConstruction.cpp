@@ -18,6 +18,7 @@ extern OpenMPDirective* parseOpenMP(const char*, void * _exprParse(const char*))
 //Liao, 10/27/2008: parsing OpenMP pragma here
 //Handle OpenMP pragmas. This should be called after preprocessing information is attached since macro calls may exist within pragmas, Liao, 3/31/2009
 extern int omp_parse();
+extern SgExpression* parseExpression(SgNode*, const char*);
 extern OmpSupport::OmpAttribute* getParsedDirective();
 extern void omp_parser_init(SgNode* aNode, const char* str);
 //Fortran OpenMP parser interface
@@ -27,7 +28,7 @@ static OpenMPDirective* ompparser_OpenMPIR;
 static bool is_complex_clause = false;
 static bool use_ompparser = false;
 static bool checkOpenMPIR(OpenMPDirective*);
-static void parseExpression (const char*);
+//static void parseExpression (const char*);
 static void parseFortran(SgSourceFile*);
 static void convertAST();
 static SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
@@ -3648,6 +3649,7 @@ SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_
         case OMPC_if: {
             OpenMPIfClauseModifier if_modifier = ((OpenMPIfClause*)current_omp_clause)->getModifier();
             SgOmpClause::omp_if_modifier_enum sg_modifier = toSgOmpClauseIfModifier(if_modifier);
+            clause_expression->set_parent(current_OpenMPIR.first);
             SgExpression* if_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
             result = new SgOmpIfClause(if_expression, sg_modifier);
             printf("If Clause added!\n");
@@ -3674,11 +3676,11 @@ SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_
 }
 
 SgExpression* parseOmpExpression(SgPragmaDeclaration* directive, std::string expression) {
-    std::string expr_string = std::string() + "expr (" + expression + ")\n";
-    omp_parser_init(directive, expr_string.c_str());
-    omp_parse();
 
-    return omp_expression;
+    std::string expr_string = std::string() + "expr (" + expression + ")\n";
+    SgExpression* sg_expression = parseExpression(directive, expr_string.c_str());
+
+    return sg_expression;
 }
 
 void buildVariableList(SgOmpVariablesClause* current_omp_clause) {
@@ -3747,13 +3749,13 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
     return true;
 }
 
-void parseExpression (const char* omp_expression) {
+//void parseExpression (const char* omp_expression) {
 
     //omp_parser_init();
-    ;
+//    ;
  
 
-}
+//}
 
 
 void parseFortran(SgSourceFile *sageFilePtr)

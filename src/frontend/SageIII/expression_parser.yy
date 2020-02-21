@@ -44,6 +44,7 @@ extern void omp_lexer_init(const char* str);
 
 //! Initialize the parser with the originating SgPragmaDeclaration and its pragma text
 extern void omp_parser_init(SgNode* aNode, const char* str);
+extern SgExpression* parseExpression(SgNode*, const char*);
 
 //The result AST representing the annotation
 extern OmpAttribute* getParsedDirective();
@@ -102,8 +103,6 @@ static bool is_ompparser_expression = false;
 // add ompparser var
 static bool addOmpVariable(const char*);
 std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
-static bool addOmpExpression(const char*);
-SgExpression* omp_expression = NULL;
 %}
 
 %locations
@@ -170,7 +169,6 @@ omp_expression : EXPRESSION {
                 omptype = e_unknown;
                 b_within_variable_list = true;
             } '(' expression ')' {
-                addOmpExpression("");
                 is_ompparser_expression = false;
                 b_within_variable_list = false;
             }
@@ -602,12 +600,14 @@ static bool addOmpVariable(const char* var)  {
     return true;
 }
 
+SgExpression* parseExpression(SgNode* aNode, const char* str) {
 
-static bool addOmpExpression(const char* expr) {
+    orig_str = str;
+    omp_lexer_init(str);
+    gNode = aNode;
+    omp_parse();
     assert (current_exp != NULL);
-    omp_expression = current_exp;
-    omp_expression->set_parent(gNode);
-    return true;
+    SgExpression* sg_expression = current_exp;
+    return sg_expression;
+
 }
-
-
