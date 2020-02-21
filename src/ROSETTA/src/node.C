@@ -81,11 +81,13 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpFinalClause, "OmpFinalClause", "OmpFinalClauseTag" );
      NEW_TERMINAL_MACRO (OmpPriorityClause, "OmpPriorityClause", "OmpPriorityClauseTag" );
      NEW_TERMINAL_MACRO (OmpNumThreadsClause, "OmpNumThreadsClause", "OmpNumThreadsClauseTag" );
+     NEW_TERMINAL_MACRO (OmpNumTeamsClause, "OmpNumTeamsClause", "OmpNumTeamsClauseTag" );
+     NEW_TERMINAL_MACRO (OmpThreadLimitClause, "OmpThreadLimitClause", "OmpThreadLimitClauseTag" );
      NEW_TERMINAL_MACRO (OmpDeviceClause, "OmpDeviceClause", "OmpIfDeviceTag" );
      NEW_TERMINAL_MACRO (OmpSafelenClause, "OmpSafelenClause", "OmpSafelenTag" );
      NEW_TERMINAL_MACRO (OmpSimdlenClause, "OmpSimdlenClause", "OmpSimdlenTag" );
 
-     NEW_NONTERMINAL_MACRO (OmpExpressionClause, OmpOrderedClause | OmpCollapseClause | OmpIfClause | OmpNumThreadsClause | OmpDeviceClause |
+     NEW_NONTERMINAL_MACRO (OmpExpressionClause, OmpOrderedClause | OmpCollapseClause | OmpIfClause | OmpNumThreadsClause | OmpNumTeamsClause | OmpThreadLimitClause | OmpDeviceClause |
                             OmpSafelenClause | OmpSimdlenClause | OmpFinalClause | OmpPriorityClause
          ,"OmpExpressionClause", "OmpExpressionClauseTag",false );
 

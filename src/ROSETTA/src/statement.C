@@ -275,6 +275,7 @@ Grammar::setUpStatements ()
      //------------------------------------------------------------
     // +body+ clauses
     NEW_TERMINAL_MACRO (OmpParallelStatement,  "OmpParallelStatement",   "OMP_PARALLEL_STMT" );
+    NEW_TERMINAL_MACRO (OmpTeamsStatement,  "OmpTeamsStatement",   "OMP_TEAMS_STMT" );
     NEW_TERMINAL_MACRO (OmpMetadirectiveStatement,  "OmpMetadirectiveStatement",   "OMP_METADIRECTIVE_STMT" );
     NEW_TERMINAL_MACRO (OmpSingleStatement,    "OmpSingleStatement",     "OMP_SINGLE_STMT" );
     NEW_TERMINAL_MACRO (OmpTaskStatement,      "OmpTaskStatement",       "OMP_TASK_STMT" );
@@ -294,7 +295,7 @@ Grammar::setUpStatements ()
     // A base class for the most commonly formed directives with both clauses and a structured body
     // We treat OmpSectionsStatement separatedly by move the body to a list of SgOmpSectionStatement
     // sensitive to 
-    NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpSingleStatement | OmpAtomicStatement | OmpMetadirectiveStatement |
+    NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpMetadirectiveStatement |
               OmpTaskStatement| OmpForStatement| OmpDoStatement | OmpSectionsStatement | OmpTargetStatement| OmpTargetDataStatement |
               OmpSimdStatement| OmpForSimdStatement ,
         "OmpClauseBodyStatement",   "OMP_CLAUSEBODY_STMT", false );
@@ -4183,6 +4184,7 @@ Grammar::setUpStatements ()
     OmpDeclareSimdStatement.setFunctionSource      ("SOURCE_OMP_DECLARE_SIMD_STATEMENT", "../Grammar/Statement.code");
 
     OmpParallelStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
+    OmpTeamsStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_STATEMENT", "../Grammar/Statement.code" );
     OmpMetadirectiveStatement.setFunctionSource            ("SOURCE_OMP_METADIRECTIVE_STATEMENT", "../Grammar/Statement.code" );
     OmpSectionsStatement.setFunctionSource            ("SOURCE_OMP_SECTIONS_STATEMENT", "../Grammar/Statement.code" );
     OmpSectionStatement.setFunctionSource            ("SOURCE_OMP_SECTION_STATEMENT", "../Grammar/Statement.code" );

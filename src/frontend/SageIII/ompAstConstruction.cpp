@@ -3147,6 +3147,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
 
     switch (directive_kind) {
         case OMPD_metadirective:
+        case OMPD_teams:
         case OMPD_parallel: {
             result = convertBodyDirective(current_OpenMPIR);
             break;
@@ -3201,6 +3202,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             result = new SgOmpParallelStatement(NULL, body);
             break;
         }
+        case OMPD_teams: {
+            result = new SgOmpTeamsStatement(NULL, body);
+            break;
+        }
         case OMPD_metadirective: {
             result = new SgOmpMetadirectiveStatement(NULL, body);
             break;
@@ -3220,6 +3225,8 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         clause_kind = (*clause_iter)->getKind();
         switch (clause_kind) {
             case OMPC_if:
+            case OMPC_num_teams:
+            case OMPC_thread_limit:
             case OMPC_num_threads: {
                 convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
                 break;
@@ -3259,6 +3266,10 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
             result = new SgOmpParallelStatement(NULL, NULL);
             break;
         }
+        case OMPD_teams: {
+            result = new SgOmpTeamsStatement(NULL, NULL);
+            break;
+        }
         case OMPD_metadirective: {
             result = new SgOmpMetadirectiveStatement(NULL, NULL);
             break;
@@ -3278,6 +3289,8 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         clause_kind = (*clause_iter)->getKind();
         switch (clause_kind) {
             case OMPC_if:
+            case OMPC_num_teams:
+            case OMPC_thread_limit:
             case OMPC_num_threads: {
                 convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR, *clause_iter);
                 break;
@@ -3661,6 +3674,18 @@ SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_
             printf("Num_threads Clause added!\n");
             break;
         }
+        case OMPC_num_teams: {
+            SgExpression* num_teams_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
+            result = new SgOmpNumTeamsClause(num_teams_expression);
+            printf("Num_teams Clause added!\n");
+            break;
+        }
+        case OMPC_thread_limit: {
+            SgExpression* thread_limit_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
+            result = new SgOmpThreadLimitClause(thread_limit_expression);
+            printf("Thread_limit Clause added!\n");
+            break;
+        }
         default: {
             printf("Unknown Clause!\n");
         }
@@ -3714,6 +3739,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
     OpenMPDirectiveKind directive_kind = directive->getKind();
     switch (directive_kind) {
         case OMPD_metadirective:
+        case OMPD_teams:
         case OMPD_parallel: {
             break;
         }
@@ -3732,6 +3758,8 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_firstprivate:
                 case OMPC_if:
                 case OMPC_num_threads:
+                case OMPC_num_teams:
+                case OMPC_thread_limit:
                 case OMPC_private:
                 case OMPC_proc_bind:
                 case OMPC_reduction:

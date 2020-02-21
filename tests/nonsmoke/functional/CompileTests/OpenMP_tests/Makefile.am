@@ -159,6 +159,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	task_underIf.c \
 	task_wait.c \
 	task_wait2.c \
+	teams.c \
 	twoRegions.c \
 	threadprivate2.c \
 	threadprivate3.c \

@@ -2810,6 +2810,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpOrderedStatement:
                     case V_SgOmpSectionsStatement:
                     case V_SgOmpParallelStatement:
+                    case V_SgOmpTeamsStatement:
                     case V_SgOmpTargetStatement:
                     case V_SgOmpTargetDataStatement:
                     case V_SgOmpWorkshareStatement:
@@ -8226,6 +8227,10 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     curprint(string(" priority("));
   else if (isSgOmpNumThreadsClause(c))
     curprint(string(" num_threads("));
+  else if (isSgOmpNumTeamsClause(c))
+    curprint(string(" num_teams("));
+  else if (isSgOmpThreadLimitClause(c))
+    curprint(string(" thread_limit("));
   else if (isSgOmpDeviceClause(c))
     curprint(string(" device("));
   else if (isSgOmpSafelenClause(c))
@@ -8324,7 +8329,9 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpIfClause:  
     case V_SgOmpFinalClause:  
     case V_SgOmpPriorityClause:  
-    case V_SgOmpNumThreadsClause:  
+    case V_SgOmpNumThreadsClause:
+    case V_SgOmpNumTeamsClause:  
+    case V_SgOmpThreadLimitClause:
     case V_SgOmpSafelenClause:  
     case V_SgOmpSimdlenClause:  
     case V_SgOmpOrderedClause:
@@ -8525,6 +8532,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpParallelStatement:
       {
         curprint(string ("parallel "));
+        break;
+      }
+    case V_SgOmpTeamsStatement:
+      {
+        curprint(string ("teams "));
         break;
       }
     case V_SgOmpTargetStatement:
