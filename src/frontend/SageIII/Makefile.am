@@ -54,9 +54,9 @@ if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 endif
 
 # omplexer.cc needs a header generaetd from ompparser.yy
-omplexer.lo: ompparser.h omplexer.cc
-ompparser.h: ompparser.cc
-	if test -f ompparser.hh; then $(LN_S) -f ompparser.hh ompparser.h; fi;
+expression_lexer.lo: expression_parser.h expression_lexer.cc
+expression_parser.h: expression_parser.cc
+	if test -f expression_parser.hh; then $(LN_S) -f expression_parser.hh expression_parser.h; fi;
 
 # Force sage.docs to be make by default 
 # (if sage.docs.in is modified)
@@ -93,11 +93,11 @@ CXX_TEMPLATE_REPOSITORY_PATH = .
 # Rasmussen (04/17/2019): Support for ATerms has been deprecated (atermSupport.h removed)
 EXTRA_DIST = CMakeLists.txt preproc-c.ll docs rtiHelpers.h attributeListMap.h \
              advanced_preprocessing_hooks.h rose_attributes_list.h \
-             omplexer.cc ompparser.cc ompparser.h sage3basic.hhh fileoffsetbits.h rosedll.h \
+             expression_lexer.cc expression_parser.cc expression_parser.h sage3basic.hhh fileoffsetbits.h rosedll.h \
 	     ompAstConstruction.h PolicyControl.txt Utf8.h
 CLEANFILES = haveRosettaGeneratedSource
 
-DISTCLEANFILES = preproc-c.cc ompparser.cc ompparser.h omplexer.cc
+DISTCLEANFILES = preproc-c.cc expression_parser.cc expression_parser.h expression_lexer.cc
 
 # Some source code is generated (call make in ROSE/src/ROSETTA/src to generate these files)
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
@@ -226,7 +226,7 @@ noinst_LTLIBRARIES = libsage3.la
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 libsage3_la_SOURCES = $(libsage3Sources) preproc-c.ll
 else
-libsage3_la_SOURCES = $(libsage3Sources) preproc-c.ll omplexer.ll ompparser.yy
+libsage3_la_SOURCES = $(libsage3Sources) preproc-c.ll expression_lexer.ll expression_parser.yy
 endif
 
 # DQ (3/8/2009): I think that the dependence upon $(top_builddir)/rose_config.h 
@@ -344,7 +344,8 @@ nodist_pkginclude_HEADERS = \
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 BUILT_SOURCES = $(GENERATED_SOURCE)
 else
-BUILT_SOURCES = $(GENERATED_SOURCE) ompparser.cc ompparser.h omplexer.cc
+#BUILT_SOURCES = $(GENERATED_SOURCE) ompparser.cc ompparser.h omplexer.cc
+BUILT_SOURCES = $(GENERATED_SOURCE) expression_parser.cc expression_parser.h expression_lexer.cc
 endif
 
 # DQ (9/9/2007): Put C++_include_files.h back into place
