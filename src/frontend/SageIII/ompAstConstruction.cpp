@@ -18,8 +18,7 @@ extern OpenMPDirective* parseOpenMP(const char*, void * _exprParse(const char*))
 //Liao, 10/27/2008: parsing OpenMP pragma here
 //Handle OpenMP pragmas. This should be called after preprocessing information is attached since macro calls may exist within pragmas, Liao, 3/31/2009
 extern int omp_parse();
-extern SgExpression* parseExpression(SgNode*, const char*);
-extern OmpSupport::OmpAttribute* getParsedDirective();
+extern SgExpression* parseExpression(SgNode*, OpenMPClauseKind, const char*);
 extern void omp_parser_init(SgNode* aNode, const char* str);
 //Fortran OpenMP parser interface
 void parse_fortran_openmp(SgSourceFile *sageFilePtr);
@@ -45,7 +44,7 @@ static SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement*, std::pair<S
 // store temporary expression pairs for ompparser.
 extern std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
 extern SgExpression* omp_expression;
-static SgExpression* parseOmpExpression(SgPragmaDeclaration*, std::string);
+static SgExpression* parseOmpExpression(SgPragmaDeclaration*, OpenMPClauseKind, std::string);
 
 using namespace std;
 using namespace SageInterface;
@@ -253,7 +252,8 @@ namespace OmpSupport
             };
 #endif
             if (!use_ompparser) {
-                OmpAttribute* attribute = getParsedDirective();
+                //OmpAttribute* attribute = getParsedDirective();
+                OmpAttribute* attribute = NULL;
             //cout<<"sage_gen_be.C:23758 debug:\n"<<pragmaString<<endl;
             //attribute->print();//debug only for now
                 addOmpAttribute(attribute,pragmaDeclaration);
@@ -3417,24 +3417,24 @@ SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement* clause_body, std::p
     SgExpression* user_condition = NULL;
     std::string user_condition_string = ((OpenMPWhenClause*)current_omp_clause)->getUserCondition()->second;
     if (user_condition_string.size()) {
-        user_condition = parseOmpExpression(current_OpenMPIR.first, user_condition_string.c_str());
+        user_condition = parseOmpExpression(current_OpenMPIR.first, current_omp_clause->getKind(), user_condition_string.c_str());
     };
     SgExpression* user_condition_score = NULL;
     std::string user_condition_score_string = ((OpenMPWhenClause*)current_omp_clause)->getUserCondition()->first;
     if (user_condition_score_string.size()) {
-        user_condition_score = parseOmpExpression(current_OpenMPIR.first, user_condition_score_string.c_str());
+        user_condition_score = parseOmpExpression(current_OpenMPIR.first, current_omp_clause->getKind(), user_condition_score_string.c_str());
     };
 
     SgExpression* device_arch = NULL;
     std::string device_arch_string = ((OpenMPWhenClause*)current_omp_clause)->getArchExpression()->second;
     if (device_arch_string.size()) {
-        device_arch = parseOmpExpression(current_OpenMPIR.first, device_arch_string.c_str());
+        device_arch = parseOmpExpression(current_OpenMPIR.first, current_omp_clause->getKind(), device_arch_string.c_str());
     };
 
     SgExpression* device_isa = NULL;
     std::string device_isa_string = ((OpenMPWhenClause*)current_omp_clause)->getIsaExpression()->second;
     if (device_isa_string.size()) {
-        device_isa = parseOmpExpression(current_OpenMPIR.first, device_isa_string.c_str());
+        device_isa = parseOmpExpression(current_OpenMPIR.first, current_omp_clause->getKind(), device_isa_string.c_str());
     };
 
     SgOmpClause::omp_when_context_kind_enum sg_device_kind = SgOmpClause::e_omp_when_context_kind_unknown;
@@ -3527,13 +3527,13 @@ SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement* clause_body, std::p
     SgExpression* implementation_user_defined = NULL;
     std::string implementation_user_defined_string = ((OpenMPWhenClause*)current_omp_clause)->getImplementationExpression()->second;
     if (implementation_user_defined_string.size()) {
-        implementation_user_defined = parseOmpExpression(current_OpenMPIR.first, implementation_user_defined_string.c_str());
+        implementation_user_defined = parseOmpExpression(current_OpenMPIR.first, current_omp_clause->getKind(), implementation_user_defined_string.c_str());
     };
 
     SgExpression* implementation_extension = NULL;
     std::string implementation_extension_string = ((OpenMPWhenClause*)current_omp_clause)->getExtensionExpression()->second;
     if (implementation_extension_string.size()) {
-        implementation_extension = parseOmpExpression(current_OpenMPIR.first, implementation_extension_string.c_str());
+        implementation_extension = parseOmpExpression(current_OpenMPIR.first, current_omp_clause->getKind(), implementation_extension_string.c_str());
     };
 
     SgOmpWhenClause* result = new SgOmpWhenClause(user_condition, user_condition_score, device_arch, device_isa, sg_device_kind, sg_implementation_vendor, implementation_user_defined, implementation_extension, variant_directive);
@@ -3541,7 +3541,7 @@ SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement* clause_body, std::p
     if (construct_directive->size()) {
         std::list<SgStatement*> sg_construct_directives;
         SgStatement* sg_construct_directive = NULL;
-        for (int i = 0; i < construct_directive->size(); i++) {
+        for (unsigned int i = 0; i < construct_directive->size(); i++) {
             std::pair<SgPragmaDeclaration*, OpenMPDirective*> paired_construct_OpenMPIR = make_pair(current_OpenMPIR.first, construct_directive->at(i).second);
             sg_construct_directive = convertVariantDirective(paired_construct_OpenMPIR);
             sg_construct_directives.push_back(sg_construct_directive);
@@ -3586,7 +3586,7 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
             SgOmpClause::omp_allocate_modifier_enum sg_modifier = toSgOmpClauseAllocateAllocator(allocate_allocator);
             SgExpression* user_defined_parameter = NULL;
             if (sg_modifier == SgOmpClause::e_omp_allocate_user_defined_modifier) {
-                SgExpression* clause_expression = parseOmpExpression(current_OpenMPIR.first, ((OpenMPAllocateClause*)current_omp_clause)->getUserDefinedAllocator());
+                SgExpression* clause_expression = parseOmpExpression(current_OpenMPIR.first, current_omp_clause->getKind(), ((OpenMPAllocateClause*)current_omp_clause)->getUserDefinedAllocator());
                 user_defined_parameter = checkOmpExpressionClause(clause_expression, global, e_allocate);
             }
             result = new SgOmpAllocateClause(explist, sg_modifier, user_defined_parameter);
@@ -3615,7 +3615,7 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
             SgOmpClause::omp_reduction_identifier_enum sg_identifier = toSgOmpClauseReductionIdentifier(identifier);
             SgExpression* user_defined_identifier = NULL;
             if (sg_identifier == SgOmpClause::e_omp_reduction_user_defined_identifier) {
-                SgExpression* clause_expression = parseOmpExpression(current_OpenMPIR.first, ((OpenMPReductionClause*)current_omp_clause)->getUserDefinedIdentifier());
+                SgExpression* clause_expression = parseOmpExpression(current_OpenMPIR.first, current_omp_clause->getKind(), ((OpenMPReductionClause*)current_omp_clause)->getUserDefinedIdentifier());
                 user_defined_identifier = checkOmpExpressionClause(clause_expression, global, e_reduction);
             }
             result = new SgOmpReductionClause(explist, sg_modifier, sg_identifier, user_defined_identifier);
@@ -3654,7 +3654,7 @@ SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_
     if (current_expressions->size() != 0) {
         std::vector<const char*>::iterator iter;
         for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
-            clause_expression = parseOmpExpression(current_OpenMPIR.first, *iter);
+            clause_expression = parseOmpExpression(current_OpenMPIR.first, current_omp_clause->getKind(), *iter);
         }
     }
 
@@ -3700,10 +3700,10 @@ SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_
     return result;
 }
 
-SgExpression* parseOmpExpression(SgPragmaDeclaration* directive, std::string expression) {
+SgExpression* parseOmpExpression(SgPragmaDeclaration* directive, OpenMPClauseKind clause_kind, std::string expression) {
 
     std::string expr_string = std::string() + "expr (" + expression + ")\n";
-    SgExpression* sg_expression = parseExpression(directive, expr_string.c_str());
+    SgExpression* sg_expression = parseExpression(directive, clause_kind, expr_string.c_str());
 
     return sg_expression;
 }

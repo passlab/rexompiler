@@ -23,7 +23,7 @@ in the build tree
 #include <iostream>
 #include "sage3basic.h" // Sage Interface and Builders
 #include "sageBuilder.h"
-#include "OmpAttribute.h"
+#include "OpenMPIR.h"
 
 #ifdef _MSC_VER
   #undef IN
@@ -46,27 +46,7 @@ extern void omp_lexer_init(const char* str);
 extern void omp_parser_init(SgNode* aNode, const char* str);
 extern SgExpression* parseExpression(SgNode*, const char*);
 
-//The result AST representing the annotation
-extern OmpAttribute* getParsedDirective();
-
 static int omp_error(const char*);
-
-//Insert variable into var_list of some clause
-static bool addVar(const char* var);
-
-
-// The current AST annotation being built
-static OmpAttribute* ompattribute = NULL;
-
-// The current OpenMP construct or clause type which is being parsed
-// It is automatically associated with the current ompattribute
-// Used to indicate the OpenMP directive or clause to which a variable list or an expression should get added for the current OpenMP pragma being parsed.
-static omp_construct_enum omptype = e_unknown;
-
-// the clause where variables will be added.
-static ComplexClause* current_clause;
-// The node to which vars/expressions should get added
-//static OmpAttribute* omptype = 0;
 
 // The context node with the pragma annotation being parsed
 //
@@ -74,7 +54,8 @@ static ComplexClause* current_clause;
 // A few OpenMP directive does not affect the next structure block
 // This variable is set by the prefix_parser_init() before prefix_parse() is called.
 //Liao
-static SgNode* gNode;
+static SgNode* omp_directive_node;
+static OpenMPClauseKind omp_clause_kind;
 
 static const char* orig_str; 
 
@@ -91,11 +72,6 @@ static SgExpression* length_exp = NULL;
 // check if the parsed a[][] is an array element access a[i][j] or array section a[lower:length][lower:length]
 // 
 static bool arraySection=true; 
-
-// mark whether it is complex clause.
-static bool is_complex_clause = false;
-
-static bool addComplexVar(const char* var);
 
 // mark whether it is for ompparser
 static bool is_ompparser_variable = false;
@@ -160,13 +136,11 @@ openmp_expression : omp_varlist
 
 omp_varlist : VARLIST {
                     is_ompparser_variable = true;
-                    omptype = e_unknown; 
-                    cur_omp_directive = omptype; b_within_variable_list = true;} variable_list {b_within_variable_list = false; is_ompparser_variable = false; }
+                    b_within_variable_list = true;} variable_list {b_within_variable_list = false; is_ompparser_variable = false; }
                ;
 
 omp_expression : EXPRESSION {
                 is_ompparser_expression = true;
-                omptype = e_unknown;
                 b_within_variable_list = true;
             } '(' expression ')' {
                 is_ompparser_expression = false;
@@ -433,7 +407,7 @@ primary_expr : ICONSTANT {
               }
              | ID_EXPRESSION {
                current_exp = SageBuilder::buildVarRefExp(
-                 (const char*)($1),SageInterface::getScope(gNode)
+                 (const char*)($1),SageInterface::getScope(omp_directive_node)
                );
                $$ = current_exp;
               }
@@ -482,9 +456,7 @@ postfix_expr:primary_expr {
                {  
                  SgVarRefExp* vref = isSgVarRefExp((SgExpression*)($1));
                  assert (vref);
-                 array_symbol = ompattribute->addVariable(omptype, vref->unparseToString());
-                 // if (!addVar((const char*) )) YYABORT;
-                 //std::cout<<("!array_symbol, add variable for \n")<< vref->unparseToString()<<std::endl;
+                 //array_symbol = ompattribute->addVariable(omptype, vref->unparseToString());
                }
                lower_exp= NULL; 
                length_exp= NULL; 
@@ -500,7 +472,7 @@ postfix_expr:primary_expr {
                  std::cerr<<"while seeing "<<t->class_name()<<std::endl;
                }
                assert (lower_exp && length_exp);
-               ompattribute->array_dimensions[array_symbol].push_back( std::make_pair (lower_exp, length_exp));
+               //ompattribute->array_dimensions[array_symbol].push_back( std::make_pair (lower_exp, length_exp));
              }  
             | postfix_expr PLUSPLUS {
                   current_exp = SageBuilder::buildPlusPlusOp(
@@ -527,37 +499,17 @@ variable-list : identifier
 
 /* in C++ (we use the C++ version) */ 
 variable_list : ID_EXPRESSION {
-              if (is_complex_clause) {
-                addComplexVar((const char*)$1);
-              }
-              else if (is_ompparser_variable) {
                 std::cout << "Got expression: " << $1 << "\n";
                 addOmpVariable((const char*)$1);
               }
-              else {
-                if (!addVar((const char*)$1)) {
-                    YYABORT;
-                };
-              }
-            }
               | variable_list ',' ID_EXPRESSION {
-              if (is_complex_clause) {
-                addComplexVar((const char*)$3);
-              }
-              else if (is_ompparser_variable) {
                 std::cout << "Got expression: " << $3 << "\n";
                 addOmpVariable((const char*)$3);
               }
-              else {
-                if (!addVar((const char*)$3)) {
-                    YYABORT;
-                };
-              }
-            }
 
 %%
 int yyerror(const char *s) {
-    SgLocatedNode* lnode = isSgLocatedNode(gNode);
+    SgLocatedNode* lnode = isSgLocatedNode(omp_directive_node);
     assert (lnode);
     printf("Error when parsing pragma:\n\t %s \n\t associated with node at line %d\n", orig_str, lnode->get_file_info()->get_line()); 
     printf(" %s!\n", s);
@@ -565,33 +517,47 @@ int yyerror(const char *s) {
     return 0; // we want to the program to stop on error
 }
 
-
-OmpAttribute* getParsedDirective() {
-    return ompattribute;
-}
-
-void omp_parser_init(SgNode* aNode, const char* str) {
-    orig_str = str;  
+void omp_parser_init(SgNode* directive, const char* str) {
+    orig_str = str;
     omp_lexer_init(str);
-    gNode = aNode;
-}
-
-static bool addVar(const char* var)  {
-    array_symbol = ompattribute->addVariable(omptype,var);
-    return true;
-}
-
-static bool addComplexVar(const char* var)  {
-    array_symbol = ompattribute->addComplexClauseVariable(current_clause, var);
-    return true;
+    omp_directive_node = directive;
 }
 
 static bool addOmpVariable(const char* var)  {
     SgInitializedName* sgvar = NULL;
     SgVariableSymbol* symbol = NULL;
-    SgScopeStatement* scope = SageInterface::getScope(gNode);
+    SgScopeStatement* scope = NULL;
+
+    if (omp_directive_node != NULL) {
+        scope = SageInterface::getScope(omp_directive_node);
+
+        // special handling for omp declare simd directive
+        // It may have clauses referencing a variable declared in an immediately followed function's parameter list
+        if (isSgOmpDeclareSimdStatement(omp_directive_node) && (omp_clause_kind == OMPC_linear ||
+            omp_clause_kind == OMPC_simdlen ||
+            omp_clause_kind == OMPC_aligned ||
+            omp_clause_kind == OMPC_uniform)) {
+            SgStatement* cur_stmt = getEnclosingStatement(omp_directive_node);
+            ROSE_ASSERT (isSgPragmaDeclaration(cur_stmt));
+
+            // omp declare simd may show up several times before the impacted function declaration.
+            SgStatement* nstmt = getNextStatement(cur_stmt);
+            ROSE_ASSERT (nstmt); // must have next statement followed.
+            // skip possible multiple pragma declarations
+            while (isSgPragmaDeclaration(nstmt)) {
+                nstmt = getNextStatement (nstmt);
+                ROSE_ASSERT (nstmt);
+            }
+            // At this point, it must be a function declaration
+            SgFunctionDeclaration* func = isSgFunctionDeclaration(nstmt);
+            ROSE_ASSERT (func);
+            SgFunctionDefinition* def = func->get_definition();
+            scope = def->get_body();
+        };
+    };
+
     ROSE_ASSERT(scope != NULL);
-    symbol = lookupVariableSymbolInParentScopes (var, scope);
+    symbol = lookupVariableSymbolInParentScopes(var, scope);
     sgvar = symbol->get_declaration();
     if (sgvar != NULL) {
         symbol = isSgVariableSymbol(sgvar->get_symbol_from_symbol_table());
@@ -600,14 +566,17 @@ static bool addOmpVariable(const char* var)  {
     return true;
 }
 
-SgExpression* parseExpression(SgNode* aNode, const char* str) {
+
+SgExpression* parseExpression(SgNode* directive, OpenMPClauseKind clause_kind, const char* str) {
 
     orig_str = str;
     omp_lexer_init(str);
-    gNode = aNode;
+    omp_directive_node = directive;
+    omp_clause_kind = clause_kind;
     omp_parse();
     assert (current_exp != NULL);
     SgExpression* sg_expression = current_exp;
+
     return sg_expression;
 
 }
