@@ -18,7 +18,7 @@ extern OpenMPDirective* parseOpenMP(const char*, void * _exprParse(const char*))
 //Liao, 10/27/2008: parsing OpenMP pragma here
 //Handle OpenMP pragmas. This should be called after preprocessing information is attached since macro calls may exist within pragmas, Liao, 3/31/2009
 extern int omp_parse();
-extern SgExpression* parseExpression(SgNode*, OpenMPClauseKind, const char*);
+extern SgExpression* parseExpression(SgNode*, bool, const char*);
 extern void omp_parser_init(SgNode* aNode, const char* str);
 //Fortran OpenMP parser interface
 void parse_fortran_openmp(SgSourceFile *sageFilePtr);
@@ -27,7 +27,6 @@ static OpenMPDirective* ompparser_OpenMPIR;
 static bool is_complex_clause = false;
 static bool use_ompparser = false;
 static bool checkOpenMPIR(OpenMPDirective*);
-//static void parseExpression (const char*);
 static void parseFortran(SgSourceFile*);
 static void convertAST();
 static SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
@@ -3701,9 +3700,17 @@ SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_
 }
 
 SgExpression* parseOmpExpression(SgPragmaDeclaration* directive, OpenMPClauseKind clause_kind, std::string expression) {
-
+    // special handling for omp declare simd directive
+    // It may have clauses referencing a variable declared in an immediately followed function's parameter list
+    bool look_forward = false;
+    if (isSgOmpDeclareSimdStatement(directive) && (clause_kind == OMPC_linear ||
+        clause_kind == OMPC_simdlen ||
+        clause_kind == OMPC_aligned ||
+        clause_kind == OMPC_uniform)) {
+        look_forward = true;
+    };
     std::string expr_string = std::string() + "expr (" + expression + ")\n";
-    SgExpression* sg_expression = parseExpression(directive, clause_kind, expr_string.c_str());
+    SgExpression* sg_expression = parseExpression(directive, look_forward, expr_string.c_str());
 
     return sg_expression;
 }
@@ -3776,15 +3783,6 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
 
     return true;
 }
-
-//void parseExpression (const char* omp_expression) {
-
-    //omp_parser_init();
-//    ;
- 
-
-//}
-
 
 void parseFortran(SgSourceFile *sageFilePtr)
 {

@@ -23,7 +23,6 @@ in the build tree
 #include <iostream>
 #include "sage3basic.h" // Sage Interface and Builders
 #include "sageBuilder.h"
-#include "OpenMPIR.h"
 
 #ifdef _MSC_VER
   #undef IN
@@ -55,13 +54,13 @@ static int omp_error(const char*);
 // This variable is set by the prefix_parser_init() before prefix_parse() is called.
 //Liao
 static SgNode* omp_directive_node;
-static OpenMPClauseKind omp_clause_kind;
 
 static const char* orig_str; 
 
 // The current expression node being generated 
 static SgExpression* current_exp = NULL;
-bool b_within_variable_list  = false;  // a flag to indicate if the program is now processing a list of variables
+// a flag to indicate if the program is looking forward in the symbol table
+static bool omp_look_forward = false;
 
 // We now follow the OpenMP 4.0 standard's C-style array section syntax: [lower-bound:length] or just [length]
 // the latest variable symbol being parsed, used to help parsing the array dimensions associated with array symbol
@@ -136,15 +135,13 @@ openmp_expression : omp_varlist
 
 omp_varlist : VARLIST {
                     is_ompparser_variable = true;
-                    b_within_variable_list = true;} variable_list {b_within_variable_list = false; is_ompparser_variable = false; }
+                    } variable_list { is_ompparser_variable = false; }
                ;
 
 omp_expression : EXPRESSION {
                 is_ompparser_expression = true;
-                b_within_variable_list = true;
             } '(' expression ')' {
                 is_ompparser_expression = false;
-                b_within_variable_list = false;
             }
             ;
 
@@ -528,32 +525,26 @@ static bool addOmpVariable(const char* var)  {
     SgVariableSymbol* symbol = NULL;
     SgScopeStatement* scope = NULL;
 
-    if (omp_directive_node != NULL) {
+    if (omp_look_forward != true) {
         scope = SageInterface::getScope(omp_directive_node);
+    }
+    else {
+        SgStatement* cur_stmt = getEnclosingStatement(omp_directive_node);
+        ROSE_ASSERT (isSgPragmaDeclaration(cur_stmt));
 
-        // special handling for omp declare simd directive
-        // It may have clauses referencing a variable declared in an immediately followed function's parameter list
-        if (isSgOmpDeclareSimdStatement(omp_directive_node) && (omp_clause_kind == OMPC_linear ||
-            omp_clause_kind == OMPC_simdlen ||
-            omp_clause_kind == OMPC_aligned ||
-            omp_clause_kind == OMPC_uniform)) {
-            SgStatement* cur_stmt = getEnclosingStatement(omp_directive_node);
-            ROSE_ASSERT (isSgPragmaDeclaration(cur_stmt));
-
-            // omp declare simd may show up several times before the impacted function declaration.
-            SgStatement* nstmt = getNextStatement(cur_stmt);
-            ROSE_ASSERT (nstmt); // must have next statement followed.
-            // skip possible multiple pragma declarations
-            while (isSgPragmaDeclaration(nstmt)) {
-                nstmt = getNextStatement (nstmt);
-                ROSE_ASSERT (nstmt);
-            }
-            // At this point, it must be a function declaration
-            SgFunctionDeclaration* func = isSgFunctionDeclaration(nstmt);
-            ROSE_ASSERT (func);
-            SgFunctionDefinition* def = func->get_definition();
-            scope = def->get_body();
+        // omp declare simd may show up several times before the impacted function declaration.
+        SgStatement* nstmt = getNextStatement(cur_stmt);
+        ROSE_ASSERT (nstmt); // must have next statement followed.
+        // skip possible multiple pragma declarations
+        while (isSgPragmaDeclaration(nstmt)) {
+            nstmt = getNextStatement (nstmt);
+            ROSE_ASSERT (nstmt);
         };
+        // At this point, it must be a function declaration
+        SgFunctionDeclaration* func = isSgFunctionDeclaration(nstmt);
+        ROSE_ASSERT (func);
+        SgFunctionDefinition* def = func->get_definition();
+        scope = def->get_body();
     };
 
     ROSE_ASSERT(scope != NULL);
@@ -567,12 +558,12 @@ static bool addOmpVariable(const char* var)  {
 }
 
 
-SgExpression* parseExpression(SgNode* directive, OpenMPClauseKind clause_kind, const char* str) {
+SgExpression* parseExpression(SgNode* directive, bool look_forward, const char* str) {
 
     orig_str = str;
     omp_lexer_init(str);
     omp_directive_node = directive;
-    omp_clause_kind = clause_kind;
+    omp_look_forward = look_forward;
     omp_parse();
     assert (current_exp != NULL);
     SgExpression* sg_expression = current_exp;
