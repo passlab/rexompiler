@@ -3218,7 +3218,7 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
     }
     body->set_parent(result);
     // extract all the clauses based on the vector of clauses in the original order
-    std::vector<OpenMPClause*>* all_clauses = current_OpenMPIR_to_SageIII.second->getOrderedClauses();
+    std::vector<OpenMPClause*>* all_clauses = current_OpenMPIR_to_SageIII.second->getClausesInOriginalOrder();
     std::vector<OpenMPClause*>::iterator clause_iter;
     for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end(); clause_iter++) {
         clause_kind = (*clause_iter)->getKind();
@@ -3282,7 +3282,7 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
     }
     //body->set_parent(result);
     // extract all the clauses based on the vector of clauses in the original order
-    std::vector<OpenMPClause*>* all_clauses = current_OpenMPIR_to_SageIII.second->getOrderedClauses();
+    std::vector<OpenMPClause*>* all_clauses = current_OpenMPIR_to_SageIII.second->getClausesInOriginalOrder();
     std::vector<OpenMPClause*>::iterator clause_iter;
     for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end(); clause_iter++) {
         clause_kind = (*clause_iter)->getKind();
