@@ -18,5 +18,5 @@ int main( )
         printf( "section_count %d\n", section_count );
     }
 }
-    return 1;
+    return 0;
 }
