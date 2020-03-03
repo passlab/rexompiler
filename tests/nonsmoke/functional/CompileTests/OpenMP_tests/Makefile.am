@@ -90,6 +90,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	ompfor5.c \
 	ompfor6.c \
 	ompfor8.c \
+	ompfor9.c \
 	ompfor-default.c \
 	ompfor-decremental.c \
 	ompfor-static.c \

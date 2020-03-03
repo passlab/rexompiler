@@ -3294,6 +3294,8 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         switch (clause_kind) {
             case OMPC_if:
             case OMPC_num_teams:
+            case OMPC_ordered:
+             case OMPC_collapse:
             case OMPC_thread_limit:
             case OMPC_num_threads: {
                 convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
@@ -3382,6 +3384,8 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         switch (clause_kind) {
             case OMPC_if:
             case OMPC_num_teams:
+            case OMPC_ordered:
+            case OMPC_collapse:
             case OMPC_thread_limit:
             case OMPC_num_threads: {
                 convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
@@ -3793,6 +3797,18 @@ SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_
             printf("Num_teams Clause added!\n");
             break;
         }
+        case OMPC_ordered: {
+            SgExpression* ordered_expression = checkOmpExpressionClause(clause_expression, global, e_ordered_clause);
+            result = new SgOmpOrderedClause(ordered_expression);
+            printf("Ordered Clause added!\n");
+            break;
+        }
+        case OMPC_collapse: {
+            SgExpression* collapse_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
+            result = new SgOmpCollapseClause(collapse_expression);
+            printf("Collapse Clause added!\n");
+            break;
+        }
         case OMPC_thread_limit: {
             SgExpression* thread_limit_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
             result = new SgOmpThreadLimitClause(thread_limit_expression);
@@ -3885,6 +3901,8 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_num_threads:
                 case OMPC_num_teams:
                 case OMPC_thread_limit:
+                case OMPC_ordered:
+                case OMPC_collapse:
                 case OMPC_private:
                 case OMPC_proc_bind:
                 case OMPC_reduction:
