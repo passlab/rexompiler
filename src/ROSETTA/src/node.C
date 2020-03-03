@@ -1803,9 +1803,12 @@ Grammar::setUpNodes ()
      // Using a SgNode for variable list, avoiding mixed container + simple member
      OmpVariablesClause.setDataPrototype ( "SgExprListExp*", "variables", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-     // linear (varlist[:step])
+     // linear (varlist[:step]) varlist may be modifier(list)
      OmpLinearClause.setDataPrototype ( "SgExpression*", "step", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+
+     OmpLinearClause.setDataPrototype("SgOmpClause::omp_linear_modifier_enum", "modifier", "=e_omp_linear_modifier_unspecified",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      
      // aligned (varlist[:alignment])
      OmpAlignedClause.setDataPrototype ( "SgExpression*", "alignment", "= NULL",
@@ -1839,6 +1842,10 @@ Grammar::setUpNodes ()
 
      // if (modifier : expression)
      OmpIfClause.setDataPrototype("SgOmpClause::omp_if_modifier_enum", "modifier", "=e_omp_if_modifier_unknown",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // lastprivate (modifier : variable_list)
+     OmpLastprivateClause.setDataPrototype("SgOmpClause::omp_lastprivate_modifier_enum", "modifier", "=e_omp_lastprivate_modifier_unspecified",
                                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
      // allocate (modifier : variables)

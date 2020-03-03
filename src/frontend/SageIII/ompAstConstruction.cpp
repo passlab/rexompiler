@@ -37,6 +37,7 @@ static SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDir
 static SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static void buildVariableList(SgOmpVariablesClause*);
 static SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpNowaitClause* convertNowaitClause(SgOmpClauseBodyStatement* clause_body);
 static SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpProcBindClause* convertProcBindClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
@@ -781,6 +782,64 @@ namespace OmpSupport
     return result;
   }
 
+  static SgOmpClause::omp_lastprivate_modifier_enum toSgOmpClauseLastprivateModifier(OpenMPLastprivateClauseModifier modifier)
+  {
+    SgOmpClause::omp_lastprivate_modifier_enum result = SgOmpClause::e_omp_lastprivate_modifier_unspecified;
+    switch (modifier)
+    {
+      case OMPC_LASTPRIVATE_MODIFIER_conditional:
+        {
+          result = SgOmpClause::e_omp_lastprivate_conditional;
+          break;
+        }
+      case OMPC_LASTPRIVATE_MODIFIER_unspecified:
+        {
+          result = SgOmpClause::e_omp_lastprivate_modifier_unspecified;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for lastprivate modifier conversion:%d\n", modifier);
+          ROSE_ASSERT(false);
+        }
+    }
+    return result;
+  }
+
+  static SgOmpClause::omp_linear_modifier_enum toSgOmpClauseLinearModifier(OpenMPLinearClauseModifier modifier)
+  {
+    SgOmpClause::omp_linear_modifier_enum result = SgOmpClause::e_omp_linear_modifier_unspecified;
+    switch (modifier)
+    {
+      case OMPC_LINEAR_MODIFIER_unspecified:
+        {
+          result = SgOmpClause::e_omp_linear_modifier_unspecified;
+          break;
+        }
+      case OMPC_LINEAR_MODIFIER_ref:
+        {
+          result = SgOmpClause::e_omp_linear_modifier_ref;
+          break;
+        }
+      case OMPC_LINEAR_MODIFIER_val:
+        {
+          result = SgOmpClause::e_omp_linear_modifier_val;
+          break;
+        }
+      case OMPC_LINEAR_MODIFIER_uval:
+        {
+          result = SgOmpClause::e_omp_linear_modifier_uval;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for linear modifier conversion:%d\n", modifier);
+          ROSE_ASSERT(false);
+        }
+    }
+    return result;
+  }
+
   //! A helper function to convert OmpAttribute reduction operator to SgClause reduction operator
   //TODO move to sageInterface?
   static   SgOmpClause::omp_reduction_modifier_enum toSgOmpClauseReductionModifier(omp_construct_enum modifier)
@@ -1344,15 +1403,6 @@ namespace OmpSupport
             result = new SgOmpFirstprivateClause(explist);
             break;
         }
-        case e_lastprivate: {
-            result = new SgOmpLastprivateClause(explist);
-            break;
-        }
-        case e_linear: {
-            SgExpression* stepExp = current_clause->expression.second;
-            result = new SgOmpLinearClause(explist, stepExp);
-            break;
-        }
         case e_private: {
             result = new SgOmpPrivateClause(explist);
             break;
@@ -1860,7 +1910,6 @@ namespace OmpSupport
             case e_copyin:
             case e_copyprivate:
             case e_firstprivate:
-            case e_lastprivate:
             case e_linear:
             case e_private:
             case e_shared: {
@@ -3147,6 +3196,10 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
     switch (directive_kind) {
         case OMPD_metadirective:
         case OMPD_teams:
+        case OMPD_single:
+        case OMPD_for:
+        case OMPD_sections:
+        case OMPD_section:
         case OMPD_parallel: {
             result = convertBodyDirective(current_OpenMPIR_to_SageIII);
             break;
@@ -3205,6 +3258,22 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             result = new SgOmpTeamsStatement(NULL, body);
             break;
         }
+        case OMPD_single: {
+            result = new SgOmpSingleStatement(NULL, body);
+            break;
+        }
+        case OMPD_for: {
+            result = new SgOmpForStatement(NULL, body);
+            break;
+        }
+        case OMPD_sections: {
+            result = new SgOmpSectionsStatement(NULL, body);
+            break;
+        }
+        case OMPD_section: {
+            result = new SgOmpSectionStatement(NULL, body);
+            break;
+        }
         case OMPD_metadirective: {
             result = new SgOmpMetadirectiveStatement(NULL, body);
             break;
@@ -3242,12 +3311,28 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
                 convertWhenClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
+            case OMPC_nowait: {
+                convertNowaitClause(isSgOmpClauseBodyStatement(result));
+                break;
+            }
             default: {
                 convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
             }
         };
     };
 
+    return result;
+}
+
+SgOmpNowaitClause* convertNowaitClause(SgOmpClauseBodyStatement* clause_body) {
+    printf("ompparser nowait clause is ready.\n");
+    SgOmpNowaitClause* result = new SgOmpNowaitClause();
+    ROSE_ASSERT(result);
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+    printf("ompparser nowait clause is added.\n");
     return result;
 }
 
@@ -3267,6 +3352,14 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         }
         case OMPD_teams: {
             result = new SgOmpTeamsStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_single: {
+            result = new SgOmpSingleStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_for: {
+            result = new SgOmpForStatement(NULL, NULL);
             break;
         }
         case OMPD_metadirective: {
@@ -3607,6 +3700,11 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
             printf("Private Clause added!\n");
             break;
         }
+        case OMPC_copyprivate: {
+            result = new SgOmpCopyprivateClause(explist);
+            printf("Copyprivate Clause added!\n");
+            break;
+        }
         case OMPC_reduction: {
             OpenMPReductionClauseModifier modifier = ((OpenMPReductionClause*)current_omp_clause)->getModifier();
             SgOmpClause::omp_reduction_modifier_enum sg_modifier = toSgOmpClauseReductionModifier(modifier);
@@ -3619,6 +3717,22 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
             }
             result = new SgOmpReductionClause(explist, sg_modifier, sg_identifier, user_defined_identifier);
             printf("Reduction Clause added!\n");
+            break;
+        }
+        case OMPC_linear: {
+            OpenMPLinearClauseModifier modifier = ((OpenMPLinearClause*)current_omp_clause)->getModifier();
+            SgOmpClause::omp_linear_modifier_enum sg_modifier = toSgOmpClauseLinearModifier(modifier);
+            SgExpression* stepExp = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), ((OpenMPLinearClause*)current_omp_clause)->getUserDefinedStep());
+
+            result = new SgOmpLinearClause(explist, stepExp, sg_modifier);
+            printf("Linear Clause added!\n");
+            break;
+        }
+        case OMPC_lastprivate: {
+            OpenMPLastprivateClauseModifier modifier = ((OpenMPLastprivateClause*)current_omp_clause)->getModifier();
+            SgOmpClause::omp_lastprivate_modifier_enum sg_modifier = toSgOmpClauseLastprivateModifier(modifier);
+            result = new SgOmpLastprivateClause(explist, sg_modifier);
+            printf("Lastprivate Clause added!\n");
             break;
         }
         case OMPC_shared: {
@@ -3747,6 +3861,10 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
     switch (directive_kind) {
         case OMPD_metadirective:
         case OMPD_teams:
+        case OMPD_single:
+        case OMPD_for:
+        case OMPD_sections:
+        case OMPD_section:
         case OMPD_parallel: {
             break;
         }
@@ -3771,6 +3889,10 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_proc_bind:
                 case OMPC_reduction:
                 case OMPC_shared:
+                case OMPC_copyprivate:
+                case OMPC_nowait:
+                case OMPC_linear:
+                case OMPC_lastprivate:
                 case OMPC_when: {
                     break;
                 }

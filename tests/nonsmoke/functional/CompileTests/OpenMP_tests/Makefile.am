@@ -128,12 +128,15 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	rice1.c \
 	section.c \
 	section1.c \
+        sections.c \
+	sections1.c \
 	set_num_threads.c \
 	shared.c \
 	simd.c \
 	simd2.c \
 	single.c \
 	single2.c \
+	single3.c \
 	single_copyprivate.c \
 	sizeof.c \
 	spmd1.c \

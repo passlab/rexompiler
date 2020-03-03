@@ -167,6 +167,14 @@ namespace OmpSupport
     e_reduction_inscan,
     e_reduction_task,
     e_reduction_default,
+
+    // lastprivate modifiers in OpenMP 5.0
+    e_lastprivate_conditional,
+
+    // linear modifiers in OpenMP 5.0
+    e_linear_ref,
+    e_linear_val,
+    e_linear_uval,
     
     // enum for all the user defined parameters
     e_user_defined_parameter,
