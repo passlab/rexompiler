@@ -105,6 +105,20 @@ HEADER_OMP_CLAUSE_START
             e_omp_reduction_default
         };
 
+        enum omp_linear_modifier_enum
+        {
+            e_omp_linear_modifier_unspecified,
+            e_omp_linear_modifier_ref,
+            e_omp_linear_modifier_val,
+            e_omp_linear_modifier_uval
+        };
+
+        enum omp_lastprivate_modifier_enum
+        {
+            e_omp_lastprivate_modifier_unspecified,
+            e_omp_lastprivate_conditional
+        };
+
         enum omp_when_context_kind_enum
         {
             e_omp_when_context_kind_unknown = 0,

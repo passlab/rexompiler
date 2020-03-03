@@ -7657,6 +7657,64 @@ static std::string reductionModifierToString(SgOmpClause::omp_reduction_modifier
   return result;
 }
 
+static std::string lastprivateModifierToString(SgOmpClause::omp_lastprivate_modifier_enum rm)
+{
+  string result = "";
+  switch (rm)
+  {
+    case SgOmpClause::e_omp_lastprivate_modifier_unspecified: 
+      {
+        result = "";
+        break;
+      }
+    case SgOmpClause::e_omp_lastprivate_conditional: 
+      {
+        result = "conditional";
+        break;
+      }
+    default:
+      {
+        cerr<<"Error: unhandled operator type lastprivateModifierToString():"<< rm <<endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
+
+static std::string linearModifierToString(SgOmpClause::omp_linear_modifier_enum rm)
+{
+  string result = "";
+  switch (rm)
+  {
+    case SgOmpClause::e_omp_linear_modifier_unspecified: 
+      {
+        result = "";
+        break;
+      }
+    case SgOmpClause::e_omp_linear_modifier_ref: 
+      {
+        result = "ref ";
+        break;
+      }
+    case SgOmpClause::e_omp_linear_modifier_val: 
+      {
+        result = "val ";
+        break;
+      }
+    case SgOmpClause::e_omp_linear_modifier_uval: 
+      {
+        result = "uval ";
+        break;
+      }
+    default:
+      {
+        cerr<<"Error: unhandled operator type linearModifierToString():"<< rm <<endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
+
 static std::string allocateModifierToString(SgOmpClause::omp_allocate_modifier_enum modifier)
 {
   string result;
@@ -7850,9 +7908,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
     case V_SgOmpFirstprivateClause:
       curprint(string(" firstprivate("));
       break;
-    case V_SgOmpLastprivateClause:
-      curprint(string(" lastprivate("));
-      break;
     case V_SgOmpPrivateClause:
       curprint(string(" private("));
       break;
@@ -7882,7 +7937,16 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
         curprint(string(" : "));
         break;
       }
-
+    case V_SgOmpLastprivateClause:
+      {
+        curprint(string(" lastprivate("));
+        SgOmpClause::omp_lastprivate_modifier_enum modifier = isSgOmpLastprivateClause(c)->get_modifier();
+        if (modifier != SgOmpClause::e_omp_lastprivate_modifier_unspecified) {
+            curprint(lastprivateModifierToString(modifier));
+            curprint(string(" : "));
+        };
+        break;
+      }
     case V_SgOmpDependClause:
       {
         curprint(string(" depend("));
@@ -7892,8 +7956,15 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
         break;
       }
     case V_SgOmpLinearClause:
-      curprint(string(" linear("));
-      break;
+      {
+          curprint(string(" linear("));
+          SgOmpClause::omp_linear_modifier_enum modifier = isSgOmpLinearClause(c)->get_modifier();
+          if (modifier != SgOmpClause::e_omp_linear_modifier_unspecified) {
+              curprint(linearModifierToString(modifier));
+              curprint(string("("));
+          }
+          break;
+      }
     case V_SgOmpMapClause:
       {
         is_map = true;
@@ -8023,6 +8094,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
   // optional :step  for linear(list:step)
   if (isSgOmpLinearClause(c) && isSgOmpLinearClause(c)->get_step())
   {
+    if (isSgOmpLinearClause(c)->get_modifier()) { curprint(string(")")); }
     curprint(string(":"));
     unparseExpression(isSgOmpLinearClause(c)->get_step(), info);
   }

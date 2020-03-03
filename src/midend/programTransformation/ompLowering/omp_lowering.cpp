@@ -5661,7 +5661,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
           result = new SgOmpFirstprivateClause(buildExprListExp());
           break;
         case V_SgOmpLastprivateClause:
-          result = new SgOmpLastprivateClause(buildExprListExp());
+          result = new SgOmpLastprivateClause(buildExprListExp(), SgOmpClause::e_omp_lastprivate_modifier_unspecified);
           break;
         case V_SgOmpPrivateClause:
           result = new SgOmpPrivateClause(buildExprListExp());
