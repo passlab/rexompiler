@@ -67,7 +67,7 @@ SgAggregateInitializer.C               SgClassDecl_attr.C                    SgF
 SgAliasSymbol.C                        SgClassDefinition.C                   SgFunctionTypeSymbol.C                  SgOmpDefaultClause.C                         SgThisExp.C \
 SgAllocateStatement.C                  SgClassNameRefExp.C                   SgFunctionTypeTable.C                   SgOmpDoStatement.C                           SgThrowOp.C \
 SgAndAssignOp.C                        SgClassSymbol.C                       SgGlobal.C                              SgOmpExpressionClause.C                      SgToken.C \
-SgAndOp.C                              SgClassType.C                         SgGotoStatement.C                       SgOmpFirstprivateClause.C                    SgTryStmt.C \
+SgAndOp.C                              SgClassType.C                         SgGotoStatement.C                       SgOmpFirstprivateClause.C              SgOmpNontemporalClause.C       SgTryStmt.C \
 SgArithmeticIfStatement.C              SgClinkageDeclarationStatement.C      SgGraph.C                               SgOmpFlushStatement.C                        SgTypeBool.C \
 SgArrayType.C                          SgClinkageEndStatement.C              SgGraphEdge.C                           SgOmpForStatement.C                          SgType.C \
 SgArrowExp.C                           SgClinkageStartStatement.C            SgGraphEdgeList.C                       SgOmpIfClause.C                              SgTypeChar.C \

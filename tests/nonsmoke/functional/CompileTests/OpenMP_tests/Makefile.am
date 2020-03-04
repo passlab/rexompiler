@@ -90,6 +90,8 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	ompfor5.c \
 	ompfor6.c \
 	ompfor8.c \
+	ompfor9.c \
+	ompfor10.c \
 	ompfor-default.c \
 	ompfor-decremental.c \
 	ompfor-static.c \
@@ -134,6 +136,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	shared.c \
 	simd.c \
 	simd2.c \
+	simd3.c \
 	single.c \
 	single2.c \
 	single3.c \

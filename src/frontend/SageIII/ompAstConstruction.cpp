@@ -38,6 +38,7 @@ static SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement*, std::pair<
 static void buildVariableList(SgOmpVariablesClause*);
 static SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpNowaitClause* convertNowaitClause(SgOmpClauseBodyStatement* clause_body);
+static SgOmpScheduleClause* convertScheduleClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause);
 static SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpProcBindClause* convertProcBindClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
@@ -680,47 +681,6 @@ namespace OmpSupport
     return result;
   }
 
-  //Build SgOmpScheduleClause from OmpAttribute, if any
-  SgOmpScheduleClause* buildOmpScheduleClause(OmpAttribute* att, ComplexClause* current_clause) {
-    ROSE_ASSERT(att != NULL);
-    if (!att->hasClause(e_schedule))
-      return NULL;
-    // convert OmpAttribute schedule kind to SgOmpClause schedule kind
-    omp_construct_enum oa_kind = current_clause->first_parameter;
-    SgOmpClause::omp_schedule_kind_enum sg_kind;
-    switch (oa_kind)
-    {
-      case   e_schedule_static:
-        sg_kind = SgOmpClause::e_omp_schedule_static;
-        break;
-      case   e_schedule_dynamic:
-        sg_kind = SgOmpClause::e_omp_schedule_dynamic;
-        break;
-      case   e_schedule_guided:
-        sg_kind = SgOmpClause::e_omp_schedule_guided;
-        break;
-      case   e_schedule_auto:
-        sg_kind = SgOmpClause::e_omp_schedule_auto;
-        break;
-      case   e_schedule_runtime:
-        sg_kind = SgOmpClause::e_omp_schedule_runtime;
-        break;
-      default:
-        {
-          cerr<<"error: buildOmpScheduleClause() Unacceptable schedule kind from OmpAttribute:"
-            <<OmpSupport::toString(oa_kind)<<endl;
-          ROSE_ASSERT(false) ;  
-        }
-    }
-    SgExpression* chunksize_exp = current_clause->expression.second;
-    // ROSE_ASSERT(chunksize_exp != NULL); // chunk size is optional
-    // finally build the node
-    SgOmpScheduleClause* result = new SgOmpScheduleClause(sg_kind, chunksize_exp);
-    setOneSourcePositionForTransformation(result);
-    ROSE_ASSERT(result != NULL);
-    return  result;
-  }
-
   static   SgOmpClause::omp_map_operator_enum toSgOmpClauseMapOperator(omp_construct_enum at_op)
   {
     SgOmpClause::omp_map_operator_enum result = SgOmpClause::e_omp_map_unknown;
@@ -768,6 +728,11 @@ namespace OmpSupport
           result = SgOmpClause::e_omp_if_parallel;
           break;
         }
+      case OMPC_IF_MODIFIER_simd:
+        {
+          result = SgOmpClause::e_omp_if_simd;
+          break;
+        }
       case OMPC_IF_MODIFIER_unspecified:
         {
           result = SgOmpClause::e_omp_if_modifier_unknown;
@@ -800,6 +765,84 @@ namespace OmpSupport
       default:
         {
           printf("error: unacceptable omp construct enum for lastprivate modifier conversion:%d\n", modifier);
+          ROSE_ASSERT(false);
+        }
+    }
+    return result;
+  }
+
+  static SgOmpClause::omp_schedule_modifier_enum toSgOmpClauseScheduleModifier(OpenMPScheduleClauseModifier modifier)
+  {
+    SgOmpClause::omp_schedule_modifier_enum result = SgOmpClause::e_omp_schedule_modifier_unspecified;
+    switch (modifier)
+    {
+      case OMPC_SCHEDULE_MODIFIER_unspecified:
+        {
+          result = SgOmpClause::e_omp_schedule_modifier_unspecified;
+          break;
+        }
+      case OMPC_SCHEDULE_MODIFIER_monotonic:
+        {
+          result = SgOmpClause::e_omp_schedule_modifier_monotonic;
+          break;
+        }
+      case OMPC_SCHEDULE_MODIFIER_nonmonotonic:
+        {
+          result = SgOmpClause::e_omp_schedule_modifier_nonmonotonic;
+          break;
+        }
+      case OMPC_SCHEDULE_MODIFIER_simd:
+        {
+          result = SgOmpClause::e_omp_schedule_modifier_simd;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for schedule modifier conversion:%d\n", modifier);
+          ROSE_ASSERT(false);
+        }
+    }
+    return result;
+  }
+
+  static SgOmpClause::omp_schedule_kind_enum toSgOmpClauseScheduleKind(OpenMPScheduleClauseKind kind)
+  {
+    SgOmpClause::omp_schedule_kind_enum result = SgOmpClause::e_omp_schedule_kind_unspecified;
+    switch (kind)
+    {
+      case OMPC_SCHEDULE_KIND_unspecified:
+        {
+          result = SgOmpClause::e_omp_schedule_kind_unspecified;
+          break;
+        }
+      case OMPC_SCHEDULE_KIND_static:
+        {
+          result = SgOmpClause::e_omp_schedule_kind_static;
+          break;
+        }
+      case OMPC_SCHEDULE_KIND_dynamic:
+        {
+          result = SgOmpClause::e_omp_schedule_kind_dynamic;
+          break;
+        }
+      case OMPC_SCHEDULE_KIND_guided:
+        {
+          result = SgOmpClause::e_omp_schedule_kind_guided;
+          break;
+        }
+      case OMPC_SCHEDULE_KIND_auto:
+        {
+          result = SgOmpClause::e_omp_schedule_kind_auto;
+          break;
+        }
+      case OMPC_SCHEDULE_KIND_runtime:
+        {
+          result = SgOmpClause::e_omp_schedule_kind_runtime;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for schedule kind conversion:%d\n", kind);
           ROSE_ASSERT(false);
         }
     }
@@ -1646,11 +1689,6 @@ namespace OmpSupport
           break;
         }
 #endif      
-      case e_schedule:
-        { // place holder, not valid.
-          // result = buildOmpScheduleClause(att);
-          break;
-        }
       case e_untied:
         {
           result = buildOmpUntiedClause(att);
@@ -1934,20 +1972,6 @@ namespace OmpSupport
                     // process each clause individually.
                     SgOmpClause* sgclause = buildOmpDefaultClause(att, &*iter);
                     ROSE_ASSERT(sgclause != NULL);
-                    target->get_clauses().push_back(sgclause);
-                    sgclause->set_parent(target);
-                };
-                break;
-            }
-            case e_schedule: {
-                std::deque<ComplexClause>* attr_clauses = att->getComplexClauses(c_clause);
-                ROSE_ASSERT(attr_clauses->size()!=0);
-                std::deque<ComplexClause>::iterator iter;
-                for (iter = attr_clauses->begin(); iter != attr_clauses->end(); iter++) {
-                    // process each clause individually.
-                    SgOmpClause* sgclause = buildOmpScheduleClause(att, &*iter);
-                    ROSE_ASSERT(sgclause != NULL);
-                    setOneSourcePositionForTransformation(sgclause);
                     target->get_clauses().push_back(sgclause);
                     sgclause->set_parent(target);
                 };
@@ -2282,24 +2306,6 @@ namespace OmpSupport
             };
             break;
           }
-          // unique clauses allocated to omp for  or omp for simd
-        case e_schedule: {
-            std::deque<ComplexClause>* var_clauses = att->getComplexClauses(c_clause);
-            ROSE_ASSERT(var_clauses->size()!=0);
-            std::deque<ComplexClause>::iterator iter;
-            for (iter = var_clauses->begin(); iter != var_clauses->end(); iter++) {
-                if (!isSgOmpForStatement(second_stmt) && !isSgOmpForSimdStatement(second_stmt) && !isSgOmpDoStatement(second_stmt)) {
-                printf("Error: buildOmpParallelStatementFromCombinedDirectives(): unacceptable clauses for parallel for/do [simd]\n");
-                att->print();
-                ROSE_ASSERT(false);
-                };
-                SgOmpClause* sgclause = buildOmpScheduleClause(att, &*iter);
-                ROSE_ASSERT(sgclause != NULL);
-                isSgOmpClauseBodyStatement(second_stmt)->get_clauses().push_back(sgclause);
-                sgclause->set_parent(second_stmt);
-            };
-            break;
-        }
         case e_safelen:
         case e_simdlen:
         case e_uniform:
@@ -3200,6 +3206,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_for:
         case OMPD_sections:
         case OMPD_section:
+        case OMPD_simd:
         case OMPD_parallel: {
             result = convertBodyDirective(current_OpenMPIR_to_SageIII);
             break;
@@ -3258,6 +3265,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             result = new SgOmpTeamsStatement(NULL, body);
             break;
         }
+        case OMPD_simd: {
+            result = new SgOmpSimdStatement(NULL, body);
+            break;
+        }
         case OMPD_single: {
             result = new SgOmpSingleStatement(NULL, body);
             break;
@@ -3294,6 +3305,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         switch (clause_kind) {
             case OMPC_if:
             case OMPC_num_teams:
+            case OMPC_safelen:
+            case OMPC_simdlen:
+            case OMPC_ordered:
+            case OMPC_collapse:
             case OMPC_thread_limit:
             case OMPC_num_threads: {
                 convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
@@ -3313,6 +3328,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             }
             case OMPC_nowait: {
                 convertNowaitClause(isSgOmpClauseBodyStatement(result));
+                break;
+            }
+            case OMPC_schedule: {
+                convertScheduleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             default: {
@@ -3336,6 +3355,31 @@ SgOmpNowaitClause* convertNowaitClause(SgOmpClauseBodyStatement* clause_body) {
     return result;
 }
 
+SgOmpScheduleClause* convertScheduleClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser schedule clause is ready.\n");
+
+    OpenMPScheduleClauseModifier modifier1 = ((OpenMPScheduleClause*)current_omp_clause)->getModifier1();
+    SgOmpClause::omp_schedule_modifier_enum sg_modifier1 = toSgOmpClauseScheduleModifier(modifier1);
+    OpenMPScheduleClauseModifier modifier2 = ((OpenMPScheduleClause*)current_omp_clause)->getModifier2();
+    SgOmpClause::omp_schedule_modifier_enum sg_modifier2 = toSgOmpClauseScheduleModifier(modifier2);
+    OpenMPScheduleClauseKind kind = ((OpenMPScheduleClause*)current_omp_clause)->getKind();
+    SgOmpClause::omp_schedule_kind_enum sg_kind = toSgOmpClauseScheduleKind(kind);
+
+    SgExpression* chunk_size = NULL;
+    if ( (((OpenMPScheduleClause*)current_omp_clause)->getChunkSize()) != "" ) {
+        chunk_size = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(),((OpenMPScheduleClause*)current_omp_clause)->getChunkSize());
+    }
+
+    SgOmpScheduleClause* result = new SgOmpScheduleClause( sg_modifier1, sg_modifier2, sg_kind, chunk_size );
+    ROSE_ASSERT(result);
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+    printf("ompparser schedule clause is added.\n");
+    return result;
+}
+
 SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
 
     OpenMPDirectiveKind directive_kind = current_OpenMPIR_to_SageIII.second->getKind();
@@ -3348,6 +3392,10 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
     switch (directive_kind) {
         case OMPD_parallel: {
             result = new SgOmpParallelStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_simd: {
+            result = new SgOmpSimdStatement(NULL, NULL);
             break;
         }
         case OMPD_teams: {
@@ -3382,6 +3430,10 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         switch (clause_kind) {
             case OMPC_if:
             case OMPC_num_teams:
+            case OMPC_safelen:
+            case OMPC_simdlen:
+            case OMPC_ordered:
+            case OMPC_collapse:
             case OMPC_thread_limit:
             case OMPC_num_threads: {
                 convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
@@ -3695,6 +3747,11 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
             printf("Firstprivate Clause added!\n");
             break;
         }
+        case OMPC_nontemporal: {
+            result = new SgOmpNontemporalClause(explist);
+            printf("Nontemporal Clause added!\n");
+            break;
+        }
         case OMPC_private: {
             result = new SgOmpPrivateClause(explist);
             printf("Private Clause added!\n");
@@ -3722,10 +3779,21 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
         case OMPC_linear: {
             OpenMPLinearClauseModifier modifier = ((OpenMPLinearClause*)current_omp_clause)->getModifier();
             SgOmpClause::omp_linear_modifier_enum sg_modifier = toSgOmpClauseLinearModifier(modifier);
-            SgExpression* stepExp = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), ((OpenMPLinearClause*)current_omp_clause)->getUserDefinedStep());
-
+            SgExpression* stepExp = NULL;
+            if ( (((OpenMPLinearClause*)current_omp_clause)->getUserDefinedStep()) != "" ) {
+                stepExp = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), ((OpenMPLinearClause*)current_omp_clause)->getUserDefinedStep());
+            }
             result = new SgOmpLinearClause(explist, stepExp, sg_modifier);
             printf("Linear Clause added!\n");
+            break;
+        }
+        case OMPC_aligned: {
+            SgExpression* alignExp = NULL;
+            if ( (((OpenMPAlignedClause*)current_omp_clause)->getUserDefinedAlignment()) != "" ) {
+                alignExp = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), ((OpenMPAlignedClause*)current_omp_clause)->getUserDefinedAlignment());
+            }
+            result = new SgOmpAlignedClause(explist, alignExp);
+            printf("Aligned Clause added!\n");
             break;
         }
         case OMPC_lastprivate: {
@@ -3791,6 +3859,30 @@ SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_
             SgExpression* num_teams_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
             result = new SgOmpNumTeamsClause(num_teams_expression);
             printf("Num_teams Clause added!\n");
+            break;
+        }
+        case OMPC_safelen: {
+            SgExpression* safelen_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
+            result = new SgOmpSafelenClause(safelen_expression);
+            printf("Safelen Clause added!\n");
+            break;
+        }
+        case OMPC_simdlen: {
+            SgExpression* simdlen_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
+            result = new SgOmpSimdlenClause(simdlen_expression);
+            printf("Simdlen Clause added!\n");
+            break;
+        }
+        case OMPC_ordered: {
+            SgExpression* ordered_expression = checkOmpExpressionClause(clause_expression, global, e_ordered_clause);
+            result = new SgOmpOrderedClause(ordered_expression);
+            printf("Ordered Clause added!\n");
+            break;
+        }
+        case OMPC_collapse: {
+            SgExpression* collapse_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
+            result = new SgOmpCollapseClause(collapse_expression);
+            printf("Collapse Clause added!\n");
             break;
         }
         case OMPC_thread_limit: {
@@ -3865,6 +3957,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_for:
         case OMPD_sections:
         case OMPD_section:
+        case OMPD_simd:
         case OMPD_parallel: {
             break;
         }
@@ -3881,10 +3974,15 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_copyin:
                 case OMPC_default:
                 case OMPC_firstprivate:
+                case OMPC_nontemporal:
                 case OMPC_if:
                 case OMPC_num_threads:
                 case OMPC_num_teams:
+                case OMPC_safelen:
+                case OMPC_simdlen:
                 case OMPC_thread_limit:
+                case OMPC_ordered:
+                case OMPC_collapse:
                 case OMPC_private:
                 case OMPC_proc_bind:
                 case OMPC_reduction:
@@ -3892,7 +3990,9 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_copyprivate:
                 case OMPC_nowait:
                 case OMPC_linear:
+                case OMPC_aligned:
                 case OMPC_lastprivate:
+                case OMPC_schedule:
                 case OMPC_when: {
                     break;
                 }

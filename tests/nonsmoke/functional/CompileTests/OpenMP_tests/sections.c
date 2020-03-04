@@ -1,6 +1,5 @@
 #include <omp.h>
 #include <stdio.h>
-#define NT 4
 int main( )
  {
     int section_count = 0;
