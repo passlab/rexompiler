@@ -728,6 +728,11 @@ namespace OmpSupport
           result = SgOmpClause::e_omp_if_parallel;
           break;
         }
+      case OMPC_IF_MODIFIER_simd:
+        {
+          result = SgOmpClause::e_omp_if_simd;
+          break;
+        }
       case OMPC_IF_MODIFIER_unspecified:
         {
           result = SgOmpClause::e_omp_if_modifier_unknown;
@@ -3201,6 +3206,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_for:
         case OMPD_sections:
         case OMPD_section:
+        case OMPD_simd:
         case OMPD_parallel: {
             result = convertBodyDirective(current_OpenMPIR_to_SageIII);
             break;
@@ -3259,6 +3265,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             result = new SgOmpTeamsStatement(NULL, body);
             break;
         }
+        case OMPD_simd: {
+            result = new SgOmpSimdStatement(NULL, body);
+            break;
+        }
         case OMPD_single: {
             result = new SgOmpSingleStatement(NULL, body);
             break;
@@ -3295,8 +3305,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         switch (clause_kind) {
             case OMPC_if:
             case OMPC_num_teams:
+            case OMPC_safelen:
+            case OMPC_simdlen:
             case OMPC_ordered:
-             case OMPC_collapse:
+            case OMPC_collapse:
             case OMPC_thread_limit:
             case OMPC_num_threads: {
                 convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
@@ -3382,6 +3394,10 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
             result = new SgOmpParallelStatement(NULL, NULL);
             break;
         }
+        case OMPD_simd: {
+            result = new SgOmpSimdStatement(NULL, NULL);
+            break;
+        }
         case OMPD_teams: {
             result = new SgOmpTeamsStatement(NULL, NULL);
             break;
@@ -3414,6 +3430,8 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         switch (clause_kind) {
             case OMPC_if:
             case OMPC_num_teams:
+            case OMPC_safelen:
+            case OMPC_simdlen:
             case OMPC_ordered:
             case OMPC_collapse:
             case OMPC_thread_limit:
@@ -3729,6 +3747,11 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
             printf("Firstprivate Clause added!\n");
             break;
         }
+        case OMPC_nontemporal: {
+            result = new SgOmpNontemporalClause(explist);
+            printf("Nontemporal Clause added!\n");
+            break;
+        }
         case OMPC_private: {
             result = new SgOmpPrivateClause(explist);
             printf("Private Clause added!\n");
@@ -3762,6 +3785,15 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
             }
             result = new SgOmpLinearClause(explist, stepExp, sg_modifier);
             printf("Linear Clause added!\n");
+            break;
+        }
+        case OMPC_aligned: {
+            SgExpression* alignExp = NULL;
+            if ( (((OpenMPAlignedClause*)current_omp_clause)->getUserDefinedAlignment()) != "" ) {
+                alignExp = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), ((OpenMPAlignedClause*)current_omp_clause)->getUserDefinedAlignment());
+            }
+            result = new SgOmpAlignedClause(explist, alignExp);
+            printf("Aligned Clause added!\n");
             break;
         }
         case OMPC_lastprivate: {
@@ -3827,6 +3859,18 @@ SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_
             SgExpression* num_teams_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
             result = new SgOmpNumTeamsClause(num_teams_expression);
             printf("Num_teams Clause added!\n");
+            break;
+        }
+        case OMPC_safelen: {
+            SgExpression* safelen_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
+            result = new SgOmpSafelenClause(safelen_expression);
+            printf("Safelen Clause added!\n");
+            break;
+        }
+        case OMPC_simdlen: {
+            SgExpression* simdlen_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
+            result = new SgOmpSimdlenClause(simdlen_expression);
+            printf("Simdlen Clause added!\n");
             break;
         }
         case OMPC_ordered: {
@@ -3913,6 +3957,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_for:
         case OMPD_sections:
         case OMPD_section:
+        case OMPD_simd:
         case OMPD_parallel: {
             break;
         }
@@ -3929,9 +3974,12 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_copyin:
                 case OMPC_default:
                 case OMPC_firstprivate:
+                case OMPC_nontemporal:
                 case OMPC_if:
                 case OMPC_num_threads:
                 case OMPC_num_teams:
+                case OMPC_safelen:
+                case OMPC_simdlen:
                 case OMPC_thread_limit:
                 case OMPC_ordered:
                 case OMPC_collapse:
@@ -3942,6 +3990,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_copyprivate:
                 case OMPC_nowait:
                 case OMPC_linear:
+                case OMPC_aligned:
                 case OMPC_lastprivate:
                 case OMPC_schedule:
                 case OMPC_when: {

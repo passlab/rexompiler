@@ -325,6 +325,7 @@ SgOmpLastprivateClause
 SgOmpNowaitClause
 SgOmpNumThreadsClause
 SgOmpNumTeamsClause
+SgOmpNontemporalClause
 SgOmpThreadLimitClause
 SgOmpOrderedClause
 SgOmpPrivateClause

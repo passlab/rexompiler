@@ -221,7 +221,8 @@ HEADER_OMP_CLAUSE_START
         enum omp_if_modifier_enum
         {
             e_omp_if_modifier_unknown,
-            e_omp_if_parallel
+            e_omp_if_parallel,
+            e_omp_if_simd
         };
        
 

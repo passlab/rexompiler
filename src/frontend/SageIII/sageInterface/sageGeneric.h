@@ -589,6 +589,7 @@ namespace sg
     GEN_VISIT(SgOmpCopyprivateClause)
     GEN_VISIT(SgOmpPrivateClause)
     GEN_VISIT(SgOmpFirstprivateClause)
+    GEN_VISIT(SgOmpNontemporalClause)
     GEN_VISIT(SgOmpSharedClause)
     GEN_VISIT(SgOmpCopyinClause)
     GEN_VISIT(SgOmpLastprivateClause)

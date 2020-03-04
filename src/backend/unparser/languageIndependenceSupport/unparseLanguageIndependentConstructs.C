@@ -2811,12 +2811,12 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpSectionsStatement:
                     case V_SgOmpParallelStatement:
                     case V_SgOmpTeamsStatement:
+                    case V_SgOmpSimdStatement:
                     case V_SgOmpTargetStatement:
                     case V_SgOmpTargetDataStatement:
                     case V_SgOmpWorkshareStatement:
                     case V_SgOmpSingleStatement:
                     case V_SgOmpTaskStatement:
-                    case V_SgOmpSimdStatement:
                     case V_SgOmpAtomicStatement: // Atomic may have clause now
                          unparseOmpGenericStatement (stmt, info); 
                          break;
@@ -7965,6 +7965,9 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
     case V_SgOmpFirstprivateClause:
       curprint(string(" firstprivate("));
       break;
+    case V_SgOmpNontemporalClause:
+      curprint(string(" nontemporal("));
+      break;
     case V_SgOmpPrivateClause:
       curprint(string(" private("));
       break;
@@ -8347,6 +8350,9 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_parallel) {
         curprint(string("parallel : "));
     }
+    if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_simd) {
+        curprint(string("simd : "));
+    }
   }
   else if (isSgOmpOrderedClause(c))
     curprint(string(" ordered("));
@@ -8476,6 +8482,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpCopyprivateClause:
     case V_SgOmpCopyinClause:
     case V_SgOmpFirstprivateClause:
+    case V_SgOmpNontemporalClause:
     case V_SgOmpLastprivateClause:
     case V_SgOmpPrivateClause:
     case V_SgOmpReductionClause:
@@ -8668,6 +8675,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         curprint(string ("teams "));
         break;
       }
+    case V_SgOmpSimdStatement:
+      {
+        curprint(string ("simd "));
+        break;
+      }
     case V_SgOmpTargetStatement:
       {
         curprint(string ("target "));
@@ -8722,11 +8734,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
       case V_SgOmpSingleStatement:
       {
         curprint(string ("single "));
-        break;
-      }
-      case V_SgOmpSimdStatement:
-      {
-        curprint(string ("simd"));
         break;
       }
       case V_SgOmpDeclareSimdStatement:
