@@ -1767,8 +1767,13 @@ Grammar::setUpNodes ()
      OmpExpressionClause.setDataPrototype ( "SgExpression*", "expression", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
      
-     // schedule (kind[, chunksize_exp])
-     OmpScheduleClause.setDataPrototype("SgOmpClause::omp_schedule_kind_enum", "kind", "=e_omp_schedule_unknown",
+     // schedule([modifier [, modifier]:]kind[, chunk_size])
+
+     OmpScheduleClause.setDataPrototype("SgOmpClause::omp_schedule_modifier_enum", "modifier", "=e_omp_schedule_modifier_unspecified",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpScheduleClause.setDataPrototype("SgOmpClause::omp_schedule_modifier_enum", "modifier1", "=e_omp_schedule_modifier_unspecified",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpScheduleClause.setDataPrototype("SgOmpClause::omp_schedule_kind_enum", "kind", "=e_omp_schedule_kind_unspecified",
                                    CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      OmpScheduleClause.setDataPrototype ( "SgExpression*", "chunk_size", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);

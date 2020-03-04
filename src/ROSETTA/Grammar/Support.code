@@ -58,13 +58,19 @@ HEADER_OMP_CLAUSE_START
 	};
 
         enum omp_schedule_kind_enum{
-          e_omp_schedule_unknown = 0,
-          e_omp_schedule_static,
-          e_omp_schedule_dynamic,
-          e_omp_schedule_guided,
-          e_omp_schedule_auto,
-          e_omp_schedule_runtime,
-          e_omp_schedule_last
+          e_omp_schedule_kind_unspecified,
+          e_omp_schedule_kind_static,
+          e_omp_schedule_kind_dynamic,
+          e_omp_schedule_kind_guided,
+          e_omp_schedule_kind_auto,
+          e_omp_schedule_kind_runtime
+        };
+
+        enum omp_schedule_modifier_enum{
+          e_omp_schedule_modifier_unspecified,
+          e_omp_schedule_modifier_monotonic,
+          e_omp_schedule_modifier_nonmonotonic,
+          e_omp_schedule_modifier_simd
         };
 
         enum omp_reduction_identifier_enum

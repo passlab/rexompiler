@@ -7469,59 +7469,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpAtomicClause(SgOmpClause* c
   }    
 }
 
-
-
-void UnparseLanguageIndependentConstructs::unparseOmpScheduleClause(SgOmpClause* clause, SgUnparse_Info& info)
-{
-  ROSE_ASSERT(clause != NULL);
-  SgOmpScheduleClause* c = isSgOmpScheduleClause(clause);
-  ROSE_ASSERT(c!= NULL);
-  curprint (string (" schedule("));
-  SgOmpClause::omp_schedule_kind_enum skind = c-> get_kind ();
-  switch (skind)
-  {
-    case SgOmpClause::e_omp_schedule_static:
-      {
-        curprint(string("static"));
-        break;
-      }
-    case SgOmpClause::e_omp_schedule_dynamic:
-      {
-        curprint(string("dynamic"));
-        break;
-      }
-    case SgOmpClause::e_omp_schedule_guided:
-      {
-        curprint(string("guided"));
-        break;
-      }
-    case SgOmpClause::e_omp_schedule_auto :
-      {
-        curprint(string("auto"));
-        break;
-      }
-    case SgOmpClause::e_omp_schedule_runtime :
-      {
-        curprint(string("runtime"));
-        break;
-      }
-    default:
-      cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpScheduleClause() meets unacceptable kind option value:"<<skind<<endl;
-      ROSE_ASSERT (false);
-      break;
-  }
-
-  // chunk_size expression
-  SgUnparse_Info ninfo(info);
-  if (c->get_chunk_size())
-  {
-    curprint(string(" , "));
-    unparseExpression(c->get_chunk_size(), ninfo);
-  }
-
-  curprint(string(")"));
-}
-
 #if 1
 //! A helper function to convert reduction operators to strings
 // TODO put into a better place and expose it to users.
@@ -7675,6 +7622,84 @@ static std::string lastprivateModifierToString(SgOmpClause::omp_lastprivate_modi
     default:
       {
         cerr<<"Error: unhandled operator type lastprivateModifierToString():"<< rm <<endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
+
+static std::string scheduleModifierToString(SgOmpClause::omp_schedule_modifier_enum rm)
+{
+  string result = "";
+  switch (rm)
+  {
+    case SgOmpClause::e_omp_schedule_modifier_unspecified: 
+      {
+        result = "";
+        break;
+      }
+    case SgOmpClause::e_omp_schedule_modifier_monotonic: 
+      {
+        result = "monotonic";
+        break;
+      }
+    case SgOmpClause::e_omp_schedule_modifier_nonmonotonic: 
+      {
+        result = "nonmonotonic";
+        break;
+      }
+    case SgOmpClause::e_omp_schedule_modifier_simd: 
+      {
+        result = "simd";
+        break;
+      }
+    default:
+      {
+        cerr<<"Error: unhandled operator type scheduleModifierToString():"<< rm <<endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
+
+static std::string scheduleKindToString(SgOmpClause::omp_schedule_kind_enum rm)
+{
+  string result = "";
+  switch (rm)
+  {
+    case SgOmpClause::e_omp_schedule_kind_unspecified: 
+      {
+        result = "";
+        break;
+      }
+    case SgOmpClause::e_omp_schedule_kind_static: 
+      {
+        result = "static";
+        break;
+      }
+    case SgOmpClause::e_omp_schedule_kind_dynamic: 
+      {
+        result = "dynamic";
+        break;
+      }
+    case SgOmpClause::e_omp_schedule_kind_guided: 
+      {
+        result = "guided";
+        break;
+      }
+    case SgOmpClause::e_omp_schedule_kind_auto: 
+      {
+        result = "auto";
+        break;
+      }
+    case SgOmpClause::e_omp_schedule_kind_runtime: 
+      {
+        result = "runtime";
+        break;
+      }
+    default:
+      {
+        cerr<<"Error: unhandled operator type scheduleKindToString():"<< rm <<endl;
         ROSE_ASSERT(false);
       }
   }
@@ -7862,6 +7887,38 @@ static std::string distPolicyToString(SgOmpClause::omp_map_dist_data_enum ro)
       }
   }
   return result;
+}
+
+void UnparseLanguageIndependentConstructs::unparseOmpScheduleClause(SgOmpClause* clause, SgUnparse_Info& info)
+{
+  ROSE_ASSERT(clause != NULL);
+  SgOmpScheduleClause* c = isSgOmpScheduleClause(clause);
+  ROSE_ASSERT(c!= NULL);
+  curprint (string (" schedule("));
+  SgOmpClause::omp_schedule_modifier_enum modifier1 = c-> get_modifier ();
+  SgOmpClause::omp_schedule_modifier_enum modifier2 = c-> get_modifier1 ();
+  if (modifier1 != SgOmpClause::e_omp_schedule_modifier_unspecified) {
+      curprint(scheduleModifierToString(modifier1));
+      if (modifier2 != SgOmpClause::e_omp_schedule_modifier_unspecified) {
+           curprint(string(" , "));
+      } else curprint(string(" : "));
+  };
+  if (modifier2 != SgOmpClause::e_omp_schedule_modifier_unspecified) {
+      curprint(scheduleModifierToString(modifier2));
+      curprint(string(" : "));
+  };
+  SgOmpClause::omp_schedule_kind_enum skind = c-> get_kind ();
+  curprint(scheduleKindToString(skind));
+
+  // chunk_size expression
+  SgUnparse_Info ninfo(info);
+  if (c->get_chunk_size())
+  {
+    curprint(string(" , "));
+    unparseExpression(c->get_chunk_size(), ninfo);
+  }
+
+  curprint(string(")"));
 }
 
 // Generate dist_data(p1, p2, p3)
@@ -8092,9 +8149,9 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
   }
 
   // optional :step  for linear(list:step)
+  if (isSgOmpLinearClause(c) && isSgOmpLinearClause(c)->get_modifier()) { curprint(string(")")); }
   if (isSgOmpLinearClause(c) && isSgOmpLinearClause(c)->get_step())
   {
-    if (isSgOmpLinearClause(c)->get_modifier()) { curprint(string(")")); }
     curprint(string(":"));
     unparseExpression(isSgOmpLinearClause(c)->get_step(), info);
   }
@@ -9909,5 +9966,3 @@ UnparseLanguageIndependentConstructs::requiresParentheses(SgExpression* expr, Sg
 
      return true;
    }
-
-
