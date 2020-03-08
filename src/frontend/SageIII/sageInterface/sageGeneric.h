@@ -340,6 +340,7 @@ namespace sg
     GEN_VISIT(SgOmpMetadirectiveStatement)
     GEN_VISIT(SgOmpParallelStatement)
     GEN_VISIT(SgOmpTeamsStatement)
+    GEN_VISIT(SgOmpLoopStatement)
     GEN_VISIT(SgOmpSingleStatement)
     GEN_VISIT(SgOmpSimdStatement)
     GEN_VISIT(SgOmpTaskStatement)

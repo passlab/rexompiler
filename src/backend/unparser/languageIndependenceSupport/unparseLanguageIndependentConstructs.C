@@ -2811,6 +2811,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpSectionsStatement:
                     case V_SgOmpParallelStatement:
                     case V_SgOmpTeamsStatement:
+                    case V_SgOmpLoopStatement:
                     case V_SgOmpSimdStatement:
                     case V_SgOmpTargetStatement:
                     case V_SgOmpTargetDataStatement:
@@ -8673,6 +8674,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpTeamsStatement:
       {
         curprint(string ("teams "));
+        break;
+      }
+    case V_SgOmpLoopStatement:
+      {
+        curprint(string ("loop "));
         break;
       }
     case V_SgOmpSimdStatement:

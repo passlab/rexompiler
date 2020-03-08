@@ -77,7 +77,7 @@ SgCommaOpExp.C                        SgGreaterOrEqualOp.C                    Sg
 SgAsmOp.C 			      SgCommonBlock.C                       SgGreaterThanOp.C                       SgOmpNumThreadsClause.C                      SgTypedefSeq.C                  SgOmpNumTeamsClause.C                 SgOmpThreadLimitClause.C \
 SgCommonBlockObject.C                 SgIdentDirectiveStatement.C             SgOmpOrderedClause.C                         SgTypedefSymbol.C \
 SgCommonSymbol.C                      SgIfdefDirectiveStatement.C             SgOmpOrderedStatement.C                      SgTypedefType.C \
-SgIfDirectiveStatement.C      SgOmpMetadirectiveStatement.C          SgOmpParallelStatement.C      SgOmpTeamsStatement.C           SgTypeDouble.C \
+SgIfDirectiveStatement.C      SgOmpMetadirectiveStatement.C          SgOmpParallelStatement.C      SgOmpTeamsStatement.C    SgOmpLoopStatement.C       SgTypeDouble.C \
 SgComputedGotoStatement.C             SgIfndefDirectiveStatement.C            SgOmpPrivateClause.C                         SgTypeEllipse.C \
 SgConcatenationOp.C                   SgIfStmt.C                              SgOmpReductionClause.C SgOmpAllocateClause.C   SgOmpWhenClause.C                   SgTypeFloat.C \
 SgConditionalExp.C                    SgImagPartOp.C                          SgOmpScheduleClause.C                        SgTypeGlobalVoid.C \
