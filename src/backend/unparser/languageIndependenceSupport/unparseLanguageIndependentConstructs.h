@@ -379,6 +379,7 @@ class UnparseLanguageIndependentConstructs
           virtual void unparseOmpDefaultClause              (SgOmpClause* clause, SgUnparse_Info& info); 
           virtual void unparseOmpProcBindClause             (SgOmpClause* clause, SgUnparse_Info& info); 
           virtual void unparseOmpOrderClause                (SgOmpClause* clause, SgUnparse_Info& info); 
+          virtual void unparseOmpBindClause                 (SgOmpClause* clause, SgUnparse_Info& info); 
           virtual void unparseOmpWhenClause                 (SgOmpClause* clause, SgUnparse_Info& info);
           virtual void unparseOmpAtomicClause               (SgOmpClause* clause, SgUnparse_Info& info); 
           virtual void unparseOmpScheduleClause             (SgOmpClause* clause, SgUnparse_Info& info);

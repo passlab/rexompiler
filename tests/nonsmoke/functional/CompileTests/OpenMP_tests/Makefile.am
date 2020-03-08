@@ -71,6 +71,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	limits_threads.c \
 	linebreak.c \
 	lockarray.c \
+	loop.c \
 	loop1.c \
 	lu_factorization.c \
 	master.c \

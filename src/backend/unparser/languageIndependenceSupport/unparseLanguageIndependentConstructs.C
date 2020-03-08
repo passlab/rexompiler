@@ -7461,6 +7461,44 @@ void UnparseLanguageIndependentConstructs::unparseOmpOrderClause(SgOmpClause* cl
   curprint(string(")"));
 }
 
+void UnparseLanguageIndependentConstructs::unparseOmpBindClause(SgOmpClause* clause, SgUnparse_Info& info)
+{
+  ROSE_ASSERT(clause != NULL);
+  SgOmpBindClause * c = isSgOmpBindClause(clause);
+  ROSE_ASSERT(c!= NULL);
+  curprint(string(" bind("));
+  SgOmpClause::omp_bind_binding_enum dv = c->get_binding(); 
+  switch (dv)
+  {
+    case SgOmpClause::e_omp_bind_binding_teams:
+      {
+        curprint(string("teams"));
+        break;
+      }
+    case SgOmpClause::e_omp_bind_binding_parallel:
+      {
+        curprint(string("parallel"));
+        break;
+      }
+    case SgOmpClause::e_omp_bind_binding_thread:
+      {
+        curprint(string("thread"));
+        break;
+      }
+    case SgOmpClause::e_omp_bind_binding_unspecified:
+      {
+        curprint(string(""));
+        break;
+      }   
+   default:
+      cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpBindClause() meets unacceptable default option value:"<<dv<<endl;
+      ROSE_ASSERT (false);
+      break;
+  }    
+  curprint(string(")"));
+}
+
+
 void UnparseLanguageIndependentConstructs::unparseOmpAtomicClause(SgOmpClause* clause, SgUnparse_Info& info)
 {
   ROSE_ASSERT(clause != NULL);
@@ -8437,6 +8475,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpOrderClause:
       {
         unparseOmpOrderClause(isSgOmpOrderClause(clause),info);
+        break;
+      }
+    case V_SgOmpBindClause:
+      {
+        unparseOmpBindClause(isSgOmpBindClause(clause),info);
         break;
       }
     case V_SgOmpAtomicClause:

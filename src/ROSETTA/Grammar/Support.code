@@ -209,6 +209,14 @@ HEADER_OMP_CLAUSE_START
           e_omp_proc_bind_policy_last
         };
 
+        enum omp_bind_binding_enum
+        {
+            e_omp_bind_binding_unspecified,
+            e_omp_bind_binding_teams,
+            e_omp_bind_binding_parallel,
+            e_omp_bind_binding_thread
+        };
+
         enum omp_order_kind_enum
         {
           e_omp_order_kind_unspecified,

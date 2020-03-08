@@ -74,6 +74,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpAtomicClause, "OmpAtomicClause", "OmpAtomicClauseTag" );
      NEW_TERMINAL_MACRO (OmpProcBindClause, "OmpProcBindClause", "OmpProcBindClauseTag" );
      NEW_TERMINAL_MACRO (OmpOrderClause, "OmpOrderClause", "OmpOrderClauseTag" );
+     NEW_TERMINAL_MACRO (OmpBindClause, "OmpBindClause", "OmpBindClauseTag" );
      NEW_TERMINAL_MACRO (OmpInbranchClause, "OmpInbranchClause", "OmpInbranchClauseTag" );
      NEW_TERMINAL_MACRO (OmpNotinbranchClause, "OmpNotinbranchClause", "OmpNotinbranchClauseTag" );
 
@@ -118,7 +119,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpWhenClause, "OmpWhenClause", "OmpWhenClauseTag" );
 
      NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpBeginClause |OmpEndClause | OmpUntiedClause |
-         OmpDefaultClause | OmpAtomicClause | OmpProcBindClause | OmpOrderClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause |
+         OmpDefaultClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause |
          OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause ,
          "OmpClause", "OmpClauseTag", false);
 #endif
@@ -1837,6 +1838,10 @@ Grammar::setUpNodes ()
 
      // order(concurrent) 
      OmpOrderClause.setDataPrototype("SgOmpClause::omp_order_kind_enum", "kind", "=e_omp_order_kind_unspecified",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // bind(binding) 
+     OmpBindClause.setDataPrototype("SgOmpClause::omp_bind_binding_enum", "binding", "=e_omp_bind_binding_unspecified",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
      // reduction(modifier, identifier : variables)

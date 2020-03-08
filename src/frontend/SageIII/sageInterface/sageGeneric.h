@@ -586,6 +586,7 @@ namespace sg
     GEN_VISIT(SgOmpNumThreadsClause)
     GEN_VISIT(SgOmpNumTeamsClause)
     GEN_VISIT(SgOmpOrderClause)
+    GEN_VISIT(SgOmpBindClause)
     GEN_VISIT(SgOmpThreadLimitClause)
     GEN_VISIT(SgOmpExpressionClause)
     GEN_VISIT(SgOmpCopyprivateClause)
