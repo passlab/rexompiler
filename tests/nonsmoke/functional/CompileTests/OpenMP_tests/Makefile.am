@@ -137,6 +137,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	simd.c \
 	simd2.c \
 	simd3.c \
+	simd4.c \
 	single.c \
 	single2.c \
 	single3.c \

@@ -209,6 +209,12 @@ HEADER_OMP_CLAUSE_START
           e_omp_proc_bind_policy_last
         };
 
+        enum omp_order_kind_enum
+        {
+          e_omp_order_kind_unspecified,
+          e_omp_order_kind_concurrent,
+        };
+
         enum omp_atomic_clause_enum
         {
           e_omp_atomic_clause_unknown,
