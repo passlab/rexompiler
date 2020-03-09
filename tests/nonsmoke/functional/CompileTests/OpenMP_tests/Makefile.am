@@ -71,6 +71,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	limits_threads.c \
 	linebreak.c \
 	lockarray.c \
+	loop.c \
 	loop1.c \
 	lu_factorization.c \
 	master.c \
@@ -137,6 +138,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	simd.c \
 	simd2.c \
 	simd3.c \
+	simd4.c \
 	single.c \
 	single2.c \
 	single3.c \

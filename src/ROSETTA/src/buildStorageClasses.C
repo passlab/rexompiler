@@ -858,6 +858,8 @@ AstNodeClass::evaluateType(std::string& varTypeString)
 
                  ( varTypeString == "SgOmpClause::omp_default_option_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_proc_bind_policy_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_order_kind_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_bind_binding_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_atomic_clause_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_schedule_kind_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_schedule_modifier_enum" ) ||

@@ -41,6 +41,8 @@ static SgOmpNowaitClause* convertNowaitClause(SgOmpClauseBodyStatement* clause_b
 static SgOmpScheduleClause* convertScheduleClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause);
 static SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpProcBindClause* convertProcBindClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpOrderClause* convertOrderClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpBindClause* convertBindClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 // store temporary expression pairs for ompparser.
 extern std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
@@ -3202,6 +3204,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
     switch (directive_kind) {
         case OMPD_metadirective:
         case OMPD_teams:
+        case OMPD_loop:
         case OMPD_single:
         case OMPD_for:
         case OMPD_sections:
@@ -3265,6 +3268,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             result = new SgOmpTeamsStatement(NULL, body);
             break;
         }
+        case OMPD_loop: {
+            result = new SgOmpLoopStatement(NULL, body);
+            break;
+        }
         case OMPD_simd: {
             result = new SgOmpSimdStatement(NULL, body);
             break;
@@ -3320,6 +3327,14 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             }
             case OMPC_proc_bind: {
                 convertProcBindClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            case OMPC_order: {
+                convertOrderClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            case OMPC_bind: {
+                convertBindClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_when: {
@@ -3402,6 +3417,10 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
             result = new SgOmpTeamsStatement(NULL, NULL);
             break;
         }
+        case OMPD_loop: {
+            result = new SgOmpLoopStatement(NULL, NULL);
+            break;
+        }
         case OMPD_single: {
             result = new SgOmpSingleStatement(NULL, NULL);
             break;
@@ -3445,6 +3464,14 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
             }
             case OMPC_proc_bind: {
                 convertProcBindClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            case OMPC_order: {
+                convertOrderClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            case OMPC_bind: {
+                convertBindClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_when: {
@@ -3539,6 +3566,60 @@ SgOmpProcBindClause* convertProcBindClause(SgOmpClauseBodyStatement* clause_body
       }
     }; //end switch
     SgOmpProcBindClause* result = new SgOmpProcBindClause(sg_dv);
+    setOneSourcePositionForTransformation(result);
+
+    // reconsider the location of following code to attach clause
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+
+    return result;
+}
+
+SgOmpOrderClause* convertOrderClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    OpenMPOrderClauseKind order_kind = ((OpenMPOrderClause*)current_omp_clause)->getOrderClauseKind();
+    SgOmpClause::omp_order_kind_enum sg_dv = e_omp_order_kind_unspecified;
+    switch (order_kind) {
+      case OMPC_ORDER_concurrent: {
+        sg_dv = SgOmpClause::e_omp_order_kind_concurrent;
+        break;
+      }
+      default: {
+        cerr << "error: buildOmpOrderClause () Unacceptable default option from OpenMPIR:" << order_kind;
+      }
+    }; //end switch
+    SgOmpOrderClause* result = new SgOmpOrderClause(sg_dv);
+    setOneSourcePositionForTransformation(result);
+
+    // reconsider the location of following code to attach clause
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+
+    return result;
+}
+
+SgOmpBindClause* convertBindClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    OpenMPBindClauseBinding bind_binding = ((OpenMPBindClause*)current_omp_clause)->getBindClauseBinding();
+    SgOmpClause::omp_bind_binding_enum sg_dv = e_omp_bind_binding_unspecified;
+    switch (bind_binding) {
+      case OMPC_BIND_teams: {
+        sg_dv = SgOmpClause::e_omp_bind_binding_teams;
+        break;
+      }
+      case OMPC_BIND_parallel: {
+        sg_dv = SgOmpClause::e_omp_bind_binding_parallel;
+        break;
+      }
+      case OMPC_BIND_thread: {
+        sg_dv = SgOmpClause::e_omp_bind_binding_thread;
+        break;
+      }
+      default: {
+        cerr << "error: buildOmpBindClause () Unacceptable default option from OpenMPIR:" << bind_binding;
+      }
+    }; //end switch
+    SgOmpBindClause* result = new SgOmpBindClause(sg_dv);
     setOneSourcePositionForTransformation(result);
 
     // reconsider the location of following code to attach clause
@@ -3953,6 +4034,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
     switch (directive_kind) {
         case OMPD_metadirective:
         case OMPD_teams:
+        case OMPD_loop:
         case OMPD_single:
         case OMPD_for:
         case OMPD_sections:
@@ -3985,6 +4067,8 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_collapse:
                 case OMPC_private:
                 case OMPC_proc_bind:
+                case OMPC_order:
+                case OMPC_bind:
                 case OMPC_reduction:
                 case OMPC_shared:
                 case OMPC_copyprivate:

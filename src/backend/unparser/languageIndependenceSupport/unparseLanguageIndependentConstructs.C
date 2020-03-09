@@ -2811,6 +2811,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpSectionsStatement:
                     case V_SgOmpParallelStatement:
                     case V_SgOmpTeamsStatement:
+                    case V_SgOmpLoopStatement:
                     case V_SgOmpSimdStatement:
                     case V_SgOmpTargetStatement:
                     case V_SgOmpTargetDataStatement:
@@ -7426,12 +7427,83 @@ void UnparseLanguageIndependentConstructs::unparseOmpProcBindClause(SgOmpClause*
         break;
       }
    default:
-      cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpProcBindClause() meets unacceptable default option value:"<<dv<<endl;
-      ROSE_ASSERT (false);
-      break;
+      {
+        cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpProcBindClause() meets unacceptable default option value:"<<dv<<endl;
+        ROSE_ASSERT (false);
+        break;
+      }
   }    
   curprint(string(")"));
 }
+
+void UnparseLanguageIndependentConstructs::unparseOmpOrderClause(SgOmpClause* clause, SgUnparse_Info& info)
+{
+  ROSE_ASSERT(clause != NULL);
+  SgOmpOrderClause * c = isSgOmpOrderClause(clause);
+  ROSE_ASSERT(c!= NULL);
+  curprint(string(" order("));
+  SgOmpClause::omp_order_kind_enum dv = c->get_kind(); 
+  switch (dv)
+  {
+    case SgOmpClause::e_omp_order_kind_concurrent:
+      {
+        curprint(string("concurrent"));
+        break;
+      }
+    case SgOmpClause::e_omp_order_kind_unspecified:
+      {
+        curprint(string(""));
+        break;
+      }   
+   default:
+      {
+        cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpOrderClause() meets unacceptable default option value:"<<dv<<endl;
+        ROSE_ASSERT (false);
+        break;
+      }
+  }    
+  curprint(string(")"));
+}
+
+void UnparseLanguageIndependentConstructs::unparseOmpBindClause(SgOmpClause* clause, SgUnparse_Info& info)
+{
+  ROSE_ASSERT(clause != NULL);
+  SgOmpBindClause * c = isSgOmpBindClause(clause);
+  ROSE_ASSERT(c!= NULL);
+  curprint(string(" bind("));
+  SgOmpClause::omp_bind_binding_enum dv = c->get_binding(); 
+  switch (dv)
+  {
+    case SgOmpClause::e_omp_bind_binding_teams:
+      {
+        curprint(string("teams"));
+        break;
+      }
+    case SgOmpClause::e_omp_bind_binding_parallel:
+      {
+        curprint(string("parallel"));
+        break;
+      }
+    case SgOmpClause::e_omp_bind_binding_thread:
+      {
+        curprint(string("thread"));
+        break;
+      }
+    case SgOmpClause::e_omp_bind_binding_unspecified:
+      {
+        curprint(string(""));
+        break;
+      }   
+   default:
+      {
+        cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpBindClause() meets unacceptable default option value:"<<dv<<endl;
+        ROSE_ASSERT (false);
+        break;
+      }
+  }    
+  curprint(string(")"));
+}
+
 
 void UnparseLanguageIndependentConstructs::unparseOmpAtomicClause(SgOmpClause* clause, SgUnparse_Info& info)
 {
@@ -8406,6 +8478,16 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         unparseOmpProcBindClause(isSgOmpProcBindClause(clause),info);
         break;
       }
+    case V_SgOmpOrderClause:
+      {
+        unparseOmpOrderClause(isSgOmpOrderClause(clause),info);
+        break;
+      }
+    case V_SgOmpBindClause:
+      {
+        unparseOmpBindClause(isSgOmpBindClause(clause),info);
+        break;
+      }
     case V_SgOmpAtomicClause:
       {
         unparseOmpAtomicClause(isSgOmpAtomicClause(clause),info);
@@ -8673,6 +8755,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpTeamsStatement:
       {
         curprint(string ("teams "));
+        break;
+      }
+    case V_SgOmpLoopStatement:
+      {
+        curprint(string ("loop "));
         break;
       }
     case V_SgOmpSimdStatement:
