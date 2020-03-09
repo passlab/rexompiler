@@ -7427,9 +7427,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpProcBindClause(SgOmpClause*
         break;
       }
    default:
-      cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpProcBindClause() meets unacceptable default option value:"<<dv<<endl;
-      ROSE_ASSERT (false);
-      break;
+      {
+        cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpProcBindClause() meets unacceptable default option value:"<<dv<<endl;
+        ROSE_ASSERT (false);
+        break;
+      }
   }    
   curprint(string(")"));
 }
@@ -7454,9 +7456,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpOrderClause(SgOmpClause* cl
         break;
       }   
    default:
-      cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpOrderClause() meets unacceptable default option value:"<<dv<<endl;
-      ROSE_ASSERT (false);
-      break;
+      {
+        cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpOrderClause() meets unacceptable default option value:"<<dv<<endl;
+        ROSE_ASSERT (false);
+        break;
+      }
   }    
   curprint(string(")"));
 }
@@ -7491,9 +7495,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpBindClause(SgOmpClause* cla
         break;
       }   
    default:
-      cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpBindClause() meets unacceptable default option value:"<<dv<<endl;
-      ROSE_ASSERT (false);
-      break;
+      {
+        cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpBindClause() meets unacceptable default option value:"<<dv<<endl;
+        ROSE_ASSERT (false);
+        break;
+      }
   }    
   curprint(string(")"));
 }
