@@ -3578,7 +3578,7 @@ SgOmpProcBindClause* convertProcBindClause(SgOmpClauseBodyStatement* clause_body
 
 SgOmpOrderClause* convertOrderClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     OpenMPOrderClauseKind order_kind = ((OpenMPOrderClause*)current_omp_clause)->getOrderClauseKind();
-    SgOmpClause::omp_order_kind_enum sg_dv;
+    SgOmpClause::omp_order_kind_enum sg_dv = e_omp_order_kind_unspecified;
     switch (order_kind) {
       case OMPC_ORDER_concurrent: {
         sg_dv = SgOmpClause::e_omp_order_kind_concurrent;
@@ -3601,7 +3601,7 @@ SgOmpOrderClause* convertOrderClause(SgOmpClauseBodyStatement* clause_body, std:
 
 SgOmpBindClause* convertBindClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     OpenMPBindClauseBinding bind_binding = ((OpenMPBindClause*)current_omp_clause)->getBindClauseBinding();
-    SgOmpClause::omp_bind_binding_enum sg_dv;
+    SgOmpClause::omp_bind_binding_enum sg_dv = e_omp_bind_binding_unspecified;
     switch (bind_binding) {
       case OMPC_BIND_teams: {
         sg_dv = SgOmpClause::e_omp_bind_binding_teams;
