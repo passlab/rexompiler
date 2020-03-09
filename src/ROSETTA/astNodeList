@@ -298,6 +298,7 @@ SgOmpOrderedStatement
 SgOmpParallelStatement
 SgOmpTeamsStatement
 SgOmpLoopStatement
+SgOmpScanStatement
 SgOmpSectionStatement
 SgOmpSectionsStatement
 SgOmpSingleStatement
@@ -329,6 +330,8 @@ SgOmpNumTeamsClause
 SgOmpOrderClause
 SgOmpBindClause
 SgOmpNontemporalClause
+SgOmpInclusiveClause
+SgOmpExclusiveClause
 SgOmpThreadLimitClause
 SgOmpOrderedClause
 SgOmpPrivateClause

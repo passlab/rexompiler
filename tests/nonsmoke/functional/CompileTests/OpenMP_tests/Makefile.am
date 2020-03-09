@@ -129,6 +129,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	reduction_modifier.c \
 	reduction_user_identifier.c \
 	rice1.c \
+	scan.c \
 	section.c \
 	section1.c \
 	sections.c \

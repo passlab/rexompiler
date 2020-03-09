@@ -3205,6 +3205,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_metadirective:
         case OMPD_teams:
         case OMPD_loop:
+        case OMPD_scan:
         case OMPD_single:
         case OMPD_for:
         case OMPD_sections:
@@ -3270,6 +3271,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         }
         case OMPD_loop: {
             result = new SgOmpLoopStatement(NULL, body);
+            break;
+        }
+        case OMPD_scan: {
+            result = new SgOmpScanStatement(NULL, body);
             break;
         }
         case OMPD_simd: {
@@ -3419,6 +3424,10 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         }
         case OMPD_loop: {
             result = new SgOmpLoopStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_scan: {
+            result = new SgOmpScanStatement(NULL, NULL);
             break;
         }
         case OMPD_single: {
@@ -3833,6 +3842,16 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
             printf("Nontemporal Clause added!\n");
             break;
         }
+        case OMPC_inclusive: {
+            result = new SgOmpInclusiveClause(explist);
+            printf("Inclusive Clause added!\n");
+            break;
+        }
+        case OMPC_exclusive: {
+            result = new SgOmpExclusiveClause(explist);
+            printf("Exclusive Clause added!\n");
+            break;
+        }
         case OMPC_private: {
             result = new SgOmpPrivateClause(explist);
             printf("Private Clause added!\n");
@@ -4035,6 +4054,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_metadirective:
         case OMPD_teams:
         case OMPD_loop:
+        case OMPD_scan:
         case OMPD_single:
         case OMPD_for:
         case OMPD_sections:
@@ -4057,6 +4077,8 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_default:
                 case OMPC_firstprivate:
                 case OMPC_nontemporal:
+                case OMPC_inclusive:
+                case OMPC_exclusive:
                 case OMPC_if:
                 case OMPC_num_threads:
                 case OMPC_num_teams:

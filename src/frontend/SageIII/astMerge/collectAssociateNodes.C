@@ -1748,7 +1748,9 @@ addAssociatedNodes ( SgNode* node, set<SgNode*> & nodeList, bool markMemberNodes
           case V_SgOmpDoStatement       : 
           case V_SgOmpExpressionClause  : 
           case V_SgOmpFirstprivateClause: 
-          case V_SgOmpNontemporalClause: 
+          case V_SgOmpNontemporalClause : 
+          case V_SgOmpInclusiveClause   :
+          case V_SgOmpExclusiveClause   :
           case V_SgOmpFlushStatement    : 
           case V_SgOmpForStatement      : 
           case V_SgOmpForSimdStatement  : 

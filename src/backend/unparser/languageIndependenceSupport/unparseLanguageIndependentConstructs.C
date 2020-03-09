@@ -2812,6 +2812,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpParallelStatement:
                     case V_SgOmpTeamsStatement:
                     case V_SgOmpLoopStatement:
+                    case V_SgOmpScanStatement:
                     case V_SgOmpSimdStatement:
                     case V_SgOmpTargetStatement:
                     case V_SgOmpTargetDataStatement:
@@ -8040,6 +8041,12 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
     case V_SgOmpNontemporalClause:
       curprint(string(" nontemporal("));
       break;
+    case V_SgOmpInclusiveClause:
+      curprint(string(" inclusive("));
+      break;
+    case V_SgOmpExclusiveClause:
+      curprint(string(" exclusive("));
+      break;
     case V_SgOmpPrivateClause:
       curprint(string(" private("));
       break;
@@ -8565,6 +8572,8 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpCopyinClause:
     case V_SgOmpFirstprivateClause:
     case V_SgOmpNontemporalClause:
+    case V_SgOmpInclusiveClause:
+    case V_SgOmpExclusiveClause:
     case V_SgOmpLastprivateClause:
     case V_SgOmpPrivateClause:
     case V_SgOmpReductionClause:
@@ -8760,6 +8769,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpLoopStatement:
       {
         curprint(string ("loop "));
+        break;
+      }
+    case V_SgOmpScanStatement:
+      {
+        curprint(string ("scan "));
         break;
       }
     case V_SgOmpSimdStatement:
