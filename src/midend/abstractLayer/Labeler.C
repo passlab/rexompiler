@@ -297,6 +297,7 @@ int Labeler::isLabelRelevantNode(SgNode* node) {
   case V_SgOmpMasterStatement:
   case V_SgOmpMetadirectiveStatement:
   case V_SgOmpTeamsStatement:
+  case V_SgOmpRequiresStatement:
   case V_SgOmpLoopStatement:
   case V_SgOmpScanStatement:
   case V_SgOmpOrderedStatement:

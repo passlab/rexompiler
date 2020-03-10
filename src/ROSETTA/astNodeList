@@ -297,6 +297,7 @@ SgOmpMetadirectiveStatement
 SgOmpOrderedStatement
 SgOmpParallelStatement
 SgOmpTeamsStatement
+SgOmpRequiresStatement
 SgOmpLoopStatement
 SgOmpScanStatement
 SgOmpSectionStatement
@@ -327,6 +328,10 @@ SgOmpLastprivateClause
 SgOmpNowaitClause
 SgOmpNumThreadsClause
 SgOmpNumTeamsClause
+SgOmpReverseOffloadClause
+SgOmpUnifiedAddressClause
+SgOmpUnifiedSharedMemoryClause
+SgOmpDynamicAllocatorsClause
 SgOmpOrderClause
 SgOmpBindClause
 SgOmpNontemporalClause

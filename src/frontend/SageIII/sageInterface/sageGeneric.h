@@ -340,6 +340,7 @@ namespace sg
     GEN_VISIT(SgOmpMetadirectiveStatement)
     GEN_VISIT(SgOmpParallelStatement)
     GEN_VISIT(SgOmpTeamsStatement)
+    GEN_VISIT(SgOmpRequiresStatement)
     GEN_VISIT(SgOmpLoopStatement)
     GEN_VISIT(SgOmpScanStatement)
     GEN_VISIT(SgOmpSingleStatement)
@@ -577,6 +578,10 @@ namespace sg
     // - OMP Nodes
     GEN_VISIT(SgOmpOrderedClause)
     GEN_VISIT(SgOmpNowaitClause)
+    GEN_VISIT(SgOmpReverseOffloadClause)
+    GEN_VISIT(SgOmpUnifiedAddressClause)
+    GEN_VISIT(SgOmpUnifiedSharedMemoryClause)
+    GEN_VISIT(SgOmpDynamicAllocatorsClause)
     GEN_VISIT(SgOmpUntiedClause)
     GEN_VISIT(SgOmpMergeableClause)
     GEN_VISIT(SgOmpDefaultClause)

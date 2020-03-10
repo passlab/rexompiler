@@ -2811,6 +2811,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpSectionsStatement:
                     case V_SgOmpParallelStatement:
                     case V_SgOmpTeamsStatement:
+                    case V_SgOmpRequiresStatement:
                     case V_SgOmpLoopStatement:
                     case V_SgOmpScanStatement:
                     case V_SgOmpSimdStatement:
@@ -8506,6 +8507,26 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         curprint(string(" nowait"));
         break;
       }
+    case V_SgOmpReverseOffloadClause:
+      {
+        curprint(string(" reverse_offload"));
+        break;
+      }
+    case V_SgOmpUnifiedAddressClause:
+      {
+        curprint(string(" unified_address"));
+        break;
+      }
+    case V_SgOmpUnifiedSharedMemoryClause:
+      {
+        curprint(string(" unified_shared_memory"));
+        break;
+      }
+    case V_SgOmpDynamicAllocatorsClause:
+      {
+        curprint(string(" dynamic_allocators"));
+        break;
+      }
     case V_SgOmpInbranchClause:
       {
         curprint(string(" inbranch"));
@@ -8764,6 +8785,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpTeamsStatement:
       {
         curprint(string ("teams "));
+        break;
+      }
+    case V_SgOmpRequiresStatement:
+      {
+        curprint(string ("requires "));
         break;
       }
     case V_SgOmpLoopStatement:
