@@ -48,6 +48,7 @@ static SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement*, std::
 static SgOmpProcBindClause* convertProcBindClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpOrderClause* convertOrderClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpBindClause* convertBindClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpAtomicDefaultMemOrderClause* convertAtomicDefaultMemOrderClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 // store temporary expression pairs for ompparser.
 extern std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
@@ -3075,8 +3076,8 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
                 convertDynamicAllocatorsClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
-            case OMPC_schedule: {
-                convertScheduleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+            case OMPC_atomic_default_mem_order: {
+                convertAtomicDefaultMemOrderClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             default: {
@@ -3253,6 +3254,36 @@ SgOmpDynamicAllocatorsClause* convertDynamicAllocatorsClause(SgOmpClauseBodyStat
     setOneSourcePositionForTransformation(result);
     SgOmpClause* sg_clause = result;
     printf("ompparser dynamic_allocators clause is added.\n");
+    return result;
+}
+
+SgOmpAtomicDefaultMemOrderClause* convertAtomicDefaultMemOrderClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser atomic_default_mem_order clause is ready.\n");
+    OpenMPAtomicDefaultMemOrderClauseKind atomic_default_mem_order_kind = ((OpenMPAtomicDefaultMemOrderClause*)current_omp_clause)->getKind();
+    SgOmpClause::omp_atomic_default_mem_order_kind_enum sg_dv = SgOmpClause::e_omp_atomic_default_mem_order_kind_unspecified;
+    switch (atomic_default_mem_order_kind) {
+      case OMPC_ATOMIC_DEFAULT_MEM_ORDER_seq_cst: {
+        sg_dv = SgOmpClause::e_omp_atomic_default_mem_order_kind_seq_cst;
+        break;
+      }
+      case OMPC_ATOMIC_DEFAULT_MEM_ORDER_acq_rel: {
+        sg_dv = SgOmpClause::e_omp_atomic_default_mem_order_kind_acq_rel;
+        break;
+      }
+      case OMPC_ATOMIC_DEFAULT_MEM_ORDER_relaxed: {
+        sg_dv = SgOmpClause::e_omp_atomic_default_mem_order_kind_relaxed;
+        break;
+      }
+      default: {
+        cerr << "error: buildOmpAtomicDefaultMemOrderClause () Unacceptable default option from OpenMPIR:" << atomic_default_mem_order_kind;
+      }
+    }; //end switch
+    SgOmpAtomicDefaultMemOrderClause* result = new SgOmpAtomicDefaultMemOrderClause(sg_dv);
+    setOneSourcePositionForTransformation(result);
+
+    // reconsider the location of following code to attach clause
+    SgOmpClause* sg_clause = result;
+    printf("ompparser atomic_default_mem_order clause is added.\n");
     return result;
 }
 
@@ -4109,6 +4140,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_unified_address:
                 case OMPC_unified_shared_memory:
                 case OMPC_dynamic_allocators:
+                case OMPC_atomic_default_mem_order:
                 case OMPC_linear:
                 case OMPC_aligned:
                 case OMPC_lastprivate:

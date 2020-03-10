@@ -7506,6 +7506,44 @@ void UnparseLanguageIndependentConstructs::unparseOmpBindClause(SgOmpClause* cla
   curprint(string(")"));
 }
 
+void UnparseLanguageIndependentConstructs::unparseOmpAtomicDefaultMemOrderClause(SgOmpClause* clause, SgUnparse_Info& info)
+{
+  ROSE_ASSERT(clause != NULL);
+  SgOmpAtomicDefaultMemOrderClause * c = isSgOmpAtomicDefaultMemOrderClause(clause);
+  ROSE_ASSERT(c!= NULL);
+  curprint(string(" atomic_default_mem_order("));
+  SgOmpClause::omp_atomic_default_mem_order_kind_enum dv = c->get_kind(); 
+  switch (dv)
+  {
+    case SgOmpClause::e_omp_atomic_default_mem_order_kind_seq_cst:
+      {
+        curprint(string("seq_cst"));
+        break;
+      }
+    case SgOmpClause::e_omp_atomic_default_mem_order_kind_acq_rel:
+      {
+        curprint(string("acq_rel"));
+        break;
+      }
+    case SgOmpClause::e_omp_atomic_default_mem_order_kind_relaxed:
+      {
+        curprint(string("relaxed"));
+        break;
+      }
+    case SgOmpClause::e_omp_atomic_default_mem_order_kind_unspecified:
+      {
+        curprint(string(""));
+        break;
+      }   
+   default:
+      {
+        cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpAtomicDefaultMemOrderClause() meets unacceptable default option value:"<<dv<<endl;
+        ROSE_ASSERT (false);
+        break;
+      }
+  }    
+  curprint(string(")"));
+}
 
 void UnparseLanguageIndependentConstructs::unparseOmpAtomicClause(SgOmpClause* clause, SgUnparse_Info& info)
 {
@@ -8494,6 +8532,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpBindClause:
       {
         unparseOmpBindClause(isSgOmpBindClause(clause),info);
+        break;
+      }
+    case V_SgOmpAtomicDefaultMemOrderClause:
+      {
+        unparseOmpAtomicDefaultMemOrderClause(isSgOmpAtomicDefaultMemOrderClause(clause),info);
         break;
       }
     case V_SgOmpAtomicClause:

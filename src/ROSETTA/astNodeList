@@ -332,6 +332,7 @@ SgOmpReverseOffloadClause
 SgOmpUnifiedAddressClause
 SgOmpUnifiedSharedMemoryClause
 SgOmpDynamicAllocatorsClause
+SgOmpAtomicDefaultMemOrderClause
 SgOmpOrderClause
 SgOmpBindClause
 SgOmpNontemporalClause
