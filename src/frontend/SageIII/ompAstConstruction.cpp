@@ -54,7 +54,7 @@ static SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement*, std::pair<S
 extern std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
 extern SgExpression* omp_expression;
 static SgExpression* parseOmpExpression(SgPragmaDeclaration*, OpenMPClauseKind, std::string);
-static SgOmpParallelStatement* buildOmpParallelStatementFromCombinedDirectives(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
+static SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 
 using namespace std;
@@ -3029,7 +3029,7 @@ SgOmpBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*,
 
     switch (directive_kind) {
         case OMPD_parallel_for: {
-            result = buildOmpParallelStatementFromCombinedDirectives(current_OpenMPIR_to_SageIII);
+            result = convertOmpParallelStatementFromCombinedDirectives(current_OpenMPIR_to_SageIII);
             break;
         }
         default: {
@@ -3047,7 +3047,7 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
 
     switch (directive_kind) {
         case OMPD_requires: {
-            result = new SgOmpRequiresStatement(NULL,NULL);
+            result = new SgOmpRequiresStatement();
             break;
         }
         default: {
@@ -3103,10 +3103,6 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             result = new SgOmpParallelStatement(NULL, body);
             break;
         }
-       /* case OMPD_requires: {
-            result = new SgOmpRequiresStatement(NULL, body);
-            break;
-        }*/
         case OMPD_teams: {
             result = new SgOmpTeamsStatement(NULL, body);
             break;
@@ -3957,7 +3953,7 @@ void buildVariableList(SgOmpVariablesClause* current_omp_clause) {
     }
 }
 
-SgOmpParallelStatement* buildOmpParallelStatementFromCombinedDirectives(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII)
+SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII)
   {
     ROSE_ASSERT(current_OpenMPIR_to_SageIII.second != NULL);
     SgStatement* body = getOpenMPBlockBody(current_OpenMPIR_to_SageIII);
@@ -3976,7 +3972,7 @@ SgOmpParallelStatement* buildOmpParallelStatementFromCombinedDirectives(std::pai
         }
       default:
         {
-          cerr<<"error: unacceptable directive type in buildOmpParallelStatementFromCombinedDirectives() "<<endl;
+          cerr<<"error: unacceptable directive type in convertOmpParallelStatementFromCombinedDirectives() "<<endl;
           ROSE_ASSERT(false);
         }
     } 
