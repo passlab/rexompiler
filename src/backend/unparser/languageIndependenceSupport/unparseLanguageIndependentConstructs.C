@@ -2811,7 +2811,9 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpSectionsStatement:
                     case V_SgOmpParallelStatement:
                     case V_SgOmpTeamsStatement:
+                    case V_SgOmpRequiresStatement:
                     case V_SgOmpLoopStatement:
+                    case V_SgOmpScanStatement:
                     case V_SgOmpSimdStatement:
                     case V_SgOmpTargetStatement:
                     case V_SgOmpTargetDataStatement:
@@ -7504,6 +7506,44 @@ void UnparseLanguageIndependentConstructs::unparseOmpBindClause(SgOmpClause* cla
   curprint(string(")"));
 }
 
+void UnparseLanguageIndependentConstructs::unparseOmpAtomicDefaultMemOrderClause(SgOmpClause* clause, SgUnparse_Info& info)
+{
+  ROSE_ASSERT(clause != NULL);
+  SgOmpAtomicDefaultMemOrderClause * c = isSgOmpAtomicDefaultMemOrderClause(clause);
+  ROSE_ASSERT(c!= NULL);
+  curprint(string(" atomic_default_mem_order("));
+  SgOmpClause::omp_atomic_default_mem_order_kind_enum dv = c->get_kind(); 
+  switch (dv)
+  {
+    case SgOmpClause::e_omp_atomic_default_mem_order_kind_seq_cst:
+      {
+        curprint(string("seq_cst"));
+        break;
+      }
+    case SgOmpClause::e_omp_atomic_default_mem_order_kind_acq_rel:
+      {
+        curprint(string("acq_rel"));
+        break;
+      }
+    case SgOmpClause::e_omp_atomic_default_mem_order_kind_relaxed:
+      {
+        curprint(string("relaxed"));
+        break;
+      }
+    case SgOmpClause::e_omp_atomic_default_mem_order_kind_unspecified:
+      {
+        curprint(string(""));
+        break;
+      }   
+   default:
+      {
+        cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpAtomicDefaultMemOrderClause() meets unacceptable default option value:"<<dv<<endl;
+        ROSE_ASSERT (false);
+        break;
+      }
+  }    
+  curprint(string(")"));
+}
 
 void UnparseLanguageIndependentConstructs::unparseOmpAtomicClause(SgOmpClause* clause, SgUnparse_Info& info)
 {
@@ -8040,6 +8080,12 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
     case V_SgOmpNontemporalClause:
       curprint(string(" nontemporal("));
       break;
+    case V_SgOmpInclusiveClause:
+      curprint(string(" inclusive("));
+      break;
+    case V_SgOmpExclusiveClause:
+      curprint(string(" exclusive("));
+      break;
     case V_SgOmpPrivateClause:
       curprint(string(" private("));
       break;
@@ -8488,6 +8534,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         unparseOmpBindClause(isSgOmpBindClause(clause),info);
         break;
       }
+    case V_SgOmpAtomicDefaultMemOrderClause:
+      {
+        unparseOmpAtomicDefaultMemOrderClause(isSgOmpAtomicDefaultMemOrderClause(clause),info);
+        break;
+      }
     case V_SgOmpAtomicClause:
       {
         unparseOmpAtomicClause(isSgOmpAtomicClause(clause),info);
@@ -8497,6 +8548,26 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpNowaitClause:
       {
         curprint(string(" nowait"));
+        break;
+      }
+    case V_SgOmpReverseOffloadClause:
+      {
+        curprint(string(" reverse_offload"));
+        break;
+      }
+    case V_SgOmpUnifiedAddressClause:
+      {
+        curprint(string(" unified_address"));
+        break;
+      }
+    case V_SgOmpUnifiedSharedMemoryClause:
+      {
+        curprint(string(" unified_shared_memory"));
+        break;
+      }
+    case V_SgOmpDynamicAllocatorsClause:
+      {
+        curprint(string(" dynamic_allocators"));
         break;
       }
     case V_SgOmpInbranchClause:
@@ -8565,6 +8636,8 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpCopyinClause:
     case V_SgOmpFirstprivateClause:
     case V_SgOmpNontemporalClause:
+    case V_SgOmpInclusiveClause:
+    case V_SgOmpExclusiveClause:
     case V_SgOmpLastprivateClause:
     case V_SgOmpPrivateClause:
     case V_SgOmpReductionClause:
@@ -8757,9 +8830,19 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         curprint(string ("teams "));
         break;
       }
+    case V_SgOmpRequiresStatement:
+      {
+        curprint(string ("requires "));
+        break;
+      }
     case V_SgOmpLoopStatement:
       {
         curprint(string ("loop "));
+        break;
+      }
+    case V_SgOmpScanStatement:
+      {
+        curprint(string ("scan "));
         break;
       }
     case V_SgOmpSimdStatement:

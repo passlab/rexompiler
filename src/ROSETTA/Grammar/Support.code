@@ -217,6 +217,14 @@ HEADER_OMP_CLAUSE_START
             e_omp_bind_binding_thread
         };
 
+        enum omp_atomic_default_mem_order_kind_enum
+        {
+            e_omp_atomic_default_mem_order_kind_unspecified,
+            e_omp_atomic_default_mem_order_kind_seq_cst,
+            e_omp_atomic_default_mem_order_kind_acq_rel,
+            e_omp_atomic_default_mem_order_kind_relaxed
+        };
+
         enum omp_order_kind_enum
         {
           e_omp_order_kind_unspecified,

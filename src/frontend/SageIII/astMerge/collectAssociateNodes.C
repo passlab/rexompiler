@@ -1748,16 +1748,23 @@ addAssociatedNodes ( SgNode* node, set<SgNode*> & nodeList, bool markMemberNodes
           case V_SgOmpDoStatement       : 
           case V_SgOmpExpressionClause  : 
           case V_SgOmpFirstprivateClause: 
-          case V_SgOmpNontemporalClause: 
+          case V_SgOmpNontemporalClause : 
+          case V_SgOmpInclusiveClause   :
+          case V_SgOmpExclusiveClause   :
           case V_SgOmpFlushStatement    : 
           case V_SgOmpForStatement      : 
           case V_SgOmpForSimdStatement  : 
           case V_SgOmpIfClause          : 
           case V_SgOmpFinalClause       :  
           case V_SgOmpPriorityClause    :  
-          case V_SgOmpLastprivateClause:  
-          case V_SgOmpMasterStatement  :  
-          case V_SgOmpNowaitClause     :  
+          case V_SgOmpLastprivateClause        :  
+          case V_SgOmpMasterStatement          :  
+          case V_SgOmpNowaitClause             :  
+          case V_SgOmpReverseOffloadClause     :
+          case V_SgOmpUnifiedAddressClause     :
+          case V_SgOmpUnifiedSharedMemoryClause     :
+          case V_SgOmpDynamicAllocatorsClause       :
+          case V_SgOmpAtomicDefaultMemOrderClause   :
           case V_SgOmpNumThreadsClause :
           case V_SgOmpNumTeamsClause :
           case V_SgOmpOrderClause :
