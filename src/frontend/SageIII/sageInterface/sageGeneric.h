@@ -340,6 +340,7 @@ namespace sg
     GEN_VISIT(SgOmpMetadirectiveStatement)
     GEN_VISIT(SgOmpParallelStatement)
     GEN_VISIT(SgOmpTeamsStatement)
+    GEN_VISIT(SgOmpDistributeStatement)
     GEN_VISIT(SgOmpRequiresStatement)
     GEN_VISIT(SgOmpLoopStatement)
     GEN_VISIT(SgOmpScanStatement)
@@ -610,6 +611,7 @@ namespace sg
     GEN_VISIT(SgOmpWhenClause)
     GEN_VISIT(SgOmpVariablesClause)
     GEN_VISIT(SgOmpScheduleClause)
+    GEN_VISIT(SgOmpDistScheduleClause)
     GEN_VISIT(SgOmpDependClause)
     GEN_VISIT(SgOmpClause)
 

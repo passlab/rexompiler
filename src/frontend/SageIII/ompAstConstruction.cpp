@@ -44,6 +44,7 @@ static SgOmpUnifiedAddressClause* convertUnifiedAddressClause(SgOmpClauseBodySta
 static SgOmpUnifiedSharedMemoryClause* convertUnifiedSharedMemoryClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDynamicAllocatorsClause* convertDynamicAllocatorsClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpScheduleClause* convertScheduleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpDistScheduleClause* convertDistScheduleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpProcBindClause* convertProcBindClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpOrderClause* convertOrderClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
@@ -853,6 +854,25 @@ namespace OmpSupport
       default:
         {
           printf("error: unacceptable omp construct enum for schedule kind conversion:%d\n", kind);
+          ROSE_ASSERT(false);
+        }
+    }
+    return result;
+  }
+
+  static SgOmpClause::omp_dist_schedule_kind_enum toSgOmpClauseDistScheduleKind(OpenMPDistScheduleClauseKind kind)
+  {
+    SgOmpClause::omp_dist_schedule_kind_enum result = SgOmpClause::e_omp_dist_schedule_kind_unspecified;
+    switch (kind)
+    {
+      case OMPC_DIST_SCHEDULE_KIND_static:
+        {
+          result = SgOmpClause::e_omp_dist_schedule_kind_static;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for dist_schedule kind conversion:%d\n", kind);
           ROSE_ASSERT(false);
         }
     }
@@ -2963,6 +2983,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
     switch (directive_kind) {
         case OMPD_metadirective:
         case OMPD_teams:
+        case OMPD_distribute:
         case OMPD_loop:
         case OMPD_scan:
         case OMPD_single:
@@ -3107,6 +3128,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             result = new SgOmpTeamsStatement(NULL, body);
             break;
         }
+        case OMPD_distribute: {
+            result = new SgOmpDistributeStatement(NULL, body);
+            break;
+        }
         case OMPD_loop: {
             result = new SgOmpLoopStatement(NULL, body);
             break;
@@ -3190,6 +3215,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             }
             case OMPC_schedule: {
                 convertScheduleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            case OMPC_dist_schedule: {
+                convertDistScheduleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             default: {
@@ -3308,6 +3337,27 @@ SgOmpScheduleClause* convertScheduleClause(SgOmpClauseBodyStatement* clause_body
     return result;
 }
 
+SgOmpDistScheduleClause* convertDistScheduleClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser dist_schedule clause is ready.\n");
+
+    OpenMPDistScheduleClauseKind kind = ((OpenMPDistScheduleClause*)current_omp_clause)->getKind();
+    SgOmpClause::omp_dist_schedule_kind_enum sg_kind = toSgOmpClauseDistScheduleKind(kind);
+
+    SgExpression* chunk_size = NULL;
+    if ( (((OpenMPDistScheduleClause*)current_omp_clause)->getChunkSize()) != "" ) {
+        chunk_size = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(),((OpenMPDistScheduleClause*)current_omp_clause)->getChunkSize());
+    }
+
+    SgOmpDistScheduleClause* result = new SgOmpDistScheduleClause( sg_kind, chunk_size );
+    ROSE_ASSERT(result);
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+    printf("ompparser dist_schedule clause is added.\n");
+    return result;
+}
+
 SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
 
     OpenMPDirectiveKind directive_kind = current_OpenMPIR_to_SageIII.second->getKind();
@@ -3328,6 +3378,10 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         }
         case OMPD_teams: {
             result = new SgOmpTeamsStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_distribute: {
+            result = new SgOmpDistributeStatement(NULL, NULL);
             break;
         }
         case OMPD_loop: {
@@ -4088,6 +4142,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
     switch (directive_kind) {
         case OMPD_metadirective:
         case OMPD_teams:
+        case OMPD_distribute:
         case OMPD_requires:
         case OMPD_loop:
         case OMPD_scan:
@@ -4141,6 +4196,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_aligned:
                 case OMPC_lastprivate:
                 case OMPC_schedule:
+                case OMPC_dist_schedule:
                 case OMPC_when: {
                     break;
                 }
