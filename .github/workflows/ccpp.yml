@@ -63,7 +63,6 @@ jobs:
           libhpdf-dev \
           libmpc-dev \
           libmpfr-dev \
-          libomp-dev \
           libtool \
           libxml2-dev \
           patchutils \
