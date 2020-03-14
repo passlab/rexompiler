@@ -124,9 +124,9 @@ Grammar::setUpNodes ()
 
      NEW_TERMINAL_MACRO (OmpScheduleClause, "OmpScheduleClause", "OmpScheduleClauseTag" );
      NEW_TERMINAL_MACRO (OmpWhenClause, "OmpWhenClause", "OmpWhenClauseTag" );
-
+     NEW_TERMINAL_MACRO (OmpDistScheduleClause, "OmpDistScheduleClause", "OmpDistScheduleClauseTag" );
      NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpBeginClause |OmpEndClause | OmpUntiedClause |
-         OmpDefaultClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpReverseOffloadClause | OmpUnifiedAddressClause | OmpUnifiedSharedMemoryClause | OmpAtomicDefaultMemOrderClause | OmpDynamicAllocatorsClause | 
+         OmpDefaultClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpDistScheduleClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpReverseOffloadClause | OmpUnifiedAddressClause | OmpUnifiedSharedMemoryClause | OmpAtomicDefaultMemOrderClause | OmpDynamicAllocatorsClause | 
          OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause ,
          "OmpClause", "OmpClauseTag", false);
 #endif
@@ -1846,6 +1846,13 @@ Grammar::setUpNodes ()
      // order(concurrent) 
      OmpOrderClause.setDataPrototype("SgOmpClause::omp_order_kind_enum", "kind", "=e_omp_order_kind_unspecified",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // dist_schedule(kind[, chunk_size]) 
+     OmpDistScheduleClause.setDataPrototype("SgOmpClause::omp_dist_schedule_kind_enum", "kind", "=e_omp_dist_schedule_kind_unspecified",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpDistScheduleClause.setDataPrototype ( "SgExpression*", "chunk_size", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+
 
      // bind(binding) 
      OmpBindClause.setDataPrototype("SgOmpClause::omp_bind_binding_enum", "binding", "=e_omp_bind_binding_unspecified",

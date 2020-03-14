@@ -278,6 +278,7 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpLoopStatement,  "OmpLoopStatement",   "OMP_LOOP_STMT" );
     NEW_TERMINAL_MACRO (OmpScanStatement,  "OmpScanStatement",   "OMP_SCAN_STMT" );
     NEW_TERMINAL_MACRO (OmpTeamsStatement,  "OmpTeamsStatement",   "OMP_TEAMS_STMT" );
+    NEW_TERMINAL_MACRO (OmpDistributeStatement,  "OmpDistributeStatement",   "OMP_DISTRIBUTE_STMT" );
     NEW_TERMINAL_MACRO (OmpMetadirectiveStatement,  "OmpMetadirectiveStatement",   "OMP_METADIRECTIVE_STMT" );
     NEW_TERMINAL_MACRO (OmpSingleStatement,    "OmpSingleStatement",     "OMP_SINGLE_STMT" );
     NEW_TERMINAL_MACRO (OmpTaskStatement,      "OmpTaskStatement",       "OMP_TASK_STMT" );
@@ -298,8 +299,8 @@ Grammar::setUpStatements ()
     // We treat OmpSectionsStatement separatedly by move the body to a list of SgOmpSectionStatement
     // sensitive to 
     NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement |
-              OmpTaskStatement| OmpForStatement| OmpDoStatement | OmpSectionsStatement | OmpTargetStatement| OmpTargetDataStatement |
-              OmpSimdStatement| OmpForSimdStatement ,
+              OmpTaskStatement | OmpForStatement | OmpDoStatement | OmpSectionsStatement | OmpTargetStatement | OmpTargetDataStatement |
+              OmpSimdStatement | OmpForSimdStatement | OmpDistributeStatement ,
         "OmpClauseBodyStatement",   "OMP_CLAUSEBODY_STMT", false );
 
     // + a statement / block 
@@ -4188,6 +4189,7 @@ Grammar::setUpStatements ()
 
     OmpParallelStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
     OmpTeamsStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_STATEMENT", "../Grammar/Statement.code" );
+    OmpDistributeStatement.setFunctionSource            ("SOURCE_OMP_DISTRIBUTE_STATEMENT", "../Grammar/Statement.code" );
     OmpRequiresStatement.setFunctionSource            ("SOURCE_OMP_REQUIRES_STATEMENT", "../Grammar/Statement.code" );
     OmpLoopStatement.setFunctionSource            ("SOURCE_OMP_LOOP_STATEMENT", "../Grammar/Statement.code" );
     OmpScanStatement.setFunctionSource            ("SOURCE_OMP_SCAN_STATEMENT", "../Grammar/Statement.code" );

@@ -2811,6 +2811,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpSectionsStatement:
                     case V_SgOmpParallelStatement:
                     case V_SgOmpTeamsStatement:
+                    case V_SgOmpDistributeStatement:
                     case V_SgOmpRequiresStatement:
                     case V_SgOmpLoopStatement:
                     case V_SgOmpScanStatement:
@@ -7818,6 +7819,30 @@ static std::string scheduleKindToString(SgOmpClause::omp_schedule_kind_enum rm)
   return result;
 }
 
+static std::string distScheduleKindToString(SgOmpClause::omp_dist_schedule_kind_enum rm)
+{
+  string result = "";
+  switch (rm)
+  {
+    case SgOmpClause::e_omp_dist_schedule_kind_unspecified: 
+      {
+        result = "";
+        break;
+      }
+    case SgOmpClause::e_omp_dist_schedule_kind_static: 
+      {
+        result = "static";
+        break;
+      }
+    default:
+      {
+        cerr<<"Error: unhandled operator type distScheduleKindToString():"<< rm <<endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
+
 static std::string linearModifierToString(SgOmpClause::omp_linear_modifier_enum rm)
 {
   string result = "";
@@ -8022,6 +8047,25 @@ void UnparseLanguageIndependentConstructs::unparseOmpScheduleClause(SgOmpClause*
   SgOmpClause::omp_schedule_kind_enum skind = c-> get_kind ();
   curprint(scheduleKindToString(skind));
 
+  // chunk_size expression
+  SgUnparse_Info ninfo(info);
+  if (c->get_chunk_size())
+  {
+    curprint(string(" , "));
+    unparseExpression(c->get_chunk_size(), ninfo);
+  }
+
+  curprint(string(")"));
+}
+
+void UnparseLanguageIndependentConstructs::unparseOmpDistScheduleClause(SgOmpClause* clause, SgUnparse_Info& info)
+{
+  ROSE_ASSERT(clause != NULL);
+  SgOmpDistScheduleClause* c = isSgOmpDistScheduleClause(clause);
+  ROSE_ASSERT(c!= NULL);
+  curprint (string (" dist_schedule("));
+  SgOmpClause::omp_dist_schedule_kind_enum skind = c-> get_kind ();
+  curprint(distScheduleKindToString(skind));
   // chunk_size expression
   SgUnparse_Info ninfo(info);
   if (c->get_chunk_size())
@@ -8612,6 +8656,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         unparseOmpScheduleClause(isSgOmpScheduleClause(clause), info);
         break;
       }
+    case V_SgOmpDistScheduleClause:
+      {
+        unparseOmpDistScheduleClause(isSgOmpDistScheduleClause(clause), info);
+        break;
+      }
     case V_SgOmpDeviceClause:
     case V_SgOmpCollapseClause:
     case V_SgOmpIfClause:  
@@ -8823,6 +8872,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpParallelStatement:
       {
         curprint(string ("parallel "));
+        break;
+      }
+    case V_SgOmpDistributeStatement:
+      {
+        curprint(string ("distribute "));
         break;
       }
     case V_SgOmpTeamsStatement:
