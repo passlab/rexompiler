@@ -2988,6 +2988,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_scan:
         case OMPD_single:
         case OMPD_for:
+        case OMPD_target:
         case OMPD_sections:
         case OMPD_section:
         case OMPD_simd:
@@ -3150,6 +3151,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         }
         case OMPD_for: {
             result = new SgOmpForStatement(NULL, body);
+            break;
+        }
+        case OMPD_target: {
+            result = new SgOmpTargetStatement(NULL, body);
             break;
         }
         case OMPD_sections: {
@@ -3398,6 +3403,10 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         }
         case OMPD_for: {
             result = new SgOmpForStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_target: {
+            result = new SgOmpTargetStatement(NULL, NULL);
             break;
         }
         case OMPD_metadirective: {
@@ -4148,6 +4157,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_scan:
         case OMPD_single:
         case OMPD_for:
+        case OMPD_target:
         case OMPD_sections:
         case OMPD_section:
         case OMPD_simd:
