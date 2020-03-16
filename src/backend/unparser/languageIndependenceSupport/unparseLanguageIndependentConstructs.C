@@ -8528,6 +8528,8 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     curprint(string(" num_teams("));
   else if (isSgOmpThreadLimitClause(c))
     curprint(string(" thread_limit("));
+  else if (isSgOmpHintClause(c))
+    curprint(string(" hint("));
   else if (isSgOmpDeviceClause(c))
     curprint(string(" device("));
   else if (isSgOmpSafelenClause(c))
@@ -8668,6 +8670,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpPriorityClause:  
     case V_SgOmpNumThreadsClause:
     case V_SgOmpNumTeamsClause:  
+    case V_SgOmpHintClause: 
     case V_SgOmpThreadLimitClause:
     case V_SgOmpSafelenClause:  
     case V_SgOmpSimdlenClause:  

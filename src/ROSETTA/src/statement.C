@@ -294,13 +294,13 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpTargetDataStatement,  "OmpTargetDataStatement",   "OMP_TARGET_DATA_STMT" );
 
     NEW_TERMINAL_MACRO (OmpSimdStatement,    "OmpSimdStatement",     "OMP_SIMD_STMT" );
-
+    NEW_TERMINAL_MACRO (OmpCriticalStatement,  "OmpCriticalStatement",   "OMP_CRITICAL_STMT" );
     // A base class for the most commonly formed directives with both clauses and a structured body
     // We treat OmpSectionsStatement separatedly by move the body to a list of SgOmpSectionStatement
     // sensitive to 
     NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement |
               OmpTaskStatement | OmpForStatement | OmpDoStatement | OmpSectionsStatement | OmpTargetStatement | OmpTargetDataStatement |
-              OmpSimdStatement | OmpForSimdStatement | OmpDistributeStatement ,
+              OmpSimdStatement | OmpForSimdStatement | OmpCriticalStatement   | OmpDistributeStatement ,
         "OmpClauseBodyStatement",   "OMP_CLAUSEBODY_STMT", false );
 
     // + a statement / block 
@@ -309,11 +309,11 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpOrderedStatement,   "OmpOrderedStatement",   "OMP_ORDERED_STMT" );
     NEW_TERMINAL_MACRO (OmpWorkshareStatement,    "OmpWorkshareStatement",    "OMP_WORKSHARE_STMT" );
     // + stmt/block + name
-    NEW_TERMINAL_MACRO (OmpCriticalStatement,  "OmpCriticalStatement",   "OMP_CRITICAL_STMT" );
+
 
     // A base class for all directives with a body/statement
     NEW_NONTERMINAL_MACRO (OmpBodyStatement,  OmpMasterStatement  | OmpOrderedStatement 
-        | OmpCriticalStatement   |  OmpSectionStatement | OmpWorkshareStatement  | OmpClauseBodyStatement , 
+        |   OmpSectionStatement | OmpWorkshareStatement  | OmpClauseBodyStatement , 
         "OmpBodyStatement",      "OMP_BODY_STMT", false );
 
 
@@ -4252,6 +4252,7 @@ Grammar::setUpStatements ()
      MicrosoftAttributeDeclaration.setFunctionSource ( "SOURCE_MICROSOFT_ATTRIBUTE_DECLARATION_STATEMENT", "../Grammar/Statement.code" );
 
    }
+
 
 
 

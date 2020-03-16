@@ -41,6 +41,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	copyprivate3.c \
 	copyprivate.c \
 	critical.c \
+	critical1.c \
 	critical_dead.c \
 	critical_orphaned.c \
 	distribute.c \

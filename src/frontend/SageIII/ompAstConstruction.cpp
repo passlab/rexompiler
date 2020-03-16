@@ -2989,6 +2989,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_single:
         case OMPD_for:
         case OMPD_target:
+        case OMPD_critical:
         case OMPD_sections:
         case OMPD_section:
         case OMPD_simd:
@@ -3157,6 +3158,11 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             result = new SgOmpTargetStatement(NULL, body);
             break;
         }
+        case OMPD_critical: {
+            std::string name = ((OpenMPCriticalDirective*)(current_OpenMPIR_to_SageIII.second))->getCriticalName();
+            result = new SgOmpCriticalStatement(NULL, body, SgName(name));
+            break;
+        }
         case OMPD_sections: {
             result = new SgOmpSectionsStatement(NULL, body);
             break;
@@ -3185,6 +3191,7 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         switch (clause_kind) {
             case OMPC_if:
             case OMPC_num_teams:
+            case OMPC_hint:
             case OMPC_safelen:
             case OMPC_simdlen:
             case OMPC_ordered:
@@ -3409,6 +3416,11 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
             result = new SgOmpTargetStatement(NULL, NULL);
             break;
         }
+        case OMPD_critical: {
+            std::string name = ((OpenMPCriticalDirective*)(current_OpenMPIR_to_SageIII.second))->getCriticalName();
+            result = new SgOmpCriticalStatement(NULL, NULL, SgName(name));
+            break;
+        }
         case OMPD_metadirective: {
             result = new SgOmpMetadirectiveStatement(NULL, NULL);
             break;
@@ -3430,6 +3442,7 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
             case OMPC_if:
             case OMPC_num_teams:
             case OMPC_safelen:
+            case OMPC_hint:
             case OMPC_simdlen:
             case OMPC_ordered:
             case OMPC_collapse:
@@ -3932,6 +3945,12 @@ SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_
             printf("Num_teams Clause added!\n");
             break;
         }
+        case OMPC_hint: {
+            SgExpression* hint_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
+            result = new SgOmpHintClause(hint_expression);
+            printf("hint Clause added!\n");
+            break;
+        }
         case OMPC_safelen: {
             SgExpression* safelen_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
             result = new SgOmpSafelenClause(safelen_expression);
@@ -3970,7 +3989,10 @@ SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_
 
     // reconsider the location of following code to attach clause
     SgOmpClause* sg_clause = result;
+    //clause_body->get_clauses().push_back(sg_clause);
+    //if(clause_kind != OMPC_hint)
     clause_body->get_clauses().push_back(sg_clause);
+ //printf("testtets\n");
     sg_clause->set_parent(clause_body);
 
     return result;
@@ -4158,6 +4180,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_single:
         case OMPD_for:
         case OMPD_target:
+        case OMPD_critical:
         case OMPD_sections:
         case OMPD_section:
         case OMPD_simd:
@@ -4184,6 +4207,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_if:
                 case OMPC_num_threads:
                 case OMPC_num_teams:
+                case OMPC_hint:
                 case OMPC_safelen:
                 case OMPC_simdlen:
                 case OMPC_thread_limit:
