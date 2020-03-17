@@ -126,8 +126,9 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpScheduleClause, "OmpScheduleClause", "OmpScheduleClauseTag" );
      NEW_TERMINAL_MACRO (OmpWhenClause, "OmpWhenClause", "OmpWhenClauseTag" );
      NEW_TERMINAL_MACRO (OmpDistScheduleClause, "OmpDistScheduleClause", "OmpDistScheduleClauseTag" );
+     NEW_TERMINAL_MACRO (OmpExtImplementationDefinedRequirementClause, "OmpExtImplementationDefinedRequirementClause", "OmpExtImplementationDefinedRequirementClauseTag" );
      NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpBeginClause |OmpEndClause | OmpUntiedClause |
-         OmpDefaultClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpDistScheduleClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpReverseOffloadClause | OmpUnifiedAddressClause | OmpUnifiedSharedMemoryClause | OmpAtomicDefaultMemOrderClause | OmpDynamicAllocatorsClause | 
+         OmpDefaultClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpDistScheduleClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpReverseOffloadClause | OmpUnifiedAddressClause | OmpUnifiedSharedMemoryClause | OmpAtomicDefaultMemOrderClause | OmpDynamicAllocatorsClause | OmpExtImplementationDefinedRequirementClause |
          OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause ,
          "OmpClause", "OmpClauseTag", false);
 #endif
@@ -1854,6 +1855,9 @@ Grammar::setUpNodes ()
      OmpDistScheduleClause.setDataPrototype ( "SgExpression*", "chunk_size", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
 
+     // ext_implementation_defined_requirement 
+     OmpExtImplementationDefinedRequirementClause.setDataPrototype ( "SgExpression*", "implementation_defined_requirement", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
 
      // bind(binding) 
      OmpBindClause.setDataPrototype("SgOmpClause::omp_bind_binding_enum", "binding", "=e_omp_bind_binding_unspecified",

@@ -335,6 +335,7 @@ SgOmpUnifiedAddressClause
 SgOmpUnifiedSharedMemoryClause
 SgOmpDynamicAllocatorsClause
 SgOmpAtomicDefaultMemOrderClause
+SgOmpExtImplementationDefinedRequirementClause
 SgOmpOrderClause
 SgOmpDistScheduleClause
 SgOmpBindClause

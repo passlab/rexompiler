@@ -8077,6 +8077,17 @@ void UnparseLanguageIndependentConstructs::unparseOmpDistScheduleClause(SgOmpCla
   curprint(string(")"));
 }
 
+void UnparseLanguageIndependentConstructs::unparseOmpExtImplementationDefinedRequirementClause(SgOmpClause* clause, SgUnparse_Info& info)
+{
+  ROSE_ASSERT(clause != NULL);
+  SgOmpExtImplementationDefinedRequirementClause* c = isSgOmpExtImplementationDefinedRequirementClause(clause);
+  ROSE_ASSERT(c!= NULL);
+  curprint (string (" ext_"));
+  // chunk_size expression
+  SgUnparse_Info ninfo(info);
+  unparseExpression(c->get_implementation_defined_requirement(), ninfo);
+}
+
 // Generate dist_data(p1, p2, p3)
 void UnparseLanguageIndependentConstructs::unparseMapDistDataPoliciesToString (std::vector< std::pair< SgOmpClause::omp_map_dist_data_enum, SgExpression * > > policies, SgUnparse_Info& info) 
 {
@@ -8661,6 +8672,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpDistScheduleClause:
       {
         unparseOmpDistScheduleClause(isSgOmpDistScheduleClause(clause), info);
+        break;
+      }
+    case V_SgOmpExtImplementationDefinedRequirementClause:
+      {
+        unparseOmpExtImplementationDefinedRequirementClause(isSgOmpExtImplementationDefinedRequirementClause(clause), info);
         break;
       }
     case V_SgOmpDeviceClause:

@@ -584,6 +584,7 @@ namespace sg
     GEN_VISIT(SgOmpUnifiedSharedMemoryClause)
     GEN_VISIT(SgOmpDynamicAllocatorsClause)
     GEN_VISIT(SgOmpAtomicDefaultMemOrderClause)
+    GEN_VISIT(SgOmpExtImplementationDefinedRequirementClause)
     GEN_VISIT(SgOmpUntiedClause)
     GEN_VISIT(SgOmpMergeableClause)
     GEN_VISIT(SgOmpDefaultClause)
