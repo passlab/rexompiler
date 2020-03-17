@@ -119,6 +119,13 @@ HEADER_OMP_CLAUSE_START
             e_omp_linear_modifier_uval
         };
 
+        enum omp_device_modifier_enum
+        {
+            e_omp_device_modifier_unspecified,
+            e_omp_device_modifier_ancestor,
+            e_omp_device_modifier_device_num
+        };
+
         enum omp_lastprivate_modifier_enum
         {
             e_omp_lastprivate_modifier_unspecified,

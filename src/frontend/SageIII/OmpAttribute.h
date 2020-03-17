@@ -171,6 +171,10 @@ namespace OmpSupport
     // lastprivate modifiers in OpenMP 5.0
     e_lastprivate_conditional,
 
+    // device modifiers in OpenMP 5.0
+    e_device_ancestor,
+    e_device_device_num,
+
     // linear modifiers in OpenMP 5.0
     e_linear_ref,
     e_linear_val,

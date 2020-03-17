@@ -1887,6 +1887,10 @@ Grammar::setUpNodes ()
      OmpLastprivateClause.setDataPrototype("SgOmpClause::omp_lastprivate_modifier_enum", "modifier", "=e_omp_lastprivate_modifier_unspecified",
                                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
+     // device([ device-modifier :] integer-expression)
+     OmpDeviceClause.setDataPrototype("SgOmpClause::omp_device_modifier_enum", "modifier", "=e_omp_device_modifier_unspecified",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
      // allocate (modifier : variables)
      OmpAllocateClause.setDataPrototype("SgOmpClause::omp_allocate_modifier_enum", "modifier", "=e_omp_allocate_modifier_unknown",
                                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);

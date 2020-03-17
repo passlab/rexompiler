@@ -8526,6 +8526,21 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_simd) {
         curprint(string("simd : "));
     }
+    if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_target) {
+        curprint(string("target : "));
+    }
+  }
+  else if (isSgOmpDeviceClause(c)) {
+    curprint(string(" device("));
+    if (isSgOmpDeviceClause(c)->get_modifier() == SgOmpClause::e_omp_device_modifier_unspecified) {
+        curprint(string(""));
+    }
+    if (isSgOmpDeviceClause(c)->get_modifier() == SgOmpClause::e_omp_device_modifier_ancestor) {
+        curprint(string("ancestor : "));
+    }
+    if (isSgOmpDeviceClause(c)->get_modifier() == SgOmpClause::e_omp_device_modifier_device_num) {
+        curprint(string("device_num : "));
+    }
   }
   else if (isSgOmpOrderedClause(c))
     curprint(string(" ordered("));

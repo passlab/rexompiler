@@ -567,12 +567,12 @@ namespace OmpSupport
     SgGlobal* global = SageInterface::getGlobalScope( att->getNode() );
     switch (clause_type)
     {
-      case e_device:
+      /*case e_device:
         {
           SgExpression* param = checkOmpExpressionClause( att->getExpression(e_device).second, global, e_device );
           result = new SgOmpDeviceClause(param);
           break;
-        }
+        }*/
       case e_safelen:
         {
           SgExpression* param = checkOmpExpressionClause( att->getExpression(e_safelen).second, global, e_safelen );
@@ -745,6 +745,11 @@ namespace OmpSupport
           result = SgOmpClause::e_omp_if_simd;
           break;
         }
+      case OMPC_IF_MODIFIER_target:
+        {
+          result = SgOmpClause::e_omp_if_target;
+          break;
+        }
       case OMPC_IF_MODIFIER_unspecified:
         {
           result = SgOmpClause::e_omp_if_modifier_unknown;
@@ -777,6 +782,35 @@ namespace OmpSupport
       default:
         {
           printf("error: unacceptable omp construct enum for lastprivate modifier conversion:%d\n", modifier);
+          ROSE_ASSERT(false);
+        }
+    }
+    return result;
+  }
+
+  static SgOmpClause::omp_device_modifier_enum toSgOmpClauseDeviceModifier(OpenMPDeviceClauseModifier modifier)
+  {
+    SgOmpClause::omp_device_modifier_enum result = SgOmpClause::e_omp_device_modifier_unspecified;
+    switch (modifier)
+    {
+      case OMPC_DEVICE_MODIFIER_unspecified:
+        {
+          result = SgOmpClause::e_omp_device_modifier_unspecified;
+          break;
+        }
+      case OMPC_DEVICE_MODIFIER_ancestor:
+        {
+          result = SgOmpClause::e_omp_device_modifier_ancestor;
+          break;
+        }
+      case OMPC_DEVICE_MODIFIER_device_num:
+        {
+          result = SgOmpClause::e_omp_device_modifier_device_num;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for device modifier conversion:%d\n", modifier);
           ROSE_ASSERT(false);
         }
     }
@@ -3202,6 +3236,7 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             case OMPC_ordered:
             case OMPC_collapse:
             case OMPC_thread_limit:
+            case OMPC_device:
             case OMPC_num_threads: {
                 convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
@@ -3999,7 +4034,17 @@ SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_
             printf("Thread_limit Clause added!\n");
             break;
         }
+        case OMPC_device: {
+            OpenMPDeviceClauseModifier modifier = ((OpenMPDeviceClause*)current_omp_clause)->getModifier();
+            SgOmpClause::omp_device_modifier_enum sg_modifier = toSgOmpClauseDeviceModifier(modifier);
+            clause_expression->set_parent(current_OpenMPIR_to_SageIII.first);
+            SgExpression* device_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
+            result = new SgOmpDeviceClause(device_expression, sg_modifier);
+            printf("Device Clause added!\n");
+            break;
+        }
         default: {
+            printf("sasdf\n");
             printf("Unknown Clause!\n");
         }
     }
@@ -4245,6 +4290,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_linear:
                 case OMPC_aligned:
                 case OMPC_lastprivate:
+                case OMPC_device:
                 case OMPC_schedule:
                 case OMPC_dist_schedule:
                 case OMPC_when: {

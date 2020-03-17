@@ -154,6 +154,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	staticChunk.c \
 	subteam2.c \
 	subteam.c \
+	target.c \
 	task_array.c \
 	task_array2.c \
 	task_dep1.c \
