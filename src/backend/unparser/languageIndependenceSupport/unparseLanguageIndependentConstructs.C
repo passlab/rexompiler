@@ -7688,6 +7688,111 @@ static std::string reductionIdentifierToString(SgOmpClause::omp_reduction_identi
   return result;
 }
 
+//! A helper function to convert reduction operators to strings
+// TODO put into a better place and expose it to users.
+static std::string inReductionIdentifierToString(SgOmpClause::omp_in_reduction_identifier_enum ro)
+{
+  string result;
+  switch (ro)
+  {
+    case SgOmpClause::e_omp_in_reduction_identifier_plus: 
+      {
+        result = "+";
+        break;
+      }
+    case SgOmpClause::e_omp_in_reduction_identifier_mul: 
+      {
+        result = "*";
+        break;
+      }
+    case SgOmpClause::e_omp_in_reduction_identifier_minus:   
+      {
+        result = "-";
+        break;
+      }
+    case SgOmpClause::e_omp_in_reduction_identifier_bitand:  
+      {
+        result = "&";
+        break;
+      }
+    case SgOmpClause::e_omp_in_reduction_identifier_bitor :  
+      {
+        result = "|";
+        break;
+      }
+      //------------
+    case SgOmpClause::e_omp_in_reduction_identifier_bitxor:  
+      {
+        result = "^";
+        break;
+      }
+    case SgOmpClause::e_omp_in_reduction_identifier_logand:  
+      {
+        result = "&&";
+        break;
+      }
+    case SgOmpClause::e_omp_in_reduction_identifier_logor :  
+      {
+        result = "||";
+        break;
+      }
+    case SgOmpClause::e_omp_in_reduction_identifier_and  : 
+      {
+        result = ".and.";
+        break;
+      }
+    case SgOmpClause::e_omp_in_reduction_identifier_or : 
+      {
+        result = ".or.";
+        break;
+      }
+     //------------
+    case SgOmpClause::e_omp_in_reduction_identifier_eqv:   
+      {
+        result = ".eqv.";
+        break;
+      }
+    case SgOmpClause::e_omp_in_reduction_identifier_neqv : 
+      {
+        result = ".neqv.";
+        break;
+      }
+    case SgOmpClause::e_omp_in_reduction_identifier_max  : 
+      {
+        result = "max";
+        break;
+      }
+    case SgOmpClause::e_omp_in_reduction_identifier_min  : 
+      {
+        result = "min";
+        break;
+      }
+    case SgOmpClause::e_omp_in_reduction_identifier_iand : 
+      {
+        result = "iand";
+        break;
+      }
+
+      //------------
+    case SgOmpClause::e_omp_in_reduction_identifier_ior  : 
+      {
+        result = "ior";
+        break;
+      }
+    case SgOmpClause::e_omp_in_reduction_identifier_ieor : 
+      {
+        result = "ieor";
+        break;
+      }
+    default:
+      {
+        cerr<<"Error: unhandled operator type inReductionIdentifierToString():"<< ro <<endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
+
 static std::string reductionModifierToString(SgOmpClause::omp_reduction_modifier_enum rm)
 {
   string result;
@@ -8166,6 +8271,20 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
         else {
             SgUnparse_Info new_info(info);
             unparseExpression(isSgOmpReductionClause(c)->get_user_defined_identifier(), new_info);
+        };
+        curprint(string(" : "));
+        break;
+      }
+    case V_SgOmpInReductionClause:
+      {
+        curprint(string(" in_reduction("));
+        SgOmpClause::omp_in_reduction_identifier_enum identifier = isSgOmpInReductionClause(c)->get_identifier();
+        if (identifier != SgOmpClause::e_omp_in_reduction_user_defined_identifier) {
+            curprint(inReductionIdentifierToString(identifier));
+        }
+        else {
+            SgUnparse_Info new_info(info);
+            unparseExpression(isSgOmpInReductionClause(c)->get_user_defined_identifier(), new_info);
         };
         curprint(string(" : "));
         break;
@@ -8724,6 +8843,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpLastprivateClause:
     case V_SgOmpPrivateClause:
     case V_SgOmpReductionClause:
+    case V_SgOmpInReductionClause:
     case V_SgOmpDependClause:
     case V_SgOmpMapClause:
     case V_SgOmpSharedClause:

@@ -132,7 +132,26 @@ namespace OmpSupport
     e_atomic_read, 
     e_atomic_write, 
     e_atomic_update, 
-    e_atomic_capture, 
+    e_atomic_capture,
+ 
+    // in_reduction operations
+    e_in_reduction_identifier_plus, //+
+    e_in_reduction_identifier_mul,  //* 
+    e_in_reduction_identifier_minus, // -
+    e_in_reduction_identifier_bitand, // &  
+    e_in_reduction_identifier_bitor,  // | 
+    e_in_reduction_identifier_bitxor,  // ^  
+    e_in_reduction_identifier_logand,  // &&  
+    e_in_reduction_identifier_logor,   // || 
+    e_in_reduction_identifier_and, // .and.
+    e_in_reduction_identifier_or, // .or.
+    e_in_reduction_identifier_eqv,   // fortran .eqv. 
+    e_in_reduction_identifier_neqv,   // fortran .neqv.
+    e_in_reduction_identifier_max,
+    e_in_reduction_identifier_min, 
+    e_in_reduction_identifier_iand,
+    e_in_reduction_identifier_ior,
+    e_in_reduction_identifier_ieor,
 
     // reduction operations
     //8 operand for C/C++
