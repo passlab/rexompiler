@@ -3944,15 +3944,10 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
             SgOmpClause::omp_in_reduction_identifier_enum sg_identifier = toSgOmpClauseInReductionIdentifier(identifier);
             SgExpression* user_defined_identifier = NULL;
             if (sg_identifier == SgOmpClause::e_omp_in_reduction_user_defined_identifier) {
-     
                 SgExpression* clause_expression = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), ((OpenMPInReductionClause*)current_omp_clause)->getUserDefinedIdentifier());
-               
                 user_defined_identifier = checkOmpExpressionClause(clause_expression, global, e_reduction);
-           
             }
-
             result = new SgOmpInReductionClause(explist, sg_identifier, user_defined_identifier);
-
             printf("In_reduction Clause added!\n");
             break;
         }

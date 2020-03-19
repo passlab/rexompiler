@@ -300,7 +300,7 @@ Grammar::setUpStatements ()
     // sensitive to 
     NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement |
               OmpTaskStatement | OmpForStatement | OmpDoStatement | OmpSectionsStatement | OmpTargetStatement | OmpTargetDataStatement |
-              OmpSimdStatement | OmpForSimdStatement | OmpCriticalStatement   | OmpDistributeStatement ,
+              OmpSimdStatement | OmpForSimdStatement | OmpCriticalStatement | OmpDistributeStatement ,
         "OmpClauseBodyStatement",   "OMP_CLAUSEBODY_STMT", false );
 
     // + a statement / block 
