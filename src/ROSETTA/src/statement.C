@@ -313,7 +313,7 @@ Grammar::setUpStatements ()
 
     // A base class for all directives with a body/statement
     NEW_NONTERMINAL_MACRO (OmpBodyStatement,  OmpMasterStatement  | OmpOrderedStatement 
-        |   OmpSectionStatement | OmpWorkshareStatement  | OmpClauseBodyStatement , 
+        | OmpSectionStatement | OmpWorkshareStatement  | OmpClauseBodyStatement , 
         "OmpBodyStatement",      "OMP_BODY_STMT", false );
 
 

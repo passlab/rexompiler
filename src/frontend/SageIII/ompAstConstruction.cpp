@@ -3213,7 +3213,8 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
                 break;
             }
             default: {
-                convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                cerr<<"error: unknown clause "<<endl;
+                ROSE_ASSERT(false);
             }
         };
         ROSE_ASSERT(result);
@@ -4082,7 +4083,6 @@ SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_
             break;
         }
         default: {
-            printf("sasdf\n");
             printf("Unknown Clause!\n");
         }
     }
