@@ -329,11 +329,13 @@ SgOmpLastprivateClause
 SgOmpNowaitClause
 SgOmpNumThreadsClause
 SgOmpNumTeamsClause
+SgOmpHintClause
 SgOmpReverseOffloadClause
 SgOmpUnifiedAddressClause
 SgOmpUnifiedSharedMemoryClause
 SgOmpDynamicAllocatorsClause
 SgOmpAtomicDefaultMemOrderClause
+SgOmpExtImplementationDefinedRequirementClause
 SgOmpOrderClause
 SgOmpDistScheduleClause
 SgOmpBindClause
@@ -344,6 +346,7 @@ SgOmpThreadLimitClause
 SgOmpOrderedClause
 SgOmpPrivateClause
 SgOmpReductionClause
+SgOmpInReductionClause
 SgOmpScheduleClause
 SgOmpSharedClause
 SgOmpUntiedClause

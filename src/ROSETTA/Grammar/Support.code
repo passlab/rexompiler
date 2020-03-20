@@ -73,6 +73,33 @@ HEADER_OMP_CLAUSE_START
           e_omp_schedule_modifier_simd
         };
 
+        enum omp_in_reduction_identifier_enum
+        {
+            e_omp_in_reduction_identifier_unspecified,
+            e_omp_in_reduction_identifier_plus, //+
+            e_omp_in_reduction_identifier_mul,  //*
+            e_omp_in_reduction_identifier_minus, // -
+        
+            e_omp_in_reduction_identifier_bitand, // &
+            e_omp_in_reduction_identifier_bitor,  // |
+            e_omp_in_reduction_identifier_bitxor,  // ^
+            e_omp_in_reduction_identifier_logand,  // &&
+            e_omp_in_reduction_identifier_logor,   // ||
+        
+            e_omp_in_reduction_identifier_and, // .and.
+            e_omp_in_reduction_identifier_or, // .or.
+            e_omp_in_reduction_identifier_eqv,   // fortran .eqv.
+            e_omp_in_reduction_identifier_neqv,   // fortran .neqv.
+            e_omp_in_reduction_identifier_max,
+            e_omp_in_reduction_identifier_min,
+            e_omp_in_reduction_identifier_iand,
+            e_omp_in_reduction_identifier_ior,
+            e_omp_in_reduction_identifier_ieor,
+            e_omp_in_reduction_user_defined_identifier,
+            e_omp_in_reduction_identifier_last
+
+        };
+
         enum omp_reduction_identifier_enum
         {
             e_omp_reduction_unknown,
@@ -117,6 +144,13 @@ HEADER_OMP_CLAUSE_START
             e_omp_linear_modifier_ref,
             e_omp_linear_modifier_val,
             e_omp_linear_modifier_uval
+        };
+
+        enum omp_device_modifier_enum
+        {
+            e_omp_device_modifier_unspecified,
+            e_omp_device_modifier_ancestor,
+            e_omp_device_modifier_device_num
         };
 
         enum omp_lastprivate_modifier_enum
@@ -250,7 +284,8 @@ HEADER_OMP_CLAUSE_START
         {
             e_omp_if_modifier_unknown,
             e_omp_if_parallel,
-            e_omp_if_simd
+            e_omp_if_simd,
+            e_omp_if_target
         };
        
 

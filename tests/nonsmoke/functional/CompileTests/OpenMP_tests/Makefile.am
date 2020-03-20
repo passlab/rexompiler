@@ -41,6 +41,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	copyprivate3.c \
 	copyprivate.c \
 	critical.c \
+	critical1.c \
 	critical_dead.c \
 	critical_orphaned.c \
 	distribute.c \
@@ -131,6 +132,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	reduction_modifier.c \
 	reduction_user_identifier.c \
 	requires.c \
+	requires1.c \
 	rice1.c \
 	scan.c \
 	section.c \
@@ -152,6 +154,8 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	staticChunk.c \
 	subteam2.c \
 	subteam.c \
+	target.c \
+	target1.c \
 	task_array.c \
 	task_array2.c \
 	task_dep1.c \

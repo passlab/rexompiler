@@ -867,10 +867,12 @@ AstNodeClass::evaluateType(std::string& varTypeString)
                  ( varTypeString == "SgOmpClause::omp_schedule_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_reduction_identifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_reduction_modifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_in_reduction_identifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_when_context_kind_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_when_context_vendor_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_if_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_lastprivate_modifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_device_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_linear_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_allocate_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_dependence_type_enum" ) ||

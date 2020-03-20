@@ -1,0 +1,4 @@
+#pragma omp target  in_reduction(+ : sum)
+#pragma omp parallel  private(sum0)
+#pragma omp for  private(i)
+#pragma omp critical 
