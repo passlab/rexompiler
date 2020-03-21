@@ -98,11 +98,13 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/../rex_build
         make core -j2
-        make install-core
+        make install-core -j2
 
     - name: Test
       run: |
         cd $GITHUB_WORKSPACE/../rex_build
-        make check-core
+        make check-core -j2
         cd $GITHUB_WORKSPACE/../rex_build/tests/nonsmoke/functional/CompileTests/OpenMP_tests
-        make check
+        make check -j2
+        cd $GITHUB_WORKSPACE/../rex_build/tests/nonsmoke/functional/roseTests/astInterfaceTests
+        make check -j2
