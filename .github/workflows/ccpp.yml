@@ -104,3 +104,5 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/../rex_build
         make check-core
+        cd $GITHUB_WORKSPACE/../rex_build/tests/nonsmoke/functional/CompileTests/OpenMP_tests
+        make check
