@@ -3559,7 +3559,7 @@ SgOmpDefaultmapClause* convertDefaultmapClause(SgOmpClauseBodyStatement* clause_
     SgOmpClause* sg_clause = result;
     clause_body->get_clauses().push_back(sg_clause);
     sg_clause->set_parent(clause_body);
-    printf("ompparser behavior clause is added.\n");
+    printf("ompparser defaultmap clause is added.\n");
     return result;
 }
 
@@ -4453,6 +4453,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_dist_schedule:
                 case OMPC_defaultmap:
                 case OMPC_when: {
+               printf("asdfg\n");
                     break;
                 }
                 default: {

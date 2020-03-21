@@ -7988,6 +7988,11 @@ static std::string defaultmapBehaviorToString(SgOmpClause::omp_defaultmap_behavi
         result = "none";
         break;
       }
+    case SgOmpClause::e_omp_defaultmap_behavior_default: 
+      {
+        result = "default";
+        break;
+      }
     default:
       {
         cerr<<"Error: unhandled operator type defaultmapBehaviorToString():"<< rm <<endl;
@@ -8278,10 +8283,10 @@ void UnparseLanguageIndependentConstructs::unparseOmpDefaultmapClause(SgOmpClaus
   curprint (string (" defaultmap("));
   SgOmpClause::omp_defaultmap_behavior_enum behavior = c-> get_behavior ();
   curprint(defaultmapBehaviorToString(behavior));
-  if(c-> get_category ())
+  SgOmpClause::omp_defaultmap_category_enum category = c-> get_category ();
+  if(category != SgOmpClause::e_omp_defaultmap_category_unspecified)
   {
     curprint(string(" : "));
-    SgOmpClause::omp_defaultmap_category_enum category = c-> get_category ();
     curprint(defaultmapCategoryToString(category));
   }
   curprint(string(")"));
