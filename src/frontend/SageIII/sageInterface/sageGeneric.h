@@ -605,6 +605,7 @@ namespace sg
     GEN_VISIT(SgOmpNontemporalClause)
     GEN_VISIT(SgOmpInclusiveClause)
     GEN_VISIT(SgOmpExclusiveClause)
+    GEN_VISIT(SgOmpIsDevicePtrClause)
     GEN_VISIT(SgOmpSharedClause)
     GEN_VISIT(SgOmpCopyinClause)
     GEN_VISIT(SgOmpLastprivateClause)
@@ -615,6 +616,7 @@ namespace sg
     GEN_VISIT(SgOmpVariablesClause)
     GEN_VISIT(SgOmpScheduleClause)
     GEN_VISIT(SgOmpDistScheduleClause)
+    GEN_VISIT(SgOmpDefaultmapClause)
     GEN_VISIT(SgOmpDependClause)
     GEN_VISIT(SgOmpClause)
 

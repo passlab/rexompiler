@@ -41,6 +41,7 @@ static SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement*,
 static SgOmpNowaitClause* convertNowaitClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpScheduleClause* convertScheduleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDistScheduleClause* convertDistScheduleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpDefaultmapClause* convertDefaultmapClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpProcBindClause* convertProcBindClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpOrderClause* convertOrderClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
@@ -885,6 +886,94 @@ namespace OmpSupport
       default:
         {
           printf("error: unacceptable omp construct enum for schedule kind conversion:%d\n", kind);
+          ROSE_ASSERT(false);
+        }
+    }
+    return result;
+  }
+
+  static SgOmpClause::omp_defaultmap_behavior_enum toSgOmpClauseDefaultmapBehavior(OpenMPDefaultmapClauseBehavior behavior)
+  {
+    SgOmpClause::omp_defaultmap_behavior_enum result = SgOmpClause::e_omp_defaultmap_behavior_unspecified;
+    switch (behavior)
+    {
+      case OMPC_DEFAULTMAP_BEHAVIOR_alloc:
+        {
+          result = SgOmpClause::e_omp_defaultmap_behavior_alloc;
+          break;
+        }
+      case OMPC_DEFAULTMAP_BEHAVIOR_to:
+        {
+          result = SgOmpClause::e_omp_defaultmap_behavior_to;
+          break;
+        }
+      case OMPC_DEFAULTMAP_BEHAVIOR_from:
+        {
+          result = SgOmpClause::e_omp_defaultmap_behavior_from;
+          break;
+        }
+      case OMPC_DEFAULTMAP_BEHAVIOR_tofrom:
+        {
+          result = SgOmpClause::e_omp_defaultmap_behavior_tofrom;
+          break;
+        }
+      case OMPC_DEFAULTMAP_BEHAVIOR_firstprivate:
+        {
+          result = SgOmpClause::e_omp_defaultmap_behavior_firstprivate;
+          break;
+        }
+      case OMPC_DEFAULTMAP_BEHAVIOR_none:
+        {
+          result = SgOmpClause::e_omp_defaultmap_behavior_none;
+          break;
+        }
+      case OMPC_DEFAULTMAP_BEHAVIOR_default:
+        {
+          result = SgOmpClause::e_omp_defaultmap_behavior_default;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for defaultmap behavior conversion:%d\n", behavior);
+          ROSE_ASSERT(false);
+        }
+    }
+    return result;
+  }
+
+  static SgOmpClause::omp_defaultmap_category_enum toSgOmpClauseDefaultmapCategory(OpenMPDefaultmapClauseCategory category)
+  {
+    SgOmpClause::omp_defaultmap_category_enum result = SgOmpClause::e_omp_defaultmap_category_unspecified;
+    switch (category)
+    {
+      case OMPC_DEFAULTMAP_CATEGORY_unspecified:
+        {
+          result = SgOmpClause::e_omp_defaultmap_category_unspecified;
+          break;
+        }
+      case OMPC_DEFAULTMAP_CATEGORY_scalar:
+        {
+          result = SgOmpClause::e_omp_defaultmap_category_scalar;
+          break;
+        }
+      case OMPC_DEFAULTMAP_CATEGORY_aggregate:
+        {
+          result = SgOmpClause::e_omp_defaultmap_category_aggregate;
+          break;
+        }
+      case OMPC_DEFAULTMAP_CATEGORY_pointer:
+        {
+          result = SgOmpClause::e_omp_defaultmap_category_pointer;
+          break;
+        }
+      case OMPC_DEFAULTMAP_CATEGORY_allocatable:
+        {
+          result = SgOmpClause::e_omp_defaultmap_category_allocatable;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for defaultmap category conversion:%d\n", category);
           ROSE_ASSERT(false);
         }
     }
@@ -3346,6 +3435,11 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
                 convertDistScheduleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
+            case OMPC_defaultmap: {
+               printf("asdfg\n");
+ convertDefaultmapClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
             default: {
                 convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
             }
@@ -3447,6 +3541,25 @@ SgOmpDistScheduleClause* convertDistScheduleClause(SgOmpClauseBodyStatement* cla
     clause_body->get_clauses().push_back(sg_clause);
     sg_clause->set_parent(clause_body);
     printf("ompparser dist_schedule clause is added.\n");
+    return result;
+}
+
+SgOmpDefaultmapClause* convertDefaultmapClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser defaultmap clause is ready.\n");
+
+    OpenMPDefaultmapClauseBehavior behavior = ((OpenMPDefaultmapClause*)current_omp_clause)->getBehavior();
+    SgOmpClause::omp_defaultmap_behavior_enum sg_behavior = toSgOmpClauseDefaultmapBehavior(behavior);
+
+    OpenMPDefaultmapClauseCategory category = ((OpenMPDefaultmapClause*)current_omp_clause)->getCategory();
+    SgOmpClause::omp_defaultmap_category_enum sg_category = toSgOmpClauseDefaultmapCategory(category);
+
+    SgOmpDefaultmapClause* result = new SgOmpDefaultmapClause( sg_behavior, sg_category );
+    ROSE_ASSERT(result);
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+    printf("ompparser behavior clause is added.\n");
     return result;
 }
 
@@ -3916,6 +4029,11 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
             printf("Exclusive Clause added!\n");
             break;
         }
+        case OMPC_is_device_ptr: {
+            result = new SgOmpIsDevicePtrClause(explist);
+            printf("is_device_ptr Clause added!\n");
+            break;
+        }
         case OMPC_private: {
             result = new SgOmpPrivateClause(explist);
             printf("Private Clause added!\n");
@@ -4302,6 +4420,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_nontemporal:
                 case OMPC_inclusive:
                 case OMPC_exclusive:
+                case OMPC_is_device_ptr:
                 case OMPC_if:
                 case OMPC_num_threads:
                 case OMPC_num_teams:
@@ -4332,6 +4451,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_device:
                 case OMPC_schedule:
                 case OMPC_dist_schedule:
+                case OMPC_defaultmap:
                 case OMPC_when: {
                     break;
                 }

@@ -342,11 +342,13 @@ SgOmpBindClause
 SgOmpNontemporalClause
 SgOmpInclusiveClause
 SgOmpExclusiveClause
+SgOmpIsDevicePtrClause
 SgOmpThreadLimitClause
 SgOmpOrderedClause
 SgOmpPrivateClause
 SgOmpReductionClause
 SgOmpInReductionClause
+SgOmpDefaultmapClause
 SgOmpScheduleClause
 SgOmpSharedClause
 SgOmpUntiedClause

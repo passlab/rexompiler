@@ -7948,6 +7948,94 @@ static std::string distScheduleKindToString(SgOmpClause::omp_dist_schedule_kind_
   return result;
 }
 
+static std::string defaultmapBehaviorToString(SgOmpClause::omp_defaultmap_behavior_enum rm)
+{
+  string result = "";
+  switch (rm)
+  {
+    case SgOmpClause::e_omp_defaultmap_behavior_unspecified: 
+      {
+        result = "";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_behavior_alloc: 
+      {
+        result = "alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_behavior_to: 
+      {
+        result = "to";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_behavior_from: 
+      {
+        result = "from";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_behavior_tofrom: 
+      {
+        result = "tofrom";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_behavior_firstprivate: 
+      {
+        result = "firstprivate";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_behavior_none: 
+      {
+        result = "none";
+        break;
+      }
+    default:
+      {
+        cerr<<"Error: unhandled operator type defaultmapBehaviorToString():"<< rm <<endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
+
+static std::string defaultmapCategoryToString(SgOmpClause::omp_defaultmap_category_enum rm)
+{
+  string result = "";
+  switch (rm)
+  {
+    case SgOmpClause::e_omp_defaultmap_category_unspecified: 
+      {
+        result = "";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_category_scalar: 
+      {
+        result = "scalar";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_category_aggregate: 
+      {
+        result = "aggregate";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_category_pointer: 
+      {
+        result = "pointer";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_category_allocatable: 
+      {
+        result = "allocatable";
+        break;
+      }
+    default:
+      {
+        cerr<<"Error: unhandled operator type defaultmapBehaviorToString():"<< rm <<endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
+
 static std::string linearModifierToString(SgOmpClause::omp_linear_modifier_enum rm)
 {
   string result = "";
@@ -8182,6 +8270,23 @@ void UnparseLanguageIndependentConstructs::unparseOmpDistScheduleClause(SgOmpCla
   curprint(string(")"));
 }
 
+void UnparseLanguageIndependentConstructs::unparseOmpDefaultmapClause(SgOmpClause* clause, SgUnparse_Info& info)
+{
+  ROSE_ASSERT(clause != NULL);
+  SgOmpDefaultmapClause* c = isSgOmpDefaultmapClause(clause);
+  ROSE_ASSERT(c!= NULL);
+  curprint (string (" defaultmap("));
+  SgOmpClause::omp_defaultmap_behavior_enum behavior = c-> get_behavior ();
+  curprint(defaultmapBehaviorToString(behavior));
+  if(c-> get_category ())
+  {
+    curprint(string(" : "));
+    SgOmpClause::omp_defaultmap_category_enum category = c-> get_category ();
+    curprint(defaultmapCategoryToString(category));
+  }
+  curprint(string(")"));
+}
+
 void UnparseLanguageIndependentConstructs::unparseOmpExtImplementationDefinedRequirementClause(SgOmpClause* clause, SgUnparse_Info& info)
 {
   ROSE_ASSERT(clause != NULL);
@@ -8245,6 +8350,9 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
       break;
     case V_SgOmpExclusiveClause:
       curprint(string(" exclusive("));
+      break;
+    case V_SgOmpIsDevicePtrClause:
+      curprint(string(" is_device_ptr("));
       break;
     case V_SgOmpPrivateClause:
       curprint(string(" private("));
@@ -8808,6 +8916,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         unparseOmpDistScheduleClause(isSgOmpDistScheduleClause(clause), info);
         break;
       }
+    case V_SgOmpDefaultmapClause:
+      {
+        unparseOmpDefaultmapClause(isSgOmpDefaultmapClause(clause), info);
+        break;
+      }
     case V_SgOmpExtImplementationDefinedRequirementClause:
       {
         unparseOmpExtImplementationDefinedRequirementClause(isSgOmpExtImplementationDefinedRequirementClause(clause), info);
@@ -8840,6 +8953,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpNontemporalClause:
     case V_SgOmpInclusiveClause:
     case V_SgOmpExclusiveClause:
+    case V_SgOmpIsDevicePtrClause:
     case V_SgOmpLastprivateClause:
     case V_SgOmpPrivateClause:
     case V_SgOmpReductionClause:

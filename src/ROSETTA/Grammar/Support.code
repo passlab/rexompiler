@@ -100,6 +100,27 @@ HEADER_OMP_CLAUSE_START
 
         };
 
+        enum omp_defaultmap_behavior_enum
+        {
+            e_omp_defaultmap_behavior_unspecified,
+            e_omp_defaultmap_behavior_alloc,
+            e_omp_defaultmap_behavior_to,
+            e_omp_defaultmap_behavior_from,
+            e_omp_defaultmap_behavior_tofrom,
+            e_omp_defaultmap_behavior_firstprivate,
+            e_omp_defaultmap_behavior_none,
+            e_omp_defaultmap_behavior_default
+        };
+
+        enum omp_defaultmap_category_enum
+        {
+            e_omp_defaultmap_category_unspecified,
+            e_omp_defaultmap_category_scalar,
+            e_omp_defaultmap_category_aggregate,
+            e_omp_defaultmap_category_pointer,
+            e_omp_defaultmap_category_allocatable
+        };
+
         enum omp_reduction_identifier_enum
         {
             e_omp_reduction_unknown,
