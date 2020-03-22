@@ -3176,6 +3176,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
     switch (directive_kind) {
         case OMPD_metadirective:
         case OMPD_teams:
+        case OMPD_master:
         case OMPD_distribute:
         case OMPD_loop:
         case OMPD_scan:
@@ -3196,6 +3197,10 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         }
         case OMPD_requires: {
             result = convertNonBodyDirective(current_OpenMPIR_to_SageIII);
+            break;
+        }
+        case OMPD_barrier: {
+            result = new SgOmpBarrierStatement();
             break;
         }
         default: {
@@ -3329,6 +3334,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         }
         case OMPD_teams: {
             result = new SgOmpTeamsStatement(NULL, body);
+            break;
+        }
+        case OMPD_master: {
+            result = new SgOmpMasterStatement(NULL, body);
             break;
         }
         case OMPD_distribute: {
@@ -3583,6 +3592,10 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         }
         case OMPD_teams: {
             result = new SgOmpTeamsStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_master: {
+            result = new SgOmpMasterStatement(NULL, NULL);
             break;
         }
         case OMPD_distribute: {
@@ -4389,6 +4402,8 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
     switch (directive_kind) {
         case OMPD_metadirective:
         case OMPD_teams:
+        case OMPD_barrier:
+        case OMPD_master:
         case OMPD_distribute:
         case OMPD_requires:
         case OMPD_loop:
