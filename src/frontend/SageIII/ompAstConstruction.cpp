@@ -1359,6 +1359,79 @@ namespace OmpSupport
     return result;
   }
 
+  //! A helper function to convert OpenMPIR reduction identifier to SgClause reduction identifier
+  static SgOmpClause::omp_task_reduction_identifier_enum toSgOmpClauseTaskReductionIdentifier(OpenMPTaskReductionClauseIdentifier identifier)
+  {
+    SgOmpClause::omp_task_reduction_identifier_enum result = SgOmpClause::e_omp_task_reduction_identifier_unspecified;
+    switch (identifier)
+    {
+      case OMPC_TASK_REDUCTION_IDENTIFIER_plus: //+
+        {
+          result = SgOmpClause::e_omp_task_reduction_identifier_plus;
+          break;
+        }
+      case OMPC_TASK_REDUCTION_IDENTIFIER_mul:  //*
+        {
+          result = SgOmpClause::e_omp_task_reduction_identifier_mul;
+          break;
+        }
+      case OMPC_TASK_REDUCTION_IDENTIFIER_minus: // -
+        {
+          result = SgOmpClause::e_omp_task_reduction_identifier_minus;
+          break;
+        }
+        // C/C++ only
+      case OMPC_TASK_REDUCTION_IDENTIFIER_bitand: // &
+        {
+          result = SgOmpClause::e_omp_task_reduction_identifier_bitand;
+          break;
+        }
+      case OMPC_TASK_REDUCTION_IDENTIFIER_bitor:  // |
+        {
+          result = SgOmpClause::e_omp_task_reduction_identifier_bitor;
+          break;
+        }
+      case OMPC_TASK_REDUCTION_IDENTIFIER_bitxor:  // ^
+        {
+          result = SgOmpClause::e_omp_task_reduction_identifier_bitxor;
+          break;
+        }
+      case OMPC_TASK_REDUCTION_IDENTIFIER_logand:  // &&
+        {
+          result = SgOmpClause::e_omp_task_reduction_identifier_logand;
+          break;
+        }
+      case OMPC_TASK_REDUCTION_IDENTIFIER_logor:   // ||
+        {
+          result = SgOmpClause::e_omp_task_reduction_identifier_logor;
+          break;
+        }
+      case OMPC_TASK_REDUCTION_IDENTIFIER_max:
+        {
+          result = SgOmpClause::e_omp_task_reduction_identifier_max;
+          break;
+        }
+      case OMPC_TASK_REDUCTION_IDENTIFIER_min:
+        {
+          result = SgOmpClause::e_omp_task_reduction_identifier_min;
+          break;
+        }
+      case OMPC_TASK_REDUCTION_IDENTIFIER_user:
+        {
+          result = SgOmpClause::e_omp_task_reduction_user_defined_identifier;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for task_reduction operator conversion:%d\n", identifier);
+          ROSE_ASSERT(false);
+          break;
+        }
+    }
+    ROSE_ASSERT(result != SgOmpClause::e_omp_task_reduction_identifier_unspecified);
+    return result;
+  }
+
   //! A helper function to convert OmpAttribute ALLOCATE modifier to SgClause ALLOCATE modifier
   static   SgOmpClause::omp_allocate_modifier_enum toSgOmpClauseAllocateModifier(omp_construct_enum modifier)
   {
@@ -2518,11 +2591,6 @@ namespace OmpSupport
               omp_stmt = new SgOmpBarrierStatement();
               break;
             }
-          case e_taskwait:
-            {
-              omp_stmt = new SgOmpTaskwaitStatement();
-              break;
-            }
             // with variable list
           case e_threadprivate:
             {
@@ -3176,6 +3244,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
     switch (directive_kind) {
         case OMPD_metadirective:
         case OMPD_teams:
+        case OMPD_taskgroup:
         case OMPD_master:
         case OMPD_distribute:
         case OMPD_loop:
@@ -3334,6 +3403,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         }
         case OMPD_teams: {
             result = new SgOmpTeamsStatement(NULL, body);
+            break;
+        }
+        case OMPD_taskgroup: {
+            result = new SgOmpTaskgroupStatement(NULL, body);
             break;
         }
         case OMPD_master: {
@@ -3592,6 +3665,10 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         }
         case OMPD_teams: {
             result = new SgOmpTeamsStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_taskgroup: {
+            result = new SgOmpTaskgroupStatement(NULL, NULL);
             break;
         }
         case OMPD_master: {
@@ -4083,6 +4160,18 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
             printf("In_reduction Clause added!\n");
             break;
         }
+        case OMPC_task_reduction: {
+            OpenMPTaskReductionClauseIdentifier identifier = ((OpenMPTaskReductionClause*)current_omp_clause)->getIdentifier();
+            SgOmpClause::omp_task_reduction_identifier_enum sg_identifier = toSgOmpClauseTaskReductionIdentifier(identifier);
+            SgExpression* user_defined_identifier = NULL;
+            if (sg_identifier == SgOmpClause::e_omp_task_reduction_user_defined_identifier) {
+                SgExpression* clause_expression = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), ((OpenMPTaskReductionClause*)current_omp_clause)->getUserDefinedIdentifier());
+                user_defined_identifier = checkOmpExpressionClause(clause_expression, global, e_reduction);
+            }
+            result = new SgOmpTaskReductionClause(explist, sg_identifier, user_defined_identifier);
+            printf("Task_reduction Clause added!\n");
+            break;
+        }
         case OMPC_linear: {
             OpenMPLinearClauseModifier modifier = ((OpenMPLinearClause*)current_omp_clause)->getModifier();
             SgOmpClause::omp_linear_modifier_enum sg_modifier = toSgOmpClauseLinearModifier(modifier);
@@ -4402,6 +4491,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
     switch (directive_kind) {
         case OMPD_metadirective:
         case OMPD_teams:
+        case OMPD_taskgroup:
         case OMPD_barrier:
         case OMPD_master:
         case OMPD_distribute:
@@ -4451,6 +4541,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_bind:
                 case OMPC_reduction:
                 case OMPC_in_reduction:
+                case OMPC_task_reduction:
                 case OMPC_shared:
                 case OMPC_copyprivate:
                 case OMPC_nowait:

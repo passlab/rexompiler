@@ -153,6 +153,25 @@ namespace OmpSupport
     e_in_reduction_identifier_ior,
     e_in_reduction_identifier_ieor,
 
+    // task_reduction operations
+    e_task_reduction_identifier_plus, //+
+    e_task_reduction_identifier_mul,  //* 
+    e_task_reduction_identifier_minus, // -
+    e_task_reduction_identifier_bitand, // &  
+    e_task_reduction_identifier_bitor,  // | 
+    e_task_reduction_identifier_bitxor,  // ^  
+    e_task_reduction_identifier_logand,  // &&  
+    e_task_reduction_identifier_logor,   // || 
+    e_task_reduction_identifier_and, // .and.
+    e_task_reduction_identifier_or, // .or.
+    e_task_reduction_identifier_eqv,   // fortran .eqv. 
+    e_task_reduction_identifier_neqv,   // fortran .neqv.
+    e_task_reduction_identifier_max,
+    e_task_reduction_identifier_min, 
+    e_task_reduction_identifier_iand,
+    e_task_reduction_identifier_ior,
+    e_task_reduction_identifier_ieor,
+
     // reduction operations
     //8 operand for C/C++
      //  shared 3 common operators for both C and Fortran

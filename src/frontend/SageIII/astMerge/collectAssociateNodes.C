@@ -1780,6 +1780,7 @@ addAssociatedNodes ( SgNode* node, set<SgNode*> & nodeList, bool markMemberNodes
           case V_SgOmpDependClause     :  
           case V_SgOmpReductionClause  :
           case V_SgOmpInReductionClause:  
+          case V_SgOmpTaskReductionClause: 
           case V_SgOmpAllocateClause   :
           case V_SgOmpScheduleClause   :  
           case V_SgOmpDistScheduleClause   :

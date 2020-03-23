@@ -100,6 +100,33 @@ HEADER_OMP_CLAUSE_START
 
         };
 
+        enum omp_task_reduction_identifier_enum
+        {
+            e_omp_task_reduction_identifier_unspecified,
+            e_omp_task_reduction_identifier_plus, //+
+            e_omp_task_reduction_identifier_mul,  //*
+            e_omp_task_reduction_identifier_minus, // -
+        
+            e_omp_task_reduction_identifier_bitand, // &
+            e_omp_task_reduction_identifier_bitor,  // |
+            e_omp_task_reduction_identifier_bitxor,  // ^
+            e_omp_task_reduction_identifier_logand,  // &&
+            e_omp_task_reduction_identifier_logor,   // ||
+        
+            e_omp_task_reduction_identifier_and, // .and.
+            e_omp_task_reduction_identifier_or, // .or.
+            e_omp_task_reduction_identifier_eqv,   // fortran .eqv.
+            e_omp_task_reduction_identifier_neqv,   // fortran .neqv.
+            e_omp_task_reduction_identifier_max,
+            e_omp_task_reduction_identifier_min,
+            e_omp_task_reduction_identifier_iand,
+            e_omp_task_reduction_identifier_ior,
+            e_omp_task_reduction_identifier_ieor,
+            e_omp_task_reduction_user_defined_identifier,
+            e_omp_task_reduction_identifier_last
+
+        };
+
         enum omp_defaultmap_behavior_enum
         {
             e_omp_defaultmap_behavior_unspecified,

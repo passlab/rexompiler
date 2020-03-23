@@ -112,6 +112,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpLastprivateClause, "OmpLastprivateClause", "OmpLastprivateClauseTag" );
      NEW_TERMINAL_MACRO (OmpReductionClause, "OmpReductionClause", "OmpReductionClauseTag" );
      NEW_TERMINAL_MACRO (OmpInReductionClause, "OmpInReductionClause", "OmpInReductionClauseTag" );
+     NEW_TERMINAL_MACRO (OmpTaskReductionClause, "OmpTaskReductionClause", "OmpTaskReductionClauseTag" );
      NEW_TERMINAL_MACRO (OmpAllocateClause, "OmpAllocateClause", "OmpAllocateClauseTag" );
      NEW_TERMINAL_MACRO (OmpDependClause,    "OmpDependClause", "OmpDependClauseTag" );
 
@@ -121,7 +122,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpAlignedClause, "OmpAlignedClause", "OmpAlignedClauseTag" );
 
      NEW_NONTERMINAL_MACRO (OmpVariablesClause, OmpCopyprivateClause| OmpPrivateClause | OmpFirstprivateClause | OmpNontemporalClause | OmpInclusiveClause | OmpExclusiveClause | OmpIsDevicePtrClause | 
-         OmpSharedClause |OmpCopyinClause| OmpLastprivateClause| OmpReductionClause | OmpInReductionClause | OmpMapClause | OmpAllocateClause |
+         OmpSharedClause |OmpCopyinClause| OmpLastprivateClause| OmpReductionClause | OmpInReductionClause | OmpTaskReductionClause | OmpMapClause | OmpAllocateClause |
          OmpUniformClause | OmpAlignedClause | OmpLinearClause | OmpDependClause ,
          "OmpVariablesClause", "OmpVariablesClauseTag", false);
 
@@ -1894,6 +1895,14 @@ Grammar::setUpNodes ()
 
      // in_reduction(user-defined identifier : variables)
      OmpInReductionClause.setDataPrototype("SgExpression*", "user_defined_identifier", "= NULL",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // task_reduction(op:variables) 
+     OmpTaskReductionClause.setDataPrototype("SgOmpClause::omp_task_reduction_identifier_enum", "identifier", "=e_omp_task_reduction_identifier_unspecified",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // task_reduction(user-defined identifier : variables)
+     OmpTaskReductionClause.setDataPrototype("SgExpression*", "user_defined_identifier", "= NULL",
                                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
      // if (modifier : expression)

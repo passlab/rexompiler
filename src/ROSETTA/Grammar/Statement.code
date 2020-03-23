@@ -19729,6 +19729,12 @@ SgOmpTeamsStatement::post_construction_initialization()
    {}
 SOURCE_OMP_TEAMS_STATEMENT_END
 
+SOURCE_OMP_TASKGROUP_STATEMENT_START
+void
+SgOmpTaskgroupStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TASKGROUP_STATEMENT_END
+
 SOURCE_OMP_DISTRIBUTE_STATEMENT_START
 void
 SgOmpDistributeStatement::post_construction_initialization()
@@ -19874,7 +19880,6 @@ void
 SgOmpTargetDataStatement::post_construction_initialization()
    {}
 SOURCE_OMP_TARGET_DATA_STATEMENT_END
-
 
 SOURCE_OMP_TASKWAIT_STATEMENT_START
 void
