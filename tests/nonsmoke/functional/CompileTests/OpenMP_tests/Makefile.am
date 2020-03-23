@@ -102,7 +102,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	ompfor-default.c \
 	ompfor-decremental.c \
 	ompfor-static.c \
-	#ompGetNumThreads.c \
+	ompGetNumThreads.c \
 	omp_sections.c \
 	#ordered3.c \
 	#ordered2.c \
@@ -136,14 +136,14 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	reduction_user_identifier.c \
 	requires.c \
 	requires1.c \
-	#rice1.c \
+	rice1.c \
 	scan.c \
 	section.c \
 	section1.c \
 	sections.c \
 	sections1.c \
 	set_num_threads.c \
-	#shared.c \
+	shared.c \
 	#simd.c \
 	#simd2.c \
 	simd3.c \
@@ -183,7 +183,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	#threadprivate2.c \
 	#threadprivate3.c \
 	#threadprivate.c \
-	#upperCase.c \
+	upperCase.c \
 	#variables.c
 	threadProcessor.c
 
@@ -195,7 +195,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	array_init.c \
 	array_init_2.c \
 	atoms-2.c \
-        barrier.c \
+	barrier.c \
 	copyprivate2.c \
 	critical.c \
 	critical1.c \
@@ -250,6 +250,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	ompfor-default.c \
 	ompfor-decremental.c \
 	ompfor-static.c \
+	ompGetNumThreads.c \
 	omp_sections.c \
 	orphaned-directives.c \
 	parallel.c \
@@ -279,12 +280,14 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	reduction_user_identifier.c \
 	requires.c \
 	requires1.c \
+	rice1.c \
 	scan.c \
 	section.c \
 	section1.c \
 	sections.c \
 	sections1.c \
 	set_num_threads.c \
+	shared.c \
 	simd3.c \
 	simd4.c \
 	single3.c \
@@ -298,7 +301,8 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	taskgroup.c \
 	teams.c \
 	twoRegions.c \
-	threadProcessor.c
+	threadProcessor.c \
+	upperCase.c
 
 # removed experimental test cases	
 removed_Experimental_TEST = \

@@ -79,7 +79,7 @@ REX_TESTCODES_REQUIRED_TO_PASS = \
 if !USING_INTEL_COMPILER
 TESTCODES_REQUIRED_TO_PASS += \
    for_schedule_static.c \
-   #omp_barrier.c \
+   omp_barrier.c \
    omp_critical.c \
    #omp_flush.c \
    omp_ticks_time.c \
@@ -88,6 +88,7 @@ TESTCODES_REQUIRED_TO_PASS += \
 
 REX_TESTCODES_REQUIRED_TO_PASS += \
     for_schedule_static.c \
+    omp_barrier.c \
     omp_critical.c \
     omp_ticks_time.c \
     omp_time.c 
