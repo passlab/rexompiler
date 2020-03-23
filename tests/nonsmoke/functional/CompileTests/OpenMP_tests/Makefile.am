@@ -173,7 +173,6 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	task_untied3.c \
 	task_untied4.c \
 	task_underIf.c \
-	taskgroup.c \
 	task_wait.c \
 	task_wait2.c \
 	teams.c \
