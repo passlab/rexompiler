@@ -3518,7 +3518,6 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
                 break;
             }
             case OMPC_defaultmap: {
-               printf("asdfg\n");
  convertDefaultmapClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
@@ -4559,7 +4558,6 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_dist_schedule:
                 case OMPC_defaultmap:
                 case OMPC_when: {
-               printf("asdfg\n");
                     break;
                 }
                 default: {
