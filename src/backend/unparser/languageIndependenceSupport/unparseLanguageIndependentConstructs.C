@@ -2811,6 +2811,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpSectionsStatement:
                     case V_SgOmpParallelStatement:
                     case V_SgOmpTeamsStatement:
+                    case V_SgOmpTaskgroupStatement:
                     case V_SgOmpDistributeStatement:
                     case V_SgOmpRequiresStatement:
                     case V_SgOmpLoopStatement:
@@ -7688,7 +7689,7 @@ static std::string reductionIdentifierToString(SgOmpClause::omp_reduction_identi
   return result;
 }
 
-//! A helper function to convert reduction operators to strings
+//! A helper function to convert in_reduction operators to strings
 // TODO put into a better place and expose it to users.
 static std::string inReductionIdentifierToString(SgOmpClause::omp_in_reduction_identifier_enum ro)
 {
@@ -7787,6 +7788,111 @@ static std::string inReductionIdentifierToString(SgOmpClause::omp_in_reduction_i
     default:
       {
         cerr<<"Error: unhandled operator type inReductionIdentifierToString():"<< ro <<endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
+
+//! A helper function to convert task_reduction operators to strings
+// TODO put into a better place and expose it to users.
+static std::string taskReductionIdentifierToString(SgOmpClause::omp_task_reduction_identifier_enum ro)
+{
+  string result;
+  switch (ro)
+  {
+    case SgOmpClause::e_omp_task_reduction_identifier_plus: 
+      {
+        result = "+";
+        break;
+      }
+    case SgOmpClause::e_omp_task_reduction_identifier_mul: 
+      {
+        result = "*";
+        break;
+      }
+    case SgOmpClause::e_omp_task_reduction_identifier_minus:   
+      {
+        result = "-";
+        break;
+      }
+    case SgOmpClause::e_omp_task_reduction_identifier_bitand:  
+      {
+        result = "&";
+        break;
+      }
+    case SgOmpClause::e_omp_task_reduction_identifier_bitor :  
+      {
+        result = "|";
+        break;
+      }
+      //------------
+    case SgOmpClause::e_omp_task_reduction_identifier_bitxor:  
+      {
+        result = "^";
+        break;
+      }
+    case SgOmpClause::e_omp_task_reduction_identifier_logand:  
+      {
+        result = "&&";
+        break;
+      }
+    case SgOmpClause::e_omp_task_reduction_identifier_logor :  
+      {
+        result = "||";
+        break;
+      }
+    case SgOmpClause::e_omp_task_reduction_identifier_and  : 
+      {
+        result = ".and.";
+        break;
+      }
+    case SgOmpClause::e_omp_task_reduction_identifier_or : 
+      {
+        result = ".or.";
+        break;
+      }
+     //------------
+    case SgOmpClause::e_omp_task_reduction_identifier_eqv:   
+      {
+        result = ".eqv.";
+        break;
+      }
+    case SgOmpClause::e_omp_task_reduction_identifier_neqv : 
+      {
+        result = ".neqv.";
+        break;
+      }
+    case SgOmpClause::e_omp_task_reduction_identifier_max  : 
+      {
+        result = "max";
+        break;
+      }
+    case SgOmpClause::e_omp_task_reduction_identifier_min  : 
+      {
+        result = "min";
+        break;
+      }
+    case SgOmpClause::e_omp_task_reduction_identifier_iand : 
+      {
+        result = "iand";
+        break;
+      }
+
+      //------------
+    case SgOmpClause::e_omp_task_reduction_identifier_ior  : 
+      {
+        result = "ior";
+        break;
+      }
+    case SgOmpClause::e_omp_task_reduction_identifier_ieor : 
+      {
+        result = "ieor";
+        break;
+      }
+    default:
+      {
+        cerr<<"Error: unhandled operator type taskReductionIdentifierToString():"<< ro <<endl;
         ROSE_ASSERT(false);
       }
   }
@@ -7942,6 +8048,99 @@ static std::string distScheduleKindToString(SgOmpClause::omp_dist_schedule_kind_
     default:
       {
         cerr<<"Error: unhandled operator type distScheduleKindToString():"<< rm <<endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
+
+static std::string defaultmapBehaviorToString(SgOmpClause::omp_defaultmap_behavior_enum rm)
+{
+  string result = "";
+  switch (rm)
+  {
+    case SgOmpClause::e_omp_defaultmap_behavior_unspecified: 
+      {
+        result = "";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_behavior_alloc: 
+      {
+        result = "alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_behavior_to: 
+      {
+        result = "to";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_behavior_from: 
+      {
+        result = "from";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_behavior_tofrom: 
+      {
+        result = "tofrom";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_behavior_firstprivate: 
+      {
+        result = "firstprivate";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_behavior_none: 
+      {
+        result = "none";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_behavior_default: 
+      {
+        result = "default";
+        break;
+      }
+    default:
+      {
+        cerr<<"Error: unhandled operator type defaultmapBehaviorToString():"<< rm <<endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
+
+static std::string defaultmapCategoryToString(SgOmpClause::omp_defaultmap_category_enum rm)
+{
+  string result = "";
+  switch (rm)
+  {
+    case SgOmpClause::e_omp_defaultmap_category_unspecified: 
+      {
+        result = "";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_category_scalar: 
+      {
+        result = "scalar";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_category_aggregate: 
+      {
+        result = "aggregate";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_category_pointer: 
+      {
+        result = "pointer";
+        break;
+      }
+    case SgOmpClause::e_omp_defaultmap_category_allocatable: 
+      {
+        result = "allocatable";
+        break;
+      }
+    default:
+      {
+        cerr<<"Error: unhandled operator type defaultmapBehaviorToString():"<< rm <<endl;
         ROSE_ASSERT(false);
       }
   }
@@ -8182,6 +8381,23 @@ void UnparseLanguageIndependentConstructs::unparseOmpDistScheduleClause(SgOmpCla
   curprint(string(")"));
 }
 
+void UnparseLanguageIndependentConstructs::unparseOmpDefaultmapClause(SgOmpClause* clause, SgUnparse_Info& info)
+{
+  ROSE_ASSERT(clause != NULL);
+  SgOmpDefaultmapClause* c = isSgOmpDefaultmapClause(clause);
+  ROSE_ASSERT(c!= NULL);
+  curprint (string (" defaultmap("));
+  SgOmpClause::omp_defaultmap_behavior_enum behavior = c-> get_behavior ();
+  curprint(defaultmapBehaviorToString(behavior));
+  SgOmpClause::omp_defaultmap_category_enum category = c-> get_category ();
+  if(category != SgOmpClause::e_omp_defaultmap_category_unspecified)
+  {
+    curprint(string(" : "));
+    curprint(defaultmapCategoryToString(category));
+  }
+  curprint(string(")"));
+}
+
 void UnparseLanguageIndependentConstructs::unparseOmpExtImplementationDefinedRequirementClause(SgOmpClause* clause, SgUnparse_Info& info)
 {
   ROSE_ASSERT(clause != NULL);
@@ -8246,6 +8462,9 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
     case V_SgOmpExclusiveClause:
       curprint(string(" exclusive("));
       break;
+    case V_SgOmpIsDevicePtrClause:
+      curprint(string(" is_device_ptr("));
+      break;
     case V_SgOmpPrivateClause:
       curprint(string(" private("));
       break;
@@ -8285,6 +8504,21 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
         else {
             SgUnparse_Info new_info(info);
             unparseExpression(isSgOmpInReductionClause(c)->get_user_defined_identifier(), new_info);
+        };
+        curprint(string(" : "));
+        break;
+      }
+
+    case V_SgOmpTaskReductionClause:
+      {
+        curprint(string(" task_reduction("));
+        SgOmpClause::omp_task_reduction_identifier_enum identifier = isSgOmpTaskReductionClause(c)->get_identifier();
+        if (identifier != SgOmpClause::e_omp_task_reduction_user_defined_identifier) {
+            curprint(taskReductionIdentifierToString(identifier));
+        }
+        else {
+            SgUnparse_Info new_info(info);
+            unparseExpression(isSgOmpTaskReductionClause(c)->get_user_defined_identifier(), new_info);
         };
         curprint(string(" : "));
         break;
@@ -8808,6 +9042,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         unparseOmpDistScheduleClause(isSgOmpDistScheduleClause(clause), info);
         break;
       }
+    case V_SgOmpDefaultmapClause:
+      {
+        unparseOmpDefaultmapClause(isSgOmpDefaultmapClause(clause), info);
+        break;
+      }
     case V_SgOmpExtImplementationDefinedRequirementClause:
       {
         unparseOmpExtImplementationDefinedRequirementClause(isSgOmpExtImplementationDefinedRequirementClause(clause), info);
@@ -8840,10 +9079,12 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpNontemporalClause:
     case V_SgOmpInclusiveClause:
     case V_SgOmpExclusiveClause:
+    case V_SgOmpIsDevicePtrClause:
     case V_SgOmpLastprivateClause:
     case V_SgOmpPrivateClause:
     case V_SgOmpReductionClause:
     case V_SgOmpInReductionClause:
+    case V_SgOmpTaskReductionClause:
     case V_SgOmpDependClause:
     case V_SgOmpMapClause:
     case V_SgOmpSharedClause:
@@ -9036,6 +9277,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpTeamsStatement:
       {
         curprint(string ("teams "));
+        break;
+      }
+    case V_SgOmpTaskgroupStatement:
+      {
+        curprint(string ("taskgroup "));
         break;
       }
     case V_SgOmpRequiresStatement:

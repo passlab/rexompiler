@@ -297,6 +297,7 @@ SgOmpMetadirectiveStatement
 SgOmpOrderedStatement
 SgOmpParallelStatement
 SgOmpTeamsStatement
+SgOmpTaskgroupStatement
 SgOmpDistributeStatement
 SgOmpRequiresStatement
 SgOmpLoopStatement
@@ -342,11 +343,14 @@ SgOmpBindClause
 SgOmpNontemporalClause
 SgOmpInclusiveClause
 SgOmpExclusiveClause
+SgOmpIsDevicePtrClause
 SgOmpThreadLimitClause
 SgOmpOrderedClause
 SgOmpPrivateClause
 SgOmpReductionClause
 SgOmpInReductionClause
+SgOmpTaskReductionClause
+SgOmpDefaultmapClause
 SgOmpScheduleClause
 SgOmpSharedClause
 SgOmpUntiedClause

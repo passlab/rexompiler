@@ -1751,6 +1751,7 @@ addAssociatedNodes ( SgNode* node, set<SgNode*> & nodeList, bool markMemberNodes
           case V_SgOmpNontemporalClause : 
           case V_SgOmpInclusiveClause   :
           case V_SgOmpExclusiveClause   :
+          case V_SgOmpIsDevicePtrClause :
           case V_SgOmpFlushStatement    : 
           case V_SgOmpForStatement      : 
           case V_SgOmpForSimdStatement  : 
@@ -1779,9 +1780,11 @@ addAssociatedNodes ( SgNode* node, set<SgNode*> & nodeList, bool markMemberNodes
           case V_SgOmpDependClause     :  
           case V_SgOmpReductionClause  :
           case V_SgOmpInReductionClause:  
+          case V_SgOmpTaskReductionClause: 
           case V_SgOmpAllocateClause   :
           case V_SgOmpScheduleClause   :  
           case V_SgOmpDistScheduleClause   :
+          case V_SgOmpDefaultmapClause   :
           case V_SgOmpSectionsStatement:  
           case V_SgOmpSectionStatement :  
           case V_SgOmpSharedClause     :  
