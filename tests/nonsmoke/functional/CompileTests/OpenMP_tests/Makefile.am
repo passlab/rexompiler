@@ -37,7 +37,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	#atomic.c \
 	atoms-2.c \
 	#atomic-3.c \
-	#barrier.c \
+	barrier.c \
 	#collapse.c \
 	#copyin.c \
 	copyprivate2.c \
@@ -80,8 +80,8 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	loop.c \
 	loop1.c \
 	lu_factorization.c \
-	#master.c \
-	#masterSingle.c \
+	master.c \
+	masterSingle.c \
 	matrix_vector.c \
 	matrixmultiply.c \
 	md_open_mp.c \
@@ -91,7 +91,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	omp1.c \
 	ompfor.c \
 	ompfor_c99.c \
-	#ompfor2.c \
+	ompfor2.c \
 	ompfor3.c \
 	ompfor4.c \
 	ompfor5.c \
@@ -195,6 +195,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	array_init.c \
 	array_init_2.c \
 	atoms-2.c \
+        barrier.c \
 	copyprivate2.c \
 	critical.c \
 	critical1.c \
@@ -227,6 +228,8 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	loop.c \
 	loop1.c \
 	lu_factorization.c \
+	master.c \
+	masterSingle.c \
 	matrix_vector.c \
 	matrixmultiply.c \
 	md_open_mp.c \
@@ -236,6 +239,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	omp1.c \
 	ompfor.c \
 	ompfor_c99.c \
+	ompfor2.c \
 	ompfor3.c \
 	ompfor4.c \
 	ompfor5.c \
@@ -291,6 +295,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	subteam.c \
 	target.c \
 	target1.c \
+	taskgroup.c \
 	teams.c \
 	twoRegions.c \
 	threadProcessor.c
