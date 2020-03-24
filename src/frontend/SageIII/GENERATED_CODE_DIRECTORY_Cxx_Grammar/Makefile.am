@@ -72,8 +72,8 @@ SgOmpInclusiveClause.C               SgOmpExclusiveClause.C                  SgO
 SgArithmeticIfStatement.C              SgClinkageDeclarationStatement.C      SgGraph.C                               SgOmpFlushStatement.C                        SgTypeBool.C \
 SgArrayType.C                          SgClinkageEndStatement.C              SgGraphEdge.C                           SgOmpForStatement.C                          SgType.C \
 SgArrowExp.C                           SgClinkageStartStatement.C            SgGraphEdgeList.C                       SgOmpIfClause.C                              SgTypeChar.C \
-SgArrowStarOp.C                        SgCloseStatement.C                    SgGraphNode.C                           SgOmpLastprivateClause.C                     SgTypeComplex.C \
-SgColonShapeExp.C                     SgGraphNodeList.C                       SgOmpMasterStatement.C                       SgTypeDefault.C \
+SgArrowStarOp.C                        SgCloseStatement.C                    SgGraphNode.C                           SgOmpLastprivateClause.C                     SgTypeComplex.C                  SgOmpMasterStatement.C\
+SgColonShapeExp.C                     SgGraphNodeList.C                       SgOmpTaskyieldStatement.C                       SgTypeDefault.C \
 SgCommaOpExp.C                        SgGreaterOrEqualOp.C                    SgOmpNowaitClause.C                          SgTypedefDeclaration.C \
 SgOmpReverseOffloadClause.C          SgOmpUnifiedAddressClause.C           SgOmpUnifiedSharedMemoryClause.C \
 SgOmpDynamicAllocatorsClause.C        SgOmpAtomicDefaultMemOrderClause.C     SgOmpExtImplementationDefinedRequirementClause.C \                     

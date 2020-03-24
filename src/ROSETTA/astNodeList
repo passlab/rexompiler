@@ -293,6 +293,7 @@ SgOmpDeclareSimdStatement
 SgOmpForStatement
 SgOmpForSimdStatement
 SgOmpMasterStatement
+SgOmpTaskyieldStatement
 SgOmpMetadirectiveStatement
 SgOmpOrderedStatement
 SgOmpParallelStatement

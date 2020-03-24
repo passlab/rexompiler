@@ -313,7 +313,7 @@ Grammar::setUpStatements ()
 
 
     // A base class for all directives with a body/statement
-    NEW_NONTERMINAL_MACRO (OmpBodyStatement,  OmpMasterStatement  | OmpOrderedStatement 
+    NEW_NONTERMINAL_MACRO (OmpBodyStatement,  OmpMasterStatement  | OmpOrderedStatement
         | OmpSectionStatement | OmpWorkshareStatement  | OmpClauseBodyStatement , 
         "OmpBodyStatement",      "OMP_BODY_STMT", false );
 
@@ -478,6 +478,7 @@ Grammar::setUpStatements ()
      NEW_TERMINAL_MACRO (OmpDeclareSimdStatement, "OmpDeclareSimdStatement",  "OMP_DECLARE_SIMD_STMT" );
   // simplest directives, just one line 
      NEW_TERMINAL_MACRO (OmpBarrierStatement,   "OmpBarrierStatement",   "OMP_BARRIER_STMT" );
+     NEW_TERMINAL_MACRO (OmpTaskyieldStatement,   "OmpTaskyieldStatement",   "OMP_TASKYIELD_STMT" );
      NEW_TERMINAL_MACRO (OmpTaskwaitStatement,  "OmpTaskwaitStatement",  "OMP_TASKWAIT_STMT" );
      NEW_TERMINAL_MACRO (OmpRequiresStatement,  "OmpRequiresStatement",   "OMP_REQUIRES_STMT" );
 
@@ -522,7 +523,7 @@ Grammar::setUpStatements ()
              WhereStatement            | ElseWhereStatement     | NullifyStatement                | ArithmeticIfStatement |
              AssignStatement           | ComputedGotoStatement  | AssignedGotoStatement           |
           /* FortranDo                 | */ AllocateStatement   | DeallocateStatement             | UpcNotifyStatement    | 
-             UpcWaitStatement          | UpcBarrierStatement    | UpcFenceStatement               | 
+             UpcWaitStatement          | UpcBarrierStatement    | UpcFenceStatement               | OmpTaskyieldStatement   |
              OmpBarrierStatement       | OmpTaskwaitStatement   |  OmpFlushStatement              | OmpBodyStatement      |
              SequenceStatement         | WithStatement          | PythonPrintStmt                 | PassStatement         |
              AssertStmt                | ExecStatement          | PythonGlobalStmt                | OmpRequiresStatement  |
@@ -4209,6 +4210,7 @@ Grammar::setUpStatements ()
     OmpAtomicStatement.setFunctionSource            ("SOURCE_OMP_ATOMIC_STATEMENT", "../Grammar/Statement.code" );
     OmpBarrierStatement.setFunctionSource            ("SOURCE_OMP_BARRIER_STATEMENT", "../Grammar/Statement.code" );
     OmpMasterStatement.setFunctionSource            ("SOURCE_OMP_MASTER_STATEMENT", "../Grammar/Statement.code" );
+    OmpTaskyieldStatement.setFunctionSource            ("SOURCE_OMP_TASKYIELD_STATEMENT", "../Grammar/Statement.code" );
     OmpOrderedStatement.setFunctionSource            ("SOURCE_OMP_ORDERED_STATEMENT", "../Grammar/Statement.code" );
     OmpTaskwaitStatement.setFunctionSource            ("SOURCE_OMP_TASKWAIT_STATEMENT", "../Grammar/Statement.code" );
 
