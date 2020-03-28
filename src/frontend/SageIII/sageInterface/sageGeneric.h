@@ -355,6 +355,7 @@ namespace sg
     GEN_VISIT(SgOmpClauseBodyStatement)
     GEN_VISIT(SgOmpAtomicStatement)
     GEN_VISIT(SgOmpMasterStatement)
+    GEN_VISIT(SgOmpTaskyieldStatement)
     GEN_VISIT(SgOmpSectionStatement)
     GEN_VISIT(SgOmpOrderedStatement)
     GEN_VISIT(SgOmpWorkshareStatement)

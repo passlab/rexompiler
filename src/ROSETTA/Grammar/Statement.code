@@ -19771,6 +19771,11 @@ SgOmpMasterStatement::post_construction_initialization()
    {}
 SOURCE_OMP_MASTER_STATEMENT_END
 
+SOURCE_OMP_TASKYIELD_STATEMENT_START
+void
+SgOmpTaskyieldStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TASKYIELD_STATEMENT_END
 
 SOURCE_OMP_FLUSH_STATEMENT_START
 void

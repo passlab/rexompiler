@@ -3272,6 +3272,10 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
             result = new SgOmpBarrierStatement();
             break;
         }
+        case OMPD_taskyield: {
+            result = new SgOmpTaskyieldStatement();
+            break;
+        }
         default: {
             printf("Unknown directive is found.\n");
         }
@@ -4493,6 +4497,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_taskgroup:
         case OMPD_barrier:
         case OMPD_master:
+        case OMPD_taskyield:
         case OMPD_distribute:
         case OMPD_requires:
         case OMPD_loop:
