@@ -254,6 +254,8 @@ namespace sg
     GEN_VISIT(SgIncidenceDirectedGraph)
     GEN_VISIT(SgIncidenceUndirectedGraph)
     GEN_VISIT(SgGraph)
+    GEN_VISIT(SgIteratorIdentifier)
+    GEN_VISIT(SgIterator)
     GEN_VISIT(SgGraphNodeList)
     GEN_VISIT(SgGraphEdgeList)
     GEN_VISIT(SgQualifiedName)

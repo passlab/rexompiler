@@ -180,7 +180,8 @@ Grammar::setUpSupport ()
      NEW_TERMINAL_MACRO (GraphNodeList, "GraphNodeList", "GraphNodeListTag");
      NEW_TERMINAL_MACRO (GraphEdgeList, "GraphEdgeList", "GraphEdgeListTag");
 
-
+     NEW_TERMINAL_MACRO (IteratorIdentifier,  "IteratorIdentifier", "IteratorIdentifierTag");
+     //NEW_TERMINAL_MACRO (Iterator,  "Iterator", "IteratorTag");
   // DQ (12/19/2005): Support for explicit qualified names in the source code (currently we generate them
   // if they are required, but this causes the generated source to be a bit verbose for some applications).
      NEW_TERMINAL_MACRO (QualifiedName, "QualifiedName", "QualifiedNameTag" );
@@ -247,8 +248,8 @@ Grammar::setUpSupport ()
           TemplateParameter     | TemplateArgument          | Directory                | FileList             |
           DirectoryList         | FunctionParameterTypeList | QualifiedName            | TemplateArgumentList |
           TemplateParameterList | /* RenamePair                | InterfaceBody       |*/
-          Graph                 | GraphNode                 | GraphEdge                |
-          GraphNodeList         | GraphEdgeList             | TypeTable                |
+          Graph                 | GraphNode                 | GraphEdge                | IteratorIdentifier   |
+          GraphNodeList         | GraphEdgeList             | TypeTable                | //Iterator             |
           NameGroup             | DimensionObject           | FormatItem               |
           FormatItemList        | DataStatementGroup        | DataStatementObject      | IncludeFile          |
           DataStatementValue    | HeaderFileReport,
@@ -1524,6 +1525,34 @@ Grammar::setUpSupport ()
      GraphNode.setDataPrototype("std::map<int, std::string>","properties", "",
                            NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
+  // ******************************************************************************
+  //                                IteratorIdentifier
+  // ******************************************************************************
+     IteratorIdentifier.setFunctionPrototype ( "HEADER_ITERATORIDENTIFIER", "../Grammar/Support.code");
+     //Iterator.setFunctionPrototype ( "HEADER_ITERATOR", "../Grammar/Support.code");
+     //Iterator.setFunctionSource    ( "SOURCE_ITERATOR", "../Grammar/Support.code");
+  // An alternative might be to keep a hash_map<int,string> in the SgGraph (to keep the size small).
+     IteratorIdentifier.setDataPrototype     ( "SgExpression*", "iteratorType", "= NULL",                                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+     IteratorIdentifier.setDataPrototype     ( "SgExpression*", "identifier", "= NULL",                               CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+     IteratorIdentifier.setDataPrototype     ( "SgExpression*", "begin", "= NULL",                                                CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+     IteratorIdentifier.setDataPrototype     ( "SgExpression*", "end", "= NULL",                                                CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+     IteratorIdentifier.setDataPrototype     ( "SgExpression*", "step", "= NULL",                                                CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+
+     //Iterator.setDataPrototype("IteratorIdentifier", "iteratorIdentifier", "=NULL",
+                         // CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    
+                                 
+
+/*     IteratorIdentifier.setDataPrototype ( "SgExpression*", "type", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     IteratorIdentifier.setDataPrototype ( "SgExpression*", "identifier", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     IteratorIdentifier.setDataPrototype ( "SgExpression*", "begin", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     IteratorIdentifier.setDataPrototype ( "SgExpression*", "end", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     IteratorIdentifier.setDataPrototype ( "SgExpression*", "step", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);*/
 
   // ******************************************************************************
   //                                SgGraphEdge

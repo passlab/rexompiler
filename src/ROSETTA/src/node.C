@@ -31,6 +31,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (LambdaCapture    , "LambdaCapture"    , "LambdaCaptureTag" );
      NEW_TERMINAL_MACRO (LambdaCaptureList, "LambdaCaptureList", "LambdaCaptureListTag" );
 
+     NEW_TERMINAL_MACRO (Iterator, "Iterator", "IteratorTag" );
 #if USE_OMP_IR_NODES  // Liao, 5/30/2009 add nodes for OpenMP Clauses, 
  // they have source position info and should be traversed
      // add all terminals first, then bottom-up traverse class hierarchy to define non-terminals
@@ -349,7 +350,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (UntypedInitializedNameList,     "UntypedInitializedNameList",     "TEMP_UntypedInitializedNameList" );
 
      NEW_NONTERMINAL_MACRO (UntypedNode, UntypedExpression | UntypedStatement | UntypedName | UntypedToken | UntypedTokenPair |
-          UntypedType | UntypedAttribute | UntypedInitializedName | UntypedFile | UntypedStatementList |
+          UntypedType | UntypedAttribute | UntypedInitializedName | UntypedFile | UntypedStatementList | Iterator |
           UntypedDeclarationStatementList | UntypedFunctionDeclarationList | UntypedInitializedNameList |
           UntypedNameList | UntypedTokenList | UntypedTokenPairList,
          "UntypedNode", "UntypedNodeTag", false);
@@ -906,6 +907,9 @@ Grammar::setUpNodes ()
                      CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      UntypedInitializedNameListDeclaration.setDataPrototype     ( "SgUntypedInitializedNameList*", "variables", "",
                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+
+     Iterator.setFunctionPrototype ( "HEADER_ITERATOR","../Grammar/Support.code");
+
 
   // Rasmussen (02/22/2019): Added SgUntypedDirectiveDeclaration node for compiler directives
      UntypedDirectiveDeclaration.setFunctionPrototype( "HEADER_UNTYPED_DIRECTIVE_DECLARATION", "../Grammar/LocatedNode.code");

@@ -3911,6 +3911,7 @@ Grammar::GrammarNodeInfo Grammar::getGrammarNodeInfo(AstNodeClass* grammarnode) 
         ||nodeName == "SgOmpForSimdStatement"
         ||nodeName == "SgOmpDoStatement"
         ||nodeName == "SgOmpAtomicStatement"
+        ||nodeName == "SgIterator"
         ||nodeName == "SgExprListExp");
   }
   return info;
