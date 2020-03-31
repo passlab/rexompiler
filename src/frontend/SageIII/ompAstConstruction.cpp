@@ -38,11 +38,7 @@ static SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDir
 static SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static void buildVariableList(SgOmpVariablesClause*);
 static SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
-static SgOmpNowaitClause* convertNowaitClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
-static SgOmpParallelClause* convertParallelClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
-static SgOmpSectionsClause* convertSectionsClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
-static SgOmpForClause* convertForClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
-static SgOmpTaskgroupClause* convertTaskgroupClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpClause* convertSimpleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpScheduleClause* convertScheduleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDistScheduleClause* convertDistScheduleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDefaultmapClause* convertDefaultmapClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
@@ -3338,6 +3334,43 @@ SgOmpBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*,
     return result;
 }
 
+SgOmpClause* convertSimpleClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser simple clause is ready.\n");
+    SgOmpClause* sg_clause = NULL;
+    SgGlobal* global = SageInterface::getGlobalScope(current_OpenMPIR_to_SageIII.first);
+    OpenMPClauseKind clause_kind = current_omp_clause->getKind();
+    switch (clause_kind) {
+        case OMPC_parallel: {
+            sg_clause = new SgOmpParallelClause();
+            break;
+        }
+        case OMPC_sections: {
+            sg_clause = new SgOmpSectionsClause();
+            break;
+        }
+        case OMPC_for: {
+            sg_clause = new SgOmpForClause();
+            break;
+        }
+        case OMPC_taskgroup: {
+            sg_clause = new SgOmpTaskgroupClause();
+            break;
+        }
+        case OMPC_nowait: {
+            sg_clause = new SgOmpNowaitClause();
+            break;
+        }
+        default: {
+            cerr<<"error11: unknown clause "<<endl;
+            ROSE_ASSERT(false);
+        }
+    };
+    setOneSourcePositionForTransformation(sg_clause);
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+    return sg_clause;
+}
+
 SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
     
     OpenMPDirectiveKind directive_kind = current_OpenMPIR_to_SageIII.second->getKind();
@@ -3519,23 +3552,23 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
                 break;
             }
             case OMPC_nowait: {
-                convertNowaitClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertSimpleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_parallel: {
-                convertParallelClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertSimpleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_sections: {
-                convertSectionsClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertSimpleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_for: {
-                convertForClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertSimpleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_taskgroup: {
-                convertTaskgroupClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertSimpleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_schedule: {
@@ -3558,67 +3591,6 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
 
     return result;
 }
-
-SgOmpNowaitClause* convertNowaitClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
-    printf("ompparser nowait clause is ready.\n");
-    SgOmpNowaitClause* result = new SgOmpNowaitClause();
-    ROSE_ASSERT(result);
-    setOneSourcePositionForTransformation(result);
-    SgOmpClause* sg_clause = result;
-    clause_body->get_clauses().push_back(sg_clause);
-    sg_clause->set_parent(clause_body);
-    printf("ompparser nowait clause is added.\n");
-    return result;
-}
-
-SgOmpParallelClause* convertParallelClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
-    printf("ompparser Parallel clause is ready.\n");
-    SgOmpParallelClause* result = new SgOmpParallelClause();
-    ROSE_ASSERT(result);
-    setOneSourcePositionForTransformation(result);
-    SgOmpClause* sg_clause = result;
-    clause_body->get_clauses().push_back(sg_clause);
-    sg_clause->set_parent(clause_body);
-    printf("ompparser Parallel clause is added.\n");
-    return result;
-}
-
-SgOmpSectionsClause* convertSectionsClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
-    printf("ompparser Sections clause is ready.\n");
-    SgOmpSectionsClause* result = new SgOmpSectionsClause();
-    ROSE_ASSERT(result);
-    setOneSourcePositionForTransformation(result);
-    SgOmpClause* sg_clause = result;
-    clause_body->get_clauses().push_back(sg_clause);
-    sg_clause->set_parent(clause_body);
-    printf("ompparser Sections clause is added.\n");
-    return result;
-}
-
-SgOmpForClause* convertForClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
-    printf("ompparser For clause is ready.\n");
-    SgOmpForClause* result = new SgOmpForClause();
-    ROSE_ASSERT(result);
-    setOneSourcePositionForTransformation(result);
-    SgOmpClause* sg_clause = result;
-    clause_body->get_clauses().push_back(sg_clause);
-    sg_clause->set_parent(clause_body);
-    printf("ompparser For clause is added.\n");
-    return result;
-}
-
-SgOmpTaskgroupClause* convertTaskgroupClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
-    printf("ompparser Taskgroup clause is ready.\n");
-    SgOmpTaskgroupClause* result = new SgOmpTaskgroupClause();
-    ROSE_ASSERT(result);
-    setOneSourcePositionForTransformation(result);
-    SgOmpClause* sg_clause = result;
-    clause_body->get_clauses().push_back(sg_clause);
-    sg_clause->set_parent(clause_body);
-    printf("ompparser Taskgroup clause is added.\n");
-    return result;
-}
-
 
 SgOmpAtomicDefaultMemOrderClause* convertAtomicDefaultMemOrderClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     printf("ompparser atomic_default_mem_order clause is ready.\n");
@@ -4518,23 +4490,23 @@ SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::p
             break;
             }
             case OMPC_nowait: {
-                SgOmpClause* sgclause = convertNowaitClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
+                SgOmpClause* sgclause = convertSimpleClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
             break;
             }
             case OMPC_parallel: {
-                SgOmpClause* sgclause = convertParallelClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
+                SgOmpClause* sgclause = convertSimpleClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
             break;
             }
             case OMPC_sections: {
-                SgOmpClause* sgclause = convertSectionsClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
+                SgOmpClause* sgclause = convertSimpleClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
             break;
             }
             case OMPC_for: {
-                SgOmpClause* sgclause = convertForClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
+                SgOmpClause* sgclause = convertSimpleClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
             break;
             }
             case OMPC_taskgroup: {
-                SgOmpClause* sgclause = convertTaskgroupClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
+                SgOmpClause* sgclause = convertSimpleClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
             break;
             }
             case OMPC_order: {
