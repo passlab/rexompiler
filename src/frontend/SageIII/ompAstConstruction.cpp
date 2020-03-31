@@ -742,6 +742,11 @@ namespace OmpSupport
           result = SgOmpClause::e_omp_if_simd;
           break;
         }
+      case OMPC_IF_MODIFIER_cancel:
+        {
+          result = SgOmpClause::e_omp_if_cancel;
+          break;
+        }
       case OMPC_IF_MODIFIER_target:
         {
           result = SgOmpClause::e_omp_if_target;
@@ -3244,7 +3249,6 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
     switch (directive_kind) {
         case OMPD_metadirective:
         case OMPD_teams:
-        case OMPD_cancellation_point:
         case OMPD_taskgroup:
         case OMPD_master:
         case OMPD_distribute:
@@ -3265,6 +3269,8 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
             result = convertCombinedBodyDirective(current_OpenMPIR_to_SageIII);
             break;
         }
+        case OMPD_cancellation_point:
+        case OMPD_cancel:
         case OMPD_requires: {
             result = convertNonBodyDirective(current_OpenMPIR_to_SageIII);
             break;
@@ -3283,7 +3289,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
     }
     setOneSourcePositionForTransformation(result);
     // handle the SgFilePtr
-    if (directive_kind !=OMPD_requires){
+    if (directive_kind != OMPD_requires && directive_kind != OMPD_cancellation_point && directive_kind != OMPD_cancel){
         copyStartFileInfo (current_OpenMPIR_to_SageIII.first, result, NULL);
         copyEndFileInfo (current_OpenMPIR_to_SageIII.first, result, NULL);
         replaceOmpPragmaWithOmpStatement(current_OpenMPIR_to_SageIII.first, result);
@@ -3340,28 +3346,12 @@ SgOmpClause* convertSimpleClause(SgOmpClauseBodyStatement* clause_body, std::pai
     SgGlobal* global = SageInterface::getGlobalScope(current_OpenMPIR_to_SageIII.first);
     OpenMPClauseKind clause_kind = current_omp_clause->getKind();
     switch (clause_kind) {
-        case OMPC_parallel: {
-            sg_clause = new SgOmpParallelClause();
-            break;
-        }
-        case OMPC_sections: {
-            sg_clause = new SgOmpSectionsClause();
-            break;
-        }
-        case OMPC_for: {
-            sg_clause = new SgOmpForClause();
-            break;
-        }
-        case OMPC_taskgroup: {
-            sg_clause = new SgOmpTaskgroupClause();
-            break;
-        }
         case OMPC_nowait: {
             sg_clause = new SgOmpNowaitClause();
             break;
         }
         default: {
-            cerr<<"error11: unknown clause "<<endl;
+            cerr<<"error: unknown clause "<<endl;
             ROSE_ASSERT(false);
         }
     };
@@ -3380,6 +3370,14 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
     switch (directive_kind) {
         case OMPD_requires: {
             result = new SgOmpRequiresStatement();
+            break;
+        }
+        case OMPD_cancellation_point: {
+            result = new SgOmpCancellationPointStatement();
+            break;
+        }
+        case OMPD_cancel: {
+            result = new SgOmpCancelStatement();
             break;
         }
         default: {
@@ -3417,6 +3415,22 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
                 sg_clause = convertExtImplementationDefinedRequirementClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
+            case OMPC_parallel: {
+                sg_clause = new SgOmpParallelClause();
+                break;
+            }
+            case OMPC_sections: {
+                sg_clause = new SgOmpSectionsClause();
+                break;
+            }
+            case OMPC_for: {
+                sg_clause = new SgOmpForClause();
+                break;
+            }
+            case OMPC_taskgroup: {
+                sg_clause = new SgOmpTaskgroupClause();
+                break;
+            }
             default: {
                 cerr<<"error: unknown clause "<<endl;
                 ROSE_ASSERT(false);
@@ -3445,10 +3459,6 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         }
         case OMPD_teams: {
             result = new SgOmpTeamsStatement(NULL, body);
-            break;
-        }
-        case OMPD_cancellation_point: {
-            result = new SgOmpCancellationPointStatement(NULL, body);
             break;
         }
         case OMPD_taskgroup: {
@@ -3552,22 +3562,6 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
                 break;
             }
             case OMPC_nowait: {
-                convertSimpleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
-                break;
-            }
-            case OMPC_parallel: {
-                convertSimpleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
-                break;
-            }
-            case OMPC_sections: {
-                convertSimpleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
-                break;
-            }
-            case OMPC_for: {
-                convertSimpleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
-                break;
-            }
-            case OMPC_taskgroup: {
                 convertSimpleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
@@ -3713,10 +3707,6 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         }
         case OMPD_teams: {
             result = new SgOmpTeamsStatement(NULL, NULL);
-            break;
-        }
-        case OMPD_cancellation_point: {
-            result = new SgOmpCancellationPointStatement(NULL, NULL);
             break;
         }
         case OMPD_taskgroup: {
@@ -4497,22 +4487,6 @@ SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::p
                 SgOmpClause* sgclause = convertSimpleClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
             break;
             }
-            case OMPC_sections: {
-                SgOmpClause* sgclause = convertSimpleClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
-            break;
-            }
-            case OMPC_for: {
-                SgOmpClause* sgclause = convertSimpleClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
-            break;
-            }
-            case OMPC_taskgroup: {
-                SgOmpClause* sgclause = convertSimpleClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
-            break;
-            }
-            case OMPC_order: {
-                SgOmpClause* sgclause = convertOrderClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
-            break;
-            }
             default: {
                 cerr<<"error: unacceptable clause for combined parallel for directive"<<endl;
                 ROSE_ASSERT(false);
@@ -4560,6 +4534,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_metadirective:
         case OMPD_teams:
         case OMPD_cancellation_point:
+        case OMPD_cancel:
         case OMPD_taskgroup:
         case OMPD_barrier:
         case OMPD_master:

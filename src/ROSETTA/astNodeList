@@ -299,6 +299,7 @@ SgOmpOrderedStatement
 SgOmpParallelStatement
 SgOmpTeamsStatement
 SgOmpCancellationPointStatement
+SgOmpCancelStatement
 SgOmpTaskgroupStatement
 SgOmpDistributeStatement
 SgOmpRequiresStatement

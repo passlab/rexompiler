@@ -14,7 +14,7 @@ void foo(int iend, int ist)
     {
       printf("Iteration %d is carried out by thread %d\n",i, omp_get_thread_num());
     }
-#pragma omp cancellation point parallel
+#pragma omp cancel parallel
   }
 }
 
