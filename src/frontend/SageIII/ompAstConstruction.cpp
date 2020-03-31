@@ -39,6 +39,10 @@ static SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement*, std::pair<
 static void buildVariableList(SgOmpVariablesClause*);
 static SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpNowaitClause* convertNowaitClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpParallelClause* convertParallelClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpSectionsClause* convertSectionsClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpForClause* convertForClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpTaskgroupClause* convertTaskgroupClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpScheduleClause* convertScheduleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDistScheduleClause* convertDistScheduleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDefaultmapClause* convertDefaultmapClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
@@ -3244,6 +3248,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
     switch (directive_kind) {
         case OMPD_metadirective:
         case OMPD_teams:
+        case OMPD_cancellation_point:
         case OMPD_taskgroup:
         case OMPD_master:
         case OMPD_distribute:
@@ -3409,6 +3414,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             result = new SgOmpTeamsStatement(NULL, body);
             break;
         }
+        case OMPD_cancellation_point: {
+            result = new SgOmpCancellationPointStatement(NULL, body);
+            break;
+        }
         case OMPD_taskgroup: {
             result = new SgOmpTaskgroupStatement(NULL, body);
             break;
@@ -3513,6 +3522,22 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
                 convertNowaitClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
+            case OMPC_parallel: {
+                convertParallelClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            case OMPC_sections: {
+                convertSectionsClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            case OMPC_for: {
+                convertForClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            case OMPC_taskgroup: {
+                convertTaskgroupClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
             case OMPC_schedule: {
                 convertScheduleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
@@ -3543,6 +3568,54 @@ SgOmpNowaitClause* convertNowaitClause(SgOmpClauseBodyStatement* clause_body, st
     clause_body->get_clauses().push_back(sg_clause);
     sg_clause->set_parent(clause_body);
     printf("ompparser nowait clause is added.\n");
+    return result;
+}
+
+SgOmpParallelClause* convertParallelClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser Parallel clause is ready.\n");
+    SgOmpParallelClause* result = new SgOmpParallelClause();
+    ROSE_ASSERT(result);
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+    printf("ompparser Parallel clause is added.\n");
+    return result;
+}
+
+SgOmpSectionsClause* convertSectionsClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser Sections clause is ready.\n");
+    SgOmpSectionsClause* result = new SgOmpSectionsClause();
+    ROSE_ASSERT(result);
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+    printf("ompparser Sections clause is added.\n");
+    return result;
+}
+
+SgOmpForClause* convertForClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser For clause is ready.\n");
+    SgOmpForClause* result = new SgOmpForClause();
+    ROSE_ASSERT(result);
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+    printf("ompparser For clause is added.\n");
+    return result;
+}
+
+SgOmpTaskgroupClause* convertTaskgroupClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser Taskgroup clause is ready.\n");
+    SgOmpTaskgroupClause* result = new SgOmpTaskgroupClause();
+    ROSE_ASSERT(result);
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+    printf("ompparser Taskgroup clause is added.\n");
     return result;
 }
 
@@ -3668,6 +3741,10 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         }
         case OMPD_teams: {
             result = new SgOmpTeamsStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_cancellation_point: {
+            result = new SgOmpCancellationPointStatement(NULL, NULL);
             break;
         }
         case OMPD_taskgroup: {
@@ -4444,6 +4521,22 @@ SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::p
                 SgOmpClause* sgclause = convertNowaitClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
             break;
             }
+            case OMPC_parallel: {
+                SgOmpClause* sgclause = convertParallelClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
+            break;
+            }
+            case OMPC_sections: {
+                SgOmpClause* sgclause = convertSectionsClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
+            break;
+            }
+            case OMPC_for: {
+                SgOmpClause* sgclause = convertForClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
+            break;
+            }
+            case OMPC_taskgroup: {
+                SgOmpClause* sgclause = convertTaskgroupClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
+            break;
+            }
             case OMPC_order: {
                 SgOmpClause* sgclause = convertOrderClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
             break;
@@ -4494,6 +4587,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
     switch (directive_kind) {
         case OMPD_metadirective:
         case OMPD_teams:
+        case OMPD_cancellation_point:
         case OMPD_taskgroup:
         case OMPD_barrier:
         case OMPD_master:
@@ -4549,6 +4643,10 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_shared:
                 case OMPC_copyprivate:
                 case OMPC_nowait:
+                case OMPC_parallel:
+                case OMPC_sections:
+                case OMPC_for:
+                case OMPC_taskgroup:
                 case OMPC_reverse_offload:
                 case OMPC_unified_address:
                 case OMPC_unified_shared_memory:

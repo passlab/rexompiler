@@ -196,6 +196,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	array_init_2.c \
 	atoms-2.c \
 	barrier.c \
+        cancellation_point.c
 	copyprivate2.c \
 	critical.c \
 	critical1.c \

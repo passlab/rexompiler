@@ -2812,6 +2812,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpSectionsStatement:
                     case V_SgOmpParallelStatement:
                     case V_SgOmpTeamsStatement:
+                    case V_SgOmpCancellationPointStatement:
                     case V_SgOmpTaskgroupStatement:
                     case V_SgOmpDistributeStatement:
                     case V_SgOmpRequiresStatement:
@@ -8976,6 +8977,26 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         curprint(string(" nowait"));
         break;
       }
+    case V_SgOmpParallelClause:
+      {
+        curprint(string(" parallel"));
+        break;
+      }
+    case V_SgOmpSectionsClause:
+      {
+        curprint(string(" sections"));
+        break;
+      }
+    case V_SgOmpForClause:
+      {
+        curprint(string(" for"));
+        break;
+      }
+    case V_SgOmpTaskgroupClause:
+      {
+        curprint(string(" taskgroup"));
+        break;
+      }
     case V_SgOmpReverseOffloadClause:
       {
         curprint(string(" reverse_offload"));
@@ -9278,6 +9299,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpTeamsStatement:
       {
         curprint(string ("teams "));
+        break;
+      }
+    case V_SgOmpCancellationPointStatement:
+      {
+        curprint(string ("cancellation point "));
         break;
       }
     case V_SgOmpTaskgroupStatement:

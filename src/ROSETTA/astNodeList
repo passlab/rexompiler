@@ -298,6 +298,7 @@ SgOmpMetadirectiveStatement
 SgOmpOrderedStatement
 SgOmpParallelStatement
 SgOmpTeamsStatement
+SgOmpCancellationPointStatement
 SgOmpTaskgroupStatement
 SgOmpDistributeStatement
 SgOmpRequiresStatement
@@ -329,6 +330,10 @@ SgOmpPriorityClause
 SgOmpDeviceClause
 SgOmpLastprivateClause
 SgOmpNowaitClause
+SgOmpParallelClause
+SgOmpSectionsClause
+SgOmpForClause
+SgOmpTaskgroupClause
 SgOmpNumThreadsClause
 SgOmpNumTeamsClause
 SgOmpHintClause
