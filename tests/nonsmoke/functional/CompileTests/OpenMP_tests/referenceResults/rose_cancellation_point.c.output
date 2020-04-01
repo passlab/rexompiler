@@ -1,4 +1,4 @@
 #pragma omp parallel 
 #pragma omp single 
-#pragma omp cancellation point  parallel
 #pragma omp for  nowait schedule(static)
+#pragma omp cancellation point parallel
