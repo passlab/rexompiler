@@ -2529,9 +2529,13 @@ void transOmpMetadirective(SgNode* node)
     std::cout << "Metadirective IR is caught.\n";
 
 
-    // insert a function for mapper
-    std::string mapper_name = "foo";
+    // Insert a function for mapper
+    // Create the mapper function name
+    std::string mapper_name = "goooooo";
     std::string mapper_function_name = "__DECLARE_MAPPER_FUNCTION_" + mapper_name;
+
+    // Set up the working scope, if it's inside a function, it's local.
+    // Otherwise, it's global.
     SgNode* parent = target->get_parent();
     SgScopeStatement* mapper_scope = NULL;
     while (parent != NULL && !isSgFunctionDeclaration(parent)) {
@@ -2543,10 +2547,16 @@ void transOmpMetadirective(SgNode* node)
     else {
         mapper_scope = SageInterface::getGlobalScope(parent);
     };
+
+    // Create the function node, which needs name, return type, parameters, scope.
     SgName func_name (mapper_name.c_str());
-    SgFunctionParameterList *parameterList = buildFunctionParameterList();
-    SgFunctionDeclaration* mapper_function = createFuncSkeleton(mapper_function_name,SgTypeVoid::createType(), parameterList, mapper_scope);
-    ROSE_ASSERT(mapper_scope->lookup_function_symbol(mapper_function->get_name())); 
+    SgFunctionParameterList *parameter_list = buildFunctionParameterList();
+    SgFunctionDeclaration* mapper_function = createFuncSkeleton(mapper_function_name, SgTypeVoid::createType(), parameter_list, mapper_scope);
+
+    // Verify the function and scope
+    ROSE_ASSERT(mapper_scope->lookup_function_symbol(mapper_function->get_name()));
+    printf("Function generated\n");
+    // TODO: implement a symbol table to match mapper and function.
 
 
     SgIfStmt* root_if_statement = NULL;
