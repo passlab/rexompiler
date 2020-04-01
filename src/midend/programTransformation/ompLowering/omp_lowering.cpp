@@ -12,6 +12,39 @@ using namespace SageInterface;
 using namespace SageBuilder;
 using namespace OmpSupport;
 
+//! Creates a non-member function.
+static
+SgFunctionDeclaration *
+createFuncSkeleton (const string& name, SgType* ret_type,
+                    SgFunctionParameterList* params, SgScopeStatement* scope)
+   {
+     ROSE_ASSERT(scope != NULL);
+     ROSE_ASSERT(isSgGlobal(scope)!=NULL);
+     SgFunctionDeclaration* func;
+     SgProcedureHeaderStatement* fortranRoutine;
+  // Liao 12/13/2007, generate SgProcedureHeaderStatement for Fortran code
+     if (SageInterface::is_Fortran_language()) 
+        {
+          fortranRoutine = SageBuilder::buildProcedureHeaderStatement(name.c_str(),ret_type, params, SgProcedureHeaderStatement::e_subroutine_subprogram_kind,scope);
+          func = isSgFunctionDeclaration(fortranRoutine);  
+        }
+       else
+        {
+          func = SageBuilder::buildDefiningFunctionDeclaration(name,ret_type,params,scope);
+        }
+
+     ROSE_ASSERT (func != NULL);
+
+   SgFunctionSymbol* func_symbol = scope->lookup_function_symbol(func->get_name());
+   ROSE_ASSERT(func_symbol != NULL);
+   if (Outliner::enable_debug)
+   {
+     printf("Found function symbol in %p for function:%s\n",scope,func->get_name().getString().c_str());
+   }
+     return func;
+   }
+
+// ===========================================================
 // This is a hack to pass the number of CUDA loop iteration count around
 // When translating "omp target" , we need to calculate the number of thread blocks needed.
 // To do that, we need to know how many CUDA threads are needed.
@@ -2494,6 +2527,27 @@ void transOmpMetadirective(SgNode* node)
 
     cutPreprocessingInfo(target, PreprocessingInfo::inside, save_buf_inside) ;
     std::cout << "Metadirective IR is caught.\n";
+
+
+    // insert a function for mapper
+    std::string mapper_name = "foo";
+    std::string mapper_function_name = "__DECLARE_MAPPER_FUNCTION_" + mapper_name;
+    SgNode* parent = target->get_parent();
+    SgScopeStatement* mapper_scope = NULL;
+    while (parent != NULL && !isSgFunctionDeclaration(parent)) {
+        parent = parent->get_parent();
+    };
+    if (isSgFunctionDeclaration(parent)) {
+        mapper_scope = SageInterface::getScope(parent);
+    }
+    else {
+        mapper_scope = SageInterface::getGlobalScope(parent);
+    };
+    SgName func_name (mapper_name.c_str());
+    SgFunctionParameterList *parameterList = buildFunctionParameterList();
+    SgFunctionDeclaration* mapper_function = createFuncSkeleton(mapper_function_name,SgTypeVoid::createType(), parameterList, mapper_scope);
+    ROSE_ASSERT(mapper_scope->lookup_function_symbol(mapper_function->get_name())); 
+
 
     SgIfStmt* root_if_statement = NULL;
     SgStatement* variant_directive;
