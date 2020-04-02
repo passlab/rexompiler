@@ -3459,7 +3459,7 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             break;
         }
         case OMPD_metadirective: {
-            result = new SgOmpMetadirectiveStatement(NULL, body);
+            result = new SgOmpMetadirectiveStatement(NULL, body, false);
             break;
         }
         case OMPD_end: {
@@ -3708,7 +3708,7 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
             break;
         }
         case OMPD_metadirective: {
-            result = new SgOmpMetadirectiveStatement(NULL, NULL);
+            result = new SgOmpMetadirectiveStatement(NULL, NULL, false);
             break;
         }
         case OMPD_end: {
@@ -4039,6 +4039,11 @@ SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement* clause_body, std::p
     if (implementation_extension_string.size()) {
         implementation_extension = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), implementation_extension_string.c_str());
     };
+
+    SgExpression* mapper = ((SgOmpMetadirectiveStatement*)current_OpenMPIR_to_SageIII.first)->get_mapper();
+    bool useDefault = ((SgOmpMetadirectiveStatement*)current_OpenMPIR_to_SageIII.first)->get_useDefault();
+    ((SgOmpMetadirectiveStatement*)current_OpenMPIR_to_SageIII.first)->set_mapper(implementation_extension);
+    ((SgOmpMetadirectiveStatement*)current_OpenMPIR_to_SageIII.first)->set_useDefault(false);
 
     SgOmpWhenClause* result = new SgOmpWhenClause(user_condition, user_condition_score, device_arch, device_isa, sg_device_kind, sg_implementation_vendor, implementation_user_defined, implementation_extension, variant_directive);
     std::vector<std::pair<std::string, OpenMPDirective*> >* construct_directive = ((OpenMPWhenClause*)current_omp_clause)->getConstructDirective();

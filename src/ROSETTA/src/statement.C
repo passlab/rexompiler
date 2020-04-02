@@ -4245,6 +4245,15 @@ Grammar::setUpStatements ()
     OmpCriticalStatement.setDataPrototype ( "SgName", "name", "= \"\"",
                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
+//    OmpMetadirectiveStatement.setDataPrototype ( "SgExpression*", "external_mapper", "= NULL",
+  //                CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+
+    OmpMetadirectiveStatement.setDataPrototype ( "SgExpression*", "mapper", "= NULL",
+                  NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+    OmpMetadirectiveStatement.setDataPrototype ( "bool", "useDefault", "= false",
+                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
     // omp clause-body : e.g: parallel clause \n  body 
     // having both 
     OmpClauseBodyStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
