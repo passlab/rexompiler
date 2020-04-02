@@ -66,6 +66,10 @@ Grammar::setUpNodes ()
         */
      NEW_TERMINAL_MACRO (OmpOrderedClause, "OmpOrderedClause", "OmpOrderedClauseTag" );
      NEW_TERMINAL_MACRO (OmpNowaitClause, "OmpNowaitClause", "OmpNowaitClauseTag" );
+     NEW_TERMINAL_MACRO (OmpParallelClause, "OmpParallelClause", "OmpParallelClauseTag" );
+     NEW_TERMINAL_MACRO (OmpSectionsClause, "OmpSectionsClause", "OmpSectionsClauseTag" );
+     NEW_TERMINAL_MACRO (OmpForClause, "OmpForClause", "OmpForClauseTag" );
+     NEW_TERMINAL_MACRO (OmpTaskgroupClause, "OmpTaskgroupClause", "OmpTaskgroupClauseTag" );
      NEW_TERMINAL_MACRO (OmpBeginClause, "OmpBeginClause", "OmpBeginClauseTag" );
      NEW_TERMINAL_MACRO (OmpEndClause, "OmpEndClause", "OmpEndClauseTag" );
      NEW_TERMINAL_MACRO (OmpUntiedClause, "OmpUntiedClause", "OmpUntiedClauseTag" );
@@ -132,6 +136,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpDefaultmapClause, "OmpDefaultmapClause", "OmpDefaultmapClauseTag" );
      NEW_TERMINAL_MACRO (OmpExtImplementationDefinedRequirementClause, "OmpExtImplementationDefinedRequirementClause", "OmpExtImplementationDefinedRequirementClauseTag" );
      NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpBeginClause |OmpEndClause | OmpUntiedClause |
+         OmpParallelClause | OmpSectionsClause | OmpForClause | OmpTaskgroupClause |
          OmpDefaultClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpDistScheduleClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpReverseOffloadClause | OmpUnifiedAddressClause | OmpUnifiedSharedMemoryClause | OmpAtomicDefaultMemOrderClause | OmpDynamicAllocatorsClause | OmpExtImplementationDefinedRequirementClause | OmpDefaultmapClause |
          OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause ,
          "OmpClause", "OmpClauseTag", false);

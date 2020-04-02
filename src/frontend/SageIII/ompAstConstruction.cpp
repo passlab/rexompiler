@@ -38,7 +38,7 @@ static SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDir
 static SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static void buildVariableList(SgOmpVariablesClause*);
 static SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
-static SgOmpNowaitClause* convertNowaitClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpClause* convertSimpleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpScheduleClause* convertScheduleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDistScheduleClause* convertDistScheduleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDefaultmapClause* convertDefaultmapClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
@@ -740,6 +740,11 @@ namespace OmpSupport
       case OMPC_IF_MODIFIER_simd:
         {
           result = SgOmpClause::e_omp_if_simd;
+          break;
+        }
+      case OMPC_IF_MODIFIER_cancel:
+        {
+          result = SgOmpClause::e_omp_if_cancel;
           break;
         }
       case OMPC_IF_MODIFIER_target:
@@ -3264,6 +3269,8 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
             result = convertCombinedBodyDirective(current_OpenMPIR_to_SageIII);
             break;
         }
+        case OMPD_cancellation_point:
+        case OMPD_cancel:
         case OMPD_requires: {
             result = convertNonBodyDirective(current_OpenMPIR_to_SageIII);
             break;
@@ -3282,7 +3289,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
     }
     setOneSourcePositionForTransformation(result);
     // handle the SgFilePtr
-    if (directive_kind !=OMPD_requires){
+    if (directive_kind != OMPD_requires && directive_kind != OMPD_cancellation_point && directive_kind != OMPD_cancel){
         copyStartFileInfo (current_OpenMPIR_to_SageIII.first, result, NULL);
         copyEndFileInfo (current_OpenMPIR_to_SageIII.first, result, NULL);
         replaceOmpPragmaWithOmpStatement(current_OpenMPIR_to_SageIII.first, result);
@@ -3333,6 +3340,27 @@ SgOmpBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*,
     return result;
 }
 
+SgOmpClause* convertSimpleClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser simple clause is ready.\n");
+    SgOmpClause* sg_clause = NULL;
+    SgGlobal* global = SageInterface::getGlobalScope(current_OpenMPIR_to_SageIII.first);
+    OpenMPClauseKind clause_kind = current_omp_clause->getKind();
+    switch (clause_kind) {
+        case OMPC_nowait: {
+            sg_clause = new SgOmpNowaitClause();
+            break;
+        }
+        default: {
+            cerr<<"error: unknown clause "<<endl;
+            ROSE_ASSERT(false);
+        }
+    };
+    setOneSourcePositionForTransformation(sg_clause);
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+    return sg_clause;
+}
+
 SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
     
     OpenMPDirectiveKind directive_kind = current_OpenMPIR_to_SageIII.second->getKind();
@@ -3342,6 +3370,14 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
     switch (directive_kind) {
         case OMPD_requires: {
             result = new SgOmpRequiresStatement();
+            break;
+        }
+        case OMPD_cancellation_point: {
+            result = new SgOmpCancellationPointStatement();
+            break;
+        }
+        case OMPD_cancel: {
+            result = new SgOmpCancelStatement();
             break;
         }
         default: {
@@ -3377,6 +3413,22 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
             }
             case OMPC_ext_implementation_defined_requirement: {
                 sg_clause = convertExtImplementationDefinedRequirementClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            case OMPC_parallel: {
+                sg_clause = new SgOmpParallelClause();
+                break;
+            }
+            case OMPC_sections: {
+                sg_clause = new SgOmpSectionsClause();
+                break;
+            }
+            case OMPC_for: {
+                sg_clause = new SgOmpForClause();
+                break;
+            }
+            case OMPC_taskgroup: {
+                sg_clause = new SgOmpTaskgroupClause();
                 break;
             }
             default: {
@@ -3510,7 +3562,7 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
                 break;
             }
             case OMPC_nowait: {
-                convertNowaitClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertSimpleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_schedule: {
@@ -3533,19 +3585,6 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
 
     return result;
 }
-
-SgOmpNowaitClause* convertNowaitClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
-    printf("ompparser nowait clause is ready.\n");
-    SgOmpNowaitClause* result = new SgOmpNowaitClause();
-    ROSE_ASSERT(result);
-    setOneSourcePositionForTransformation(result);
-    SgOmpClause* sg_clause = result;
-    clause_body->get_clauses().push_back(sg_clause);
-    sg_clause->set_parent(clause_body);
-    printf("ompparser nowait clause is added.\n");
-    return result;
-}
-
 
 SgOmpAtomicDefaultMemOrderClause* convertAtomicDefaultMemOrderClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     printf("ompparser atomic_default_mem_order clause is ready.\n");
@@ -4441,11 +4480,11 @@ SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::p
             break;
             }
             case OMPC_nowait: {
-                SgOmpClause* sgclause = convertNowaitClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
+                SgOmpClause* sgclause = convertSimpleClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
             break;
             }
-            case OMPC_order: {
-                SgOmpClause* sgclause = convertOrderClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
+            case OMPC_parallel: {
+                SgOmpClause* sgclause = convertSimpleClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
             break;
             }
             default: {
@@ -4494,6 +4533,8 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
     switch (directive_kind) {
         case OMPD_metadirective:
         case OMPD_teams:
+        case OMPD_cancellation_point:
+        case OMPD_cancel:
         case OMPD_taskgroup:
         case OMPD_barrier:
         case OMPD_master:
@@ -4549,6 +4590,10 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_shared:
                 case OMPC_copyprivate:
                 case OMPC_nowait:
+                case OMPC_parallel:
+                case OMPC_sections:
+                case OMPC_for:
+                case OMPC_taskgroup:
                 case OMPC_reverse_offload:
                 case OMPC_unified_address:
                 case OMPC_unified_shared_memory:

@@ -19729,6 +19729,18 @@ SgOmpTeamsStatement::post_construction_initialization()
    {}
 SOURCE_OMP_TEAMS_STATEMENT_END
 
+SOURCE_OMP_CANCELLATION_POINT_STATEMENT_START
+void
+SgOmpCancellationPointStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_CANCELLATION_POINT_STATEMENT_END
+
+SOURCE_OMP_CANCEL_STATEMENT_START
+void
+SgOmpCancelStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_CANCEL_STATEMENT_END
+
 SOURCE_OMP_TASKGROUP_STATEMENT_START
 void
 SgOmpTaskgroupStatement::post_construction_initialization()

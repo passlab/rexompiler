@@ -2812,6 +2812,8 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpSectionsStatement:
                     case V_SgOmpParallelStatement:
                     case V_SgOmpTeamsStatement:
+                    case V_SgOmpCancellationPointStatement:
+                    case V_SgOmpCancelStatement:
                     case V_SgOmpTaskgroupStatement:
                     case V_SgOmpDistributeStatement:
                     case V_SgOmpRequiresStatement:
@@ -8880,6 +8882,9 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_simd) {
         curprint(string("simd : "));
     }
+    if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_cancel) {
+        curprint(string("cancel : "));
+    }
     if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_target) {
         curprint(string("target : "));
     }
@@ -8974,6 +8979,26 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpNowaitClause:
       {
         curprint(string(" nowait"));
+        break;
+      }
+    case V_SgOmpParallelClause:
+      {
+        curprint(string(" parallel"));
+        break;
+      }
+    case V_SgOmpSectionsClause:
+      {
+        curprint(string(" sections"));
+        break;
+      }
+    case V_SgOmpForClause:
+      {
+        curprint(string(" for"));
+        break;
+      }
+    case V_SgOmpTaskgroupClause:
+      {
+        curprint(string(" taskgroup"));
         break;
       }
     case V_SgOmpReverseOffloadClause:
@@ -9278,6 +9303,16 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpTeamsStatement:
       {
         curprint(string ("teams "));
+        break;
+      }
+    case V_SgOmpCancellationPointStatement:
+      {
+        curprint(string ("cancellation point "));
+        break;
+      }
+    case V_SgOmpCancelStatement:
+      {
+        curprint(string ("cancel "));
         break;
       }
     case V_SgOmpTaskgroupStatement:
