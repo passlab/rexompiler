@@ -333,6 +333,9 @@ SgOmpDeviceClause
 SgOmpLastprivateClause
 SgOmpNowaitClause
 SgOmpReadClause
+SgOmpWriteClause
+SgOmpUpdateClause
+SgOmpCaptureClause
 SgOmpParallelClause
 SgOmpSectionsClause
 SgOmpForClause

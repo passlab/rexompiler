@@ -8987,6 +8987,21 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         curprint(string(" read"));
         break;
       }
+    case V_SgOmpWriteClause:
+      {
+        curprint(string(" write"));
+        break;
+      }
+    case V_SgOmpUpdateClause:
+      {
+        curprint(string(" update"));
+        break;
+      }
+    case V_SgOmpCaptureClause:
+      {
+        curprint(string(" capture"));
+        break;
+      }
     case V_SgOmpParallelClause:
       {
         curprint(string(" parallel"));
