@@ -2813,6 +2813,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpParallelStatement:
                     case V_SgOmpTeamsStatement:
                     case V_SgOmpCancellationPointStatement:
+                    case V_SgOmpDeclareMapperStatement:
                     case V_SgOmpCancelStatement:
                     case V_SgOmpTaskgroupStatement:
                     case V_SgOmpDistributeStatement:
@@ -9308,6 +9309,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpCancellationPointStatement:
       {
         curprint(string ("cancellation point "));
+        break;
+      }
+    case V_SgOmpDeclareMapperStatement:
+      {
+        curprint(string ("declare mapper "));
         break;
       }
     case V_SgOmpCancelStatement:

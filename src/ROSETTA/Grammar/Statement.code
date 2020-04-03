@@ -19735,6 +19735,12 @@ SgOmpCancellationPointStatement::post_construction_initialization()
    {}
 SOURCE_OMP_CANCELLATION_POINT_STATEMENT_END
 
+SOURCE_OMP_DECLARE_MAPPER_STATEMENT_START
+void
+SgOmpDeclareMapperStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_DECLARE_MAPPER_STATEMENT_END
+
 SOURCE_OMP_CANCEL_STATEMENT_START
 void
 SgOmpCancelStatement::post_construction_initialization()

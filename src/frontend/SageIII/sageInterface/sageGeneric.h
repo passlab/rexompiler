@@ -341,6 +341,7 @@ namespace sg
     GEN_VISIT(SgOmpParallelStatement)
     GEN_VISIT(SgOmpTeamsStatement)
     GEN_VISIT(SgOmpCancellationPointStatement)
+    GEN_VISIT(SgOmpDeclareMapperStatement)
     GEN_VISIT(SgOmpCancelStatement)
     GEN_VISIT(SgOmpTaskgroupStatement)
     GEN_VISIT(SgOmpDistributeStatement)

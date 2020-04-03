@@ -3269,6 +3269,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
             result = convertCombinedBodyDirective(current_OpenMPIR_to_SageIII);
             break;
         }
+        case OMPD_declare_mapper:
         case OMPD_cancellation_point:
         case OMPD_cancel:
         case OMPD_requires: {
@@ -3289,7 +3290,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
     }
     setOneSourcePositionForTransformation(result);
     // handle the SgFilePtr
-    if (directive_kind != OMPD_requires && directive_kind != OMPD_cancellation_point && directive_kind != OMPD_cancel){
+    if (directive_kind != OMPD_requires && directive_kind != OMPD_cancellation_point && directive_kind != OMPD_cancel && directive_kind != OMPD_declare_mapper){
         copyStartFileInfo (current_OpenMPIR_to_SageIII.first, result, NULL);
         copyEndFileInfo (current_OpenMPIR_to_SageIII.first, result, NULL);
         replaceOmpPragmaWithOmpStatement(current_OpenMPIR_to_SageIII.first, result);
@@ -3374,6 +3375,10 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
         }
         case OMPD_cancellation_point: {
             result = new SgOmpCancellationPointStatement();
+            break;
+        }
+        case OMPD_declare_mapper: {
+            result = new SgOmpDeclareMapperStatement();
             break;
         }
         case OMPD_cancel: {
@@ -4534,6 +4539,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_metadirective:
         case OMPD_teams:
         case OMPD_cancellation_point:
+        case OMPD_declare_mapper:
         case OMPD_cancel:
         case OMPD_taskgroup:
         case OMPD_barrier:
