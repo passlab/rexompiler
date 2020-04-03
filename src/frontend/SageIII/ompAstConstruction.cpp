@@ -3249,6 +3249,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
     switch (directive_kind) {
         case OMPD_metadirective:
         case OMPD_teams:
+        case OMPD_atomic:
         case OMPD_taskgroup:
         case OMPD_master:
         case OMPD_distribute:
@@ -3349,6 +3350,10 @@ SgOmpClause* convertSimpleClause(SgOmpClauseBodyStatement* clause_body, std::pai
     switch (clause_kind) {
         case OMPC_nowait: {
             sg_clause = new SgOmpNowaitClause();
+            break;
+        }
+        case OMPC_read: {
+            sg_clause = new SgOmpReadClause();
             break;
         }
         default: {
@@ -3466,6 +3471,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             result = new SgOmpTeamsStatement(NULL, body);
             break;
         }
+        case OMPD_atomic: {
+            result = new SgOmpAtomicStatement(NULL, body);
+            break;
+        }
         case OMPD_taskgroup: {
             result = new SgOmpTaskgroupStatement(NULL, body);
             break;
@@ -3566,6 +3575,7 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
                 convertWhenClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
+            case OMPC_read:          
             case OMPC_nowait: {
                 convertSimpleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
@@ -3712,6 +3722,10 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         }
         case OMPD_teams: {
             result = new SgOmpTeamsStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_atomic: {
+            result = new SgOmpAtomicStatement(NULL, NULL);
             break;
         }
         case OMPD_taskgroup: {
@@ -4538,6 +4552,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
     switch (directive_kind) {
         case OMPD_metadirective:
         case OMPD_teams:
+        case OMPD_atomic:
         case OMPD_cancellation_point:
         case OMPD_declare_mapper:
         case OMPD_cancel:
@@ -4596,6 +4611,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_shared:
                 case OMPC_copyprivate:
                 case OMPC_nowait:
+                case OMPC_read:
                 case OMPC_parallel:
                 case OMPC_sections:
                 case OMPC_for:

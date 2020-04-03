@@ -584,6 +584,7 @@ namespace sg
     // - OMP Nodes
     GEN_VISIT(SgOmpOrderedClause)
     GEN_VISIT(SgOmpNowaitClause)
+    GEN_VISIT(SgOmpReadClause)
     GEN_VISIT(SgOmpReverseOffloadClause)
     GEN_VISIT(SgOmpUnifiedAddressClause)
     GEN_VISIT(SgOmpUnifiedSharedMemoryClause)

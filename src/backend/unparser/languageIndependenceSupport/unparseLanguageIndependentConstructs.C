@@ -8982,6 +8982,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         curprint(string(" nowait"));
         break;
       }
+    case V_SgOmpReadClause:
+      {
+        curprint(string(" read"));
+        break;
+      }
     case V_SgOmpParallelClause:
       {
         curprint(string(" parallel"));
