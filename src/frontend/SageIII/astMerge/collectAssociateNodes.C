@@ -1765,6 +1765,11 @@ addAssociatedNodes ( SgNode* node, set<SgNode*> & nodeList, bool markMemberNodes
           case V_SgOmpWriteClause              :
           case V_SgOmpUpdateClause             :
           case V_SgOmpCaptureClause            :
+          case V_SgOmpSeqCstClause             : 
+          case V_SgOmpAcqRelClause             : 
+          case V_SgOmpReleaseClause            : 
+          case V_SgOmpAcquireClause            : 
+          case V_SgOmpRelaxedClause            :
           case V_SgOmpParallelClause           :  
           case V_SgOmpSectionsClause           :  
           case V_SgOmpForClause                :  

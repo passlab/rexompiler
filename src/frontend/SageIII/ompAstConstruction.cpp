@@ -3368,6 +3368,26 @@ SgOmpClause* convertSimpleClause(SgOmpClauseBodyStatement* clause_body, std::pai
             sg_clause = new SgOmpCaptureClause();
             break;
         }
+        case OMPC_seq_cst: {
+            sg_clause = new SgOmpSeqCstClause();
+            break;
+        }
+        case OMPC_acq_rel: {
+            sg_clause = new SgOmpAcqRelClause();
+            break;
+        }
+        case OMPC_release: {
+            sg_clause = new SgOmpReleaseClause();
+            break;
+        }
+        case OMPC_acquire: {
+            sg_clause = new SgOmpAcquireClause();
+            break;
+        }
+        case OMPC_relaxed: {
+            sg_clause = new SgOmpRelaxedClause();
+            break;
+        }
         default: {
             cerr<<"error: unknown clause "<<endl;
             ROSE_ASSERT(false);
@@ -3590,7 +3610,12 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             case OMPC_read:
             case OMPC_write:
             case OMPC_update:
-            case OMPC_capture:          
+            case OMPC_capture:
+            case OMPC_seq_cst:
+            case OMPC_acq_rel:
+            case OMPC_release:
+            case OMPC_acquire:
+            case OMPC_relaxed:         
             case OMPC_nowait: {
                 convertSimpleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
@@ -4630,6 +4655,11 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_write:
                 case OMPC_update:
                 case OMPC_capture:
+                case OMPC_seq_cst:
+                case OMPC_acq_rel:
+                case OMPC_release:
+                case OMPC_acquire:
+                case OMPC_relaxed:
                 case OMPC_parallel:
                 case OMPC_sections:
                 case OMPC_for:

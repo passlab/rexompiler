@@ -34,9 +34,9 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	#alignment.c \
 	array_init.c \
 	array_init_2.c \
-	#atomic.c \
+	atomic.c \
 	atoms-2.c \
-	#atomic-3.c \
+	atomic-3.c \
 	barrier.c \
 	#collapse.c \
 	#copyin.c \
@@ -195,6 +195,8 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	array_init.c \
 	array_init_2.c \
 	atoms-2.c \
+        atomic.c \
+	atomic-3.c \
 	barrier.c \
 	cancel.c \
 	cancellation_point.c \

@@ -9002,6 +9002,31 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         curprint(string(" capture"));
         break;
       }
+    case V_SgOmpSeqCstClause:
+      {
+        curprint(string(" seq_cst"));
+        break;
+      }
+    case V_SgOmpAcqRelClause:
+      {
+        curprint(string(" acq_rel"));
+        break;
+      }
+    case V_SgOmpReleaseClause:
+      {
+        curprint(string(" release"));
+        break;
+      }
+    case V_SgOmpAcquireClause:
+      {
+        curprint(string(" acquire"));
+        break;
+      }
+    case V_SgOmpRelaxedClause:
+      {
+        curprint(string(" relaxed"));
+        break;
+      }
     case V_SgOmpParallelClause:
       {
         curprint(string(" parallel"));

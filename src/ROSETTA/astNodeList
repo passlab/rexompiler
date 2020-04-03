@@ -336,6 +336,11 @@ SgOmpReadClause
 SgOmpWriteClause
 SgOmpUpdateClause
 SgOmpCaptureClause
+SgOmpSeqCstClause
+SgOmpAcqRelClause
+SgOmpReleaseClause
+SgOmpAcquireClause
+SgOmpRelaxedClause
 SgOmpParallelClause
 SgOmpSectionsClause
 SgOmpForClause
