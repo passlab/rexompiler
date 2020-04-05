@@ -19777,6 +19777,12 @@ SgOmpScanStatement::post_construction_initialization()
    {}
 SOURCE_OMP_SCAN_STATEMENT_END
 
+SOURCE_OMP_TASKLOOP_STATEMENT_START
+void
+SgOmpTaskloopStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TASKLOOP_STATEMENT_END
+
 SOURCE_OMP_METADIRECTIVE_STATEMENT_START
 void
 SgOmpMetadirectiveStatement::post_construction_initialization()

@@ -1780,11 +1780,14 @@ addAssociatedNodes ( SgNode* node, set<SgNode*> & nodeList, bool markMemberNodes
           case V_SgOmpDynamicAllocatorsClause       :
           case V_SgOmpAtomicDefaultMemOrderClause   :
           case V_SgOmpExtImplementationDefinedRequirementClause :
-          case V_SgOmpNumThreadsClause :
-          case V_SgOmpHintClause :
-          case V_SgOmpNumTeamsClause :
-          case V_SgOmpOrderClause :
-          case V_SgOmpBindClause :
+          case V_SgOmpNumThreadsClause  :
+          case V_SgOmpHintClause        :
+          case V_SgOmpNumTeamsClause    :
+          case V_SgOmpGrainsizeClause   :
+          case V_SgOmpNumTasksClause    :
+          case V_SgOmpNogroupClause     :
+          case V_SgOmpOrderClause       :
+          case V_SgOmpBindClause        :
           case V_SgOmpThreadLimitClause :  
           case V_SgOmpOrderedClause    :  
           case V_SgOmpOrderedStatement :  

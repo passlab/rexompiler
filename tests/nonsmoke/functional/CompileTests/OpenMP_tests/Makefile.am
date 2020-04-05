@@ -303,6 +303,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	target.c \
 	target1.c \
 	taskgroup.c \
+	taskloop.c \
         taskyield.c \
 	teams.c \
 	twoRegions.c \

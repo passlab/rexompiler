@@ -306,6 +306,7 @@ SgOmpDistributeStatement
 SgOmpRequiresStatement
 SgOmpLoopStatement
 SgOmpScanStatement
+SgOmpTaskloopStatement
 SgOmpSectionStatement
 SgOmpSectionsStatement
 SgOmpSingleStatement
@@ -347,6 +348,9 @@ SgOmpForClause
 SgOmpTaskgroupClause
 SgOmpNumThreadsClause
 SgOmpNumTeamsClause
+SgOmpGrainsizeClause
+SgOmpNumTasksClause
+SgOmpNogroupClause
 SgOmpHintClause
 SgOmpReverseOffloadClause
 SgOmpUnifiedAddressClause

@@ -2820,6 +2820,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpRequiresStatement:
                     case V_SgOmpLoopStatement:
                     case V_SgOmpScanStatement:
+                    case V_SgOmpTaskloopStatement:
                     case V_SgOmpSimdStatement:
                     case V_SgOmpTargetStatement:
                     case V_SgOmpTargetDataStatement:
@@ -8883,6 +8884,9 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_simd) {
         curprint(string("simd : "));
     }
+    if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_taskloop) {
+        curprint(string("taskloop : "));
+    }
     if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_cancel) {
         curprint(string("cancel : "));
     }
@@ -8912,6 +8916,10 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     curprint(string(" num_threads("));
   else if (isSgOmpNumTeamsClause(c))
     curprint(string(" num_teams("));
+  else if (isSgOmpGrainsizeClause(c))
+    curprint(string(" grainsize("));
+  else if (isSgOmpNumTasksClause(c))
+    curprint(string(" num_tasks("));
   else if (isSgOmpThreadLimitClause(c))
     curprint(string(" thread_limit("));
   else if (isSgOmpHintClause(c))
@@ -8980,6 +8988,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpNowaitClause:
       {
         curprint(string(" nowait"));
+        break;
+      }
+    case V_SgOmpNogroupClause:
+      {
+        curprint(string(" nogroup"));
         break;
       }
     case V_SgOmpReadClause:
@@ -9130,6 +9143,8 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpFinalClause:  
     case V_SgOmpPriorityClause:  
     case V_SgOmpNumThreadsClause:
+    case V_SgOmpGrainsizeClause:
+    case V_SgOmpNumTasksClause:
     case V_SgOmpNumTeamsClause:  
     case V_SgOmpHintClause: 
     case V_SgOmpThreadLimitClause:
@@ -9384,6 +9399,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpScanStatement:
       {
         curprint(string ("scan "));
+        break;
+      }
+    case V_SgOmpTaskloopStatement:
+      {
+        curprint(string ("taskloop "));
         break;
       }
     case V_SgOmpSimdStatement:
