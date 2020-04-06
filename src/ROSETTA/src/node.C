@@ -71,7 +71,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpWriteClause, "OmpWriteClause", "OmpWriteClauseTag" );
      NEW_TERMINAL_MACRO (OmpUpdateClause, "OmpUpdateClause", "OmpUpdateClauseTag" );
      NEW_TERMINAL_MACRO (OmpCaptureClause, "OmpCaptureClause", "OmpCaptureClauseTag" );
-    NEW_TERMINAL_MACRO (OmpSeqCstClause, "OmpSeqCstClause", "OmpSeqCstClauseTag" );
+     NEW_TERMINAL_MACRO (OmpSeqCstClause, "OmpSeqCstClause", "OmpSeqCstClauseTag" );
      NEW_TERMINAL_MACRO (OmpAcqRelClause, "OmpAcqRelClause", "OmpAcqRelClauseTag" );
      NEW_TERMINAL_MACRO (OmpReleaseClause, "OmpReleaseClause", "OmpReleaseClauseTag" );
      NEW_TERMINAL_MACRO (OmpAcquireClause, "OmpAcquireClause", "OmpAcquireClauseTag" );
