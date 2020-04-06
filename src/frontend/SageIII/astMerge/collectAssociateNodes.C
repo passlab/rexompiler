@@ -1761,6 +1761,15 @@ addAssociatedNodes ( SgNode* node, set<SgNode*> & nodeList, bool markMemberNodes
           case V_SgOmpLastprivateClause        :  
           case V_SgOmpMasterStatement          :  
           case V_SgOmpNowaitClause             :
+          case V_SgOmpReadClause               :
+          case V_SgOmpWriteClause              :
+          case V_SgOmpUpdateClause             :
+          case V_SgOmpCaptureClause            :
+          case V_SgOmpSeqCstClause             : 
+          case V_SgOmpAcqRelClause             : 
+          case V_SgOmpReleaseClause            : 
+          case V_SgOmpAcquireClause            : 
+          case V_SgOmpRelaxedClause            :
           case V_SgOmpParallelClause           :  
           case V_SgOmpSectionsClause           :  
           case V_SgOmpForClause                :  
@@ -1771,11 +1780,14 @@ addAssociatedNodes ( SgNode* node, set<SgNode*> & nodeList, bool markMemberNodes
           case V_SgOmpDynamicAllocatorsClause       :
           case V_SgOmpAtomicDefaultMemOrderClause   :
           case V_SgOmpExtImplementationDefinedRequirementClause :
-          case V_SgOmpNumThreadsClause :
-          case V_SgOmpHintClause :
-          case V_SgOmpNumTeamsClause :
-          case V_SgOmpOrderClause :
-          case V_SgOmpBindClause :
+          case V_SgOmpNumThreadsClause  :
+          case V_SgOmpHintClause        :
+          case V_SgOmpNumTeamsClause    :
+          case V_SgOmpGrainsizeClause   :
+          case V_SgOmpNumTasksClause    :
+          case V_SgOmpNogroupClause     :
+          case V_SgOmpOrderClause       :
+          case V_SgOmpBindClause        :
           case V_SgOmpThreadLimitClause :  
           case V_SgOmpOrderedClause    :  
           case V_SgOmpOrderedStatement :  

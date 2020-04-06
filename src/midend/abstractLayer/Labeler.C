@@ -299,12 +299,14 @@ int Labeler::isLabelRelevantNode(SgNode* node) {
   case V_SgOmpMetadirectiveStatement:
   case V_SgOmpTeamsStatement:
   case V_SgOmpCancellationPointStatement:
+  case V_SgOmpDeclareMapperStatement:
   case V_SgOmpCancelStatement:
   case V_SgOmpTaskgroupStatement:
   case V_SgOmpDistributeStatement:
   case V_SgOmpRequiresStatement:
   case V_SgOmpLoopStatement:
   case V_SgOmpScanStatement:
+  case V_SgOmpTaskloopStatement:
   case V_SgOmpOrderedStatement:
   case V_SgOmpSectionStatement:
   case V_SgOmpSingleStatement:

@@ -66,6 +66,16 @@ Grammar::setUpNodes ()
         */
      NEW_TERMINAL_MACRO (OmpOrderedClause, "OmpOrderedClause", "OmpOrderedClauseTag" );
      NEW_TERMINAL_MACRO (OmpNowaitClause, "OmpNowaitClause", "OmpNowaitClauseTag" );
+     NEW_TERMINAL_MACRO (OmpNogroupClause, "OmpNogroupClause", "OmpNogroupClauseTag" );
+     NEW_TERMINAL_MACRO (OmpReadClause, "OmpReadClause", "OmpReadClauseTag" );
+     NEW_TERMINAL_MACRO (OmpWriteClause, "OmpWriteClause", "OmpWriteClauseTag" );
+     NEW_TERMINAL_MACRO (OmpUpdateClause, "OmpUpdateClause", "OmpUpdateClauseTag" );
+     NEW_TERMINAL_MACRO (OmpCaptureClause, "OmpCaptureClause", "OmpCaptureClauseTag" );
+     NEW_TERMINAL_MACRO (OmpSeqCstClause, "OmpSeqCstClause", "OmpSeqCstClauseTag" );
+     NEW_TERMINAL_MACRO (OmpAcqRelClause, "OmpAcqRelClause", "OmpAcqRelClauseTag" );
+     NEW_TERMINAL_MACRO (OmpReleaseClause, "OmpReleaseClause", "OmpReleaseClauseTag" );
+     NEW_TERMINAL_MACRO (OmpAcquireClause, "OmpAcquireClause", "OmpAcquireClauseTag" );
+     NEW_TERMINAL_MACRO (OmpRelaxedClause, "OmpRelaxedClause", "OmpRelaxedClauseTag" );
      NEW_TERMINAL_MACRO (OmpParallelClause, "OmpParallelClause", "OmpParallelClauseTag" );
      NEW_TERMINAL_MACRO (OmpSectionsClause, "OmpSectionsClause", "OmpSectionsClauseTag" );
      NEW_TERMINAL_MACRO (OmpForClause, "OmpForClause", "OmpForClauseTag" );
@@ -88,6 +98,8 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpPriorityClause, "OmpPriorityClause", "OmpPriorityClauseTag" );
      NEW_TERMINAL_MACRO (OmpNumThreadsClause, "OmpNumThreadsClause", "OmpNumThreadsClauseTag" );
      NEW_TERMINAL_MACRO (OmpNumTeamsClause, "OmpNumTeamsClause", "OmpNumTeamsClauseTag" );
+     NEW_TERMINAL_MACRO (OmpGrainsizeClause, "OmpGrainsizeClause", "OmpGrainsizeClauseTag" );
+     NEW_TERMINAL_MACRO (OmpNumTasksClause, "OmpNumTasksClause", "OmpNumTasksClauseTag" );
      NEW_TERMINAL_MACRO (OmpHintClause, "OmpHintClause", "OmpHintClauseTag" );
      NEW_TERMINAL_MACRO (OmpReverseOffloadClause, "OmpReverseOffloadClause", "OmpReverseOffloadClauseTag" );
      NEW_TERMINAL_MACRO (OmpUnifiedAddressClause, "OmpUnifiedAddressClause", "OmpUnifiedAddressClauseTag" );
@@ -103,7 +115,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpSafelenClause, "OmpSafelenClause", "OmpSafelenTag" );
      NEW_TERMINAL_MACRO (OmpSimdlenClause, "OmpSimdlenClause", "OmpSimdlenTag" );
 
-     NEW_NONTERMINAL_MACRO (OmpExpressionClause, OmpOrderedClause | OmpCollapseClause | OmpIfClause | OmpNumThreadsClause | OmpNumTeamsClause | OmpThreadLimitClause | OmpDeviceClause | OmpHintClause |
+     NEW_NONTERMINAL_MACRO (OmpExpressionClause, OmpOrderedClause | OmpCollapseClause | OmpIfClause | OmpNumThreadsClause | OmpNumTeamsClause | OmpThreadLimitClause | OmpDeviceClause | OmpHintClause | OmpGrainsizeClause | OmpNumTasksClause |
                             OmpSafelenClause | OmpSimdlenClause | OmpFinalClause | OmpPriorityClause
          ,"OmpExpressionClause", "OmpExpressionClauseTag",false );
 
@@ -135,8 +147,8 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpDistScheduleClause, "OmpDistScheduleClause", "OmpDistScheduleClauseTag" );
      NEW_TERMINAL_MACRO (OmpDefaultmapClause, "OmpDefaultmapClause", "OmpDefaultmapClauseTag" );
      NEW_TERMINAL_MACRO (OmpExtImplementationDefinedRequirementClause, "OmpExtImplementationDefinedRequirementClause", "OmpExtImplementationDefinedRequirementClauseTag" );
-     NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpBeginClause |OmpEndClause | OmpUntiedClause |
-         OmpParallelClause | OmpSectionsClause | OmpForClause | OmpTaskgroupClause |
+     NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpReadClause | OmpWriteClause | OmpUpdateClause | OmpCaptureClause | OmpBeginClause |OmpEndClause | OmpUntiedClause | OmpSeqCstClause | OmpAcqRelClause | OmpReleaseClause | OmpAcquireClause | OmpRelaxedClause |
+         OmpParallelClause | OmpSectionsClause | OmpForClause | OmpTaskgroupClause | OmpNogroupClause |
          OmpDefaultClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpDistScheduleClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpReverseOffloadClause | OmpUnifiedAddressClause | OmpUnifiedSharedMemoryClause | OmpAtomicDefaultMemOrderClause | OmpDynamicAllocatorsClause | OmpExtImplementationDefinedRequirementClause | OmpDefaultmapClause |
          OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause ,
          "OmpClause", "OmpClauseTag", false);
