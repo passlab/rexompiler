@@ -195,7 +195,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	array_init.c \
 	array_init_2.c \
 	atoms-2.c \
-        atomic.c \
+	atomic.c \
 	atomic-3.c \
 	barrier.c \
 	cancel.c \
@@ -304,7 +304,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	target1.c \
 	taskgroup.c \
 	taskloop.c \
-        taskyield.c \
+	taskyield.c \
 	teams.c \
 	twoRegions.c \
 	threadProcessor.c \
