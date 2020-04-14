@@ -307,6 +307,8 @@ SgOmpRequiresStatement
 SgOmpLoopStatement
 SgOmpScanStatement
 SgOmpTaskloopStatement
+SgOmpTargetEnterDataStatement
+SgOmpTargetExitDataStatement
 SgOmpSectionStatement
 SgOmpSectionsStatement
 SgOmpSingleStatement
@@ -366,6 +368,8 @@ SgOmpNontemporalClause
 SgOmpInclusiveClause
 SgOmpExclusiveClause
 SgOmpIsDevicePtrClause
+SgOmpUseDevicePtrClause
+SgOmpUseDeviceAddrClause
 SgOmpThreadLimitClause
 SgOmpOrderedClause
 SgOmpPrivateClause

@@ -2821,6 +2821,8 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpLoopStatement:
                     case V_SgOmpScanStatement:
                     case V_SgOmpTaskloopStatement:
+                    case V_SgOmpTargetEnterDataStatement:
+                    case V_SgOmpTargetExitDataStatement:
                     case V_SgOmpSimdStatement:
                     case V_SgOmpTargetStatement:
                     case V_SgOmpTargetDataStatement:
@@ -8470,6 +8472,12 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
     case V_SgOmpIsDevicePtrClause:
       curprint(string(" is_device_ptr("));
       break;
+    case V_SgOmpUseDevicePtrClause:
+      curprint(string(" use_device_ptr("));
+      break;
+    case V_SgOmpUseDeviceAddrClause:
+      curprint(string(" use_device_addr("));
+      break;
     case V_SgOmpPrivateClause:
       curprint(string(" private("));
       break;
@@ -8887,6 +8895,12 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_taskloop) {
         curprint(string("taskloop : "));
     }
+    if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_target_enter_data) {
+        curprint(string("target enter data : "));
+    }
+    if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_target_exit_data) {
+        curprint(string("target exit data : "));
+    }
     if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_cancel) {
         curprint(string("cancel : "));
     }
@@ -8895,6 +8909,9 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     }
     if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_task) {
         curprint(string("task : "));
+    }
+    if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_target_data) {
+        curprint(string("target data : "));
     }
   }
   else if (isSgOmpDeviceClause(c)) {
@@ -9173,6 +9190,8 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpInclusiveClause:
     case V_SgOmpExclusiveClause:
     case V_SgOmpIsDevicePtrClause:
+    case V_SgOmpUseDevicePtrClause:
+    case V_SgOmpUseDeviceAddrClause:
     case V_SgOmpLastprivateClause:
     case V_SgOmpPrivateClause:
     case V_SgOmpReductionClause:
@@ -9410,6 +9429,16 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpTaskloopStatement:
       {
         curprint(string ("taskloop "));
+        break;
+      }
+    case V_SgOmpTargetEnterDataStatement:
+      {
+        curprint(string ("target enter data "));
+        break;
+      }
+    case V_SgOmpTargetExitDataStatement:
+      {
+        curprint(string ("target exit data "));
         break;
       }
     case V_SgOmpSimdStatement:

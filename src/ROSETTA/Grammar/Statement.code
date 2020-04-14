@@ -19783,6 +19783,18 @@ SgOmpTaskloopStatement::post_construction_initialization()
    {}
 SOURCE_OMP_TASKLOOP_STATEMENT_END
 
+SOURCE_OMP_TARGET_ENTER_DATA_STATEMENT_START
+void
+SgOmpTargetEnterDataStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TARGET_ENTER_DATA_STATEMENT_END
+
+SOURCE_OMP_TARGET_EXIT_DATA_STATEMENT_START
+void
+SgOmpTargetExitDataStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TARGET_EXIT_DATA_STATEMENT_END
+
 SOURCE_OMP_METADIRECTIVE_STATEMENT_START
 void
 SgOmpMetadirectiveStatement::post_construction_initialization()

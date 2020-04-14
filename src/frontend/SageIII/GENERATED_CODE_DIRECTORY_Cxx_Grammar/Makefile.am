@@ -68,7 +68,7 @@ SgAliasSymbol.C                        SgClassDefinition.C                   SgF
 SgAllocateStatement.C                  SgClassNameRefExp.C                   SgFunctionTypeTable.C                   SgOmpDoStatement.C                           SgThrowOp.C \
 SgAndAssignOp.C                        SgClassSymbol.C                       SgGlobal.C                              SgOmpExpressionClause.C                      SgToken.C \
 SgAndOp.C                              SgClassType.C                         SgGotoStatement.C                       SgOmpFirstprivateClause.C              SgOmpNontemporalClause.C       SgTryStmt.C \
-SgOmpInclusiveClause.C               SgOmpExclusiveClause.C                  SgOmpIsDevicePtrClause.C\
+SgOmpInclusiveClause.C               SgOmpExclusiveClause.C                  SgOmpIsDevicePtrClause.C        SgOmpUseDevicePtrClause.C     SgOmpUseDevicePtrClause.C \
 SgArithmeticIfStatement.C              SgClinkageDeclarationStatement.C      SgGraph.C                               SgOmpFlushStatement.C                        SgTypeBool.C \
 SgArrayType.C                          SgClinkageEndStatement.C              SgGraphEdge.C                           SgOmpForStatement.C                          SgType.C \
 SgArrowExp.C                           SgClinkageStartStatement.C            SgGraphEdgeList.C                       SgOmpIfClause.C                              SgTypeChar.C \
@@ -84,7 +84,7 @@ SgOmpGrainsizeClause.C                         SgOmpNumTasksClause.C            
 SgOmpNumParallelClause.C                 SgOmpNumSectionsClause.C                   SgOmpNumForClause.C                        SgOmpNumTaskgroupClause.C \
 SgCommonBlockObject.C                 SgIdentDirectiveStatement.C             SgOmpOrderedClause.C                         SgTypedefSymbol.C \
 SgCommonSymbol.C                      SgIfdefDirectiveStatement.C             SgOmpOrderedStatement.C                      SgTypedefType.C \
-SgIfDirectiveStatement.C      SgOmpMetadirectiveStatement.C          SgOmpParallelStatement.C      SgOmpTeamsStatement.C    SgOmpLoopStatement.C          SgOmpTaskloopStatement.C       SgTypeDouble.C                       SgOmpRequiresStatement.C                    SgOmpScanStatement.C         SgOmpDistributeStatement.C   SgOmpTaskgroupStatement.C             SgOmpCancellationPointStatement.C       SgOmpCancelStatement.C                       SgOmpDeclareMapperStatement.C\
+SgIfDirectiveStatement.C      SgOmpMetadirectiveStatement.C          SgOmpParallelStatement.C      SgOmpTeamsStatement.C    SgOmpLoopStatement.C          SgOmpTaskloopStatement.C       SgTypeDouble.C                       SgOmpRequiresStatement.C                    SgOmpScanStatement.C         SgOmpDistributeStatement.C   SgOmpTaskgroupStatement.C             SgOmpCancellationPointStatement.C       SgOmpCancelStatement.C                       SgOmpDeclareMapperStatement.C         SgOmpTargetEnterDataStatement.C           SgOmpTargetExitDataStatement.C \
 SgComputedGotoStatement.C             SgIfndefDirectiveStatement.C            SgOmpPrivateClause.C                         SgTypeEllipse.C \
 SgConcatenationOp.C                   SgIfStmt.C                              SgOmpReductionClause.C                       SgOmpAllocateClause.C \
 SgOmpWhenClause.C                   SgTypeFloat.C                             SgOmpDistScheduleClause.C                    SgOmpInReductionClause.C \

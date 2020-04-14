@@ -287,6 +287,8 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpMetadirectiveStatement,  "OmpMetadirectiveStatement",   "OMP_METADIRECTIVE_STMT" );
     NEW_TERMINAL_MACRO (OmpSingleStatement,    "OmpSingleStatement",     "OMP_SINGLE_STMT" );
     NEW_TERMINAL_MACRO (OmpTaskStatement,      "OmpTaskStatement",       "OMP_TASK_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetEnterDataStatement,      "OmpTargetEnterDataStatement",       "OMP_TARGET_ENTER_DATA_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetExitDataStatement,      "OmpTargetExitDataStatement",       "OMP_TARGET_EXIT_DATA_STMT" );
     NEW_TERMINAL_MACRO (OmpForStatement,       "OmpForStatement",        "OMP_FOR_STMT" );
     NEW_TERMINAL_MACRO (OmpForSimdStatement,   "OmpForSimdStatement",     "OMP_FOR_SIMD_STMT" );
     NEW_TERMINAL_MACRO (OmpDoStatement,        "OmpDoStatement",         "OMP_DO_STMT" );
@@ -303,7 +305,7 @@ Grammar::setUpStatements ()
     // A base class for the most commonly formed directives with both clauses and a structured body
     // We treat OmpSectionsStatement separatedly by move the body to a list of SgOmpSectionStatement
     // sensitive to 
-    NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement | OmpTaskgroupStatement | OmpTaskloopStatement |
+    NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement | OmpTaskgroupStatement | OmpTaskloopStatement | OmpTargetEnterDataStatement | OmpTargetExitDataStatement |
               OmpTaskStatement | OmpForStatement | OmpDoStatement | OmpSectionsStatement | OmpTargetStatement | OmpTargetDataStatement |
               OmpSimdStatement | OmpForSimdStatement | OmpCriticalStatement | OmpDistributeStatement ,
         "OmpClauseBodyStatement",   "OMP_CLAUSEBODY_STMT", false );
@@ -4208,6 +4210,8 @@ Grammar::setUpStatements ()
     OmpSectionsStatement.setFunctionSource            ("SOURCE_OMP_SECTIONS_STATEMENT", "../Grammar/Statement.code" );
     OmpSectionStatement.setFunctionSource            ("SOURCE_OMP_SECTION_STATEMENT", "../Grammar/Statement.code" );
     OmpTaskStatement.setFunctionSource            ("SOURCE_OMP_TASK_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetEnterDataStatement.setFunctionSource            ("SOURCE_OMP_TARGET_ENTER_DATA_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetExitDataStatement.setFunctionSource            ("SOURCE_OMP_TARGET_EXIT_DATA_STATEMENT", "../Grammar/Statement.code" );
     OmpSingleStatement.setFunctionSource            ("SOURCE_OMP_SINGLE_STATEMENT", "../Grammar/Statement.code" );
 
     OmpThreadprivateStatement.setFunctionPrototype    ( "HEADER_OMP_THREADPRIVATE_STATEMENT", "../Grammar/Statement.code" );

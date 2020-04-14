@@ -752,9 +752,24 @@ namespace OmpSupport
           result = SgOmpClause::e_omp_if_taskloop;
           break;
         }
+      case OMPC_IF_MODIFIER_target_enter_data:
+        {
+          result = SgOmpClause::e_omp_if_target_enter_data;
+          break;
+        }
+      case OMPC_IF_MODIFIER_target_exit_data:
+        {
+          result = SgOmpClause::e_omp_if_target_exit_data;
+          break;
+        }
       case OMPC_IF_MODIFIER_task:
         {
           result = SgOmpClause::e_omp_if_task;
+          break;
+        }
+      case OMPC_IF_MODIFIER_target_data:
+        {
+          result = SgOmpClause::e_omp_if_target_data;
           break;
         }
       case OMPC_IF_MODIFIER_target:
@@ -3266,7 +3281,10 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_loop:
         case OMPD_scan:
         case OMPD_taskloop:
+        case OMPD_target_enter_data:
+        case OMPD_target_exit_data:
         case OMPD_task:
+        case OMPD_target_data:
         case OMPD_single:
         case OMPD_for:
         case OMPD_target:
@@ -3555,8 +3573,20 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             result = new SgOmpTaskloopStatement(NULL, body);
             break;
         }
+        case OMPD_target_enter_data: {
+            result = new SgOmpTargetEnterDataStatement(NULL, body);
+            break;
+        }
+        case OMPD_target_exit_data: {
+            result = new SgOmpTargetExitDataStatement(NULL, body);
+            break;
+        }
         case OMPD_task: {
             result = new SgOmpTaskStatement(NULL, body);
+            break;
+        }
+        case OMPD_target_data: {
+            result = new SgOmpTargetDataStatement(NULL, body);
             break;
         }
         case OMPD_simd: {
@@ -3832,8 +3862,20 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
             result = new SgOmpTaskloopStatement(NULL, NULL);
             break;
         }
+        case OMPD_target_enter_data: {
+            result = new SgOmpTargetEnterDataStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_target_exit_data: {
+            result = new SgOmpTargetExitDataStatement(NULL, NULL);
+            break;
+        }
         case OMPD_task: {
             result = new SgOmpTaskStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_target_data: {
+            result = new SgOmpTargetDataStatement(NULL, NULL);
             break;
         }
         case OMPD_single: {
@@ -4278,6 +4320,16 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
             printf("is_device_ptr Clause added!\n");
             break;
         }
+        case OMPC_use_device_ptr: {
+            result = new SgOmpUseDevicePtrClause(explist);
+            printf("use_device_ptr Clause added!\n");
+            break;
+        }
+        case OMPC_use_device_addr: {
+            result = new SgOmpUseDeviceAddrClause(explist);
+            printf("use_device_addr Clause added!\n");
+            break;
+        }
         case OMPC_private: {
             result = new SgOmpPrivateClause(explist);
             printf("Private Clause added!\n");
@@ -4688,7 +4740,10 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_loop:
         case OMPD_scan:
         case OMPD_taskloop:
+        case OMPD_target_enter_data:
+        case OMPD_target_exit_data:
         case OMPD_task:
+        case OMPD_target_data:
         case OMPD_single:
         case OMPD_for:
         case OMPD_target:
@@ -4717,6 +4772,8 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_inclusive:
                 case OMPC_exclusive:
                 case OMPC_is_device_ptr:
+                case OMPC_use_device_ptr:
+                case OMPC_use_device_addr:
                 case OMPC_if:
                 case OMPC_num_threads:
                 case OMPC_num_teams:

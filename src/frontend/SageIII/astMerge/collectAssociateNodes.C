@@ -1752,6 +1752,8 @@ addAssociatedNodes ( SgNode* node, set<SgNode*> & nodeList, bool markMemberNodes
           case V_SgOmpInclusiveClause   :
           case V_SgOmpExclusiveClause   :
           case V_SgOmpIsDevicePtrClause :
+          case V_SgOmpUseDevicePtrClause  :
+          case V_SgOmpUseDeviceAddrClause :
           case V_SgOmpFlushStatement    : 
           case V_SgOmpForStatement      : 
           case V_SgOmpForSimdStatement  : 

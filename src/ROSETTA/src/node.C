@@ -112,6 +112,8 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpInclusiveClause, "OmpInclusiveClause", "OmpInclusiveClauseTag" );
      NEW_TERMINAL_MACRO (OmpExclusiveClause, "OmpExclusiveClause", "OmpExclusiveClauseTag" );
      NEW_TERMINAL_MACRO (OmpIsDevicePtrClause, "OmpIsDevicePtrClause", "OmpIsDevicePtrClauseTag" );
+     NEW_TERMINAL_MACRO (OmpUseDevicePtrClause, "OmpUseDevicePtrClause", "OmpUseDevicePtrClauseTag" );
+     NEW_TERMINAL_MACRO (OmpUseDeviceAddrClause, "OmpUseDeviceAddrClause", "OmpUseDeviceAddrClauseTag" );
      NEW_TERMINAL_MACRO (OmpDeviceClause, "OmpDeviceClause", "OmpIfDeviceTag" );
      NEW_TERMINAL_MACRO (OmpSafelenClause, "OmpSafelenClause", "OmpSafelenTag" );
      NEW_TERMINAL_MACRO (OmpSimdlenClause, "OmpSimdlenClause", "OmpSimdlenTag" );
@@ -138,7 +140,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpUniformClause, "OmpUniformClause", "OmpUniformClauseTag" );
      NEW_TERMINAL_MACRO (OmpAlignedClause, "OmpAlignedClause", "OmpAlignedClauseTag" );
 
-     NEW_NONTERMINAL_MACRO (OmpVariablesClause, OmpCopyprivateClause| OmpPrivateClause | OmpFirstprivateClause | OmpNontemporalClause | OmpInclusiveClause | OmpExclusiveClause | OmpIsDevicePtrClause | 
+     NEW_NONTERMINAL_MACRO (OmpVariablesClause, OmpCopyprivateClause| OmpPrivateClause | OmpFirstprivateClause | OmpNontemporalClause | OmpInclusiveClause | OmpExclusiveClause | OmpIsDevicePtrClause | OmpUseDevicePtrClause | OmpUseDeviceAddrClause |
          OmpSharedClause |OmpCopyinClause| OmpLastprivateClause| OmpReductionClause | OmpInReductionClause | OmpTaskReductionClause | OmpMapClause | OmpAllocateClause |
          OmpUniformClause | OmpAlignedClause | OmpLinearClause | OmpDependClause ,
          "OmpVariablesClause", "OmpVariablesClauseTag", false);
