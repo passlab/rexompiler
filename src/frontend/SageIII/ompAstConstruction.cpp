@@ -752,6 +752,11 @@ namespace OmpSupport
           result = SgOmpClause::e_omp_if_taskloop;
           break;
         }
+      case OMPC_IF_MODIFIER_task:
+        {
+          result = SgOmpClause::e_omp_if_task;
+          break;
+        }
       case OMPC_IF_MODIFIER_target:
         {
           result = SgOmpClause::e_omp_if_target;
@@ -3261,6 +3266,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_loop:
         case OMPD_scan:
         case OMPD_taskloop:
+        case OMPD_task:
         case OMPD_single:
         case OMPD_for:
         case OMPD_target:
@@ -3549,6 +3555,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             result = new SgOmpTaskloopStatement(NULL, body);
             break;
         }
+        case OMPD_task: {
+            result = new SgOmpTaskStatement(NULL, body);
+            break;
+        }
         case OMPD_simd: {
             result = new SgOmpSimdStatement(NULL, body);
             break;
@@ -3608,6 +3618,7 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             case OMPC_thread_limit:
             case OMPC_device:
             case OMPC_grainsize:
+            case OMPC_detach:
             case OMPC_num_tasks:
             case OMPC_num_threads: {
                 convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
@@ -3821,6 +3832,10 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
             result = new SgOmpTaskloopStatement(NULL, NULL);
             break;
         }
+        case OMPD_task: {
+            result = new SgOmpTaskStatement(NULL, NULL);
+            break;
+        }
         case OMPD_single: {
             result = new SgOmpSingleStatement(NULL, NULL);
             break;
@@ -3859,6 +3874,7 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
             case OMPC_if:
             case OMPC_num_teams:
             case OMPC_grainsize:
+            case OMPC_detach:
             case OMPC_num_tasks:
             case OMPC_safelen:
             case OMPC_hint:
@@ -4401,6 +4417,12 @@ SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_
             printf("Grainsize Clause added!\n");
             break;
         }
+        case OMPC_detach: {
+            SgExpression* detach_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
+            result = new SgOmpDetachClause(detach_expression);
+            printf("Detach Clause added!\n");
+            break;
+        }
         case OMPC_num_tasks: {
             SgExpression* num_tasks_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
             result = new SgOmpNumTasksClause(num_tasks_expression);
@@ -4666,6 +4688,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_loop:
         case OMPD_scan:
         case OMPD_taskloop:
+        case OMPD_task:
         case OMPD_single:
         case OMPD_for:
         case OMPD_target:
@@ -4698,6 +4721,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_num_threads:
                 case OMPC_num_teams:
                 case OMPC_grainsize:
+                case OMPC_detach:
                 case OMPC_num_tasks:
                 case OMPC_final:
                 case OMPC_priority:

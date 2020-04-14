@@ -159,8 +159,8 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	subteam.c \
 	target.c \
 	target1.c \
-	#task_array.c \
-	#task_array2.c \
+	task_array.c \
+	task_array2.c \
 	#task_dep1.c \
 	#task_dep2.c \
 	#task_dep3.c \
@@ -171,11 +171,11 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	#task_orphaned.c \
 	#task_outlining.c \
 	#task_priority.c \
-	#task_untied.c \
-	#task_untied2.c \
-	#task_untied3.c \
+	task_untied.c \
+	task_untied2.c \
+	task_untied3.c \
 	#task_untied4.c \
-	#task_underIf.c \
+	task_underIf.c \
 	#task_wait.c \
 	#task_wait2.c \
 	teams.c \
@@ -302,6 +302,12 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	subteam.c \
 	target.c \
 	target1.c \
+	task_array.c \
+	task_array2.c \
+	task_untied.c \
+	task_untied2.c \
+	task_untied3.c \
+	task_underIf.c \
 	taskgroup.c \
 	taskloop.c \
 	taskyield.c \

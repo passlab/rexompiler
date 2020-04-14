@@ -349,6 +349,7 @@ SgOmpTaskgroupClause
 SgOmpNumThreadsClause
 SgOmpNumTeamsClause
 SgOmpGrainsizeClause
+SgOmpDetachClause
 SgOmpNumTasksClause
 SgOmpNogroupClause
 SgOmpHintClause

@@ -8893,6 +8893,9 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_target) {
         curprint(string("target : "));
     }
+    if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_task) {
+        curprint(string("task : "));
+    }
   }
   else if (isSgOmpDeviceClause(c)) {
     curprint(string(" device("));
@@ -8918,6 +8921,8 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     curprint(string(" num_teams("));
   else if (isSgOmpGrainsizeClause(c))
     curprint(string(" grainsize("));
+  else if (isSgOmpDetachClause(c))
+    curprint(string(" detach("));
   else if (isSgOmpNumTasksClause(c))
     curprint(string(" num_tasks("));
   else if (isSgOmpThreadLimitClause(c))
@@ -9144,6 +9149,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpPriorityClause:  
     case V_SgOmpNumThreadsClause:
     case V_SgOmpGrainsizeClause:
+    case V_SgOmpDetachClause:
     case V_SgOmpNumTasksClause:
     case V_SgOmpNumTeamsClause:  
     case V_SgOmpHintClause: 

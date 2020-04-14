@@ -335,7 +335,8 @@ HEADER_OMP_CLAUSE_START
             e_omp_if_simd,
             e_omp_if_target,
             e_omp_if_cancel,
-            e_omp_if_taskloop
+            e_omp_if_taskloop,
+            e_omp_if_task
         };
        
 

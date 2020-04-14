@@ -614,6 +614,7 @@ namespace sg
     GEN_VISIT(SgOmpTaskgroupClause)
     GEN_VISIT(SgOmpNumTeamsClause)
     GEN_VISIT(SgOmpGrainsizeClause)
+    GEN_VISIT(SgOmpDetachClause)
     GEN_VISIT(SgOmpNumTasksClause)
     GEN_VISIT(SgOmpNogroupClause)
     GEN_VISIT(SgOmpHintClause)

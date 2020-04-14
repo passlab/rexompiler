@@ -1784,6 +1784,7 @@ addAssociatedNodes ( SgNode* node, set<SgNode*> & nodeList, bool markMemberNodes
           case V_SgOmpHintClause        :
           case V_SgOmpNumTeamsClause    :
           case V_SgOmpGrainsizeClause   :
+          case V_SgOmpDetachClause      :
           case V_SgOmpNumTasksClause    :
           case V_SgOmpNogroupClause     :
           case V_SgOmpOrderClause       :
