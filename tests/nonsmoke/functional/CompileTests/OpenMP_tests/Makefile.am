@@ -62,8 +62,8 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	firstPrivateArray.c \
 	firstPrivateArray_2.c \
 	firstlastprivate.c \
-	#flush.c \
-	#flush_exampleA_21_1c.c \
+	flush.c \
+	flush_exampleA_21_1c.c \
 	full_verify.c \
 	get_max_threads.c \
 	hello.c \
@@ -217,6 +217,9 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	firstPrivateArray.c \
 	firstPrivateArray_2.c \
 	firstlastprivate.c \
+	flush.c \
+	flush_exampleA_21_1c.c \
+	flush_with_clause.c \
 	full_verify.c \
 	get_max_threads.c \
 	hello.c \
