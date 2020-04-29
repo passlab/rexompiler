@@ -323,6 +323,9 @@ Grammar::setUpStatements ()
         | OmpSectionStatement | OmpWorkshareStatement  | OmpClauseBodyStatement , 
         "OmpBodyStatement",      "OMP_BODY_STMT", false );
 
+    NEW_NONTERMINAL_MACRO (OmpClauseStatement,  OmpCancelStatement | OmpCancellationPointStatement , 
+        "OmpClauseStatement",      "OMP_CLAUSE_STMT", false );
+
 
 #endif
 
@@ -530,10 +533,9 @@ Grammar::setUpStatements ()
              AssignStatement           | ComputedGotoStatement  | AssignedGotoStatement           |
           /* FortranDo                 | */ AllocateStatement   | DeallocateStatement             | UpcNotifyStatement    | 
              UpcWaitStatement          | UpcBarrierStatement    | UpcFenceStatement               | OmpTaskyieldStatement   |
-             OmpBarrierStatement       | OmpTaskwaitStatement   |  OmpFlushStatement              | OmpBodyStatement      |
+             OmpBarrierStatement       | OmpTaskwaitStatement   |  OmpFlushStatement              | OmpBodyStatement      | OmpClauseStatement |
              SequenceStatement         | WithStatement          | PythonPrintStmt                 | PassStatement         |
              AssertStmt                | ExecStatement          | PythonGlobalStmt                | OmpRequiresStatement  | OmpDeclareMapperStatement |
-             OmpCancellationPointStatement | OmpCancelStatement |
 	     ImageControlStatement /* | JavaPackageDeclaration */,
              "Statement","StatementTag", false);
 
@@ -4189,6 +4191,9 @@ Grammar::setUpStatements ()
     OmpClauseBodyStatement.setFunctionPrototype         ( "HEADER_OMP_CLAUSEBODY_STATEMENT", "../Grammar/Statement.code" );
     OmpClauseBodyStatement.setFunctionSource            ("SOURCE_OMP_CLAUSEBODY_STATEMENT", "../Grammar/Statement.code" );
 
+    OmpClauseStatement.setFunctionPrototype         ( "HEADER_OMP_CLAUSE_STATEMENT", "../Grammar/Statement.code" );
+    OmpClauseStatement.setFunctionSource            ("SOURCE_OMP_CLAUSE_STATEMENT", "../Grammar/Statement.code" );
+
     OmpBodyStatement.setFunctionPrototype         ("HEADER_OMP_BODY_STATEMENT", "../Grammar/Statement.code");
     OmpBodyStatement.setFunctionSource            ("SOURCE_OMP_BODY_STATEMENT", "../Grammar/Statement.code");
     OmpCriticalStatement.setFunctionSource            ("SOURCE_OMP_CRITICAL_STATEMENT", "../Grammar/Statement.code");
@@ -4252,6 +4257,8 @@ Grammar::setUpStatements ()
    // Directives with a statement/ structured body
     OmpBodyStatement.setDataPrototype ( "SgStatement*", "body",        "= NULL",
                                              CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+    OmpClauseStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
     // Directive with a body + a name: 
         // omp critical [name]  \n structured_block
     OmpCriticalStatement.setDataPrototype ( "SgName", "name", "= \"\"",

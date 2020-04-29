@@ -3326,11 +3326,14 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
     }
     setOneSourcePositionForTransformation(result);
     // handle the SgFilePtr
-    if (directive_kind != OMPD_requires && directive_kind != OMPD_cancellation_point && directive_kind != OMPD_cancel && directive_kind != OMPD_declare_mapper&& directive_kind != OMPD_flush){
+    /*if (directive_kind != OMPD_requires && directive_kind != OMPD_cancellation_point && directive_kind != OMPD_cancel && directive_kind != OMPD_declare_mapper&& directive_kind != OMPD_flush){
         copyStartFileInfo (current_OpenMPIR_to_SageIII.first, result, NULL);
         copyEndFileInfo (current_OpenMPIR_to_SageIII.first, result, NULL);
         replaceOmpPragmaWithOmpStatement(current_OpenMPIR_to_SageIII.first, result);
-    }
+    }*/
+    copyStartFileInfo (current_OpenMPIR_to_SageIII.first, result, NULL);
+    copyEndFileInfo (current_OpenMPIR_to_SageIII.first, result, NULL);
+    replaceOmpPragmaWithOmpStatement(current_OpenMPIR_to_SageIII.first, result);
 
     return result;
 }
@@ -3574,6 +3577,8 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
         };
         ROSE_ASSERT(result);
         setOneSourcePositionForTransformation(sg_clause);
+        ((SgOmpClauseStatement*)result)->get_clauses().push_back(sg_clause);
+        sg_clause->set_parent(((SgOmpClauseStatement*)result));
     };
 
     return result;

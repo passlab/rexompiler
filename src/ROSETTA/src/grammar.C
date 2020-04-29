@@ -3891,6 +3891,7 @@ Grammar::GrammarNodeInfo Grammar::getGrammarNodeInfo(AstNodeClass* grammarnode) 
      // DQ (12/21/2011): Added exception for SgTemplateVariableDeclaration derived from SgVariableDeclaration.
         ||nodeName == "SgTemplateVariableDeclaration"
         ||nodeName == "SgOmpClauseBodyStatement"
+        ||nodeName == "SgOmpClauseStatement"
         ||nodeName == "SgOmpMetadirectiveStatement"
         ||nodeName == "SgOmpParallelStatement"
         ||nodeName == "SgOmpTeamsStatement"
@@ -4231,6 +4232,7 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                  ||string(node.getName()) == "SgOmpForSimdStatement"
                  ||string(node.getName()) == "SgOmpForSimdStatement"
                  ||string(node.getName()) == "SgOmpDoStatement"
+                 ||string(node.getName()) == "SgOmpClauseStatement"
                  ||string(node.getName()) == "SgOmpAtomicStatement"
                  )
                   {
@@ -4353,6 +4355,7 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                  ||string(node.getName()) == "SgOmpForStatement"
                  ||string(node.getName()) == "SgOmpForSimdStatement"
                  ||string(node.getName()) == "SgOmpDoStatement"
+                 ||string(node.getName()) == "SgOmpClauseStatement"
                  ||string(node.getName()) == "SgOmpAtomicStatement"
                  )
                   {
