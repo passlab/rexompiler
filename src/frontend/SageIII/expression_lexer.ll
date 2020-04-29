@@ -99,6 +99,7 @@ id              [a-zA-Z_][a-zA-Z0-9_]*
 
 expr            { return (EXPRESSION); }
 varlist         { return (VARLIST); }
+maplist         { return (MAPLIST); }
 identifier      { return (IDENTIFIER); /*not in use for now*/ }
 {id}            { omp_lval.stype = strdup(yytext); 
                   return (ID_EXPRESSION); }
