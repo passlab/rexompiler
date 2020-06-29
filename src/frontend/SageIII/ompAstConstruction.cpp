@@ -51,11 +51,14 @@ static SgOmpExtImplementationDefinedRequirementClause* convertExtImplementationD
 static SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 // store temporary expression pairs for ompparser.
 extern std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
+extern std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >  array_dimensions;  
 extern SgExpression* omp_expression;
 static SgExpression* parseOmpExpression(SgPragmaDeclaration*, OpenMPClauseKind, std::string);
+static SgExpression* parseOmpArraySection(SgPragmaDeclaration*, OpenMPClauseKind, std::string);
 static SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 SgOmpFlushStatement* convertFlushDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII);
+static SgOmpMapClause* convertMapClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 
 using namespace std;
 using namespace SageInterface;
@@ -691,42 +694,6 @@ namespace OmpSupport
     return result;
   }
 
-  static   SgOmpClause::omp_map_operator_enum toSgOmpClauseMapOperator(omp_construct_enum at_op)
-  {
-    SgOmpClause::omp_map_operator_enum result = SgOmpClause::e_omp_map_unknown;
-    switch (at_op)
-    {
-      case e_map_tofrom: 
-        {
-          result = SgOmpClause::e_omp_map_tofrom;
-          break;
-        }
-      case e_map_to: 
-        {
-          result = SgOmpClause::e_omp_map_to;
-          break;
-        }
-      case e_map_from: 
-        {
-          result = SgOmpClause::e_omp_map_from;
-          break;
-        }
-      case e_map_alloc: 
-        {
-          result = SgOmpClause::e_omp_map_alloc;
-          break;
-        }
-      default:
-        {
-          printf("error: unacceptable omp construct enum for map operator conversion:%s\n", OmpSupport::toString(at_op).c_str());
-          ROSE_ASSERT(false);
-          break;
-        }
-    }
-    ROSE_ASSERT(result != SgOmpClause::e_omp_map_unknown);
-    return result;
-  }
-
   //! A helper function to convert OpenMPIfClause modifier to SgClause if modifier
   static SgOmpClause::omp_if_modifier_enum toSgOmpClauseIfModifier(OpenMPIfClauseModifier modifier)
   {
@@ -969,6 +936,42 @@ namespace OmpSupport
           ROSE_ASSERT(false);
         }
     }
+    return result;
+  }
+
+  static SgOmpClause::omp_map_operator_enum toSgOmpClauseMapOperator(OpenMPMapClauseType at_op)
+  {
+    SgOmpClause::omp_map_operator_enum result = SgOmpClause::e_omp_map_unknown;
+    switch (at_op)
+    {
+      case OMPC_MAP_TYPE_tofrom: 
+        {
+          result = SgOmpClause::e_omp_map_tofrom;
+          break;
+        }
+      case OMPC_MAP_TYPE_to: 
+        {
+          result = SgOmpClause::e_omp_map_to;
+          break;
+        }
+      case OMPC_MAP_TYPE_from: 
+        {
+          result = SgOmpClause::e_omp_map_from;
+          break;
+        }
+      case OMPC_MAP_TYPE_alloc: 
+        {
+          result = SgOmpClause::e_omp_map_alloc;
+          break;
+        }
+      default:
+        {
+         //printf("error: unacceptable omp construct enum for map operator conversion:%s\n", OmpSupport::toString(at_op).c_str());
+          ROSE_ASSERT(false);
+          break;
+        }
+    }
+    ROSE_ASSERT(result != SgOmpClause::e_omp_map_unknown);
     return result;
   }
 
@@ -1882,7 +1885,7 @@ namespace OmpSupport
   //! Build a map clause with a given operation type from OmpAttribute
   // map may have several variants: tofrom, to, from, and alloc. 
   // the variables for each may have dimension info 
-  SgOmpMapClause* buildOmpMapClause(OmpAttribute* att, omp_construct_enum map_op)
+  /*SgOmpMapClause* buildOmpMapClause(OmpAttribute* att, omp_construct_enum map_op)
   {
     ROSE_ASSERT(att !=NULL);
     ROSE_ASSERT (att->isMapVariant(map_op));
@@ -1939,7 +1942,7 @@ namespace OmpSupport
    }
     result->set_dist_data_policies(convertedDistMap);
     return result;
-  }
+  }*/
 
   //Build one of the clauses with a variable list
   SgOmpVariablesClause * buildOmpVariableClause(OmpAttribute* att, omp_construct_enum clause_type)
@@ -2318,7 +2321,7 @@ namespace OmpSupport
                 };
                 break;
             }
-            case e_map: {
+            /*case e_map: {
                 std::vector<omp_construct_enum> rops  = att->getMapVariants();
                 ROSE_ASSERT(rops.size()!=0);
                 std::vector<omp_construct_enum>::iterator iter;
@@ -2329,7 +2332,7 @@ namespace OmpSupport
                     sgclause->set_parent(target);
                 };
                 break;
-            }
+            }*/
             case e_proc_bind: {
                 std::deque<ComplexClause>* attr_clauses = att->getComplexClauses(c_clause);
                 ROSE_ASSERT(attr_clauses->size()!=0);
@@ -3756,7 +3759,11 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
                 break;
             }
             case OMPC_defaultmap: {
- convertDefaultmapClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertDefaultmapClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            case OMPC_map: {
+                convertMapClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             default: {
@@ -3866,6 +3873,38 @@ SgOmpDefaultmapClause* convertDefaultmapClause(SgOmpClauseBodyStatement* clause_
     clause_body->get_clauses().push_back(sg_clause);
     sg_clause->set_parent(clause_body);
     printf("ompparser defaultmap clause is added.\n");
+    return result;
+}
+
+SgOmpMapClause* convertMapClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser map clause is ready.\n");
+    SgOmpMapClause* result = NULL;
+    SgExpression* clause_expression = NULL;
+    OpenMPMapClauseType type = ((OpenMPMapClause*)current_omp_clause)->getType();
+    SgOmpClause::omp_map_operator_enum sg_type = toSgOmpClauseMapOperator(type);
+
+    std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
+    if (current_expressions->size() != 0) {
+        std::vector<const char*>::iterator iter;
+        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
+            clause_expression = parseOmpArraySection(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), *iter);
+        }
+    }
+    SgExprListExp* explist=buildExprListExp();
+
+    result = new SgOmpMapClause(explist, sg_type);
+    ROSE_ASSERT(result != NULL);
+    buildVariableList(result);
+    explist->set_parent(result);
+    result->set_array_dimensions(array_dimensions);
+
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+    array_dimensions.clear();
+    omp_variable_list.clear();
+    printf("ompparser map clause is added.\n");
     return result;
 }
 
@@ -4479,7 +4518,7 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
     SgOmpClause* sg_clause = result; 
     clause_body->get_clauses().push_back(sg_clause);
     sg_clause->set_parent(clause_body);
-
+    omp_variable_list.clear();
     return result;
 
 }
@@ -4620,6 +4659,22 @@ SgExpression* parseOmpExpression(SgPragmaDeclaration* directive, OpenMPClauseKin
         look_forward = true;
     };
     std::string expr_string = std::string() + "expr (" + expression + ")\n";
+    SgExpression* sg_expression = parseExpression(directive, look_forward, expr_string.c_str());
+
+    return sg_expression;
+}
+
+SgExpression* parseOmpArraySection(SgPragmaDeclaration* directive, OpenMPClauseKind clause_kind, std::string expression) {
+    // special handling for omp declare simd directive
+    // It may have clauses referencing a variable declared in an immediately followed function's parameter list
+    bool look_forward = false;
+    if (isSgOmpDeclareSimdStatement(directive) && (clause_kind == OMPC_linear ||
+        clause_kind == OMPC_simdlen ||
+        clause_kind == OMPC_aligned ||
+        clause_kind == OMPC_uniform)) {
+        look_forward = true;
+    };
+    std::string expr_string = std::string() + "array_section (" + expression + ")\n";
     SgExpression* sg_expression = parseExpression(directive, look_forward, expr_string.c_str());
 
     return sg_expression;
@@ -4885,6 +4940,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_schedule:
                 case OMPC_dist_schedule:
                 case OMPC_defaultmap:
+                case OMPC_map:
                 case OMPC_when: {
                     break;
                 }
