@@ -19,6 +19,7 @@ extern OpenMPDirective* parseOpenMP(const char*, void * _exprParse(const char*))
 //Handle OpenMP pragmas. This should be called after preprocessing information is attached since macro calls may exist within pragmas, Liao, 3/31/2009
 extern int omp_parse();
 extern SgExpression* parseExpression(SgNode*, bool, const char*);
+extern SgExpression* parseArraySectionExpression(SgNode*, bool, const char*);
 extern void omp_parser_init(SgNode* aNode, const char* str);
 //Fortran OpenMP parser interface
 void parse_fortran_openmp(SgSourceFile *sageFilePtr);
@@ -4675,7 +4676,7 @@ SgExpression* parseOmpArraySection(SgPragmaDeclaration* directive, OpenMPClauseK
         look_forward = true;
     };
     std::string expr_string = std::string() + "array_section (" + expression + ")\n";
-    SgExpression* sg_expression = parseExpression(directive, look_forward, expr_string.c_str());
+    SgExpression* sg_expression = parseArraySectionExpression(directive, look_forward, expr_string.c_str());
 
     return sg_expression;
 }

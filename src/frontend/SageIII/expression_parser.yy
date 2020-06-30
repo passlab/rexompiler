@@ -44,6 +44,7 @@ extern void omp_lexer_init(const char* str);
 //! Initialize the parser with the originating SgPragmaDeclaration and its pragma text
 extern void omp_parser_init(SgNode* aNode, const char* str);
 extern SgExpression* parseExpression(SgNode*, const char*);
+extern SgExpression* parseArraySectionExpression(SgNode*, const char*);
 
 static int omp_error(const char*);
 
@@ -601,6 +602,18 @@ static bool addOmpVariable(const char* var)  {
     return true;
 }
 
+SgExpression* parseArraySectionExpression(SgNode* directive, bool look_forward, const char* str) {
+
+    orig_str = str;
+    omp_lexer_init(str);
+    omp_directive_node = directive;
+    omp_look_forward = look_forward;
+    omp_parse();
+    SgExpression* sg_expression = current_exp;
+
+    return sg_expression;
+
+}
 
 SgExpression* parseExpression(SgNode* directive, bool look_forward, const char* str) {
 

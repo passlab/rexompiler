@@ -62,8 +62,8 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	firstPrivateArray.c \
 	firstPrivateArray_2.c \
 	firstlastprivate.c \
-	flush.c \
-	flush_exampleA_21_1c.c \
+	#flush.c \
+	#flush_exampleA_21_1c.c \
 	full_verify.c \
 	get_max_threads.c \
 	hello.c \
@@ -134,8 +134,8 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	reduction_min_max.c \
 	reduction_modifier.c \
 	reduction_user_identifier.c \
-	requires.c \
-	requires1.c \
+	#requires.c \
+	#requires1.c \
 	rice1.c \
 	scan.c \
 	section.c \
@@ -217,9 +217,6 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	firstPrivateArray.c \
 	firstPrivateArray_2.c \
 	firstlastprivate.c \
-	flush.c \
-	flush_exampleA_21_1c.c \
-	flush_with_clause.c \
 	full_verify.c \
 	get_max_threads.c \
 	hello.c \
@@ -285,8 +282,6 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	reduction_min_max.c \
 	reduction_modifier.c \
 	reduction_user_identifier.c \
-	requires.c \
-	requires1.c \
 	rice1.c \
 	scan.c \
 	section.c \
@@ -353,19 +348,28 @@ CXX_TESTCODES_REQUIRED_TO_PASS = \
 	task_tree.cpp 
 else
 C_OMP_ACC_TESTCODES_REQUIRED_TO_PASS = \
-    #    axpy_ompacc.c \
-    #    axpy_ompacc2.c \
-	#axpy_ompacc3.c \
-	#matrixmultiply-ompacc.c \
-	#matrixmultiply-ompacc2.c \
-	#jacobi-ompacc.c \
-	#jacobi-ompacc-v2.c \
-	#jacobi-ompacc-opt1.c \
-	#jacobi-ompacc-opt2.c \
-	#jacobi-ompacc-multiGPU.c
+        axpy_ompacc.c \
+        axpy_ompacc2.c \
+	axpy_ompacc3.c \
+	matrixmultiply-ompacc.c \
+	matrixmultiply-ompacc2.c \
+	jacobi-ompacc.c \
+	jacobi-ompacc-v2.c \
+	jacobi-ompacc-opt1.c \
+	jacobi-ompacc-opt2.c \
+	jacobi-ompacc-multiGPU.c
 
-REX_C_OMP_ACC_TESTCODES_REQUIRED_TO_PASS = 
-
+REX_C_OMP_ACC_TESTCODES_REQUIRED_TO_PASS = \ 
+        axpy_ompacc.c \
+        axpy_ompacc2.c \
+	axpy_ompacc3.c \
+	matrixmultiply-ompacc.c \
+	matrixmultiply-ompacc2.c \
+	jacobi-ompacc.c \
+	jacobi-ompacc-v2.c \
+	jacobi-ompacc-opt1.c \
+	jacobi-ompacc-opt2.c \
+	jacobi-ompacc-multiGPU.c
 CXX_TESTCODES_REQUIRED_TO_PASS = \
     #    jacobi-ompacc2.cpp \
 	classMember.cpp \
