@@ -307,6 +307,8 @@ int Labeler::isLabelRelevantNode(SgNode* node) {
   case V_SgOmpLoopStatement:
   case V_SgOmpScanStatement:
   case V_SgOmpTaskloopStatement:
+  case V_SgOmpTargetEnterDataStatement:
+  case V_SgOmpTargetExitDataStatement:
   case V_SgOmpOrderedStatement:
   case V_SgOmpSectionStatement:
   case V_SgOmpSingleStatement:

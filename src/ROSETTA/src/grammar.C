@@ -3891,6 +3891,7 @@ Grammar::GrammarNodeInfo Grammar::getGrammarNodeInfo(AstNodeClass* grammarnode) 
      // DQ (12/21/2011): Added exception for SgTemplateVariableDeclaration derived from SgVariableDeclaration.
         ||nodeName == "SgTemplateVariableDeclaration"
         ||nodeName == "SgOmpClauseBodyStatement"
+        ||nodeName == "SgOmpClauseStatement"
         ||nodeName == "SgOmpMetadirectiveStatement"
         ||nodeName == "SgOmpParallelStatement"
         ||nodeName == "SgOmpTeamsStatement"
@@ -3903,6 +3904,8 @@ Grammar::GrammarNodeInfo Grammar::getGrammarNodeInfo(AstNodeClass* grammarnode) 
         ||nodeName == "SgOmpLoopStatement"
         ||nodeName == "SgOmpScanStatement"
         ||nodeName == "SgOmpTaskloopStatement"
+        ||nodeName == "SgOmpTargetEnterDataStatement"
+        ||nodeName == "SgOmpTargetExitDataStatement"
         ||nodeName == "SgOmpCriticalStatement"
         ||nodeName == "SgOmpSectionsStatement"
         ||nodeName == "SgOmpTargetStatement"
@@ -4216,6 +4219,8 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                  ||string(node.getName()) == "SgOmpLoopStatement"
                  ||string(node.getName()) == "SgOmpScanStatement"
                  ||string(node.getName()) == "SgOmpTaskloopStatement"
+                 ||string(node.getName()) == "SgOmpTargetEnterDataStatement"
+                 ||string(node.getName()) == "SgOmpTargetExitDataStatement"
                  ||string(node.getName()) == "SgOmpCriticalStatement"
                  ||string(node.getName()) == "SgOmpSingleStatement"
                  ||string(node.getName()) == "SgOmpSimdStatement"
@@ -4227,6 +4232,7 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                  ||string(node.getName()) == "SgOmpForSimdStatement"
                  ||string(node.getName()) == "SgOmpForSimdStatement"
                  ||string(node.getName()) == "SgOmpDoStatement"
+                 ||string(node.getName()) == "SgOmpClauseStatement"
                  ||string(node.getName()) == "SgOmpAtomicStatement"
                  )
                   {
@@ -4338,6 +4344,8 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                  ||string(node.getName()) == "SgOmpLoopStatement"
                  ||string(node.getName()) == "SgOmpScanStatement"
                  ||string(node.getName()) == "SgOmpTaskloopStatement"
+                 ||string(node.getName()) == "SgOmpTargetEnterDataStatement"
+                 ||string(node.getName()) == "SgOmpTargetExitDataStatement"
                  ||string(node.getName()) == "SgOmpSingleStatement"
                  ||string(node.getName()) == "SgOmpSimdStatement"
                  ||string(node.getName()) == "SgOmpTaskStatement"
@@ -4347,6 +4355,7 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                  ||string(node.getName()) == "SgOmpForStatement"
                  ||string(node.getName()) == "SgOmpForSimdStatement"
                  ||string(node.getName()) == "SgOmpDoStatement"
+                 ||string(node.getName()) == "SgOmpClauseStatement"
                  ||string(node.getName()) == "SgOmpAtomicStatement"
                  )
                   {

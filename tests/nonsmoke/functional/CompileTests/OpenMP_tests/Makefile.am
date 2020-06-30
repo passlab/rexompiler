@@ -134,8 +134,8 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	reduction_min_max.c \
 	reduction_modifier.c \
 	reduction_user_identifier.c \
-	requires.c \
-	requires1.c \
+	#requires.c \
+	#requires1.c \
 	rice1.c \
 	scan.c \
 	section.c \
@@ -159,8 +159,8 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	subteam.c \
 	target.c \
 	target1.c \
-	#task_array.c \
-	#task_array2.c \
+	task_array.c \
+	task_array2.c \
 	#task_dep1.c \
 	#task_dep2.c \
 	#task_dep3.c \
@@ -171,11 +171,11 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	#task_orphaned.c \
 	#task_outlining.c \
 	#task_priority.c \
-	#task_untied.c \
-	#task_untied2.c \
-	#task_untied3.c \
+	task_untied.c \
+	task_untied2.c \
+	task_untied3.c \
 	#task_untied4.c \
-	#task_underIf.c \
+	task_underIf.c \
 	#task_wait.c \
 	#task_wait2.c \
 	teams.c \
@@ -282,8 +282,6 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	reduction_min_max.c \
 	reduction_modifier.c \
 	reduction_user_identifier.c \
-	requires.c \
-	requires1.c \
 	rice1.c \
 	scan.c \
 	section.c \
@@ -302,6 +300,12 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	subteam.c \
 	target.c \
 	target1.c \
+	task_array.c \
+	task_array2.c \
+	task_untied.c \
+	task_untied2.c \
+	task_untied3.c \
+	task_underIf.c \
 	taskgroup.c \
 	taskloop.c \
 	taskyield.c \
@@ -344,19 +348,28 @@ CXX_TESTCODES_REQUIRED_TO_PASS = \
 	task_tree.cpp 
 else
 C_OMP_ACC_TESTCODES_REQUIRED_TO_PASS = \
-    #    axpy_ompacc.c \
-    #    axpy_ompacc2.c \
-	#axpy_ompacc3.c \
-	#matrixmultiply-ompacc.c \
-	#matrixmultiply-ompacc2.c \
-	#jacobi-ompacc.c \
-	#jacobi-ompacc-v2.c \
-	#jacobi-ompacc-opt1.c \
-	#jacobi-ompacc-opt2.c \
-	#jacobi-ompacc-multiGPU.c
+        axpy_ompacc.c \
+        axpy_ompacc2.c \
+	axpy_ompacc3.c \
+	matrixmultiply-ompacc.c \
+	matrixmultiply-ompacc2.c \
+	jacobi-ompacc.c \
+	jacobi-ompacc-v2.c \
+	jacobi-ompacc-opt1.c \
+	jacobi-ompacc-opt2.c \
+	jacobi-ompacc-multiGPU.c
 
-REX_C_OMP_ACC_TESTCODES_REQUIRED_TO_PASS = 
-
+REX_C_OMP_ACC_TESTCODES_REQUIRED_TO_PASS = \ 
+        axpy_ompacc.c \
+        axpy_ompacc2.c \
+	axpy_ompacc3.c \
+	matrixmultiply-ompacc.c \
+	matrixmultiply-ompacc2.c \
+	jacobi-ompacc.c \
+	jacobi-ompacc-v2.c \
+	jacobi-ompacc-opt1.c \
+	jacobi-ompacc-opt2.c \
+	jacobi-ompacc-multiGPU.c
 CXX_TESTCODES_REQUIRED_TO_PASS = \
     #    jacobi-ompacc2.cpp \
 	classMember.cpp \

@@ -287,6 +287,7 @@ SgOmpBarrierStatement
 SgOmpCriticalStatement
 SgOmpClauseBodyStatement
 SgOmpBodyStatement
+SgOmpClauseStatement
 SgOmpDoStatement
 SgOmpFlushStatement
 SgOmpDeclareSimdStatement
@@ -307,6 +308,8 @@ SgOmpRequiresStatement
 SgOmpLoopStatement
 SgOmpScanStatement
 SgOmpTaskloopStatement
+SgOmpTargetEnterDataStatement
+SgOmpTargetExitDataStatement
 SgOmpSectionStatement
 SgOmpSectionsStatement
 SgOmpSingleStatement
@@ -349,6 +352,7 @@ SgOmpTaskgroupClause
 SgOmpNumThreadsClause
 SgOmpNumTeamsClause
 SgOmpGrainsizeClause
+SgOmpDetachClause
 SgOmpNumTasksClause
 SgOmpNogroupClause
 SgOmpHintClause
@@ -365,6 +369,8 @@ SgOmpNontemporalClause
 SgOmpInclusiveClause
 SgOmpExclusiveClause
 SgOmpIsDevicePtrClause
+SgOmpUseDevicePtrClause
+SgOmpUseDeviceAddrClause
 SgOmpThreadLimitClause
 SgOmpOrderedClause
 SgOmpPrivateClause

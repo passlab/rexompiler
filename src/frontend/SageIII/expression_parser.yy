@@ -44,7 +44,7 @@ extern void omp_lexer_init(const char* str);
 //! Initialize the parser with the originating SgPragmaDeclaration and its pragma text
 extern void omp_parser_init(SgNode* aNode, const char* str);
 extern SgExpression* parseExpression(SgNode*, const char*);
-extern std::pair<SgSymbol*, std::pair<SgExpression*, SgExpression*> >* parseMapExpression(SgNode*, bool, const char*);
+extern SgExpression* parseArraySectionExpression(SgNode*, const char*);
 
 static int omp_error(const char*);
 
@@ -69,7 +69,6 @@ static bool omp_look_forward = false;
 static SgVariableSymbol* array_symbol; 
 static SgExpression* lower_exp = NULL;
 static SgExpression* length_exp = NULL;
-static std::pair<SgSymbol*, std::pair<SgExpression*, SgExpression*> > array_dimensions;
 // check if the parsed a[][] is an array element access a[i][j] or array section a[lower:length][lower:length]
 // 
 static bool arraySection=true; 
@@ -80,6 +79,7 @@ static bool is_ompparser_expression = false;
 // add ompparser var
 static bool addOmpVariable(const char*);
 std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
+std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >  array_dimensions;  
 %}
 
 %locations
@@ -102,7 +102,7 @@ corresponding C type is union name defaults to YYSTYPE.
         SUB_ASSIGN2 MUL_ASSIGN2 DIV_ASSIGN2 MOD_ASSIGN2 AND_ASSIGN2 
         XOR_ASSIGN2 OR_ASSIGN2 DEPEND IN OUT INOUT MERGEABLE
         LEXICALERROR IDENTIFIER MIN MAX
-        VARLIST MAPLIST
+        VARLIST ARRAY_SECTION
 /*We ignore NEWLINE since we only care about the pragma string , We relax the syntax check by allowing it as part of line continuation */
 %token <itype> ICONSTANT   
 %token <stype> EXPRESSION ID_EXPRESSION 
@@ -133,7 +133,7 @@ corresponding C type is union name defaults to YYSTYPE.
 
 openmp_expression : omp_varlist
                   | omp_expression
-                  | omp_maplist
+                  | omp_array_section
                   ;
 
 omp_varlist : VARLIST {
@@ -148,10 +148,46 @@ omp_expression : EXPRESSION {
             }
             ;
 
-omp_maplist : MAPLIST {
-                    is_ompparser_variable = true;
-                    } '(' map_variable_list ')' { is_ompparser_variable = false; }
-               ;
+omp_array_section : ARRAY_SECTION {
+                      is_ompparser_expression = true;
+                  } '(' array_section_list ')' {
+                      is_ompparser_expression = false;
+                  }
+                  ;
+
+array_section_list : id_expression_opt_dimension
+                   | array_section_list ',' id_expression_opt_dimension
+                   ;
+
+/* mapped variables may have optional dimension information */
+id_expression_opt_dimension : ID_EXPRESSION { if (!addOmpVariable((const char*)$1)) YYABORT; } dimension_field_optseq
+                            ;
+
+/* Parse optional dimension information associated with map(a[0:n][0:m]) Liao 1/22/2013 */
+dimension_field_optseq : /* empty */
+                       | dimension_field_seq
+                       ;
+/* sequence of dimension fields */
+dimension_field_seq : dimension_field
+                    | dimension_field_seq dimension_field
+                    ;
+
+dimension_field : '[' expression {lower_exp = current_exp; } 
+                  ':' expression { length_exp = current_exp;
+                       assert (array_symbol != NULL);
+                       SgType* t = array_symbol->get_type();
+                       bool isPointer= (isSgPointerType(t) != NULL );
+                       bool isArray= (isSgArrayType(t) != NULL);
+                       if (!isPointer && ! isArray )
+                       {
+                         std::cerr<<"Error. ompparser.yy expects a pointer or array type."<<std::endl;
+                         std::cerr<<"while seeing "<<t->class_name()<<std::endl;
+                       }
+                       array_dimensions[array_symbol].push_back( std::make_pair (lower_exp, length_exp));
+                       } 
+                   ']'
+                ;
+
 
 /* Sara Royuela, 04/27/2012
  * Extending grammar to accept conditional expressions, arithmetic and bitwise expressions and member accesses
@@ -512,39 +548,6 @@ variable_list : ID_EXPRESSION {
                 addOmpVariable((const char*)$3);
               }
 
-/* map (array[lower:length][lower:length])  , not array references, but array section notations */ 
-map_variable_list : id_expression_opt_dimension
-              | map_variable_list ',' id_expression_opt_dimension
-              ;
-/* mapped variables may have optional dimension information */
-id_expression_opt_dimension: ID_EXPRESSION { addOmpVariable((const char*)$1); } dimension_field_optseq
-                           ;
-
-/* Parse optional dimension information associated with map(a[0:n][0:m]) Liao 1/22/2013 */
-dimension_field_optseq: /* empty */
-                      | dimension_field_seq
-                      ;
-/* sequence of dimension fields */
-dimension_field_seq : dimension_field
-                    | dimension_field_seq dimension_field
-                    ;
-
-dimension_field: '[' expression { lower_exp = current_exp; } 
-                 ':' expression { length_exp = current_exp;
-                      assert (array_symbol != NULL);
-                      SgType* t = array_symbol->get_type();
-                      bool isPointer= (isSgPointerType(t) != NULL );
-                      bool isArray= (isSgArrayType(t) != NULL);
-                      if (!isPointer && ! isArray )
-                      {
-                        std::cerr<<"Error. ompparser.yy expects a pointer or array type."<<std::endl;
-                        std::cerr<<"while seeing "<<t->class_name()<<std::endl;
-                      }
-                      array_dimensions = std::make_pair(array_symbol, std::make_pair(lower_exp, length_exp));
-                      } 
-                  ']'
-               ;
-
 %%
 int yyerror(const char *s) {
     SgLocatedNode* lnode = isSgLocatedNode(omp_directive_node);
@@ -599,20 +602,16 @@ static bool addOmpVariable(const char* var)  {
     return true;
 }
 
-std::pair<SgSymbol*, std::pair<SgExpression*, SgExpression*> >* parseMapExpression(SgNode* directive, bool look_forward, const char* str) {
+SgExpression* parseArraySectionExpression(SgNode* directive, bool look_forward, const char* str) {
 
-    //array_dimensions.clear();
     orig_str = str;
     omp_lexer_init(str);
     omp_directive_node = directive;
     omp_look_forward = look_forward;
     omp_parse();
-    std::pair<SgSymbol*, std::pair<SgExpression*, SgExpression*> >* result = &array_dimensions;
-    if (current_exp == NULL) {
-        result = NULL;
-    };
+    SgExpression* sg_expression = current_exp;
 
-    return result;
+    return sg_expression;
 
 }
 
