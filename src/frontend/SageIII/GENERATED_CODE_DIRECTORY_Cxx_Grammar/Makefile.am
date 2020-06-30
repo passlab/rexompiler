@@ -67,19 +67,28 @@ SgAggregateInitializer.C               SgClassDecl_attr.C                    SgF
 SgAliasSymbol.C                        SgClassDefinition.C                   SgFunctionTypeSymbol.C                  SgOmpDefaultClause.C                         SgThisExp.C \
 SgAllocateStatement.C                  SgClassNameRefExp.C                   SgFunctionTypeTable.C                   SgOmpDoStatement.C                           SgThrowOp.C \
 SgAndAssignOp.C                        SgClassSymbol.C                       SgGlobal.C                              SgOmpExpressionClause.C                      SgToken.C \
-SgAndOp.C                              SgClassType.C                         SgGotoStatement.C                       SgOmpFirstprivateClause.C                    SgTryStmt.C \
+SgAndOp.C                              SgClassType.C                         SgGotoStatement.C                       SgOmpFirstprivateClause.C              SgOmpNontemporalClause.C       SgTryStmt.C \
+SgOmpInclusiveClause.C               SgOmpExclusiveClause.C                  SgOmpIsDevicePtrClause.C        SgOmpUseDevicePtrClause.C     SgOmpUseDevicePtrClause.C \
 SgArithmeticIfStatement.C              SgClinkageDeclarationStatement.C      SgGraph.C                               SgOmpFlushStatement.C                        SgTypeBool.C \
 SgArrayType.C                          SgClinkageEndStatement.C              SgGraphEdge.C                           SgOmpForStatement.C                          SgType.C \
 SgArrowExp.C                           SgClinkageStartStatement.C            SgGraphEdgeList.C                       SgOmpIfClause.C                              SgTypeChar.C \
-SgArrowStarOp.C                        SgCloseStatement.C                    SgGraphNode.C                           SgOmpLastprivateClause.C                     SgTypeComplex.C \
-SgColonShapeExp.C                     SgGraphNodeList.C                       SgOmpMasterStatement.C                       SgTypeDefault.C \
-SgCommaOpExp.C                        SgGreaterOrEqualOp.C                    SgOmpNowaitClause.C                          SgTypedefDeclaration.C \
-SgAsmOp.C 			      SgCommonBlock.C                       SgGreaterThanOp.C                       SgOmpNumThreadsClause.C                      SgTypedefSeq.C \
+SgArrowStarOp.C                        SgCloseStatement.C                    SgGraphNode.C                           SgOmpLastprivateClause.C                     SgTypeComplex.C                  SgOmpMasterStatement.C\
+SgColonShapeExp.C                     SgGraphNodeList.C                       SgOmpTaskyieldStatement.C                       SgTypeDefault.C \
+SgCommaOpExp.C                        SgGreaterOrEqualOp.C                    SgOmpNowaitClause.C               SgOmpReadClause.C                         SgTypedefDeclaration.C                SgOmpWriteClause.C                     SgOmpUpdateClause.C                            SgOmpCaptureClause.C \
+SgOmpSeqCstClause.C              SgOmpAcqRelClause.C                SgOmpReleaseClause.C                     SgOmpAcquireClause.C \
+SgOmpRelaxedClause.C \
+SgOmpReverseOffloadClause.C          SgOmpUnifiedAddressClause.C           SgOmpUnifiedSharedMemoryClause.C \
+SgOmpDynamicAllocatorsClause.C        SgOmpAtomicDefaultMemOrderClause.C     SgOmpExtImplementationDefinedRequirementClause.C \                     
+SgAsmOp.C 			      SgCommonBlock.C                       SgGreaterThanOp.C                       SgOmpNumThreadsClause.C                      SgTypedefSeq.C                  SgOmpNumTeamsClause.C                         SgOmpOrderClause.C SgOmpBindClause.C               SgOmpThreadLimitClause.C \
+SgOmpGrainsizeClause.C                         SgOmpNumTasksClause.C            SgOmpNogroupClause.C \
+SgOmpNumParallelClause.C                 SgOmpNumSectionsClause.C                   SgOmpNumForClause.C                        SgOmpNumTaskgroupClause.C \
 SgCommonBlockObject.C                 SgIdentDirectiveStatement.C             SgOmpOrderedClause.C                         SgTypedefSymbol.C \
 SgCommonSymbol.C                      SgIfdefDirectiveStatement.C             SgOmpOrderedStatement.C                      SgTypedefType.C \
-SgIfDirectiveStatement.C      SgOmpMetadirectiveStatement.C          SgOmpParallelStatement.C                     SgTypeDouble.C \
+SgIfDirectiveStatement.C      SgOmpMetadirectiveStatement.C          SgOmpParallelStatement.C      SgOmpTeamsStatement.C    SgOmpLoopStatement.C          SgOmpTaskloopStatement.C       SgTypeDouble.C                       SgOmpRequiresStatement.C                    SgOmpScanStatement.C         SgOmpDistributeStatement.C   SgOmpTaskgroupStatement.C             SgOmpCancellationPointStatement.C       SgOmpCancelStatement.C                       SgOmpDeclareMapperStatement.C         SgOmpTargetEnterDataStatement.C           SgOmpTargetExitDataStatement.C \
 SgComputedGotoStatement.C             SgIfndefDirectiveStatement.C            SgOmpPrivateClause.C                         SgTypeEllipse.C \
-SgConcatenationOp.C                   SgIfStmt.C                              SgOmpReductionClause.C SgOmpAllocateClause.C   SgOmpWhenClause.C                   SgTypeFloat.C \
+SgConcatenationOp.C                   SgIfStmt.C                              SgOmpReductionClause.C                       SgOmpAllocateClause.C \
+SgOmpWhenClause.C                   SgTypeFloat.C                             SgOmpDistScheduleClause.C                    SgOmpInReductionClause.C \
+SgOmpDefaultmapClause.C               SgOmpTaskReductionClause.C \
 SgConditionalExp.C                    SgImagPartOp.C                          SgOmpScheduleClause.C                        SgTypeGlobalVoid.C \
 SgConjugateOp.C                       SgImplicitStatement.C                   SgOmpSectionsStatement.C                     SgTypeIdOp.C \
 SgConstructorInitializer.C            SgImpliedDo.C                           SgOmpSectionStatement.C                      SgTypeImaginary.C \

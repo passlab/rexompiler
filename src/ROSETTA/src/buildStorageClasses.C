@@ -858,13 +858,25 @@ AstNodeClass::evaluateType(std::string& varTypeString)
 
                  ( varTypeString == "SgOmpClause::omp_default_option_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_proc_bind_policy_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_order_kind_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_dist_schedule_kind_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_defaultmap_behavior_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_defaultmap_category_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_bind_binding_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_atomic_default_mem_order_kind_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_atomic_clause_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_schedule_kind_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_schedule_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_reduction_identifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_reduction_modifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_in_reduction_identifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_task_reduction_identifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_when_context_kind_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_when_context_vendor_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_if_modifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_lastprivate_modifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_device_modifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_linear_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_allocate_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_dependence_type_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_map_operator_enum" ) ||

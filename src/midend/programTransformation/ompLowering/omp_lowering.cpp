@@ -914,7 +914,7 @@ namespace OmpSupport
       ROSE_ASSERT(clauses.size() ==1); 
       SgOmpScheduleClause* s_clause = isSgOmpScheduleClause(clauses[0]);
       ROSE_ASSERT(s_clause);
-      if (s_clause->get_kind() == SgOmpClause::e_omp_schedule_static)
+      if (s_clause->get_kind() == SgOmpClause::e_omp_schedule_kind_static)
         result = true;
     }
     return result;
@@ -935,22 +935,22 @@ namespace OmpSupport
   string toString(SgOmpClause::omp_schedule_kind_enum s_kind)
   {
     string result ;
-    if (s_kind == SgOmpClause::e_omp_schedule_static)
+    if (s_kind == SgOmpClause::e_omp_schedule_kind_static)
     {
       result = "static";
-    } else if (s_kind == SgOmpClause::e_omp_schedule_dynamic)
+    } else if (s_kind == SgOmpClause::e_omp_schedule_kind_dynamic)
     {
       result = "dynamic";
     }
-    else if (s_kind == SgOmpClause::e_omp_schedule_guided)
+    else if (s_kind == SgOmpClause::e_omp_schedule_kind_guided)
     {
       result = "guided";
     }
-    else if (s_kind == SgOmpClause::e_omp_schedule_runtime)
+    else if (s_kind == SgOmpClause::e_omp_schedule_kind_runtime)
     {
       result = "runtime";
     }
-    else if (s_kind == SgOmpClause::e_omp_schedule_auto)
+    else if (s_kind == SgOmpClause::e_omp_schedule_kind_auto)
     {
       //      cerr<<"GOMP does not provide an implementation for schedule(auto)....."<<endl;
       result = "auto";
@@ -1177,7 +1177,7 @@ namespace OmpSupport
 
     // the case of with the ordered schedule, but without any schedule policy specified
     // treat it as (static, 0) based on GCC's translation
-    SgOmpClause::omp_schedule_kind_enum s_kind = SgOmpClause::e_omp_schedule_static;
+    SgOmpClause::omp_schedule_kind_enum s_kind = SgOmpClause::e_omp_schedule_kind_static;
     SgExpression* orig_chunk_size = NULL;
     bool hasOrder = false;
     if (hasClause(target, V_SgOmpOrderedClause))
@@ -1193,7 +1193,7 @@ namespace OmpSupport
       orig_chunk_size = s_clause->get_chunk_size();
 
       // chunk size is 1 for dynamic and guided schedule, if not specified. 
-      if (s_kind == SgOmpClause::e_omp_schedule_dynamic|| s_kind == SgOmpClause::e_omp_schedule_guided)
+      if (s_kind == SgOmpClause::e_omp_schedule_kind_dynamic|| s_kind == SgOmpClause::e_omp_schedule_kind_guided)
       {
         orig_chunk_size = createAdjustedChunkSize(orig_chunk_size);
       }
@@ -1202,7 +1202,7 @@ namespace OmpSupport
       orig_chunk_size = buildIntVal(0);
 
     // schedule(auto) does not have chunk size 
-    if (s_kind != SgOmpClause::e_omp_schedule_auto  && s_kind != SgOmpClause::e_omp_schedule_runtime)
+    if (s_kind != SgOmpClause::e_omp_schedule_kind_auto  && s_kind != SgOmpClause::e_omp_schedule_kind_runtime)
       ROSE_ASSERT(orig_chunk_size != NULL);
     // (GOMP_loop_static_start (orig_lower, orig_upper, adj_stride, orig_chunk, &_p_lower, &_p_upper)) 
     // (GOMP_loop_ordered_static_start (orig_lower, orig_upper, adj_stride, orig_chunk, &_p_lower, &_p_upper)) 
@@ -1225,7 +1225,7 @@ namespace OmpSupport
         //buildAddOp(copyExpression(orig_upper), buildIntVal(upper_adjust)),
         copyExpression(orig_upper), 
         createAdjustedStride(orig_stride, isIncremental)); 
-    if (s_kind != SgOmpClause::e_omp_schedule_auto && s_kind != SgOmpClause::e_omp_schedule_runtime)
+    if (s_kind != SgOmpClause::e_omp_schedule_kind_auto && s_kind != SgOmpClause::e_omp_schedule_kind_runtime)
     {
       appendExpression(para_list_i, copyExpression(orig_chunk_size));
     }
@@ -1239,7 +1239,7 @@ namespace OmpSupport
         //buildAddOp(copyExpression(orig_upper), buildIntVal(upper_adjust)),
         copyExpression(orig_upper),
         createAdjustedStride(orig_stride, isIncremental)); 
-    if (s_kind != SgOmpClause::e_omp_schedule_auto && s_kind != SgOmpClause::e_omp_schedule_runtime)
+    if (s_kind != SgOmpClause::e_omp_schedule_kind_auto && s_kind != SgOmpClause::e_omp_schedule_kind_runtime)
     {
       appendExpression(para_list, orig_chunk_size);
       //appendExpression(para_list, copyExpression(orig_chunk_size));
@@ -5661,7 +5661,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
           result = new SgOmpFirstprivateClause(buildExprListExp());
           break;
         case V_SgOmpLastprivateClause:
-          result = new SgOmpLastprivateClause(buildExprListExp());
+          result = new SgOmpLastprivateClause(buildExprListExp(), SgOmpClause::e_omp_lastprivate_modifier_unspecified);
           break;
         case V_SgOmpPrivateClause:
           result = new SgOmpPrivateClause(buildExprListExp());

@@ -3,29 +3,51 @@ include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 F77_TESTCODES_TO_PASS = \
 	allocate_predefined_modifiers.f \
 	allocate_user_defined_modifiers.f \
-    array-one.f \
-    array_initialize.f \
+    #array-one.f \
+    #array_initialize.f \
     default.f \
     exampleA251f.f \
     flush.f \
     helloworld.f \
     helloworld0.f \
     helloworld2.f \
-    jacobi.f \
+    #jacobi.f \
     master.f \
-    ompdo-decremental.f \
-    ompdo-default.f \
-    ompdo-multiple.f \
-    ompdo-orphaned.f \
-    ompdo-static.f \
+    #ompdo-decremental.f \
+    #ompdo-default.f \
+    #ompdo-multiple.f \
+    #ompdo-orphaned.f \
+    #ompdo-static.f \
     parallel-1.f \
     parallel-2.f \
     parallel.f \
     private.f \
-    reduction.f \
-    schedule.f \
+    #reduction.f \
+    #schedule.f \
     section1.f \
-    shared-array.f \
+    #shared-array.f \
+    shared.f \
+    single.f \
+    task_largenumber.f \
+    task_largenumber2.f \
+    task_scalar.f \
+    task_simplest.f
+
+REX_F77_TESTCODES_TO_PASS = \
+	allocate_predefined_modifiers.f \
+	allocate_user_defined_modifiers.f \
+    default.f \
+    exampleA251f.f \
+    flush.f \
+    helloworld.f \
+    helloworld0.f \
+    helloworld2.f \
+    master.f \
+    parallel-1.f \
+    parallel-2.f \
+    parallel.f \
+    private.f \
+    section1.f \
     shared.f \
     single.f \
     task_largenumber.f \
@@ -38,8 +60,14 @@ F77_TESTCODES_TO_PASS += testNewOFP.f
 
 F90_TESTCODES_TO_PASS = \
   paralleldo.f90 \
-  paralleldo-1.f90 \
-  collapse.f90 \
+  #paralleldo-1.f90 \
+  #collapse.f90 \
+  critical.f90 \
+  single-copyprivate.f90 \
+  continuation.f90
+
+REX_F90_TESTCODES_TO_PASS = \
+  paralleldo.f90 \
   critical.f90 \
   single-copyprivate.f90 \
   continuation.f90
@@ -86,8 +114,8 @@ ROSE_FLAGS = -rose:openmp:ast_only
 TESTCODE_INCLUDES = -I$(top_srcdir)/src/frontend/SageIII
 
 
-PASSING_F77_TEST_RESULTS = $(addprefix rose_,${F77_TESTCODES_TO_PASS})
-PASSING_F90_TEST_RESULTS = $(addprefix rose_,${F90_TESTCODES_TO_PASS})
+PASSING_F77_TEST_RESULTS = $(addprefix rose_,${REX_F77_TESTCODES_TO_PASS})
+PASSING_F90_TEST_RESULTS = $(addprefix rose_,${REX_F90_TESTCODES_TO_PASS})
 
 $(PASSING_F77_TEST_RESULTS): $(srcdir)/$(@:rose_%=%) ../parseOmp
 	$(ADDRESS_SANITIZER) ../parseOmp $(ROSE_FLAGS) $(TESTCODE_INCLUDES) -c $(srcdir)/$(@:rose_%=%)
@@ -116,8 +144,8 @@ gen-output: $(PASSING_F77_F90_TEST_RESULTS_OUTPUT)
 ../parseOmp:
 	$(MAKE) -C ../. parseOmp
 ALL_TESTCODES =\
-  $(F77_TESTCODES_TO_PASS) \
-  $(F90_TESTCODES_TO_PASS) \
+  $(REX_F77_TESTCODES_TO_PASS) \
+  $(REX_F90_TESTCODES_TO_PASS) \
   $(TESTCODES_CURRENTLY_FAILING) 
 
 # follow the astOutlining test to guide fortran tests  

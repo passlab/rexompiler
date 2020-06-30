@@ -19057,7 +19057,6 @@ SgSyncTeamStatement::post_construction_initialization()
 
 SOURCE_SYNC_TEAM_STATEMENT_END
 
-
 SOURCE_LOCK_STATEMENT_START
 
 void
@@ -19724,6 +19723,78 @@ SgOmpParallelStatement::post_construction_initialization()
    {}
 SOURCE_OMP_PARALLEL_STATEMENT_END
 
+SOURCE_OMP_TEAMS_STATEMENT_START
+void
+SgOmpTeamsStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TEAMS_STATEMENT_END
+
+SOURCE_OMP_CANCELLATION_POINT_STATEMENT_START
+void
+SgOmpCancellationPointStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_CANCELLATION_POINT_STATEMENT_END
+
+SOURCE_OMP_DECLARE_MAPPER_STATEMENT_START
+void
+SgOmpDeclareMapperStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_DECLARE_MAPPER_STATEMENT_END
+
+SOURCE_OMP_CANCEL_STATEMENT_START
+void
+SgOmpCancelStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_CANCEL_STATEMENT_END
+
+SOURCE_OMP_TASKGROUP_STATEMENT_START
+void
+SgOmpTaskgroupStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TASKGROUP_STATEMENT_END
+
+SOURCE_OMP_DISTRIBUTE_STATEMENT_START
+void
+SgOmpDistributeStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_DISTRIBUTE_STATEMENT_END
+
+SOURCE_OMP_REQUIRES_STATEMENT_START
+void
+SgOmpRequiresStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_REQUIRES_STATEMENT_END
+
+SOURCE_OMP_LOOP_STATEMENT_START
+void
+SgOmpLoopStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_LOOP_STATEMENT_END
+
+SOURCE_OMP_SCAN_STATEMENT_START
+void
+SgOmpScanStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_SCAN_STATEMENT_END
+
+SOURCE_OMP_TASKLOOP_STATEMENT_START
+void
+SgOmpTaskloopStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TASKLOOP_STATEMENT_END
+
+SOURCE_OMP_TARGET_ENTER_DATA_STATEMENT_START
+void
+SgOmpTargetEnterDataStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TARGET_ENTER_DATA_STATEMENT_END
+
+SOURCE_OMP_TARGET_EXIT_DATA_STATEMENT_START
+void
+SgOmpTargetExitDataStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TARGET_EXIT_DATA_STATEMENT_END
+
 SOURCE_OMP_METADIRECTIVE_STATEMENT_START
 void
 SgOmpMetadirectiveStatement::post_construction_initialization()
@@ -19736,6 +19807,11 @@ SgOmpMasterStatement::post_construction_initialization()
    {}
 SOURCE_OMP_MASTER_STATEMENT_END
 
+SOURCE_OMP_TASKYIELD_STATEMENT_START
+void
+SgOmpTaskyieldStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TASKYIELD_STATEMENT_END
 
 SOURCE_OMP_FLUSH_STATEMENT_START
 void
@@ -19846,7 +19922,6 @@ SgOmpTargetDataStatement::post_construction_initialization()
    {}
 SOURCE_OMP_TARGET_DATA_STATEMENT_END
 
-
 SOURCE_OMP_TASKWAIT_STATEMENT_START
 void
 SgOmpTaskwaitStatement::post_construction_initialization()
@@ -19914,6 +19989,15 @@ HEADER_OMP_BODY_STATEMENT_START
 #endif
 
 HEADER_OMP_BODY_STATEMENT_END
+
+HEADER_OMP_CLAUSE_STATEMENT_START
+HEADER_OMP_CLAUSE_STATEMENT_END
+
+SOURCE_OMP_CLAUSE_STATEMENT_START
+void
+SgOmpClauseStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_CLAUSE_STATEMENT_END
 
 SOURCE_OMP_BODY_STATEMENT_START
 void

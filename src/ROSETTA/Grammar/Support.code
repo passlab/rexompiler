@@ -58,13 +58,94 @@ HEADER_OMP_CLAUSE_START
 	};
 
         enum omp_schedule_kind_enum{
-          e_omp_schedule_unknown = 0,
-          e_omp_schedule_static,
-          e_omp_schedule_dynamic,
-          e_omp_schedule_guided,
-          e_omp_schedule_auto,
-          e_omp_schedule_runtime,
-          e_omp_schedule_last
+          e_omp_schedule_kind_unspecified,
+          e_omp_schedule_kind_static,
+          e_omp_schedule_kind_dynamic,
+          e_omp_schedule_kind_guided,
+          e_omp_schedule_kind_auto,
+          e_omp_schedule_kind_runtime
+        };
+
+        enum omp_schedule_modifier_enum{
+          e_omp_schedule_modifier_unspecified,
+          e_omp_schedule_modifier_monotonic,
+          e_omp_schedule_modifier_nonmonotonic,
+          e_omp_schedule_modifier_simd
+        };
+
+        enum omp_in_reduction_identifier_enum
+        {
+            e_omp_in_reduction_identifier_unspecified,
+            e_omp_in_reduction_identifier_plus, //+
+            e_omp_in_reduction_identifier_mul,  //*
+            e_omp_in_reduction_identifier_minus, // -
+        
+            e_omp_in_reduction_identifier_bitand, // &
+            e_omp_in_reduction_identifier_bitor,  // |
+            e_omp_in_reduction_identifier_bitxor,  // ^
+            e_omp_in_reduction_identifier_logand,  // &&
+            e_omp_in_reduction_identifier_logor,   // ||
+        
+            e_omp_in_reduction_identifier_and, // .and.
+            e_omp_in_reduction_identifier_or, // .or.
+            e_omp_in_reduction_identifier_eqv,   // fortran .eqv.
+            e_omp_in_reduction_identifier_neqv,   // fortran .neqv.
+            e_omp_in_reduction_identifier_max,
+            e_omp_in_reduction_identifier_min,
+            e_omp_in_reduction_identifier_iand,
+            e_omp_in_reduction_identifier_ior,
+            e_omp_in_reduction_identifier_ieor,
+            e_omp_in_reduction_user_defined_identifier,
+            e_omp_in_reduction_identifier_last
+
+        };
+
+        enum omp_task_reduction_identifier_enum
+        {
+            e_omp_task_reduction_identifier_unspecified,
+            e_omp_task_reduction_identifier_plus, //+
+            e_omp_task_reduction_identifier_mul,  //*
+            e_omp_task_reduction_identifier_minus, // -
+        
+            e_omp_task_reduction_identifier_bitand, // &
+            e_omp_task_reduction_identifier_bitor,  // |
+            e_omp_task_reduction_identifier_bitxor,  // ^
+            e_omp_task_reduction_identifier_logand,  // &&
+            e_omp_task_reduction_identifier_logor,   // ||
+        
+            e_omp_task_reduction_identifier_and, // .and.
+            e_omp_task_reduction_identifier_or, // .or.
+            e_omp_task_reduction_identifier_eqv,   // fortran .eqv.
+            e_omp_task_reduction_identifier_neqv,   // fortran .neqv.
+            e_omp_task_reduction_identifier_max,
+            e_omp_task_reduction_identifier_min,
+            e_omp_task_reduction_identifier_iand,
+            e_omp_task_reduction_identifier_ior,
+            e_omp_task_reduction_identifier_ieor,
+            e_omp_task_reduction_user_defined_identifier,
+            e_omp_task_reduction_identifier_last
+
+        };
+
+        enum omp_defaultmap_behavior_enum
+        {
+            e_omp_defaultmap_behavior_unspecified,
+            e_omp_defaultmap_behavior_alloc,
+            e_omp_defaultmap_behavior_to,
+            e_omp_defaultmap_behavior_from,
+            e_omp_defaultmap_behavior_tofrom,
+            e_omp_defaultmap_behavior_firstprivate,
+            e_omp_defaultmap_behavior_none,
+            e_omp_defaultmap_behavior_default
+        };
+
+        enum omp_defaultmap_category_enum
+        {
+            e_omp_defaultmap_category_unspecified,
+            e_omp_defaultmap_category_scalar,
+            e_omp_defaultmap_category_aggregate,
+            e_omp_defaultmap_category_pointer,
+            e_omp_defaultmap_category_allocatable
         };
 
         enum omp_reduction_identifier_enum
@@ -103,6 +184,27 @@ HEADER_OMP_CLAUSE_START
             e_omp_reduction_inscan,
             e_omp_reduction_task,
             e_omp_reduction_default
+        };
+
+        enum omp_linear_modifier_enum
+        {
+            e_omp_linear_modifier_unspecified,
+            e_omp_linear_modifier_ref,
+            e_omp_linear_modifier_val,
+            e_omp_linear_modifier_uval
+        };
+
+        enum omp_device_modifier_enum
+        {
+            e_omp_device_modifier_unspecified,
+            e_omp_device_modifier_ancestor,
+            e_omp_device_modifier_device_num
+        };
+
+        enum omp_lastprivate_modifier_enum
+        {
+            e_omp_lastprivate_modifier_unspecified,
+            e_omp_lastprivate_conditional
         };
 
         enum omp_when_context_kind_enum
@@ -189,6 +291,34 @@ HEADER_OMP_CLAUSE_START
           e_omp_proc_bind_policy_last
         };
 
+        enum omp_bind_binding_enum
+        {
+            e_omp_bind_binding_unspecified,
+            e_omp_bind_binding_teams,
+            e_omp_bind_binding_parallel,
+            e_omp_bind_binding_thread
+        };
+
+        enum omp_atomic_default_mem_order_kind_enum
+        {
+            e_omp_atomic_default_mem_order_kind_unspecified,
+            e_omp_atomic_default_mem_order_kind_seq_cst,
+            e_omp_atomic_default_mem_order_kind_acq_rel,
+            e_omp_atomic_default_mem_order_kind_relaxed
+        };
+
+        enum omp_order_kind_enum
+        {
+          e_omp_order_kind_unspecified,
+          e_omp_order_kind_concurrent,
+        };
+
+        enum omp_dist_schedule_kind_enum
+        {
+          e_omp_dist_schedule_kind_unspecified,
+          e_omp_dist_schedule_kind_static,
+        };
+
         enum omp_atomic_clause_enum
         {
           e_omp_atomic_clause_unknown,
@@ -201,7 +331,15 @@ HEADER_OMP_CLAUSE_START
         enum omp_if_modifier_enum
         {
             e_omp_if_modifier_unknown,
-            e_omp_if_parallel
+            e_omp_if_parallel,
+            e_omp_if_simd,
+            e_omp_if_target,
+            e_omp_if_cancel,
+            e_omp_if_taskloop,
+            e_omp_if_target_data,
+            e_omp_if_target_enter_data,
+            e_omp_if_target_exit_data,
+            e_omp_if_task
         };
        
 

@@ -1748,24 +1748,62 @@ addAssociatedNodes ( SgNode* node, set<SgNode*> & nodeList, bool markMemberNodes
           case V_SgOmpDoStatement       : 
           case V_SgOmpExpressionClause  : 
           case V_SgOmpFirstprivateClause: 
+          case V_SgOmpNontemporalClause : 
+          case V_SgOmpInclusiveClause   :
+          case V_SgOmpExclusiveClause   :
+          case V_SgOmpIsDevicePtrClause :
+          case V_SgOmpUseDevicePtrClause  :
+          case V_SgOmpUseDeviceAddrClause :
           case V_SgOmpFlushStatement    : 
           case V_SgOmpForStatement      : 
           case V_SgOmpForSimdStatement  : 
           case V_SgOmpIfClause          : 
           case V_SgOmpFinalClause       :  
           case V_SgOmpPriorityClause    :  
-          case V_SgOmpLastprivateClause:  
-          case V_SgOmpMasterStatement  :  
-          case V_SgOmpNowaitClause     :  
-          case V_SgOmpNumThreadsClause :  
+          case V_SgOmpLastprivateClause        :  
+          case V_SgOmpMasterStatement          :  
+          case V_SgOmpNowaitClause             :
+          case V_SgOmpReadClause               :
+          case V_SgOmpWriteClause              :
+          case V_SgOmpUpdateClause             :
+          case V_SgOmpCaptureClause            :
+          case V_SgOmpSeqCstClause             : 
+          case V_SgOmpAcqRelClause             : 
+          case V_SgOmpReleaseClause            : 
+          case V_SgOmpAcquireClause            : 
+          case V_SgOmpRelaxedClause            :
+          case V_SgOmpParallelClause           :  
+          case V_SgOmpSectionsClause           :  
+          case V_SgOmpForClause                :  
+          case V_SgOmpTaskgroupClause          :    
+          case V_SgOmpReverseOffloadClause     :
+          case V_SgOmpUnifiedAddressClause     :
+          case V_SgOmpUnifiedSharedMemoryClause     :
+          case V_SgOmpDynamicAllocatorsClause       :
+          case V_SgOmpAtomicDefaultMemOrderClause   :
+          case V_SgOmpExtImplementationDefinedRequirementClause :
+          case V_SgOmpNumThreadsClause  :
+          case V_SgOmpHintClause        :
+          case V_SgOmpNumTeamsClause    :
+          case V_SgOmpGrainsizeClause   :
+          case V_SgOmpDetachClause      :
+          case V_SgOmpNumTasksClause    :
+          case V_SgOmpNogroupClause     :
+          case V_SgOmpOrderClause       :
+          case V_SgOmpBindClause        :
+          case V_SgOmpThreadLimitClause :  
           case V_SgOmpOrderedClause    :  
           case V_SgOmpOrderedStatement :  
           case V_SgOmpParallelStatement:  
           case V_SgOmpPrivateClause    :  
           case V_SgOmpDependClause     :  
-          case V_SgOmpReductionClause  :  
+          case V_SgOmpReductionClause  :
+          case V_SgOmpInReductionClause:  
+          case V_SgOmpTaskReductionClause: 
           case V_SgOmpAllocateClause   :
           case V_SgOmpScheduleClause   :  
+          case V_SgOmpDistScheduleClause   :
+          case V_SgOmpDefaultmapClause   :
           case V_SgOmpSectionsStatement:  
           case V_SgOmpSectionStatement :  
           case V_SgOmpSharedClause     :  
