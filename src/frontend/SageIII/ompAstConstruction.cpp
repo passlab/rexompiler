@@ -58,7 +58,6 @@ static SgExpression* parseOmpExpression(SgPragmaDeclaration*, OpenMPClauseKind, 
 static SgExpression* parseOmpArraySection(SgPragmaDeclaration*, OpenMPClauseKind, std::string);
 static SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
-SgOmpFlushStatement* convertFlushDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII);
 static SgOmpMapClause* convertMapClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 
 using namespace std;
@@ -3301,10 +3300,6 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
             result = convertBodyDirective(current_OpenMPIR_to_SageIII);
             break;
         }
-        case OMPD_flush: {
-            result = convertFlushDirective(current_OpenMPIR_to_SageIII);
-            break;
-        }
         case OMPD_parallel_for: {
             result = convertCombinedBodyDirective(current_OpenMPIR_to_SageIII);
             break;
@@ -3381,53 +3376,6 @@ SgOmpBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*,
             printf("Unknown directive is found.\n");
         }
     }
-    return result;
-}
-
-SgOmpFlushStatement* convertFlushDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
-    
-    OpenMPDirectiveKind directive_kind = current_OpenMPIR_to_SageIII.second->getKind();
-    SgOmpFlushStatement* result = NULL;
-    OpenMPClauseKind clause_kind;
-    result = new SgOmpFlushStatement();
-    omp_variable_list.clear();
-    SgOmpClause* sg_clause = NULL;
-    std::vector<OpenMPClause*>* all_clauses = current_OpenMPIR_to_SageIII.second->getClausesInOriginalOrder();
-    std::vector<OpenMPClause*>::iterator clause_iter;
-    for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end(); clause_iter++) {
-        clause_kind = (*clause_iter)->getKind();
-        switch (clause_kind) {
-            case OMPC_acq_rel: {
-                sg_clause = new SgOmpAcqRelClause();
-                break;
-            }
-            case OMPC_release: {
-                sg_clause = new SgOmpReleaseClause();
-                break;
-            }
-            case OMPC_acquire: {
-                sg_clause = new SgOmpAcquireClause();
-                break;
-            }
-            default: {
-                cerr<<"error: unknown clause "<<endl;
-                ROSE_ASSERT(false);
-            }
-        };
-        ROSE_ASSERT(result);
-        setOneSourcePositionForTransformation(sg_clause);
-    };
-    std::vector<std::string>* current_expressions = ((OpenMPFlushDirective*)current_OpenMPIR_to_SageIII.second)->getFlushList();
-    if (current_expressions->size() != 0) {
-        std::vector<std::string>::iterator iter;
-        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
-            std::string expr_string = std::string() + "varlist " + *iter + "\n";
-            omp_parser_init(current_OpenMPIR_to_SageIII.first, expr_string.c_str());
-            omp_parse();
-        }
-    }
-    SgExprListExp* explist = buildExprListExp();
-    explist->set_parent(result);
     return result;
 }
 
@@ -4853,7 +4801,6 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_loop:
         case OMPD_scan:
         case OMPD_taskloop:
-        case OMPD_flush:
         case OMPD_target_enter_data:
         case OMPD_target_exit_data:
         case OMPD_task:

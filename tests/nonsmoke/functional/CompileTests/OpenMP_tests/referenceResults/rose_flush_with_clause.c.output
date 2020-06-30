@@ -1,4 +1,0 @@
-#pragma omp parallel  if(a) num_threads(4)
-#pragma omp flush
-#pragma omp flush acq_rel (a,b)
-#pragma omp barrier 
