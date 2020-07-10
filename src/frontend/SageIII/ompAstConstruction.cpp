@@ -939,29 +939,44 @@ namespace OmpSupport
     return result;
   }
 
-  static SgOmpClause::omp_map_operator_enum toSgOmpClauseMapOperator(OpenMPMapClauseType at_op)
+  static SgOmpClause::omp_map_type_enum toSgOmpClauseMapType(OpenMPMapClauseType at_op)
   {
-    SgOmpClause::omp_map_operator_enum result = SgOmpClause::e_omp_map_unknown;
+    SgOmpClause::omp_map_type_enum result = SgOmpClause::e_omp_map_type_unspecified;
     switch (at_op)
     {
-      case OMPC_MAP_TYPE_tofrom: 
+      case OMPC_MAP_TYPE_unspecified: 
         {
-          result = SgOmpClause::e_omp_map_tofrom;
+          result = SgOmpClause::e_omp_map_type_unspecified;
           break;
         }
       case OMPC_MAP_TYPE_to: 
         {
-          result = SgOmpClause::e_omp_map_to;
+          result = SgOmpClause::e_omp_map_type_to;
           break;
         }
       case OMPC_MAP_TYPE_from: 
         {
-          result = SgOmpClause::e_omp_map_from;
+          result = SgOmpClause::e_omp_map_type_from;
+          break;
+        }
+      case OMPC_MAP_TYPE_tofrom: 
+        {
+          result = SgOmpClause::e_omp_map_type_tofrom;
           break;
         }
       case OMPC_MAP_TYPE_alloc: 
         {
-          result = SgOmpClause::e_omp_map_alloc;
+          result = SgOmpClause::e_omp_map_type_alloc;
+          break;
+        }
+      case OMPC_MAP_TYPE_release: 
+        {
+          result = SgOmpClause::e_omp_map_type_release;
+          break;
+        }
+      case OMPC_MAP_TYPE_delete: 
+        {
+          result = SgOmpClause::e_omp_map_type_delete;
           break;
         }
       default:
@@ -971,7 +986,41 @@ namespace OmpSupport
           break;
         }
     }
-    ROSE_ASSERT(result != SgOmpClause::e_omp_map_unknown);
+    return result;
+  }
+
+  static SgOmpClause::omp_map_type_modifier_enum toSgOmpClauseMapTypeModifier(OpenMPMapClauseModifier at_op)
+  {
+    SgOmpClause::omp_map_type_modifier_enum result = SgOmpClause::e_omp_map_type_modifier_unspecified;
+    switch (at_op)
+    {
+      case OMPC_MAP_MODIFIER_unspecified: 
+        {
+          result = SgOmpClause::e_omp_map_type_modifier_unspecified;
+          break;
+        }
+      case OMPC_MAP_MODIFIER_always: 
+        {
+          result = SgOmpClause::e_omp_map_type_modifier_always;
+          break;
+        }
+      case OMPC_MAP_MODIFIER_close: 
+        {
+          result = SgOmpClause::e_omp_map_type_modifier_close;
+          break;
+        }
+      case OMPC_MAP_MODIFIER_mapper: 
+        {
+          result = SgOmpClause::e_omp_map_type_modifier_mapper;
+          break;
+        }
+      default:
+        {
+         //printf("error: unacceptable omp construct enum for map operator conversion:%s\n", OmpSupport::toString(at_op).c_str());
+          ROSE_ASSERT(false);
+          break;
+        }
+    }
     return result;
   }
 
@@ -3829,8 +3878,20 @@ SgOmpMapClause* convertMapClause(SgOmpClauseBodyStatement* clause_body, std::pai
     printf("ompparser map clause is ready.\n");
     SgOmpMapClause* result = NULL;
     SgExpression* clause_expression = NULL;
+    OpenMPMapClauseModifier modifier1 = ((OpenMPMapClause*)current_omp_clause)->getModifier1();
+    SgOmpClause::omp_map_type_modifier_enum sg_modifier1 = toSgOmpClauseMapTypeModifier(modifier1);
+    OpenMPMapClauseModifier modifier2 = ((OpenMPMapClause*)current_omp_clause)->getModifier2();
+    SgOmpClause::omp_map_type_modifier_enum sg_modifier2 = toSgOmpClauseMapTypeModifier(modifier2);
+    OpenMPMapClauseModifier modifier3 = ((OpenMPMapClause*)current_omp_clause)->getModifier3();
+    SgOmpClause::omp_map_type_modifier_enum sg_modifier3 = toSgOmpClauseMapTypeModifier(modifier3);
+   
+    SgExpression* mapper_identifier = NULL;
+    if ( (((OpenMPMapClause*)current_omp_clause)->getMapperIdentifier()) != "" ) {
+                mapper_identifier = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), ((OpenMPMapClause*)current_omp_clause)->getMapperIdentifier());
+            }
+
     OpenMPMapClauseType type = ((OpenMPMapClause*)current_omp_clause)->getType();
-    SgOmpClause::omp_map_operator_enum sg_type = toSgOmpClauseMapOperator(type);
+    SgOmpClause::omp_map_type_enum sg_type = toSgOmpClauseMapType(type);
 
     std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
     if (current_expressions->size() != 0) {
@@ -3841,7 +3902,7 @@ SgOmpMapClause* convertMapClause(SgOmpClauseBodyStatement* clause_body, std::pai
     }
     SgExprListExp* explist=buildExprListExp();
 
-    result = new SgOmpMapClause(explist, sg_type);
+    result = new SgOmpMapClause(explist, sg_modifier1, sg_modifier2, sg_modifier3, sg_type, mapper_identifier);
     ROSE_ASSERT(result != NULL);
     buildVariableList(result);
     explist->set_parent(result);

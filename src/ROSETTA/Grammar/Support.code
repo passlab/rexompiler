@@ -261,14 +261,23 @@ HEADER_OMP_CLAUSE_START
         };
        
         // Liao 1/22/2012: experimental support for OpenMP Accelerator model 
-        enum omp_map_operator_enum
+        enum omp_map_type_enum
         {
-          e_omp_map_unknown,
-          e_omp_map_alloc,
-          e_omp_map_to,
-          e_omp_map_from,
-          e_omp_map_tofrom,
-          e_omp_map_last
+          e_omp_map_type_unspecified,
+          e_omp_map_type_to,
+          e_omp_map_type_from,
+          e_omp_map_type_tofrom,
+          e_omp_map_type_alloc,
+          e_omp_map_type_release,
+          e_omp_map_type_delete
+        };
+
+        enum omp_map_type_modifier_enum
+        {
+          e_omp_map_type_modifier_unspecified,
+          e_omp_map_type_modifier_always,
+          e_omp_map_type_modifier_close,
+          e_omp_map_type_modifier_mapper
         };
 
         // Liao, 11/11/2015: experimental support for data distribution policies

@@ -2877,7 +2877,7 @@ std::map <SgVariableSymbol *, bool> collectVariableAppearance (SgNode* root)
 void extractMapClauses(Rose_STL_Container<SgOmpClause*> map_clauses, 
     std::map<SgSymbol*, std::vector< std::pair <SgExpression*, SgExpression*> > > & array_dimensions,
     std::map<SgSymbol*, std::vector< std::pair< SgOmpClause::omp_map_dist_data_enum, SgExpression * > > > &  dist_data_policies,
-    SgOmpMapClause** map_alloc_clause, SgOmpMapClause** map_to_clause, SgOmpMapClause** map_from_clause, SgOmpMapClause** map_tofrom_clause
+    SgOmpMapClause** map_alloc_clause, SgOmpMapClause** map_to_clause, SgOmpMapClause** map_from_clause, SgOmpMapClause** map_tofrom_clause, SgOmpMapClause** map_unspecified_clause, SgOmpMapClause** map_release_clause, SgOmpMapClause** map_delete_clause
     )
 {
   if ( map_clauses.size() == 0) return; // stop if no map clauses at all
@@ -2903,18 +2903,24 @@ void extractMapClauses(Rose_STL_Container<SgOmpClause*> map_clauses,
       dist_data_policies = m_cls->get_dist_data_policies ();
     }
 
-    SgOmpClause::omp_map_operator_enum map_operator = m_cls->get_operation();
-    if (map_operator == SgOmpClause::e_omp_map_alloc)
+    SgOmpClause::omp_map_type_enum map_type = m_cls->get_type();
+    if (map_type == SgOmpClause::e_omp_map_type_alloc)
       *map_alloc_clause = m_cls;
-    else if (map_operator == SgOmpClause::e_omp_map_to)  
+    else if (map_type == SgOmpClause::e_omp_map_to)  
       *map_to_clause = m_cls;
-    else if (map_operator == SgOmpClause::e_omp_map_from)  
+    else if (map_type == SgOmpClause::e_omp_map_from)  
       *map_from_clause = m_cls;
-    else if (map_operator == SgOmpClause::e_omp_map_tofrom)  
+    else if (map_type == SgOmpClause::e_omp_map_tofrom)  
       *map_tofrom_clause = m_cls;
+    else if (map_type == SgOmpClause::e_omp_map_type_unspecified)  
+      *map_unspecified_clause = m_cls;
+    else if (map_type == SgOmpClause::e_omp_map_type_release)  
+      *map_release_clause = m_cls;
+    else if (map_type == SgOmpClause::e_omp_map_type_delete)  
+      *map_delete_clause = m_cls;
     else 
     {
-      cerr<<"Error. transOmpMapVariables() from omp_lowering.cpp: found unacceptable map operator type:"<< map_operator <<endl;
+      cerr<<"Error. transOmpMapVariables() from omp_lowering.cpp: found unacceptable map operator type:"<< map_type <<endl;
       ROSE_ASSERT (false);
     }
   }  // end for
@@ -2950,7 +2956,7 @@ void extractMapClauses(Rose_STL_Container<SgOmpClause*> map_clauses,
 static void generateMappedArrayMemoryHandling(
     /* the array and the map information */
     SgSymbol* sym, 
-    SgOmpMapClause* map_alloc_clause, SgOmpMapClause* map_to_clause, SgOmpMapClause* map_from_clause, SgOmpMapClause* map_tofrom_clause, 
+    SgOmpMapClause* map_alloc_clause, SgOmpMapClause* map_to_clause, SgOmpMapClause* map_from_clause, SgOmpMapClause* map_tofrom_clause, SgOmpMapClause* map_unspecified_clause, SgOmpMapClause* map_release_clause, SgOmpMapClause* map_delete_clause
     std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > > & array_dimensions, SgExpression* device_expression,
     /*Where to insert generated function calls*/
     SgBasicBlock* insertion_scope, SgStatement* insertion_anchor_stmt, 
@@ -3330,6 +3336,9 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
   SgOmpMapClause* map_to_clause = NULL;
   SgOmpMapClause* map_from_clause = NULL;
   SgOmpMapClause* map_tofrom_clause = NULL;
+  SgOmpMapClause* map_unspecified_clause = NULL;
+  SgOmpMapClause* map_release_clause = NULL;
+  SgOmpMapClause* map_delete_clause = NULL;
   // dimension map is the same for all the map clauses under the same omp target directive
   std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >  array_dimensions; 
   std::map<SgSymbol*, std::vector< std::pair< SgOmpClause::omp_map_dist_data_enum, SgExpression * > > > dist_data_policies; // no in use, for compatible reason
@@ -3352,7 +3361,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     device_expression = getClauseExpression (target_directive_stmt, VariantVector(V_SgOmpDeviceClause));
 
  
-  extractMapClauses (map_clauses, array_dimensions, dist_data_policies, &map_alloc_clause, &map_to_clause, &map_from_clause, &map_tofrom_clause);
+  extractMapClauses (map_clauses, array_dimensions, dist_data_policies, &map_alloc_clause, &map_to_clause, &map_from_clause, &map_tofrom_clause, &map_unspecified_clause, &map_release_clause, &map_delete_clause);
   std::set<SgSymbol*> array_syms; // store clause variable symbols which are array types (explicit or as a pointer)
   std::set<SgSymbol*> atom_syms; // store clause variable symbols which are non-aggregate types: scalar, pointer, etc
 
@@ -3439,7 +3448,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
         if (variable_map[orig_sym])
           all_syms.insert(new_sym);
     // generate memory allocation, copy, free function calls.
-    generateMappedArrayMemoryHandling (sym, map_alloc_clause, map_to_clause, map_from_clause, map_tofrom_clause,array_dimensions, device_expression, 
+    generateMappedArrayMemoryHandling (sym, map_alloc_clause, map_to_clause, map_from_clause, map_tofrom_clause, map_unspecified_clause, map_release_clause, map_delete_clause, array_dimensions, device_expression, 
         insertion_scope, insertion_anchor_stmt, true);
   }  // end for
 
@@ -3609,6 +3618,9 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     SgOmpMapClause* map_to_clause = NULL;
     SgOmpMapClause* map_from_clause = NULL;
     SgOmpMapClause* map_tofrom_clause = NULL;
+    SgOmpMapClause* map_unspecified_clause = NULL;
+    SgOmpMapClause* map_release_clause = NULL;
+    SgOmpMapClause* map_delete_clause = NULL;
     // dimension map is the same for all the map clauses under the same omp target directive
     std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >  array_dimensions; 
     std::map<SgSymbol*, std::vector< std::pair< SgOmpClause::omp_map_dist_data_enum, SgExpression * > > > dist_data_policies; // no in use, for compatible reason
@@ -3625,7 +3637,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 #endif
   all_mapped_vars = collectClauseVariables (target_directive_stmt, VariantVector(V_SgOmpMapClause));
 
-    extractMapClauses (map_clauses, array_dimensions, dist_data_policies, &map_alloc_clause, &map_to_clause, &map_from_clause, &map_tofrom_clause);
+    extractMapClauses (map_clauses, array_dimensions, dist_data_policies, &map_alloc_clause, &map_unspecified_clause, &map_release_clause, &map_delete_clause, &map_to_clause, &map_from_clause, &map_tofrom_clause);
     std::set<SgSymbol*> array_syms; // store clause variable symbols which are array types (explicit or as a pointer)
     std::set<SgSymbol*> atom_syms; // store clause variable symbols which are non-aggregate types: scalar, pointer, etc
 
@@ -3717,7 +3729,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     }
 
     // generate memory allocation, copy, free function calls.
-    generateMappedArrayMemoryHandling (sym, map_alloc_clause, map_to_clause, map_from_clause, map_tofrom_clause,array_dimensions, NULL,  
+    generateMappedArrayMemoryHandling (sym, map_alloc_clause, map_to_clause, map_from_clause, map_tofrom_clause, map_unspecified_clause, map_release_clause, map_delete_clause, array_dimensions, NULL,  
         insertion_scope, insertion_anchor_stmt, need_generate_data_stmt);
   }  // end for
 
@@ -6162,8 +6174,8 @@ void transOmpCollapse(SgOmpClauseBodyStatement * node)
       SgOmpMapClause * temp_map_clause = isSgOmpMapClause(*iter);
       if(temp_map_clause != NULL) //Winnie, look for the map(to) or map(tofrom) clause
       {
-        SgOmpClause::omp_map_operator_enum map_operator = temp_map_clause->get_operation();
-        if(map_operator == SgOmpClause::e_omp_map_to || map_operator == SgOmpClause::e_omp_map_tofrom)
+        SgOmpClause::omp_map_type_enum map_type = temp_map_clause->get_operation();
+        if(map_type == SgOmpClause::e_omp_map_to || map_type == SgOmpClause::e_omp_map_tofrom)
         {
           map_to = temp_map_clause;
           break;

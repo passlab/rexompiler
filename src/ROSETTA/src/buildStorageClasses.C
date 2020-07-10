@@ -879,7 +879,8 @@ AstNodeClass::evaluateType(std::string& varTypeString)
                  ( varTypeString == "SgOmpClause::omp_linear_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_allocate_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_dependence_type_enum" ) ||
-                 ( varTypeString == "SgOmpClause::omp_map_operator_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_map_type_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_map_type_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_map_dist_data_enum" ) ||
                  ( varTypeString == "SgProcedureHeaderStatement::subprogram_kind_enum" ) ||
                  ( varTypeString == "SgLabelSymbol::label_type_enum" ) ||

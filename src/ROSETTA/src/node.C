@@ -1952,8 +1952,16 @@ Grammar::setUpNodes ()
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
      // map (inout|alloc|in|out:variable_list) , a variable could be array type with additional dimension info, such as a[0:n][0:m]
-     OmpMapClause.setDataPrototype("SgOmpClause::omp_map_operator_enum", "operation", "=e_omp_map_unknown",
+     OmpMapClause.setDataPrototype("SgOmpClause::omp_map_type_modifier_enum", "modifier1", "=e_omp_map_type_modifier_unspecified",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpMapClause.setDataPrototype("SgOmpClause::omp_map_type_modifier_enum", "modifier2", "=e_omp_map_type_modifier_unspecified",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpMapClause.setDataPrototype("SgOmpClause::omp_map_type_modifier_enum", "modifier3", "=e_omp_map_type_modifier_unspecified",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpMapClause.setDataPrototype("SgOmpClause::omp_map_type_enum", "type", "=e_omp_map_type_unspecified",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpMapClause.setDataPrototype("SgExpression*", "mapper_identifier", "= NULL",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      // TODO how to traverse this map?  the bound variables may need to be visited.
      OmpMapClause.setDataPrototype("std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >", "array_dimensions", "",
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);

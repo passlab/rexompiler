@@ -8274,34 +8274,85 @@ static std::string dependenceTypeToString(SgOmpClause::omp_dependence_type_enum 
 }
 
 
-static std::string mapOperatorToString(SgOmpClause::omp_map_operator_enum ro)
+static std::string mapTypeToString(SgOmpClause::omp_map_type_enum ro)
 {
   string result;
   switch (ro)
   {
-    case SgOmpClause::e_omp_map_tofrom: 
+    case SgOmpClause::e_omp_map_type_unspecified: 
       {
-        result = "tofrom";
+        result = "";
         break;
       }
-    case SgOmpClause::e_omp_map_to: 
+    case SgOmpClause::e_omp_map_type_to: 
       {
         result = "to";
         break;
       }
-    case SgOmpClause::e_omp_map_from:   
+    case SgOmpClause::e_omp_map_type_from:   
       {
         result = "from";
         break;
       }
-    case SgOmpClause::e_omp_map_alloc:  
+    case SgOmpClause::e_omp_map_type_tofrom:  
+      {
+        result = "tofrom";
+        break;
+      }
+    case SgOmpClause::e_omp_map_type_alloc:  
       {
         result = "alloc";
         break;
       }
+    case SgOmpClause::e_omp_map_type_release:  
+      {
+        result = "release";
+        break;
+      }
+    case SgOmpClause::e_omp_map_type_delete:  
+      {
+        result = "delete";
+        break;
+      }
    default:
       {
-        cerr<<"Error: unhandled operator type MapOperatorToString():"<< ro <<endl;
+        cerr<<"Error: unhandled operator type mapTypeToString():"<< ro <<endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
+
+static std::string mapTypeModifierToString(SgOmpClause::omp_map_type_modifier_enum ro)
+{
+  string result;
+  switch (ro)
+  {
+    case SgOmpClause::e_omp_map_type_modifier_unspecified: 
+      {
+        result = "";
+        break;
+      }
+    case SgOmpClause::e_omp_map_type_modifier_always: 
+      {
+        result = "always";
+        break;
+      }
+    case SgOmpClause::e_omp_map_type_modifier_close:   
+      {
+        result = "close";
+        break;
+      }
+    case SgOmpClause::e_omp_map_type_modifier_mapper:  
+      {
+        result = "mapper(";
+        result += isSgOmpMapClause(c)->get_mapper_identifier();
+        result = ")";
+        break;
+      }
+   default:
+      {
+        cerr<<"Error: unhandled operator type mapTypeModifierToString():"<< ro <<endl;
         ROSE_ASSERT(false);
       }
   }
@@ -8568,8 +8619,22 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
       {
         is_map = true;
         curprint(string(" map("));
-        curprint(mapOperatorToString(isSgOmpMapClause(c)->get_operation()));
-        curprint(string(" : "));
+        if((isSgOmpMapClause(c)->get_modifier1()) != e_omp_map_type_modifier_unspecified) {
+            curprint(mapTypeModifierToString(isSgOmpMapClause(c)->get_modifier1()));
+            curprint(string(","));
+            if((isSgOmpMapClause(c)->get_modifier2()) != e_omp_map_type_modifier_unspecified) { 
+                curprint(mapTypeModifierToString(isSgOmpMapClause(c)->get_modifier2()));
+                curprint(string(",")); 
+                if((isSgOmpMapClause(c)->get_modifier3()) != e_omp_map_type_modifier_unspecified) { 
+                    curprint(mapTypeModifierToString(isSgOmpMapClause(c)->get_modifier3())); 
+                    curprint(string(","));
+                }
+            }
+        }
+        if((isSgOmpMapClause(c)->get_type()) != e_omp_map_type_unspecified) {
+            curprint(mapTypeToString(isSgOmpMapClause(c)->get_type()));
+            curprint(string(":"));
+        }
       break;
       }
  

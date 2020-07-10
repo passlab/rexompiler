@@ -232,10 +232,17 @@ namespace OmpSupport
 
     // 4 device map variants
     //----------------------
-    e_map_alloc,
-    e_map_to,
-    e_map_from,
-    e_map_tofrom,
+    e_omp_map_type_to,
+    e_omp_map_type_from,
+    e_omp_map_type_tofrom,
+    e_omp_map_type_alloc,
+    e_omp_map_type_release,
+    e_omp_map_type_delete,
+
+    e_omp_map_type_modifier_always,
+    e_omp_map_type_modifier_close,
+    e_omp_map_type_modifier_mapper,
+
 
     // experimental dist_data clause dist_data(dim1_policy, dim2_policy, dim3_policy)
     // A policy can be block(n), cyclic(n), or duplicate
