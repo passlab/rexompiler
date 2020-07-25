@@ -236,7 +236,6 @@ c++)
 cuda)
 	support_cuda_frontend=yes
 	AC_DEFINE([ROSE_BUILD_CUDA_LANGUAGE_SUPPORT], [], [Build ROSE to support the CUDA langauge])
-        GENERATE_CUDA_SPECIFIC_HEADERS
 	;;
 fortran)
 	if test "x$USE_JAVA" = x1; then
