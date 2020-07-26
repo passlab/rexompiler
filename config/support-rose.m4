@@ -118,6 +118,8 @@ ROSE_SUPPORT_JAVA # This macro uses JAVA_HOME
 
 ROSE_CONFIGURE_SECTION([Checking GNU Fortran])
 # DQ (10/18/2010): Check for gfortran (required for syntax checking and semantic analysis of input Fortran codes)
+AC_REQUIRE([AC_PROG_F77])
+AC_REQUIRE([AC_PROG_FC])
 AX_WITH_PROG(GFORTRAN_PATH, [gfortran], [])
 AC_SUBST(GFORTRAN_PATH)
 
@@ -142,7 +144,6 @@ AC_MSG_NOTICE([GFORTRAN_PATH = "$GFORTRAN_PATH"])
 
   ROSE_SUPPORT_GMP
   ROSE_SUPPORT_ISL
-  ROSE_SUPPORT_MPI
   ROSE_SUPPORT_SPOT
 
 # ****************************************************
