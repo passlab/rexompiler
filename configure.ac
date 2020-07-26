@@ -110,6 +110,11 @@ dnl I had to promote it here instead of put it into ROSE_SUPPORT_ROSE_PART_2
 dnl since the expansion order there is wrong.
 test -z "$SED" && SED=sed
 
+dnl cherry-pick ROSE d55a24085a9 2019-11-22 
+if test "x$ECHO" = x; then
+    ECHO=echo
+fi
+
 dnl +--------------------------------------------------------------------------+
 dnl | ROSE Support
 dnl +--------------------------------------------------------------------------+
