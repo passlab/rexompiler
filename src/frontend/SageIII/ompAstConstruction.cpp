@@ -3288,6 +3288,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_target_enter_data:
         case OMPD_target_exit_data:
         case OMPD_task:
+        case OMPD_taskwait:
         case OMPD_target_data:
         case OMPD_single:
         case OMPD_for:
@@ -3548,6 +3549,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
     switch (directive_kind) {
         case OMPD_parallel: {
             result = new SgOmpParallelStatement(NULL, body);
+            break;
+        }
+        case OMPD_taskwait: {
+            result = new SgOmpTaskwaitStatement(NULL, body);
             break;
         }
         case OMPD_teams: {
@@ -3905,6 +3910,10 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         }
         case OMPD_taskloop: {
             result = new SgOmpTaskloopStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_taskwait: {
+            result = new SgOmpTaskwaitStatement(NULL, NULL);
             break;
         }
         case OMPD_target_enter_data: {
@@ -4804,6 +4813,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_target_enter_data:
         case OMPD_target_exit_data:
         case OMPD_task:
+        case OMPD_taskwait:
         case OMPD_target_data:
         case OMPD_single:
         case OMPD_for:
