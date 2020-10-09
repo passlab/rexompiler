@@ -180,9 +180,9 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	task_wait2.c \
 	teams.c \
 	twoRegions.c \
-	#threadprivate2.c \
-	#threadprivate3.c \
-	#threadprivate.c \
+	threadprivate2.c \
+	threadprivate3.c \
+	threadprivate.c \
 	upperCase.c \
 	#variables.c
 	threadProcessor.c
@@ -311,6 +311,9 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	task_wait.c
 	task_wait2.c
 	taskyield.c \
+	threadprivate.c \
+	threadprivate2.c \
+	threadprivate3.c \
 	teams.c \
 	twoRegions.c \
 	threadProcessor.c \
