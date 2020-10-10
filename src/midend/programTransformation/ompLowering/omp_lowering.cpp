@@ -613,7 +613,7 @@ namespace OmpSupport
     SgGlobal* globalscope = file->get_globalScope() ; //isSgGlobal(*i);
     ROSE_ASSERT (globalscope != NULL);
 #ifdef ENABLE_XOMP
-    SageInterface::insertHeader("libxomp.h",PreprocessingInfo::after,false,globalscope);
+    SageInterface::insertHeader("rex_kmp.h",PreprocessingInfo::after,false,globalscope);
     if (enable_accelerator)  // include inlined CUDA device codes
       SageInterface::insertHeader("xomp_cuda_lib_inlined.cu",PreprocessingInfo::after,false,globalscope);
 #else    
@@ -748,14 +748,6 @@ namespace OmpSupport
       appendExpression(exp_list_exp,var2);
     }
 
-    SgExprStatement * expStmt=  buildFunctionCallStmt (SgName("XOMP_init"),
-        buildVoidType(), exp_list_exp,currentscope);
-    //  cout<<"debug:"<<expStmt->unparseToString()<<endl;
-    //prepend to main body
-    // Liao 1/5/2011
-    // This is not safe since it cannot be prepended to an implicit none statement in fortran
-    //prependStatement(expStmt,currentscope);
-    //prependStatement(varDecl1,currentscope);
     if (SageInterface::is_Fortran_language())
     {
       SgStatement *l_stmt = findLastDeclarationStatement(currentscope);
@@ -767,7 +759,6 @@ namespace OmpSupport
     else // C/C++, we can always prepend it.
       prependStatement(varDecl1,currentscope);
 
-    insertStatementAfter (varDecl1, expStmt);
     //---------------------- termination part
 
     //  cout<<"debug:"<<mainDef->unparseToString()<<endl;
@@ -784,30 +775,6 @@ namespace OmpSupport
     SgExprListExp * exp_list_exp2 = buildExprListExp();
     appendExpression(exp_list_exp2,var3);
 
-    //build call exp stmt
-    SgExprStatement * expStmt2= buildFunctionCallStmt (SgName("XOMP_terminate"),
-        buildVoidType(),exp_list_exp2,mainDef->get_body());
-    // find return statement, insert before it
-    Rose_STL_Container<SgNode*> rtList = NodeQuery::querySubTree(mainDef, V_SgReturnStmt);
-    if (rtList.size()>0)
-    {
-      for(Rose_STL_Container<SgNode*>::iterator i= rtList.begin();i!=rtList.end();i++)
-      {
-        SgStatement *targetBB= isSgStatement((*i)->get_parent());
-        ROSE_ASSERT(targetBB != NULL);
-        if (i!=rtList.begin()) // for 2nd, 3rd, etc occurrences. We should always build a new statement instead of sharing a statement! 
-        {
-          expStmt2= buildFunctionCallStmt (SgName("XOMP_terminate"),
-              buildVoidType(),exp_list_exp2,mainDef->get_body());
-        }
-        insertStatement(isSgStatement(*i),expStmt2);
-      }
-    }
-    else //if not found append to function body
-    {
-      appendStatement(expStmt2,currentscope);
-    }
-    // cout<<"debug terminate:"<<expStmt2->unparseToString()<<endl;
     //   AstPostProcessing(mainDef->get_declaration());
 #endif  // ENABLE_XOMP
 
@@ -2282,6 +2249,7 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
    printf("Hello,world! I am thread %d\n", *i);
    }
    */
+
   void transOmpParallel (SgNode* node)
   {
     ROSE_ASSERT(node != NULL);
@@ -2407,7 +2375,10 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
         parameter2 = buildIntVal(0);
       else
         parameter2 =  buildAddressOfOp(buildVarRefExp(wrapper_name, p_scope));
-     parameters = buildExprListExp(buildFunctionRefExp(outlined_func), parameter2, ifClauseValue, numThreadsSpecified); 
+
+     SgExpression* source_location_info = buildIntVal(0);
+     SgExpression* outlined_function_parameter_amount = buildIntVal(1);
+     parameters = buildExprListExp(source_location_info, outlined_function_parameter_amount, buildFunctionRefExp(outlined_func), parameter2);
     }
 
     ROSE_ASSERT (parameters != NULL);
@@ -2418,16 +2389,8 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
   // * data: pointer to a data segment which will be used as the arguments of func
   // * ifClauseValue: set to if-clause-expression if if-clause exists, or default is 1.
   // * numThreadsSpecified: set to the expression of num_threads clause if the clause exists, or default is 0
-  // Liao 3/11/2013, additional file location info, at least for C/C++  for now
-  if (!SageInterface::is_Fortran_language())
-  {
-    string file_name = target->get_startOfConstruct()->get_filenameString();
-    int line = target->get_startOfConstruct()->get_line();
-    parameters->append_expression(buildStringVal(file_name));
-    parameters->append_expression(buildIntVal(line));
-  }
 
-    SgExprStatement * s1 = buildFunctionCallStmt("XOMP_parallel_start", buildVoidType(), parameters, p_scope); 
+    SgExprStatement * s1 = buildFunctionCallStmt("__kmpc_fork_call", buildVoidType(), parameters, p_scope);
     SageInterface::replaceStatement(target, s1 , true);
 #else
    ROSE_ASSERT (false); //This portion of code should never be used anymore. Kept for reference only.
@@ -2452,22 +2415,15 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
       parameters2->append_expression(buildIntVal(line));
     }
 
-    //SgExprStatement * s2 = buildFunctionCallStmt("XOMP_parallel_end", buildVoidType(), NULL, p_scope); 
-    SgExprStatement * s2 = buildFunctionCallStmt("XOMP_parallel_end", buildVoidType(), parameters2, p_scope); 
-    SageInterface::insertStatementAfter(s1, s2);  // insert s2 after s1
-#else
-    SgExprStatement * s2 = buildFunctionCallStmt("GOMP_parallel_end", buildVoidType(), NULL, p_scope); 
-    SageInterface::insertStatementAfter(func_call, s2); 
 #endif
-   // SageInterface::moveUpPreprocessingInfo(s2, target, PreprocessingInfo::after); 
-   pastePreprocessingInfo(s2, PreprocessingInfo::after, save_buf2); 
+   pastePreprocessingInfo(s1, PreprocessingInfo::after, save_buf2);
    // paste the preprocessing info with inside position to the outlined function's body
    pastePreprocessingInfo(outlined_func->get_definition()->get_body(), PreprocessingInfo::inside, save_buf_inside); 
 
     // some #endif may be attached to the body, we should not move it with the body into
     // the outlined funcion!!
    // move dangling #endif etc from the body to the end of s2
-   movePreprocessingInfo(body,s2,PreprocessingInfo::before, PreprocessingInfo::after); 
+   movePreprocessingInfo(body,s1,PreprocessingInfo::before, PreprocessingInfo::after);
 
    // SageInterface::deepDelete(target);
   }
