@@ -2325,18 +2325,6 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
 
     // Generate the parameter list for the call to the XOMP runtime function
     SgExprListExp* parameters  = NULL;
-    // pass ifClauseValue: set to the expression of if-clause, otherwise set to 1
-    SgExpression* ifClauseValue = NULL; 
-    if (hasClause(target, V_SgOmpIfClause))
-    {
-      Rose_STL_Container<SgOmpClause*> clauses = getClause(target, V_SgOmpIfClause);
-      ROSE_ASSERT (clauses.size() ==1); // should only have one if ()
-      SgOmpIfClause * if_clause = isSgOmpIfClause (clauses[0]);
-      ROSE_ASSERT (if_clause->get_expression() != NULL);
-      ifClauseValue = copyExpression(if_clause->get_expression());
-    }
-    else
-      ifClauseValue = buildIntVal(1);  
     // pass num_threads_specified: 0 if not, otherwise set to the expression of num_threads clause  
     SgExpression* numThreadsSpecified = NULL;
     if (hasClause(target, V_SgOmpNumThreadsClause))
@@ -2350,36 +2338,17 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
     else
       numThreadsSpecified = buildIntVal(0);  
 
-    if (SageInterface::is_Fortran_language())
-    { // The parameter list for Fortran is little bit different from C/C++'s XOMP interface 
-      // since we are forced to pass variables one by one in the parameter list to support Fortran 77
-       // void xomp_parallel_start (void (*func) (void *), unsigned * ifClauseValue, unsigned* numThread, int * argcount, ...)
-      //e.g. xomp_parallel_start(OUT__1__1527__,0,2,S,K)
-      SgExpression * parameter4 = buildIntVal (pdSyms3.size()); //TODO double check if pdSyms3 is the right set of variables to be passed
-      parameters = buildExprListExp(buildFunctionRefExp(outlined_func), ifClauseValue, numThreadsSpecified, parameter4);
+    // add __kmpc_fork_call (0, 1, OUT_func_xxx, &__out_argv1__5876__);
+    // or __kmpc_fork_call (0, 1, OUT_func_xxx, 0); // if no variables need to be passed
+    SgExpression * outlined_parameter = NULL;
+    if (syms.size() == 0)
+        outlined_parameter = buildIntVal(0);
+    else
+        outlined_parameter = buildAddressOfOp(buildVarRefExp(wrapper_name, p_scope));
 
-      ASTtools::VarSymSet_t::iterator iter = pdSyms3.begin();
-      for (; iter!=pdSyms3.end(); iter++)
-      {
-        const SgVariableSymbol * sb = *iter;
-        appendExpression (parameters, buildVarRefExp(const_cast<SgVariableSymbol *>(sb)));
-      }
-    }
-    else 
-    { 
-      // C/C++ case: 
-      //add GOMP_parallel_start (OUT_func_xxx, &__out_argv1__5876__, 0);
-      // or GOMP_parallel_start (OUT_func_xxx, 0, 0); // if no variables need to be passed
-      SgExpression * parameter2 = NULL;
-      if (syms.size()==0)
-        parameter2 = buildIntVal(0);
-      else
-        parameter2 =  buildAddressOfOp(buildVarRefExp(wrapper_name, p_scope));
-
-     SgExpression* source_location_info = buildIntVal(0);
-     SgExpression* outlined_function_parameter_amount = buildIntVal(1);
-     parameters = buildExprListExp(source_location_info, outlined_function_parameter_amount, buildFunctionRefExp(outlined_func), parameter2);
-    }
+    SgExpression* source_location_info = buildIntVal(0);
+    SgExpression* outlined_function_parameter_amount = buildIntVal(1);
+    parameters = buildExprListExp(source_location_info, outlined_function_parameter_amount, buildFunctionRefExp(outlined_func), outlined_parameter);
 
     ROSE_ASSERT (parameters != NULL);
 
@@ -2390,12 +2359,25 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
   // * ifClauseValue: set to if-clause-expression if if-clause exists, or default is 1.
   // * numThreadsSpecified: set to the expression of num_threads clause if the clause exists, or default is 0
 
-    SgExprStatement * s1 = buildFunctionCallStmt("__kmpc_fork_call", buildVoidType(), parameters, p_scope);
+    SgStatement* s1 = buildFunctionCallStmt("__kmpc_fork_call", buildVoidType(), parameters, p_scope);
+
+    SgExpression* if_condition = NULL;
+    if (hasClause(target, V_SgOmpIfClause)) {
+        Rose_STL_Container<SgOmpClause*> if_clauses = getClause(target, V_SgOmpIfClause);
+        ROSE_ASSERT (if_clauses.size() == 1); // should only have one if ()
+        SgOmpIfClause * if_clause = isSgOmpIfClause(if_clauses[0]);
+        ROSE_ASSERT (if_clause->get_expression() != NULL);
+        if_condition = copyExpression(if_clause->get_expression());
+    }
+    if (if_condition != NULL) {
+        SgIfStmt* if_statement = buildIfStmt(if_condition, s1, NULL);
+        parameters = buildExprListExp(buildIntVal(0), buildIntVal(0), outlined_parameter);
+        SgExprStatement* else_stmt = buildFunctionCallStmt(outlined_func->get_name(), buildVoidType(), parameters, p_scope);
+        if_statement->set_false_body(else_stmt);
+        s1 = if_statement;
+    };
+
     SageInterface::replaceStatement(target, s1 , true);
-#else
-   ROSE_ASSERT (false); //This portion of code should never be used anymore. Kept for reference only.
-//    SgExprStatement * s1 = buildFunctionCallStmt("GOMP_parallel_start", buildVoidType(), parameters, p_scope); 
-//    SageInterface::insertStatementBefore(func_call, s1); 
 #endif
     // Keep preprocessing information
     // I have to use cut-paste instead of direct move since 
