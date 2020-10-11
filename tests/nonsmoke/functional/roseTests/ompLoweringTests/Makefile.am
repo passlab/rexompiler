@@ -298,7 +298,7 @@ $(PASSING_OMP_ACC_TEST_CXX_CUDA_Files): rose_%.cu: $(TEST_DIR)/%.cpp roseompacc
 # 2013-09-28]
 OMP_ACC_DIFF_FILES=$(PASSING_OMP_ACC_TEST_CUDA_Files:.cu=.cu.diff)
 DIFF=diff
-EXPECTED_PATH = $(top_srcdir)/tests/nonsmoke/functional/roseTests/ompLoweringTests/ROSEXOMPRefernce
+EXPECTED_PATH = $(top_srcdir)/tests/nonsmoke/functional/roseTests/ompLoweringTests/ROSEXOMPReference
 $(OMP_ACC_DIFF_FILES):$(PASSING_OMP_ACC_TEST_CUDA_Files)
 	echo "Verifying OMP ACC translation by diff ..."; \
 	if $(DIFF) $(@:.cu.diff=.cu) $(EXPECTED_PATH)/$(@:.cu.diff=.cu) > $@ ; then echo "Test Passed" ; else echo "Files differ; test falied"; rm -rf $@; exit 1; fi 
@@ -492,7 +492,7 @@ clean-local:
 	rm -f *.out *.dot
 
 
-EXTRA_DIST = ROSEXOMPRefernce
+EXTRA_DIST = ROSEXOMPReference
 
 CLEANFILES = 
 
