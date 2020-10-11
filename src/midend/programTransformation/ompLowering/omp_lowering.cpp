@@ -2211,17 +2211,22 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
 // it's could be available as a caller parameters, e.g. in a outlined function.
 // or, it must be retrieved by the function "__kmpc_global_thread_num".
 // this getter handles both cases.
-SgExpression* get_kmpc_global_tid(SgScopeStatement* scope) {
+SgExpression* get_kmpc_global_tid(SgNode* node, SgScopeStatement* scope) {
 
     SgExpression* thread_global_tid = NULL;
-    SgName thread_global_id_name("__global_tid");
-    SgVariableSymbol* thread_global_id_symbol = scope->lookup_var_symbol(thread_global_id_name);
-    // if int* __global_tid is available in the current scope, it can be used directly.
-    if (thread_global_id_symbol != NULL) {
+
+    // check if the processing node is in a parallel region.
+    // in this case, int* __global_tid is available in the current scope, it can be used directly.
+    SgNode* parent = node->get_parent();
+    ROSE_ASSERT (parent != NULL);
+    if (isSgBasicBlock(parent)) { // skip the padding block in between.
+        parent = parent->get_parent();
+    };
+    if (isSgOmpParallelStatement(parent)) {
         SgVarRefExp* thread_global_id_pointer = buildVarRefExp("__global_tid", scope);
         thread_global_tid = buildPointerDerefExp(thread_global_id_pointer);
     }
-    // if not, we need to get it first.
+    // if not, we need to get the global id first.
     else {
         SgExprStatement* global_tid_statement = buildFunctionCallStmt("__kmpc_global_thread_num", buildIntType(), buildExprListExp(buildIntVal(0)), scope);
         thread_global_tid = global_tid_statement->get_expression();
@@ -2390,7 +2395,7 @@ SgExpression* get_kmpc_global_tid(SgScopeStatement* scope) {
       omp_num_threads = copyExpression(num_threads_clause->get_expression());
     }
     if (omp_num_threads != NULL) {
-        SgExpression* thread_global_tid = get_kmpc_global_tid(p_scope);
+        SgExpression* thread_global_tid = get_kmpc_global_tid(node, p_scope);
         parameters = buildExprListExp(buildIntVal(0), thread_global_tid, omp_num_threads);
         set_num_threads_statement = buildFunctionCallStmt("__kmpc_push_num_threads", buildVoidType(), parameters, p_scope);
         // set up the head of transformed code to num_threads setter
@@ -5540,7 +5545,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
     SgIfStmt* if_stmt = NULL;
 
     SgExprListExp* parameters = NULL;
-    SgExpression* thread_global_tid = get_kmpc_global_tid(scope);
+    SgExpression* thread_global_tid = get_kmpc_global_tid(node, scope);
     parameters = buildExprListExp(buildIntVal(0), thread_global_tid);
 
    if (SageInterface::is_Fortran_language())

@@ -290,7 +290,7 @@ ASTtools::collectRefdVarSyms (const SgStatement* s, VarSymSet_t& syms)
     // so we do builtin function ref check first, later we can safely assert symbol != NULL
      string  vname = isSgVarRefExp(*iter)->get_symbol()->get_name().getString();
 
-     if  (vname =="__PRETTY_FUNCTION__" || vname =="__FUNCTION__" ||vname == "__func__")
+     if  (vname =="__PRETTY_FUNCTION__" || vname =="__FUNCTION__" ||vname == "__func__" || vname == "__global_tid" || vname == "__bound_tid")
        continue; 
 
 
