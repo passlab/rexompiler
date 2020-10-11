@@ -2325,18 +2325,6 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
 
     // Generate the parameter list for the call to the XOMP runtime function
     SgExprListExp* parameters  = NULL;
-    // pass num_threads_specified: 0 if not, otherwise set to the expression of num_threads clause  
-    SgExpression* numThreadsSpecified = NULL;
-    if (hasClause(target, V_SgOmpNumThreadsClause))
-    {
-      Rose_STL_Container<SgOmpClause*> clauses = getClause(target, V_SgOmpNumThreadsClause);
-      ROSE_ASSERT (clauses.size() ==1); // should only have one if ()
-      SgOmpNumThreadsClause * numThreads_clause = isSgOmpNumThreadsClause (clauses[0]);
-      ROSE_ASSERT (numThreads_clause->get_expression() != NULL);
-      numThreadsSpecified = copyExpression(numThreads_clause->get_expression());
-    }
-    else
-      numThreadsSpecified = buildIntVal(0);  
 
     // add __kmpc_fork_call (0, 1, OUT_func_xxx, &__out_argv1__5876__);
     // or __kmpc_fork_call (0, 1, OUT_func_xxx, 0); // if no variables need to be passed
@@ -2359,8 +2347,35 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
   // * ifClauseValue: set to if-clause-expression if if-clause exists, or default is 1.
   // * numThreadsSpecified: set to the expression of num_threads clause if the clause exists, or default is 0
 
-    SgStatement* s1 = buildFunctionCallStmt("__kmpc_fork_call", buildVoidType(), parameters, p_scope);
+    SgStatement* outlined_function_call = buildFunctionCallStmt("__kmpc_fork_call", buildVoidType(), parameters, p_scope);
+    // the head of transformed code
+    SgStatement* s1 = outlined_function_call;
+    // the tail of transformed code
+    SgStatement* s2 = s1;
 
+    // if num_threads clause exists, we need to set up the omp number of threads first.
+    // therefore, the head will be the function call of setting up num_threads.
+    SgExprStatement* set_num_threads_statement = NULL;
+    SgExpression* omp_num_threads = NULL;
+    if (hasClause(target, V_SgOmpNumThreadsClause)) {
+      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgOmpNumThreadsClause);
+      ROSE_ASSERT (num_threads_clauses.size() == 1); // should only have one num_threads()
+      SgOmpNumThreadsClause * num_threads_clause = isSgOmpNumThreadsClause(num_threads_clauses[0]);
+      ROSE_ASSERT (num_threads_clause->get_expression() != NULL);
+      omp_num_threads = copyExpression(num_threads_clause->get_expression());
+    }
+    if (omp_num_threads != NULL) {
+        parameters = buildExprListExp(buildIntVal(0));
+        SgExprStatement* global_tid_statement = buildFunctionCallStmt("__kmpc_global_thread_num", buildIntType(), parameters, p_scope);
+        parameters = buildExprListExp(buildIntVal(0), global_tid_statement->get_expression(), omp_num_threads);
+        set_num_threads_statement = buildFunctionCallStmt("__kmpc_push_num_threads", buildVoidType(), parameters, p_scope);
+        // set up the head of transformed code to num_thread setter
+        // the tail is still the outlined function call
+        s1 = set_num_threads_statement;
+    };
+
+    // transform the if clause
+    // the head of transformed code will be the if statement in this case
     SgExpression* if_condition = NULL;
     if (hasClause(target, V_SgOmpIfClause)) {
         Rose_STL_Container<SgOmpClause*> if_clauses = getClause(target, V_SgOmpIfClause);
@@ -2370,22 +2385,31 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
         if_condition = copyExpression(if_clause->get_expression());
     }
     if (if_condition != NULL) {
+        if (set_num_threads_statement != NULL) {
+            s1 = set_num_threads_statement;
+        };
         SgIfStmt* if_statement = buildIfStmt(if_condition, s1, NULL);
         parameters = buildExprListExp(buildIntVal(0), buildIntVal(0), outlined_parameter);
         SgExprStatement* else_stmt = buildFunctionCallStmt(outlined_func->get_name(), buildVoidType(), parameters, p_scope);
         if_statement->set_false_body(else_stmt);
+        // the head and tail are both changed to the if statement because all the other transformed code are included as children of if statement
         s1 = if_statement;
+        s2 = s1;
     };
 
-    SageInterface::replaceStatement(target, s1 , true);
+    SageInterface::replaceStatement(target, s1, true);
 #endif
     // Keep preprocessing information
     // I have to use cut-paste instead of direct move since 
     // the preprocessing information may be moved to a wrong place during outlining
     // while the destination node is unknown until the outlining is done.
-   // SageInterface::moveUpPreprocessingInfo(s1, target, PreprocessingInfo::before); 
-   pastePreprocessingInfo(s1, PreprocessingInfo::before, save_buf1); 
-    // add GOMP_parallel_end ();
+   pastePreprocessingInfo(s1, PreprocessingInfo::before, save_buf1);
+
+   // we can only set up the relationship between these two statements,
+   // because ROSE requires that the targeting location must have the parent info, which is not available until "pastePreprocessingInfo" above.
+   if (set_num_threads_statement != NULL) {
+       SageInterface::insertStatementAfter(set_num_threads_statement, outlined_function_call);
+   };
 #ifdef ENABLE_XOMP
 
     SgExprListExp*  parameters2 = buildExprListExp();
@@ -2398,14 +2422,14 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
     }
 
 #endif
-   pastePreprocessingInfo(s1, PreprocessingInfo::after, save_buf2);
+   pastePreprocessingInfo(s2, PreprocessingInfo::after, save_buf2);
    // paste the preprocessing info with inside position to the outlined function's body
    pastePreprocessingInfo(outlined_func->get_definition()->get_body(), PreprocessingInfo::inside, save_buf_inside); 
 
     // some #endif may be attached to the body, we should not move it with the body into
     // the outlined funcion!!
    // move dangling #endif etc from the body to the end of s2
-   movePreprocessingInfo(body,s1,PreprocessingInfo::before, PreprocessingInfo::after);
+   movePreprocessingInfo(body, s2, PreprocessingInfo::before, PreprocessingInfo::after);
 
    // SageInterface::deepDelete(target);
   }
