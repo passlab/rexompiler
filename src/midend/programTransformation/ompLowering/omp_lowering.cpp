@@ -2206,6 +2206,31 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
   return rt;
 }
 #endif
+
+// global_tid is required as a parameter in many kmpc function calls
+// it's could be available as a caller parameters, e.g. in a outlined function.
+// or, it must be retrieved by the function "__kmpc_global_thread_num".
+// this getter handles both cases.
+SgExpression* get_kmpc_global_tid(SgScopeStatement* scope) {
+
+    SgExpression* thread_global_tid = NULL;
+    SgName thread_global_id_name("__global_tid");
+    SgVariableSymbol* thread_global_id_symbol = scope->lookup_var_symbol(thread_global_id_name);
+    // if int* __global_tid is available in the current scope, it can be used directly.
+    if (thread_global_id_symbol != NULL) {
+        SgVarRefExp* thread_global_id_pointer = buildVarRefExp("__global_tid", scope);
+        thread_global_tid = buildPointerDerefExp(thread_global_id_pointer);
+    }
+    // if not, we need to get it first.
+    else {
+        SgExprStatement* global_tid_statement = buildFunctionCallStmt("__kmpc_global_thread_num", buildIntType(), buildExprListExp(buildIntVal(0)), scope);
+        thread_global_tid = global_tid_statement->get_expression();
+    };
+
+    return thread_global_tid;
+}
+
+
   /* GCC's libomp uses the following translation method: 
    * 
    * 
@@ -2365,9 +2390,8 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
       omp_num_threads = copyExpression(num_threads_clause->get_expression());
     }
     if (omp_num_threads != NULL) {
-        parameters = buildExprListExp(buildIntVal(0));
-        SgExprStatement* global_tid_statement = buildFunctionCallStmt("__kmpc_global_thread_num", buildIntType(), parameters, p_scope);
-        parameters = buildExprListExp(buildIntVal(0), global_tid_statement->get_expression(), omp_num_threads);
+        SgExpression* thread_global_tid = get_kmpc_global_tid(p_scope);
+        parameters = buildExprListExp(buildIntVal(0), thread_global_tid, omp_num_threads);
         set_num_threads_statement = buildFunctionCallStmt("__kmpc_push_num_threads", buildVoidType(), parameters, p_scope);
         // set up the head of transformed code to num_threads setter
         // the tail is still the outlined function call
@@ -5513,7 +5537,11 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
     SgStatement* body = target->get_body();
     ROSE_ASSERT(body!= NULL );
 
-   SgIfStmt* if_stmt = NULL; 
+    SgIfStmt* if_stmt = NULL;
+
+    SgExprListExp* parameters = NULL;
+    SgExpression* thread_global_tid = get_kmpc_global_tid(scope);
+    parameters = buildExprListExp(buildIntVal(0), thread_global_tid);
 
    if (SageInterface::is_Fortran_language())
    {
@@ -5530,11 +5558,10 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
    else // C/C++
    {
 #ifdef ENABLE_XOMP
-     SgExpression* func_exp = buildFunctionCallExp("XOMP_single", buildBoolType(), NULL, scope);
+     SgExpression* func_exp = buildFunctionCallExp("__kmpc_single", buildBoolType(), parameters, scope);
 #else
      SgExpression* func_exp = buildFunctionCallExp("GOMP_single_start", buildBoolType(), NULL, scope);
 #endif
-
      if_stmt = buildIfStmt(func_exp, body, NULL); 
    }
 
@@ -5543,11 +5570,15 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
    if (SageInterface::is_Fortran_language())
      insert_libxompf_h (if_stmt); // need prototype for xomp runtime function
     transOmpVariables(target, true_body);
+
+    SgExprStatement* end_single_call = buildFunctionCallStmt("__kmpc_end_single", buildVoidType(), parameters, scope);
+    insertStatementAfter(body, end_single_call);
+
     // handle nowait 
     if (!hasClause(target, V_SgOmpNowaitClause))
     {
 #ifdef ENABLE_XOMP
-      SgExprStatement* barrier_call= buildFunctionCallStmt("XOMP_barrier", buildVoidType(), NULL, scope);
+      SgExprStatement* barrier_call = buildFunctionCallStmt("__kmpc_barrier", buildVoidType(), parameters, scope);
 #else
       SgExprStatement* barrier_call= buildFunctionCallStmt("GOMP_barrier", buildVoidType(), NULL, scope);
 #endif
