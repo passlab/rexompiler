@@ -2369,7 +2369,7 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
         SgExprStatement* global_tid_statement = buildFunctionCallStmt("__kmpc_global_thread_num", buildIntType(), parameters, p_scope);
         parameters = buildExprListExp(buildIntVal(0), global_tid_statement->get_expression(), omp_num_threads);
         set_num_threads_statement = buildFunctionCallStmt("__kmpc_push_num_threads", buildVoidType(), parameters, p_scope);
-        // set up the head of transformed code to num_thread setter
+        // set up the head of transformed code to num_threads setter
         // the tail is still the outlined function call
         s1 = set_num_threads_statement;
     };
@@ -2385,9 +2385,6 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
         if_condition = copyExpression(if_clause->get_expression());
     }
     if (if_condition != NULL) {
-        if (set_num_threads_statement != NULL) {
-            s1 = set_num_threads_statement;
-        };
         SgIfStmt* if_statement = buildIfStmt(if_condition, s1, NULL);
         parameters = buildExprListExp(buildIntVal(0), buildIntVal(0), outlined_parameter);
         SgExprStatement* else_stmt = buildFunctionCallStmt(outlined_func->get_name(), buildVoidType(), parameters, p_scope);
@@ -2403,13 +2400,13 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
     // I have to use cut-paste instead of direct move since 
     // the preprocessing information may be moved to a wrong place during outlining
     // while the destination node is unknown until the outlining is done.
-   pastePreprocessingInfo(s1, PreprocessingInfo::before, save_buf1);
+    pastePreprocessingInfo(s1, PreprocessingInfo::before, save_buf1);
 
-   // we can only set up the relationship between these two statements,
-   // because ROSE requires that the targeting location must have the parent info, which is not available until "pastePreprocessingInfo" above.
-   if (set_num_threads_statement != NULL) {
-       SageInterface::insertStatementAfter(set_num_threads_statement, outlined_function_call);
-   };
+    // we can only set up the relationship between these two statements now,
+    // because ROSE requires that the targeting location must have the parent info, which is not available until "pastePreprocessingInfo" right above.
+    if (set_num_threads_statement != NULL) {
+        SageInterface::insertStatementAfter(set_num_threads_statement, outlined_function_call);
+    };
 #ifdef ENABLE_XOMP
 
     SgExprListExp*  parameters2 = buildExprListExp();
@@ -4895,7 +4892,7 @@ static void insertOmpLastprivateCopyBackStmts(SgStatement* ompStmt, vector <SgSt
 static void insertOmpReductionCopyBackStmts (SgOmpClause::omp_reduction_identifier_enum r_operator, vector <SgStatement* >& end_stmt_list,  SgBasicBlock* bb1, SgInitializedName* orig_var, SgVariableDeclaration* local_decl)
 {
 #ifdef ENABLE_XOMP
-  SgExprStatement* atomic_start_stmt = buildFunctionCallStmt("XOMP_atomic_start", buildVoidType(), NULL, bb1); 
+  SgExprStatement* atomic_start_stmt = buildFunctionCallStmt("__kmpc_atomic_start", buildVoidType(), NULL, bb1);
 #else  
   SgExprStatement* atomic_start_stmt = buildFunctionCallStmt("GOMP_atomic_start", buildVoidType(), NULL, bb1); 
 #endif  
@@ -4945,7 +4942,7 @@ static void insertOmpReductionCopyBackStmts (SgOmpClause::omp_reduction_identifi
     SgStatement* reduction_stmt = buildAssignStatement(buildVarRefExp(orig_var, bb1), r_exp);
     end_stmt_list.push_back(reduction_stmt);   
 #ifdef ENABLE_XOMP
-    SgExprStatement* atomic_end_stmt = buildFunctionCallStmt("XOMP_atomic_end", buildVoidType(), NULL, bb1);  
+    SgExprStatement* atomic_end_stmt = buildFunctionCallStmt("__kmpc_atomic_end", buildVoidType(), NULL, bb1);
 #else    
     SgExprStatement* atomic_end_stmt = buildFunctionCallStmt("GOMP_atomic_end", buildVoidType(), NULL, bb1);  
 #endif    
