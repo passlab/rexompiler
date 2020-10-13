@@ -8209,19 +8209,34 @@ static std::string dependenceTypeToString(SgOmpClause::omp_dependence_type_enum 
   string result;
   switch (ro)
   {
-    case SgOmpClause::e_omp_depend_in: 
+    case SgOmpClause::e_depend_unspecified: 
+      {
+        result = "";
+        break;
+      }
+    case SgOmpClause::e_depend_in: 
       {
         result = "in";
         break;
       }
-    case SgOmpClause::e_omp_depend_out: 
+    case SgOmpClause::e_depend_out:   
       {
         result = "out";
         break;
       }
-    case SgOmpClause::e_omp_depend_inout:   
+    case SgOmpClause::e_depend_inout:   
       {
         result = "inout";
+        break;
+      }
+    case SgOmpClause::e_depend_mutexinoutset:   
+      {
+        result = "mutexinoutset";
+        break;
+      }
+    case SgOmpClause::e_depend_depobj:   
+      {
+        result = "depobj";
         break;
       }
     default:

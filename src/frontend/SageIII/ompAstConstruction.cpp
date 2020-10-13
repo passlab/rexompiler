@@ -1825,58 +1825,43 @@ namespace OmpSupport
     return result;
   }
 
-  //! A helper function to convert OmpAttribute depend type operator to SgClause's one 
-  //TODO move to sageInterface?
-  static   SgOmpClause::omp_dependence_type_enum toSgOmpClauseDependenceType(omp_construct_enum at_op)
+  static SgOmpClause::omp_dependence_type_enum toSgOmpClauseDependenceType(OpenMPDependClauseType type)
   {
-    SgOmpClause::omp_dependence_type_enum result = SgOmpClause::e_omp_depend_unknown;
-    switch (at_op)
+    SgOmpClause::omp_dependence_type_enum result = SgOmpClause::e_depend_unspecified;
+    switch (type)
     {
-      case e_depend_in: 
+      case OMPC_DEPENDENCE_TYPE_in:
         {
-          result = SgOmpClause::e_omp_depend_in;
+          result = SgOmpClause::e_depend_in;
           break;
         }
-      case e_depend_out: 
+      case OMPC_DEPENDENCE_TYPE_out:
         {
-          result = SgOmpClause::e_omp_depend_out;
+          result = SgOmpClause::e_depend_out;
           break;
         }
-      case e_depend_inout:
+      case OMPC_DEPENDENCE_TYPE_inout:
         {
-          result = SgOmpClause::e_omp_depend_inout;
+          result = SgOmpClause::e_depend_inout;
           break;
         }
-     default:
+      case OMPC_DEPENDENCE_TYPE_mutexinoutset:
         {
-          printf("error: unacceptable omp construct enum for dependence type conversion:%s\n", OmpSupport::toString(at_op).c_str());
+          result = SgOmpClause::e_depend_mutexinoutset;
+          break;
+        }
+      case OMPC_DEPENDENCE_TYPE_depobj:
+        {
+          result = SgOmpClause::e_depend_depobj;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for dependence type conversion:%d\n", type);
           ROSE_ASSERT(false);
           break;
         }
     }
-    ROSE_ASSERT(result != SgOmpClause::e_omp_depend_unknown);
-    return result;
-  }
-  //! Try to build a depend clause with a given operation type from OmpAttribute
-  SgOmpDependClause* buildOmpDependClause(OmpAttribute* att, ComplexClause* current_clause) {
-    ROSE_ASSERT(att != NULL);
-    if (!att->hasDependenceType(current_clause->first_parameter))
-      return NULL;
-    SgOmpClause::omp_dependence_type_enum  sg_op = toSgOmpClauseDependenceType(current_clause->first_parameter);
-    SgExprListExp* explist=buildExprListExp();
-    SgOmpDependClause* result = new SgOmpDependClause(explist, sg_op);
-    ROSE_ASSERT(result != NULL);
-    explist->set_parent(result);
-    setOneSourcePositionForTransformation(result);
-    
-    // build variable list
-    setComplexClauseVariableList(result, current_clause);
-
-    //this is somewhat inefficient. 
-    // since the attribute has dimension info for all map clauses
-    //But we don't want to move the dimension info to directive level 
-    result->set_array_dimensions(att->array_dimensions);
-
     return result;
   }
 
@@ -2299,20 +2284,6 @@ namespace OmpSupport
                 for (iter = attr_clauses->begin(); iter != attr_clauses->end(); iter++) {
                     // process each clause individually.
                     SgOmpClause* sgclause = buildOmpDefaultClause(att, &*iter);
-                    ROSE_ASSERT(sgclause != NULL);
-                    target->get_clauses().push_back(sgclause);
-                    sgclause->set_parent(target);
-                };
-                break;
-            }
-            // special handling for depend(type:varlist)
-            case e_depend: {
-                std::deque<ComplexClause>* attr_clauses = att->getComplexClauses(c_clause);
-                ROSE_ASSERT(attr_clauses->size()!=0);
-                std::deque<ComplexClause>::iterator iter;
-                for (iter = attr_clauses->begin(); iter != attr_clauses->end(); iter++) {
-                    // process each clause individually.
-                    SgOmpClause* sgclause = buildOmpDependClause(att, &*iter);
                     ROSE_ASSERT(sgclause != NULL);
                     target->get_clauses().push_back(sgclause);
                     sgclause->set_parent(target);
@@ -4338,6 +4309,14 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
             printf("In_reduction Clause added!\n");
             break;
         }
+        case OMPC_depend: {
+            OpenMPDependClauseType type = ((OpenMPDependClause*)current_omp_clause)->getType();
+            SgOmpClause::omp_dependence_type_enum sg_type = toSgOmpClauseDependenceType(type);
+
+            result = new SgOmpDependClause(explist, sg_type);
+            printf("Depend Clause added!\n");
+            break;
+        }
         case OMPC_task_reduction: {
             OpenMPTaskReductionClauseIdentifier identifier = ((OpenMPTaskReductionClause*)current_omp_clause)->getIdentifier();
             SgOmpClause::omp_task_reduction_identifier_enum sg_identifier = toSgOmpClauseTaskReductionIdentifier(identifier);
@@ -4781,6 +4760,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_bind:
                 case OMPC_reduction:
                 case OMPC_in_reduction:
+                case OMPC_depend:
                 case OMPC_task_reduction:
                 case OMPC_shared:
                 case OMPC_copyprivate:
