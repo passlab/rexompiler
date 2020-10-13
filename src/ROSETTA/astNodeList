@@ -304,7 +304,6 @@ SgOmpDeclareMapperStatement
 SgOmpCancelStatement
 SgOmpTaskgroupStatement
 SgOmpDistributeStatement
-SgOmpRequiresStatement
 SgOmpLoopStatement
 SgOmpScanStatement
 SgOmpTaskloopStatement
@@ -356,12 +355,6 @@ SgOmpDetachClause
 SgOmpNumTasksClause
 SgOmpNogroupClause
 SgOmpHintClause
-SgOmpReverseOffloadClause
-SgOmpUnifiedAddressClause
-SgOmpUnifiedSharedMemoryClause
-SgOmpDynamicAllocatorsClause
-SgOmpAtomicDefaultMemOrderClause
-SgOmpExtImplementationDefinedRequirementClause
 SgOmpOrderClause
 SgOmpDistScheduleClause
 SgOmpBindClause

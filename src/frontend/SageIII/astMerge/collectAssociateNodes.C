@@ -1775,13 +1775,7 @@ addAssociatedNodes ( SgNode* node, set<SgNode*> & nodeList, bool markMemberNodes
           case V_SgOmpParallelClause           :  
           case V_SgOmpSectionsClause           :  
           case V_SgOmpForClause                :  
-          case V_SgOmpTaskgroupClause          :    
-          case V_SgOmpReverseOffloadClause     :
-          case V_SgOmpUnifiedAddressClause     :
-          case V_SgOmpUnifiedSharedMemoryClause     :
-          case V_SgOmpDynamicAllocatorsClause       :
-          case V_SgOmpAtomicDefaultMemOrderClause   :
-          case V_SgOmpExtImplementationDefinedRequirementClause :
+          case V_SgOmpTaskgroupClause          :
           case V_SgOmpNumThreadsClause  :
           case V_SgOmpHintClause        :
           case V_SgOmpNumTeamsClause    :
