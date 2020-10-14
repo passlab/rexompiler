@@ -259,6 +259,9 @@ namespace OmpSupport
     e_depend_inout, 
     e_depend_mutexinoutset, 
     e_depend_depobj, 
+    
+    // task depend modifier
+    e_omp_depend_modifier_iterator, 
 
     // OpenMP 5.0 clause
     e_allocate,

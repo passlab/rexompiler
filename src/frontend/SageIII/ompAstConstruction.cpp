@@ -50,13 +50,14 @@ static SgOmpBindClause* convertBindClause(SgOmpClauseBodyStatement*, std::pair<S
 static SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 // store temporary expression pairs for ompparser.
 extern std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
-extern std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >  array_dimensions;  
+extern std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >  array_dimensions;
 extern SgExpression* omp_expression;
 static SgExpression* parseOmpExpression(SgPragmaDeclaration*, OpenMPClauseKind, std::string);
 static SgExpression* parseOmpArraySection(SgPragmaDeclaration*, OpenMPClauseKind, std::string);
 static SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgOmpMapClause* convertMapClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpDependClause* convertDependClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 
 using namespace std;
 using namespace SageInterface;
@@ -1864,6 +1865,31 @@ namespace OmpSupport
     }
     return result;
   }
+  
+    static SgOmpClause::omp_depend_modifier_enum toSgOmpClauseDependModifier(OpenMPDependClauseModifier modifier)
+  {
+    SgOmpClause::omp_depend_modifier_enum result = SgOmpClause::e_omp_depend_modifier_unspecified;
+    switch (modifier)
+    {
+      case OMPC_DEPEND_MODIFIER_unspecified:
+        {
+          result = SgOmpClause::e_omp_depend_modifier_unspecified;
+          break;
+        }
+      case OMPC_DEPEND_MODIFIER_iterator:
+        {
+          result = SgOmpClause::e_omp_depend_modifier_iterator;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for depend modifier conversion:%d\n", modifier);
+          ROSE_ASSERT(false);
+          break;
+        }
+    }
+    return result;
+  }
 
   //! Build a map clause with a given operation type from OmpAttribute
   // map may have several variants: tofrom, to, from, and alloc. 
@@ -3649,6 +3675,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
                 convertMapClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
+            case OMPC_depend: {
+                convertDependClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
             default: {
                 convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
             }
@@ -4309,14 +4339,6 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
             printf("In_reduction Clause added!\n");
             break;
         }
-        case OMPC_depend: {
-            OpenMPDependClauseType type = ((OpenMPDependClause*)current_omp_clause)->getType();
-            SgOmpClause::omp_dependence_type_enum sg_type = toSgOmpClauseDependenceType(type);
-
-            result = new SgOmpDependClause(explist, sg_type);
-            printf("Depend Clause added!\n");
-            break;
-        }
         case OMPC_task_reduction: {
             OpenMPTaskReductionClauseIdentifier identifier = ((OpenMPTaskReductionClause*)current_omp_clause)->getIdentifier();
             SgOmpClause::omp_task_reduction_identifier_enum sg_identifier = toSgOmpClauseTaskReductionIdentifier(identifier);
@@ -4368,7 +4390,6 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
     setOneSourcePositionForTransformation(result);
     buildVariableList(result);
     explist->set_parent(result);
-
     // reconsider the location of following code to attach clause
     SgOmpClause* sg_clause = result; 
     clause_body->get_clauses().push_back(sg_clause);
@@ -4376,6 +4397,40 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
     omp_variable_list.clear();
     return result;
 
+}
+    
+SgOmpDependClause* convertDependClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser depend clause is ready.\n");
+    SgOmpDependClause* result = NULL;
+    SgExpression* clause_expression = NULL;
+    OpenMPDependClauseModifier modifier = ((OpenMPDependClause*)current_omp_clause)->getModifier();
+    SgOmpClause::omp_depend_modifier_enum sg_modifier = toSgOmpClauseDependModifier(modifier);
+    OpenMPDependClauseType type = ((OpenMPDependClause*)current_omp_clause)->getType();
+    SgOmpClause::omp_dependence_type_enum sg_type = toSgOmpClauseDependenceType(type);
+
+    std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
+    if (current_expressions->size() != 0) {
+        std::vector<const char*>::iterator iter;
+        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
+            clause_expression = parseOmpArraySection(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), *iter);
+        }
+    }
+    SgExprListExp* explist=buildExprListExp();
+
+    result = new SgOmpDependClause(explist, sg_modifier, sg_type);
+    ROSE_ASSERT(result != NULL);
+    buildVariableList(result);
+    explist->set_parent(result);
+    result->set_array_dimensions(array_dimensions);
+
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+    array_dimensions.clear();
+    omp_variable_list.clear();
+    printf("ompparser depend clause is added.\n");
+    return result;
 }
 
 SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {

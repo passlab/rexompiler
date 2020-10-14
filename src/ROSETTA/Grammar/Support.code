@@ -260,6 +260,13 @@ HEADER_OMP_CLAUSE_START
             e_depend_mutexinoutset,
             e_depend_depobj
         };
+        
+        enum omp_depend_modifier_enum
+        {
+            e_omp_depend_modifier_unspecified,
+            e_omp_depend_modifier_iterator
+        };
+
        
         // Liao 1/22/2012: experimental support for OpenMP Accelerator model 
         enum omp_map_operator_enum

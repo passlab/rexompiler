@@ -8248,6 +8248,29 @@ static std::string dependenceTypeToString(SgOmpClause::omp_dependence_type_enum 
   return result;
 }
 
+static std::string dependModifierToString(SgOmpClause::omp_depend_modifier_enum ro)
+{
+  string result;
+  switch (ro)
+  {
+    case SgOmpClause::e_omp_depend_modifier_unspecified: 
+      {
+        result = "";
+        break;
+      }
+    case SgOmpClause::e_omp_depend_modifier_iterator: 
+      {
+        result = "iterator";
+        break;
+      }
+    default:
+      {
+        cerr<<"Error: unhandled operator modifier"<<__func__<< "():"<< ro <<endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
 
 static std::string mapOperatorToString(SgOmpClause::omp_map_operator_enum ro)
 {
@@ -8513,6 +8536,10 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
     case V_SgOmpDependClause:
       {
         curprint(string(" depend("));
+        if(isSgOmpDependClause(c)->get_depend_modifier()){
+            curprint(dependModifierToString(isSgOmpDependClause(c)->get_depend_modifier()));
+            curprint(string(" , "));       
+        }
         curprint(dependenceTypeToString(isSgOmpDependClause(c)->get_dependence_type()));
         curprint(string(" : "));
         is_depend = true; 
