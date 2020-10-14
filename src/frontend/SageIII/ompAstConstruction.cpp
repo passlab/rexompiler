@@ -3737,8 +3737,8 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
 // Convert an OpenMPIR Threadprivate Directive to a ROSE node
 // Because we have to do some non-standard things, I'm putting this in a separate function
 SgStatement* convertOmpThreadprivateStatement(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
-    auto statement = new SgOmpThreadprivateStatement();        
-    auto current_ir = static_cast<OpenMPThreadprivateDirective *>(current_OpenMPIR_to_SageIII.second);
+    SgOmpThreadprivateStatement *statement = new SgOmpThreadprivateStatement();        
+    OpenMPThreadprivateDirective *current_ir = static_cast<OpenMPThreadprivateDirective *>(current_OpenMPIR_to_SageIII.second);
 
     std::vector<const char*>* current_expressions = current_ir->getThreadprivateList();
     if (current_expressions->size() != 0) {
