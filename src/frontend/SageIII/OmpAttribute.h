@@ -254,11 +254,11 @@ namespace OmpSupport
     e_linear,
 
     // task dependence type
-    e_depend_in, 
-    e_depend_out, 
-    e_depend_inout, 
-    e_depend_mutexinoutset, 
-    e_depend_depobj, 
+    e_omp_depend_in, 
+    e_omp_depend_out, 
+    e_omp_depend_inout, 
+    e_omp_depend_mutexinoutset, 
+    e_omp_depend_depobj, 
     
     // task depend modifier
     e_omp_depend_modifier_iterator, 

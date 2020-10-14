@@ -1828,32 +1828,32 @@ namespace OmpSupport
 
   static SgOmpClause::omp_dependence_type_enum toSgOmpClauseDependenceType(OpenMPDependClauseType type)
   {
-    SgOmpClause::omp_dependence_type_enum result = SgOmpClause::e_depend_unspecified;
+    SgOmpClause::omp_dependence_type_enum result = SgOmpClause::e_omp_depend_unspecified;
     switch (type)
     {
       case OMPC_DEPENDENCE_TYPE_in:
         {
-          result = SgOmpClause::e_depend_in;
+          result = SgOmpClause::e_omp_depend_in;
           break;
         }
       case OMPC_DEPENDENCE_TYPE_out:
         {
-          result = SgOmpClause::e_depend_out;
+          result = SgOmpClause::e_omp_depend_out;
           break;
         }
       case OMPC_DEPENDENCE_TYPE_inout:
         {
-          result = SgOmpClause::e_depend_inout;
+          result = SgOmpClause::e_omp_depend_inout;
           break;
         }
       case OMPC_DEPENDENCE_TYPE_mutexinoutset:
         {
-          result = SgOmpClause::e_depend_mutexinoutset;
+          result = SgOmpClause::e_omp_depend_mutexinoutset;
           break;
         }
       case OMPC_DEPENDENCE_TYPE_depobj:
         {
-          result = SgOmpClause::e_depend_depobj;
+          result = SgOmpClause::e_omp_depend_depobj;
           break;
         }
       default:
