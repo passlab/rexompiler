@@ -1,6 +1,0 @@
-START
-PROGRAM testbody ;
-BEGIN
-  ivar = 13 ;
-END
-TERM

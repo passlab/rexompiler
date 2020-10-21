@@ -1,7 +1,0 @@
-START
-PROGRAM testgoto ;
-BEGIN
- labelxyz: GOTO label1 ;
- label1: RETURN ;
-END
-TERM
