@@ -176,13 +176,13 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	task_untied3.c \
 	#task_untied4.c \
 	task_underIf.c \
-	#task_wait.c \
-	#task_wait2.c \
+	taskwait.c \
+	taskwait2.c \
 	teams.c \
 	twoRegions.c \
-	#threadprivate2.c \
-	#threadprivate3.c \
-	#threadprivate.c \
+	threadprivate2.c \
+	threadprivate3.c \
+	threadprivate.c \
 	upperCase.c \
 	#variables.c
 	threadProcessor.c
@@ -308,7 +308,12 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	task_underIf.c \
 	taskgroup.c \
 	taskloop.c \
+	taskwait.c \
+	taskwait2.c \
 	taskyield.c \
+	threadprivate.c \
+	threadprivate2.c \
+	threadprivate3.c \
 	teams.c \
 	twoRegions.c \
 	threadProcessor.c \
