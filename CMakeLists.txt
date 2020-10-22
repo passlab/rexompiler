@@ -491,7 +491,7 @@ find_package(Perl REQUIRED)
 # FIXME: All options should be in the affirmative (i.e., enable-whatever instead of disable-whatever)
 option(disable-example-translators-directory "Disable compilation and testing of exampleTranslators directory" ON)
 option(disable-tests-directory "Disable compilation and testing of the ROSE/tests directory" OFF)
-option(disable-tutorial-directory "Disable compilation and testing of the ROSE/tutorial directory" OFF)
+option(disable-tutorial-directory "Disable compilation and testing of the ROSE/tutorial directory" ON)
 
 option(enable-advanced-warnings "Support for an advanced uniform warning level for ROSE development" OFF)
 if(enable-advanced-warnings)
@@ -621,6 +621,15 @@ if(NOT WIN32)
   if(NOT APPLE)
     find_library(RT_LIB rt)
   endif()
+endif()
+
+# TODO: We shoud move this elsewhere
+set(OMPPARSER_PATH "" CACHE STRING "Path to external OMP parser")
+if (OMPPARSER_PATH STREQUAL "")
+else()
+    include_directories(${OMPPARSER_PATH}/include)
+    link_directories(${OMPPARSER_PATH}/lib)
+    set(use_ompparser TRUE)
 endif()
 
 # This is essential to find the right include path from either build or installation tree for a translator
@@ -847,6 +856,9 @@ if(VERBOSE)
   # the tools for creating libraries
   message(STATUS "CMAKE_AR:                           ${CMAKE_AR}")
   message(STATUS "CMAKE_RANLIB:                       ${CMAKE_RANLIB}")
+  
+  # ompparser
+  message(STATUS "OMPPARSER:                          ${OMPPARSER_PATH}")
 endif()
 
 
@@ -941,6 +953,10 @@ set(ROSE_INCLUDES
 
 if(WIN32)
   list(APPEND ROSE_INCLUDES ${ROSE_TOP_SRC_DIR}/winspecific)
+endif()
+
+if(SQLITE3_FOUND_LIB)
+  list(APPEND ROSE_INCLUDES ${ROSE_TOP_SRC_DIR}/src/roseExtensions/sqlite3x)
 endif()
 
 ########################################################################################################################

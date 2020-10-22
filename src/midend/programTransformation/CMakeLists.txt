@@ -42,7 +42,7 @@ add_library(midend_pt OBJECT
   astOutlining/If.cc
   astOutlining/Transform.cc
   astOutlining/GenerateCall.cc
-  #  ompLowering/omp_lowering.cpp
+  ompLowering/omp_lowering.cpp
   astInlining/isPotentiallyModified.C
   astInlining/replaceExpressionWithStatement.C
   astInlining/inliner.C

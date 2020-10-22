@@ -147,7 +147,11 @@ add_dependencies(ROSE_DLL roseUtil)
 
 set_target_properties(ROSE_DLL PROPERTIES OUTPUT_NAME "rose")
 
-target_link_libraries(ROSE_DLL ${edg_lib} ${link_with_libraries})
+if (use_ompparser)
+    target_link_libraries(ROSE_DLL ${edg_lib} ${link_with_libraries} ompparser)
+else()
+    target_link_libraries(ROSE_DLL ${edg_lib} ${link_with_libraries})
+endif()
 
 set_target_properties(ROSE_DLL PROPERTIES
   VERSION 1.0.0
