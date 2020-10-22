@@ -759,9 +759,6 @@
 /* Defined if we're using a prebuilt EDG library */
 #cmakedefine BINARY_EDG
 
-/* Build ROSE to support the Binary Analysis */
-#cmakedefine ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-
 /* Build ROSE to support the Cuda langauge */
 #cmakedefine ROSE_BUILD_CUDA_LANGUAGE_SUPPORT
 
@@ -780,12 +777,6 @@
 
 /* Build ROSE to support the OpenCL langauge */
 #cmakedefine ROSE_BUILD_OPENCL_LANGUAGE_SUPPORT
-
-/* Build ROSE to support the PHP langauge */
-#cmakedefine ROSE_BUILD_PHP_LANGUAGE_SUPPORT
-
-/* Build ROSE to support the Python langauge */
-#cmakedefine ROSE_BUILD_PYTHON_LANGUAGE_SUPPORT
 
 /* Support for an advanced uniform warning level for ROSE development */
 #cmakedefine ROSE_USE_UNIFORM_ADVANCED_WARNINGS_SUPPORT

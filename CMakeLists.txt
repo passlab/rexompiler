@@ -314,13 +314,6 @@ endif()
 ########################################################################################################################
 # Analyzable languages supported by ROSE
 ########################################################################################################################
-
-# Binary analysis
-option(enable-binary-analysis "Enable binary analysis" ON)
-if(enable-binary-analysis)
-  set(ROSE_BUILD_BINARY_ANALYSIS_SUPPORT 1)
-endif()
-
 # C/C++
 option(enable-c "Enable C/C++ analysis" ON)
 if(enable-c)
@@ -397,31 +390,6 @@ if(enable-php)
   set(ROSE_BUILD_PHP_LANGUAGE_SUPPORT 1)
   find_path(with-php php DOC "Specify the prefix where PHP (and phc) is installed")
 endif()
-
-# Python
-option(enable-python "Enable Python analysis" OFF)
-if(enable-python)
-  set(ROSE_BUILD_PYTHON_LANGUAGE_SUPPORT 1)
-  find_package(PythonLibs REQUIRED)
-  option(with-python "Build code that requires a Python interpreter" ON)
-  if(with-python)
-    find_package(PythonInterp)
-  endif()
-endif()
-
-# Ada
-option(enable-ada "Enable Ada analysis" OFF)
-if(enable-ada)
-  set(ROSE_BUILD_ADA_LANGUAGE_SUPPORT 1)
-endif()
-
-# Jovial
-option(enable-jovial "Enable Jovial analysis" OFF)
-if(enable-jovial)
-  set(ROSE_BUILD_JOVIAL_LANGUAGE_SUPPORT 1)
-endif()
-
-
 
 ########################################################################################################################
 # EDG (Edison Design Group) frontend C/C++ compiler
@@ -512,9 +480,6 @@ set(CMAKE_REQUIRED_QUIET FALSE)
 # A collection of macros which extend the built-in cmake commands
 include(MacroLibrary)
 
-# Database
-include(FindMySQL)
-
 find_package(OpenSSL)
 
 find_package(Perl REQUIRED)
@@ -524,19 +489,15 @@ find_package(Perl REQUIRED)
 ########################################################################################################################
 
 # FIXME: All options should be in the affirmative (i.e., enable-whatever instead of disable-whatever)
-option(disable-binary-analysis-tests "Disable tests of ROSE binary analysis code" ON)
 option(disable-example-translators-directory "Disable compilation and testing of exampleTranslators directory" ON)
 option(disable-tests-directory "Disable compilation and testing of the ROSE/tests directory" OFF)
 option(disable-tutorial-directory "Disable compilation and testing of the ROSE/tutorial directory" OFF)
-option(enable-projects-directory "Build projects ('projects' directory)" ON)
 
 option(enable-advanced-warnings "Support for an advanced uniform warning level for ROSE development" OFF)
 if(enable-advanced-warnings)
   message(WARNING "Using an advanced uniform warning level for ROSE development")
   set(ROSE_USE_UNIFORM_ADVANCED_WARNINGS_SUPPORT 1)
 endif()
-
-option(enable-assembly-semantics "Enable semantics-based analysis of assembly code" OFF)
 
 option(enable-candl "Support for ScopLib" OFF)
 if(enable-candl)
@@ -550,7 +511,6 @@ if(enable-cloog)
     DOC "Path to a valid Cloog installation")
 endif()
 
-option(enable-compass2 "build the Compass2 static analysis tool" OFF)
 option(enable-edg-cuda "Build EDG 4.0 with CUDA support" OFF)
 option(enable-edg-opencl "Build EDG 4.0 with OpenCL support" OFF)
 
@@ -559,20 +519,9 @@ if(enable-edg_union_struct_debugging)
   set(USE_ROSE_EDG_DEBUGGING_SUPPORT 1)
 endif()
 
-option(enable-FLTK "Enable FLTK")
-if(enable-FLTK)
-  find_package(FLTK REQUIRED)
-endif()
-
 option(enable-gnu-extensions "Enable internal support in ROSE for GNU language extensions" OFF)
 if(enable-gnu-extensions)
   set(ROSE_SUPPORT_GNU_EXTENSIONS TRUE)
-endif()
-
-option(enable-internalFrontendDevelopment "Enable development mode to reduce files required to support work on
-  language frontends" OFF)
-if(enable-internalFrontendDevelopment)
-  set(ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT 1)
 endif()
 
 option(enable-microsoft-extensions "Enable internal support in ROSE for GNU language extensions" OFF)
@@ -601,40 +550,18 @@ if(enable-purify-linker)
   set(USE_PURIFY_LINKER 1)
 endif()
 
-option(enable-rosehpct "enable build of the ROSE-HPCT module" ON)
-
-option(enable-rose-openGL "enable openGL" OFF)
-if(enable-rose-openGL)
-  find_package(OpenGL)
-  find_package(GLUT)
-endif()
-
 option(enable-scoplib "Support for ScopLib" OFF)
 if(enable-scoplib)
   find_path(with-scoplib "include/scolib.h" DOC "Path to a valid ScopLib installation")
 endif()
 
-option(enable-poet "Enable POET support" OFF)
-
 # To use Bison, set BISON_ROOT to the Bison installation prefix. To avoid Bison, use BISON_ROOT=no
 include(FindBison)
 find_bison()
 
-# To use Z3, set Z3_ROOT to the Z3 installation prefix. To avoid Z3, use Z3_ROOT=no.
-include(FindZ3)
-find_z3()
-
 # To use doxygen, set DOXYGEN_ROOT to the doxygen installation prefix. To avoid doxygen use DOXYGEN_ROOT=no
 include(FindDoxygen)
 find_doxygen()
-
-# To use YAML-CPP, set YAMLCPP_ROOT to the YAML-CPP installation prefix. To avoid YAML-CPP set YAMLCPP_ROOT=no
-include(FindYamlcpp)
-find_yamlcpp()
-
-# To use Dlib, set DLIB_ROOT to the Dlib installation prefix. To avoid Dlib set DLIB_ROOT=no
-include(FindDlib)
-find_dlib()
 
 # To use GCrypt, set GCRYPT_ROOT to the GCrypt installation prefix. To avoid GCrypt set GCRYPT_ROOT=no
 include(FindGcrypt)
@@ -645,41 +572,10 @@ if(GCRYPT_FOUND)
   find_gpgerror()
 endif()
 
-# To use libmagic, set MAGIC_ROOT to the libmagic installation prefix. To avoid libmagic set MAGIC_ROOT=no
-include(FindMagic)
-find_magic()
-
-# To use libpqxx, set PQXX_ROOT to the libpqxx installation prefix. To avoid libpqxx set PQXX_ROOT=no
-include(FindPqxx)
-find_pqxx()
-
-# To use Qt, set QT_ROOT to the Qt installation prefix. To avoid Qt set QT_ROOT=no
-include(FindQt)
-find_qt()
-
-# To use libreadline, set READLINE_ROOT to the readline installation prefix. To avoid readline set READLINE_ROOT=no
-include(FindReadline)
-find_readline()
-
-# To use libspot, set SPOT_ROOT to the spot installation prefix. To avoid spot set SPOT_ROOT=no
-include(FindSpot)
-find_spot()
-
-# To use Wt, set WT_ROOT to the Wt installation prefix. To avoid Wt set WT_ROOT=no
-include(FindWt)
-find_wt()
-
-# To use Yices, set YICES_ROOT to the Yices installation prefix. To avoid Yices set YICES_ROOT=no
-include(FindYices)
-find_yices()
-
 # Zlib is required by Boost. To find it in a special place, set ZLIB_ROOT to its installation prefix.
+# Zlib is required by libharu
 include(FindZlib)
 find_zlib()
-
-# DWARF library
-include(FindDwarf)
-find_dwarf()
 
 set(ASSERTION_BEHAVIOR "exit" CACHE STRING "Default behavior of failed assertions. Can be 'abort', 'exit', or 'throw'.")
 if(ASSERTION_BEHAVIOR STREQUAL "abort")
@@ -692,35 +588,17 @@ else()
   message(FATAL_ERROR "ASSERTION_BEHAVIOR should be 'abort', 'exit', or 'throw'")
 endif()
 
-find_path(with-backstroke-ross ROSS DOC "Specify the path where ROSS is installed")
-find_path(with-backstroke-speedes SPEEDES DOC "Specify the path where SPEEDES is installed")
-find_library(with-gomp_omp_runtime_library gomp_omp DOC "Specify the prefix where GOMP Runtime System is installed")
 find_path(with-GraphViz_include graphviz.h DOC "Specify the prefix where GraphViz include files are installed")
 find_path(with-GraphViz_libs GraphViz_libs DOC "Specify the prefix where GraphViz libraries are installed")
-find_path(with-haskell runghc DOC "Path to bin directory containing ghc and runghc.")
-find_path(with-ida "ida2sql.py" DOC "Specify the prefix where IDA Pro is installed")
 find_path(with-insure insure++ DOC "Specify the prefix where insure++ is installed")
-find_path(with-IntelPin include/IntelPinSupport.h DOC "Specify the prefix where Intel Pin Package is installed")
 find_path(with-ltdl-include ltdl.h DOC "use the ltdl headers installed in DIR")
 find_library(with-ltdl-lib ltdl DOC "Path to ltdl library")
-find_path(with-llvm "llvm" DOC "Specify the prefix where LLVM (and opt) is installed")
-find_path(with-maple "include/maple.h" DOC "Specify the prefix where Maple is installed")
-find_path(with-omni_omp_runtime_support include/omni_omp.h DOC "Specify the prefix where Omni OpenMP Runtime System is installed")
 
 find_path(with-purify bin/purify DOC "Specify the prefix where purify is installed")
 if(with-purify)
   set(USE_PURIFY 1)
 endif()
 
-find_path(with-QRose QRose DOC "prefix of QRose installation")
-
-if(with-roseQt)
-  find_package(Qt4 REQUIRED)
-  include(${QT_USE_FILE})
-endif()
-
-find_path(with-rted rted DOC "Configure option to have RTED enabled.")
-find_path(with-smt-solver smt-solver DOC "Specify the path to an SMT-LIB compatible SMT solver. Used only for testing")
 
 find_path(with-wine "bin/wine" DOC "Specify the prefix where Wine is installed")
 if(with-wine)
@@ -1001,25 +879,12 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astFileIO
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astFromString
   ${ROSE_TOP_SRC_DIR}/src/frontend/OpenFortranParser_SAGE_Connection
-  ${ROSE_TOP_SRC_DIR}/src/frontend/PHPFrontend
-  ${ROSE_TOP_SRC_DIR}/src/frontend/PythonFrontend
-  ${ROSE_TOP_SRC_DIR}/src/frontend/BinaryFormats
-  ${ROSE_TOP_SRC_DIR}/src/frontend/BinaryLoader
-  ${ROSE_TOP_SRC_DIR}/src/frontend/Disassemblers
-  ${ROSE_TOP_SRC_DIR}/src/frontend/ExecFormats
   ${ROSE_TOP_SRC_DIR}/src/frontend
   ${ROSE_TOP_SRC_DIR}/src/backend/unparser
   ${ROSE_TOP_SRC_DIR}/src/backend/unparser/formatSupport
   ${ROSE_TOP_SRC_DIR}/src/backend/unparser/languageIndependenceSupport
   ${ROSE_TOP_SRC_DIR}/src/backend/unparser/CxxCodeGeneration
   ${ROSE_TOP_SRC_DIR}/src/backend/unparser/FortranCodeGeneration
-  ${ROSE_TOP_SRC_DIR}/src/backend/unparser/JavaCodeGeneration
-  ${ROSE_TOP_SRC_DIR}/src/backend/unparser/PHPCodeGeneration
-  ${ROSE_TOP_SRC_DIR}/src/backend/unparser/PythonCodeGeneration
-  ${ROSE_TOP_SRC_DIR}/src/backend/unparser/X10CodeGeneration
-  ${ROSE_TOP_SRC_DIR}/src/backend/unparser/AdaCodeGeneration
-  ${ROSE_TOP_SRC_DIR}/src/backend/unparser/JovialCodeGeneration
-  ${ROSE_TOP_SRC_DIR}/src/backend/asmUnparser
   ${ROSE_TOP_SRC_DIR}/src/util
   ${ROSE_TOP_SRC_DIR}/src/util/support
   ${ROSE_TOP_SRC_DIR}/src/util/graphs
@@ -1039,10 +904,6 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/midend/astUtil/astInterface
   ${ROSE_TOP_SRC_DIR}/src/midend/astUtil/astSupport
   ${ROSE_TOP_SRC_DIR}/src/midend/astUtil/symbolicVal
-  ${ROSE_TOP_SRC_DIR}/src/midend/BinaryAnalysis
-  ${ROSE_TOP_SRC_DIR}/src/midend/BinaryAnalysis/dataflowanalyses
-  ${ROSE_TOP_SRC_DIR}/src/midend/BinaryAnalysis/graph
-  ${ROSE_TOP_SRC_DIR}/src/midend/BinaryAnalysis/instructionSemantics
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/loopProcessing/computation
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/loopProcessing/depGraph
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/loopProcessing/depInfo
@@ -1074,63 +935,13 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/MSTL
   ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/libharu-2.1.0/include
   ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/libharu-2.1.0/include
-  ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/qrose/Framework
-  ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/qrose/Widgets
   ${ROSE_TOP_SRC_DIR}/src/util/graphs
   ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/libharu-2.1.0/win32/include/
   ${ROSE_TOP_SRC_DIR}/src/midend/astUtil/astInterface)
 
-if(SQLITE3_FOUND_LIB)
-  list(APPEND ROSE_INCLUDES ${ROSE_TOP_SRC_DIR}/src/roseExtensions/sqlite3x)
-endif()
-
-if(enable-poet)
-  list(APPEND ROSE_INCLUDES ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/POET)
-endif()
-
 if(WIN32)
   list(APPEND ROSE_INCLUDES ${ROSE_TOP_SRC_DIR}/winspecific)
 endif()
-
-include_directories(${KDE4_INCLUDES} ${KDE4_INCLUDE_DIR} ${QT_INCLUDES})
-
-if(with-roseQt)
-  list(APPEND ROSE_INCLUDES
-    ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/qrose/Components/Common
-    ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/qrose/Components/QueryBox
-    ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/qrose/Components/SourceBox
-    ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/qrose/Components/TreeBox)
-  set(qtWidgets_INCLUDE_DIRS
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/AsmInstructionBar
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/AsmView
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/AstBrowserWidget
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/AstGraphWidget
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/AstProcessing
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/BeautifiedAst
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/FlopCounter
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/InstructionCountAnnotator
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/KiviatView
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/MetricsConfig
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/MetricFilter
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/MetricsKiviat
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/NodeInfoWidget
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/ProjectManager
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/PropertyTreeWidget
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/QCodeEditWidget
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/QCodeEditWidget/QCodeEdit
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/QCodeEditWidget/QCodeEdit/widgets
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/QtGradientEditor
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/RoseCodeEdit
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/RoseFileSelector
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/SrcBinView
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/TaskSystem
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/TreeModel
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/util
-    ${ROSE_SOURCE_DIR}/src/roseExtensions/qtWidgets/WidgetCreator)
-endif()
-set(QT_INCLUDES ${ROSE_INCLUDES} ${Boost_INCLUDE_DIRS})
-
-
 
 ########################################################################################################################
 # Set output directories
@@ -1265,7 +1076,6 @@ add_subdirectory(tools)
 enable_testing()
 add_subdirectory(tests)
 add_subdirectory(tutorial)
-add_subdirectory(projects)
 
 ########################################################################################################################
 # Miscellaneous final actions

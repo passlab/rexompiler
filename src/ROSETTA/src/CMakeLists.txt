@@ -26,7 +26,6 @@ set(CxxGrammarMetaProgram_SRCS
   expression.C
   statement.C
   support.C
-  binaryInstruction.C
   storageSize.C
   visitorSupport.C
   poolBasedTraversal.C
@@ -61,7 +60,6 @@ set(GRAMMAR_SOURCE_FILES
   ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/LocatedNode.code 
   ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/dataMemberAccessFunctions.macro 
   ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/grammarMainClassParseFunctionSourceCode.macro
-  ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/BinaryInstruction.code 
   ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/grammarClassDeclarationMacros.macro 
   ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/grammarMainClassSourceCodeMacros.macro 
   ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/grammarNewDeleteOperatorMacros.macro 

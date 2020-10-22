@@ -5,7 +5,7 @@ add_subdirectory(constantFolding)
 add_subdirectory(implicitCodeGeneration)
 add_subdirectory(astInlining)
 add_subdirectory(astOutlining)
-add_subdirectory(ompLowering)
+#add_subdirectory(ompLowering)
 add_subdirectory(transformationTracking)
 add_subdirectory(extractFunctionArgumentsNormalization)
 add_subdirectory(singleStatementToBlockNormalization)
@@ -42,7 +42,7 @@ add_library(midend_pt OBJECT
   astOutlining/If.cc
   astOutlining/Transform.cc
   astOutlining/GenerateCall.cc
-  ompLowering/omp_lowering.cpp
+  #  ompLowering/omp_lowering.cpp
   astInlining/isPotentiallyModified.C
   astInlining/replaceExpressionWithStatement.C
   astInlining/inliner.C

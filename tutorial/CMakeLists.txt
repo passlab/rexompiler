@@ -1,11 +1,7 @@
 if(NOT disable-tutorial-directory)
   include_directories(${ROSE_INCLUDES})
 
-  if(enable-rosehpct)
-    add_subdirectory(roseHPCT)
-  endif()
   add_subdirectory(outliner)
-  add_subdirectory(intelPin)
 
   ########### next target ###############
 
@@ -27,7 +23,7 @@ if(NOT disable-tutorial-directory)
     bin_example buildCallGraph buildVFA livenessAnalysis CharmSupport
     debuggingIRnodeToString debuggingSourceCodePositionInformation
     commandlineProcessing interveneAtVariables changeFunction classHierarchyGraph
-    dataBaseUsage dwarfAnalysis dwarfInstructionAddressToSourceLineAnalysis
+    dataBaseUsage 
     loopNestingInfoProcessing tauInstrumenter typeTransformation
     astFileIO_GenerateBinaryFile generatingUniqueNamesFromDeclaration
     symbolTableHandling scopeInformation customGraphGeneration inlineTransformations
@@ -42,12 +38,6 @@ if(NOT disable-tutorial-directory)
     virtualFunctionIdentification switchWithoutDefault addStruct
     sprintf_to_snprintf seedBugsExample_arrayIndexing volatileTypeModifier
     findVariableDeclarations)
-
-  if(enable-binary-analysis)
-    list(APPEND tutorials
-      binaryAttribute binaryCallGraph binaryFileRead
-      binaryFileWrite binaryHelloWorld binaryStrings binaryAnalysis_symbolTable)
-  endif()
 
   if(HAVE_PTHREAD_H)
     list(APPEND tutorials sharedMemoryTraversals)

@@ -20,11 +20,6 @@
 #   include "unparseFortran_modfile.h"
 #endif
 
-#ifdef ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-#   include <Partitioner2/Engine.h>
-#   include <Partitioner2/ModulesElf.h>
-#endif
-
 #include <algorithm>
 
 #include <boost/algorithm/string/join.hpp>
