@@ -314,13 +314,6 @@ endif()
 ########################################################################################################################
 # Analyzable languages supported by ROSE
 ########################################################################################################################
-
-# Binary analysis
-option(enable-binary-analysis "Enable binary analysis" ON)
-if(enable-binary-analysis)
-  set(ROSE_BUILD_BINARY_ANALYSIS_SUPPORT 1)
-endif()
-
 # C/C++
 option(enable-c "Enable C/C++ analysis" ON)
 if(enable-c)
@@ -336,29 +329,6 @@ if(enable-cuda)
   endif()
   find_package(CUDA REQUIRED)
   set(ROSE_BUILD_CUDA_LANGUAGE_SUPPORT 1)
-endif()
-
-# Java
-option(enable-java "Enable Java analysis" ON)
-if(enable-java)
-  message(STATUS "Looking for JAVA ...")
-  # The FindJava script is different than all our others--it doesn't consult JAVA_ROOT. Therefore, the only
-  # value of JAVA_ROOT that we can support is the empty string.
-  if("${JAVA_ROOT}" STREQUAL "")
-  elseif("${JAVA_ROOT}" STREQUAL "no")
-    message(FATAL_ERROR "Java cannot be both disabled (-DJAVA_ROOT=FALSE) and enabled (-Denable-java=TRUE)")
-  else()
-    message(FATAL_ERROR "Java location cannot be explicit (-DJAVA_ROOT=...)")
-  endif()
-  
-  include(FindJava)
-  find_program(GCJ gcj)
-  find_program(GCJH gcjh)
-  find_package(JNI)
-  set(ROSE_BUILD_JAVA_LANGUAGE_SUPPORT 1)
-  set(USE_ROSE_INTERNAL_JAVA_SUPPORT 1)
-  get_filename_component(BACKEND_JAVA_COMPILER ${Java_JAVAC_EXECUTABLE} NAME)
-  install(FILES ${JAVA_JVM_LIBRARY} DESTINATION ${ROSE_LIB_DIR_NAME})
 endif()
 
 # OpenCL
@@ -390,38 +360,6 @@ if(enable-fortran)
     message(STATUS "gfortran version ${gfortran_version} detected")
   endif()
 endif()
-
-# PHP
-option(enable-php "Enable PHP analysis" ON)
-if(enable-php)
-  set(ROSE_BUILD_PHP_LANGUAGE_SUPPORT 1)
-  find_path(with-php php DOC "Specify the prefix where PHP (and phc) is installed")
-endif()
-
-# Python
-option(enable-python "Enable Python analysis" OFF)
-if(enable-python)
-  set(ROSE_BUILD_PYTHON_LANGUAGE_SUPPORT 1)
-  find_package(PythonLibs REQUIRED)
-  option(with-python "Build code that requires a Python interpreter" ON)
-  if(with-python)
-    find_package(PythonInterp)
-  endif()
-endif()
-
-# Ada
-option(enable-ada "Enable Ada analysis" OFF)
-if(enable-ada)
-  set(ROSE_BUILD_ADA_LANGUAGE_SUPPORT 1)
-endif()
-
-# Jovial
-option(enable-jovial "Enable Jovial analysis" OFF)
-if(enable-jovial)
-  set(ROSE_BUILD_JOVIAL_LANGUAGE_SUPPORT 1)
-endif()
-
-
 
 ########################################################################################################################
 # EDG (Edison Design Group) frontend C/C++ compiler
@@ -527,7 +465,7 @@ find_package(Perl REQUIRED)
 option(disable-binary-analysis-tests "Disable tests of ROSE binary analysis code" ON)
 option(disable-example-translators-directory "Disable compilation and testing of exampleTranslators directory" ON)
 option(disable-tests-directory "Disable compilation and testing of the ROSE/tests directory" OFF)
-option(disable-tutorial-directory "Disable compilation and testing of the ROSE/tutorial directory" OFF)
+option(disable-tutorial-directory "Disable compilation and testing of the ROSE/tutorial directory" ON)
 option(enable-projects-directory "Build projects ('projects' directory)" ON)
 
 option(enable-advanced-warnings "Support for an advanced uniform warning level for ROSE development" OFF)
@@ -690,6 +628,14 @@ elseif(ASSERTION_BEHAVIOR STREQUAL "throw")
   add_definitions("-DROSE_ASSERTION_BEHAVIOR=ROSE_ASSERTION_THROW")
 else()
   message(FATAL_ERROR "ASSERTION_BEHAVIOR should be 'abort', 'exit', or 'throw'")
+endif()
+
+# TODO: We shoud move this elsewhere
+set(OMPPARSER_PATH "" CACHE STRING "Path to external OMP parser")
+if (OMPPARSER_PATH STREQUAL "")
+else()
+    include_directories(${OMPPARSER_PATH}/include)
+    link_directories(${OMPPARSER_PATH}/lib)
 endif()
 
 find_path(with-backstroke-ross ROSS DOC "Specify the path where ROSS is installed")
@@ -969,6 +915,8 @@ if(VERBOSE)
   # the tools for creating libraries
   message(STATUS "CMAKE_AR:                           ${CMAKE_AR}")
   message(STATUS "CMAKE_RANLIB:                       ${CMAKE_RANLIB}")
+  
+  message(STATUS "OMPPARSER:                          ${OMPPARSER_PATH}")
 endif()
 
 
@@ -1265,7 +1213,6 @@ add_subdirectory(tools)
 enable_testing()
 add_subdirectory(tests)
 add_subdirectory(tutorial)
-add_subdirectory(projects)
 
 ########################################################################################################################
 # Miscellaneous final actions

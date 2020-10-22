@@ -87,7 +87,6 @@ add_subdirectory(util)
 add_subdirectory(ROSETTA)
 add_subdirectory(roseSupport)
 add_subdirectory(3rdPartyLibraries)
-add_subdirectory(roseIndependentSupport)
 
 add_definitions(-DROSE_DLL_EXPORTS)
 
@@ -114,11 +113,11 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:virtualCFG>
   $<TARGET_OBJECTS:astFromString>
   $<TARGET_OBJECTS:roseSupport>
-  $<TARGET_OBJECTS:rosePartitioner2>
-  $<TARGET_OBJECTS:roseDisassemblers>
-  $<TARGET_OBJECTS:roseBinaryFormats>
-  $<TARGET_OBJECTS:roseBinaryLoader>
-  $<TARGET_OBJECTS:roseAsmUnparser>
+  #$<TARGET_OBJECTS:rosePartitioner2>
+  #$<TARGET_OBJECTS:roseDisassemblers>
+  #$<TARGET_OBJECTS:roseBinaryFormats>
+  #$<TARGET_OBJECTS:roseBinaryLoader>
+  #$<TARGET_OBJECTS:roseAsmUnparser>
   $<TARGET_OBJECTS:astMerge>
   $<TARGET_OBJECTS:astFixup>
   $<TARGET_OBJECTS:midend>
@@ -128,7 +127,7 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:astProcessing>
   $<TARGET_OBJECTS:astMatching>
   $<TARGET_OBJECTS:midend_util>
-  $<TARGET_OBJECTS:midend_binary>
+  #$<TARGET_OBJECTS:midend_binary>
   $<TARGET_OBJECTS:midend_pt>
   $<TARGET_OBJECTS:sageInterface>
   $<TARGET_OBJECTS:astTokenStream>
@@ -136,27 +135,15 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:astVisualization>
   $<TARGET_OBJECTS:includeDirectivesProcessing>
   $<TARGET_OBJECTS:astPostProcessing>
-  $<TARGET_OBJECTS:failsafe>
+  #$<TARGET_OBJECTS:failsafe>
   $<TARGET_OBJECTS:trans_tracking>
   $<TARGET_OBJECTS:astRewriteMechanism>
   $<TARGET_OBJECTS:mstl>)
-
-if(enable-java)
-  list(APPEND rose_LIB_SRCS $<TARGET_OBJECTS:roseJava>)
-endif()
-
-if (enable-php)
-  list(APPEND rose_LIB_SRCS $<TARGET_OBJECTS:phpFrontend>)
-endif()
 
 if(NOT enable-internalFrontendDevelopment)
   list(APPEND rose_LIB_SRCS
     $<TARGET_OBJECTS:midend_pa>
     $<TARGET_OBJECTS:midend_loopproc>)
-endif()
-
-if(enable-rosehpct)
-  list(APPEND rose_LIB_SRCS $<TARGET_OBJECTS:roseExtensions>)
 endif()
 
 ########################################################################################################################
@@ -169,7 +156,7 @@ add_dependencies(ROSE_DLL roseUtil)
 
 set_target_properties(ROSE_DLL PROPERTIES OUTPUT_NAME "rose")
 
-target_link_libraries(ROSE_DLL ${edg_lib} ${link_with_libraries})
+target_link_libraries(ROSE_DLL ${edg_lib} ${link_with_libraries} ompparser)
 
 set_target_properties(ROSE_DLL PROPERTIES
   VERSION 1.0.0
@@ -226,8 +213,7 @@ if(enable-poet)
 else()
   set(LINK_FILES
     libhpdf
-    ${CMAKE_DL_LIBS}
-    libX10Traversal)
+    ${CMAKE_DL_LIBS})
 endif()
 
 # ???
@@ -238,14 +224,6 @@ endif()
 # Depending on which language analysis (frontend) features are enabled in ROSE, we may need some additional libraries.
 if(enable-fortran)
   list(APPEND LINK_FILES roseFortran)
-endif()
-
-if (enable-java)
-  list(APPEND LINK_FILES ${JAVA_JVM_LIBRARY})
-endif()
-
-if(enable-python)
-  list(APPEND LINK_FILES unparsePython rosePythonFrontend)
 endif()
 
 if(enable-rosehpct)
