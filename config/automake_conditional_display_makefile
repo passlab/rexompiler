@@ -29,11 +29,6 @@ if CONVENIENCE_LTDL
 else
 	@echo "Automake conditional CONVENIENCE_LTDL: NOT defined"
 endif
-if DOT_TO_GML_TRANSLATOR
-	@echo "Automake conditional DOT_TO_GML_TRANSLATOR: DEFINED"
-else
-	@echo "Automake conditional DOT_TO_GML_TRANSLATOR: NOT defined"
-endif
 if ROSE_HAVE_LIBYICES
 	@echo "Automake conditional ROSE_HAVE_LIBYICES: DEFINED"
 else
@@ -253,11 +248,6 @@ if ROSE_USE_UNIFORM_ADVANCED_WARNINGS_SUPPORT
 	@echo "Automake conditional ROSE_USE_UNIFORM_ADVANCED_WARNINGS_SUPPORT: DEFINED"
 else
 	@echo "Automake conditional ROSE_USE_UNIFORM_ADVANCED_WARNINGS_SUPPORT: NOT defined"
-endif
-if ROSE_USE_VISUALIZATION
-	@echo "Automake conditional ROSE_USE_VISUALIZATION: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_VISUALIZATION: NOT defined"
 endif
 if ROSE_USE_WGET
 	@echo "Automake conditional ROSE_USE_WGET: DEFINED"

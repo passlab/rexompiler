@@ -317,17 +317,6 @@ if test "x$enable_use_new_graph_node_backward_compatability" = "xyes"; then
   AC_DEFINE([ROSE_USING_GRAPH_IR_NODES_FOR_BACKWARD_COMPATABILITY], [], [Whether to use the new graph IR nodes compatability option with older API])
 fi
 
-# Set up for use of bison to build dot2gml tool in directory
-# src/roseIndependentSupport/dot2gml.  This is made optional
-# because it seems that many don't have the correct version of bison
-# to support the compilation of this tool.  This is it is a configure
-# option to build it (or have the makefile system have it be built).
-AC_ARG_ENABLE(dot2gml_translator,
-[  --enable-dot2gml_translator   Configure option to have DOT to GML translator built (bison version specific tool).],
-[ AC_MSG_NOTICE([setting up optional DOT-to-GML translator in directory: src/roseIndependentSupport/dot2gml])
-])
-AM_CONDITIONAL(DOT_TO_GML_TRANSLATOR,test "$enable_dot2gml_translator" = yes)
-
 # Set the value of srcdir so that it will be an absolute path instead of a relative path
 # srcdir=`dirname "$0"`
 # echo "In ROSE/con figure: srcdir = $srcdir"
@@ -829,18 +818,6 @@ AC_MSG_NOTICE([TCLSH = "$TCLSH"])
 ROSE_SUPPORT_OFP
 
 ROSE_SUPPORT_CUDA
-
-# Call supporting macro for VISUALIZATION (FLTK and GraphViz)
-ROSE_SUPPORT_VISUALIZATION
-
-# if ((test ! "$with_FLTK_include" = no) || (test ! "$with_FLTK_libs" = no) || (test ! "$with_GraphViz_include" = no) || (test ! "$with_GraphViz_libs" = no)); then
-#   echo "Skipping visualization support!"
-# else
-#   echo "Setting up visualization support!"
-# fi
-
-# Setup Automake conditional in src/roseIndependentSupport/visualization/Makefile.am
-AM_CONDITIONAL(ROSE_USE_VISUALIZATION,(test ! "$with_FLTK_include" = no) || (test ! "$with_FLTK_libs" = no) || (test ! "$with_GraphViz_include" = no) || (test ! "$with_GraphViz_libs" = no))
 
 # *********************************************************************
 # Option to control internal support of PPL (Parma Polyhedron Library)
