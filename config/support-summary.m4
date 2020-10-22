@@ -31,7 +31,6 @@ AC_DEFUN([ROSE_SUPPORT_SUMMARY],[
 
     #--------------------------------------------------------------------------------
     ROSE_SUMMARY_HEADING([Languages supported for analysis])
-    echo "    Binaries                         ${support_binaries_frontend:-no}"
     echo "    C                                ${support_c_frontend:-no}"
     echo "    C++                              ${support_cxx_frontend:-no}"
     echo "    Cuda                             ${support_cuda_frontend:-no}"
