@@ -2797,7 +2797,6 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
 
                  // Liao 10/21/2010. Handle generic OpenMP directive unparsing here.
                     case V_SgOmpSectionStatement:
-                    case V_SgOmpTaskwaitStatement:
                     case V_SgOmpBarrierStatement:           unparseOmpSimpleStatement        (stmt, info);break;
                     case V_SgOmpThreadprivateStatement:     unparseOmpThreadprivateStatement (stmt, info);break;
                     case V_SgOmpFlushStatement:             unparseOmpFlushStatement         (stmt, info);break;
@@ -2811,6 +2810,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpOrderedStatement:
                     case V_SgOmpSectionsStatement:
                     case V_SgOmpParallelStatement:
+                    case V_SgOmpTaskwaitStatement:
                     case V_SgOmpTeamsStatement:
                     case V_SgOmpCancellationPointStatement:
                     case V_SgOmpDeclareMapperStatement:
