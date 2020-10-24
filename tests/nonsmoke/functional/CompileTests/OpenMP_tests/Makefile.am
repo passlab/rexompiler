@@ -161,9 +161,9 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	target1.c \
 	task_array.c \
 	task_array2.c \
-	#task_dep1.c \
+	task_dep1.c \
 	#task_dep2.c \
-	#task_dep3.c \
+	task_dep3.c \
 	#task_dep.load.compute.c \
 	#task_final.c \
 	#task_largenumber.c \
@@ -205,6 +205,10 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	critical1.c \
 	critical_dead.c \
 	critical_orphaned.c \
+	task_dep1.c \
+	task_dep3.c \
+	task_dep_iterator1.c \
+	task_dep_iterator2.c \
 	distribute.c \
 	distribute2.c \
 	dynamicChunk.c \
