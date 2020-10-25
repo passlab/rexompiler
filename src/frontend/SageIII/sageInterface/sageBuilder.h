@@ -190,6 +190,10 @@ ROSE_DLL_API SgTypeShort*    buildShortType();
 ROSE_DLL_API SgTypeFloat80*  buildFloat80Type();
 ROSE_DLL_API SgTypeFloat128* buildFloat128Type();
 
+// Rasmussen (2/20/2020): Added builder for Jovial fixed type
+//! Build a Jovial fixed type with a fraction specifier and a scale specifier
+ROSE_DLL_API SgTypeFixed* buildFixedType(SgExpression* fraction, SgExpression* scale);
+
 //! DQ (8/21/2010): We want to move to the new buildStringType( SgExpression*,size_t) function over the older buildStringType() function.
 ROSE_DLL_API SgTypeString* buildStringType();
 // SgTypeString* buildStringType( SgExpression* stringLengthExpression, size_t stringLengthLiteral );
@@ -219,6 +223,12 @@ ROSE_DLL_API SgTypeUnsignedLong*    buildUnsignedLongType();
 ROSE_DLL_API SgTypeUnsignedLongLong*    buildUnsignedLongLongType();
 ROSE_DLL_API SgTypeUnsignedShort*    buildUnsignedShortType();
 ROSE_DLL_API SgTypeUnknown * buildUnknownType();
+
+// Rasmussen (2/20/2020): Added builder functions for type size (kind) expressions for Fortran and Jovial
+//! Builder functions for primitive types with type size (kind) expressions
+ROSE_DLL_API SgTypeBool * buildBoolType(SgExpression* kind_expr);
+ROSE_DLL_API SgTypeInt * buildIntType(SgExpression* kind_expr);
+ROSE_DLL_API SgTypeUnsignedInt* buildUnsignedIntType(SgExpression* kind_expr);
 
 //! Build a type based on Fortran's implicit typing rules.
 //! Currently this interface does not take into account possible implicit
@@ -422,11 +432,13 @@ ROSE_DLL_API SgDoubleVal* buildDoubleVal_nfi(double value, const std::string& st
 
 ROSE_DLL_API SgFloatVal* buildFloatVal(float value = 0.0);
 ROSE_DLL_API SgFloatVal* buildFloatVal_nfi(float value, const std::string& str);
+ROSE_DLL_API SgFloatVal* buildFloatVal_nfi(const std::string& str);
 
 //! Build an integer value expression
 ROSE_DLL_API SgIntVal* buildIntVal(int value = 0);
 ROSE_DLL_API SgIntVal* buildIntValHex(int value = 0);
 ROSE_DLL_API SgIntVal* buildIntVal_nfi(int value, const std::string& str);
+ROSE_DLL_API SgIntVal* buildIntVal_nfi(const std::string& str);
 
 //! Build a long integer value expression
 ROSE_DLL_API SgLongIntVal* buildLongIntVal(long value = 0);

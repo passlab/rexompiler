@@ -14767,13 +14767,17 @@ PreprocessingInfo* SageInterface::insertHeader(const string& filename, Preproces
   // unparsing, and specifically add a null declaration so that we can attach the #include directive directly to that statement.
      bool supportTokenUnparsing = false;
 
-    //bool successful = false;
+    bool successful = false;
     if (scope == NULL)
         scope = SageBuilder::topScopeStack();
     ROSE_ASSERT(scope);
     SgGlobal* globalScope = getGlobalScope(scope);
     ROSE_ASSERT(globalScope);
-
+ 
+    // To support inserting a header file into a header file, we need this srcScope to indicate the src file in which to insert the header
+    // if the input scope is within a header file,
+    // its global scope will jump to a .cpp file. Later looping will not find a match.
+    SgScopeStatement* srcScope = globalScope;
     PreprocessingInfo* result=NULL;
     string content;
     if (isSystemHeader)
@@ -14793,6 +14797,16 @@ PreprocessingInfo* SageInterface::insertHeader(const string& filename, Preproces
      supportTokenUnparsing      = sourceFile->get_unparse_tokens();
 
      bool supportUnparseHeaders = sourceFile->get_unparseHeaderFiles();
+     // if unparsing header and the scope is within a header file, we adjust srcScope to be scope, not its enclosing global scope
+     if (supportUnparseHeaders)
+     {
+       string filename= scope->get_file_info()->get_filename();
+       string suffix = Rose::StringUtility ::fileNameSuffix(filename);
+
+       //vector.tcc: This is an internal header file, included by other library headers
+       if (suffix=="h" ||suffix=="hpp"|| suffix=="hh"||suffix=="H" ||suffix=="hxx"||suffix=="h++" ||suffix=="tcc")
+         srcScope = scope;  
+     }
 
 #if 0
      printf ("supportTokenUnparsing = %s \n",supportTokenUnparsing ? "true" : "false");
@@ -14816,7 +14830,7 @@ PreprocessingInfo* SageInterface::insertHeader(const string& filename, Preproces
       {
             //must have this judgement, otherwise wrong file will be modified!
             //It could also be the transformation generated statements with #include attached
-        if ( ((*j)->get_file_info ())->isSameFile(globalScope->get_file_info ())||
+        if ( ((*j)->get_file_info ())->isSameFile(srcScope->get_file_info ())||
               ((*j)->get_file_info ())->isTransformation()
            )
          {
@@ -14836,6 +14850,9 @@ PreprocessingInfo* SageInterface::insertHeader(const string& filename, Preproces
               }
              else
               {
+
+                (*j)->addToAttachedPreprocessingInfo(result,position);
+#if 0 // Liao, let's try the new way. 
              // global_scope->prepend_statement(null_statement);
                 SgEmptyDeclaration* emptyDeclaration = buildEmptyDeclaration();
 
@@ -14857,9 +14874,10 @@ PreprocessingInfo* SageInterface::insertHeader(const string& filename, Preproces
                 emptyDeclaration->addToAttachedPreprocessingInfo(result, position);
 
                 globalScope->insert_statement(*j,emptyDeclaration);
+#endif                
               }
 
-          // successful = true;
+           successful = true;
            break;
          }
       }
@@ -14874,7 +14892,7 @@ PreprocessingInfo* SageInterface::insertHeader(const string& filename, Preproces
                 content, "Transformation generated",0, 0, 0, PreprocessingInfo::after);
        ROSE_ASSERT(result);
        globalScope->addToAttachedPreprocessingInfo(result,position);
-       //successful = true;
+       successful = true;
     }
 
  // DQ (3/12/2019): We need to mark the added comments and CPP directives as a transformation so that then can be output.

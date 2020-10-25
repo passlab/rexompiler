@@ -368,7 +368,7 @@ C_OMP_ACC_TESTCODES_REQUIRED_TO_PASS = \
 	jacobi-ompacc-opt2.c \
 	jacobi-ompacc-multiGPU.c
 
-REX_C_OMP_ACC_TESTCODES_REQUIRED_TO_PASS = \ 
+REX_C_OMP_ACC_TESTCODES_REQUIRED_TO_PASS = \
         axpy_ompacc.c \
         axpy_ompacc2.c \
 	axpy_ompacc3.c \
