@@ -4522,6 +4522,148 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
 
 }
 
+SgOmpDependClause* convertDependClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser depend clause is ready.\n");
+    SgOmpDependClause* result = NULL;
+    SgExpression* clause_expression = NULL;
+    
+    SgExpression* iterator_type = NULL;
+    //SgExpression* identifierExp = NULL;
+    SgExpression* identifier = NULL;
+    SgExpression* begin = NULL;
+    SgExpression* end = NULL;
+    SgExpression* step = NULL;
+    
+    OpenMPDependClauseModifier modifier = ((OpenMPDependClause*)current_omp_clause)->getModifier();
+    std::vector<vector<const char*>* > *omp_depend_iterators_definition_class = NULL;
+    std::list<std::list<SgExpression*> > depend_iterators_definition_class;
+    if(modifier == OMPC_DEPEND_MODIFIER_iterator) {
+        omp_depend_iterators_definition_class = ((OpenMPDependClause*)current_omp_clause)->getDependIteratorsDefinitionClass();
+        for (int i = 0; i < omp_depend_iterators_definition_class->size(); i++) {
+            std::list<SgExpression*> iterator_expressions;
+            if ((string)(omp_depend_iterators_definition_class->at(i)->at(0)) != "") {
+                iterator_type = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), std::string(omp_depend_iterators_definition_class->at(i)->at(0)));
+                iterator_expressions.push_back(iterator_type); 
+            }
+            else {
+                iterator_type = NULL;
+                iterator_expressions.push_back(iterator_type);   
+            }
+            identifier = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), std::string(omp_depend_iterators_definition_class->at(i)->at(1)));
+            iterator_expressions.push_back(identifier);
+            begin = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), std::string(omp_depend_iterators_definition_class->at(i)->at(2)));
+            iterator_expressions.push_back(begin);
+            end = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), std::string(omp_depend_iterators_definition_class->at(i)->at(3)));
+            iterator_expressions.push_back(end);
+            
+            if((string)(omp_depend_iterators_definition_class->at(i)->at(4)) != "") {
+                step = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), std::string(omp_depend_iterators_definition_class->at(i)->at(4)));
+                iterator_expressions.push_back(step);
+            } else {
+                step = NULL;
+                iterator_expressions.push_back(step);
+            }
+            depend_iterators_definition_class.push_back(iterator_expressions);
+        }
+    }  
+    SgOmpClause::omp_depend_modifier_enum sg_modifier = toSgOmpClauseDependModifier(modifier);
+    OpenMPDependClauseType type = ((OpenMPDependClause*)current_omp_clause)->getType();
+    SgOmpClause::omp_dependence_type_enum sg_type = toSgOmpClauseDependenceType(type);
+
+    std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
+    if (current_expressions->size() != 0) {
+        std::vector<const char*>::iterator iter;
+        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
+            clause_expression = parseOmpArraySection(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), *iter);
+        }
+    }
+    SgExprListExp* explist=buildExprListExp();
+
+    result = new SgOmpDependClause(explist, sg_modifier, sg_type);
+    ROSE_ASSERT(result != NULL);
+    buildVariableList(result);
+    explist->set_parent(result);
+    result->set_array_dimensions(array_dimensions);
+    result->set_iterator(depend_iterators_definition_class);
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+    array_dimensions.clear();
+    omp_variable_list.clear();
+    printf("ompparser depend clause is added.\n");
+    return result;
+}
+/*SgOmpDependClause* convertDependClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser depend clause is ready.\n");
+    SgOmpDependClause* result = NULL;
+    SgExpression* clause_expression = NULL;
+    
+    SgExpression* iterator_type = NULL;
+    SgExpression* identifierExp = NULL;
+    SgSymbol* identifier = NULL;
+    SgExpression* begin = NULL;
+    SgExpression* end = NULL;
+    SgExpression* step = NULL;
+    
+    OpenMPDependClauseModifier modifier = ((OpenMPDependClause*)current_omp_clause)->getModifier();
+    std::vector<vector<const char*>* >* omp_depend_iterators_definition_class = NULL;
+    std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > > depend_iterators_definition_class;
+    if(modifier == OMPC_DEPEND_MODIFIER_iterator) {
+        omp_depend_iterators_definition_class = ((OpenMPDependClause*)current_omp_clause)->getDependIteratorsDefinitionClass();
+        for (int i = 0; i < omp_depend_iterators_definition_class->size(); i++) {
+            std::vector < std::pair <SgExpression*, SgExpression*> > iterator_expressions;
+            
+            identifierExp = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), std::string(omp_depend_iterators_definition_class->at(i)->at(1)));
+            SgVarRefExp* vref= isSgVarRefExp(identifierExp);
+            ROSE_ASSERT (vref);
+            identifier = vref->get_symbol();
+            
+            iterator_type = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), std::string(omp_depend_iterators_definition_class->at(i)->at(0)));
+            //depend_iterators_definition_class[index].push_back(iterator_type);
+            //depend_iterators_definition_class[index].push_back(identifier);
+            begin = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), std::string(omp_depend_iterators_definition_class->at(i)->at(2)));
+            //depend_iterators_definition_class[index].push_back(begin);
+            end = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), std::string(omp_depend_iterators_definition_class->at(i)->at(3)));
+            //depend_iterators_definition_class[index].push_back(end);
+            step = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), std::string(omp_depend_iterators_definition_class->at(i)->at(4)));
+            //depend_iterators_definition_class[index].push_back(step);
+            iterator_expressions.push_back(std::make_pair(iterator_type, iterator_type));
+            iterator_expressions.push_back(std::make_pair(begin, begin));
+            iterator_expressions.push_back(std::make_pair(end, end));
+            iterator_expressions.push_back(std::make_pair(step, step));
+            depend_iterators_definition_class[identifier] = iterator_expressions;
+        }
+    }  
+    SgOmpClause::omp_depend_modifier_enum sg_modifier = toSgOmpClauseDependModifier(modifier);
+    OpenMPDependClauseType type = ((OpenMPDependClause*)current_omp_clause)->getType();
+    SgOmpClause::omp_dependence_type_enum sg_type = toSgOmpClauseDependenceType(type);
+
+    std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
+    if (current_expressions->size() != 0) {
+        std::vector<const char*>::iterator iter;
+        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
+            clause_expression = parseOmpArraySection(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), *iter);
+        }
+    }
+    SgExprListExp* explist=buildExprListExp();
+
+    result = new SgOmpDependClause(explist, sg_modifier, sg_type);
+    ROSE_ASSERT(result != NULL);
+    buildVariableList(result);
+    explist->set_parent(result);
+    result->set_array_dimensions(array_dimensions);
+    result->set_iterator(depend_iterators_definition_class);
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+    array_dimensions.clear();
+    omp_variable_list.clear();
+    printf("ompparser depend clause is added.\n");
+    return result;
+}*/
+
 SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     printf("ompparser expression clause is ready.\n");
     SgOmpExpressionClause* result = NULL;
