@@ -78,7 +78,7 @@ SgCommaOpExp.C                        SgGreaterOrEqualOp.C                    Sg
 SgOmpSeqCstClause.C              SgOmpAcqRelClause.C                SgOmpReleaseClause.C                     SgOmpAcquireClause.C \
 SgOmpRelaxedClause.C \
 SgOmpReverseOffloadClause.C          SgOmpUnifiedAddressClause.C           SgOmpUnifiedSharedMemoryClause.C \
-SgOmpDynamicAllocatorsClause.C        SgOmpAtomicDefaultMemOrderClause.C     SgOmpExtImplementationDefinedRequirementClause.C \                     
+SgOmpDynamicAllocatorsClause.C        SgOmpAtomicDefaultMemOrderClause.C     SgOmpExtImplementationDefinedRequirementClause.C \
 SgAsmOp.C 			      SgCommonBlock.C                       SgGreaterThanOp.C                       SgOmpNumThreadsClause.C                      SgTypedefSeq.C                  SgOmpNumTeamsClause.C                         SgOmpOrderClause.C SgOmpBindClause.C               SgOmpThreadLimitClause.C \
 SgOmpGrainsizeClause.C                         SgOmpNumTasksClause.C            SgOmpNogroupClause.C \
 SgOmpNumParallelClause.C                 SgOmpNumSectionsClause.C                   SgOmpNumForClause.C                        SgOmpNumTaskgroupClause.C \

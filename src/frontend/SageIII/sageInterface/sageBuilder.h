@@ -432,11 +432,13 @@ ROSE_DLL_API SgDoubleVal* buildDoubleVal_nfi(double value, const std::string& st
 
 ROSE_DLL_API SgFloatVal* buildFloatVal(float value = 0.0);
 ROSE_DLL_API SgFloatVal* buildFloatVal_nfi(float value, const std::string& str);
+ROSE_DLL_API SgFloatVal* buildFloatVal_nfi(const std::string& str);
 
 //! Build an integer value expression
 ROSE_DLL_API SgIntVal* buildIntVal(int value = 0);
 ROSE_DLL_API SgIntVal* buildIntValHex(int value = 0);
 ROSE_DLL_API SgIntVal* buildIntVal_nfi(int value, const std::string& str);
+ROSE_DLL_API SgIntVal* buildIntVal_nfi(const std::string& str);
 
 //! Build a long integer value expression
 ROSE_DLL_API SgLongIntVal* buildLongIntVal(long value = 0);
