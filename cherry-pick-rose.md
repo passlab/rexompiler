@@ -42,8 +42,8 @@ ba46ae0134c8b8fd95d35bf6d89f1e0d519582ec
 1372e5865f314959675b4324009e62679db3b495
 501762846024346e77051323718b6209a6542ccc
 
-Feb, 2020
-5bf4676728c4a84db382ef51716fb467934031d7   //only need those that remove C++11 creeping (nullptr, std:stof). 
+
+ROSE's commits on Feb, 2020 that are cherry-picked by Oct 25, 2020. 
 71063704e5284757fa94e9c99ff2750aaa6eb4e0
 75bb89b96305ed34cbcef410a0bc071c886033df
 15864ce35dfa5339d295faf10dc7b73cd8d9d560   //only need the sageBuilder.C changes
@@ -58,9 +58,6 @@ db0177c483ec26d8bb0369e974a4ebbe8434c477
 c488a09d857250db732606030e36358913573061
 84834940c5820b0630dbc35c5232976fbdcf9c35
 93d01d1721a60623c94f335ff4b10125f46a8aab
-
-
-//already picked
 fa6a1a2a450a6c8ae727afb8199b74b141760865
 666213a3653e2033ec8716b487a63d550d0e967c
 9349ad15a61f35ae9b422ee63030dd1f327cc9ff
@@ -85,6 +82,5 @@ dcda1c707fd2076507ab181ad4d8d1a57b166cca
 6c2d5d8660b464b593dd55367fe219d94e8f1151
 da194ae21447994d7c7fda707f9e0e8528d5e2c7
 
-* Next cherry-pick log
-* 2020 Feb 3rd: Starting from ROSE https://github.com/rose-compiler/rose/commit/ad53c8971b58cdb4c4cf01bf50432dd883a0f740 commit
+The REX developed starts from the https://github.com/rose-compiler/rose/commit/ad53c8971b58cdb4c4cf01bf50432dd883a0f740 commit which is on Feb 3, 2020. 
 and merge in changes for trimming ROSE to only support C/C++ and Fortran. 
