@@ -4463,7 +4463,7 @@ SgOmpDependClause* convertDependClause(SgOmpClauseBodyStatement* clause_body, st
     
     OpenMPDependClauseModifier modifier = ((OpenMPDependClause*)current_omp_clause)->getModifier();
     std::vector<vector<const char*>* > *omp_depend_iterators_definition_class = NULL;
-    std::list<std::list<SgExpression*>> depend_iterators_definition_class;
+    std::list<std::list<SgExpression*> > depend_iterators_definition_class;
     if(modifier == OMPC_DEPEND_MODIFIER_iterator) {
         omp_depend_iterators_definition_class = ((OpenMPDependClause*)current_omp_clause)->getDependIteratorsDefinitionClass();
         for (int i = 0; i < omp_depend_iterators_definition_class->size(); i++) {
