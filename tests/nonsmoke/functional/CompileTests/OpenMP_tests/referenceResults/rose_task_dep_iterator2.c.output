@@ -1,0 +1,4 @@
+#pragma omp parallel 
+#pragma omp single 
+#pragma omp task  depend(out : v)
+#pragma omp task  depend(iterator ( it=0:n )  , in : v)

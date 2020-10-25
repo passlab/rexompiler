@@ -489,8 +489,6 @@ Grammar::setUpStatements ()
   // simplest directives, just one line 
      NEW_TERMINAL_MACRO (OmpBarrierStatement,   "OmpBarrierStatement",   "OMP_BARRIER_STMT" );
      NEW_TERMINAL_MACRO (OmpTaskyieldStatement,   "OmpTaskyieldStatement",   "OMP_TASKYIELD_STMT" );
-     NEW_TERMINAL_MACRO (OmpRequiresStatement,  "OmpRequiresStatement",   "OMP_REQUIRES_STMT" );
-
 
   // + variable list
      NEW_TERMINAL_MACRO (OmpThreadprivateStatement, "OmpThreadprivateStatement",    "OMP_THREADPRIVATE_STMT" );
@@ -535,7 +533,7 @@ Grammar::setUpStatements ()
              UpcWaitStatement          | UpcBarrierStatement    | UpcFenceStatement               | OmpTaskyieldStatement   |
              OmpBarrierStatement       | OmpFlushStatement              | OmpBodyStatement      | OmpClauseStatement |
              SequenceStatement         | WithStatement          | PythonPrintStmt                 | PassStatement         |
-             AssertStmt                | ExecStatement          | PythonGlobalStmt                | OmpRequiresStatement  | OmpDeclareMapperStatement |
+             AssertStmt                | ExecStatement          | PythonGlobalStmt                | OmpDeclareMapperStatement |
 	     ImageControlStatement /* | JavaPackageDeclaration */,
              "Statement","StatementTag", false);
 
@@ -4208,7 +4206,6 @@ Grammar::setUpStatements ()
     OmpCancelStatement.setFunctionSource            ("SOURCE_OMP_CANCEL_STATEMENT", "../Grammar/Statement.code" );
     OmpTaskgroupStatement.setFunctionSource            ("SOURCE_OMP_TASKGROUP_STATEMENT", "../Grammar/Statement.code" );
     OmpDistributeStatement.setFunctionSource            ("SOURCE_OMP_DISTRIBUTE_STATEMENT", "../Grammar/Statement.code" );
-    OmpRequiresStatement.setFunctionSource            ("SOURCE_OMP_REQUIRES_STATEMENT", "../Grammar/Statement.code" );
     OmpLoopStatement.setFunctionSource            ("SOURCE_OMP_LOOP_STATEMENT", "../Grammar/Statement.code" );
     OmpScanStatement.setFunctionSource            ("SOURCE_OMP_SCAN_STATEMENT", "../Grammar/Statement.code" );
     OmpTaskloopStatement.setFunctionSource            ("SOURCE_OMP_TASKLOOP_STATEMENT", "../Grammar/Statement.code" ); OmpMetadirectiveStatement.setFunctionSource            ("SOURCE_OMP_METADIRECTIVE_STATEMENT", "../Grammar/Statement.code" );
