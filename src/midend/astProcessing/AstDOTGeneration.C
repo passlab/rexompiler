@@ -22,10 +22,6 @@
 #undef TEMPLATE_IMPLEMENTATIONS
 #include "AstConsistencyTests.h"
 
-#ifdef ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-   #include "AsmUnparser_compat.h"
-#endif
-
 using namespace std;                                    // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace Rose;                                   // until this file is all moved into the rose namespace
 
