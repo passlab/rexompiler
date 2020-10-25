@@ -8553,6 +8553,53 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
         curprint(string(" : "));
         is_depend = true; 
         break;
+        if(isSgOmpDependClause(c)->get_depend_modifier())
+        {
+            curprint(dependModifierToString(isSgOmpDependClause(c)->get_depend_modifier()));
+            curprint(string(" ( "));
+            SgOmpDependClause * d_clause = isSgOmpDependClause (clause);
+            std::list<std::list<SgExpression*> > depend_iterators_definition_class = d_clause -> get_iterator();
+            std::list<std::list<SgExpression*> >::iterator iter;
+            SgUnparse_Info ninfo(info);
+            for (iter = depend_iterators_definition_class.begin(); iter != depend_iterators_definition_class.end(); iter ++)
+            {
+              std::list<SgExpression*> depend_iterators_definition  = (*iter);
+              std::list<SgExpression*>::iterator iter1;
+              int count = 0;
+              if(iter != depend_iterators_definition_class.begin()) curprint(string(" , "));
+              for (iter1 = depend_iterators_definition.begin(); iter1 != depend_iterators_definition.end(); iter1 ++)
+              {
+                SgExpression* tmp = (*iter1);
+                if (count == 0 && tmp != NULL) {
+                  unparseExpression(tmp, ninfo); 
+                  curprint(string(" "));
+                }
+                else if (count == 1) {
+                  unparseExpression(tmp, ninfo); 
+                  curprint(string("="));
+                }
+                else if (count == 2) {
+                  unparseExpression(tmp, ninfo); 
+                  curprint(string(":"));
+                }
+                else if (count == 3) {
+                  unparseExpression(tmp, ninfo); 
+                }
+                else if (count == 4 && tmp != NULL) {
+                  curprint(string(":"));
+                  unparseExpression(tmp, ninfo); 
+                }
+                count++;
+              }
+            }
+            curprint(string(" ) "));
+            curprint(string(" , "));       
+          }
+          curprint(dependenceTypeToString(isSgOmpDependClause(c)->get_dependence_type()));
+          curprint(string(" : "));
+          is_depend = true; 
+          break;
+>>>>>>> 639bb16d85... Fixed the formatting error of list in unparseLanguageIndependentConstructs.C
       }
     case V_SgOmpLinearClause:
       {
