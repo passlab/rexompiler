@@ -8541,8 +8541,8 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
             curprint(dependModifierToString(isSgOmpDependClause(c)->get_depend_modifier()));
             curprint(string(" ( "));
             SgOmpDependClause * d_clause = isSgOmpDependClause (clause);
-            std::list<std::list<SgExpression*>> depend_iterators_definition_class = d_clause -> get_iterator();
-            std::list<std::list<SgExpression*>>::iterator iter;
+            std::list<std::list<SgExpression*> > depend_iterators_definition_class = d_clause -> get_iterator();
+            std::list<std::list<SgExpression*> >::iterator iter;
             SgUnparse_Info ninfo(info);
             for (iter = depend_iterators_definition_class.begin(); iter != depend_iterators_definition_class.end(); iter ++)
             {
