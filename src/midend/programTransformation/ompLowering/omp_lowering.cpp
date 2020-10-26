@@ -43,6 +43,8 @@ static std::map<string , std::vector<SgExpression*> > offload_array_size_map;
 // This may not be elegant, but let's get something working first.
 static set<SgVarRefExp* > preservedHostVarRefs; 
 
+SgExpression* get_kmpc_global_tid(SgNode*, SgScopeStatement*);
+
 #define ENABLE_XOMP 1  // Enable the middle layer (XOMP) of OpenMP runtime libraries
   //! Generate a symbol set from an initialized name list, 
   //filter out struct/class typed names
@@ -1393,6 +1395,11 @@ namespace OmpSupport
 
     SgStatement* loop = (for_loop!=NULL?(SgStatement*)for_loop:(SgStatement*)do_loop);
     ROSE_ASSERT (loop != NULL);
+
+    SgExprListExp* parameters = NULL;
+    SgExpression* thread_global_tid = get_kmpc_global_tid(node, p_scope);
+    SgExpression* source_location_info = buildIntVal(0);
+
     // Step 1. Loop normalization
     // we reuse the normalization from SageInterface, though it is different from what gomp expects.
     // the point is to have a consistent loop form. We can adjust the difference later on.
@@ -1436,20 +1443,16 @@ namespace OmpSupport
 
     // Declare local loop control variables: _p_loop_index _p_loop_lower _p_loop_upper , no change to the original stride
     SgType* loop_var_type  = NULL ;
-#if 0    
-    if (sizeof(void*) ==8 ) // xomp interface expects long* for some runtime calls. 
-      loop_var_type = buildLongType();
-    else 
-      loop_var_type = buildIntType();
-#endif
     // xomp interface expects long for some runtime calls now, 6/9/2010
     if (for_loop) 
       loop_var_type = buildLongType();
     else if (do_loop)  // No long integer in Fortran
       loop_var_type = buildIntType();
-    SgVariableDeclaration* index_decl =  NULL; 
-    SgVariableDeclaration* lower_decl =  NULL; 
-    SgVariableDeclaration* upper_decl =  NULL;
+    SgVariableDeclaration* index_decl = NULL;
+    SgVariableDeclaration* lower_decl = NULL;
+    SgVariableDeclaration* upper_decl = NULL;
+    SgVariableDeclaration* last_iter_decl = NULL;
+    SgVariableDeclaration* stride_decl = NULL;
 
     if (SageInterface::is_Fortran_language() )
     {// special rules to insert variable declarations in Fortran
@@ -1462,13 +1465,17 @@ namespace OmpSupport
     }
     else
     {  
-      index_decl = buildVariableDeclaration("p_index_", loop_var_type , NULL,bb1); 
-      lower_decl = buildVariableDeclaration("p_lower_", loop_var_type , NULL,bb1); 
-      upper_decl = buildVariableDeclaration("p_upper_", loop_var_type , NULL,bb1); 
+      index_decl = buildVariableDeclaration("__index_", buildIntType(), NULL, bb1);
+      lower_decl = buildVariableDeclaration("__lower_", buildIntType(), buildAssignInitializer(orig_lower), bb1);
+      upper_decl = buildVariableDeclaration("__upper_", buildIntType(), buildAssignInitializer(orig_upper), bb1);
+      stride_decl = buildVariableDeclaration("__stride_", buildIntType(), buildAssignInitializer(orig_stride), bb1);
+      last_iter_decl = buildVariableDeclaration("__last_iter_", buildIntType(), buildAssignInitializer(buildIntVal(0)), bb1);
 
       appendStatement(index_decl, bb1);
       appendStatement(lower_decl, bb1);
       appendStatement(upper_decl, bb1);
+      appendStatement(stride_decl, bb1);
+      appendStatement(last_iter_decl, bb1);
     } 
 
     bool hasOrder = false;
@@ -1522,10 +1529,17 @@ namespace OmpSupport
         e5= buildVarRefExp(upper_decl);
       }
       ROSE_ASSERT (e4&&e5);
-      SgExprListExp* call_parameters = buildExprListExp(copyExpression(orig_lower), copyExpression(orig_upper), copyExpression(orig_stride), 
-          e4, e5);
-      SgStatement * call_stmt =  buildFunctionCallStmt ("XOMP_loop_default", buildVoidType(), call_parameters, bb1);
+      SgExpression* schedule_type = NULL;
+      schedule_type = buildIntVal(34);
+      parameters = buildExprListExp(source_location_info, thread_global_tid, schedule_type, buildAddressOfOp(buildVarRefExp(last_iter_decl)), e4, e5, buildAddressOfOp(buildVarRefExp(stride_decl)), buildIntVal(1), buildIntVal(1));
+      SgStatement * call_stmt = buildFunctionCallStmt ("__kmpc_for_static_init_4", buildVoidType(), parameters, bb1);
       appendStatement(call_stmt, bb1);
+
+      // insert the upper bound checking
+      SgExpression* if_condition = buildGreaterThanOp(buildVarRefExp(upper_decl), copyExpression(orig_upper));
+      SgExprStatement* update_upper_bound_stmt = buildAssignStatement(buildVarRefExp(upper_decl), copyExpression(orig_upper));
+      SgIfStmt* if_statement = buildIfStmt(if_condition, update_upper_bound_stmt, NULL);
+      appendStatement(if_statement, bb1);
 
       // add loop here
       appendStatement(loop, bb1); 
@@ -1537,20 +1551,19 @@ namespace OmpSupport
       SageInterface::setLoopUpperBound(loop, buildVarRefExp(upper_decl)); 
 
       transOmpVariables(target, bb1,orig_upper); // This should happen before the barrier is inserted.
+      parameters = buildExprListExp(buildIntVal(0), thread_global_tid);
+      appendStatement(buildFunctionCallStmt("__kmpc_for_static_fini", buildVoidType(), parameters, bb1), bb1);
       // insert barrier if there is no nowait clause
       if (!hasClause(target, V_SgOmpNowaitClause)) 
       {
-        //insertStatementAfter(for_loop, buildFunctionCallStmt("GOMP_barrier", buildVoidType(), NULL, bb1));
 #ifdef ENABLE_XOMP
-        appendStatement(buildFunctionCallStmt("XOMP_barrier", buildVoidType(), NULL, bb1), bb1);
+        appendStatement(buildFunctionCallStmt("__kmpc_barrier", buildVoidType(), parameters, bb1), bb1);
 #else   
         appendStatement(buildFunctionCallStmt("GOMP_barrier", buildVoidType(), NULL, bb1), bb1);
 #endif  
       }
     }
 
-    // handle variables 
-    // transOmpVariables(target, bb1); // This should happen before the barrier is inserted.
   } // end trans omp for
 
 
@@ -2206,34 +2219,6 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
   return rt;
 }
 #endif
-
-// global_tid is required as a parameter in many kmpc function calls
-// it's could be available as a caller parameters, e.g. in a outlined function.
-// or, it must be retrieved by the function "__kmpc_global_thread_num".
-// this getter handles both cases.
-SgExpression* get_kmpc_global_tid(SgNode* node, SgScopeStatement* scope) {
-
-    SgExpression* thread_global_tid = NULL;
-
-    // check if the processing node is in a parallel region.
-    // in this case, int* __global_tid is available in the current scope, it can be used directly.
-    SgNode* parent = node->get_parent();
-    ROSE_ASSERT (parent != NULL);
-    if (isSgBasicBlock(parent)) { // skip the padding block in between.
-        parent = parent->get_parent();
-    };
-    if (isSgOmpParallelStatement(parent)) {
-        SgVarRefExp* thread_global_id_pointer = buildVarRefExp("__global_tid", scope);
-        thread_global_tid = buildPointerDerefExp(thread_global_id_pointer);
-    }
-    // if not, we need to get the global id first.
-    else {
-        SgExprStatement* global_tid_statement = buildFunctionCallStmt("__kmpc_global_thread_num", buildIntType(), buildExprListExp(buildIntVal(0)), scope);
-        thread_global_tid = global_tid_statement->get_expression();
-    };
-
-    return thread_global_tid;
-}
 
 
   /* GCC's libomp uses the following translation method: 
@@ -6411,3 +6396,32 @@ void lower_omp(SgSourceFile* file)
 }
 
 } // end namespace
+
+// global_tid is required as a parameter in many kmpc function calls
+// it's could be available as a caller parameters, e.g. in a outlined function.
+// or, it must be retrieved by the function "__kmpc_global_thread_num".
+// this getter handles both cases.
+SgExpression* get_kmpc_global_tid(SgNode* node, SgScopeStatement* scope) {
+
+    SgExpression* thread_global_tid = NULL;
+
+    // check if the processing node is in a parallel region.
+    // in this case, int* __global_tid is available in the current scope, it can be used directly.
+    SgNode* parent = node->get_parent();
+    ROSE_ASSERT (parent != NULL);
+    if (isSgBasicBlock(parent)) { // skip the padding block in between.
+        parent = parent->get_parent();
+    };
+    if (isSgOmpParallelStatement(parent)) {
+        SgVarRefExp* thread_global_id_pointer = buildVarRefExp("__global_tid", scope);
+        thread_global_tid = buildPointerDerefExp(thread_global_id_pointer);
+    }
+    // if not, we need to get the global id first.
+    else {
+        SgExprStatement* global_tid_statement = buildFunctionCallStmt("__kmpc_global_thread_num", buildIntType(), buildExprListExp(buildIntVal(0)), scope);
+        thread_global_tid = global_tid_statement->get_expression();
+    };
+
+    return thread_global_tid;
+}
+
