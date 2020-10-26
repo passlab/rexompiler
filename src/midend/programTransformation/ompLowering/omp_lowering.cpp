@@ -1104,9 +1104,7 @@ namespace OmpSupport
   }
   // and XOMP layer will compensate for the difference.
   */
-  static void transOmpLoop_others(SgOmpClauseBodyStatement* target,  
-      SgVariableDeclaration* index_decl, SgVariableDeclaration* lower_decl,  SgVariableDeclaration* upper_decl, 
-      SgBasicBlock* bb1)
+  static void transOmpLoop_others(SgOmpClauseBodyStatement* target, SgVariableDeclaration* index_decl, SgVariableDeclaration* lower_decl, SgVariableDeclaration* upper_decl, SgVariableDeclaration* stride_decl, SgVariableDeclaration* last_iter_decl, SgBasicBlock* bb1)
   {
     ROSE_ASSERT (target != NULL);
     ROSE_ASSERT (index_decl != NULL);
@@ -1122,6 +1120,10 @@ namespace OmpSupport
     SgForStatement * for_loop = isSgForStatement(body);
     SgFortranDo* do_loop = isSgFortranDo(body);
     SgStatement * loop = for_loop!=NULL? (SgStatement*)for_loop:(SgStatement*)do_loop;
+
+    SgExprListExp* parameters = NULL;
+    SgExpression* thread_global_tid = get_kmpc_global_tid(target, p_scope);
+    SgExpression* source_location_info = buildIntVal(0);
 
     SgInitializedName* orig_index; 
     SgExpression* orig_lower, * orig_upper, * orig_stride; 
@@ -1148,23 +1150,31 @@ namespace OmpSupport
     // treat it as (static, 0) based on GCC's translation
     SgOmpClause::omp_schedule_kind_enum s_kind = SgOmpClause::e_omp_schedule_kind_static;
     SgExpression* orig_chunk_size = NULL;
+    string func_init_name = "__kmpc_for_static_init_4";
+    SgExpression* schedule_type = NULL;
     bool hasOrder = false;
     if (hasClause(target, V_SgOmpOrderedClause))
       hasOrder = true;
     ROSE_ASSERT(hasOrder || clauses.size() !=0);
     // Most cases: with schedule(kind,chunk_size)
-    if (clauses.size() !=0)
+    if (clauses.size() != 0)
     {  
       ROSE_ASSERT(clauses.size() ==1);
       SgOmpScheduleClause* s_clause = isSgOmpScheduleClause(clauses[0]);
       ROSE_ASSERT(s_clause);
       s_kind = s_clause->get_kind();
       orig_chunk_size = s_clause->get_chunk_size();
+      schedule_type = buildIntVal(33);
+      parameters = buildExprListExp(source_location_info, thread_global_tid, schedule_type, buildAddressOfOp(buildVarRefExp(last_iter_decl)), buildAddressOfOp(buildVarRefExp(lower_decl)), buildAddressOfOp(buildVarRefExp(upper_decl)), buildAddressOfOp(buildVarRefExp(stride_decl)), copyExpression(orig_stride), orig_chunk_size);
 
       // chunk size is 1 for dynamic and guided schedule, if not specified. 
       if (s_kind == SgOmpClause::e_omp_schedule_kind_dynamic|| s_kind == SgOmpClause::e_omp_schedule_kind_guided)
       {
         orig_chunk_size = createAdjustedChunkSize(orig_chunk_size);
+        func_init_name = "__kmpc_dispatch_init_4";
+        schedule_type = buildIntVal(35);
+        parameters = buildExprListExp(source_location_info, thread_global_tid, schedule_type, buildVarRefExp(lower_decl), buildVarRefExp(upper_decl), buildVarRefExp(stride_decl), orig_chunk_size);
+
       }
     }
     else
@@ -1181,17 +1191,9 @@ namespace OmpSupport
     // we generate inclusive upper (-1) bounds after loop normalization, gomp runtime calls expect exclusive upper bounds
     // so we +1 to adjust it back to exclusive.
 
-#if 0 // Liao 1/11/2011. I changed XOMP loop functions to use inclusive upper bounds. All adjustments are done within XOMP from now on
-    int upper_adjust = 1;  // we use inclusive bounds, adjust them accordingly 
-    if (!isIncremental) 
-      upper_adjust = -1;
-#endif 
-
 #ifdef ENABLE_XOMP
     // build function init stmt
-    //  _ompc_dynamic_sched_init(_p_loop_lower,_p_loop_upper,_p_loop_stride,5);
     SgExprListExp* para_list_i = buildExprListExp(copyExpression(orig_lower), 
-        //buildAddOp(copyExpression(orig_upper), buildIntVal(upper_adjust)),
         copyExpression(orig_upper), 
         createAdjustedStride(orig_stride, isIncremental)); 
     if (s_kind != SgOmpClause::e_omp_schedule_kind_auto && s_kind != SgOmpClause::e_omp_schedule_kind_runtime)
@@ -1199,19 +1201,16 @@ namespace OmpSupport
       appendExpression(para_list_i, copyExpression(orig_chunk_size));
     }
 
-    string func_init_name= generateGOMPLoopInitFuncName(hasOrder, s_kind);
-    SgExprStatement* func_init_stmt = buildFunctionCallStmt(func_init_name, buildVoidType(), para_list_i, bb1);
+    SgExprStatement* func_init_stmt = buildFunctionCallStmt(func_init_name, buildVoidType(), parameters, bb1);
     appendStatement(func_init_stmt, bb1);
 #endif    
     //build function start
     SgExprListExp* para_list = buildExprListExp(copyExpression(orig_lower), 
-        //buildAddOp(copyExpression(orig_upper), buildIntVal(upper_adjust)),
         copyExpression(orig_upper),
         createAdjustedStride(orig_stride, isIncremental)); 
     if (s_kind != SgOmpClause::e_omp_schedule_kind_auto && s_kind != SgOmpClause::e_omp_schedule_kind_runtime)
     {
       appendExpression(para_list, orig_chunk_size);
-      //appendExpression(para_list, copyExpression(orig_chunk_size));
     }
     if (for_loop)
     {
@@ -1232,16 +1231,13 @@ namespace OmpSupport
       // Otherwise, unparser will complain.
       func_start_exp  = buildFunctionCallExp(func_start_name, buildIntType(), para_list, bb1);
       if_stmt = buildIfStmt(buildEqualityOp(func_start_exp,buildIntVal(1)), true_body, NULL);
-      // if_stmt->set_use_then_keyword(true); 
-      // if_stmt->set_has_end_statement(true); 
+      appendStatement(if_stmt, bb1);
     }
     else 
     {
-      func_start_exp  = buildFunctionCallExp(func_start_name, buildBoolType(), para_list, bb1);
-      if_stmt = buildIfStmt(func_start_exp, true_body, NULL);
+      appendStatement(true_body, bb1);
     }
 
-    appendStatement(if_stmt, bb1);
     SgExprListExp * n_exp_list = NULL;
     if (for_loop)
     {
@@ -1256,15 +1252,36 @@ namespace OmpSupport
 
     // do {} while (GOMP_loop_static_next (&_p_lower, &_p_upper))
     if (for_loop)
-    { 
-
-      func_next_exp =buildFunctionCallExp(generateGOMPLoopNextFuncName(hasOrder, s_kind), buildBoolType(),
-          n_exp_list, bb1);
+    { // for schedule(dynamic), the next-fetching call controls the while loop
+      if (s_kind == SgOmpClause::e_omp_schedule_kind_dynamic) {
+          parameters = buildExprListExp(source_location_info, thread_global_tid, buildAddressOfOp(buildVarRefExp(last_iter_decl)), buildAddressOfOp(buildVarRefExp(lower_decl)), buildAddressOfOp(buildVarRefExp(upper_decl)), buildAddressOfOp(buildVarRefExp(stride_decl)));
+          func_next_exp = buildFunctionCallExp("__kmpc_dispatch_next_4", buildIntType(), parameters, bb1);
+      }
+      else { // for schedule(static, n), lower_bound <= upper_bound controls the while loop
+          func_next_exp = buildLessOrEqualOp(buildVarRefExp(lower_decl), buildVarRefExp(upper_decl));
+      };
       SgBasicBlock * do_body = buildBasicBlock();
-      SgDoWhileStmt * do_while_stmt = buildDoWhileStmt(do_body, func_next_exp);
-      appendStatement(do_while_stmt, true_body);
+      SgWhileStmt * while_do_stmt = buildWhileStmt(func_next_exp, do_body);
+      appendStatement(while_do_stmt, true_body);
+
+      // insert the upper bound checking
+      SgExpression* if_condition = buildGreaterThanOp(buildVarRefExp(upper_decl), copyExpression(orig_upper));
+      SgExprStatement* update_upper_bound_stmt = buildAssignStatement(buildVarRefExp(upper_decl), copyExpression(orig_upper));
+      SgIfStmt* if_statement = buildIfStmt(if_condition, update_upper_bound_stmt, NULL);
+      appendStatement(if_statement, do_body);
+
       // insert the loop into do-while
       appendStatement(loop, do_body);
+      if (s_kind != SgOmpClause::e_omp_schedule_kind_dynamic) {
+          SgExpression* increase_lower_bound = buildPlusAssignOp(buildVarRefExp(lower_decl), buildVarRefExp(stride_decl));
+          SgExprStatement* increase_lower_bound_stmt = buildExprStatement(increase_lower_bound);
+          appendStatement(increase_lower_bound_stmt, do_body);
+          SgExpression* increase_upper_bound = buildPlusAssignOp(buildVarRefExp(upper_decl), buildVarRefExp(stride_decl));
+          SgExprStatement* increase_upper_bound_stmt = buildExprStatement(increase_upper_bound);
+          appendStatement(increase_upper_bound_stmt, do_body);
+          parameters = buildExprListExp(buildIntVal(0), thread_global_tid);
+          appendStatement(buildFunctionCallStmt("__kmpc_for_static_fini", buildVoidType(), parameters, bb1), bb1);
+      };
     } 
     // Liao 1/7/2011, Fortran does not support SgDoWhileStmt
     // We use the following control flow as an alternative:  
@@ -1284,8 +1301,7 @@ namespace OmpSupport
       // loop here
       appendStatement(loop, true_body);
       // if () goto label
-      func_next_exp =buildFunctionCallExp(generateGOMPLoopNextFuncName(hasOrder, s_kind), buildIntType(),
-          n_exp_list, bb1);
+      func_next_exp = buildFunctionCallExp(generateGOMPLoopNextFuncName(hasOrder, s_kind), buildIntType(), n_exp_list, bb1);
       SgIfStmt * if_stmt_2 = buildIfStmt(buildEqualityOp(func_next_exp,buildIntVal(1)), buildBasicBlock(), buildBasicBlock());
       SgGotoStatement* gt_stmt = buildGotoStatement(label_stmt_1->get_numeric_label()->get_symbol());
       appendStatement (gt_stmt, isSgScopeStatement(if_stmt_2->get_true_body()));
@@ -1296,32 +1312,16 @@ namespace OmpSupport
     }
 
     // Rewrite loop control variables
-    replaceVariableReferences(loop,isSgVariableSymbol(orig_index->get_symbol_from_symbol_table ()), 
-        getFirstVarSym(index_decl));
-#if 0 // Liao 1/11/2011. I changed XOMP loop functions to use inclusive upper bounds. All adjustments are done within XOMP from now on
-    int upperAdjust;
-    if (isIncremental)  // adjust the bounds again, inclusive bound so -1 for incremental loop
-      upperAdjust = -1;
-    else 
-      upperAdjust = 1;
-#endif      
+    replaceVariableReferences(loop,isSgVariableSymbol(orig_index->get_symbol_from_symbol_table ()), getFirstVarSym(index_decl));
     SageInterface::setLoopLowerBound(loop, buildVarRefExp(lower_decl));
-    //SageInterface::setLoopUpperBound(loop, buildAddOp(buildVarRefExp(upper_decl),buildIntVal(upperAdjust)));
     SageInterface::setLoopUpperBound(loop, buildVarRefExp(upper_decl));
     ROSE_ASSERT (orig_upper != NULL);
     transOmpVariables(target, bb1, orig_upper); // This should happen before the barrier is inserted.
-    // GOMP_loop_end ();  or GOMP_loop_end_nowait (); 
-#ifdef ENABLE_XOMP
-    string func_loop_end_name = "XOMP_loop_end"; 
-#else    
-    string func_loop_end_name = "GOMP_loop_end"; 
-#endif    
-    if (hasClause(target, V_SgOmpNowaitClause)) 
+    if (!hasClause(target, V_SgOmpNowaitClause))
     {
-      func_loop_end_name+= "_nowait";
+      parameters = buildExprListExp(buildIntVal(0), thread_global_tid);
+      appendStatement(buildFunctionCallStmt("__kmpc_barrier", buildVoidType(), parameters, bb1), bb1);
     }
-    SgExprStatement* end_func_stmt = buildFunctionCallStmt(func_loop_end_name, buildVoidType(), NULL, bb1);
-    appendStatement(end_func_stmt, bb1);
   }
 
   // Expected AST
@@ -1502,10 +1502,9 @@ namespace OmpSupport
     }
 
     //  step 3. Translation for omp for 
-    //if (hasClause(target, V_SgOmpScheduleClause)) 
     if (!useStaticSchedule(target) || hasOrder || hasSpecifiedSize) 
     {
-      transOmpLoop_others( target,   index_decl, lower_decl,   upper_decl, bb1);
+      transOmpLoop_others(target, index_decl, lower_decl, upper_decl, stride_decl, last_iter_decl, bb1);
     }
     else 
     {
@@ -1529,10 +1528,10 @@ namespace OmpSupport
         e5= buildVarRefExp(upper_decl);
       }
       ROSE_ASSERT (e4&&e5);
-      SgExpression* schedule_type = NULL;
-      schedule_type = buildIntVal(34);
-      parameters = buildExprListExp(source_location_info, thread_global_tid, schedule_type, buildAddressOfOp(buildVarRefExp(last_iter_decl)), e4, e5, buildAddressOfOp(buildVarRefExp(stride_decl)), buildIntVal(1), buildIntVal(1));
-      SgStatement * call_stmt = buildFunctionCallStmt ("__kmpc_for_static_init_4", buildVoidType(), parameters, bb1);
+      // by default, LLVM uses 34 as the scheduling policy enum
+      SgExpression* schedule_type = buildIntVal(34);
+      parameters = buildExprListExp(source_location_info, thread_global_tid, schedule_type, buildAddressOfOp(buildVarRefExp(last_iter_decl)), e4, e5, buildAddressOfOp(buildVarRefExp(stride_decl)), copyExpression(orig_stride), buildIntVal(1));
+      SgStatement* call_stmt = buildFunctionCallStmt ("__kmpc_for_static_init_4", buildVoidType(), parameters, bb1);
       appendStatement(call_stmt, bb1);
 
       // insert the upper bound checking
