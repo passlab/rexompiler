@@ -1265,7 +1265,13 @@ namespace OmpSupport
       appendStatement(while_do_stmt, true_body);
 
       // insert the upper bound checking
-      SgExpression* if_condition = buildGreaterThanOp(buildVarRefExp(upper_decl), copyExpression(orig_upper));
+      SgExpression* if_condition = NULL;
+      if (isIncremental) { 
+        if_condition = buildGreaterThanOp(buildVarRefExp(upper_decl), copyExpression(orig_upper));
+      }
+      else {
+        if_condition = buildLessThanOp(buildVarRefExp(upper_decl), copyExpression(orig_upper));
+      };
       SgExprStatement* update_upper_bound_stmt = buildAssignStatement(buildVarRefExp(upper_decl), copyExpression(orig_upper));
       SgIfStmt* if_statement = buildIfStmt(if_condition, update_upper_bound_stmt, NULL);
       appendStatement(if_statement, do_body);
@@ -1535,7 +1541,13 @@ namespace OmpSupport
       appendStatement(call_stmt, bb1);
 
       // insert the upper bound checking
-      SgExpression* if_condition = buildGreaterThanOp(buildVarRefExp(upper_decl), copyExpression(orig_upper));
+      SgExpression* if_condition = NULL;
+      if (isIncremental) { 
+        if_condition = buildGreaterThanOp(buildVarRefExp(upper_decl), copyExpression(orig_upper));
+      }
+      else {
+        if_condition = buildLessThanOp(buildVarRefExp(upper_decl), copyExpression(orig_upper));
+      };
       SgExprStatement* update_upper_bound_stmt = buildAssignStatement(buildVarRefExp(upper_decl), copyExpression(orig_upper));
       SgIfStmt* if_statement = buildIfStmt(if_condition, update_upper_bound_stmt, NULL);
       appendStatement(if_statement, bb1);
