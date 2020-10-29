@@ -1,0 +1,3 @@
+#pragma omp target  if(target : test)
+#pragma omp parallel 
+#pragma omp for 

@@ -1,0 +1,114 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+  pull_request:
+    branches:
+      - master
+      - dev
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        config:
+          - {os: ubuntu-20.04, gnu: 9}
+          - {os: ubuntu-18.04, gnu: 7}
+          - {os: ubuntu-16.04, gnu: 5}
+
+    runs-on: ${{ matrix.config.os }}
+    env:
+      CC: /usr/bin/gcc-${{ matrix.config.gnu }}
+      CXX: /usr/bin/g++-${{ matrix.config.gnu }}
+      LD_LIBRARY_PATH: /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server:/usr/lib/x86_64-linux-gnu
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '1.8'
+
+    - name: Checkout submodules
+      shell: bash
+      run: |
+        git submodule sync --recursive
+        git -c "http.extraheader=Authorization: basic ${{ secrets.SUBMODULE_TOKEN }}" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+        git submodule status
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y openjdk-8-jdk && \
+        sudo apt-get install -y \
+          autoconf \
+          automake \
+          autotools-dev \
+          bc \
+          binutils \
+          bison \
+          build-essential \
+          cmake \
+          curl \
+          device-tree-compiler \
+          doxygen \
+          flex \
+          gawk \
+          gcc-multilib \
+          gfortran \
+          ghostscript \
+          git \
+          gperf \
+          graphviz \
+          libboost-all-dev \
+          libgmp-dev \
+          libhpdf-dev \
+          libmpc-dev \
+          libmpfr-dev \
+          libtool \
+          libxml2-dev \
+          patchutils \
+          python3-dev \
+          sqlite \
+          texinfo \
+          unzip \
+          wget \
+          zip \
+          zlib1g \
+          zlib1g-dev
+
+    - name: Install ompparser
+      run: |
+        cd $GITHUB_WORKSPACE/..
+        git clone -b dev https://github.com/passlab/ompparser.git
+        cd ompparser
+        mkdir build
+        cd build
+        cmake -DCMAKE_INSTALL_PREFIX=../../ompparser_install ..
+        make
+        make install
+
+    - name: Configure
+      run: |
+        cd $GITHUB_WORKSPACE
+        ./build
+        mkdir ../rex_build
+        cd ../rex_build
+        $GITHUB_WORKSPACE/configure --prefix=$GITHUB_WORKSPACE/../rex_install --with-boost=/usr --with-boost-libdir=/usr/lib/x86_64-linux-gnu/ --enable-languages=c,c++,fortran --disable-tests-directory --disable-tutorial-directory --disable-projects-directory --with-ompparser=$GITHUB_WORKSPACE/../ompparser_install
+
+    - name: Build
+      run: |
+        cd $GITHUB_WORKSPACE/../rex_build
+        make core -j2
+        make install-core -j2
+
+    - name: Test
+      run: |
+        cd $GITHUB_WORKSPACE/../rex_build
+        make check-core -j2
+        cd $GITHUB_WORKSPACE/../rex_build/tests/nonsmoke/functional/CompileTests/OpenMP_tests
+        make check -j2
+        cd $GITHUB_WORKSPACE/../rex_build/tests/nonsmoke/functional/roseTests/astInterfaceTests
+        make check -j2

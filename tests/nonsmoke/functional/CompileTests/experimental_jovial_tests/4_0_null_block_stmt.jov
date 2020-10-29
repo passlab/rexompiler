@@ -1,8 +1,0 @@
-START
-PROGRAM testNullBlockStatement ;
-BEGIN
-  BEGIN
-    label1: label2:
-  END
-END
-TERM

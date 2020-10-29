@@ -1,8 +1,0 @@
-START
-PROGRAM teststop ;
-BEGIN
- Stop ;
- STOP 1;
- stop -21;
-END
-TERM
