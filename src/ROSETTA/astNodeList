@@ -340,6 +340,7 @@ SgOmpReadClause
 SgOmpWriteClause
 SgOmpUpdateClause
 SgOmpDepobjUpdateClause
+SgOmpDestroyClause
 SgOmpCaptureClause
 SgOmpSeqCstClause
 SgOmpAcqRelClause

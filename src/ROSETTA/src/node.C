@@ -71,6 +71,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpWriteClause, "OmpWriteClause", "OmpWriteClauseTag" );
      NEW_TERMINAL_MACRO (OmpUpdateClause, "OmpUpdateClause", "OmpUpdateClauseTag" );
      NEW_TERMINAL_MACRO (OmpDepobjUpdateClause, "OmpDepobjUpdateClause", "OmpDepobjUpdateClauseTag" );
+     NEW_TERMINAL_MACRO (OmpDestroyClause, "OmpDestroyClause", "OmpDestroyClauseTag" );
      NEW_TERMINAL_MACRO (OmpCaptureClause, "OmpCaptureClause", "OmpCaptureClauseTag" );
      NEW_TERMINAL_MACRO (OmpSeqCstClause, "OmpSeqCstClause", "OmpSeqCstClauseTag" );
      NEW_TERMINAL_MACRO (OmpAcqRelClause, "OmpAcqRelClause", "OmpAcqRelClauseTag" );
@@ -145,7 +146,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpWhenClause, "OmpWhenClause", "OmpWhenClauseTag" );
      NEW_TERMINAL_MACRO (OmpDistScheduleClause, "OmpDistScheduleClause", "OmpDistScheduleClauseTag" );
      NEW_TERMINAL_MACRO (OmpDefaultmapClause, "OmpDefaultmapClause", "OmpDefaultmapClauseTag" );
-     NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpReadClause | OmpWriteClause | OmpUpdateClause | OmpDepobjUpdateClause | OmpCaptureClause | OmpBeginClause |OmpEndClause | OmpUntiedClause | OmpSeqCstClause | OmpAcqRelClause | OmpReleaseClause | OmpAcquireClause | OmpRelaxedClause |
+     NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpReadClause | OmpWriteClause | OmpUpdateClause | OmpDepobjUpdateClause | OmpDestroyClause | OmpCaptureClause | OmpBeginClause |OmpEndClause | OmpUntiedClause | OmpSeqCstClause | OmpAcqRelClause | OmpReleaseClause | OmpAcquireClause | OmpRelaxedClause |
          OmpParallelClause | OmpSectionsClause | OmpForClause | OmpTaskgroupClause | OmpNogroupClause |
          OmpDefaultClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpDistScheduleClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpDefaultmapClause |
          OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause ,

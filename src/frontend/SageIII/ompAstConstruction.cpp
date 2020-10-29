@@ -3483,6 +3483,10 @@ SgOmpClause* convertSimpleClause(SgOmpClauseBodyStatement* clause_body, std::pai
             sg_clause = new SgOmpRelaxedClause();
             break;
         }
+        case OMPC_destroy: {
+            sg_clause = new SgOmpDestroyClause();
+            break;
+        } break;
         default: {
             cerr<<"error: unknown clause "<<endl;
             ROSE_ASSERT(false);
@@ -3721,7 +3725,8 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             case OMPC_relaxed:
             case OMPC_mergeable:
             case OMPC_untied:
-            case OMPC_nogroup:         
+            case OMPC_nogroup:
+            case OMPC_destroy:         
             case OMPC_nowait: {
                 convertSimpleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;

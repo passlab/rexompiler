@@ -9203,6 +9203,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         curprint(string(" end"));
         break;
       }
+    case V_SgOmpDestroyClause:
+      {
+        curprint(string(" destroy"));
+        break;
+      }
     case V_SgOmpScheduleClause:
       {
         unparseOmpScheduleClause(isSgOmpScheduleClause(clause), info);
