@@ -3,7 +3,6 @@
 #include <rose.h>
 #include <rosePublicConfig.h>
 #include <Combinatorics.h>
-#include <MemoryMap.h>
 #include <iostream>
 
 using namespace Rose;
@@ -120,41 +119,7 @@ testAllHashes() {
 #endif
 }
 
-// Test a couple hashes using memory maps.
-static void
-testMemoryMap() {
-    std::cout <<"MemoryMap hashing\n";
-#ifdef ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-    using namespace Rose::BinaryAnalysis;
-    typedef Combinatorics::HasherFnv Hasher;              // this one doesn't depend on libgcrypt
-
-    static const size_t dataSize = 3;
-    static const uint8_t data[dataSize] = {'a', 'b', 'c'};
-
-    // Hash a map that has two segments
-    MemoryMap::Ptr map1 = MemoryMap::instance();
-    map1->insert(AddressInterval::baseSize(100, dataSize), MemoryMap::Segment::staticInstance(data, dataSize));
-    map1->insert(AddressInterval::baseSize(200, dataSize), MemoryMap::Segment::staticInstance(data, dataSize));
-    Hasher hasher1;
-    map1->hash(hasher1);
-    Hasher::Digest digest1 = hasher1.digest();
-    std::cout <<"  map hash    = " <<hasher1 <<"\n";
-
-    // Hash the same data directly
-    Hasher hasher2;
-    hasher2.insert(data, dataSize);
-    hasher2.insert(data, dataSize);
-    Hasher::Digest digest2 = hasher2.digest();
-    std::cout <<"  direct hash = " <<hasher2 <<"\n";
-
-    ASSERT_always_require(hasher1.toString() == hasher2.toString());
-#else
-    std::cout <<"  ROSE was not configured with binary analysis support\n";
-#endif
-}
-
 int
 main() {
     testAllHashes();
-    testMemoryMap();
 }

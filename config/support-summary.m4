@@ -31,16 +31,12 @@ AC_DEFUN([ROSE_SUPPORT_SUMMARY],[
 
     #--------------------------------------------------------------------------------
     ROSE_SUMMARY_HEADING([Languages supported for analysis])
-    echo "    Binaries                         ${support_binaries_frontend:-no}"
     echo "    C                                ${support_c_frontend:-no}"
     echo "    C++                              ${support_cxx_frontend:-no}"
     echo "    C preprocessor                   ${support_cpp_frontend:-no}"
     echo "    Cuda                             ${support_cuda_frontend:-no}"
     echo "    Fortran                          ${support_fortran_frontend:-no}"
-    echo "    Java                             ${support_java_frontend:-no}"
     echo "    OpenCL                           ${support_opencl_frontend:-no}"
-    echo "    PHP                              ${support_php_frontend:-no}"
-    echo "    Python                           ${support_python_frontend:-no}"
 
     #--------------------------------------------------------------------------------
     ROSE_SUMMARY_HEADING([Boost library])
@@ -65,22 +61,6 @@ AC_DEFUN([ROSE_SUPPORT_SUMMARY],[
     echo "    wserialization library           ${BOOST_WSERIALIZATION_LIB:-none}"
 
     #--------------------------------------------------------------------------------
-    if test -n "$support_binaries_frontend" -o -n "$verbose"; then
-        ROSE_SUMMARY_HEADING([Binary analysis support])
-	echo "    i386 support                     ${CFLAGS32:-none}"
-	echo "    libcapstone                      ${ROSE_HAVE_CAPSTONE:-none}"
-	echo "    libmagic                         ${ROSE_HAVE_LIBMAGIC:-none}"
-	echo "    readline                         ${LIBREADLINE_LIBRARY_PATH:-none}"
-	echo "    SQLite3                          ${SQLITE3_VERSION:-none}"
-	echo "    YAML-cpp                         ${ROSE_YAML_PREFIX:-none}"
-	echo "    yices executable                 ${ROSE_YICES:-none}"
-	echo "    yices library                    ${ROSE_HAVE_LIBYICES:-none}"
-	echo "    z3 version                       ${Z3_VERSION:-unknown}"
-	echo "    z3 executable                    ${Z3:-none}"
-	echo "    z3 library                       ${Z3_LIBRARY_PATH:-none}"
-    fi
-
-    #--------------------------------------------------------------------------------
     if test -n "$support_cxx_frontend" -o -n "$verbose"; then
         ROSE_SUMMARY_HEADING([C/C++ analysis support])
 	echo "    frontend C++ parser              EDG-${edg_major_version_number}.${edg_minor_version_number}"
@@ -96,32 +76,6 @@ AC_DEFUN([ROSE_SUPPORT_SUMMARY],[
     if test -n "$support_fortran_frontend" -o -n "$verbose"; then
         ROSE_SUMMARY_HEADING([Fortran analysis support])
 	echo "    fortran compiler                 ${BACKEND_FORTRAN_COMPILER:-none}"
-    fi
-
-    #--------------------------------------------------------------------------------
-    if test -n "$support_java_frontend" -o -n "$verbose"; then
-        ROSE_SUMMARY_HEADING([Java analysis support])
-        echo "    installation path            	   ${JAVA_PATH:-none}"
-	echo "    C++ header switches          	   ${JAVA_JVM_INCLUDE:-none}"
-	echo "    C++ link switches            	   ${JAVA_JVM_LINK:-none}"
-	echo "    runtime command                  ${JAVA:-none}"
-	echo "    compiler command                 ${JAVAC:-none}"
-	echo "    archive tool                     ${JAR:-none}"
-    fi
-
-    #--------------------------------------------------------------------------------
-    if test -n "$support_python_frontend" -o -n "$verbose"; then
-        ROSE_SUMMARY_HEADING([Python analysis support])
-        echo "    executable                       ${PYTHON:-none}"
-	echo "    version                          $PYTHON_VERSION_MAJOR_VERSION.$PYTHON_VERSION_MAJOR_VERSION.$PYTHON_VERSION_MINOR_VERSION.$PYTHON_VERSION_PATCH_VERSION"
-	echo "    site pkg                         ${PYTHON_SITE_PKG:-none}"
-        echo "    dev exists                       $PYTHON_DEV_EXISTS"
-        echo "    c preprocessor switches          ${PYTHON_CPPFLAGS:-none}"
-        echo "    linker switches                  ${PYTHON_LDFLAGS:-none}"
-        echo "    extra libraries                  ${PYTHON_EXTRA_LIBS:-none}"
-        echo "    extra linker switches            ${PYTHON_EXTRA_LDFLAGS:-none}"
-        echo "    use python                       ${PYTHON:-no}"
-        echo "    use python development           ${ROSE_USE_PYTHON_DEV:-no}"
     fi
 
     #--------------------------------------------------------------------------------

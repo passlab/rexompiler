@@ -706,12 +706,9 @@ SageBuilder::getTemplateArgumentList( SgDeclarationStatement* decl )
                break;
              }
 
-       // PC (10/11/13):  Added case of SgJavaPackageDeclaration
        // DQ (8/11/2013): Added cases for SgFunctionDeclaration and SgMemberFunctionDeclaration
        // I forget why we needed this case...
           case V_SgProcedureHeaderStatement:
-          case V_SgJovialTableStatement:
-          case V_SgJavaPackageDeclaration:
           case V_SgFunctionDeclaration:
           case V_SgMemberFunctionDeclaration:
           case V_SgClassDeclaration:
@@ -850,12 +847,9 @@ SageBuilder::getTemplateParameterList( SgDeclarationStatement* decl )
                break;
              }
 
-       // PC (10/11/13):  Added case of SgJavaPackageDeclaration
        // DQ (8/12/2013): This function has to be supported when called using any kind of declaration (at least SgFunctionDeclaration and SgClassDeclaration).
        // DQ (9/16/2012): I think it should be an error to call this function for a SgClassDeclaration.
           case V_SgProcedureHeaderStatement:
-          case V_SgJovialTableStatement:
-          case V_SgJavaPackageDeclaration:
           case V_SgFunctionDeclaration:
           case V_SgMemberFunctionDeclaration:
           case V_SgClassDeclaration:
@@ -6999,14 +6993,6 @@ SgUnsignedLongLongIntVal* SageBuilder::buildUnsignedLongLongIntVal_nfi(unsigned 
   return result;
 }
 
-SgJovialBitVal* SageBuilder::buildJovialBitVal_nfi(const string& str)
-{
-  SgJovialBitVal* result = new SgJovialBitVal(str);
-  ROSE_ASSERT(result);
-  setOneSourcePositionNull(result);
-  return result;
-}
-
 SgTemplateType* SageBuilder::buildTemplateType(SgName name/* ="" */)
 {
   SgTemplateType* result = new SgTemplateType (name);
@@ -7465,7 +7451,6 @@ BUILD_BINARY_DEF(AndOp)
 BUILD_BINARY_DEF(ArrowExp)
 BUILD_BINARY_DEF(ArrowStarOp)
 BUILD_BINARY_DEF(AssignOp)
-BUILD_BINARY_DEF(AtOp)
 BUILD_BINARY_DEF(BitAndOp)
 BUILD_BINARY_DEF(BitOrOp)
 BUILD_BINARY_DEF(BitXorOp)
@@ -7506,19 +7491,14 @@ BUILD_BINARY_DEF(OrOp)
 BUILD_BINARY_DEF(PlusAssignOp)
 BUILD_BINARY_DEF(PntrArrRefExp)
 BUILD_BINARY_DEF(RshiftAssignOp)
-BUILD_BINARY_DEF(JavaUnsignedRshiftAssignOp)
 
 BUILD_BINARY_DEF(RshiftOp)
-BUILD_BINARY_DEF(JavaUnsignedRshiftOp)
 BUILD_BINARY_DEF(ScopeOp)
 BUILD_BINARY_DEF(SubtractOp)
 BUILD_BINARY_DEF(XorAssignOp)
 
 BUILD_BINARY_DEF(VarArgCopyOp)
 BUILD_BINARY_DEF(VarArgStartOp)
-
-// CR(07/26/2018): Jovial operators
-BUILD_BINARY_DEF(ReplicationOp);
 
 //SK(08/20/2015): Matlab operators
 BUILD_BINARY_DEF(PowerOp);
@@ -8399,7 +8379,7 @@ SageBuilder::buildFunctionRefExp(const SgName& name,const SgType* funcType, SgSc
 
  // TODO: consider C++ template functions
     SgFunctionDeclaration * funcDecl = NULL;
-    if (SageInterface::is_Fortran_language() || SageInterface::is_Jovial_language())
+    if (SageInterface::is_Fortran_language())
        {
       // DQ (8/21/2013): Fixed number of parameters in buildNondefiningFunctionDeclaration_T() function call.
          funcDecl = buildNondefiningFunctionDeclaration_T <SgProcedureHeaderStatement>(name,return_type,parList,false,globalscope,NULL, false, NULL, NULL, SgStorageModifier::e_default);
@@ -9654,19 +9634,6 @@ SgDoWhileStmt * SageBuilder::buildDoWhileStmt_nfi(SgStatement *  body, SgStateme
   return result;
 }
 
-SgMatlabForStatement* SageBuilder::buildMatlabForStatement(SgExpression* loop_index, SgExpression* loop_range, SgBasicBlock* loop_body)
-{
-  SgMatlabForStatement* result = new SgMatlabForStatement(loop_index, loop_range, loop_body);
-  SageInterface::setOneSourcePositionForTransformation(result);
-
-  ROSE_ASSERT(result != NULL);
-
-  loop_index->set_parent(result);
-  loop_range->set_parent(result);
-  loop_body->set_parent(result);
-  return result;
-}
-
 SgBreakStmt * SageBuilder::buildBreakStmt()
 {
   SgBreakStmt* result = new SgBreakStmt();
@@ -9739,24 +9706,6 @@ SgAssertStmt* SageBuilder::buildAssertStmt(SgExpression* test)
   setOneSourcePositionForTransformation(result);
   return result;
 }
-
-// DQ (7/18/2011): Added support for SgJavaInstanceOfOp
-//! This is part of Java specific operator support.
-SgJavaInstanceOfOp* SageBuilder::buildJavaInstanceOfOp(SgExpression* exp, SgType* type)
-   {
-     SgType* exp_type = SgTypeBool::createType();
-
-     SgJavaInstanceOfOp* result = new SgJavaInstanceOfOp(exp, type, exp_type);
-     ROSE_ASSERT(result);
-     if (exp != NULL)
-        {
-          exp->set_parent(result);
-          markLhsValues(result);
-        }
-
-     setOneSourcePositionForTransformation(result);
-     return result;
-   }
 
 SgAssertStmt* SageBuilder::buildAssertStmt(SgExpression* test, SgExpression* exceptionArgument)
 {
@@ -10307,107 +10256,6 @@ SgExecStatement* SageBuilder::buildExecStatement_nfi(SgExpression* executable,
     return result;
 }
 
-// MH (6/10/2014): Added async support
-SgAsyncStmt* SageBuilder::buildAsyncStmt(SgBasicBlock *body)
-{
-       ROSE_ASSERT(body != NULL);
-       SgAsyncStmt *async_stmt = new SgAsyncStmt(body);
-       ROSE_ASSERT(async_stmt);
-       body->set_parent(async_stmt);
-       setOneSourcePositionForTransformation(async_stmt);
-
-       return async_stmt;
-}
-
-// MH (6/11/2014): Added finish support
-SgFinishStmt* SageBuilder::buildFinishStmt(SgBasicBlock *body)
-{
-       ROSE_ASSERT(body != NULL);
-       SgFinishStmt *finish_stmt = new SgFinishStmt(body);
-       ROSE_ASSERT(finish_stmt);
-       body->set_parent(finish_stmt);
-       setOneSourcePositionForTransformation(finish_stmt);
-
-       return finish_stmt;
-}
-
-// MH (6/11/2014): Added at support
-SgAtStmt* SageBuilder::buildAtStmt(SgExpression *expression, SgBasicBlock *body)
-{
-       ROSE_ASSERT(expression);
-       ROSE_ASSERT(body);
-       SgAtStmt *at_stmt = new SgAtStmt(expression, body);
-       SageInterface::setSourcePosition(at_stmt);
-       expression->set_parent(at_stmt);
-       body->set_parent(at_stmt);
-
-       return at_stmt;
-}
-
-// MH (11/12/2014): Added atomic support
-SgAtomicStmt* SageBuilder::buildAtomicStmt(SgBasicBlock *body)
-{
-       ROSE_ASSERT(body != NULL);
-       SgAtomicStmt *atomic_stmt = new SgAtomicStmt(body);
-       ROSE_ASSERT(atomic_stmt);
-       body->set_parent(atomic_stmt);
-       setOneSourcePositionForTransformation(atomic_stmt);
-
-       return atomic_stmt;
-}
-
-
-SgWhenStmt* SageBuilder::buildWhenStmt(SgExpression *expression, SgBasicBlock *body)
-{
-       ROSE_ASSERT(expression);
-       ROSE_ASSERT(body);
-       SgWhenStmt *when_stmt = new SgWhenStmt(expression, body);
-       SageInterface::setSourcePosition(when_stmt);
-       expression->set_parent(when_stmt);
-       body->set_parent(when_stmt);
-
-       return when_stmt;
-}
-
-// MH (9/14/2014): Added atexpr support
-SgAtExp* SageBuilder::buildAtExp(SgExpression *expression, SgBasicBlock *body)
-{
-       ROSE_ASSERT(expression);
-       ROSE_ASSERT(body);
-       SgAtExp *at_exp = new SgAtExp(expression, body);
-       SageInterface::setSourcePosition(at_exp);
-       expression->set_parent(at_exp);
-       body->set_parent(at_exp);
-
-       return at_exp;
-}
-
-// MH (11/7/2014): Added finish expression support
-SgFinishExp* SageBuilder::buildFinishExp(SgExpression *expression, SgBasicBlock *body)
-{
-       ROSE_ASSERT(expression);
-       ROSE_ASSERT(body);
-       SgFinishExp *finish_exp = new SgFinishExp(expression, body);
-       SageInterface::setSourcePosition(finish_exp);
-       expression->set_parent(finish_exp);
-       body->set_parent(finish_exp);
-
-       return finish_exp;
-}
-
-SgHereExp* SageBuilder::buildHereExpression()
-{
-       SgHereExp *here = new SgHereExp(NULL);
-       return here;
-}
-
-SgDotDotExp* SageBuilder::buildDotDotExp()
-{
-       SgDotDotExp *dotdot = new SgDotDotExp(NULL);
-       return dotdot;
-}
-
-
 //! Build a try statement
 SgTryStmt* SageBuilder::buildTryStmt(SgStatement* body,
                                      SgCatchOptionStmt* catch0,
@@ -10495,99 +10343,6 @@ SgCatchOptionStmt* SageBuilder::buildCatchOptionStmt(SgVariableDeclaration* cond
     if (condition) condition->set_parent(result);
     if (body) body->set_parent(result);
     setOneSourcePositionForTransformation(result);
-    return result;
-}
-
-SgJavaSynchronizedStatement *SageBuilder::buildJavaSynchronizedStatement(SgExpression *expression, SgBasicBlock *body)
-{
-  ROSE_ASSERT(expression);
-  ROSE_ASSERT(body);
-  SgJavaSynchronizedStatement *sync_stmt = new SgJavaSynchronizedStatement(expression, body);
-  SageInterface::setSourcePosition(sync_stmt);
-
-  expression->set_parent(sync_stmt);
-  body->set_parent(sync_stmt);
-
-  return sync_stmt;
-}
-
-SgJavaThrowStatement *SageBuilder::buildJavaThrowStatement(SgThrowOp *op)
-{
-  ROSE_ASSERT(op);
-  SgJavaThrowStatement *throw_stmt = new SgJavaThrowStatement(op);
-  ROSE_ASSERT(throw_stmt);
-
-  op->set_parent(throw_stmt);
-
-  return throw_stmt;
-}
-
-// DQ (9/3/2011): Changed the API to conform to the Java grammar.
-// SgJavaForEachStatement *SageBuilder::buildJavaForEachStatement(SgInitializedName *variable, SgExpression *collection, SgStatement *body)
-SgJavaForEachStatement *SageBuilder::buildJavaForEachStatement(SgVariableDeclaration *variable, SgExpression *collection, SgStatement *body)
-{
-  SgJavaForEachStatement *foreach_stmt = new SgJavaForEachStatement(variable, collection, body);
-  ROSE_ASSERT(foreach_stmt);
-  if (variable) variable -> set_parent(foreach_stmt);
-  if (collection) collection -> set_parent(foreach_stmt);
-  if (body) body -> set_parent(foreach_stmt);
-
-  return foreach_stmt;
-}
-
-SgJavaLabelStatement *SageBuilder::buildJavaLabelStatement(const SgName& name,  SgStatement *stmt /* = NULL */)
-{
-    SgJavaLabelStatement *label_stmt = new SgJavaLabelStatement(name, stmt);
-    ROSE_ASSERT(label_stmt);
-    setOneSourcePositionForTransformation(label_stmt);
-
-    if (stmt != NULL)
-        stmt -> set_parent(label_stmt);
-
-    SgJavaLabelSymbol *lsymbol = label_stmt -> lookup_java_label_symbol(name);
-    if (! lsymbol) // Should be an Assertion - always true!
-    {
-        lsymbol= new SgJavaLabelSymbol(label_stmt);
-        ROSE_ASSERT(lsymbol);
-        label_stmt -> insert_symbol(lsymbol -> get_name(), lsymbol);
-    }
-
-    return label_stmt;
-}
-
-SgPythonPrintStmt*
-SageBuilder::buildPythonPrintStmt(SgExpression* dest, SgExprListExp* values) {
-    SgPythonPrintStmt* result = new SgPythonPrintStmt(dest, values);
-    if (dest) dest->set_parent(result);
-    if (values) values->set_parent(result);
-    setOneSourcePositionForTransformation(result);
-    return result;
-}
-
-SgPythonPrintStmt*
-SageBuilder::buildPythonPrintStmt_nfi(SgExpression* dest, SgExprListExp* values) {
-    SgPythonPrintStmt* result = new SgPythonPrintStmt(dest, values);
-    if (dest) dest->set_parent(result);
-    if (values) values->set_parent(result);
-    setOneSourcePositionNull(result);
-    return result;
-}
-
-SgPythonGlobalStmt*
-SageBuilder::buildPythonGlobalStmt(SgInitializedNamePtrList& names) {
-    SgPythonGlobalStmt* result = new SgPythonGlobalStmt();
-    foreach (SgInitializedName* name, names)
-        result->append_name(name);
-    setOneSourcePositionForTransformation(result);
-    return result;
-}
-
-SgPythonGlobalStmt*
-SageBuilder::buildPythonGlobalStmt_nfi(SgInitializedNamePtrList& names) {
-    SgPythonGlobalStmt* result = new SgPythonGlobalStmt();
-    foreach (SgInitializedName* name, names)
-        result->append_name(name);
-    setOneSourcePositionNull(result);
     return result;
 }
 
@@ -11221,16 +10976,6 @@ SgTypeFixed* SageBuilder::buildFixedType(SgExpression* scale, SgExpression* frac
 
    if (scale) scale->set_parent(result);
    if (fraction) fraction->set_parent(result);
-
-  return result;
-}
-
-// CR (5/5/2020): Added builder for Jovial bit type
-SgJovialBitType* SageBuilder::buildJovialBitType(SgExpression* size)
-{
-   SgJovialBitType * result = SgJovialBitType::createType(size, NULL);
-
-   if (size) size->set_parent(result);
 
   return result;
 }
@@ -12602,67 +12347,6 @@ SageBuilder::buildStmtDeclarationStatement(SgStatement* stmt) {
     return result;
 }
 
-SgJovialDefineDeclaration*
-SageBuilder::buildJovialDefineDeclaration_nfi(const SgName& name, const std::string& params,
-                                              const std::string& def_string, SgScopeStatement* scope)
-  {
-     std::string directive_string(name);
-
-     if (scope == NULL)
-        scope = SageBuilder::topScopeStack();
-     ROSE_ASSERT(scope);
-
-     if (params.length() > 0)
-        directive_string += " " + params;
-
-     directive_string += " " + def_string;
-
-     SgJovialDefineDeclaration* define_decl = new SgJovialDefineDeclaration(directive_string);
-     ROSE_ASSERT(define_decl);
-     SageInterface::setSourcePosition(define_decl);
-
-  // The first nondefining declaration must be set
-     define_decl->set_firstNondefiningDeclaration(define_decl);
-     define_decl->set_parent(scope);
-
-     return define_decl;
-  }
-
-// Build a Jovial loop statement. Two variants are FOR and WHILE.
-SgJovialForThenStatement*
-SageBuilder::buildJovialForThenStatement_nfi(SgExpression* init_expr,
-                                             SgExpression* while_expr, SgExpression* by_or_then_expr)
-  {
-     SgJovialForThenStatement* for_stmt;
-     ROSE_ASSERT(init_expr);
-
-  // Both the increment and the test expression can be a nullptr, create a SgNullExpression if necessary.
-  //
-     if (while_expr == NULL) {
-        while_expr = buildNullExpression_nfi();
-     }
-     if (by_or_then_expr == NULL) {
-        by_or_then_expr = buildNullExpression_nfi();
-     }
-
-     SgBasicBlock* body = SageBuilder::buildBasicBlock_nfi();
-
-     for_stmt = new SgJovialForThenStatement(init_expr, while_expr, by_or_then_expr, body);
-     ROSE_ASSERT(for_stmt);
-     setOneSourcePositionNull(for_stmt);
-
-     if (topScopeStack()) {
-        for_stmt->set_parent(topScopeStack());
-     }
-     body->set_parent(for_stmt);
-
-     if (SageInterface::is_language_case_insensitive()) {
-        for_stmt->setCaseInsensitive(true);
-     }
-
-     return for_stmt;
-  }
-
 // This should take a SgClassDeclaration::class_types kind parameter!
 SgClassDeclaration * SageBuilder::buildStructDeclaration(const SgName& name, SgScopeStatement* scope /*=NULL*/)
    {
@@ -12738,48 +12422,6 @@ SgDerivedTypeStatement * SageBuilder::buildDerivedTypeStatement(const SgName& na
      setOneSourcePositionForTransformation(type_decl->get_firstNondefiningDeclaration());
 
      return type_decl;
-   }
-
-//! Build a Jovial table declaration statement.  A Jovial table is essentially a C struct with an optional struct size.
-SgJovialTableStatement * SageBuilder::buildJovialTableStatement(const SgName& name,
-                                                                SgClassDeclaration::class_types kind,
-                                                                SgScopeStatement* scope /*=NULL*/)
-   {
-     SgJovialTableStatement* table_decl = buildClassDeclarationStatement_nfi <SgJovialTableStatement> (name, kind, scope);
-
-     setOneSourcePositionForTransformation(table_decl);
-     ROSE_ASSERT(table_decl->get_firstNondefiningDeclaration() != NULL);
-     setOneSourcePositionForTransformation(table_decl->get_firstNondefiningDeclaration());
-
-     return table_decl;
-   }
-
-//! Build a Jovial table type with required class definition and defining and nondefining declarations.
-SgJovialTableType * SageBuilder::buildJovialTableType (const SgName& name, SgType* base_type, SgExprListExp* dim_info, SgScopeStatement* scope)
-   {
-     SgClassDeclaration::class_types kind = SgClassDeclaration::e_jovial_table;
-     SgJovialTableStatement* table_decl = buildClassDeclarationStatement_nfi <SgJovialTableStatement> (name, kind, scope);
-
-     setOneSourcePositionForTransformation(table_decl);
-     ROSE_ASSERT(table_decl->get_firstNondefiningDeclaration() != NULL);
-     setOneSourcePositionForTransformation(table_decl->get_firstNondefiningDeclaration());
-
-  // For a type declaration the parent of the nondefining declaration is the defining declaration
-     SgClassDeclaration* nondef_decl = isSgClassDeclaration(table_decl->get_firstNondefiningDeclaration());
-     ROSE_ASSERT(nondef_decl != NULL);
-     nondef_decl->set_parent(table_decl);
-
-     SgJovialTableType* table_type = new SgJovialTableType(nondef_decl);
-     ROSE_ASSERT(table_type != NULL);
-
-     table_type->set_base_type(base_type);
-     table_type->set_dim_info(dim_info);
-     table_type->set_rank(dim_info->get_expressions().size());
-
-     dim_info->set_parent(table_type);
-     nondef_decl->set_type(table_type);
-
-     return table_type;
    }
 
 //! Build a generic class declaration statement (SgClassDeclaration or subclass).
@@ -12894,13 +12536,6 @@ SageBuilder::buildClassDeclarationStatement_nfi(const SgName & name, SgClassDecl
                SgClassType* class_type = NULL;
                switch (kind)
                   {
-                    case SgClassDeclaration::e_java_parameter:
-                       class_type = SgJavaParameterType::createType(nondefdecl);
-                       break;
-                    case SgClassDeclaration::e_jovial_table:
-                    case SgClassDeclaration::e_jovial_block:
-                       class_type = SgJovialTableType::createType(nondefdecl);
-                       break;
                     default:
                        class_type = SgClassType::createType(nondefdecl);
                        break;
@@ -14193,9 +13828,7 @@ SageBuilder::buildClassDeclaration_nfi(const SgName& XXX_name, SgClassDeclaratio
 #if DEBUG_CLASS_DECLARATION
                printf ("In SageBuilder::buildClassDeclaration_nfi(): kind == SgClassDeclaration::e_java_parameter = %s \n",(kind == SgClassDeclaration::e_java_parameter) ? "true" : "false");
 #endif
-               SgClassType *class_type = (kind == SgClassDeclaration::e_java_parameter
-                                                ? (SgClassType *) SgJavaParameterType::createType(nondefdecl)
-                                                : (SgClassType *) SgClassType::createType(nondefdecl));
+               SgClassType *class_type = (SgClassType *) SgClassType::createType(nondefdecl);
 #if DEBUG_CLASS_DECLARATION
                printf ("In SageBuilder::buildClassDeclaration_nfi(): nondefdecl->get_type() == NULL: building a new class_type = %p = %s \n",class_type,class_type->class_name().c_str());
 #endif
@@ -16558,7 +16191,7 @@ SageBuilder::buildFile(const std::string& inputFileName, const std::string& outp
   // arglist.push_back("-rose:verbose 2");
 
   // This handles the case where the original command line may have referenced multiple files.
-     Rose_STL_Container<string> fileList = CommandlineProcessing::generateSourceFilenames(arglist,/* binaryMode = */ false);
+     Rose_STL_Container<string> fileList = CommandlineProcessing::generateSourceFilenames(arglist);
      CommandlineProcessing::removeAllFileNamesExcept(arglist,fileList,sourceFilename);
 
   // DQ (9/3/2008): Added support for SgSourceFile IR node
@@ -17607,140 +17240,6 @@ SageBuilder::getTargetFileTypeSupport(SgType* snippet_type, SgScopeStatement* ta
                     break;
                   }
 
-               case V_SgJavaParameterizedType:
-                  {
-                 // DQ (3/10/2014): This type is a view of a generic class with dynamic type checking (e.g. T).
-                 // This acts more like a class with reference to the template instead of the template instantiation.
-                 // So reset the declaration.
-#if 0
-                    printf ("In getTargetFileTypeSupport(): case V_SgJavaParameterizedType: snippet_declaration = %p = %s \n",snippet_declaration,snippet_declaration->class_name().c_str());
-#endif
-#if 1
-                    SgClassDeclaration* classDeclaration = isSgClassDeclaration(snippet_declaration);
-                    if (classDeclaration != NULL)
-                       {
-#if 0
-                         printf ("Looking for classDeclaration = %s \n",classDeclaration->get_name().str());
-#endif
-                         SgJavaParameterizedType* javaParameterizedType = isSgJavaParameterizedType(namedType);
-                         ROSE_ASSERT(javaParameterizedType != NULL);
-#if 0
-                      // SgTemplateParameterPtrList* templateParameterList = javaParameterizedType->get_type_list();
-                         SgTemplateParameterList* templateParameterListNode = javaParameterizedType->get_type_list();
-                         ROSE_ASSERT(templateParameterListNode != NULL);
-                         SgTemplateParameterPtrList* templateParameterList = &templateParameterListNode->get_args();
-#else
-                      // DQ (7/25/2014): Remove warning from GNU 4.8 compiler.
-                      // SgTemplateParameterPtrList* templateParameterList = NULL;
-#endif
-                      // DQ (7/25/2014): Remove warning from GNU 4.8 compiler.
-                      // SgTemplateArgumentPtrList*  templateSpecializationArgumentList = NULL;
-#if 0
-                         printf ("Calling lookupTemplateClassSymbolInParentScopes() name = %s \n",classDeclaration->get_name().str());
-#endif
-                      // SgTemplateClassSymbol* templateClassSymbolInTargetAST = lookupTemplateClassSymbolInParentScopes(classDeclaration->get_name(),templateParameterList,templateSpecializationArgumentList,targetScope);
-                         SgClassSymbol* templateClassSymbolInTargetAST = lookupClassSymbolInParentScopes(classDeclaration->get_name(),targetScope);
-#if 0
-                         printf ("DONE: Calling lookupTemplateClassSymbolInParentScopes() \n");
-#endif
-#if 0
-                         printf ("targetScope->get_symbol_table()->size() = %d \n",targetScope->get_symbol_table()->size());
-                         if (templateClassSymbolInTargetAST == NULL)
-                            {
-                              targetScope->get_symbol_table()->print("ERROR: templateClassSymbolInTargetAST == NULL");
-                            }
-#endif
-                      // DQ (3/30/2014): Add this approach.
-                         if (templateClassSymbolInTargetAST == NULL)
-                            {
-#if 0
-                              printf ("Calling findAssociatedSymbolInTargetAST \n");
-#endif
-                              SgSymbol* symbol = findAssociatedSymbolInTargetAST(classDeclaration,targetScope);
-                              ROSE_ASSERT(symbol != NULL);
-
-                              templateClassSymbolInTargetAST = isSgClassSymbol(symbol);
-
-                              ROSE_ASSERT(templateClassSymbolInTargetAST != NULL);
-                            }
-
-                      // Not clear if we have to handle a more general case here.
-                         ROSE_ASSERT(templateClassSymbolInTargetAST != NULL);
-
-                         returnType = templateClassSymbolInTargetAST->get_type();
-                       }
-#else
-                    SgJavaParameterizedType* javaParameterizedType = isSgJavaParameterizedType(namedType);
-                    if (javaParameterizedType != NULL)
-                       {
-#error "DEAD CODE!"
-                      // Not clear how to lookup this type in the target AST.
-                         returnType = javaParameterizedType;
-
-                         SgType* internal_type = javaParameterizedType->get_raw_type();
-                         ROSE_ASSERT(internal_type != NULL);
-                       }
-#endif
-#if 0
-                    printf ("SgJavaParameterizedType not yet tested! \n");
-                    ROSE_ASSERT(false);
-#endif
-                    break;
-                  }
-
-               case V_SgJavaQualifiedType:
-                  {
-                 // DQ (3/10/2014): This type acts like a binary operator on types to define aggregate
-                 // types to represent what in C++ would be name qualification. I need only set the
-                 // declarations in each SgJavaQualifiedType to refer to a declaration in the target AST.
-                 // So reset the declaration.
-
-                 // This case is demonstrated by test code:
-                 //    SS_JAVA_CWES/src/Error_Handling/CWE_248/CWE_248_0.java,Error_Handling.CWE_248.CWE_248_0.cwe_248_0
-                 // printf ("***** SgJavaQualifiedType not yet tested! *** \n");
-
-                    printf ("In getTargetFileTypeSupport(): case V_SgJavaQualifiedType: snippet_declaration = %p = %s \n",snippet_declaration,snippet_declaration->class_name().c_str());
-
-                    SgJavaQualifiedType* javaQualifiedType = isSgJavaQualifiedType(namedType);
-                    if (javaQualifiedType != NULL)
-                       {
-                      // Not clear how to lookup this type in the target AST.
-                         returnType = javaQualifiedType;
-
-                         SgType* internal_type_1 = javaQualifiedType->get_parent_type();
-                         ROSE_ASSERT(internal_type_1 != NULL);
-                         SgType* internal_type_2 = javaQualifiedType->get_type();
-                         ROSE_ASSERT(internal_type_2 != NULL);
-                       }
-
-                    printf ("Case of SgJavaQualifiedType: not yet handled: commented out assertion! \n");
-                 // ROSE_ASSERT(false);
-                    break;
-                  }
-
-               case V_SgJavaWildcardType:
-                  {
-                 // DQ (3/10/2014): This type expressed constraints on an input type.
-                 // if (?) then it is associated with the Java object type.
-                 // It can be constraint with an upper bound or lower bound.
-                 // if (?extends List) would be an upper bound for List.
-                 // if (?super Integer) would be an lower bound for List.
-                 // So reset the declaration.
-
-                    printf ("In getTargetFileTypeSupport(): case V_SgJavaWildcardType: snippet_declaration = %p = %s \n",snippet_declaration,snippet_declaration->class_name().c_str());
-
-                    SgJavaWildcardType* javaWildcardType = isSgJavaWildcardType(namedType);
-                    if (javaWildcardType != NULL)
-                       {
-                      // Not clear how to lookup this type in the target AST.
-                         returnType = javaWildcardType;
-                       }
-
-                    printf ("SgJavaWildcardType not yet tested! \n");
-                    ROSE_ASSERT(false);
-                    break;
-                  }
-
                default:
                   {
                     printf ("Error: In getTargetFileTypeSupport(): default reached in switch: namedType = %p = %s \n",namedType,namedType->class_name().c_str());
@@ -17917,94 +17416,6 @@ SageBuilder::getTargetFileType(SgType* snippet_type, SgScopeStatement* targetSco
                             }
                        }
 
-                    break;
-                  }
-
-               case V_SgJavaParameterizedType:
-                  {
-                 // DQ (3/10/2014): This type is a view of a generic class with dynamic type checking (e.g. T).
-                 // This acts more like a class with reference to the template instead of the template instantiation.
-                 // So reset the declaration.
-
-                    printf ("In getTargetFileType(): case V_SgJavaParameterizedType: snippet_declaration = %p = %s \n",snippet_declaration,snippet_declaration->class_name().c_str());
-#if 1
-                    SgClassDeclaration* classDeclaration = isSgClassDeclaration(snippet_declaration);
-                    if (classDeclaration != NULL)
-                       {
-                         SgTemplateParameterPtrList* templateParameterList              = NULL;
-                         SgTemplateArgumentPtrList*  templateSpecializationArgumentList = NULL;
-                         SgTemplateClassSymbol* templateClassSymbolInTargetAST = lookupTemplateClassSymbolInParentScopes(classDeclaration->get_name(),templateParameterList,templateSpecializationArgumentList,targetScope);
-
-                      // Not clear if we have to handle a more general case here.
-                         ROSE_ASSERT(templateClassSymbolInTargetAST != NULL);
-
-                         returnType = templateClassSymbolInTargetAST->get_type();
-                       }
-#else
-                    SgJavaParameterizedType* javaParameterizedType = isSgJavaParameterizedType(namedType);
-                    if (javaParameterizedType != NULL)
-                       {
-                      // Not clear how to lookup this type in the target AST.
-                         returnType = javaParameterizedType;
-
-                         SgType* internal_type = javaParameterizedType->get_raw_type();
-                         ROSE_ASSERT(internal_type != NULL);
-                       }
-#endif
-                    printf ("SgJavaParameterizedType not yet tested! \n");
-                    ROSE_ASSERT(false);
-                    break;
-                  }
-
-               case V_SgJavaQualifiedType:
-                  {
-                 // DQ (3/10/2014): This type acts like a binary operator on types to define aggregate
-                 // types to represent what in C++ would be name qualification. I need only set the
-                 // declarations in each SgJavaQualifiedType to refer to a declaration in the target AST.
-                 // So reset the declaration.
-
-                    printf ("In getTargetFileType(): case V_SgJavaQualifiedType: snippet_declaration = %p = %s \n",snippet_declaration,snippet_declaration->class_name().c_str());
-
-                    SgJavaQualifiedType* javaQualifiedType = isSgJavaQualifiedType(namedType);
-                    if (javaQualifiedType != NULL)
-                       {
-                      // Not clear how to lookup this type in the target AST.
-                         returnType = javaQualifiedType;
-
-                         SgType* internal_type_1 = javaQualifiedType->get_parent_type();
-                         ROSE_ASSERT(internal_type_1 != NULL);
-                         SgType* internal_type_2 = javaQualifiedType->get_type();
-                         ROSE_ASSERT(internal_type_2 != NULL);
-                       }
-
-                    printf ("SgJavaQualifiedType not yet tested! \n");
-                    ROSE_ASSERT(false);
-                    break;
-                  }
-
-               case V_SgJavaWildcardType:
-                  {
-                 // DQ (3/10/2014): This type expressed constraints on an input type.
-                 // if (?) then it is associated with the Java object type.
-                 // It can be constraint with an upper bound or lower bound.
-                 // if (?extends List) would be an upper bound for List.
-                 // if (?super Integer) would be an lower bound for List.
-                 // So reset the declaration.
-
-                    printf ("In getTargetFileType(): case V_SgJavaWildcardType: snippet_declaration = %p = %s \n",snippet_declaration,snippet_declaration->class_name().c_str());
-
-                    SgJavaWildcardType* javaWildcardType = isSgJavaWildcardType(namedType);
-                    if (javaWildcardType != NULL)
-                       {
-                      // Not clear how to lookup this type in the target AST.
-                         returnType = javaWildcardType;
-
-                         SgType* internal_type_1 = javaWildcardType->get_bound_type();
-                         // ROSE_ASSERT(internal_type_1 != NULL); // PC: 03/15/2014 - Dan, this cannot be asserted as the bound_type CAN BE NULL.
-                       }
-
-                    printf ("SgJavaWildcardType not yet tested! \n");
-                    ROSE_ASSERT(false);
                     break;
                   }
 
@@ -18896,39 +18307,6 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
                             }
                            else
                             {
-                           // DQ (3/29/2014): Adding support for SgInitializedName IR nodes found in a SgJavaForEachStatement.
-                              SgJavaForEachStatement* javaForEachStatement = isSgJavaForEachStatement(enclosingStatement_copy->get_parent());
-                              if (javaForEachStatement != NULL)
-                                 {
-                                   SgVariableDeclaration* variableDeclaration = isSgVariableDeclaration(enclosingStatement_copy);
-                                   ROSE_ASSERT(variableDeclaration != NULL);
-
-                                   SgStatement* enclosingStatement_original = TransformationSupport::getStatement(initializedName_original);
-                                   ROSE_ASSERT(enclosingStatement_original != NULL);
-                                   SgJavaForEachStatement* javaForEachStatement_original = isSgJavaForEachStatement(enclosingStatement_original->get_parent());
-
-                                   SgSymbol* symbol = lookupVariableSymbolInParentScopes(initializedName_copy->get_name(),javaForEachStatement_original);
-                                   if (symbol == NULL)
-                                      {
-                                        printf ("ERROR: (symbol == NULL): initializedName_copy->get_name() = %s \n",initializedName_copy->get_name().str());
-                                     // initializedName_original->get_file_info()->display("ERROR: (symbol == NULL): debug");
-                                      }
-                                   ROSE_ASSERT(symbol != NULL);
-
-                                   initializedName_copy->set_scope(targetScope);
-
-                                   SgVariableSymbol* new_variableSymbol = new SgVariableSymbol(initializedName_copy);
-                                   ROSE_ASSERT(new_variableSymbol != NULL);
-
-                                // DQ (3/29/2014): I am not certain this is the correct location to insert this symbol.
-                                   targetScope->insert_symbol(initializedName_copy->get_name(),new_variableSymbol);
-#if 0
-                                   printf ("Need to handle case of SgJavaForEachStatement \n");
-                                   ROSE_ASSERT(false);
-#endif
-                                 }
-                                else
-                                 {
                            // Case of non-SgFunctionParameterList and non-SgEnumDeclaration use of SgInitializedName in AST.
                               SgSymbol* symbol = initializedName_copy->search_for_symbol_from_symbol_table();
                               if (symbol == NULL)
@@ -18977,7 +18355,6 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
 
                                    printf ("I think this should be an error! \n");
                                    ROSE_ASSERT(false);
-                                 }
                                  }
                             }
                        }
@@ -20073,16 +19450,6 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
                break;
              }
 
-       // DQ (3/21/2014): I think we need this.
-          case V_SgJavaPackageStatement:
-             {
-#if 1
-               printf ("Exiting as a test! (SgJavaPackageStatement) \n");
-               ROSE_ASSERT(false);
-#endif
-               break;
-             }
-
           case V_SgEnumVal:
              {
             // SgEnumVal expressions contain a reference to the associated SgEnumDeclaration, so this may have to be updated.
@@ -20467,349 +19834,3 @@ Rose_STL_Container<SgNode *>& template_args)
 
   return tclass;
 }
-
-//-----------------------------------------------------------------------------
-#ifdef ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
-//-----------------------------------------------------------------------------
-
-/**
- *
- */
-SgVarRefExp *SageBuilder::buildJavaArrayLengthVarRefExp() {
-    ROSE_ASSERT(Rose::Frontend::Java::lengthSymbol);
-    SgVarRefExp *var_ref = SageBuilder::buildVarRefExp(Rose::Frontend::Java::lengthSymbol);
-    SageInterface::setSourcePosition(var_ref);
-    return var_ref;
-}
-
-/**
- *
- */
-SgScopeStatement *SageBuilder::buildScopeStatement(SgClassDefinition *parent_scope) {
-    SgScopeStatement *scope = new SgScopeStatement();
-    SageInterface::setSourcePosition(scope);
-    if (parent_scope != NULL) {
-        scope -> set_parent(parent_scope);
-    }
-    return scope;
-}
-
-/**
- *
- */
-SgJavaTypeExpression *SageBuilder::buildJavaTypeExpression(SgType *type) {
-    SgJavaTypeExpression *expr = new SgJavaTypeExpression(type);
-    SageInterface::setSourcePosition(expr);
-    return expr;
-}
-
-/**
- *
- */
-SgJavaMarkerAnnotation *SageBuilder::buildJavaMarkerAnnotation(SgType *type) {
-    SgJavaMarkerAnnotation *annotation = new SgJavaMarkerAnnotation(type);
-    SageInterface::setSourcePosition(annotation);
-    return annotation;
-}
-
-/**
- *
- */
-SgJavaMemberValuePair *SageBuilder::buildJavaMemberValuePair(const SgName &name, SgExpression *value) {
-    SgJavaMemberValuePair *pair = new SgJavaMemberValuePair();
-    SageInterface::setSourcePosition(pair);
-    pair -> set_name(name);
-    pair -> set_value(value);
-    value -> set_parent(pair);
-    return pair;
-}
-
-/**
- *
- */
-SgJavaSingleMemberAnnotation *SageBuilder::buildJavaSingleMemberAnnotation(SgType *type, SgExpression *value) {
-    SgJavaSingleMemberAnnotation *annotation = new SgJavaSingleMemberAnnotation(type, value);
-    SageInterface::setSourcePosition(annotation);
-    return annotation;
-}
-
-/**
- *
- */
-SgJavaNormalAnnotation *SageBuilder::buildJavaNormalAnnotation(SgType *type) {
-    SgJavaNormalAnnotation *annotation = new SgJavaNormalAnnotation(type);
-    SageInterface::setSourcePosition(annotation);
-    return annotation;
-}
-
-/**
- *
- */
-SgJavaNormalAnnotation *SageBuilder::buildJavaNormalAnnotation(SgType *type, list<SgJavaMemberValuePair *>& pair_list) {
-    SgJavaNormalAnnotation *annotation = SageBuilder::buildJavaNormalAnnotation(type);
-    for (std::list<SgJavaMemberValuePair *>::iterator i = pair_list.begin(); i != pair_list.end(); i++) {
-        SgJavaMemberValuePair *member_value_pair = *i;
-        member_value_pair -> set_parent(annotation);
-        annotation -> append_value_pair(member_value_pair);
-    }
-    return annotation;
-}
-
-
-/**
- *
- */
-SgInitializedName *SageBuilder::buildJavaFormalParameter(SgType *argument_type, const SgName &argument_name, bool is_var_args, bool is_final) {
-    SgInitializedName *initialized_name = NULL;
-    if (is_var_args) {
-        initialized_name = SageBuilder::buildInitializedName(argument_name, SageBuilder::getUniqueJavaArrayType(argument_type, 1), NULL);
-        initialized_name -> setAttribute("var_args", new AstRegExAttribute(""));
-    }
-    else {
-        initialized_name = SageBuilder::buildInitializedName(argument_name, argument_type, NULL);
-    }
-    SageInterface::setSourcePosition(initialized_name);
-    if (is_final) {
-        initialized_name -> setAttribute("final", new AstRegExAttribute(""));
-    }
-
-    return initialized_name;
-}
-
-/**
- * The import_info represents the qualified name of a package, type or static field.
- */
-SgJavaPackageStatement *SageBuilder::buildJavaPackageStatement(string package_name) {
-    SgJavaPackageStatement *package_statement = new SgJavaPackageStatement(package_name);
-    SageInterface::setSourcePosition(package_statement);
-    package_statement -> set_firstNondefiningDeclaration(package_statement);
-    package_statement -> set_definingDeclaration(package_statement);
-    return package_statement;
-}
-
-/**
- * The import_info represents the qualified name of a package, type or static field.
- */
-SgJavaImportStatement *SageBuilder::buildJavaImportStatement(string import_info, bool contains_wildcard) {
-    SgJavaImportStatement *import_statement = new SgJavaImportStatement(import_info, contains_wildcard);
-    SageInterface::setSourcePosition(import_statement);
-    import_statement -> set_firstNondefiningDeclaration(import_statement);
-    import_statement -> set_definingDeclaration(import_statement);
-    return import_statement;
-}
-
-/**
- *  Build a class with the given name in the given scope and return its SgClassDefinition.
- */
-SgClassDeclaration *SageBuilder::buildJavaDefiningClassDeclaration(SgScopeStatement *scope, string name, SgClassDeclaration::class_types kind) {
-    ROSE_ASSERT(scope);
-    SgName class_name = name;
-    ROSE_ASSERT(scope -> lookup_class_symbol(class_name) == NULL);
-
-    SgClassDeclaration* nonDefiningDecl              = NULL;
-    bool buildTemplateInstantiation                  = false;
-    SgTemplateArgumentPtrList* templateArgumentsList = NULL;
-    SgClassDeclaration *class_declaration = SageBuilder::buildClassDeclaration_nfi(class_name, kind, scope, nonDefiningDecl, buildTemplateInstantiation, templateArgumentsList);
-    ROSE_ASSERT(class_declaration);
-    class_declaration -> set_parent(scope);
-    class_declaration -> set_scope(scope);
-    SageInterface::setSourcePosition(class_declaration);
-    SgClassDefinition *class_definition = class_declaration -> get_definition();
-    ROSE_ASSERT(class_definition);
-    SageInterface::setSourcePosition(class_definition);
-
-    class_definition -> setAttribute("extensions", new AstSgNodeListAttribute());
-    class_definition -> setAttribute("extension_type_names", new AstRegExAttribute());
-
-    SgScopeStatement *type_space = new SgScopeStatement();
-    type_space -> set_parent(class_definition);
-    SageInterface::setSourcePosition(type_space);
-    class_declaration -> setAttribute("type_space", new AstSgNodeAttribute(type_space));
-
-    return class_declaration;
-}
-
-
-/**
- * Create a source file in the directory_name for the given type_name and add it to the given project.
- * This function is useful in order to create a new type to be added to a pre-existing Rose AST.
- */
-SgSourceFile *SageBuilder::buildJavaSourceFile(SgProject *project, string directory_name, SgClassDefinition *package_definition, string type_name) {
-    string filename = directory_name + "/" + type_name + ".java";
-    ROSE_ASSERT((*project)[filename] == NULL); // does not already exist!
-
-    string command = string("touch ") + filename; // create the file
-    int status = system(command.c_str());
-    ROSE_ASSERT(status == 0);
-    project -> get_sourceFileNameList().push_back(filename);
-    Rose_STL_Container<std::string> arg_list = project -> get_originalCommandLineArgumentList();
-    arg_list.push_back(filename);
-    Rose_STL_Container<string> fileList = CommandlineProcessing::generateSourceFilenames(arg_list, // binaryMode
-                                                                                         false);
-    CommandlineProcessing::removeAllFileNamesExcept(arg_list, fileList, filename);
-    int error_code = 0;
-    SgFile *file = determineFileType(arg_list, error_code, project);
-    SgSourceFile *sourcefile = isSgSourceFile(file);
-    ROSE_ASSERT(sourcefile);
-    sourcefile -> set_parent(project);
-    project -> get_fileList_ptr() -> get_listOfFiles().push_back(sourcefile);
-    ROSE_ASSERT(sourcefile == isSgSourceFile((*project)[filename]));
-
-    //
-    // Create a package statement and add it to the source file
-    //
-    SgClassDeclaration* pkgDefDecl = package_definition->get_declaration();
-    ROSE_ASSERT(pkgDefDecl != NULL);
-    SgJavaPackageStatement *package_statement = SageBuilder::buildJavaPackageStatement(pkgDefDecl->get_qualified_name().getString());
-    package_statement->set_parent(package_definition);
-    sourcefile->set_package(package_statement);
-
-    //
-    // Initialize an import-list for the sourcefile
-    //
-    SgJavaImportStatementList *import_statement_list = new SgJavaImportStatementList();
-    import_statement_list -> set_parent(sourcefile);
-    sourcefile -> set_import_list(import_statement_list);
-
-    //
-    // Initialize a class-declaration-list for the sourcefile
-    //
-    SgJavaClassDeclarationList *class_declaration_list = new SgJavaClassDeclarationList();
-    class_declaration_list -> set_parent(package_definition);
-    sourcefile -> set_class_list(class_declaration_list);
-
-    return sourcefile;
-}
-
-
-/**
- *
- */
-SgArrayType *SageBuilder::getUniqueJavaArrayType(SgType *base_type, int num_dimensions) {
-    ROSE_ASSERT(num_dimensions > 0);
-    if (num_dimensions > 1) {
-        base_type = getUniqueJavaArrayType(base_type, num_dimensions - 1);
-    }
-
-    ROSE_ASSERT(base_type != NULL);
-    AstSgNodeAttribute *attribute = (AstSgNodeAttribute *) base_type -> getAttribute("array");
-    if (attribute == NULL) {
-        SgArrayType *array_type = SageBuilder::buildArrayType(base_type);
-        array_type -> set_rank(num_dimensions);
-        attribute = new AstSgNodeAttribute(array_type);
-        base_type -> setAttribute("array", attribute);
-    }
-
-    return isSgArrayType(attribute -> getNode());
-}
-
-
-/**
- *
- */
-SgJavaParameterizedType *SageBuilder::getUniqueJavaParameterizedType(SgNamedType *generic_type, SgTemplateParameterPtrList *new_args) {
-    AstParameterizedTypeAttribute *attribute = (AstParameterizedTypeAttribute *) generic_type -> getAttribute("parameterized types");
-    if (! attribute) {
-        attribute = new AstParameterizedTypeAttribute(generic_type);
-        generic_type -> setAttribute("parameterized types", attribute);
-    }
-    ROSE_ASSERT(attribute);
-
-    return attribute -> findOrInsertParameterizedType(new_args);
-}
-
-
-/**
- *
- */
-SgJavaQualifiedType *SageBuilder::getUniqueJavaQualifiedType(SgClassDeclaration *class_declaration, SgNamedType *parent_type, SgNamedType *type) {
-    AstSgNodeListAttribute *attribute = (AstSgNodeListAttribute *) type -> getAttribute("qualified types");
-    if (! attribute) {
-        attribute = new AstSgNodeListAttribute();
-        type -> setAttribute("qualified types", attribute);
-    }
-    ROSE_ASSERT(attribute);
-
-    for (int i = 0; i < attribute -> size(); i++) {
-        SgJavaQualifiedType *qualified_type = isSgJavaQualifiedType(attribute -> getNode(i));
-        ROSE_ASSERT(qualified_type);
-        if (qualified_type -> get_parent_type() == parent_type &&  qualified_type -> get_type() == type) {
-            return qualified_type;
-        }
-    }
-
-    SgJavaQualifiedType *qualified_type = new SgJavaQualifiedType(class_declaration);
-    qualified_type -> set_parent_type(parent_type);
-    qualified_type -> set_type(type);
-
-    attribute -> addNode(qualified_type);
-
-    return qualified_type;
-}
-
-
-/**
- * Generate the unbound wildcard if it does not yet exist and return it.  Once the unbound Wildcard
- * is generated, it is attached to the Object type so that it can be retrieved later.
- */
-SgJavaWildcardType *SageBuilder::getUniqueJavaWildcardUnbound() {
-  AstSgNodeAttribute *attribute = (AstSgNodeAttribute *) Rose::Frontend::Java::ObjectClassType -> getAttribute("unbound");
-    if (! attribute) {
-        SgClassDeclaration *class_declaration = isSgClassDeclaration(Rose::Frontend::Java::ObjectClassType -> get_declaration());
-        SgJavaWildcardType *wildcard = new SgJavaWildcardType(class_declaration -> get_definingDeclaration());
-        attribute = new AstSgNodeAttribute(wildcard);
-        Rose::Frontend::Java::ObjectClassType -> setAttribute("unbound", attribute);
-    }
-
-    return isSgJavaWildcardType(attribute -> getNode());
-}
-
-
-/**
- * If it does not exist yet, generate wildcard type that extends this type.  Return the wildcard in question.
- */
-SgJavaWildcardType *SageBuilder::getUniqueJavaWildcardExtends(SgType *type) {
-    ROSE_ASSERT(type);
-    AstSgNodeAttribute *attribute = (AstSgNodeAttribute *) type -> getAttribute("extends");
-    if (! attribute) {
-        SgArrayType *array_type = isSgArrayType(type);
-        SgNamedType *named_type = isSgNamedType(type);
-        ROSE_ASSERT(array_type || named_type);
-        SgClassDeclaration *class_declaration = isSgClassDeclaration((array_type ? (SgNamedType *) Rose::Frontend::Java::ObjectClassType : named_type) -> get_declaration());
-        SgJavaWildcardType *wildcard = new SgJavaWildcardType(class_declaration -> get_definingDeclaration(), type);
-
-        wildcard -> set_has_extends(true);
-
-        attribute = new AstSgNodeAttribute(wildcard);
-        type -> setAttribute("extends", attribute);
-    }
-
-    return isSgJavaWildcardType(attribute -> getNode());
-}
-
-
-/**
- * If it does not exist yet, generate a super wildcard for this type.  Return the wildcard in question.
- */
-SgJavaWildcardType *SageBuilder::getUniqueJavaWildcardSuper(SgType *type) {
-    ROSE_ASSERT(type);
-    AstSgNodeAttribute *attribute = (AstSgNodeAttribute *) type -> getAttribute("super");
-    if (! attribute) {
-        SgArrayType *array_type = isSgArrayType(type);
-        SgNamedType *named_type = isSgNamedType(type);
-        ROSE_ASSERT(array_type || named_type);
-        SgClassDeclaration *class_declaration = isSgClassDeclaration((array_type ? (SgNamedType *) Rose::Frontend::Java::ObjectClassType : named_type) -> get_declaration());
-        SgJavaWildcardType *wildcard = new SgJavaWildcardType(class_declaration -> get_definingDeclaration(), type);
-
-        wildcard -> set_has_super(true);
-
-        attribute = new AstSgNodeAttribute(wildcard);
-        type -> setAttribute("super", attribute);
-    }
-
-    return isSgJavaWildcardType(attribute -> getNode());
-}
-//-----------------------------------------------------------------------------
-#endif // ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
-//-----------------------------------------------------------------------------
-

@@ -192,9 +192,6 @@ refineClassification ( SgNode* astNode )
 
        // case V_SgFile:
           case V_SgSourceFile:
-#ifdef ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-          case V_SgBinaryComposite:
-#endif
                file = isSgFile(astNode);
                break;
 

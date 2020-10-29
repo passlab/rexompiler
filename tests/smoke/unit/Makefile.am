@@ -5,8 +5,3 @@ include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 
 # These unit test directories should be listed so lower software layers are tested before higher layers.
 SUBDIRS = Boost Sawyer
-
-if ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-SUBDIRS += BinaryAnalysis
-endif
-

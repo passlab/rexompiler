@@ -345,7 +345,6 @@ HEADER_SCOPE_STATEMENT_START
        // SgEnumFieldSymbol* lookup_enumfield_symbol  (const SgName& n) const ROSE_DEPRECATED_FUNCTION;
           SgEnumFieldSymbol* lookup_enum_field_symbol (const SgName& n) const;
           SgLabelSymbol*     lookup_label_symbol      (const SgName& n) const;
-          SgJavaLabelSymbol* lookup_java_label_symbol (const SgName& n) const; // charles4: added 09/12/2011
           SgNamespaceSymbol* lookup_namespace_symbol  (const SgName& n) const;
 
 #if 0
@@ -1417,57 +1416,6 @@ HEADER_FORALL_STATEMENT_START
 #endif
 HEADER_FORALL_STATEMENT_END
 
-
-HEADER_JOVIAL_FOR_THEN_STATEMENT_START
-  //! This class represents the various versions of Jovial loop statements.
-  //
-     public:
-          enum loop_statement_type_enum
-             {
-               e_unknown,
-               e_for_only_stmt,        /* no WHILE, THEN, or BY expressions */
-               e_for_while_stmt,       /* WHILE no optional BY or THEN expression */
-               e_for_while_by_stmt,    /* WHILE then optional BY (increment expression), C style */
-               e_for_while_then_stmt,  /* WHILE then optional THEN */
-               e_for_then_while_stmt,  /* THEN (increment expression) then optional WHILE */
-               e_for_by_while_stmt     /* BY (increment expression) then optional WHILE */
-             };
-
-/*#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-          virtual unsigned int cfgIndexForEnd() const $ROSE_OVERRIDE;
-          virtual bool cfgIsIndexInteresting(unsigned int) const $ROSE_OVERRIDE;
-          virtual unsigned int cfgFindChildIndex(SgNode* n) $ROSE_OVERRIDE;
-          virtual unsigned int cfgFindNextChildIndex(SgNode* n) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
-#endif*/
-HEADER_JOVIAL_FOR_THEN_STATEMENT_END
-
-
-HEADER_JOVIAL_COMPOOL_STATEMENT_START
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-      virtual SgName get_mangled_name (void) const $ROSE_OVERRIDE;
-#endif
-HEADER_JOVIAL_COMPOOL_STATEMENT_END
-
-
-HEADER_JOVIAL_TABLE_STATEMENT_START
-      virtual SgName get_mangled_name (void) const $ROSE_OVERRIDE;
-HEADER_JOVIAL_TABLE_STATEMENT_END
-
-
-HEADER_MATLAB_FOR_STATEMENT_START
-/*#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-          virtual unsigned int cfgIndexForEnd() const $ROSE_OVERRIDE;
-          virtual bool cfgIsIndexInteresting(unsigned int) const $ROSE_OVERRIDE;
-          virtual unsigned int cfgFindChildIndex(SgNode* n) $ROSE_OVERRIDE;
-          virtual unsigned int cfgFindNextChildIndex(SgNode* n) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
-#endif*/
-HEADER_MATLAB_FOR_STATEMENT_END
-
-
 HEADER_RANGE_BASED_FOR_STATEMENT_START
 
        // void post_construction_initialization() $ROSE_OVERRIDE;
@@ -2115,11 +2063,6 @@ HEADER_CLASS_DECLARATION_STATEMENT_START
                e_struct,             /*!< struct declaration */
                e_union,              /*!< union declaration */
                e_template_parameter, /*!< type parameter in a template declaration */
-               e_java_interface,     /*!< A Java interface type declaration */
-               e_java_enum,          /*!< A Java enum type declaration */
-               e_java_parameter,     /*!< A Java parameter type declaration */
-               e_jovial_block,       /*!< A Jovial block type declaration */
-               e_jovial_table        /*!< A Jovial table type declaration */
              };
 
           virtual SgName get_qualified_name() const;
@@ -2364,39 +2307,6 @@ HEADER_LABEL_STATEMENT_START
 
 HEADER_LABEL_STATEMENT_END
 
-
-HEADER_JAVA_LABEL_STATEMENT_START
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-          virtual bool cfgIsIndexInteresting(unsigned int idx) const $ROSE_OVERRIDE;
-          virtual unsigned int cfgIndexForEnd() const $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
-#endif
-
-// CAVE3 (09/30/2011): Not sure what we need to fixup for java label
-/*
-#if ALT_FIXUP_COPY
-       // DQ (11/7/2007): These need to be called separately (see documentation)
-          virtual void fixupCopy_scopes     (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-          virtual void fixupCopy_symbols    (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-          virtual void fixupCopy_references (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-#else
-       // DQ (10/5/2007): Added fixup function to set scopes not set properly by the ROSETTA generated copy!
-          virtual void fixupCopy(SgNode* copy, SgCopyHelp & help) const;
-#endif
-*/
-      // charles4: 09/13/2011 added to support Java (DQ (2/10/2007): Marked as virtual to be consistent)
-          virtual SgSymbol* get_symbol_from_symbol_table() const $ROSE_OVERRIDE;
-
-       // DQ (8/21/2013): Added function to support calling get_type() from a SgDeclarationStatement so that the
-       // template low-level symbol table support function would compile cleanly.  Note that it is an error to
-       // call this function and it is not a virtual function that will cause derived class versions to be called
-       // where appropriate (and it is not always appropriate, e.g a SgNamespaceDeclaration has no assocated SgType).
-          SgType* get_type() const;
-
-HEADER_JAVA_LABEL_STATEMENT_END
-
-
 HEADER_WITH_STATEMENT_START
 HEADER_WITH_STATEMENT_END
 
@@ -2522,22 +2432,6 @@ HEADER_CASE_OPTION_STATEMENT_START
 #endif
 
 HEADER_CASE_OPTION_STATEMENT_END
-
-HEADER_ASYNC_STATEMENT_START
-HEADER_ASYNC_STATEMENT_END
-
-HEADER_FINISH_STATEMENT_START
-HEADER_FINISH_STATEMENT_END
-
-HEADER_AT_STATEMENT_START
-HEADER_AT_STATEMENT_END
-
-HEADER_ATOMIC_STATEMENT_START
-HEADER_ATOMIC_STATEMENT_END
-
-HEADER_WHEN_STATEMENT_START
-HEADER_WHEN_STATEMENT_END
-
 
 HEADER_TRY_STATEMENT_START
 
@@ -2699,124 +2593,6 @@ HEADER_GOTO_STATEMENT_START
 
 HEADER_GOTO_STATEMENT_END
 
-HEADER_ADA_EXIT_STATEMENT_START
-       // void post_construction_initialization();
-
-        protected:
-          virtual bool replace_child(SgStatement*, SgStatement*, bool extractListFromBasicBlock = false) $ROSE_OVERRIDE;
-          int replace_expression(SgExpression * original_expression, SgExpression * new_expression ) $ROSE_OVERRIDE;
-
-        public:
-
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-          virtual unsigned int cfgIndexForEnd() const $ROSE_OVERRIDE;
-          virtual bool cfgIsIndexInteresting(unsigned int) const $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
-#endif
-
-#if ALT_FIXUP_COPY
-       // DQ (11/7/2007): These need to be called separately (see documentation)
-          virtual void fixupCopy_scopes     (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-          virtual void fixupCopy_symbols    (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-          virtual void fixupCopy_references (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-#else
-       // DQ (10/5/2007): Added fixup function to set scopes not set properly by the ROSETTA generated copy!
-          virtual void fixupCopy(SgNode* copy, SgCopyHelp & help) const;
-#endif
-
-HEADER_ADA_EXIT_STATEMENT_END
-
-HEADER_ADA_DELAY_STATEMENT_START
-       // void post_construction_initialization();
-
-        protected:
-          int replace_expression(SgExpression * original_expression, SgExpression * new_expression ) $ROSE_OVERRIDE;
-
-        public:
-
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-          virtual unsigned int cfgIndexForEnd() const $ROSE_OVERRIDE;
-          virtual bool cfgIsIndexInteresting(unsigned int) const $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
-#endif
-
-#if ALT_FIXUP_COPY
-       // DQ (11/7/2007): These need to be called separately (see documentation)
-          virtual void fixupCopy_scopes     (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-          virtual void fixupCopy_symbols    (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-          virtual void fixupCopy_references (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-#else
-       // DQ (10/5/2007): Added fixup function to set scopes not set properly by the ROSETTA generated copy!
-          virtual void fixupCopy(SgNode* copy, SgCopyHelp & help) const;
-#endif
-
-HEADER_ADA_DELAY_STATEMENT_END
-
-HEADER_ADA_LOOP_STATEMENT_START
-       // void post_construction_initialization();
-
-        protected:
-          virtual bool replace_child(SgStatement*, SgStatement*, bool extractListFromBasicBlock = false) $ROSE_OVERRIDE;
-
-        public:
-
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-          virtual unsigned int cfgIndexForEnd() const $ROSE_OVERRIDE;
-          virtual bool cfgIsIndexInteresting(unsigned int) const $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
-#endif
-
-#if ALT_FIXUP_COPY
-       // DQ (11/7/2007): These need to be called separately (see documentation)
-          virtual void fixupCopy_scopes     (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-          virtual void fixupCopy_symbols    (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-          virtual void fixupCopy_references (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-#else
-       // DQ (10/5/2007): Added fixup function to set scopes not set properly by the ROSETTA generated copy!
-          virtual void fixupCopy(SgNode* copy, SgCopyHelp & help) const;
-#endif
-
-HEADER_ADA_LOOP_STATEMENT_END
-
-HEADER_ADA_ACCEPT_STATEMENT_START
-       // void post_construction_initialization();
-
-        protected:
-          virtual bool replace_child(SgStatement*, SgStatement*, bool extractListFromBasicBlock = false) $ROSE_OVERRIDE;
-          int replace_expression(SgExpression * original_expression, SgExpression * new_expression ) $ROSE_OVERRIDE;
-
-        public:
-
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-          virtual unsigned int cfgIndexForEnd() const $ROSE_OVERRIDE;
-          virtual bool cfgIsIndexInteresting(unsigned int) const $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
-#endif
-
-#if ALT_FIXUP_COPY
-       // DQ (11/7/2007): These need to be called separately (see documentation)
-          virtual void fixupCopy_scopes     (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-          virtual void fixupCopy_symbols    (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-          virtual void fixupCopy_references (SgNode* copy, SgCopyHelp & help) const $ROSE_OVERRIDE;
-#else
-       // DQ (10/5/2007): Added fixup function to set scopes not set properly by the ROSETTA generated copy!
-          virtual void fixupCopy(SgNode* copy, SgCopyHelp & help) const;
-#endif
-
-HEADER_ADA_ACCEPT_STATEMENT_END
-
-
-HEADER_PYTHON_GLOBAL_STMT_START
-HEADER_LIST_DECLARATIONS
-HEADER_PYTHON_GLOBAL_STMT_END
-
-HEADER_PYTHON_PRINT_STMT_START
-HEADER_PYTHON_PRINT_STMT_END
-
 HEADER_ASM_STATEMENT_START
 
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
@@ -2844,41 +2620,6 @@ HEADER_ASM_STATEMENT_END
 HEADER_SPAWN_STATEMENT_START
 
 HEADER_SPAWN_STATEMENT_END
-
-
-HEADER_JAVA_THROW_STATEMENT_START
-
-HEADER_JAVA_THROW_STATEMENT_END
-
-
-HEADER_JAVA_FOREACH_STATEMENT_START
-
-       public:
-       // charles4 (9/07/2011): Added for uniform support of mangled names
-          virtual SgName get_mangled_name() const $ROSE_OVERRIDE;
-
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-          virtual bool cfgIsIndexInteresting(unsigned int idx) const $ROSE_OVERRIDE;
-          virtual unsigned int cfgFindNextChildIndex(SgNode* n) $ROSE_OVERRIDE;
-          virtual unsigned int cfgIndexForEnd() const $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
-#endif
-
-HEADER_JAVA_FOREACH_STATEMENT_END
-
-
-HEADER_JAVA_SYNCHRONIZED_STATEMENT_START
-
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-          virtual unsigned int cfgFindChildIndex(SgNode* n) $ROSE_OVERRIDE;
-          virtual unsigned int cfgIndexForEnd() const $ROSE_OVERRIDE;
-          virtual bool cfgIsIndexInteresting(unsigned int) const $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
-#endif
-
-HEADER_JAVA_SYNCHRONIZED_STATEMENT_END
 
 
 HEADER_ASSERT_STMT_START
@@ -3479,54 +3220,6 @@ HEADER_TEMPLATE_INSTANTIATION_DIRECTIVE_STATEMENT_START
 
 HEADER_TEMPLATE_INSTANTIATION_DIRECTIVE_STATEMENT_END
 
-HEADER_ADA_PACKAGE_SPEC_DECL_STATEMENT_START
-SgSymbol* get_symbol_from_symbol_table() const ROSE_OVERRIDE;
-SgName get_mangled_name() const ROSE_OVERRIDE;
-HEADER_ADA_PACKAGE_SPEC_DECL_STATEMENT_END
-
-HEADER_ADA_PACKAGE_BODY_DECL_STATEMENT_START
-SgSymbol* get_symbol_from_symbol_table() const ROSE_OVERRIDE;
-SgName get_mangled_name() const ROSE_OVERRIDE;
-HEADER_ADA_PACKAGE_BODY_DECL_STATEMENT_END
-
-HEADER_ADA_PACKAGE_SPEC_STATEMENT_START
-SgName get_mangled_name() const ROSE_OVERRIDE;
-HEADER_ADA_PACKAGE_SPEC_STATEMENT_END
-
-HEADER_ADA_PACKAGE_BODY_STATEMENT_START
-SgName get_mangled_name() const ROSE_OVERRIDE;
-HEADER_ADA_PACKAGE_BODY_STATEMENT_END
-
-
-HEADER_ADA_TASK_SPEC_DECL_STATEMENT_START
-SgSymbol* get_symbol_from_symbol_table() const ROSE_OVERRIDE;
-SgName get_mangled_name() const ROSE_OVERRIDE;
-HEADER_ADA_TASK_SPEC_DECL_STATEMENT_END
-
-HEADER_ADA_TASK_TYPE_DECL_STATEMENT_START
-SgSymbol* get_symbol_from_symbol_table() const ROSE_OVERRIDE;
-SgName get_mangled_name() const ROSE_OVERRIDE;
-HEADER_ADA_TASK_TYPE_DECL_STATEMENT_END
-
-HEADER_ADA_TASK_BODY_DECL_STATEMENT_START
-SgSymbol* get_symbol_from_symbol_table() const ROSE_OVERRIDE;
-SgName get_mangled_name() const ROSE_OVERRIDE;
-HEADER_ADA_TASK_BODY_DECL_STATEMENT_END
-
-HEADER_ADA_TASK_SPEC_STATEMENT_START
-SgName get_mangled_name() const ROSE_OVERRIDE;
-HEADER_ADA_TASK_SPEC_STATEMENT_END
-
-HEADER_ADA_TASK_BODY_STATEMENT_START
-SgName get_mangled_name() const ROSE_OVERRIDE;
-HEADER_ADA_TASK_BODY_STATEMENT_END
-
-HEADER_ADA_RENAMING_DECL_STATEMENT_START
-SgSymbol* get_symbol_from_symbol_table() const ROSE_OVERRIDE;
-SgName get_mangled_name() const ROSE_OVERRIDE;
-HEADER_ADA_RENAMING_DECL_STATEMENT_END
-
-
 HEADER_PROGRAM_HEADER_STATEMENT_START
   /* HEADER_LIST_DECLARATIONS */
   // DQ (3/20/2007): These are automatically generated access functions from p_name (also added as a data member)
@@ -3606,12 +3299,6 @@ HEADER_ENTRY_STATEMENT_START
           SgName get_mangled_name() const $ROSE_OVERRIDE;
 
 HEADER_ENTRY_STATEMENT_END
-
-HEADER_ADA_ENTRY_DECL_STMT_START
-
-          SgName get_mangled_name() const $ROSE_OVERRIDE;
-
-HEADER_ADA_ENTRY_DECL_STMT_END
 
 HEADER_FORTRAN_DO_START
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
@@ -4207,59 +3894,6 @@ HEADER_LIST_DECLARATIONS
 HEADER_UPC_FORALL_STATEMENT_END
 
 
-HEADER_JOVIAL_DEFINE_DECLARATION_START
-
-          virtual SgName get_mangled_name() const $ROSE_OVERRIDE;
-
-HEADER_JOVIAL_DEFINE_DECLARATION_END
-
-
-HEADER_JOVIAL_DIRECTIVE_STATEMENT_START
-
-      /*! A Jovial directive can be types */
-          enum directive_types
-             {
-               e_unknown = 0,
-               e_compool,              /*!< 9.1 COMPOOL DIRECTIVE */
-                                       /*!< 9.2 TEXT DIRECTIVES */
-               e_copy,                 /*!< 9.2.1 COPY DIRECTIVE */
-               e_skip,                 /*!< 9.2.2 SKIP DIRECTIVE */
-               e_begin,                /*!<       BEGIN DIRECTIVE */
-               e_end,                  /*!<       END DIRECTIVE */
-               e_linkage,              /*!< 9.3 LINKAGES DIRECTIVES */
-               e_trace,                /*!< 9.4 TRACE DIRECTIVES */
-               e_interference,         /*!< 9.5 INTERFERENCE DIRECTIVES */
-               e_reducible,            /*!< 9.6 REDUCIBLE DIRECTIVES */
-                                       /*!< 9.7 LISTING DIRECTIVES */
-                                       /*!< 9.7.1 SOURCE-LISTING DIRECTIVES */
-               e_nolist,               /*!<       NOLIST DIRECTIVE */
-               e_list,                 /*!<       LIST DIRECTIVE */
-               e_eject,                /*!<       EJECT DIRECTIVE */
-                                       /*!< 9.7.1 DEFINE-LISTING DIRECTIVES */
-               e_listinv,              /*!<       LISTINV DIRECTIVE */
-               e_listexp,              /*!<       LISTEXP DIRECTIVE */
-                                       /*!< 9.8 REGISTER DIRECTIVES */
-               e_base,                 /*!<     BASE DIRECTIVE */
-               e_isbase,               /*!<     ISBASE DIRECTIVE */
-               e_drop,                 /*!<     DROP DIRECTIVE */
-                                       /*!< 9.9 EXPRESSION EVALUATION ORDER DIRECTIVES */
-               e_left_right,           /*!<     LEFTRIGHT DIRECTIVE */
-               e_rearrange,            /*!<     REARRANGE DIRECTIVE */
-               e_initialize,           /*!< 9.10 INITIALIZATION DIRECTIVES */
-               e_order                 /*!< 9.11 ALLOCATION ORDER DIRECTIVES */
-             };
-
-          virtual SgName get_mangled_name() const $ROSE_OVERRIDE;
-
-HEADER_JOVIAL_DIRECTIVE_STATEMENT_END
-
-
-// CR (5/24/2020): Jovial OverlayDeclaration
-HEADER_JOVIAL_OVERLAY_DECLARATION_START
-      virtual SgName get_mangled_name (void) const $ROSE_OVERRIDE;
-HEADER_JOVIAL_OVERLAY_DECLARATION_END
-
-
 HEADER_PREPROCESSOR_DIRECTIVE_STATEMENT_START
 
        // DQ (11/23/2008): I think this is defined in the base class so we can't redefine it here.
@@ -4275,22 +3909,6 @@ HEADER_PREPROCESSOR_DIRECTIVE_STATEMENT_END
 HEADER_LINEMARKER_PREPROCESSOR_DIRECTIVE_STATEMENT_START
 
 HEADER_LINEMARKER_PREPROCESSOR_DIRECTIVE_STATEMENT_END
-
-
-HEADER_JAVA_IMPORT_STATEMENT_START
-       // We might need to be able to read this file in and process it..., but hopefully the ECJ frontend takes care of that.
-
-          virtual SgName get_mangled_name (void) const $ROSE_OVERRIDE;
-
-HEADER_JAVA_IMPORT_STATEMENT_END
-
-HEADER_JAVA_PACKAGE_DECLARATION_START
-          virtual SgName get_mangled_name() const $ROSE_OVERRIDE;
-HEADER_JAVA_PACKAGE_DECLARATION_END
-
-HEADER_JAVA_PACKAGE_STATEMENT_START
-          virtual SgName get_mangled_name() const $ROSE_OVERRIDE;
-HEADER_JAVA_PACKAGE_STATEMENT_END
 
 
 HEADER_MICROSOFT_ATTRIBUTE_DECLARATION_STATEMENT_START
@@ -4589,18 +4207,6 @@ SgStatement::get_scope(void) const
                     printf ("Error: SgStatement::get_scope(): stmt->get_parent() == NULL: stmt = %p = %s \n",stmt,stmt->class_name().c_str());
                   }
                ROSE_ASSERT (stmt->get_parent() != NULL);
-
-               if ( SageInterface::is_Python_language() && isSgLambdaRefExp(stmt->get_parent()) ) {
-                   std::cout << "warning: python. Fetching scope of lambda parameters from lambda's scope." << std::endl;
-                   returnScope = SageInterface::getScope(stmt->get_parent());
-                   ROSE_ASSERT( returnScope != NULL );
-                   break;
-               }
-
-               if (SgAdaAcceptStmt* adaAccept = isSgAdaAcceptStmt(stmt->get_parent()))
-               {
-                 return adaAccept->get_parameterScope();
-               }
 
                SgFunctionDeclaration* functionDeclaration = isSgFunctionDeclaration(stmt->get_parent());
                if (functionDeclaration != NULL)
@@ -5689,18 +5295,6 @@ SgScopeStatement::lookup_label_symbol(const SgName& n) const
      return symbol;
    }
 
-//
-// charles4: function added 09/12/2011 identical with the same function for SgLabelSymbol
-//
-SgJavaLabelSymbol*
-SgScopeStatement::lookup_java_label_symbol(const SgName& n) const
-   {
-     ROSE_ASSERT (this != NULL);
-     ROSE_ASSERT (p_symbol_table != NULL);
-
-     return p_symbol_table->find_java_label(n);
-   }
-
 SgFunctionSymbol*
 SgScopeStatement::lookup_function_symbol(const SgName& n, const SgType* t, SgTemplateArgumentPtrList* templateArgumentsList) const
    {
@@ -6321,11 +5915,6 @@ SgScopeStatement::containsOnlyDeclarations() const
      bool returnValue = false;
      switch ( variantT() )
         {
-       // DQ (9/5/2011): Added support for SgJavaLabelStatement
-          case V_SgJavaLabelStatement:
-       // charles4 (9/7/2011): Added support for SgJavaForEachStatement
-          case V_SgJavaForEachStatement:
-
        // DQ (11/30/2007): Added more Fortran support.
           case V_SgAssociateStatement:
 
@@ -6345,25 +5934,12 @@ SgScopeStatement::containsOnlyDeclarations() const
        // DQ (11/27/2011): Adding more support for template declarations in the AST.
           case V_SgTemplateFunctionDefinition:
 
-       // CR (11/12/2018): Support for Jovial COMPOOL module
-          case V_SgJovialCompoolStatement:
-
-       // CR (10/22/2018): Adding node specific to Jovial for statements with a then construct.
-          case V_SgJovialForThenStatement:
-
-      // SK (08/06/2015): Adding SgMatlabForStatement that represents Matlab for loop
-          case V_SgMatlabForStatement:
-
           case V_SgIfStmt:
           case V_SgSwitchStatement:
           case V_SgWhileStmt:
           case V_SgFortranDo:
           case V_SgForAllStatement:
           case V_SgCAFWithTeamStatement: //FMZ (2/18/2009)
-      // PP (05/11/20) - Ada support
-          case V_SgAdaPackageBody:
-          case V_SgAdaAcceptStmt:
-          case V_SgAdaTaskBody:
                returnValue = false;
                break;
 
@@ -6377,9 +5953,6 @@ SgScopeStatement::containsOnlyDeclarations() const
           case V_SgFunctionParameterScope: // CR (09/24/2020): finishing implementation for Jovial
           case V_SgModuleStatement:
           case V_SgDeclarationScope:
-      // PP (05/11/20) - Ada support
-          case V_SgAdaPackageSpec:
-          case V_SgAdaTaskSpec:
                returnValue = true;
                break;
 
@@ -6661,22 +6234,6 @@ SgScopeStatement::getDeclarationList ()
                break;
              }
 
-          case V_SgAdaTaskSpec:
-             {
-               SgAdaTaskSpec* taskScope = isSgAdaTaskSpec(currentScope);
-               ROSE_ASSERT (taskScope != NULL);
-               currentStatementList = &(taskScope->get_declarations());
-               break;
-             }
-
-          case V_SgAdaPackageSpec:
-             {
-               SgAdaPackageSpec* pkgScope = isSgAdaPackageSpec(currentScope);
-               ROSE_ASSERT (pkgScope != NULL);
-               currentStatementList = &(pkgScope->get_declarations());
-               break;
-             }
-
           case V_SgFunctionParameterScope:
              {
                SgFunctionParameterScope* paramScope = isSgFunctionParameterScope(currentScope);
@@ -6749,22 +6306,6 @@ SgScopeStatement::getDeclarationList () const
                const SgGlobal* globalScope = isSgGlobal(currentScope);
                ROSE_ASSERT (globalScope != NULL);
                return globalScope->get_declarations();
-               break;
-             }
-
-          case V_SgAdaTaskSpec:
-             {
-               const SgAdaTaskSpec* taskScope = isSgAdaTaskSpec(currentScope);
-               ROSE_ASSERT (taskScope != NULL);
-               return taskScope->get_declarations();
-               break;
-             }
-
-          case V_SgAdaPackageSpec:
-             {
-               const SgAdaPackageSpec* pkgScope = isSgAdaPackageSpec(currentScope);
-               ROSE_ASSERT (pkgScope != NULL);
-               return pkgScope->get_declarations();
                break;
              }
 
@@ -6884,36 +6425,6 @@ SgScopeStatement::getStatementList ()
                break;
              }
 
-          case V_SgAdaAcceptStmt:
-             {
-               ROSE_ASSERT(!"SgAdaAcceptStmt may not have a statement list! (use generateStatementList() to form copy of merges lists)");
-              /*
-               SgAdaAcceptStmt* adanode = isSgAdaAcceptStmt(currentScope);
-               ROSE_ASSERT(adanode && adanode->get_body());
-
-               currentStatementList = &adanode->get_body()->getStatementList();
-              */
-               break;
-             }
-
-          case V_SgAdaPackageBody:
-             {
-               SgAdaPackageBody* adabody = isSgAdaPackageBody(currentScope);
-               ROSE_ASSERT(adabody);
-
-               currentStatementList = &(adabody->get_statements());
-               break;
-             }
-
-          case V_SgAdaTaskBody:
-             {
-               SgAdaTaskBody* adabody = isSgAdaTaskBody(currentScope);
-               ROSE_ASSERT(adabody);
-
-               currentStatementList = &(adabody->get_statements());
-               break;
-             }
-
        // DQ (1/30/2007): Added this case!
           case V_SgTemplateInstantiationDefn:
              {
@@ -6988,27 +6499,6 @@ SgScopeStatement::getStatementList ()
                currentStatementList = &(doStatement->get_body()->getStatementList());
                break;
              }
-
-       // CR (10/22/2018): Adding node specific to Jovial for statements with a then construct.
-          case V_SgJovialForThenStatement:
-             {
-               SgJovialForThenStatement* forStatement = isSgJovialForThenStatement(currentScope);
-               ROSE_ASSERT (forStatement != NULL);
-               ROSE_ASSERT (forStatement->get_loop_body() != NULL);
-               currentStatementList = &(forStatement->get_loop_body()->getStatementList());
-               break;
-             }
-
-       //SK(08/06/2015): Adding support for MatlabForStatement:
-          case V_SgMatlabForStatement:
-              {
-                SgMatlabForStatement *matlabForStatement = isSgMatlabForStatement(currentScope);
-                ROSE_ASSERT(matlabForStatement != NULL);
-                ROSE_ASSERT (matlabForStatement->get_body() != NULL);
-
-                currentStatementList = &(matlabForStatement->get_body()->getStatementList());
-                break;
-              }
 
           default:
                printf ("ERROR: default reached in switch (getStatementList()) currentScope = %s \n",currentScope->sage_class_name());
@@ -7103,17 +6593,7 @@ SgScopeStatement::getStatementList () const
                break;
              }
 
-          case V_SgJavaForEachStatement:
-             {
-               const SgJavaForEachStatement* forScope = isSgJavaForEachStatement(currentScope);
-               ROSE_ASSERT (forScope != NULL);
-               ROSE_ASSERT (forScope->get_loop_body() != NULL);
-            // charles4: 9/07/2011
-               return isSgBasicBlock(forScope->get_loop_body()) ? isSgBasicBlock(forScope->get_loop_body())->getStatementList() : emptyStatementList;
-               break;
-             }
-
-       // Liao, 6/17/2008, upc_forall statement
+       // Liao, 6/17/2008, upc_forall statement             
           case V_SgUpcForAllStatement:
              {
                const SgUpcForAllStatement* forScope = isSgUpcForAllStatement(currentScope);
@@ -7135,35 +6615,6 @@ SgScopeStatement::getStatementList () const
                ROSE_ASSERT (functionScope->get_body() != NULL);
             // currentStatementList = &(functionScope->get_body()->getStatementList());
                return functionScope->get_body()->getStatementList();
-               break;
-             }
-
-          case V_SgAdaAcceptStmt:
-             {
-               const SgAdaAcceptStmt* adanode = isSgAdaAcceptStmt(currentScope);
-               ROSE_ASSERT(adanode && adanode->get_body());
-
-               const SgBasicBlock*    block = isSgBasicBlock(adanode->get_body());
-
-               return block ? block->getStatementList() : emptyStatementList;
-               break;
-             }
-
-          case V_SgAdaPackageBody:
-             {
-               const SgAdaPackageBody* adabody = isSgAdaPackageBody(currentScope);
-               ROSE_ASSERT(adabody);
-
-               return adabody->get_statements();
-               break;
-             }
-
-          case V_SgAdaTaskBody:
-             {
-               const SgAdaTaskBody* adabody = isSgAdaTaskBody(currentScope);
-               ROSE_ASSERT(adabody);
-
-               return adabody->get_statements();
                break;
              }
 
@@ -7253,25 +6704,6 @@ SgScopeStatement::getStatementList () const
                break;
              }
 
-          case V_SgJovialForThenStatement:
-             {
-               const SgJovialForThenStatement* forStatement = isSgJovialForThenStatement(currentScope);
-               ROSE_ASSERT (forStatement != NULL);
-               ROSE_ASSERT (forStatement->get_loop_body() != NULL);
-               return forStatement->get_loop_body()->getStatementList();
-               break;
-             }
-
-  case V_SgMatlabForStatement:
-      {
-        const SgMatlabForStatement *matlabForStatement = isSgMatlabForStatement(currentScope);
-        ROSE_ASSERT(matlabForStatement != NULL);
-        ROSE_ASSERT(matlabForStatement->get_body() != NULL);
-
-        return matlabForStatement->get_body()->getStatementList();
-        break;
-      }
-
           case V_SgForAllStatement:
              {
                const SgForAllStatement* forAllScope = isSgForAllStatement(currentScope);
@@ -7291,15 +6723,6 @@ SgScopeStatement::getStatementList () const
                ROSE_ASSERT (teamScope != NULL);
                ROSE_ASSERT (teamScope->get_body() != NULL);
                return isSgBasicBlock(teamScope->get_body()) ? isSgBasicBlock(teamScope->get_body())->getStatementList() : emptyStatementList;
-               break;
-             }
-
-       // DQ (9/5/2011): Added support for SgJavaLabelStatement, but not certain if this is correct implementation.
-          case V_SgJavaLabelStatement:
-             {
-               const SgJavaLabelStatement* javaLabelStatement = isSgJavaLabelStatement(currentScope);
-               ROSE_ASSERT (javaLabelStatement != NULL);
-               return isSgBasicBlock(javaLabelStatement->get_statement()) ? isSgBasicBlock(javaLabelStatement->get_statement())->getStatementList() : emptyStatementList;
                break;
              }
 
@@ -7979,10 +7402,7 @@ SgGlobal::get_qualified_name() const
   // return SgName ("");
 
      std::string globalScopeDelimiter;
-     if (SageInterface::is_Java_language())
-         globalScopeDelimiter = "";
-     else
-         globalScopeDelimiter = "::";
+     globalScopeDelimiter = "::";
      return SgName (globalScopeDelimiter);
    }
 
@@ -8470,11 +7890,10 @@ resetTemplateNamesInScope ( SgScopeStatement* scope )
                case V_SgWhileStmt:
                case V_SgDoWhileStmt:
                case V_SgForStatement:
-               case V_SgJavaForEachStatement:
                   {
                  // Nothing to do here, I think, unless we have to reset template function names
                     break;
-                  }
+		  }
 
             // DQ (2/12/2012): Adding support for SgTemplateClassDefinition (not previously used).
                case V_SgTemplateClassDefinition:
@@ -10122,10 +9541,8 @@ SgDeclarationStatement::unparseNameToString()
                break;
              }
 
-       // PC (10/11/13):  Added case of SgJavaPackageDeclaration
        // DQ (8/11/2013): Added cases for SgFunctionDeclaration and SgMemberFunctionDeclaration
        // I forget why we needed this case...
-          case V_SgJavaPackageDeclaration:
           case V_SgFunctionDeclaration:
           case V_SgMemberFunctionDeclaration:
           case V_SgClassDeclaration:
@@ -10788,52 +10205,6 @@ SgForAllStatement::post_construction_initialization()
    }
 
 SOURCE_FORALL_STATEMENT_END
-
-
-SOURCE_JOVIAL_COMPOOL_STATEMENT_START
-void
-SgJovialCompoolStatement::post_construction_initialization()
-   {
-     // Nothing to setup here.
-   }
-
-SgName
-SgJovialCompoolStatement::get_mangled_name(void) const
-   {
-      return SgName("_compool_");
-   }
-SOURCE_JOVIAL_COMPOOL_STATEMENT_END
-
-SOURCE_JOVIAL_FOR_THEN_STATEMENT_START
-void
-SgJovialForThenStatement::post_construction_initialization()
-   {
-   }
-SOURCE_JOVIAL_FOR_THEN_STATEMENT_END
-
-SOURCE_JOVIAL_TABLE_STATEMENT_START
-void
-SgJovialTableStatement::post_construction_initialization()
-   {
-     // Nothing to setup here.
-   }
-
-SgName
-SgJovialTableStatement::get_mangled_name(void) const
-   {
-   // Don't believe name mangling required for Jovial
-      return get_name();
-   }
-SOURCE_JOVIAL_TABLE_STATEMENT_END
-
-
-SOURCE_MATLAB_FOR_STATEMENT_START
-void
-SgMatlabForStatement::post_construction_initialization()
-   {
-   }
-SOURCE_MATLAB_FOR_STATEMENT_END
-
 
 SOURCE_RANGE_BASED_FOR_STATEMENT_START
 
@@ -15956,41 +15327,6 @@ SgLabelStatement::replace_child(SgStatement *target,SgStatement *newstmt, bool e
 SOURCE_LABEL_STATEMENT_END
 
 
-SOURCE_JAVA_LABEL_STATEMENT_START
-
-void
-SgJavaLabelStatement::post_construction_initialization()
-   {
-   }
-
-// charles4: 09/13/2011 - Adapted from SgLabelStatement to support Java.
-// DQ (2/6/2007): Get the associated symbol from the symbol table in the stored scope
-SgSymbol*
-SgJavaLabelStatement::get_symbol_from_symbol_table() const
-   {
-#if 0
-     ROSE_ASSERT(get_scope() != NULL);
-     ROSE_ASSERT(get_scope()->get_symbol_table() != NULL);
-     return get_scope()->get_symbol_table()->find(this);
-#else
-  // return this -> get_symbol_table() -> find(this);
-     return this->find_symbol_from_declaration(this);
-#endif
-   }
-
-SgType*
-SgJavaLabelStatement::get_type() const
-   {
-  // DQ (8/21/2013): Added function to support calling get_type() from a SgDeclarationStatement so that the
-  // template low-level symbol table support function would compile cleanly.  Note that it is an error to
-  // call this function and it is not a virtual function that will cause derived class versions to be called
-  // where appropriate (and it is not always appropriate, e.g a SgNamespaceDeclaration has no assocated SgType).
-     return NULL;
-   }
-
-SOURCE_JAVA_LABEL_STATEMENT_END
-
-
 SOURCE_WHILE_STATEMENT_START
 void
 SgWhileStmt::post_construction_initialization()
@@ -16226,55 +15562,6 @@ SgCaseOptionStmt::replace_child(SgStatement *target,SgStatement *newstmt,
    }
 
 SOURCE_CASE_OPTION_STATEMENT_END
-
-SOURCE_ASYNC_STATEMENT_START
-
-void
-SgAsyncStmt::post_construction_initialization()
-   {
-   }
-
-SOURCE_ASYNC_STATEMENT_END
-
-SOURCE_FINISH_STATEMENT_START
-
-void
-SgFinishStmt::post_construction_initialization()
-   {
-   }
-
-SOURCE_FINISH_STATEMENT_END
-
-
-SOURCE_AT_STATEMENT_START
-
-void
-SgAtStmt::post_construction_initialization()
-       {
-       }
-
-SOURCE_AT_STATEMENT_END
-
-
-SOURCE_ATOMIC_STATEMENT_START
-
-void
-SgAtomicStmt::post_construction_initialization()
-   {
-   }
-
-SOURCE_ATOMIC_STATEMENT_END
-
-
-SOURCE_WHEN_STATEMENT_START
-
-void
-SgWhenStmt::post_construction_initialization()
-       {
-       }
-
-SOURCE_WHEN_STATEMENT_END
-
 
 SOURCE_TRY_STATEMENT_START
 
@@ -16609,151 +15896,6 @@ SgGotoStatement::replace_child(SgStatement *target,SgStatement *newstmt, bool ex
 
 SOURCE_GOTO_STATEMENT_END
 
-SOURCE_ADA_EXIT_STATEMENT_START
-
-void
-SgAdaExitStmt::post_construction_initialization()
-   {
-     ROSE_ASSERT(get_loop() && get_condition());
-#ifndef REMOVE_SET_PARENT_FUNCTION
-      get_loop()->set_parent(this);
-      get_condition()->set_parent(this);
-#endif
-   }
-
-bool
-SgAdaExitStmt::replace_child(SgStatement *target,SgStatement *newstmt, bool /*extractBasicBlock*/)
-{
-  return StatementReplace(this, p_loop, target, newstmt);
-}
-
-int
-SgAdaExitStmt::replace_expression(SgExpression* original_expression, SgExpression* new_expression)
-{
-  ROSE_ASSERT(original_expression && new_expression);
-  ROSE_ASSERT(original_expression == get_condition());
-
-  set_condition(new_expression);
-
-  new_expression->set_parent(this);
-
-  // Let this leak for now
-  // delete original_expression;
-  return 0;
-}
-
-
-SOURCE_ADA_EXIT_STATEMENT_END
-
-SOURCE_ADA_DELAY_STATEMENT_START
-
-void
-SgAdaDelayStmt::post_construction_initialization()
-   {
-     ROSE_ASSERT(get_time());
-#ifndef REMOVE_SET_PARENT_FUNCTION
-      get_time()->set_parent(this);
-#endif
-   }
-
-int
-SgAdaDelayStmt::replace_expression(SgExpression* original_expression, SgExpression* new_expression)
-{
-  ROSE_ASSERT(original_expression && new_expression);
-  ROSE_ASSERT(original_expression == get_time());
-
-  set_time(new_expression);
-
-  new_expression->set_parent(this);
-
-  // Let this leak for now
-  // delete original_expression;
-  return 0;
-}
-
-
-SOURCE_ADA_DELAY_STATEMENT_END
-
-SOURCE_ADA_ACCEPT_STATEMENT_START
-
-void
-SgAdaAcceptStmt::post_construction_initialization()
-{}
-
-bool
-SgAdaAcceptStmt::replace_child(SgStatement *target,SgStatement *newstmt, bool /*extractBasicBlock*/)
-{
-  ROSE_ASSERT(target && newstmt);
-  ROSE_ASSERT(target == p_body);
-
-  return StatementReplace(this, p_body, target, newstmt);
-}
-
-int
-SgAdaAcceptStmt::replace_expression(SgExpression* original_expression, SgExpression* new_expression)
-{
-  ROSE_ASSERT(original_expression && new_expression);
-  ROSE_ASSERT(original_expression == get_index());
-
-  set_index(new_expression);
-  new_expression->set_parent(this);
-
-  // Let this leak for now
-  // delete original_expression;
-  return 0;
-}
-
-SOURCE_ADA_ACCEPT_STATEMENT_END
-
-SOURCE_ADA_LOOP_STATEMENT_START
-
-void
-SgAdaLoopStmt::post_construction_initialization()
-   {
-   }
-
-bool
-SgAdaLoopStmt::replace_child(SgStatement *target,SgStatement *newstmt, bool extractBasicBlock)
-   {
-     return StatementReplace(this, p_body, target, newstmt);
-   }
-
-
-SOURCE_ADA_LOOP_STATEMENT_END
-
-SOURCE_PYTHON_PRINT_STMT_START
-
-void
-SgPythonPrintStmt::post_construction_initialization() {
-    if (get_destination() != NULL)
-        get_destination()->set_parent(this);
-    if (get_values() != NULL)
-        get_values()->set_parent(this);
-}
-
-SOURCE_PYTHON_PRINT_STMT_END
-
-SOURCE_PYTHON_GLOBAL_STMT_START
-
-void
-SgPythonGlobalStmt::post_construction_initialization() {}
-
-void
-SgPythonGlobalStmt::append_name(SgInitializedName* name) {
-    ROSE_ASSERT(name);
-    name->set_parent(this);
-    get_names().push_back(name);
-}
-
-void
-SgPythonGlobalStmt::prepend_name(SgInitializedName* name) {
-    ROSE_ASSERT(name);
-    name->set_parent(this);
-    get_names().insert(get_names().begin(), name);
-}
-
-SOURCE_PYTHON_GLOBAL_STMT_END
-
 SOURCE_ASM_STATEMENT_START
 
 void
@@ -16850,40 +15992,6 @@ SgSpawnStmt::post_construction_initialization()
    {}
 
 SOURCE_SPAWN_STATEMENT_END
-
-
-SOURCE_JAVA_THROW_STATEMENT_START
-
-void
-SgJavaThrowStatement::post_construction_initialization()
-   {}
-
-SOURCE_JAVA_THROW_STATEMENT_END
-
-
-SOURCE_JAVA_FOREACH_STATEMENT_START
-
-void
-SgJavaForEachStatement::post_construction_initialization()
-   {}
-
-// charles4 (9/07/2011): Added to provide uniform support of mangle names for all scopes
-SgName
-SgJavaForEachStatement::get_mangled_name(void) const
-   {
-     return SgName ("");
-   }
-
-SOURCE_JAVA_FOREACH_STATEMENT_END
-
-SOURCE_JAVA_SYNCHRONIZED_STATEMENT_START
-
-void
-SgJavaSynchronizedStatement::post_construction_initialization()
-   {}
-
-SOURCE_JAVA_SYNCHRONIZED_STATEMENT_END
-
 
 
 SOURCE_NULL_STATEMENT_START
@@ -18836,21 +17944,6 @@ SgEntryStatement::get_mangled_name() const
 
 SOURCE_ENTRY_STATEMENT_END
 
-SOURCE_ADA_ENTRY_DECL_STMT_START
-
-void
-SgAdaEntryDecl::post_construction_initialization() {}
-
-SgName
-SgAdaEntryDecl::get_mangled_name() const
-{
-  return SgFunctionDeclaration::get_mangled_name();
-}
-
-SOURCE_ADA_ENTRY_DECL_STMT_END
-
-
-
 SOURCE_TYPEDEF_DECLARATION_STATEMENT_START
 
 void
@@ -19208,7 +18301,6 @@ SgSyncTeamStatement::post_construction_initialization()
    {}
 
 SOURCE_SYNC_TEAM_STATEMENT_END
-
 
 SOURCE_LOCK_STATEMENT_START
 
@@ -19817,51 +18909,6 @@ SgFortranIncludeLine::get_mangled_name(void) const
    }
 SOURCE_FORTRAN_INCLUDE_LINE_END
 
-
-SOURCE_JOVIAL_DEFINE_DECLARATION_START
-
-void
-SgJovialDefineDeclaration::post_construction_initialization()
-   {
-   }
-
-SgName SgJovialDefineDeclaration::get_mangled_name() const
-   {
-     return "__jovial_language_directive__";
-   }
-
-SOURCE_JOVIAL_DEFINE_DECLARATION_END
-
-SOURCE_JOVIAL_DIRECTIVE_STATEMENT_START
-
-void
-SgJovialDirectiveStatement::post_construction_initialization()
-   {
-   }
-
-SgName SgJovialDirectiveStatement::get_mangled_name() const
-   {
-     return "__jovial_language_directive__";
-   }
-
-SOURCE_JOVIAL_DIRECTIVE_STATEMENT_END
-
-
-SOURCE_JOVIAL_OVERLAY_DECLARATION_START
-
-void
-SgJovialOverlayDeclaration::post_construction_initialization()
-   {
-      // Nothing to setup here.
-   }
-
-SgName SgJovialOverlayDeclaration::get_mangled_name() const
-   {
-       return SgName("_overlay_");
-   }
-SOURCE_JOVIAL_OVERLAY_DECLARATION_END
-
-
 SOURCE_PREPROCESSOR_DIRECTIVE_STATEMENT_START
 
 void
@@ -19891,12 +18938,95 @@ SgOmpParallelStatement::post_construction_initialization()
    {}
 SOURCE_OMP_PARALLEL_STATEMENT_END
 
+SOURCE_OMP_TEAMS_STATEMENT_START
+void
+SgOmpTeamsStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TEAMS_STATEMENT_END
+
+SOURCE_OMP_CANCELLATION_POINT_STATEMENT_START
+void
+SgOmpCancellationPointStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_CANCELLATION_POINT_STATEMENT_END
+
+SOURCE_OMP_DECLARE_MAPPER_STATEMENT_START
+void
+SgOmpDeclareMapperStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_DECLARE_MAPPER_STATEMENT_END
+
+SOURCE_OMP_CANCEL_STATEMENT_START
+void
+SgOmpCancelStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_CANCEL_STATEMENT_END
+
+SOURCE_OMP_TASKGROUP_STATEMENT_START
+void
+SgOmpTaskgroupStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TASKGROUP_STATEMENT_END
+
+SOURCE_OMP_DISTRIBUTE_STATEMENT_START
+void
+SgOmpDistributeStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_DISTRIBUTE_STATEMENT_END
+
+SOURCE_OMP_REQUIRES_STATEMENT_START
+void
+SgOmpRequiresStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_REQUIRES_STATEMENT_END
+
+SOURCE_OMP_LOOP_STATEMENT_START
+void
+SgOmpLoopStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_LOOP_STATEMENT_END
+
+SOURCE_OMP_SCAN_STATEMENT_START
+void
+SgOmpScanStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_SCAN_STATEMENT_END
+
+SOURCE_OMP_TASKLOOP_STATEMENT_START
+void
+SgOmpTaskloopStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TASKLOOP_STATEMENT_END
+
+SOURCE_OMP_TARGET_ENTER_DATA_STATEMENT_START
+void
+SgOmpTargetEnterDataStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TARGET_ENTER_DATA_STATEMENT_END
+
+SOURCE_OMP_TARGET_EXIT_DATA_STATEMENT_START
+void
+SgOmpTargetExitDataStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TARGET_EXIT_DATA_STATEMENT_END
+
+SOURCE_OMP_METADIRECTIVE_STATEMENT_START
+void
+SgOmpMetadirectiveStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_METADIRECTIVE_STATEMENT_END
+
 SOURCE_OMP_MASTER_STATEMENT_START
 void
 SgOmpMasterStatement::post_construction_initialization()
    {}
 SOURCE_OMP_MASTER_STATEMENT_END
 
+SOURCE_OMP_TASKYIELD_STATEMENT_START
+void
+SgOmpTaskyieldStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_TASKYIELD_STATEMENT_END
 
 SOURCE_OMP_FLUSH_STATEMENT_START
 void
@@ -20007,7 +19137,6 @@ SgOmpTargetDataStatement::post_construction_initialization()
    {}
 SOURCE_OMP_TARGET_DATA_STATEMENT_END
 
-
 SOURCE_OMP_TASKWAIT_STATEMENT_START
 void
 SgOmpTaskwaitStatement::post_construction_initialization()
@@ -20076,6 +19205,15 @@ HEADER_OMP_BODY_STATEMENT_START
 
 HEADER_OMP_BODY_STATEMENT_END
 
+HEADER_OMP_CLAUSE_STATEMENT_START
+HEADER_OMP_CLAUSE_STATEMENT_END
+
+SOURCE_OMP_CLAUSE_STATEMENT_START
+void
+SgOmpClauseStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_CLAUSE_STATEMENT_END
+
 SOURCE_OMP_BODY_STATEMENT_START
 void
 SgOmpBodyStatement::post_construction_initialization()
@@ -20126,75 +19264,6 @@ SgCAFWithTeamStatement::post_construction_initialization()
 
 SOURCE_WITH_TEAM_STATEMEMT_END
 
-SOURCE_JAVA_IMPORT_STATEMENT_START
-
-void
-SgJavaImportStatement::post_construction_initialization()
-   {
-  // Nothing to setup here.
-   }
-
-// DQ (2/18/2006): Added general name mangling for all declarations (and some other IR nodes).
-SgName
-SgJavaImportStatement::get_mangled_name(void) const
-   {
-  // The semantics of get_scope is that it can never be NULL (SgGlobal returns itself as its scope!)
-     SgScopeStatement* scope = get_scope();
-     ROSE_ASSERT(scope != NULL);
-
-     SgName returnName = SgName("_java_import_stmt_") + get_path();
-
-     if (get_containsWildCard() == true)
-        {
-          returnName += "_dot_regx_star_";
-        }
-
-#if 0
-     printf ("In SgJavaImportStatement::get_mangled_name(void): scope = %p = %s scope->get_qualified_name() = %s returnName = %s \n",
-          scope,scope->class_name().c_str(),scope->get_qualified_name().str(),returnName.str());
-#endif
-
-     return returnName;
-   }
-
-SOURCE_JAVA_IMPORT_STATEMENT_END
-
-SOURCE_JAVA_PACKAGE_DECLARATION_START
-void
-SgJavaPackageDeclaration::post_construction_initialization()
-   {
-     // Nothing to setup here.
-   }
-
-SgName
-SgJavaPackageDeclaration::get_mangled_name() const
-   {
-     return SgName("_package_" + SgClassDeclaration::get_mangled_name()); // PC: 06/21/2013
-   }
-SOURCE_JAVA_PACKAGE_DECLARATION_END
-
-SOURCE_JAVA_PACKAGE_STATEMENT_START
-void
-SgJavaPackageStatement::post_construction_initialization()
-   {
-     // Nothing to setup here.
-   }
-
-// DQ (2/18/2006): Added general name mangling for all declarations (and some other IR nodes).
-SgName
-SgJavaPackageStatement::get_mangled_name(void) const
-   {
-  // The semantics of get_scope is that it can never be NULL (SgGlobal returns itself as its scope!)
-     SgScopeStatement* scope = get_scope();
-     ROSE_ASSERT(scope != NULL);
-
-     SgName returnName = SgName("_java_package_stmt_") + get_name();
-
-     return returnName;
-   }
-
-SOURCE_JAVA_PACKAGE_STATEMENT_END
-
 SOURCE_OMP_SIMD_STATEMENT_START
 void
 SgOmpSimdStatement::post_construction_initialization()
@@ -20231,190 +19300,3 @@ SgMicrosoftAttributeDeclaration::hasExplicitScope() const
      return false;
    }
 SOURCE_MICROSOFT_ATTRIBUTE_DECLARATION_STATEMENT_END
-
-// Ada support
-// - packages
-
-SOURCE_ADA_PACKAGE_SPEC_DECL_STATEMENT_START
-void SgAdaPackageSpecDecl::post_construction_initialization() {}
-
-SgSymbol*
-SgAdaPackageSpecDecl::get_symbol_from_symbol_table() const
-{
-  SgScopeStatement* scope = get_scope();
-
-  ROSE_ASSERT(scope);
-  return scope->find_symbol_from_declaration(this);
-}
-
-SgName
-SgAdaPackageSpecDecl::get_mangled_name() const
-{
-  std::string name = "ada$pkg$";
-
-  name.append(get_name());
-  return name;
-}
-SOURCE_ADA_PACKAGE_SPEC_DECL_STATEMENT_END
-
-SOURCE_ADA_PACKAGE_BODY_DECL_STATEMENT_START
-// PP implement header declarations (currently empty)
-void SgAdaPackageBodyDecl::post_construction_initialization() {}
-
-SgSymbol*
-SgAdaPackageBodyDecl::get_symbol_from_symbol_table() const
-{
-  SgScopeStatement* scope = get_scope();
-
-  ROSE_ASSERT(scope);
-  return scope->find_symbol_from_declaration(this);
-}
-
-SgName
-SgAdaPackageBodyDecl::get_mangled_name() const
-{
-  std::string name = "ada$pkg$";
-
-  name.append(get_name());
-  return name;
-}
-SOURCE_ADA_PACKAGE_BODY_DECL_STATEMENT_END
-
-SOURCE_ADA_PACKAGE_SPEC_STATEMENT_START
-void SgAdaPackageSpec::post_construction_initialization() {}
-
-SgName
-SgAdaPackageSpec::get_mangled_name() const
-{
-  return "ada$pkg$spec";
-}
-
-SOURCE_ADA_PACKAGE_SPEC_STATEMENT_END
-
-SOURCE_ADA_PACKAGE_BODY_STATEMENT_START
-void SgAdaPackageBody::post_construction_initialization() {}
-
-SgName
-SgAdaPackageBody::get_mangled_name() const
-{
-  return "ada$pkg$body";
-}
-
-SOURCE_ADA_PACKAGE_BODY_STATEMENT_END
-
-// - tasks
-
-SOURCE_ADA_TASK_SPEC_DECL_STATEMENT_START
-void SgAdaTaskSpecDecl::post_construction_initialization() {}
-
-SgSymbol*
-SgAdaTaskSpecDecl::get_symbol_from_symbol_table() const
-{
-  SgScopeStatement* scope = get_scope();
-
-  ROSE_ASSERT(scope);
-  return scope->find_symbol_from_declaration(this);
-}
-
-SgName
-SgAdaTaskSpecDecl::get_mangled_name() const
-{
-  std::string name = "ada$tsk$";
-
-  name.append(get_name());
-  return name;
-}
-
-SOURCE_ADA_TASK_SPEC_DECL_STATEMENT_END
-
-SOURCE_ADA_TASK_TYPE_DECL_STATEMENT_START
-// PP implement header declarations (currently empty)
-void SgAdaTaskTypeDecl::post_construction_initialization() {}
-
-SgSymbol*
-SgAdaTaskTypeDecl::get_symbol_from_symbol_table() const
-{
-  SgScopeStatement* scope = get_scope();
-
-  ROSE_ASSERT(scope);
-  return scope->find_symbol_from_declaration(this);
-}
-
-SgName
-SgAdaTaskTypeDecl::get_mangled_name() const
-{
-  std::string name = "ada$tsk$";
-
-  name.append(get_name());
-  return name;
-}
-
-SOURCE_ADA_TASK_TYPE_DECL_STATEMENT_END
-
-SOURCE_ADA_TASK_BODY_DECL_STATEMENT_START
-void SgAdaTaskBodyDecl::post_construction_initialization() {}
-
-SgSymbol*
-SgAdaTaskBodyDecl::get_symbol_from_symbol_table() const
-{
-  SgScopeStatement* scope = get_scope();
-
-  ROSE_ASSERT(scope);
-  return scope->find_symbol_from_declaration(this);
-}
-
-SgName
-SgAdaTaskBodyDecl::get_mangled_name() const
-{
-  std::string name = "ada$tsk$";
-
-  name.append(get_name());
-  return name;
-}
-SOURCE_ADA_TASK_BODY_DECL_STATEMENT_END
-
-SOURCE_ADA_RENAMING_DECL_STATEMENT_START
-void SgAdaRenamingDecl::post_construction_initialization() {}
-
-SgSymbol*
-SgAdaRenamingDecl::get_symbol_from_symbol_table() const
-{
-  SgScopeStatement* scope = get_scope();
-
-  ROSE_ASSERT(scope);
-  return scope->find_symbol_from_declaration(this);
-}
-
-SgName
-SgAdaRenamingDecl::get_mangled_name() const
-{
-  std::string name = "ada$ren$";
-
-  name.append(get_name());
-  return name;
-}
-SOURCE_ADA_RENAMING_DECL_STATEMENT_END
-
-
-
-SOURCE_ADA_TASK_SPEC_STATEMENT_START
-void SgAdaTaskSpec::post_construction_initialization() {}
-
-SgName
-SgAdaTaskSpec::get_mangled_name() const
-{
-  return "ada$tsk$spec";
-}
-
-SOURCE_ADA_TASK_SPEC_STATEMENT_END
-
-SOURCE_ADA_TASK_BODY_STATEMENT_START
-void SgAdaTaskBody::post_construction_initialization() {}
-
-SgName
-SgAdaTaskBody::get_mangled_name() const
-{
-  return "ada$tsk$body";
-}
-SOURCE_ADA_TASK_BODY_STATEMENT_END
-

@@ -397,7 +397,7 @@ AttachPreprocessingInfoTreeTrav::iterateOverListAndInsertPreviouslyUninsertedEle
         {
           if (isSgBasicBlock (locatedNode) && (location == PreprocessingInfo::before || location == PreprocessingInfo::after))
              {
-               isFortranBlockAndBeforePoisition = true; 
+               isFortranBlockAndBeforePoisition = true;
              }
         }
 
@@ -453,7 +453,7 @@ AttachPreprocessingInfoTreeTrav::iterateOverListAndInsertPreviouslyUninsertedEle
                if ( (currentPreprocessingInfoLineNumber > lineNumber) && (location == PreprocessingInfo::before) )
 #else
             // DQ (8/17/2020): Account for the column numbers.
-               if ( ( (currentPreprocessingInfoLineNumber > lineNumber) || 
+               if ( ( (currentPreprocessingInfoLineNumber > lineNumber) ||
                       ( (currentPreprocessingInfoLineNumber == lineNumber) && (currentPreprocessingInfoColumnNumber < ending_col) ) ) &&
                     ( (location == PreprocessingInfo::before) || (location == PreprocessingInfo::inside) ) )
 #endif
@@ -469,8 +469,8 @@ AttachPreprocessingInfoTreeTrav::iterateOverListAndInsertPreviouslyUninsertedEle
 #endif
             // bool attachCommentOrDirective = (currentPreprocessingInfoPtr != NULL) && (currentPreprocessingInfoPtr->getLineNumber() <= lineNumber);
             // bool attachCommentOrDirective = (currentPreprocessingInfoLineNumber <= lineNumber);
-                  bool attachCommentOrDirective = 
-                       (currentPreprocessingInfoLineNumber < lineNumber) || 
+                  bool attachCommentOrDirective =
+                       (currentPreprocessingInfoLineNumber < lineNumber) ||
                        ( (currentPreprocessingInfoLineNumber == lineNumber) && (currentPreprocessingInfoColumnNumber < ending_col) );
 
             // DQ (1/7/2019): Supress comments and CPP directives onto member functions of the generated labda function class.
@@ -570,7 +570,7 @@ AttachPreprocessingInfoTreeTrav::iterateOverListAndInsertPreviouslyUninsertedEle
                  // currentListOfAttributes->getList()[i] = NULL;
 
                  // DQ (4/30/2020): We no long need this in the new simplified support for CPP directivces and comments and unparsing of header files.
-                 // DQ (4/13/2007): If we are going to invalidate the list of accumulated attributes then we can start 
+                 // DQ (4/13/2007): If we are going to invalidate the list of accumulated attributes then we can start
                  // next time at the next index (at least).  This removes the order n^2 complexity of traversing over the whole loop.
                  // start_index = i+1;
                  // ROSE_ASSERT(startIndexMap.find(currentFileId) != startIndexMap.end());
@@ -793,7 +793,7 @@ AttachPreprocessingInfoTreeTrav::setupPointerToPreviousNode (SgLocatedNode* curr
        }
 
 #if 1
-  // Nodes that should not have comments attached (since they are not unparsed directly 
+  // Nodes that should not have comments attached (since they are not unparsed directly
   // within the generation of the source code by the unparser (no associated unparse functions))
      ROSE_ASSERT (dynamic_cast<SgForInitStatement*>     (previousLocNodePtr) == NULL);
      ROSE_ASSERT (dynamic_cast<SgTypedefSeq*>           (previousLocNodePtr) == NULL);
@@ -807,7 +807,7 @@ AttachPreprocessingInfoTreeTrav::setupPointerToPreviousNode (SgLocatedNode* curr
 
 
 // ROSEAttributesList* AttachPreprocessingInfoTreeTrav::buildCommentAndCppDirectiveList ( bool use_Wave, std::string fileNameForDirectivesAndComments )
-ROSEAttributesList* 
+ROSEAttributesList*
 AttachPreprocessingInfoTreeTrav::buildCommentAndCppDirectiveList ( bool use_Wave, SgSourceFile* sourceFile, std::string fileNameForDirectivesAndComments )
    {
   // This function abstracts the collection of comments and CPP directives into a list.  
@@ -1367,7 +1367,7 @@ AttachPreprocessingInfoTreeTrav::evaluateInheritedAttribute ( SgNode *n, AttachP
 
   // Pei-Hung(9/17/2020): Check if the AST node is SgFunctionParameterList for Fortran input
      if(sourceFile->get_Fortran_only() == true)
-       { 
+       {
          SgFunctionParameterList* functionParameterList = isSgFunctionParameterList(n);
          if(functionParameterList != NULL)
            {
@@ -1474,10 +1474,10 @@ AttachPreprocessingInfoTreeTrav::evaluateInheritedAttribute ( SgNode *n, AttachP
 
       // Pei-Hung (09/23/2020) For Fortran code,  target_source_file_id should be same as currentFileNameId when preprocessing is required
          if (SageInterface::is_Fortran_language() == true)
-         {  
-           target_source_file_id = (currentFilePtr->get_requires_C_preprocessor() == true) ? 
-                                 // Sg_File_Info::getIDFromFilename(sourceFile->get_file_info()->get_filenameString()) : 
-                                    Sg_File_Info::getIDFromFilename(currentFilePtr->generate_C_preprocessor_intermediate_filename(sourceFile->get_file_info()->get_filename())) : 
+         {
+           target_source_file_id = (currentFilePtr->get_requires_C_preprocessor() == true) ?
+                                 // Sg_File_Info::getIDFromFilename(sourceFile->get_file_info()->get_filenameString()) :
+                                    Sg_File_Info::getIDFromFilename(currentFilePtr->generate_C_preprocessor_intermediate_filename(sourceFile->get_file_info()->get_filename())) :
                                     currentFileInfo->get_physical_file_id(source_file_id);
          }
 
@@ -1582,7 +1582,7 @@ AttachPreprocessingInfoTreeTrav::evaluateInheritedAttribute ( SgNode *n, AttachP
         }
 #endif
      // Pei-Hung (9/17/2020): comment and preprocess information will not be attached to SgInitializedName that is
-     // part of the SgFunctionParameterList 
+     // part of the SgFunctionParameterList
 
      if (statement != NULL || (i_name != NULL && inheritedAttribute.isPartOfFunctionParameterList == false) || a_initor != NULL)
         {
@@ -1762,7 +1762,7 @@ AttachPreprocessingInfoTreeTrav::evaluateInheritedAttribute ( SgNode *n, AttachP
                printf (" --- currentLocNodePtr->get_file_info()->get_file_id()                    = %d \n",currentLocNodePtr->get_file_info()->get_file_id());
                printf (" --- currentLocNodePtr->get_file_info()->get_physical_file_id()           = %d \n",currentLocNodePtr->get_file_info()->get_physical_file_id());
 #endif
-  
+
             // Pei-Hung (2/25/2020): If CPP is required, then we should use currentFileNameId here to use the preprocessed
             // input file.  Otherwise, all the preprocessed information is not attached to AST.  Comments and directives
             // will not be unparsed.
@@ -1789,9 +1789,9 @@ AttachPreprocessingInfoTreeTrav::evaluateInheritedAttribute ( SgNode *n, AttachP
                    }
 #endif
             // DQ (4/16/2020): This is the cause of a redundant inclusion of a CPP directive and comment in test8. Basically,
-            // the issue is that the evaluation of the inherited attribute is causing it to be attached and the evaluation 
+            // the issue is that the evaluation of the inherited attribute is causing it to be attached and the evaluation
             // of the synthesized attribute is also causing it to be attached. If this is a fix then I need to work with Pei-Hung.
-            // Or the issue is that the Preprocessor list iterator is not being properly increments, and so this is why both 
+            // Or the issue is that the Preprocessor list iterator is not being properly increments, and so this is why both
             // attribute evaluation functions are adding the include directive in test8.
             // if ( ((sourceFile->get_requires_C_preprocessor() == true) ? currentFileNameId : source_file_id) == currentLocNode_physical_file_id )
             // if ( source_file_id == fileIdForOriginOfCurrentLocatedNode )
@@ -2366,16 +2366,6 @@ AttachPreprocessingInfoTreeTrav::evaluateSynthesizedAttribute(
 #endif
                switch (n->variantT())
                   {
-#ifdef ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-                 // SgBinaryComposite need not be in the switch since we don't attach CPP directives or comments to it.
-                    case V_SgBinaryComposite:
-                        {
-                          printf ("Error: SgBinaryComposite need not be in the switch since we don't attach CPP directives or comments to it ... \n");
-                          ROSE_ASSERT(false);
-                          break;
-                        }
-#endif
-
                  // I wanted to leave the SgFile case in the switch statement rather 
                  // than separating it out in a conditional statement at the top of the file.
                  // case V_SgFile:
@@ -2529,7 +2519,7 @@ AttachPreprocessingInfoTreeTrav::evaluateSynthesizedAttribute(
                          // DQ (12/19/2008): I think this should be true, but check it!
                             ROSE_ASSERT(previousLocatedNodeMap.size() == startIndexMap.size());
 #endif
-            
+
 #endif
 #if 1
                             if (statementsToInsertBefore.size() > 0)
@@ -2907,7 +2897,7 @@ AttachPreprocessingInfoTreeTrav::evaluateSynthesizedAttribute(
                             }
 #endif
                       // Liao 6/10/2020, Fortran subroutine will have a SgInitializedName generated in AST to represent the subroutine name.
-                      // It is compiler-generated and has no appearance in the original source code. 
+                      // It is compiler-generated and has no appearance in the original source code.
                       // We should not attach comments to it.
                          if (SageInterface::is_Fortran_language ())
                             {
@@ -2919,7 +2909,7 @@ AttachPreprocessingInfoTreeTrav::evaluateSynthesizedAttribute(
                            else
                             {
                               bool reset_start_index = false;
-                              iterateOverListAndInsertPreviouslyUninsertedElementsAppearingBeforeLineNumber 
+                              iterateOverListAndInsertPreviouslyUninsertedElementsAppearingBeforeLineNumber
                                    ( previousLocNodePtr, lineOfClosingBrace, PreprocessingInfo::after, reset_start_index, currentListOfAttributes );
 
                            // DQ (6/24/2020): Set this only in the evaluateInheritedAttribute() function.
@@ -3128,7 +3118,7 @@ AttachPreprocessingInfoTreeTrav::evaluateSynthesizedAttribute(
                  // case V_SgFunctionParameterList:
                     case V_SgFunctionDeclaration:   // Liao 11/8/2010, this is necessary since SgInitializedName might be a previous located node.
                                  // we don't want to attach anything after an ending initialized name,
-                                 // So we give a chance to the init name's ancestor a chance. 
+                                 // So we give a chance to the init name's ancestor a chance.
                                  // For preprocessing info appearing after a last init name, we attach it inside the ancestor.
 
                     case V_SgMemberFunctionDeclaration:

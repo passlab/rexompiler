@@ -40,10 +40,6 @@ rose_inputtraverseCommonBlock.f:traverseCommonBlock
 	./traverseCommonBlock -c $(TEST_CXXFLAGS) $(srcdir)/inputtraverseCommonBlock.f
 endif	  
 
-if ROSE_BUILD_PYTHON_LANGUAGE_SUPPORT
-SUBDIRS += PythonTests
-endif
-
 EXTRA_DIST = CMakeLists.txt inputtraverseCommonBlock.f
 check-local:
 	$(MAKE) $(generatedCodeExamples)

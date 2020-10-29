@@ -357,39 +357,8 @@ HEADER_START
        */
           $CLASSNAME* addRegExpAttribute(std::string s, AstRegExAttribute* a);
 
-#ifndef _MSC_VER
-// Rasmussen (04/17/2019): Support for ATerms has been deprecated as it is no longer needed
-// and likely never fully implemented nor tested.  Files remain in the src tree but are no
-// longer built.
-#define BUILD_ATERM_SUPPORT 0
-   #if BUILD_ATERM_SUPPORT
-   #ifdef ROSE_USE_ROSE_ATERM_SUPPORT
-      // DQ (10/4/2014): Adding ATerm support to ROSE.
-      /*! \brief Support for generation of ATerms.
-
-          This support implements the generation of ATerms (consistant with the ROSE AST).
-          ROSE IR nodes that are traversed are translated as ATerms, and all other IR node 
-          date are attached as ATerm annotations.  This is a bulk translation of ROSE subtrees
-          to ATerms, can be called on any ROSE subtree.  An ATerm interface to ROSE IR nodes
-          is also implemented, but it only works with tools obaying the ATerm API (note that
-          unfortunately SDF tools and Stratego both fail to obay the ATerm API).
-       */
-       // Rasmussen (1/7/2019): Added ROSE_OVERRIDE to kill warning messages of overridden virtual function
-          virtual ATerm generate_ATerm() $ROSE_OVERRIDE;
-
-      /*! \brief Support for generation of ATerms. */
-          virtual void generate_ATerm_Annotation(ATerm & term) $ROSE_OVERRIDE;
-   #endif
-   #endif // BUILD_ATERM_SUPPORT
-#endif
-       // These can't be virtual functions since we don't yet know what IR node to build (until we have read the aterm).
-       // virtual generate_AST(ATerm & term);
-       // virtual void read_ATerm_Annotation(ATerm & term);
-
 // *** COMMON CODE SECTION ENDS HERE ***
 HEADER_END
-
-
 
 
 SOURCE_START
@@ -463,7 +432,7 @@ $CLASSNAME::addRegExpAttribute(std::string s, AstRegExAttribute* a)
    {
 #ifdef ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
   // This function is currently only supported for the AST used the represent Binary executables.
-     if (isSgAsmNode(this) != NULL)
+     if (0 /* isSgAsmNode(this) != NULL */)
         {
        // Support for regex specification.
           std::string prefixCode = "REGEX:";

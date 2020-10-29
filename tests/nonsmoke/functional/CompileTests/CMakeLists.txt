@@ -33,10 +33,6 @@ endfunction()
 
 # determine what subdirectories to enter based on our configuration settings.
 
-if(enable-x10)
-  add_subdirectory(x10_tests)
-endif()
-
 if(enable-cuda)
   add_subdirectory(CudaTests)
 endif()
@@ -55,7 +51,6 @@ else()
       add_subdirectory(MicrosoftWindows_Cxx_tests)
       add_subdirectory(C_subset_of_Cxx_tests)
       add_subdirectory(C99_tests)
-      add_subdirectory(UPC_tests)
     endif()
   endif()
 
@@ -71,16 +66,10 @@ else()
       #add_subdirectory(CAF2_tests)
     endif()
 
-    if(enable-java)
-      add_subdirectory(Java_tests)
-      add_subdirectory(MicrosoftWindows_Java_tests)
-    endif()
-
     if(enable-c)
       add_subdirectory(copyAST_tests)
 # ROSE-1738
 #     add_subdirectory(RoseExample_tests)
-      add_subdirectory(PythonExample_tests)
       add_subdirectory(colorAST_tests)
       add_subdirectory(unparseToString_tests)
       add_subdirectory(sourcePosition_tests)

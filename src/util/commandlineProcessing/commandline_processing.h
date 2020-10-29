@@ -73,7 +73,7 @@ namespace CommandlineProcessing
           ROSE_UTIL_API std::string generateStringFromArgList ( Rose_STL_Container<std::string> argList, bool skipInitialEntry, bool skipSourceFiles );
 
       //! Build the list of isolated file names from the command line
-          ROSE_DLL_API Rose_STL_Container<std::string> generateSourceFilenames ( Rose_STL_Container<std::string> argList, bool binaryMode );
+          ROSE_DLL_API Rose_STL_Container<std::string> generateSourceFilenames ( Rose_STL_Container<std::string> argList );
 
        // DQ and PC (6/1/2006): Added Peter's suggested fixes to support auto-documentation.
       //! Add another valid source file suffix
@@ -126,10 +126,6 @@ namespace CommandlineProcessing
           ROSE_UTIL_API bool isCudaFileNameSuffix ( const std::string & suffix );
        // TV (05/17/2010) Support for OpenCL
           ROSE_UTIL_API bool isOpenCLFileNameSuffix ( const std::string & suffix );
-
-       // DQ (10/11/2010): Adding Java support.
-          ROSE_UTIL_API bool isJavaFileNameSuffix ( const std::string & suffix );
-          ROSE_UTIL_API bool isX10FileNameSuffix (const std::string& suffix);
 
           ROSE_UTIL_API void initSourceFileSuffixList();
           static Rose_STL_Container<std::string> validSourceFileSuffixes;

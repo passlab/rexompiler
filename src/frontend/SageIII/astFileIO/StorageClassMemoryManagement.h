@@ -1182,24 +1182,6 @@ class EasyStorage < std::map< SgSymbol*,  std::vector < std::pair <SgOmpClause::
      static void readFromFile (std::istream& in) {};
    };
 
-
-
-#ifdef ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-/** Maps SgSharedVector to/from file representation. This is almost exactly the same as the
- *  vector of Sg object pointers specialization except the rebuildDataStoredInEasyStorageClass() constructs the SgSharedVector
- *  in a different manner. In an original AST all SgSharedVector objects probably pointed to a common underlying storage pool
- *  which was the contents of the entire binary file.  This sharing is currently lost in the file representation and the
- *  reconstructed SgSharedVector objects will each get their own pool. FIXME [RPM 2010-06-15] */
-template<class BASIC_TYPE>
-class EasyStorage<SgSharedVector<BASIC_TYPE> >: public StorageClassMemoryManagement<BASIC_TYPE> {
-    typedef StorageClassMemoryManagement<BASIC_TYPE> Base;
-  public:
-    EasyStorage() {}
-    void storeDataInEasyStorageClass(const SgSharedVector<BASIC_TYPE>& data_);
-    SgSharedVector<BASIC_TYPE> rebuildDataStoredInEasyStorageClass() const;
-};
-#endif
-
 /** Maps an ExtentMap to/from file representation. */
 template<>
 class EasyStorage<ExtentMap>: public StorageClassMemoryManagement<rose_addr_t> {

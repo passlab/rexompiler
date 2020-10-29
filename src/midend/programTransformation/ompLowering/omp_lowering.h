@@ -123,6 +123,8 @@ namespace OmpSupport
   void transOmpMaster(SgNode* node);
   //! Translate omp single 
   void transOmpSingle(SgNode* node);
+  //! Translate omp metadirective
+  void transOmpMetadirective(SgNode* node);
 
   //! A helper function to generate implicit or explicit task for either omp parallel or omp task
   // It calls the ROSE AST outliner internally. 
@@ -179,10 +181,10 @@ namespace OmpSupport
   ROSE_DLL_API bool useStaticSchedule(SgOmpClauseBodyStatement* omp_loop);
 
   //! Return a reduction variable's reduction operation type
-  ROSE_DLL_API SgOmpClause::omp_reduction_operator_enum getReductionOperationType(SgInitializedName* init_name, SgOmpClauseBodyStatement* clause_stmt);
+  ROSE_DLL_API SgOmpClause::omp_reduction_identifier_enum getReductionOperationType(SgInitializedName* init_name, SgOmpClauseBodyStatement* clause_stmt);
 
   //! Create an initial value according to reduction operator type
-  ROSE_DLL_API SgExpression* createInitialValueExp(SgOmpClause::omp_reduction_operator_enum r_operator);
+  ROSE_DLL_API SgExpression* createInitialValueExp(SgOmpClause::omp_reduction_identifier_enum r_operator);
 
   //! Generate GOMP loop schedule start function's name
   ROSE_DLL_API std::string generateGOMPLoopStartFuncName (bool isOrdered, SgOmpClause::omp_schedule_kind_enum s_kind);

@@ -69,7 +69,7 @@ extern void XOMP_taskwait (void);
 
 // Default loop scheduling, worksharing without any schedule clause, upper bounds are inclusive
 // Kick in before all runtime libraries. We use the default loop scheduling from XOMP regardless the runtime chosen.
-extern void XOMP_loop_default(int lower, int upper, int stride, long* n_lower, long* n_upper);
+extern void XOMP_loop_default(unsigned int lower, unsigned int upper, unsigned int stride, long* n_lower, long* n_upper);
 
 //! Optional init functions, mostly used for working with omni RTL
 // Non-op for gomp

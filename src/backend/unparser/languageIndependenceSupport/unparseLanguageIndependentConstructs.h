@@ -378,9 +378,17 @@ class UnparseLanguageIndependentConstructs
           virtual void unparseOmpPrefix                     (SgUnparse_Info& info); // = 0;
           virtual void unparseOmpDefaultClause              (SgOmpClause* clause, SgUnparse_Info& info); 
           virtual void unparseOmpProcBindClause             (SgOmpClause* clause, SgUnparse_Info& info); 
+          virtual void unparseOmpOrderClause                (SgOmpClause* clause, SgUnparse_Info& info); 
+          virtual void unparseOmpBindClause                 (SgOmpClause* clause, SgUnparse_Info& info); 
+          virtual void unparseOmpAtomicDefaultMemOrderClause  (SgOmpClause* clause, SgUnparse_Info& info); 
+          virtual void unparseOmpExtImplementationDefinedRequirementClause  (SgOmpClause* clause, SgUnparse_Info& info); 
+          virtual void unparseOmpWhenClause                 (SgOmpClause* clause, SgUnparse_Info& info);
           virtual void unparseOmpAtomicClause               (SgOmpClause* clause, SgUnparse_Info& info); 
           virtual void unparseOmpScheduleClause             (SgOmpClause* clause, SgUnparse_Info& info);
+          virtual void unparseOmpDistScheduleClause         (SgOmpClause* clause, SgUnparse_Info& info);
+          virtual void unparseOmpDefaultmapClause           (SgOmpClause* clause, SgUnparse_Info& info);
           virtual void unparseOmpVariablesClause            (SgOmpClause* clause, SgUnparse_Info& info);
+          virtual void unparseOmpVariablesComplexClause     (SgOmpClause* clause, SgUnparse_Info& info);
           virtual void unparseOmpExpressionClause           (SgOmpClause* clause, SgUnparse_Info& info);
           virtual void unparseOmpClause                     (SgOmpClause* clause, SgUnparse_Info& info);
 

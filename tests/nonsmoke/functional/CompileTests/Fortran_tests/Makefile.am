@@ -1144,10 +1144,6 @@ if ROSE_EXPERIMENTAL_OFP_ROSE_CONNECTION
 #	@$(RTH_RUN) CMD="sglri -i $(srcdir)/$(@:.f90.passed=.f90) -p $(SDF_OFP)/Fortran.tbl | pp-aterm -o $(@:.f90.passed=.f90).aterm" $(top_srcdir)/scripts/test_exit_status $(@:.f90.passed=.f90.testAtermGeneration.passed) || true
 # Rasmussen (12/20/2018): Turned off running experimental frontend on normal Fortran tests.  Not ready for these tests yet!
 #	@$(RTH_RUN) CMD="../../testTranslator -rose:experimental_fortran_frontend $(ROSE_FLAGS) -rose:f90 -c $(srcdir)/$(@:.f90.passed=.f90)" $(top_srcdir)/scripts/test_exit_status $(@:.f90.passed=.f90.testTokenGeneration.passed)
-if ROSE_WITH_ATERM
-# Rasmussen (12/20/2018): Turned off running experimental frontend on normal Fortran tests.  Not ready for these tests yet!
-#	@$(RTH_RUN) CMD="../../testAtermGraphGeneration $(@:.f90.passed=.f90.aterm)" $(top_srcdir)/scripts/test_exit_status $(@:.f90.passed=.f90.testAtermGraphGeneration.passed) || true
-endif
 endif
 else
 #	DQ (4/22/2011): For Insure++ we want to get the filename into the names used for the report files.

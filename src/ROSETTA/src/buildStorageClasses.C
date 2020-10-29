@@ -807,8 +807,7 @@ AstNodeClass::evaluateType(std::string& varTypeString)
        {
           returnType = ASTATTRIBUTEMECHANISM;
        }
-     else  if ( varTypeString == "hash_iterator" ||
-                varTypeString == "const Rose::BinaryAnalysis::CallingConvention::Definition*")
+     else  if ( varTypeString == "hash_iterator" )
        {
           returnType = SKIP_TYPE;
        }
@@ -842,8 +841,6 @@ AstNodeClass::evaluateType(std::string& varTypeString)
                  ( varTypeString == "SgImplicitStatement::implicit_spec_enum" ) ||
                  ( varTypeString == "SgInitializedName::asm_register_name_enum" ) ||
                  ( varTypeString == "SgInitializedName::excess_specifier_enum" ) ||
-                 ( varTypeString == "SgJovialDirectiveStatement::directive_types" ) ||
-                 ( varTypeString == "SgJovialForThenStatement::loop_statement_type_enum" ) ||
                  ( varTypeString == "SgProcessControlStatement::control_enum" ) ||
                  ( varTypeString == "SgTypeComplex::floating_point_precision_enum" ) ||
                  ( varTypeString == "SgTypeImaginary::floating_point_precision_enum" ) ||
@@ -863,66 +860,44 @@ AstNodeClass::evaluateType(std::string& varTypeString)
 
                  ( varTypeString == "SgOmpClause::omp_default_option_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_proc_bind_policy_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_order_kind_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_dist_schedule_kind_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_defaultmap_behavior_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_defaultmap_category_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_bind_binding_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_atomic_default_mem_order_kind_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_atomic_clause_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_schedule_kind_enum" ) ||
-                 ( varTypeString == "SgOmpClause::omp_reduction_operator_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_schedule_modifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_reduction_identifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_reduction_modifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_in_reduction_identifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_task_reduction_identifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_when_context_kind_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_when_context_vendor_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_if_modifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_lastprivate_modifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_device_modifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_linear_modifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_allocate_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_dependence_type_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_map_operator_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_map_dist_data_enum" ) ||
                  ( varTypeString == "SgProcedureHeaderStatement::subprogram_kind_enum" ) ||
                  ( varTypeString == "SgLabelSymbol::label_type_enum" ) ||
-                 ( varTypeString == "SgAsmFunction::function_kind_enum" ) ||
                  ( varTypeString == "SgTypeModifier::gnu_extension_machine_mode_enum" ) ||
                  ( varTypeString == "SgDeclarationStatement::gnu_extension_visability_attribute_enum" ) ||
                  ( varTypeString == "SgVariableDeclaration::gnu_extension_declaration_attributes_enum" ) ||
-                 ( varTypeString == "X86InstructionKind" ) || "Rose::BinaryAnalysis::X86InstructionKind" == varTypeString ||
-                 ( varTypeString == "X86RegisterClass" ) || "Rose::BinaryAnalysis::X86RegisterClass" == varTypeString ||
-                 ( varTypeString == "X86SegmentRegister" ) || "Rose::BinaryAnalysis::X86SegmentRegister" == varTypeString ||
-                 ( varTypeString == "X86BranchPrediction" ) || "Rose::BinaryAnalysis::X86BranchPrediction" == varTypeString ||
-                 ( varTypeString == "X86RepeatPrefix" ) || "Rose::BinaryAnalysis::X86RepeatPrefix" == varTypeString ||
-                 ( varTypeString == "X86PositionInRegister" ) || "Rose::BinaryAnalysis::X86PositionInRegister" == varTypeString ||
-                 ( varTypeString == "X86InstructionSize" ) || "Rose::BinaryAnalysis::X86InstructionSize" == varTypeString ||
-                 ( varTypeString == "A64InstructionKind" ) || "Rose::BinaryAnalysis::A64InstructionKind" == varTypeString ||
-                 ( varTypeString == "A64InstructionCondition" ) || "Rose::BinaryAnalysis::A64InstructionCondition" == varTypeString ||
-                 ( varTypeString == "PowerpcInstructionKind" ) || "Rose::BinaryAnalysis::PowerpcInstructionKind" == varTypeString ||
-                 ( varTypeString == "PowerpcRegisterClass" ) || "Rose::BinaryAnalysis::PowerpcRegisterClass" == varTypeString ||
-                 ( varTypeString == "PowerpcConditionRegisterAccessGranularity" ) || "Rose::BinaryAnalysis::PowerpcConditionRegisterAccessGranularity" == varTypeString ||
-                 ( varTypeString == "PowerpcSpecialPurposeRegister" ) || "Rose::BinaryAnalysis::PowerpcSpecialPurposeRegister" == varTypeString ||
-                 ( varTypeString == "PowerpcTimeBaseRegister" ) || "Rose::BinaryAnalysis::PowerpcTimeBaseRegister" == varTypeString ||
-                 ( varTypeString == "MipsInstructionKind") || "Rose::BinaryAnalysis::MipsInstructionKind" == varTypeString ||
-                 ( varTypeString == "M68kInstructionKind") || "Rose::BinaryAnalysis::M68kInstructionKind" == varTypeString ||
-                 ( varTypeString == "ByteOrder::Endianness" ) || "Rose::BinaryAnalysis::ByteOrder::Endianness" == varTypeString ||
               // Note that these enum names do not conform to the naming scheme used in ROSE.
-                 ( varTypeString == "SgAsmGenericSection::SectionPurpose" ) ||
-                 ( varTypeString == "SgAsmGenericFormat::InsSetArchitecture" ) ||
-                 ( varTypeString == "SgAsmGenericFormat::ExecFamily" ) ||
-                 ( varTypeString == "SgAsmGenericFormat::ExecPurpose" ) ||
-                 ( varTypeString == "SgAsmGenericFormat::ExecABI" ) ||
-                 ( varTypeString == "SgAsmGenericSymbol::SymbolDefState" ) ||
-                 ( varTypeString == "SgAsmGenericSymbol::SymbolBinding" ) ||
-                 ( varTypeString == "SgAsmGenericSymbol::SymbolType" ) ||
-                 ( varTypeString == "SgAsmElfSegmentTableEntry::SegmentType" ) ||
-                 ( varTypeString == "SgAsmElfSegmentTableEntry::SegmentFlags" ) ||
-                 ( varTypeString == "SgAsmElfDynamicEntry::EntryType") ||
-                 ( varTypeString == "SgAsmElfRelocEntry::RelocType") ||
-                 ( varTypeString == "SgAsmNEEntryPoint::NEEntryFlags" ) ||
-                 ( varTypeString == "SgAsmNERelocEntry::NERelocSrcType" ) ||
-                 ( varTypeString == "SgAsmNERelocEntry::NERelocModifiers" ) ||
-                 ( varTypeString == "SgAsmNERelocEntry::NERelocTgtType" ) ||
-                 ( varTypeString == "SgAsmNERelocEntry::NERelocFlags" ) ||
                  ( varTypeString == "SgInterfaceStatement::generic_spec_enum" ) ||
-                 ( varTypeString == "SgAsmElfSectionTableEntry::SectionType") ||
-                 ( varTypeString == "SgAsmElfSectionTableEntry::SectionFlags") ||
                  ( varTypeString == "SgOpenclAccessModeModifier::access_mode_modifier_enum") ||
-                 ( varTypeString == "SgAsmFunction::MayReturn") ||
-                 ( varTypeString == "SgAsmRiscOperation::RiscOperator") ||
               // DQ (11/26/2013): Added to support use of enums from SgToken class.
                  ( varTypeString == "SgToken::ROSE_Fortran_Operators" ) ||
                  ( varTypeString == "SgToken::ROSE_Fortran_Keywords" ) ||
               // DQ (12/9/2015): Added to support use of enums from SgUntypedType class.
                  ( varTypeString == "SgUntypedType::type_enum" ) ||
                  ( varTypeString == "SgFile::standard_enum" ) ||
-                 false 
+                 false
               )
        {
           returnType = ENUM_TYPE;
@@ -959,13 +934,7 @@ AstNodeClass::evaluateType(std::string& varTypeString)
                  ( varTypeString == "time_t" ) ||
               // DQ (8/7/2008): Note that these are not primative types, but I will account 
               // for them as such at least temporarily so that we can be the IR in place.
-                 ( varTypeString == "SgAsmNERelocEntry::iref_type" ) ||
-                 ( varTypeString == "SgAsmNERelocEntry::iord_type" ) ||
-                 ( varTypeString == "SgAsmNERelocEntry::iname_type" ) ||
-                 ( varTypeString == "SgAsmNERelocEntry::osfixup_type" ) ||
-                 ( varTypeString == "RegisterDescriptor") || ( varTypeString == "Rose::BinaryAnalysis::RegisterDescriptor" ) ||
               // DQ (8/8/2008): Added typedef for primative types (used in binary format)
-                 ( varTypeString == "SgAsmGenericFormat::fileDetails" ) ||
               // DQ (8/8/2008): This is a typedef to a std::vector<ExtentPair>, this should likely be supported elsewhere.
                  ( varTypeString == "SgGraphNodeDirectedGraphEdgeMultimapPtrList" ) ||
               // TV (05/03/2010): Added support for 'SgFunctionModifier::opencl_work_group_size_t' which's  a struct of 3 longs !
@@ -974,10 +943,6 @@ AstNodeClass::evaluateType(std::string& varTypeString)
               )
        {
           returnType = BASIC_DATA_TYPE;
-       }
-     else if (varTypeString == "SgAsmGenericStrtab::referenced_t")
-       {
-         return SGCLASS_POINTER_LIST;
        }
      else
        {

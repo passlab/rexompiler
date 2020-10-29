@@ -54,7 +54,6 @@ mAstUtilPath=astUtil#
 mProgramTransformationPath=programTransformation#
 
 SUBDIRS = \
-	BinaryAnalysis \
 	programTransformation/extractFunctionArgumentsNormalization \
 	programTransformation/singleStatementToBlockNormalization \
         MFB MDCG KLT

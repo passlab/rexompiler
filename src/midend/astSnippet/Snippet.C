@@ -93,7 +93,6 @@ SnippetFile::lookup(const std::string &fileName)
     return registry.get_value_or(fileName, SnippetFilePtr());
 }
 
-#ifdef ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
 // Return the first non-empty statement from the specified source code, without the trailing semicolon.  This returns the
 // non-comment material from the beginning of the supplied string up to but not including the first semicolon that is not part
 // of a comment or string literal.  Comments are C++/Java style comments. Strings are delimited by single and double quotes
@@ -157,124 +156,10 @@ static std::string extractFirstStatement(const std::string &source)
     return boost::trim_copy(firstStmt);
 }
 
-// Look at source code (before it's parsed) to try to figure out what package it belongs to.  The "package" statement must be
-// the first statement in the file and there can be only one, so it's fairly easy to find.
-static std::string getJavaPackageFromSourceCode(const std::string &source)
-{
-    std::string firstStmt = extractFirstStatement(source);
-    if (boost::starts_with(firstStmt, "package")) {
-        std::string pkgName = boost::trim_copy(firstStmt.substr(7));
-        return pkgName;
-    }
-
-    return "";
-}
-
-// Return the class name from a file name.  If the file is "a/b/c.java" then the class is "c"
-static std::string getJavaClassNameFromFileName(const std::string fileName)
-{
-    std::string notDir;                                 // part of the name after the final slash
-    size_t slashIdx = fileName.rfind('/');
-    if (slashIdx != std::string::npos) {
-        notDir = fileName.substr(slashIdx+1);
-    } else {
-        notDir = fileName;
-    }
-
-    return boost::erase_last_copy(notDir, ".java");
-}
-#endif
-
 #ifdef _MSC_VER
 #define UNUSED_VAR
 #else
 #define UNUSED_VAR __attribute__((unused))
-#endif
-
-#ifdef ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
-// Parse java file based on addJavaSource.cpp test case
-static SgFile* parseJavaFile(const std::string &fileName)
-{
-    // Read in the file as a string.  Easiest way is to use the MemoryMap facilities.
-    std::string sourceCode;
-    {
-        std::ostringstream ss;
-        std::ifstream file(fileName.c_str());
-        ss <<file.rdbuf();
-        sourceCode = ss.str();
-    }
-
-    // Get the package name etc. from the file contents.  We must know these before we can parse the file.
-    std::string pkgName = getJavaPackageFromSourceCode(sourceCode);
-    std::string pkgDirectory = boost::replace_all_copy(pkgName, ".", "/");
-    std::string className = getJavaClassNameFromFileName(fileName);
-    std::string qualifiedClassName = pkgName.empty() ? className : pkgName + "." + className;
-
-#if 0 /*DEBUGGING [Robb P. Matzke 2014-03-31]*/
-    std::cerr <<"ROBB: Java file name is \"" <<fileName <<"\"\n"
-              <<"      Java package directory is \"" <<pkgDirectory <<"\"\n"
-              <<"      Package name is \"" <<pkgName <<"\"\n"
-              <<"      Non-qualified class name is \"" <<className <<"\"\n"
-              <<"      Qualified class name is \"" <<qualifiedClassName <<"\n";
-#endif
-
-    // Code similar to the addJavaSource.cpp unit test
-    SgProject *project = SageInterface::getProject();
-    assert(project!=NULL);
-    std::string tempDirectory = SageInterface::getTempDirectory(project);
-#if 1 /*FIXME[Robb P. Matzke 2014-04-01]: working around a bug in the Java support*/
-    // The current Java support is not able to create parent directories (i.e., like "mkdir -p foo/bar/baz") so we must
-    // do that explicitly to prevent getting a segmentation fault in the Java run time. But we cannot create "baz" because
-    // we must allow Java to be able to do that part.
-    {
-        std::string dirName = tempDirectory;
-        std::vector<std::string> components;
-        boost::split(components, pkgDirectory, boost::is_any_of("/"), boost::token_compress_on);
-        BOOST_FOREACH (const std::string &component, components) {
-            if (!component.empty()) {
-                dirName += "/" + component;
-                boost::filesystem::create_directory(dirName);
-                std::cerr <<"ROBB: created directory \"" <<dirName <<"\"\n";
-            }
-        }
-        struct stat sb;
-        int status UNUSED_VAR = stat(dirName.c_str(), &sb);
-        assert(0==status);
-        assert(boost::filesystem::is_directory(dirName));
-        if (dirName!=tempDirectory) {
-            boost::filesystem::remove_all(dirName); // removing leaf directory so Java can create it
-            std::cerr <<"ROBB: removed directory \"" <<dirName <<"\"\n";
-        }
-    }
-#endif
-
-    // We need to make sure the package exists, but findOrInsertJavaPackage fails when the package name is the empty string.
-    // Hope that package "" exists already.
-    std::string classPath;
-    if (pkgName.empty()) {
-        classPath = className;
-    } else {
-        SgClassDefinition *pkgDef = SageInterface::findOrInsertJavaPackage(project, pkgName, true/* create dir if inserted */);
-        assert(pkgDef!=NULL);
-        classPath = pkgDirectory + "/" + className;
-    }
-
-    // Parse the source code
-    SgFile *file = SageInterface::preprocessCompilationUnit(project, classPath, sourceCode);
-
-#if 0
-    /* FIXME[Robb P. Matzke 2014-04-01]: This directory is apparently needed after parsing and I'm not sure when its safe
-     * to clean it up. The addJavaSource unit test does the cleanup after calling backend(), but we have no control over
-     * that since it's done by the user sometime after snippet injections are finished (in fact, the snippet data structures
-     * might already be destroyed by then). */
-    SageInterface::destroyTempDirectory(tempDirectory);
-#endif
-#if 1 /*DEBUGGING [Robb P. Matzke 2014-04-01]*/
-    std::cerr <<"ROBB: Java snippet has been parsed; file = (" <<file->class_name() <<"*)" <<file <<"\n";
-#endif
-
-    return file;
-}
 #endif
 
 // Class method
@@ -288,17 +173,7 @@ SnippetFile::parse(const std::string &fileName)
 
     // Try to load the snippet by parsing its source file
     SgFile *file = NULL;
-    if (SageInterface::is_Java_language()) {
-#if 0 /* [Robb P. Matzke 2014-03-31] */
-        // This appears not to work any better than SageBuilder::buildFile and Philippe Charles concurs that it might not.
-        file = SageInterface::processFile(SageInterface::getProject(), fileName, false/* don't unparse */);
-#elif defined(ROSE_BUILD_JAVA_LANGUAGE_SUPPORT)
-        // This is the better way (but much more complicated) to parse a Java file.
-        file = parseJavaFile(fileName);
-#endif
-    } else {
-        file = SageBuilder::buildFile(fileName, outputName, SageInterface::getProject());
-    }
+    file = SageBuilder::buildFile(fileName, outputName, SageInterface::getProject());
     SgSourceFile *snippetAst = isSgSourceFile(file);
     assert(snippetAst!=NULL);
 
@@ -1023,79 +898,8 @@ Snippet::insertRelatedThings(SgStatement *insertionPoint)
         return;
 
     // Language specific insertions
-    if (SageInterface::is_Java_language()) {
-        insertRelatedThingsForJava(insertionPoint);
-    } else if (SageInterface::is_C_language()) {
+    if (SageInterface::is_C_language()) {
         insertRelatedThingsForC(insertionPoint);
-    }
-}
-
-void
-Snippet::insertRelatedThingsForJava(SgStatement *insertionPoint)
-{
-    // The insertionPoint is some statement in a SgMemberFunctionDeclaration where this snippet was already inserted.  The
-    // snippet's statements have already been inserted into the target function, and now we need to insert declarations that
-    // are siblings of this snippet (in the snippet file) as siblings of the target SgMemberFunctionDeclaration into which this
-    // snippet was inserted.
-    SgStatement *topInsertionPoint = SageInterface::getEnclosingNode<SgMemberFunctionDeclaration>(insertionPoint);
-    ROSE_ASSERT(topInsertionPoint || !"Java snippet must have been inserted into a SgMemberFunctionDeclaration");
-    
-    // Insert whole declarations from the snippet file into the target file.
-    SgClassDefinition *snippetClass = SageInterface::getEnclosingNode<SgClassDefinition>(ast); // snippet's class
-    ROSE_ASSERT(snippetClass || !"each java snippet must be a member of a class definition");
-    BOOST_FOREACH (SgDeclarationStatement *decl, snippetClass->get_members()) {
-        // Insert only those things that come from the snippet file, not from header files
-        if (!decl->get_file_info()->isSameFile(ast->get_file_info()))
-            continue;
-
-        // If a declaration is blacklisted in the snippet file then don't insert it.
-        if (file->isBlackListed(decl))
-            continue;
-
-        // Insert whole function definitions (snippets) only if the user asked for this feature.
-        if (SgFunctionDeclaration *fdecl = isSgMemberFunctionDeclaration(decl)) {
-            if (fdecl->get_definition()!=NULL && !file->getCopyAllSnippetDefinitions())
-                continue;
-        }
-
-        // Insert this declaration
-        SgTreeCopy deep;
-        SgDeclarationStatement *declCopy = isSgDeclarationStatement(decl->copy(deep));
-        causeUnparsing(declCopy, topInsertionPoint->get_file_info());
-        file->addInsertionRecord(SnippetInsertion(declCopy, decl, topInsertionPoint));
-        SageInterface::insertStatementBefore(topInsertionPoint, declCopy);
-
-     // DQ (3/19/2014): Added fixup of AST for Java declarations copied into the AST.
-        if (fixupAst) {
-            // DQ (3/13/2014): Added more general support for AST fixup (after insertion into the AST).  If we are inserting into
-            // the end of a scope then we point to the scope since there is no last statement to insert a statement before.  In
-            // this case then insertionPointIsScope == true, else it is false.  I think that in the cases called by this function
-            // insertionPointIsScope is always false.
-            bool insertionPointIsScope        = false;
-            SgStatement* toInsert             = declCopy;
-            SgStatement* original_before_copy = decl;
-            // std::map<SgNode*,SgNode*> translationMap;
-
-            SageBuilder::fixupCopyOfAstFromSeparateFileInNewTargetAst(topInsertionPoint, insertionPointIsScope, toInsert,
-                                                                      original_before_copy);
-        }
-    }
-
-    // Copy import statements from the snippet's file into the target file.
-    SgSourceFile *targetFile = isSgSourceFile(SageInterface::getEnclosingFileNode(insertionPoint));
-    ROSE_ASSERT(targetFile || !"snippet insertion point must belong to a file");
-    SgSourceFile *snippetFile = isSgSourceFile(SageInterface::getEnclosingFileNode(ast));
-    ROSE_ASSERT(snippetFile || !"snippet must belong to a file");
-    SgJavaImportStatementList *targetImports = targetFile->get_import_list();
-    SgJavaImportStatementList *snippetImports = snippetFile->get_import_list();
-    assert(targetImports!=NULL && snippetImports!=NULL);
-    BOOST_FOREACH (SgJavaImportStatement *snippetImport, snippetImports->get_java_import_list()) {
-        SgTreeCopy deep;
-        SgJavaImportStatement *newImport = isSgJavaImportStatement(snippetImport->copy(deep));
-        causeUnparsing(newImport, topInsertionPoint->get_file_info());
-        file->addInsertionRecord(SnippetInsertion(newImport, snippetImport, targetImports));
-        targetImports->get_java_import_list().push_back(newImport);
-        newImport->set_parent(targetImports);
     }
 }
 

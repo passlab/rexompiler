@@ -130,7 +130,7 @@ HEADER_START
           Result is true if it stores a type explicitly as a data member, else false.
 
           \internal True only if this is either a SgTemplateParameterVal, SgComplexVal, SgSizeOfOp, SgAlignOfOp, 
-                    SgJavaInstanceOfOp, SgJavaAnnotation, SgTypeIdOp, SgVarArgStartOp, SgVarArgStartOneOperandOp, 
+                    SgTypeIdOp, SgVarArgStartOp, SgVarArgStartOneOperandOp, 
                     SgVarArgOp, SgVarArgEndOp, SgVarArgCopyOp, SgNewExp, SgRefExp, SgAggregateInitializer, SgCompoundInitializer,
                     SgConstructorInitializer, SgAssignInitializer, SgPseudoDestructorRefExp.
        */
@@ -855,14 +855,6 @@ HEADER_GREATER_OR_EQUAL_OPERATOR_END
 HEADER_ADD_OPERATOR_START
 HEADER_ADD_OPERATOR_END
 
-HEADER_DOTDOT_EXPRESSION_START
-   SgType* get_type() const $ROSE_OVERRIDE;
-
-   // get lvalue
-//   virtual bool isLValue() const;
-//   virtual bool isChildUsedAsLValue(const SgExpression* child) const; // INTERNAL Recursively call up the chain to answer the child
-HEADER_DOTDOT_EXPRESSION_END
-
 HEADER_SUBTRACT_OPERATOR_START
 HEADER_SUBTRACT_OPERATOR_END
 
@@ -976,9 +968,6 @@ HEADER_LEFT_SHIFT_OPERATOR_END
 HEADER_RIGHT_SHIFT_OPERATOR_START
 HEADER_RIGHT_SHIFT_OPERATOR_END
 
-HEADER_JAVA_UNSIGNED_RIGHT_SHIFT_OPERATOR_START
-HEADER_JAVA_UNSIGNED_RIGHT_SHIFT_OPERATOR_END
-
 HEADER_MINUS_OPERATOR_START
 HEADER_MINUS_OPERATOR_END
 
@@ -1061,16 +1050,6 @@ HEADER_NOEXCEPT_OPERATOR_START
 #endif
 
 HEADER_NOEXCEPT_OPERATOR_END
-
-
-HEADER_JAVA_INSTANCEOF_OPERATOR_START
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-          virtual unsigned int cfgIndexForEnd() const $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
-#endif
-
-HEADER_JAVA_INSTANCEOF_OPERATOR_END
 
 
 HEADER_TYPE_ID_OPERATOR_START
@@ -1209,14 +1188,6 @@ HEADER_IMAG_PART_OPERATOR_END
 
 HEADER_CONJUGATE_OPERATOR_START
 HEADER_CONJUGATE_OPERATOR_END
-
-
-HEADER_ATEXP_EXPRESSION_START
-HEADER_ATEXP_EXPRESSION_END
-
-HEADER_FINISHEXP_EXPRESSION_START
-HEADER_FINISHEXP_EXPRESSION_END
-
 
 HEADER_CONDITIONAL_EXPRESSION_START
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
@@ -1371,9 +1342,6 @@ HEADER_DELETE_OPERATOR_EXPRESSION_START
 #endif
 
 HEADER_DELETE_OPERATOR_EXPRESSION_END
-
-HEADER_HERE_EXPRESSION_START
-HEADER_HERE_EXPRESSION_END
 
 HEADER_THIS_EXPRESSION_START
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
@@ -1917,38 +1885,6 @@ HEADER_CUDA_KERNEL_EXEC_CONFIG_END
 
 HEADER_CUDA_KERNEL_CALL_EXPRESSION_START
 HEADER_CUDA_KERNEL_CALL_EXPRESSION_END
-
-HEADER_JAVA_ANNOTATION_START
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-          virtual unsigned int cfgIndexForEnd() const $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
-#endif
-
-HEADER_JAVA_ANNOTATION_END
-
-HEADER_JAVA_MARKER_ANNOTATION_START
-HEADER_JAVA_MARKER_ANNOTATION_END
-
-HEADER_JAVA_SINGLE_MEMBER_ANNOTATION_START
-HEADER_JAVA_SINGLE_MEMBER_ANNOTATION_END
-
-HEADER_JAVA_NORMAL_ANNOTATION_START
-
-  // DQ (1/13/2014): Added append and prepend member functions to support Java annotations.
-     void append_value_pair (SgJavaMemberValuePair *what);
-     void prepend_value_pair(SgJavaMemberValuePair *what);
-
-HEADER_JAVA_NORMAL_ANNOTATION_END
-
-HEADER_JAVA_TYPE_EXPRESSION_START
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-          virtual unsigned int cfgIndexForEnd() const $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
-          virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
-#endif
-
-HEADER_JAVA_TYPE_EXPRESSION_END
 
 HEADER_TYPE_EXPRESSION_START
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
@@ -2618,7 +2554,7 @@ SgExpression::hasExplicitType()
   // can review this if it is important.
 
   // This function returns true only if this is either a SgTemplateParameterVal, SgComplexVal, SgSizeOfOp, SgAlignOfOp, 
-  // SgJavaInstanceOfOp, SgJavaAnnotation, SgTypeIdOp, SgVarArgStartOp, SgVarArgStartOneOperandOp, 
+  // SgTypeIdOp, SgVarArgStartOp, SgVarArgStartOneOperandOp, 
   // SgVarArgOp, SgVarArgEndOp, SgVarArgCopyOp, SgNewExp, SgRefExp, SgAggregateInitializer, SgCompoundInitializer,
   // SgConstructorInitializer, SgAssignInitializer, SgPseudoDestructorRefExp.
 
@@ -2626,17 +2562,14 @@ SgExpression::hasExplicitType()
 
   // Need to add: SgUpcLocalsizeofExpression, SgUpcBlocksizeofExpression, SgUpcElemsizeofExpression.
 
-  // There are no access functions for SgJavaAnnotation, SgJavaTypeExpression, SgJavaTypeExpression, 
-
   // DQ (11/10/2014): Added support for SgFunctionParameterRefExp node to store the type explicitly.
 
      if ( isSgTemplateParameterVal(this) != NULL     || isSgComplexVal(this)    != NULL            || isSgSizeOfOp(this) != NULL                 || 
-          isSgAlignOfOp(this) != NULL                || isSgJavaInstanceOfOp(this) != NULL         || isSgTypeIdOp(this)  != NULL                ||
+          isSgAlignOfOp(this) != NULL                || isSgTypeIdOp(this)  != NULL                ||
           isSgVarArgStartOp(this) != NULL            || isSgVarArgStartOneOperandOp(this) != NULL  || isSgVarArgOp(this)  != NULL                ||
           isSgVarArgEndOp(this) != NULL              || isSgVarArgCopyOp(this) != NULL             || isSgNewExp(this)  != NULL                  ||
           isSgRefExp(this) != NULL                   || isSgAggregateInitializer(this) != NULL     || isSgCompoundInitializer(this)  != NULL     ||
           isSgUpcLocalsizeofExpression(this) != NULL || isSgUpcBlocksizeofExpression(this) != NULL || isSgUpcElemsizeofExpression(this)  != NULL ||
-          isSgJavaAnnotation(this) != NULL           || isSgJavaTypeExpression(this) != NULL       || isSgJavaTypeExpression(this)  != NULL      ||
        // isSgConstructorInitializer(this) != NULL   || isSgAssignInitializer(this) != NULL        || isSgPseudoDestructorRefExp(this)  != NULL  ||
           isSgConstructorInitializer(this) != NULL   || isSgPseudoDestructorRefExp(this)  != NULL  || isSgFunctionParameterRefExp(this) != NULL )
         {
@@ -2696,14 +2629,6 @@ SgExpression::set_explicitly_stored_type( SgType* type )
           case V_SgAlignOfOp:
              {
                SgAlignOfOp* exp = isSgAlignOfOp(this);
-               ROSE_ASSERT(exp != NULL);
-               exp->set_operand_type(type);
-               break;
-             }
-
-          case V_SgJavaInstanceOfOp:
-             {
-               SgJavaInstanceOfOp* exp = isSgJavaInstanceOfOp(this);
                ROSE_ASSERT(exp != NULL);
                exp->set_operand_type(type);
                break;
@@ -2813,26 +2738,6 @@ SgExpression::set_explicitly_stored_type( SgType* type )
                break;
              }
 
-#if 0
-        // DQ (3/7/20145): This IR node is generated without access functions for the type.
-           case V_SgJavaAnnotation:
-             {
-               SgJavaAnnotation* exp = isSgJavaAnnotation(this);
-               ROSE_ASSERT(exp != NULL);
-               exp->set_expresion_type(type);
-               break;
-             }
-#endif
-#if 1
-        // DQ (3/7/20145): This IR node is generated without access functions for the type.
-           case V_SgJavaTypeExpression:
-             {
-               SgJavaTypeExpression* exp = isSgJavaTypeExpression(this);
-               ROSE_ASSERT(exp != NULL);
-               exp->set_type(type);
-               break;
-             }
-#endif
 #if 0
              {
                printf ("Error: case not handled: expression = %p = %s \n",this,this->class_name().c_str());
@@ -5156,25 +5061,6 @@ SOURCE_NOT_OPERATOR_EXPRESSION_END
 SOURCE_ADD_OPERATOR_EXPRESSION_START
 SOURCE_ADD_OPERATOR_EXPRESSION_END
 
-SOURCE_DOTDOT_EXPRESSION_START
-SgType*
-$CLASSNAME::get_type() const
-   {
-     ROSE_ASSERT(get_lhs_operand() != NULL);
-     ROSE_ASSERT(get_rhs_operand() != NULL);
-
-#if 0
-     printf ("In $CLASSNAME::get_type() \n");
-#endif
-
-     SgType* returnType = get_rhs_operand()->get_type();
-
-     ROSE_ASSERT(returnType != NULL);
-
-     return returnType;
-   }
-SOURCE_DOTDOT_EXPRESSION_END
-
 SOURCE_SUBTRACT_OPERATOR_EXPRESSION_START
 SOURCE_SUBTRACT_OPERATOR_EXPRESSION_END
 
@@ -5374,9 +5260,6 @@ SOURCE_LEFT_SHIFT_OPERATOR_EXPRESSION_END
 
 SOURCE_RIGHT_SHIFT_OPERATOR_EXPRESSION_START
 SOURCE_RIGHT_SHIFT_OPERATOR_EXPRESSION_END
-
-SOURCE_JAVA_UNSIGNED_RIGHT_SHIFT_OPERATOR_EXPRESSION_START
-SOURCE_JAVA_UNSIGNED_RIGHT_SHIFT_OPERATOR_EXPRESSION_END
 
 SOURCE_MINUS_OPERATOR_EXPRESSION_START
 SOURCE_MINUS_OPERATOR_EXPRESSION_END
@@ -5687,52 +5570,6 @@ SgNoexceptOp::replace_expression (SgExpression *o, SgExpression *n)
 #endif
 
 SOURCE_NOEXCEPT_OPERATOR_EXPRESSION_END
-
-SOURCE_JAVA_INSTANCEOF_OPERATOR_EXPRESSION_START
-
-SgType*
-$CLASSNAME::get_type() const
-   {
-  // This function returns an unsigned integer representing the size of type 
-  // (the unsigned int should match size_t, which may or may not be defined).
-
-     ROSE_ASSERT(p_operand_expr != NULL || p_operand_type != NULL);
-
-#if 0
-     printf ("In $CLASSNAME::get_type() \n");
-#endif
-
-     SgType* returnType = SgTypeUnsignedInt::createType();
-
-     ROSE_ASSERT(returnType != NULL);
-     return returnType;
-   }
-
-#if 0
-// Liao, 11/17/2009
-int
-SgJavaInstanceOfOp::replace_expression (SgExpression *o, SgExpression *n)
-   {
-  // DQ (12/17/2006): This function should have the semantics that it will represent a  
-  // structural change to the AST, thus it is free to set the parent of the new expression.
-
-     ROSE_ASSERT(o != NULL);
-     ROSE_ASSERT(n != NULL);
-
-     if (get_operand_expr() == o)
-        {
-          set_operand_expr(n);
-          return 1;
-        }
-       else
-        {
-          printf ("Warning: inside of SgSizeOfOp::replace_expression original SgExpression unidentified \n");
-          return 0;
-        }
-   }
-#endif
-
-SOURCE_JAVA_INSTANCEOF_OPERATOR_EXPRESSION_END
 
 SOURCE_TYPE_ID_OPERATOR_EXPRESSION_START
 
@@ -6384,46 +6221,6 @@ SOURCE_IMAG_PART_OPERATOR_EXPRESSION_END
 
 SOURCE_CONJUGATE_OPERATOR_EXPRESSION_START
 SOURCE_CONJUGATE_OPERATOR_EXPRESSION_END
-
-
-SOURCE_ATEXP_EXPRESSION_START
-void
-$CLASSNAME::post_construction_initialization()
-   {
-   }
-
-SgType*
-SgAtExp::get_type() const
-   {
-#if 0
-     printf ("In SgAtExp::get_type() \n");
-#endif
-
-     SgType* returnType = SgTypeDefault::createType();
-     ROSE_ASSERT(returnType != NULL);
-     return returnType;
-   }
-SOURCE_ATEXP_EXPRESSION_END
-
-SOURCE_FINISHEXP_EXPRESSION_START
-void
-$CLASSNAME::post_construction_initialization()
-   {
-   }
-
-SgType*
-SgFinishExp::get_type() const
-   {
-#if 0
-     printf ("In SgFinishExp::get_type() \n");
-#endif
-
-     SgType* returnType = SgTypeDefault::createType();
-     ROSE_ASSERT(returnType != NULL);
-     return returnType;
-   }
-SOURCE_FINISHEXP_EXPRESSION_END
-
 
 SOURCE_CONDITIONAL_EXPRESSION_START
 void
@@ -7210,25 +7007,6 @@ SgDeleteExp::replace_expression(SgExpression *o, SgExpression *n)
 
 SOURCE_DELETE_OPERATOR_EXPRESSION_END
 
-SOURCE_HERE_EXPRESSION_START
-void
-$CLASSNAME::post_construction_initialization() 
-   {
-   }
-
-SgType*
-$CLASSNAME::get_type() const
-   {
-#if 0
-     printf ("In $CLASSNAME::get_type() \n");
-#endif
-
-     SgType* returnType = SgTypeDefault::createType();
-     ROSE_ASSERT(returnType != NULL);
-     return returnType;
-   }
-SOURCE_HERE_EXPRESSION_END
-
 SOURCE_THIS_EXPRESSION_START
 SOURCE_THIS_EXPRESSION_END
 
@@ -7753,18 +7531,6 @@ SgConstructorInitializer::get_class_decl () const
         // p_expression_type's declaration.
         class_decl = isSgClassDeclaration(expr_type->get_declaration());
         assert(class_decl!=NULL);
-    } else if (SgJavaParameterizedType* parmType = isSgJavaParameterizedType(p_expression_type)) {
-	    // 12/16/12 PC added case of SgJavaParameterizedType... Note that Strictly speaking,
-	    // an SgJavaParameterizedType is a class.  However, this is not the case in the current
-	    // SAGE Representation.
-        class_decl = isSgClassDeclaration(parmType->get_declaration());
-        ROSE_ASSERT(class_decl != NULL);    
-    } else if (SgJavaQualifiedType *qualType = isSgJavaQualifiedType(p_expression_type)) {
-	    // 01/24/15 PC added case of SgJavaQualifiedType... Note that Strictly speaking,
-	    // an SgJavaQualifiedType is a class.  However, this is not the case in the current
-	    // SAGE Representation.
-        class_decl = isSgClassDeclaration(qualType->get_declaration());
-        ROSE_ASSERT(class_decl != NULL);    
     } else {
         // Constructor is for a primitive type.  There is no class declaration to return.
     }
@@ -7782,14 +7548,8 @@ SgConstructorInitializer::post_construction_initialization()
      ROSE_ASSERT(p_expression_type != NULL);
      if (p_declaration == NULL)
         {
-       // This can be NULL for the case of an undeclared constructor.
-       // 12/16/12 PC added case of SgJavaParameterizedType... Note that Strictly speaking,
-       // an SgJavaParameterizedType is a class.  However, this is not the case in the current
-       // SAGE Representation.
-       //01/24/15 added case of SgJavaQualifiedType...
-
        // DQ (1/19/2019): This is failing in the copyAST tests for test2005_24.C
-          if ( !((isSgJavaParameterizedType(p_expression_type) || isSgJavaQualifiedType(p_expression_type) || isSgClassType(p_expression_type) != NULL) || (p_associated_class_unknown == true)) )
+          if ( !((isSgClassType(p_expression_type) != NULL) || (p_associated_class_unknown == true)) )
              {
                printf ("In SgConstructorInitializer::post_construction_initialization(): What is this failing case?  p_expression_type = %p \n",p_expression_type);
                if (p_expression_type != NULL)
@@ -7798,7 +7558,7 @@ SgConstructorInitializer::post_construction_initialization()
                   }
              }
 
-          ROSE_ASSERT( (isSgJavaParameterizedType(p_expression_type) || isSgJavaQualifiedType(p_expression_type) || isSgClassType(p_expression_type) != NULL) || (p_associated_class_unknown == true) );
+          ROSE_ASSERT( (isSgClassType(p_expression_type) != NULL) || (p_associated_class_unknown == true) );
         }
 
   // DQ (11/15/2006): avoid setting newArgs this late in the process.
@@ -8685,19 +8445,6 @@ $CLASSNAME::get_type() const
    }
 
 SOURCE_GET_TYPE_CALLING_GET_EXPRESSION_TYPE_EXPRESSION_END
-
-SOURCE_GET_TYPE_HERE_EXPRESSION_START
-#if 0
-SgType*
-$CLASSNAME::get_type() const 
-   {
-  // DQ (1/14/2006): The p_pobj_this data member was CC++ specific and no longer used (deprecated in Sage III), p_pobj_this is now removed
-     ROSE_ASSERT(get_class_symbol() != NULL);
-     ROSE_ASSERT(get_class_symbol()->get_type() != NULL);
-     return SgPointerType::createType(get_class_symbol()->get_type());
-   }
-#endif
-SOURCE_GET_TYPE_HERE_EXPRESSION_END
 
 SOURCE_GET_TYPE_THIS_EXPRESSION_START
 
@@ -9755,73 +9502,8 @@ SgCudaKernelCallExp::get_type() const
 SOURCE_CUDA_KERNEL_CALL_EXPRESSION_END
 
 
-SOURCE_JAVA_ANNOTATION_START
-
-// DQ (1/13/2014): This function helps to provide a uniform interface even though 
-// the type is held in a field called p_expression_type.  This supports Java annotations
-// for the SgJavaMarkerAnnotation, SgJavaSingleMemberAnnotation, and SgJavaNormalAnnotation.
-SgType*
-$CLASSNAME::get_type() const
-   {
-  // This function returns an explicitly stored type
-
-     SgType* returnType = p_expression_type;
-
-#if 0
-     printf ("In $CLASSNAME::get_type() \n");
-#endif
-
-     ROSE_ASSERT(returnType != NULL);
-     return returnType;
-   }
-
-SOURCE_JAVA_ANNOTATION_END
-
-SOURCE_JAVA_MARKER_ANNOTATION_START
-SOURCE_JAVA_MARKER_ANNOTATION_END
-
-SOURCE_JAVA_SINGLE_MEMBER_ANNOTATION_START
-SOURCE_JAVA_SINGLE_MEMBER_ANNOTATION_END
-
-SOURCE_JAVA_NORMAL_ANNOTATION_START
-
-void
-SgJavaNormalAnnotation::append_value_pair(SgJavaMemberValuePair *what)
-   { what->set_parent(this); p_value_pair_list.push_back(what); }
-
-void
-SgJavaNormalAnnotation::prepend_value_pair(SgJavaMemberValuePair *what)
-   { what->set_parent(this); p_value_pair_list.insert(p_value_pair_list.begin(), what); }
-
-SOURCE_JAVA_NORMAL_ANNOTATION_END
-
-SOURCE_JAVA_TYPE_EXPRESSION_START
-
-#if 0
-// DQ (3/7/2014): Use automatically generated access functions instead (so that we get both get_ and set_ functions).
-// We need the set functions to support the AST fixup for the snippet mechanism.
-
-//
-// Return the type associated with this Type expression.
-//
-SgType*
-$CLASSNAME::get_type() const
-   {
-  // This function returns an explicitly stored type
-
-     SgType* returnType = p_type;
-
-     ROSE_ASSERT(returnType != NULL);
-     return returnType;
-   }
-#endif
-
-SOURCE_JAVA_TYPE_EXPRESSION_END
-
-
 SOURCE_TYPE_EXPRESSION_START
 SOURCE_TYPE_EXPRESSION_END
-
 
 SOURCE_FUNCTION_PARAMETER_REFERENCE_EXPRESSION_START
 

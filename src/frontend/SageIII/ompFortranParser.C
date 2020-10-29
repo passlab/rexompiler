@@ -31,6 +31,21 @@ static OmpSupport::OmpAttribute* ompattribute = NULL; // the current attribute (
 static omp_construct_enum omptype= e_unknown; // the current clause (or reduction operation type) being filled out
 static SgExpression * current_exp = NULL; // the current expression AST tree being built
 
+// Customized variables for PASS lab updates.
+// the clause where variables will be added.
+static ComplexClause* current_clause;
+static bool is_complex_clause = false;
+// Store parameters temporarily in case of normalization.
+static omp_construct_enum first_parameter;
+static omp_construct_enum second_parameter;
+static omp_construct_enum third_parameter;
+// use existing clause for normalization or create a new one.
+static ComplexClause* setupComplexClause ();
+// normalize the complex clause after initial setup.
+static ComplexClause* normalizeComplexClause();
+// add user defined parameter as expression string.
+static bool addUserDefinedParameter(const char* expr);
+
 //--------------omp fortran scanner (ofs) functions------------------
 //
 // note: ofs_skip_xxx() optional skip 0 or more patterns
@@ -319,8 +334,8 @@ static bool ofs_match_clause_schedule()
 
   if  (ofs_match_substr("schedule",false))// no space is required after the match
   {
-    ompattribute->addClause(e_schedule);
     omptype = e_schedule;
+    current_clause = ompattribute->addComplexClause(omptype);
 
     if (!ofs_match_char('('))
     {
@@ -354,7 +369,7 @@ static bool ofs_match_clause_schedule()
       assert(false);
     }
     //  set schedule kind matched
-    ompattribute->setScheduleKind(matched_kind);
+    current_clause->first_parameter = matched_kind;
 
     // match optional ",chunk_size"
     if (matched_kind == e_schedule_static || matched_kind == e_schedule_dynamic
@@ -362,10 +377,9 @@ static bool ofs_match_clause_schedule()
     {
       if (ofs_match_char(','))
       {
-        if (ofs_match_expression())
-        {
-          assert (current_exp != NULL);
-          ompattribute->addExpression(omptype, "", current_exp);
+        if (ofs_match_expression()) {
+            assert (current_exp != NULL);
+            ompattribute->addComplexClauseExpression(omptype, "", current_exp);
         }
         else
         {
@@ -463,8 +477,12 @@ static void ofs_add_block_variables (char* block_name)
     SgVariableSymbol * symbol = isSgVariableSymbol(var_exp->get_symbol());
     assert (symbol!=NULL);
 //    cout<<"adding variable:"<< symbol->get_name().getString() <<" to "<<OmpSupport::toString(omptype)<<endl;
-    ompattribute->addVariable(omptype,symbol->get_name(), 
-                symbol->get_declaration());
+        if (is_complex_clause) {
+            ompattribute->addComplexClauseVariable(current_clause, symbol->get_name(), symbol->get_declaration());
+        }
+        else {
+            ompattribute->addVariable(omptype, symbol->get_name(), symbol->get_declaration());
+        };
     exp_iter++;
   }
 
@@ -491,10 +509,17 @@ static bool ofs_match_varlist()
 
     if (ofs_match_anyname(buffer)||(isCommonblock=ofs_match_common_block(buffer)))
     {
-      if (isCommonblock)
-        ofs_add_block_variables(buffer);
-      else
-        ompattribute->addVariable(omptype, buffer);
+        if (isCommonblock) {
+            ofs_add_block_variables(buffer);
+        }
+        else {
+            if (is_complex_clause) {
+                ompattribute->addComplexClauseVariable(current_clause, buffer);
+            }
+            else {
+                ompattribute->addVariable(omptype, buffer);
+            }
+        };
       // look for the next variable/or common block
       if (ofs_match_char(','))
         continue;
@@ -535,11 +560,11 @@ static bool ofs_match_clause_varlist(omp_construct_enum clausetype)
     case e_firstprivate:
     case e_lastprivate:
     case e_private:
-    case e_shared:
-      {
+    case e_shared: {
+        is_complex_clause = true;
         strcpy (clause_name, OmpSupport::toString(clausetype).c_str());
         break;
-      }
+    }
     default:
       {
         printf("Unaccepted clause type :%s for clause(varlist) match!\n",OmpSupport::toString(clausetype).c_str());
@@ -549,9 +574,14 @@ static bool ofs_match_clause_varlist(omp_construct_enum clausetype)
 
   if (ofs_match_substr(clause_name,false)) // We don't check for trail here, they are handled later on
   {
-    assert (ompattribute != NULL); 
-    ompattribute->addClause(clausetype);
+    assert (ompattribute != NULL);
     omptype = clausetype;
+    if (is_complex_clause) {
+        current_clause = setupComplexClause();
+    }
+    else {
+        ompattribute->addClause(clausetype);
+    };
     ofs_skip_whitespace();
     if (ofs_match_char('('))
     {
@@ -562,11 +592,13 @@ static bool ofs_match_clause_varlist(omp_construct_enum clausetype)
       printf("error in clause(varlist) match: no starting '(' is found for %s.\n",old_char);
       assert(false);
     }
+    is_complex_clause = false;
     return true;
   }
   else
     c_char= old_char;
 
+  is_complex_clause = false;
   return false;
 }
 
@@ -610,11 +642,11 @@ static bool ofs_match_clause_expression (omp_construct_enum clausetype)
   {
     case e_collapse:
     case e_if:
-    case e_num_threads:
-      {
+    case e_num_threads: {
+        is_complex_clause = true;
         strcpy (clause_name, OmpSupport::toString(clausetype).c_str());
         break;
-      }
+    }
     default:
       {
         printf("Unaccepted clause type :%s for clause(expr) match!\n",OmpSupport::toString(clausetype).c_str());
@@ -625,15 +657,33 @@ static bool ofs_match_clause_expression (omp_construct_enum clausetype)
   if (ofs_match_substr(clause_name,false)) // We don't check for trail here, they are handled later on
   {
     assert (ompattribute != NULL);
-    ompattribute->addClause(clausetype);
     omptype = clausetype;
+    if (is_complex_clause) {
+        current_clause = ompattribute->addComplexClause(omptype);
+    }
+    else {
+        ompattribute->addClause(omptype);
+    };
     ofs_skip_whitespace();
     if (ofs_match_char('('))
     {
+        // check possible parameters.
+        ofs_skip_whitespace();
+        if (is_complex_clause && ofs_match_substr("parallel", false)) {
+            current_clause->first_parameter = e_parallel;
+            ofs_match_char(':');
+            ofs_skip_whitespace();
+        };
+      // continue to the expression.
       if(ofs_match_expression())
       {
         assert(current_exp != NULL);
-        ompattribute->addExpression(omptype,"", current_exp);
+        if (is_complex_clause) {
+            ompattribute->addComplexClauseExpression(omptype, "", current_exp);
+        }
+        else {
+            ompattribute->addExpression(omptype, "", current_exp);
+        };
       }
       else
       {
@@ -654,11 +704,13 @@ static bool ofs_match_clause_expression (omp_construct_enum clausetype)
       assert(false);
     }
 
+    is_complex_clause = false;
     return true;
   }
   else
     c_char= old_char;
 
+  is_complex_clause = false;
   return false;
 }
 
@@ -704,8 +756,18 @@ static bool ofs_match_clause_naked (omp_construct_enum clausetype)
   if (ofs_match_substr(clause_name,true)) 
   {
     assert (ompattribute != NULL); 
-    ompattribute->addClause(clausetype);
-    omptype = clausetype;
+    switch (clausetype) {
+        case e_nowait:
+        case e_ordered_clause:
+        case e_untied: {
+            omptype = clausetype;
+            ompattribute->addComplexClause(clausetype);
+            break;
+        }
+        default:
+            ompattribute->addClause(clausetype);
+            omptype = clausetype;
+    }
     return true;
   }
   else
@@ -719,7 +781,7 @@ static bool ofs_match_clause_default()
   const char* old_char = c_char;
   if  (ofs_match_substr("default",false))// no space is required after the match
   {
-    ompattribute->addClause(e_default);
+    current_clause = ompattribute->addComplexClause(e_default);
     if (!ofs_match_char('('))
     {
       printf("error in default(xx) match: no starting '(' is found for %s.\n",old_char);
@@ -727,13 +789,13 @@ static bool ofs_match_clause_default()
     }
     // match values
     if (ofs_match_substr("private",false))
-      ompattribute->setDefaultValue(e_default_private);
+        current_clause->first_parameter = e_default_private;
     else if (ofs_match_substr("firstprivate",false))
-      ompattribute->setDefaultValue(e_default_firstprivate);
+        current_clause->first_parameter = e_default_firstprivate;
     else if (ofs_match_substr("shared",false))
-      ompattribute->setDefaultValue(e_default_shared);
+        current_clause->first_parameter = e_default_shared;
     else if  (ofs_match_substr("none",false))
-      ompattribute->setDefaultValue(e_default_none);
+        current_clause->first_parameter = e_default_none;
     else
     {
       printf("error in matching default(value):no legal value is found for %s\n", old_char);
@@ -752,91 +814,178 @@ static bool ofs_match_clause_default()
   return false;
 }
 
+//! Match a Fortran allocate clause
+// allocate({identifier|intrinsic_procedure_name}:varlist)
+static bool ofs_match_clause_allocate() {
+    const char* old_char = c_char;
+    if (ofs_match_substr("allocate",false)) { // no space etc. is needed after it
+        assert (ompattribute != NULL);
+        omptype = e_allocate;
+        first_parameter = e_unknown;
+        second_parameter = e_unknown;
+        third_parameter = e_unknown;
+        current_clause = NULL;
+        is_complex_clause = true;
+        if (!ofs_match_char('(')) {
+            printf("error in clause(varlist) match: no starting '(' is found for %s.\n",old_char);
+            assert(false);
+        };
+
+        // Only when there's colon, modifiers need to be matched.
+        if (strchr(c_char, ':')) {
+            if (ofs_match_substr("omp_default_mem_alloc", false)) {
+                first_parameter = e_allocate_default_mem_alloc;
+            }
+            else if (ofs_match_substr("omp_large_cap_mem_alloc", false)) {
+                first_parameter = e_allocate_large_cap_mem_alloc;
+            }
+            else if (ofs_match_substr("omp_const_mem_alloc", false)) {
+                first_parameter = e_allocate_const_mem_alloc;
+            }
+            else if (ofs_match_substr("omp_high_bw_mem_alloc", false)) {
+                first_parameter = e_allocate_high_bw_mem_alloc;
+            }
+            else if (ofs_match_substr("omp_low_lat_mem_alloc", false)) {
+                first_parameter = e_allocate_low_lat_mem_alloc;
+            }
+            else if (ofs_match_substr("omp_cgroup_mem_alloc", false)) {
+                first_parameter = e_allocate_cgroup_mem_alloc;
+            }
+            else if (ofs_match_substr("omp_pteam_mem_alloc", false)) {
+                first_parameter = e_allocate_pteam_mem_alloc;
+            }
+            else if (ofs_match_substr("omp_thread_mem_alloc", false)) {
+                first_parameter = e_allocate_thread_mem_alloc;
+            }
+            else if (ofs_match_expression()) {
+                first_parameter = e_user_defined_parameter;
+            }
+            else {
+                printf("error: cannot find a legal allocate identifier for %s\n",old_char);
+                assert(false);
+            }
+            ofs_skip_whitespace();
+        };
+        // Matching modifiers ends.
+
+        // Create clause with collected identifier.
+        current_clause = setupComplexClause();
+        if (first_parameter == e_user_defined_parameter) {
+            addUserDefinedParameter("");
+        };
+
+        // match ':' in between
+        if (first_parameter != e_unknown && !ofs_match_char(':')) {
+            printf("error in allocate(modifier:varlist) match: no ':' is found for %s\n",old_char);
+            assert(false);
+        };
+        // match the rest "varlist)"
+        if (!ofs_match_varlist()) {
+            printf("error in allocate(op:valist) match during varlist for %s \n",old_char);
+            assert(false);
+        }
+        else {
+            omptype = e_unknown; // restore it to unknown
+            is_complex_clause = false;
+            return true; // all pass! return here!
+        };
+
+    } // end if (allocate)
+
+    c_char = old_char;
+    is_complex_clause = false;
+    return false;
+}
+
 //! Match a Fortran reduction clause
 // reduction({operator|intrinsic_procedure_name}:varlist)
-static bool ofs_match_clause_reduction()
-{
-  const char* old_char = c_char;
-  if (ofs_match_substr("reduction",false)) // no space etc. is needed after it
-  {
-    assert (ompattribute != NULL);
-    ompattribute->addClause(e_reduction);
-    omptype = e_unknown; // we need the reduction operator type to associate varlist, not just reduction
-    if (!ofs_match_char('('))
-    {
-      printf("error in clause(varlist) match: no starting '(' is found for %s.\n",old_char);  
-      assert(false); 
-    }
-    // match operator/intrinsics
-    // match single character operator first
-    // 3 of them in total
-    if (ofs_match_char('+'))
-    {
-      ompattribute->setReductionOperator(e_reduction_plus);
-      omptype = e_reduction_plus; /*variables are stored for each kind of operators*/
-    } 
-    else if (ofs_match_char('*'))
-    {
-      ompattribute->setReductionOperator(e_reduction_mul);
-      omptype = e_reduction_mul;
-    } 
-    else if (ofs_match_char('-'))
-    {
-      ompattribute->setReductionOperator(e_reduction_minus);
-      omptype = e_reduction_minus; 
-    } 
-    // match multi-char operator/intrinsics 
-    // 9 of them in total
-    // we tend to not share the enumerate types between C/C++ and Fortran operators
-    else if (ofs_match_substr(".and.",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_and);
-      omptype = e_reduction_and; 
-    } 
-    else if (ofs_match_substr(".or.",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_or);
-      omptype = e_reduction_or; 
-    } 
-    else if (ofs_match_substr(".eqv.",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_eqv);
-      omptype = e_reduction_eqv; 
-    } 
-    else if (ofs_match_substr(".neqv.",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_neqv);
-      omptype = e_reduction_neqv; 
-    } 
-    else if (ofs_match_substr("max",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_max);
-      omptype = e_reduction_max; 
-    } 
-    else if (ofs_match_substr("min",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_min);
-      omptype = e_reduction_min; 
-    } 
-    else if (ofs_match_substr("iand",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_iand);
-      omptype = e_reduction_iand; 
-    } 
-    else if (ofs_match_substr("ior",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_ior);
-      omptype = e_reduction_ior; 
-    }
-    else  if (ofs_match_substr("ieor",false)) 
-    {
-      ompattribute->setReductionOperator(e_reduction_ieor);
-      omptype = e_reduction_ieor; 
-    } else
-    {
-      printf("error: cannot find a legal reduction operator for %s\n",old_char);
-      assert(false);
-    }
+static bool ofs_match_clause_reduction() {
+    const char* old_char = c_char;
+    if (ofs_match_substr("reduction",false)) { // no space etc. is needed after it
+        assert (ompattribute != NULL);
+        omptype = e_reduction;
+        first_parameter = e_unknown;
+        second_parameter = e_unknown;
+        third_parameter = e_unknown;
+        current_clause = NULL;
+        is_complex_clause = true;
+        if (!ofs_match_char('(')) {
+            printf("error in clause(varlist) match: no starting '(' is found for %s.\n",old_char);
+            assert(false);
+        };
+
+        // match modifiers.
+        if (ofs_match_substr("inscan", false)) {
+            first_parameter = e_reduction_inscan;
+            ofs_match_char(',');
+        }
+        else if (ofs_match_substr("task", false)) {
+            first_parameter = e_reduction_task;
+            ofs_match_char(',');
+        }
+        else if (ofs_match_substr("default", false)) {
+            first_parameter = e_reduction_default;
+            ofs_match_char(',');
+        };
+        ofs_skip_whitespace();
+        // match modifiers end.
+
+        // match operator/intrinsics
+        // match single character operator first
+        // 3 of them in total
+        if (ofs_match_char('+')) {
+            second_parameter = e_reduction_plus;
+        }
+        else if (ofs_match_char('*')) {
+            second_parameter = e_reduction_mul;
+        }
+        else if (ofs_match_char('-')) {
+            second_parameter = e_reduction_minus;
+        }
+        // match multi-char operator/intrinsics
+        // 9 of them in total
+        // we tend to not share the enumerate types between C/C++ and Fortran operators
+        else if (ofs_match_substr(".and.",false)) {
+            second_parameter = e_reduction_and;
+        }
+        else if (ofs_match_substr(".or.",false)) {
+            second_parameter = e_reduction_or;
+        }
+        else if (ofs_match_substr(".eqv.",false)) {
+            second_parameter = e_reduction_eqv;
+        }
+        else if (ofs_match_substr(".neqv.",false)) {
+            second_parameter = e_reduction_neqv;
+        }
+        else if (ofs_match_substr("max",false)) {
+            second_parameter = e_reduction_max;
+        }
+        else if (ofs_match_substr("min",false)) {
+            second_parameter = e_reduction_min;
+        }
+        else if (ofs_match_substr("iand",false)) {
+            second_parameter = e_reduction_iand;
+        }
+        else if (ofs_match_substr("ior",false)) {
+            second_parameter = e_reduction_ior;
+        }
+        else if (ofs_match_substr("ieor",false)) {
+            second_parameter = e_reduction_ieor;
+        }
+        // check if there's user defined parameter
+        else if (ofs_match_expression()) {
+            second_parameter = e_user_defined_parameter;
+        }
+        else {
+            printf("error: cannot find a legal reduction identifier for %s\n",old_char);
+            assert(false);
+        }
+
+        // Create clause with collected modifier and identifier.
+        current_clause = setupComplexClause();
+        if (second_parameter == e_user_defined_parameter) {
+            addUserDefinedParameter("");
+        };
 
     // match ':' in between
     if (!ofs_match_char(':'))
@@ -853,12 +1002,14 @@ static bool ofs_match_clause_reduction()
     else
     {
       omptype = e_unknown; // restore it to unknown
+      is_complex_clause = false;
       return true; // all pass! return here!
     }
 
   } // end if (reduction)
 
   c_char = old_char;
+  is_complex_clause = false;
   return false;
 }
 
@@ -915,10 +1066,12 @@ static bool ofs_match_omp_directive_end()
 #define BV_CLAUSE_SCHEDULE      (1<<12)
 #define BV_CLAUSE_SHARED        (1<<13)
 #define BV_CLAUSE_UNTIED        (1<<14)
+#define BV_CLAUSE_ALLOCATE      (1<<15)
 
 // common bit vector values for some directive's allowed clauses
 #define BV_OMP_PARALLEL_CLAUSES \
-( BV_CLAUSE_COPYIN \
+( BV_CLAUSE_ALLOCATE \
+| BV_CLAUSE_COPYIN \
 | BV_CLAUSE_DEFAULT \
 | BV_CLAUSE_FIRSTPRIVATE \
 | BV_CLAUSE_IF \
@@ -1007,6 +1160,11 @@ static bool ofs_match_omp_clauses(int bitvector)
     // reduction clause 
     if((bitvector&BV_CLAUSE_REDUCTION)&& (ofs_match_clause_reduction()))
       continue;
+
+    // allocate clause
+    if((bitvector&BV_CLAUSE_ALLOCATE)&& (ofs_match_clause_allocate())) {
+        continue;
+    };
 
     //match clauses with expressions, 
     if((bitvector&BV_CLAUSE_COLLAPSE)&& (ofs_match_clause_collapse()))
@@ -1503,3 +1661,74 @@ void parse_fortran_openmp(SgSourceFile *sageFilePtr)
     }
   } //end for located nodes
 }
+
+// Customized PASS lab functions.
+
+
+static ComplexClause* setupComplexClause() {
+    std::deque<ComplexClause>* inspecting_complex_clauses = ompattribute->getComplexClauses(omptype);
+    // iterate existing clauses with specific type and compare parameters.
+    if (inspecting_complex_clauses != NULL) {
+        std::deque<ComplexClause>::iterator iter;
+        for (iter = inspecting_complex_clauses->begin(); iter != inspecting_complex_clauses->end(); iter++) {
+            if ((iter->first_parameter == first_parameter) && (iter->second_parameter == second_parameter) && (iter->third_parameter == third_parameter)) {
+                return &*iter;
+            }
+        }
+    };
+    // no existing clause matched. Create a new one and set two parameters.
+    ComplexClause* new_clause = ompattribute->addComplexClause(omptype);
+    new_clause->first_parameter = first_parameter;
+    new_clause->second_parameter = second_parameter;
+    new_clause->third_parameter = third_parameter;
+    return new_clause;
+}
+
+static ComplexClause* normalizeComplexClause() {
+    std::deque<ComplexClause>* inspecting_complex_clauses = ompattribute->getComplexClauses(omptype);
+    std::deque<ComplexClause>::iterator unnormalized_clause;
+    ComplexClause* normalized_clause = NULL;
+    // iterate existing clauses with specific type and find proper position to insert expression or variables.
+    if (inspecting_complex_clauses != NULL) {
+        std::deque<ComplexClause>::iterator iter;
+        for (iter = inspecting_complex_clauses->begin(); iter != inspecting_complex_clauses->end(); iter++) {
+            if ((iter->first_parameter == first_parameter) && (iter->second_parameter == second_parameter) && (iter->third_parameter == third_parameter)) {
+                normalized_clause = &*iter;
+            }
+            else if (iter->first_parameter == current_clause->first_parameter && iter->second_parameter == current_clause->second_parameter && iter->third_parameter == current_clause->third_parameter) {
+                unnormalized_clause = iter;
+            }
+        }
+    };
+    // make necessary modifications to candidate position.
+    if (normalized_clause != NULL) {
+        if (unnormalized_clause->expression.first == "" && unnormalized_clause->variable_list.size() == 0) {
+            inspecting_complex_clauses->erase(unnormalized_clause);
+        };
+    }
+    else {
+        if (unnormalized_clause->expression.first == "" && unnormalized_clause->variable_list.size() == 0) {
+            normalized_clause = &*unnormalized_clause;
+            normalized_clause->first_parameter = first_parameter;
+            normalized_clause->second_parameter = second_parameter;
+            normalized_clause->third_parameter = third_parameter;
+        }
+        else {
+            normalized_clause = setupComplexClause();
+        };
+    };
+    return normalized_clause;
+}
+
+static bool addComplexClauseExpression(const char* expr) {
+    assert (current_exp != NULL);
+    ompattribute->addComplexClauseExpression(omptype, std::string(expr),current_exp);
+    return true;
+}
+
+static bool addUserDefinedParameter(const char* expr) {
+    assert (current_exp != NULL);
+    ompattribute->addUserDefinedParameter(omptype, std::string(expr), current_exp);
+    return true;
+}
+

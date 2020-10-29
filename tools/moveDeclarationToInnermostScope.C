@@ -610,7 +610,7 @@ std::vector<std::string>
 GetSourceFilenamesFromCommandline(const std::vector<std::string>& argv)
 {
   std::vector<std::string> filenames =
-      CommandlineProcessing::generateSourceFilenames(argv, false);
+      CommandlineProcessing::generateSourceFilenames(argv);
   return filenames;
 }
 

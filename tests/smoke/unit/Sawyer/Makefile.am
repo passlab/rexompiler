@@ -100,7 +100,7 @@ markupUnitTests_SOURCES		 = markupUnitTests.C
 cmdUnitTests_SOURCES		 = cmdUnitTests.C
 serializationUnitTests_SOURCES	 = serializationUnitTests.C
 databaseUnitTests_SOURCES	 = databaseUnitTests.C
-workListTests_SOURCES		 = workListTests.C 
+workListTests_SOURCES		 = workListTests.C
 
 # Test targets
 sawyer_targets = $(addsuffix .passed, $(sawyer_checkers))
