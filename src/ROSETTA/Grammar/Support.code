@@ -349,6 +349,18 @@ HEADER_OMP_CLAUSE_START
             e_omp_if_target_exit_data,
             e_omp_if_task
         };
+        
+        enum omp_depobj_modifier_enum
+        {
+            e_omp_depobj_modifier_unknown,
+            e_omp_depobj_modifier_in,
+            e_omp_depobj_modifier_out,
+            e_omp_depobj_modifier_inout,
+            e_omp_depobj_modifier_mutexinoutset,
+            e_omp_depobj_modifier_depobj,
+            e_omp_depobj_modifier_sink,
+            e_omp_depobj_modifier_source
+        };
        
 
 

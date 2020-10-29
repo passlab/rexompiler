@@ -279,6 +279,7 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpScanStatement,  "OmpScanStatement",   "OMP_SCAN_STMT" );
     NEW_TERMINAL_MACRO (OmpTaskloopStatement,  "OmpTaskloopStatement",   "OMP_TASKLOOP_STMT" );
     NEW_TERMINAL_MACRO (OmpTaskgroupStatement,  "OmpTaskgroupStatement",   "OMP_TASKGROUP_STMT" );
+    NEW_TERMINAL_MACRO (OmpDepobjStatement, "OmpDepobjStatement", "OMP_DEPOBJ_STMT" );
     NEW_TERMINAL_MACRO (OmpTeamsStatement,  "OmpTeamsStatement",   "OMP_TEAMS_STMT" );
     NEW_TERMINAL_MACRO (OmpCancellationPointStatement,  "OmpCancellationPointStatement",   "OMP_CANCELLATION_POINT_STMT" );
     NEW_TERMINAL_MACRO (OmpDeclareMapperStatement,  "OmpDeclareMapperStatement",   "OMP_DECLARE_MAPPER_STMT" );
@@ -306,7 +307,7 @@ Grammar::setUpStatements ()
     // A base class for the most commonly formed directives with both clauses and a structured body
     // We treat OmpSectionsStatement separatedly by move the body to a list of SgOmpSectionStatement
     // sensitive to 
-    NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement | OmpTaskgroupStatement | OmpTaskloopStatement | OmpTargetEnterDataStatement | OmpTargetExitDataStatement |
+    NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement | OmpTaskgroupStatement | OmpTaskloopStatement | OmpDepobjStatement | OmpTargetEnterDataStatement | OmpTargetExitDataStatement |
               OmpTaskStatement | OmpForStatement | OmpDoStatement | OmpSectionsStatement | OmpTargetStatement | OmpTargetDataStatement |
               OmpSimdStatement | OmpForSimdStatement | OmpCriticalStatement | OmpDistributeStatement | OmpTaskwaitStatement,
         "OmpClauseBodyStatement",   "OMP_CLAUSEBODY_STMT", false );
@@ -4205,6 +4206,7 @@ Grammar::setUpStatements ()
     OmpDeclareMapperStatement.setFunctionSource            ("SOURCE_OMP_DECLARE_MAPPER_STATEMENT", "../Grammar/Statement.code" );
     OmpCancelStatement.setFunctionSource            ("SOURCE_OMP_CANCEL_STATEMENT", "../Grammar/Statement.code" );
     OmpTaskgroupStatement.setFunctionSource            ("SOURCE_OMP_TASKGROUP_STATEMENT", "../Grammar/Statement.code" );
+    OmpDepobjStatement.setFunctionSource        ("SOURCE_OMP_DEPOBJ_STATEMENT", "../Grammar/Statement.code" );
     OmpDistributeStatement.setFunctionSource            ("SOURCE_OMP_DISTRIBUTE_STATEMENT", "../Grammar/Statement.code" );
     OmpLoopStatement.setFunctionSource            ("SOURCE_OMP_LOOP_STATEMENT", "../Grammar/Statement.code" );
     OmpScanStatement.setFunctionSource            ("SOURCE_OMP_SCAN_STATEMENT", "../Grammar/Statement.code" );
@@ -4251,6 +4253,7 @@ Grammar::setUpStatements ()
    // omp threadprivate [(var-list)]   
     OmpThreadprivateStatement.setDataPrototype( "SgVarRefExpPtrList", "variables", "",
                                                 NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+                                                
    // Directives with a statement/ structured body
     OmpBodyStatement.setDataPrototype ( "SgStatement*", "body",        "= NULL",
                                              CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
@@ -4259,6 +4262,10 @@ Grammar::setUpStatements ()
     // Directive with a body + a name: 
         // omp critical [name]  \n structured_block
     OmpCriticalStatement.setDataPrototype ( "SgName", "name", "= \"\"",
+                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+             
+        // omp depobj [name] ...     
+    OmpDepobjStatement.setDataPrototype ( "SgName", "name", "= \"\"",
                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
     // omp clause-body : e.g: parallel clause \n  body 

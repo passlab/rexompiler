@@ -1271,6 +1271,7 @@ generate_override_keyword( AstNodeClass & node, GrammarString & data )
           (nodeName == "FunctionDeclaration"        && variableNameString == "name")  ||
           (nodeName == "InquireStatement"           && variableNameString == "name")  ||
           (nodeName == "OmpCriticalStatement"       && variableNameString == "name")  ||
+          (nodeName == "OmpDepobjStatement"         && variableNameString == "name")  ||
           (nodeName == "EnumVal"                    && variableNameString == "name")  ||
           (nodeName == "IOItemExpression"           && variableNameString == "name")  ||
           (nodeName == "AsmOp"                      && variableNameString == "name")  ||
@@ -1381,6 +1382,7 @@ generate_override_keyword_for_set_functions( AstNodeClass & node, GrammarString 
           (nodeName == "FunctionDeclaration"        && variableNameString == "name")  ||
           (nodeName == "InquireStatement"           && variableNameString == "name")  ||
           (nodeName == "OmpCriticalStatement"       && variableNameString == "name")  ||
+          (nodeName == "OmpDepobjStatement"         && variableNameString == "name")  ||
           (nodeName == "EnumVal"                    && variableNameString == "name")  ||
           (nodeName == "IOItemExpression"           && variableNameString == "name")  ||
           (nodeName == "AsmOp"                      && variableNameString == "name")  ||
@@ -3899,6 +3901,7 @@ Grammar::GrammarNodeInfo Grammar::getGrammarNodeInfo(AstNodeClass* grammarnode) 
         ||nodeName == "SgOmpDeclareMapperStatement"
         ||nodeName == "SgOmpCancelStatement"
         ||nodeName == "SgOmpTaskgroupStatement"
+        ||nodeName == "SgOmpDepobjStatement"
         ||nodeName == "SgOmpTaskwaitStatement"
         ||nodeName == "SgOmpDistributeStatement"
         ||nodeName == "SgOmpLoopStatement"
@@ -4214,6 +4217,7 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                  ||string(node.getName()) == "SgOmpDeclareMapperStatement"
                  ||string(node.getName()) == "SgOmpCancelStatement"
                  ||string(node.getName()) == "SgOmpTaskgroupStatement"
+                 ||string(node.getName()) == "SgOmpDepobjStatement"
                  ||string(node.getName()) == "SgOmpTaskwaitStatement"
                  ||string(node.getName()) == "SgOmpDistributeStatement"
                  ||string(node.getName()) == "SgOmpLoopStatement"
@@ -4338,6 +4342,7 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                  ||string(node.getName()) == "SgOmpDeclareMapperStatement"
                  ||string(node.getName()) == "SgOmpCancelStatement"
                  ||string(node.getName()) == "SgOmpTaskgroupStatement"
+                 ||string(node.getName()) == "SgOmpDepobjStatement"
                  ||string(node.getName()) == "SgOmpTaskwaitStatement"
                  ||string(node.getName()) == "SgOmpCriticalStatement"
                  ||string(node.getName()) == "SgOmpDistributeStatement"
