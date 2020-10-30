@@ -10659,6 +10659,10 @@ SgTypeBool * SageBuilder::buildBoolType() {
   return buildBoolType(NULL);
 }
 
+SgTypeBool * SageBuilder::buildBoolType() {
+  return buildBoolType(NULL);
+}
+
 SgTypeNullptr* SageBuilder::buildNullptrType()
    {
      SgTypeNullptr * result = SgTypeNullptr::createType();
@@ -10974,8 +10978,8 @@ SgTypeFixed* SageBuilder::buildFixedType(SgExpression* scale, SgExpression* frac
   SgTypeFixed * result = SgTypeFixed::createType(scale, fraction);
   ROSE_ASSERT(result);
 
-   if (scale) scale->set_parent(result);
-   if (fraction) fraction->set_parent(result);
+  if (scale) scale->set_parent(result);
+  if (fraction) fraction->set_parent(result);
 
   return result;
 }

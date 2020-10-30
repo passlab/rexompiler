@@ -9404,6 +9404,8 @@ Unparse_ExprStmt::unparseClassDefnStmt(SgStatement* stmt, SgUnparse_Info& info)
 
 #error "DEAD CODE!"
 
+#error "DEAD CODE!"
+
                  curprint(nameQualifier.str());
                  curprint(nr_decl->get_name().str());
                } else {

@@ -14989,7 +14989,7 @@ PreprocessingInfo* SageInterface::insertHeader(const string& filename, Preproces
     ROSE_ASSERT(scope);
     SgGlobal* globalScope = getGlobalScope(scope);
     ROSE_ASSERT(globalScope);
-
+    
     // To support inserting a header file into a header file, we need this srcScope to indicate the src file in which to insert the header
     // if the input scope is within a header file,
     // its global scope will jump to a .cpp file. Later looping will not find a match.

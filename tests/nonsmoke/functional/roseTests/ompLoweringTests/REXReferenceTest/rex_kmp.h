@@ -17,3 +17,7 @@ void __kmpc_end_single(ident_t*, int);
 void __kmpc_barrier(ident_t*, int);
 int __kmpc_serialized_parallel(ident_t*, int);
 void __kmpc_end_serialized_parallel(ident_t*, int);
+void __kmpc_for_static_init_4(ident_t*, int, int, int*, int*, int*, int*, int, int);
+void __kmpc_for_static_fini(ident_t*, int);
+void __kmpc_dispatch_init_4(ident_t*, int, int, int, int, int, int);
+int __kmpc_dispatch_next_4(ident_t*, int, int*, int*, int*, int*);

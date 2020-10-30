@@ -188,7 +188,7 @@ Grammar::setUpTypes ()
           TypeCrayPointer      | TypeLabel               | RvalueReferenceType       |
           TypeNullptr          | DeclType                | TypeOfType                | TypeMatrix           |
           TypeTuple            | TypeChar16              | TypeChar32                | TypeFloat128         |
-          TypeFixed           |  AutoType,
+          TypeFixed            | AutoType,
         "Type","TypeTag", false);
 
      //SK(08/20/2015): TypeMatrix and TypeTuple for Matlab

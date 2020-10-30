@@ -333,7 +333,6 @@ int Labeler::numberOfAssociatedLabels(SgNode* node) {
   case V_SgOmpCancelStatement:
   case V_SgOmpTaskgroupStatement:
   case V_SgOmpDistributeStatement:
-  case V_SgOmpRequiresStatement:
   case V_SgOmpLoopStatement:
   case V_SgOmpScanStatement:
   case V_SgOmpTaskloopStatement:

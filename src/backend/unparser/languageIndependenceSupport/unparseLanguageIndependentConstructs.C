@@ -2885,7 +2885,6 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpCancelStatement:
                     case V_SgOmpTaskgroupStatement:
                     case V_SgOmpDistributeStatement:
-                    case V_SgOmpRequiresStatement:
                     case V_SgOmpLoopStatement:
                     case V_SgOmpScanStatement:
                     case V_SgOmpTaskloopStatement:
@@ -7691,45 +7690,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpBindClause(SgOmpClause* cla
   curprint(string(")"));
 }
 
-void UnparseLanguageIndependentConstructs::unparseOmpAtomicDefaultMemOrderClause(SgOmpClause* clause, SgUnparse_Info& info)
-{
-  ROSE_ASSERT(clause != NULL);
-  SgOmpAtomicDefaultMemOrderClause * c = isSgOmpAtomicDefaultMemOrderClause(clause);
-  ROSE_ASSERT(c!= NULL);
-  curprint(string(" atomic_default_mem_order("));
-  SgOmpClause::omp_atomic_default_mem_order_kind_enum dv = c->get_kind();
-  switch (dv)
-  {
-    case SgOmpClause::e_omp_atomic_default_mem_order_kind_seq_cst:
-      {
-        curprint(string("seq_cst"));
-        break;
-      }
-    case SgOmpClause::e_omp_atomic_default_mem_order_kind_acq_rel:
-      {
-        curprint(string("acq_rel"));
-        break;
-      }
-    case SgOmpClause::e_omp_atomic_default_mem_order_kind_relaxed:
-      {
-        curprint(string("relaxed"));
-        break;
-      }
-    case SgOmpClause::e_omp_atomic_default_mem_order_kind_unspecified:
-      {
-        curprint(string(""));
-        break;
-      }
-   default:
-      {
-        cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpAtomicDefaultMemOrderClause() meets unacceptable default option value:"<<dv<<endl;
-        ROSE_ASSERT (false);
-        break;
-      }
-  }
-  curprint(string(")"));
-}
-
 void UnparseLanguageIndependentConstructs::unparseOmpAtomicClause(SgOmpClause* clause, SgUnparse_Info& info)
 {
   ASSERT_not_null(clause);
@@ -8478,7 +8438,12 @@ static std::string dependenceTypeToString(SgOmpClause::omp_dependence_type_enum 
   string result;
   switch (ro)
   {
-    case SgOmpClause::e_omp_depend_in:
+    case SgOmpClause::e_omp_depend_unspecified: 
+      {
+        result = "";
+        break;
+      }
+    case SgOmpClause::e_omp_depend_in: 
       {
         result = "in";
         break;
@@ -8493,6 +8458,16 @@ static std::string dependenceTypeToString(SgOmpClause::omp_dependence_type_enum 
         result = "inout";
         break;
       }
+    case SgOmpClause::e_omp_depend_mutexinoutset:   
+      {
+        result = "mutexinoutset";
+        break;
+      }
+    case SgOmpClause::e_omp_depend_depobj:   
+      {
+        result = "depobj";
+        break;
+      }
     default:
       {
         cerr<<"Error: unhandled operator type"<<__func__<< "():"<< ro <<endl;
@@ -8502,6 +8477,29 @@ static std::string dependenceTypeToString(SgOmpClause::omp_dependence_type_enum 
   return result;
 }
 
+static std::string dependModifierToString(SgOmpClause::omp_depend_modifier_enum ro)
+{
+  string result;
+  switch (ro)
+  {
+    case SgOmpClause::e_omp_depend_modifier_unspecified: 
+      {
+        result = "";
+        break;
+      }
+    case SgOmpClause::e_omp_depend_modifier_iterator: 
+      {
+        result = "iterator";
+        break;
+      }
+    default:
+      {
+        cerr<<"Error: unhandled operator modifier"<<__func__<< "():"<< ro <<endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
 
 static std::string mapOperatorToString(SgOmpClause::omp_map_operator_enum ro)
 {
@@ -8632,17 +8630,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpDefaultmapClause(SgOmpClaus
     curprint(defaultmapCategoryToString(category));
   }
   curprint(string(")"));
-}
-
-void UnparseLanguageIndependentConstructs::unparseOmpExtImplementationDefinedRequirementClause(SgOmpClause* clause, SgUnparse_Info& info)
-{
-  ROSE_ASSERT(clause != NULL);
-  SgOmpExtImplementationDefinedRequirementClause* c = isSgOmpExtImplementationDefinedRequirementClause(clause);
-  ROSE_ASSERT(c!= NULL);
-  curprint (string (" ext_"));
-  // chunk_size expression
-  SgUnparse_Info ninfo(info);
-  unparseExpression(c->get_implementation_defined_requirement(), ninfo);
 }
 
 // Generate dist_data(p1, p2, p3)
@@ -8778,10 +8765,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
     case V_SgOmpDependClause:
       {
         curprint(string(" depend("));
-        curprint(dependenceTypeToString(isSgOmpDependClause(c)->get_dependence_type()));
-        curprint(string(" : "));
-        is_depend = true;
-        break;
         if(isSgOmpDependClause(c)->get_depend_modifier())
         {
             curprint(dependModifierToString(isSgOmpDependClause(c)->get_depend_modifier()));
@@ -8800,23 +8783,23 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
               {
                 SgExpression* tmp = (*iter1);
                 if (count == 0 && tmp != NULL) {
-                  unparseExpression(tmp, ninfo);
+                  unparseExpression(tmp, ninfo); 
                   curprint(string(" "));
                 }
                 else if (count == 1) {
-                  unparseExpression(tmp, ninfo);
+                  unparseExpression(tmp, ninfo); 
                   curprint(string("="));
                 }
                 else if (count == 2) {
-                  unparseExpression(tmp, ninfo);
+                  unparseExpression(tmp, ninfo); 
                   curprint(string(":"));
                 }
                 else if (count == 3) {
-                  unparseExpression(tmp, ninfo);
+                  unparseExpression(tmp, ninfo); 
                 }
                 else if (count == 4 && tmp != NULL) {
                   curprint(string(":"));
-                  unparseExpression(tmp, ninfo);
+                  unparseExpression(tmp, ninfo); 
                 }
                 count++;
               }
@@ -8828,7 +8811,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
           curprint(string(" : "));
           is_depend = true;
           break;
->>>>>>> 639bb16d85... Fixed the formatting error of list in unparseLanguageIndependentConstructs.C
       }
     case V_SgOmpLinearClause:
       {
@@ -9272,11 +9254,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         unparseOmpBindClause(isSgOmpBindClause(clause),info);
         break;
       }
-    case V_SgOmpAtomicDefaultMemOrderClause:
-      {
-        unparseOmpAtomicDefaultMemOrderClause(isSgOmpAtomicDefaultMemOrderClause(clause),info);
-        break;
-      }
     case V_SgOmpAtomicClause:
       {
         unparseOmpAtomicClause(isSgOmpAtomicClause(clause),info);
@@ -9358,26 +9335,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         curprint(string(" taskgroup"));
         break;
       }
-    case V_SgOmpReverseOffloadClause:
-      {
-        curprint(string(" reverse_offload"));
-        break;
-      }
-    case V_SgOmpUnifiedAddressClause:
-      {
-        curprint(string(" unified_address"));
-        break;
-      }
-    case V_SgOmpUnifiedSharedMemoryClause:
-      {
-        curprint(string(" unified_shared_memory"));
-        break;
-      }
-    case V_SgOmpDynamicAllocatorsClause:
-      {
-        curprint(string(" dynamic_allocators"));
-        break;
-      }
     case V_SgOmpInbranchClause:
       {
         curprint(string(" inbranch"));
@@ -9428,11 +9385,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpDefaultmapClause:
       {
         unparseOmpDefaultmapClause(isSgOmpDefaultmapClause(clause), info);
-        break;
-      }
-    case V_SgOmpExtImplementationDefinedRequirementClause:
-      {
-        unparseOmpExtImplementationDefinedRequirementClause(isSgOmpExtImplementationDefinedRequirementClause(clause), info);
         break;
       }
     case V_SgOmpDeviceClause:
@@ -9685,11 +9637,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpTaskgroupStatement:
       {
         curprint(string ("taskgroup "));
-        break;
-      }
-    case V_SgOmpRequiresStatement:
-      {
-        curprint(string ("requires "));
         break;
       }
     case V_SgOmpLoopStatement:
