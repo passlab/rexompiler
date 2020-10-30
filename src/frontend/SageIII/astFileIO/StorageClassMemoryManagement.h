@@ -1182,25 +1182,5 @@ class EasyStorage < std::map< SgSymbol*,  std::vector < std::pair <SgOmpClause::
      static void readFromFile (std::istream& in) {};
    };
 
-/** Maps an ExtentMap to/from file representation. */
-template<>
-class EasyStorage<ExtentMap>: public StorageClassMemoryManagement<rose_addr_t> {
-    typedef StorageClassMemoryManagement<rose_addr_t> Base;
-  public:
-    EasyStorage() {}
-    void storeDataInEasyStorageClass(const ExtentMap&);
-    ExtentMap rebuildDataStoredInEasyStorageClass() const;
-};
-
-/** Maps an AddressIntervalSet to/from file representation. */
-template<>
-class EasyStorage<AddressIntervalSet>: public StorageClassMemoryManagement<rose_addr_t> {
-    typedef StorageClassMemoryManagement<rose_addr_t> Base;
-  public:
-    EasyStorage() {}
-    void storeDataInEasyStorageClass(const AddressIntervalSet&);
-    AddressIntervalSet rebuildDataStoredInEasyStorageClass() const;
-};
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #endif  // STORAGE_CLASS_MEMORY_MANAGEMENT_H

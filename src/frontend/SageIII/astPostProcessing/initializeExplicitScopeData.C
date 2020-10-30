@@ -204,12 +204,6 @@ InitializeExplicitScopes::visit ( SgNode *node)
                               break;
                             }
 
-                         case V_SgPythonGlobalStmt:
-                            {
-                                scope = SageInterface::getGlobalScope(parentNode);
-                                break;
-                            }
-
                          default:
                             {
                            // DQ (9/13/2011): Reported as possible NULL value in static analysis of ROSE code.

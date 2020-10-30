@@ -185,10 +185,10 @@ Grammar::setUpTypes ()
           ReferenceType        | NamedType               | ModifierType              | FunctionType         |
           ArrayType            | TypeEllipse             | TemplateType              | QualifiedNameType    |
           TypeComplex          | TypeImaginary           | TypeDefault               | TypeCAFTeam          |
-          TypeCrayPointer      | TypeLabel               | RvalueReferenceType  |
+          TypeCrayPointer      | TypeLabel               | RvalueReferenceType       |
           TypeNullptr          | DeclType                | TypeOfType                | TypeMatrix           |
           TypeTuple            | TypeChar16              | TypeChar32                | TypeFloat128         |
-          AutoType,
+          TypeFixed           |  AutoType,
         "Type","TypeTag", false);
 
      //SK(08/20/2015): TypeMatrix and TypeTuple for Matlab
@@ -325,6 +325,11 @@ Grammar::setUpTypes ()
   // TypeUnknown.setFunctionPrototype ( "HEADER_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
   // TypeUnknown.setFunctionSource    ( "SOURCE_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
 
+  // CR (8/9/2020): Jovial allows implicit forward declarations of typed pointers
+     TypeUnknown.setDataPrototype("std::string", "type_name", "= \"\"",
+                                  NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     TypeUnknown.setDataPrototype("bool", "has_type_name", "= false",
+                                  NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // DQ (1/31/2006): Need to support addition of builtin_type pointers into the IR using ROSETTA
   // static $CLASSNAME* builtin_type;
@@ -357,6 +362,12 @@ Grammar::setUpTypes ()
      PointerType.excludeFunctionSource      ( "SOURCE_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
      ArrayType.excludeFunctionPrototype     ( "HEADER_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
      ArrayType.excludeFunctionSource        ( "SOURCE_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
+
+  // Rasmussen (2/18/2020): Added TypeFixed for Jovial
+     TypeFixed.excludeFunctionPrototype     ( "HEADER_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
+     TypeFixed.excludeFunctionSource        ( "SOURCE_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
+     TypeFixed.excludeFunctionSource        ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
+     TypeFixed.setFunctionSource            ( "SOURCE_GET_MANGLED_TYPE_FIXED", "../Grammar/Type.code");
 
   // DQ (8/2/2014): Adding support for C++11 decltype().
      DeclType.excludeFunctionPrototype ( "HEADER_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
@@ -594,6 +605,11 @@ Grammar::setUpTypes ()
      CUSTOM_CREATE_TYPE_MACRO(ArrayType,
             "SOURCE_CREATE_TYPE_FOR_ARRAY_TYPE",
             "SgType* type = NULL, SgExpression* expr = NULL");
+
+  // Rasmussen (2/18/2020): Added support for the create function for Jovial TypeFixed
+     CUSTOM_CREATE_TYPE_MACRO(TypeFixed,
+            "SOURCE_CREATE_TYPE_FOR_TYPE_FIXED",
+            "SgExpression* scale = NULL, SgExpression* fraction = NULL");
 
   // DQ (8/17/2010): Added support for create function for StringType (Fortran specific)
      CUSTOM_CREATE_TYPE_MACRO(TypeString,
@@ -920,6 +936,13 @@ Grammar::setUpTypes ()
   // DQ (2/12/2016): Adding support for Variable Length Arrays.
      ArrayType.setDataPrototype ("bool", "is_variable_length_array" , "= false",
                                  NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+  // Rasmussen (2/18/2020): Added TypeFixed for Jovial
+     TypeFixed.setFunctionPrototype ("HEADER_TYPE_FIXED_TYPE", "../Grammar/Type.code" );
+     TypeFixed.setDataPrototype ("SgExpression*", "scale", "= NULL",
+                                 CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, DEF_DELETE);
+     TypeFixed.setDataPrototype ("SgExpression*", "fraction", "= NULL",
+                                 CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, DEF_DELETE);
 
      TypeComplex.setFunctionPrototype ("HEADER_TYPE_COMPLEX_TYPE", "../Grammar/Type.code" );
      TypeComplex.setDataPrototype ("SgType*", "base_type", "= NULL",

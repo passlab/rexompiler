@@ -1184,6 +1184,13 @@ class AstSpecificDataManagingClassStorageClass;
 // DQ (4/23/2006): The friend declaration the SgProject class is not enough this must be defined outside of the class (for g++ 4.1.0).
 std::ostream & operator<< ( std::ostream & os, const Rose_STL_Container<std::string> & l );
 
+// DQ (8/8/2008): Added support for std::multimap<rose_addr_t, rose_addr_t> used in binary file format.
+std::ostream & operator<< ( std::ostream & os, const std::multimap<rose_addr_t, rose_addr_t> & m );
+std::ostream & operator<< ( std::ostream & os, const std::vector<std::pair<rose_addr_t, rose_addr_t> > & l );
+// struct SgAsmGenericFormat::fileDetails;
+// std::ostream & operator<< ( std::ostream & os, const SgAsmGenericFormat::fileDetails & sb );
+std::ostream & operator<< ( std::ostream & os, const struct stat & sb );
+
 #if 0
 // DQ (8/28/2006): This fixes a bug in ROSE where the namespace scope is not defined
 // to permit get_scope() to return a valid pointer (non NULL) when processing the

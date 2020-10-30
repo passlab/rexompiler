@@ -379,7 +379,7 @@ Grammar::setUpExpressions ()
           BitXorOp       | BitAndOp         | BitOrOp             | BitEqvOp         | CommaOpExp           | LshiftOp       |
           RshiftOp       | PntrArrRefExp    | ScopeOp             | AssignOp         | ExponentiationOp     |
           ConcatenationOp | PointerAssignOp | UserDefinedBinaryOp | CompoundAssignOp | MembershipOp         | SpaceshipOp    |
-          NonMembershipOp | IsOp            | IsNotOp             | DotDotExp        | ElementwiseOp        | PowerOp        |
+          NonMembershipOp | IsOp            | IsNotOp             | ElementwiseOp        | PowerOp        |
           LeftDivideOp    | RemOp,
           "BinaryOp","BINARY_EXPRESSION", false);
 
@@ -421,7 +421,7 @@ Grammar::setUpExpressions ()
      NEW_NONTERMINAL_MACRO (Expression,
           UnaryOp                  | BinaryOp                 | ExprListExp             | VarRefExp           | ClassNameRefExp          |
           FunctionRefExp           | MemberFunctionRefExp     | ValueExp                | CallExpression      | SizeOfOp                 |
-          UpcLocalsizeofExpression | UpcBlocksizeofExpression | UpcElemsizeofExpression | SuperExp                 |
+          UpcLocalsizeofExpression | UpcBlocksizeofExpression | UpcElemsizeofExpression | SuperExp            |
           TypeIdOp                 | ConditionalExp           | NewExp                  | DeleteExp           | ThisExp                  |
           RefExp                   | Initializer              | VarArgStartOp           | VarArgOp            | VarArgEndOp              |
           VarArgCopyOp             | VarArgStartOneOperandOp  | NullExpression          | VariantExpression   | SubscriptExpression      |
@@ -435,7 +435,7 @@ Grammar::setUpExpressions ()
           RangeExp            | MagicColonExp           | //SK(08/20/2015): RangeExp and MagicColonExp for Matlab
           TypeTraitBuiltinOperator | CompoundLiteralExp | TypeExpression |
        // ClassExp | FunctionParameterRefExp            | HereExp, "Expression", "ExpressionTag", false);
-          ClassExp            | FunctionParameterRefExp | LambdaExp | HereExp | AtExp | FinishExp | NoexceptOp | NonrealRefExp |
+          ClassExp            | FunctionParameterRefExp | LambdaExp | NoexceptOp | NonrealRefExp |
           FoldExpression | AwaitExpression | ChooseExpression,
           "Expression", "ExpressionTag", false);
 
@@ -589,9 +589,6 @@ Grammar::setUpExpressions ()
   // function on certain types of expressions (because the type should be computed from the operands 
   // or the value types directly).
      VarRefExp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", 
-                                  "../Grammar/Expression.code" );
-
-     AdaTaskRefExp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
                                   "../Grammar/Expression.code" );
 
      NonrealRefExp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",

@@ -194,10 +194,6 @@ ROSE_DLL_API SgTypeFloat128* buildFloat128Type();
 //! Build a Jovial fixed type with a fraction specifier and a scale specifier
 ROSE_DLL_API SgTypeFixed* buildFixedType(SgExpression* fraction, SgExpression* scale);
 
-// CR (5/5/2020): Added builder for Jovial bit type
-//! Build a Jovial bit type of a given size
-ROSE_DLL_API SgJovialBitType* buildJovialBitType(SgExpression* size);
-
 //! DQ (8/21/2010): We want to move to the new buildStringType( SgExpression*,size_t) function over the older buildStringType() function.
 ROSE_DLL_API SgTypeString* buildStringType();
 // SgTypeString* buildStringType( SgExpression* stringLengthExpression, size_t stringLengthLiteral );
@@ -507,9 +503,6 @@ ROSE_DLL_API SgUnsignedLongLongIntVal* buildUnsignedLongLongIntVal(unsigned long
 ROSE_DLL_API SgUnsignedLongLongIntVal* buildUnsignedLongLongIntValHex(unsigned long long v = 0);
 ROSE_DLL_API SgUnsignedLongLongIntVal* buildUnsignedLongLongIntVal_nfi(unsigned long long v, const std::string& str);
 
-//! Build a Jovial bit value expression
-ROSE_DLL_API SgJovialBitVal* buildJovialBitVal_nfi(const std::string& str);
-
 //! Build an template parameter value expression
 ROSE_DLL_API SgTemplateParameterVal* buildTemplateParameterVal(int template_parameter_position = -1);
 ROSE_DLL_API SgTemplateParameterVal* buildTemplateParameterVal_nfi(int template_parameter_position, const std::string& str);
@@ -627,7 +620,6 @@ BUILD_BINARY_PROTO(AndOp)
 BUILD_BINARY_PROTO(ArrowExp)
 BUILD_BINARY_PROTO(ArrowStarOp)
 BUILD_BINARY_PROTO(AssignOp)
-BUILD_BINARY_PROTO(AtOp)
 BUILD_BINARY_PROTO(BitAndOp)
 BUILD_BINARY_PROTO(BitOrOp)
 BUILD_BINARY_PROTO(BitXorOp)
@@ -669,7 +661,6 @@ BUILD_BINARY_PROTO(PlusAssignOp)
 BUILD_BINARY_PROTO(PntrArrRefExp)
 BUILD_BINARY_PROTO(RshiftAssignOp)
 
-BUILD_BINARY_PROTO(ReplicationOp)
 BUILD_BINARY_PROTO(RshiftOp)
 BUILD_BINARY_PROTO(ScopeOp)
 BUILD_BINARY_PROTO(SubtractOp)
@@ -1399,14 +1390,6 @@ ROSE_DLL_API SgClassDeclaration* buildClassDeclaration_nfi(const SgName& name, S
 ROSE_DLL_API SgTemplateClassDeclaration* buildTemplateClassDeclaration_nfi(const SgName& name, SgClassDeclaration::class_types kind, SgScopeStatement* scope, SgTemplateClassDeclaration* nonDefiningDecl,
                                                                            SgTemplateParameterPtrList* templateParameterList, SgTemplateArgumentPtrList* templateSpecializationArgumentList );
 
-//! Build a Jovial define directive declaration statement
-ROSE_DLL_API SgJovialDefineDeclaration * buildJovialDefineDeclaration_nfi (const SgName& name, const std::string& params,
-                                                                           const std::string& def_string, SgScopeStatement* scope=NULL);
-
-//! Build a Jovial loop statement. Two variants are FOR and WHILE.
-ROSE_DLL_API SgJovialForThenStatement* buildJovialForThenStatement_nfi(SgExpression* init_expr, SgExpression* incr_expr,
-                                                                       SgExpression* test_expr);
-
 //! Build an SgDerivedTypeStatement Fortran derived type declaration with a
 //! class declaration and definition (creating both the defining and nondefining declarations as required).
 ROSE_DLL_API SgDerivedTypeStatement * buildDerivedTypeStatement (const SgName& name, SgScopeStatement* scope=NULL);
@@ -1471,14 +1454,6 @@ ROSE_DLL_API SgCatchStatementSeq *buildCatchStatementSeq(SgCatchOptionStmt * = N
 //! Build an exec statement
 ROSE_DLL_API SgExecStatement* buildExecStatement(SgExpression* executable, SgExpression* globals = NULL, SgExpression* locals = NULL);
 SgExecStatement* buildExecStatement_nfi(SgExpression* executable, SgExpression* globals = NULL, SgExpression* locals = NULL);
-
-//! Build a python print statement
-ROSE_DLL_API SgPythonPrintStmt* buildPythonPrintStmt(SgExpression* dest = NULL, SgExprListExp* values = NULL);
-SgPythonPrintStmt* buildPythonPrintStmt_nfi(SgExpression* dest = NULL, SgExprListExp* values = NULL);
-
-//! Build a python global statement
-ROSE_DLL_API SgPythonGlobalStmt* buildPythonGlobalStmt(SgInitializedNamePtrList& names);
-SgPythonGlobalStmt* buildPythonGlobalStmt_nfi(SgInitializedNamePtrList& names);
 
 // DQ (4/30/2010): Added support for building asm statements.
 //! Build a NULL statement

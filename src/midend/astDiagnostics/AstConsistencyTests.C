@@ -814,7 +814,7 @@ AstTests::runAllTests(SgProject* sageProject)
   // DQ (9/21/2013): Force this to be skipped where ROSE's AST merge feature is active (since the point of 
   // detect inconsistancy in parent child relationships and these will be present when astMerge is active.
   // if (sageProject->get_astMerge() == false)
-     if (sageProject->get_astMerge() == false && sageProject->get_Fortran_only() == false)
+     if (sageProject->get_ast_merge() == false && sageProject->get_Fortran_only() == false)
         {
        // DQ (3/19/2012): Added test from Robb for parents of the IR nodes in the AST.
           TestForParentsMatchingASTStructure::test(sageProject);
@@ -1377,7 +1377,8 @@ TestAstProperties::evaluateSynthesizedAttribute(SgNode* node, SynthesizedAttribu
                        }
                        else
                        {
-                         ROSE_ASSERT(isSgAdaAcceptStmt(parentParameterList->get_parent()));
+                         //ROSE_ASSERT(isSgAdaAcceptStmt(parentParameterList->get_parent()));
+                         ROSE_ASSERT(NULL);
                        }
                   }
                  else

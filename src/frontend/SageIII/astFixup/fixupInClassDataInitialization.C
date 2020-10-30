@@ -27,11 +27,6 @@ FixupInClassDataInitialization::visit (SgNode* node)
   // unparsed but only when the original module files are later unparsed. At least this is true for Jovial
   // Compool files (and *.rcmp files).
   //
-     if (SageInterface::is_Jovial_language())
-        {
-           return;
-        }
-
      switch(node->variantT())
         {
           case V_SgVariableDeclaration:

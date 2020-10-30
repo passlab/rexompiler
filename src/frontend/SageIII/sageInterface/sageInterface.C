@@ -1713,18 +1713,6 @@ SageInterface::get_name ( const SgDeclarationStatement* declaration )
                break;
              }
              
-          case V_SgAdaPackageSpecDecl:
-            {
-              name = "_ada_package_spec_decl_" + genericGetName(isSgAdaPackageSpecDecl(declaration));
-              break;
-            }
-            
-          case V_SgAdaPackageBodyDecl:
-            {
-              name = "_ada_package_body_decl_" + genericGetName(isSgAdaPackageBodyDecl(declaration));
-              break;
-            }
-
        // Note that the case for SgVariableDeclaration is not implemented
           default:
             // name = "default name (default case reached: not handled)";
@@ -4956,7 +4944,7 @@ bool SageInterface::is_language_case_insensitive()
 // definitions may be declared at the end of other procedures.
 bool SageInterface::language_may_contain_nondeclarations_in_scope()
    {
-      return is_Fortran_language() || is_Python_language();
+      return is_Fortran_language();
    }
 
 // #endif
@@ -20058,13 +20046,6 @@ static void createAliasSymbols (SgNamespaceDeclarationStatement* decl)
     SgAliasSymbol* asym = new SgAliasSymbol (orig_sym);
     global_def->get_symbol_table()->insert (asym->get_name(), asym);
   }   
-}
-
-void SageInterface::moveStatementsBetweenBlocks ( SgAdaPackageSpec * sourceBlock, SgNamespaceDefinitionStatement* targetBlock )
-{
-  moveDeclarationsBetweenScopes(sourceBlock, targetBlock); 
-  //create alias symbols in its global definition 
-  createAliasSymbols(isSgNamespaceDeclarationStatement(targetBlock->get_parent()));
 }
 
 void

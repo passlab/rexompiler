@@ -1,5 +1,6 @@
 SgAccessModifier
 SgActualArgumentExpression
+SgAbsOp
 SgAddOp
 SgAddressOfOp
 SgAggregateInitializer
@@ -456,6 +457,7 @@ SgSyncMemoryStatement
 SgSyncTeamStatement
 SgLockStatement
 SgUnlockStatement
+SgProcessControlStatement
 SgSpecialFunctionModifier
 SgStatement
 SgStaticAssertionDeclaration

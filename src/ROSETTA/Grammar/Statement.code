@@ -7893,7 +7893,7 @@ resetTemplateNamesInScope ( SgScopeStatement* scope )
                   {
                  // Nothing to do here, I think, unless we have to reset template function names
                     break;
-		  }
+                  }
 
             // DQ (2/12/2012): Adding support for SgTemplateClassDefinition (not previously used).
                case V_SgTemplateClassDefinition:
@@ -18302,6 +18302,7 @@ SgSyncTeamStatement::post_construction_initialization()
 
 SOURCE_SYNC_TEAM_STATEMENT_END
 
+
 SOURCE_LOCK_STATEMENT_START
 
 void
@@ -19136,6 +19137,7 @@ void
 SgOmpTargetDataStatement::post_construction_initialization()
    {}
 SOURCE_OMP_TARGET_DATA_STATEMENT_END
+
 
 SOURCE_OMP_TASKWAIT_STATEMENT_START
 void

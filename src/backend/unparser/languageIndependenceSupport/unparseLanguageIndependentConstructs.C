@@ -2897,6 +2897,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpWorkshareStatement:
                     case V_SgOmpSingleStatement:
                     case V_SgOmpTaskStatement:
+                    case V_SgOmpSimdStatement:
                     case V_SgOmpAtomicStatement: // Atomic may have clause now
                          unparseOmpGenericStatement (stmt, info);
                          break;
@@ -7725,10 +7726,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpAtomicDefaultMemOrderClause
         ROSE_ASSERT (false);
         break;
       }
-  }    
-      cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpProcBindClause() meets unacceptable default option value:"<<dv<<endl;
-      ROSE_ASSERT (false);
-      break;
   }
   curprint(string(")"));
 }
@@ -7780,27 +7777,27 @@ void UnparseLanguageIndependentConstructs::unparseOmpScheduleClause(SgOmpClause*
   SgOmpClause::omp_schedule_kind_enum skind = c-> get_kind ();
   switch (skind)
   {
-    case SgOmpClause::e_omp_schedule_static:
+    case SgOmpClause::e_omp_schedule_kind_static:
       {
         curprint(string("static"));
         break;
       }
-    case SgOmpClause::e_omp_schedule_dynamic:
+    case SgOmpClause::e_omp_schedule_kind_dynamic:
       {
         curprint(string("dynamic"));
         break;
       }
-    case SgOmpClause::e_omp_schedule_guided:
+    case SgOmpClause::e_omp_schedule_kind_guided:
       {
         curprint(string("guided"));
         break;
       }
-    case SgOmpClause::e_omp_schedule_auto :
+    case SgOmpClause::e_omp_schedule_kind_auto :
       {
         curprint(string("auto"));
         break;
       }
-    case SgOmpClause::e_omp_schedule_runtime :
+    case SgOmpClause::e_omp_schedule_kind_runtime :
       {
         curprint(string("runtime"));
         break;
@@ -9977,9 +9974,6 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
           case V_SgIntegerDivideOp:
           case V_SgDivideOp:         // return 13;
           case V_SgModOp:            // return 13;
-          case V_SgReplicationOp:    // return 13;
-                                     precedence_value = 13; break;
-
           case V_SgDotStarOp:        // return 14;
           case V_SgArrowStarOp:      // return 14;
                                      precedence_value = 14; break;
@@ -10003,10 +9997,6 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
        // DQ (2/6/2015): Need to define the precedence of this new C++11 operator (but it is not clear to me that this is correcct).
        // I am so far unable to find data on the precedence of the lambda expression.
           case V_SgLambdaExp:        // return 15;
-
-       // CR (7/31/2020): Replication operator used in Jovial (and potentially Fortran) initialization
-          case V_SgAtOp:             // return 15;
-                                     precedence_value = 15; break;
 
           case V_SgFunctionCallExp:
              {
@@ -10520,7 +10510,6 @@ UnparseLanguageIndependentConstructs::getAssociativity(SgExpression* expr)
           case V_SgBitComplementOp:
           case V_SgPointerDerefExp:
           case V_SgAddressOfOp:
-          case V_SgAtOp:
           case V_SgSizeOfOp:
              {
               return e_assoc_left;
@@ -10595,14 +10584,6 @@ bool
 UnparseLanguageIndependentConstructs::requiresParentheses(SgExpression* expr, SgUnparse_Info& info)
    {
      ASSERT_not_null(expr);
-
-  // Rasmussen (3/25/2020): For unparsing of Jovial Conversion operators (casts)
-     if (SageInterface::is_Jovial_language())
-        {
-           if (SgCastExp* cast_expr = isSgCastExp(expr)) {
-              return false;
-           }
-        }
 
 #if 0
      if (isSgSubscriptExpression(expr) != NULL || isSgDotExp(expr) || isSgCAFCoExpression(expr) || isSgPntrArrRefExp(expr) )

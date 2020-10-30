@@ -37,9 +37,9 @@ sawyer_checkers =				\
 	workListTests				\
 	cmdUnitTests
 
-if ROSE_HAVE_BOOST_SERIALIZATION_LIB
-sawyer_checkers += serializationUnitTests
-endif
+#if ROSE_HAVE_BOOST_SERIALIZATION_LIB
+#sawyer_checkers += serializationUnitTests
+#endif
 
 if ROSE_USE_SQLITE_DATABASE
 sawyer_checkers += databaseUnitTests
@@ -69,9 +69,9 @@ noinst_PROGRAMS +=				\
 	workListTests				\
 	cmdUnitTests
 
-if ROSE_HAVE_BOOST_SERIALIZATION_LIB
-noinst_PROGRAMS += serializationUnitTests
-endif
+#if ROSE_HAVE_BOOST_SERIALIZATION_LIB
+#noinst_PROGRAMS += serializationUnitTests
+#endif
 
 if ROSE_USE_SQLITE_DATABASE
 noinst_PROGRAMS += databaseUnitTests

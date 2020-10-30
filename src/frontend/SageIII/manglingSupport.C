@@ -378,7 +378,6 @@ mangleQualifiersToString (const SgScopeStatement* scope)
                case V_SgDoWhileStmt:
                case V_SgForStatement:
                case V_SgIfStmt:
-               case V_SgJovialForThenStatement:
                case V_SgSwitchStatement:
                case V_SgWhileStmt:
                case V_SgBasicBlock:
@@ -394,38 +393,6 @@ mangleQualifiersToString (const SgScopeStatement* scope)
                     break;
                   }
                   
-               case V_SgAdaPackageSpec:
-                  {
-                    const SgAdaPackageSpec*     spec   = isSgAdaPackageSpec(scope);
-                    const SgNode*               parent = spec->get_parent();
-                    ROSE_ASSERT(parent);
-                    
-                    const SgAdaPackageSpecDecl* dcl    = isSgAdaPackageSpecDecl(parent);
-                    // ROSE_ASSERT(dcl);
-                    
-                    // \todo \revise dcl may not exist for a special, hidden scope
-                    mangled_name = dcl ? dcl->get_name().getString() // or get_mangled_name ??
-                                       : spec->get_mangled_name().getString();
-                    break;
-                  }
-                  
-               case V_SgAdaTaskSpec:
-                  {
-                    const SgAdaTaskSpec*     spec   = isSgAdaTaskSpec(scope);
-                    const SgNode*            parent = spec->get_parent();
-                    ROSE_ASSERT(parent);
-                    
-                    // or get_mangled_name ??
-                    if (const SgAdaTaskSpecDecl* taskspec = isSgAdaTaskSpecDecl(parent))
-                      mangled_name = taskspec->get_name().getString();
-                    else if (const SgAdaTaskTypeDecl* tasktype = isSgAdaTaskTypeDecl(parent))
-                      mangled_name = tasktype->get_name().getString();
-                    else
-                      ROSE_ASSERT(false);
-                    
-                    break;
-                  }
-
            
            // PP (06/01/20) - not sure how to handle function parameter scope;
            //                 for now, handle like SgGlobal
