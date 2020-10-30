@@ -205,6 +205,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	critical1.c \
 	critical_dead.c \
 	critical_orphaned.c \
+	depobj.c \
 	task_dep1.c \
 	task_dep3.c \
 	task_dep_iterator1.c \
