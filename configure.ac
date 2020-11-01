@@ -110,11 +110,6 @@ dnl I had to promote it here instead of put it into ROSE_SUPPORT_ROSE_PART_2
 dnl since the expansion order there is wrong.
 test -z "$SED" && SED=sed
 
-dnl cherry-pick ROSE d55a24085a9 2019-11-22 
-if test "x$ECHO" = x; then
-    ECHO=echo
-fi
-
 dnl +--------------------------------------------------------------------------+
 dnl | ROSE Support
 dnl +--------------------------------------------------------------------------+
@@ -126,6 +121,20 @@ dnl also require.
 ROSE_SUPPORT_ROSE_PART_1
 
 ROSE_SUPPORT_ROSE_BUILD_INCLUDE_FILES
+
+# Rasmussen (11/19//2019): This is a strange bug. I can't figure out where
+# the bug actually occurs in the m4 macros. However the symptom is that
+# ECHO may not be set after this point but it is used. Thus setting ECHO
+# may be needed. This error was noticed after a new release of XCode (11.2.1)
+# was installed but probably is not related. It is more likely related to
+# libtools.m4. After talking with Robb we realized that the Mac version is
+# different from linux. I believe that somehow a portion of the libtool
+# code is copied when ./build is run (at least this is consistent with
+# the behavior.
+if test "x$ECHO" = x; then
+    ECHO=echo
+fi
+
 ROSE_SUPPORT_ROSE_PART_2
 ROSE_SUPPORT_ROSE_PART_3
 ROSE_SUPPORT_ROSE_PART_4

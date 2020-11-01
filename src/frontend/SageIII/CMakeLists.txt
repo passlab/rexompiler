@@ -59,7 +59,7 @@ add_custom_command(
   DEPENDS  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/expression_parser.yy)
 
 set(SAGE3_SOURCES ${SAGE3_SOURCES}
-  #OmpAttribute.C
+  OmpAttribute.C
   ompAstConstruction.cpp ompFortranParser.C
   expression_lexer.ll expression_parser.yy
   ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.C

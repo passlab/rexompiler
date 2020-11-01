@@ -9,8 +9,7 @@ SUBDIRS = util ROSETTA roseSupport frontend midend backend \
           3rdPartyLibraries roseExtensions
 else
 SUBDIRS = util ROSETTA roseSupport frontend midend backend \
-	  3rdPartyLibraries roseExtensions
-
+          3rdPartyLibraries roseExtensions
 endif
 
 # This lists a large number of directories.  If "make install"
@@ -37,11 +36,10 @@ if ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
    libroseOpenFortranParserlibraries = frontend/OpenFortranParser_SAGE_Connection/libroseFortran.la
    pkgdata_DATA += $(top_srcdir)/src/3rdPartyLibraries/fortran-parser/iso_c_binding.rmod
    pkgdata_DATA += $(top_srcdir)/src/3rdPartyLibraries/fortran-parser/openacc.rmod
-   libroseExperimentalGeneralLanguagelibraries = \
-        frontend/Experimental_General_Language_Support/libexperimentalRoseGeneralLanguage.la
+#   libroseExperimentalGeneralLanguagelibraries = frontend/Experimental_General_Language_Support/libexperimentalRoseGeneralLanguage.la
 else
    libroseOpenFortranParserlibraries =
-   libroseExperimentalFlangParserlibraries =
+#   libroseExperimentalGeneralLanguagelibraries =
 endif
 
 if ROSE_USE_SQLITE_DATABASE
@@ -186,8 +184,6 @@ endif
 
 # librose_la_LDFLAGS = -no-undefined --rpath $(INTEL_PIN_PATH)/intel64/lib-ext
 librose_la_LDFLAGS = -no-undefined $(ROSE_RPATHS)
-
-#librose_la_LDFLAGS = $(ROSE_DWARF_LIBS_WITH_PATH)
 
 # DQ (4/12/2016): This is required for use with clang (not clear how to compile ROSE with out it).
 if USING_CLANG_COMPILER

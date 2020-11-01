@@ -195,11 +195,11 @@ libsage3Sources = \
    fixupCopy_symbols.C \
    fixupCopy_references.C \
    rtiHelpers.C \
-  # OmpAttribute.C \
-   ompFortranParser.C \
-   ompAstConstruction.cpp \
    rose_graph_support.C \
-   $(fSageSupport_la_sources)
+   $(fSageSupport_la_sources) \
+   OmpAttribute.C \
+   ompFortranParser.C \
+   ompAstConstruction.cpp
 endif
 
 # DQ (2/15/2010): This fails in Hudson tests of ROSE compiling ROSE for code generation, but I can't 
@@ -344,12 +344,7 @@ nodist_pkginclude_HEADERS = \
    AstQueryMemoryPool.h \
    astFileIO/AstSpecificDataManagingClass.h
 
-if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-BUILT_SOURCES = $(GENERATED_SOURCE)
-else
-#BUILT_SOURCES = $(GENERATED_SOURCE) ompparser.cc ompparser.h omplexer.cc
 BUILT_SOURCES = $(GENERATED_SOURCE) expression_parser.cc expression_parser.h expression_lexer.cc
-endif
 
 # DQ (9/9/2007): Put C++_include_files.h back into place
 # since it is a convinient mechanism to handle included headers 

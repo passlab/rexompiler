@@ -536,7 +536,7 @@ Grammar::setUpStatements ()
              UpcWaitStatement          | UpcBarrierStatement    | UpcFenceStatement               | OmpTaskyieldStatement   |
              OmpBarrierStatement       | OmpFlushStatement      | OmpBodyStatement                | OmpClauseStatement |
              SequenceStatement         | WithStatement          | PassStatement                   |
-             AssertStmt                | ExecStatement          | OmpRequiresStatement            | OmpDeclareMapperStatement |
+             AssertStmt                | ExecStatement          | OmpDeclareMapperStatement       |
 	     ImageControlStatement /* | JavaPackageDeclaration */,
              "Statement","StatementTag", false);
 

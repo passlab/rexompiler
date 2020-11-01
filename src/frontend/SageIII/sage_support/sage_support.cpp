@@ -1666,7 +1666,7 @@ SgProject::parse(const vector<string>& argv)
 
 #ifdef ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
 
-                    Rose::Frontend::Fortran::Ofp::jserver_init();
+                    //Rose::Frontend::Fortran::Ofp::jserver_init(); //jserver_init is not defined since it does not need, thus of this call. 
                     //Rose::Frontend::Java::Ecj::jserver_init();
 #endif
                     errorCode = parse();
@@ -1736,9 +1736,9 @@ SgSourceFile::SgSourceFile ( vector<string> & argv , SgProject* project )
    {
   // printf ("In the SgSourceFile constructor \n");
 
-     this->p_package = NULL;
-     this->p_import_list = NULL;
-     this->p_class_list = NULL;
+     //this->p_package = NULL;
+     //this->p_import_list = NULL;
+     //this->p_class_list = NULL;
      this->p_associated_include_file = NULL;
      this->p_headerFileReport = NULL;
      this->p_processedToIncludeCppDirectivesAndComments = false;

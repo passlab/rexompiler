@@ -3,7 +3,7 @@ set(virtualCFG_SRC memberFunctions.C)
 if(NOT enable-internalFrontendDevelopment)
   list(APPEND virtualCFG_SRC
     virtualCFG.C cfgToDot.C memberFunctions.C staticCFG.C customFilteredCFG.C
-    interproceduralCFG.C virtualBinCFG.C)
+    interproceduralCFG.C)
 endif()
 
 add_library(virtualCFG OBJECT ${virtualCFG_SRC})

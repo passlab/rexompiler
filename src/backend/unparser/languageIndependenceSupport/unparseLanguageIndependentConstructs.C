@@ -2896,7 +2896,6 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpWorkshareStatement:
                     case V_SgOmpSingleStatement:
                     case V_SgOmpTaskStatement:
-                    case V_SgOmpSimdStatement:
                     case V_SgOmpAtomicStatement: // Atomic may have clause now
                          unparseOmpGenericStatement (stmt, info);
                          break;
@@ -7724,59 +7723,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpAtomicClause(SgOmpClause* c
       ROSE_ASSERT (false);
       break;
   }
-}
-
-
-
-void UnparseLanguageIndependentConstructs::unparseOmpScheduleClause(SgOmpClause* clause, SgUnparse_Info& info)
-{
-  ASSERT_not_null(clause);
-  SgOmpScheduleClause* c = isSgOmpScheduleClause(clause);
-  ASSERT_not_null(c);
-  curprint (string (" schedule("));
-  SgOmpClause::omp_schedule_kind_enum skind = c-> get_kind ();
-  switch (skind)
-  {
-    case SgOmpClause::e_omp_schedule_kind_static:
-      {
-        curprint(string("static"));
-        break;
-      }
-    case SgOmpClause::e_omp_schedule_kind_dynamic:
-      {
-        curprint(string("dynamic"));
-        break;
-      }
-    case SgOmpClause::e_omp_schedule_kind_guided:
-      {
-        curprint(string("guided"));
-        break;
-      }
-    case SgOmpClause::e_omp_schedule_kind_auto :
-      {
-        curprint(string("auto"));
-        break;
-      }
-    case SgOmpClause::e_omp_schedule_kind_runtime :
-      {
-        curprint(string("runtime"));
-        break;
-      }
-    default:
-      cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpScheduleClause() meets unacceptable kind option value:"<<skind<<endl;
-      ROSE_ASSERT (false);
-      break;
-  }
-
-  // chunk_size expression
-  SgUnparse_Info ninfo(info);
-  if (c->get_chunk_size())
-  {
-    curprint(string(" , "));
-    unparseExpression(c->get_chunk_size(), ninfo);
-  }
-
-  curprint(string(")"));
 }
 
 #if 1

@@ -10655,9 +10655,6 @@ SgTypeBool * SageBuilder::buildBoolType(SgExpression* kind_expr) {
   if (kind_expr != NULL) kind_expr->set_parent(result);
   return result;
 }
-SgTypeBool * SageBuilder::buildBoolType() {
-  return buildBoolType(NULL);
-}
 
 SgTypeBool * SageBuilder::buildBoolType() {
   return buildBoolType(NULL);
@@ -16195,7 +16192,7 @@ SageBuilder::buildFile(const std::string& inputFileName, const std::string& outp
   // arglist.push_back("-rose:verbose 2");
 
   // This handles the case where the original command line may have referenced multiple files.
-     Rose_STL_Container<string> fileList = CommandlineProcessing::generateSourceFilenames(arglist);
+     Rose_STL_Container<string> fileList = CommandlineProcessing::generateSourceFilenames(arglist,/* binaryMode = */ false);
      CommandlineProcessing::removeAllFileNamesExcept(arglist,fileList,sourceFilename);
 
   // DQ (9/3/2008): Added support for SgSourceFile IR node

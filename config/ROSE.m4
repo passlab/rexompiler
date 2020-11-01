@@ -60,7 +60,7 @@ AC_MSG_NOTICE([after initialization: with_CXX_DEBUG = "$with_CXX_DEBUG"])
 # echo "OS_VENDOR_APPLE = $OS_VENDOR_APPLE"
 # echo "OS_vendor = $OS_vendor"
 
-if "x$OS_vendor" == "xapple"; then
+if test "x$OS_vendor" == xapple; then
     echo "This IS a Mac OSX machine (even though we call the g++ compiler (which is really clang), CXX resolves to clang): Cxx = $CXX"
 else
     echo "This is NOT a Mac OSX machine"
