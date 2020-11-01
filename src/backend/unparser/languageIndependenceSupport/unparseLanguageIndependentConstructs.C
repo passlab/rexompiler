@@ -9848,6 +9848,7 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
        // case V_SgRshiftOp:         return 11;
           case V_SgLshiftOp:         // return 11;
           case V_SgRshiftOp:         // return 11;
+                                     precedence_value = 11; break;
 
           case V_SgAddOp:            // return 12;
                                      precedence_value = 12; break;
@@ -9867,6 +9868,8 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
           case V_SgIntegerDivideOp:
           case V_SgDivideOp:         // return 13;
           case V_SgModOp:            // return 13;
+                                     precedence_value = 13; break;
+
           case V_SgDotStarOp:        // return 14;
           case V_SgArrowStarOp:      // return 14;
                                      precedence_value = 14; break;
@@ -9890,6 +9893,7 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
        // DQ (2/6/2015): Need to define the precedence of this new C++11 operator (but it is not clear to me that this is correcct).
        // I am so far unable to find data on the precedence of the lambda expression.
           case V_SgLambdaExp:        // return 15;
+                                     precedence_value = 15; break;
 
           case V_SgFunctionCallExp:
              {
