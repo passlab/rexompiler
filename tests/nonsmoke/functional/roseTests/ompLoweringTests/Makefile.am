@@ -456,7 +456,7 @@ REX_PASSING_TEST_INPUT = $(REX_C_TESTCODES_REQUIRED_TO_COMPILE) $(REX_C_TESTCODE
 REFERENCE_PATH=$(top_srcdir)/tests/nonsmoke/functional/roseTests/ompLoweringTests/REXReferenceTest
 
 $(REX_PASSING_TEST_INPUT): $(REFERENCE_PATH)/$(@:rex_%=%)
-	if diff rose_$(@:rex_%=%) $(REFERENCE_PATH)/rex_$(@:rex_%=%) ; then echo "Test Passed"; rm -rf $@ ; else echo "Files differ; test falied"; cat $@; exit 1; fi
+	if diff rose_$(@:rex_%=%) $(REFERENCE_PATH)/rex_$(@:rex_%=%) ; then echo "Test Passed"; else echo "Files differ; test falied"; exit 1; fi
 
 
 TESTS =  $(cuda_PROGRAM)
@@ -498,8 +498,10 @@ check-local: conditional-check-local
 # single list, but sometimes those lists tend to get too long, so we just do them one at a time.
 clean-local:
 	rm -f $(addprefix rose_, $(C_TESTCODES_REQUIRED_TO_COMPILE))
+	rm -f $(addprefix rose_, $(REX_C_TESTCODES_REQUIRED_TO_COMPILE))
 	rm -f $(addprefix rose_, $(CXX_TESTCODES_REQUIRED_TO_COMPILE))
 	rm -f $(addprefix rose_, $(C_TESTCODES_REQUIRED_TO_RUN))
+	rm -f $(addprefix rose_, $(REX_C_TESTCODES_REQUIRED_TO_RUN))
 	rm -f $(addprefix rose_, $(CXX_TESTCODES_REQUIRED_TO_RUN))
 	rm -f $(PASSING_C_TEST_Objects)
 	rm -f $(addsuffix .passed, $(PASSING_C_TEST_Objects))
