@@ -37,6 +37,7 @@ namespace Outliner {
   bool exclude_headers=false;
   bool use_dlopen=false; // Outlining the target to a separated file and calling it using a dlopen() scheme. It turns on useNewFile.
   bool enable_template=false; // Outlining code blocks inside C++ templates
+  bool select_omp_loop = false;  // Find OpenMP for loops and outline them. This is used for testing purposes.
   std::string output_path=""; // default output path is the original file's directory
   std::vector<std::string> handles; //  abstract handles of outlining targets, given by command line option -rose:outline:abstract_handle for each
 
@@ -117,8 +118,10 @@ Outliner::generateFuncArgName (const SgStatement* stmt)
 Outliner::Result
 Outliner::outline (SgStatement* s)
 {
+#ifdef __linux__
   if (enable_debug)  
     cout<<"Entering "<< __PRETTY_FUNCTION__ <<endl;
+#endif
   string func_name = generateFuncName (s);
   return outline (s, func_name);
 }
@@ -423,7 +426,15 @@ void Outliner::commandLineProcessing(std::vector<std::string> &argvList)
 //  else  //reset to NULL if useNewFile is not true
 //    output_path="";
 
-
+  if (CommandlineProcessing::isOption (argvList,"-rose:outline:","select_omp_loop",true))
+  {
+    if (enable_debug)
+      cout<<"Select OpenMP loops for outlining  ..."<<endl;
+    select_omp_loop = true;
+    // turn on OpenMP parsing and AST creation
+    argvList.push_back("-rose:openmp:ast_only");
+  }
+ 
  if (use_dlopen || temp_variable)    
   {
     if (CommandlineProcessing::isOption (argvList,"-rose:outline:","enable_liveness",true))
@@ -453,6 +464,7 @@ void Outliner::commandLineProcessing(std::vector<std::string> &argvList)
     cout<<"\t-rose:outline:copy_orig_file                   used with dlopen(): single lib source file copied from the entire original input file. All generated outlined functions are appended to the lib source file"<<endl;
     cout<<"\t-rose:outline:enable_template                  support outlining code blocks inside C++ templates (experimental)"<<endl;
     cout<<"\t-rose:outline:enable_debug                     run outliner in a debugging mode"<<endl;
+    cout<<"\t-rose:outline:select_omp_loop                  select OpenMP for loops for outlining, used for testing purpose"<<endl;
     cout <<"---------------------------------------------------------------"<<endl;
   }
 
@@ -463,8 +475,10 @@ void Outliner::commandLineProcessing(std::vector<std::string> &argvList)
 SgBasicBlock *
 Outliner::preprocess (SgStatement* s)
 {
+#ifdef __linux__
   if (enable_debug)  
     cout<<"Entering "<< __PRETTY_FUNCTION__ <<endl;
+#endif
   // bool b = isOutlineable (s, enable_debug);
   bool b = isOutlineable (s, SgProject::get_verbose () >= 1);
   if (b!= true)
@@ -498,8 +512,8 @@ Outliner::Result::Result (SgFunctionDeclaration* decl,
 #else
   // DQ (8/15/2019): Adding support to defere the transformations in header files (a performance improvement).
 Outliner::Result::Result (SgFunctionDeclaration* decl,
-                          SgStatement* call, SgFile* file/*=NULL*/, DeferedTransformation input_deferedTransformation)
-  : decl_ (decl), call_ (call), file_(file),target_class_member(NULL),new_function_prototype(NULL),deferedTransformation(input_deferedTransformation)
+                          SgStatement* call, SgFile* file/*=NULL*/, DeferredTransformation input_deferredTransformation)
+  : decl_ (decl), call_ (call), file_(file),target_class_member(NULL),new_function_prototype(NULL),deferredTransformation(input_deferredTransformation)
 {
 }
 #endif
@@ -514,7 +528,7 @@ Outliner::Result::Result (const Result& b)
 // DQ (8/15/2019): Adding support to defere the transformations in header files (a performance improvement).
 // DQ (8/7/2019): Store data required to support defering the transformation to insert the outlined function prototypes.
 Outliner::Result::Result (const Result& b)
-  : decl_ (b.decl_), call_ (b.call_),target_class_member(b.target_class_member),new_function_prototype(b.target_class_member),deferedTransformation(b.deferedTransformation)
+  : decl_ (b.decl_), call_ (b.call_),target_class_member(b.target_class_member),new_function_prototype(b.target_class_member),deferredTransformation(b.deferredTransformation)
 {
 }
 #endif
@@ -531,14 +545,14 @@ Outliner::Result::isValid (void) const
  *  Container to store the support for defering the transformations to later (on header files that we will want to unparse).
  */
 
-Outliner::DeferedTransformation::DeferedTransformation()
+Outliner::DeferredTransformation::DeferredTransformation()
    : class_definition(NULL),
      target_class_member(NULL),
      new_function_prototype(NULL)
    {
    }
 
-Outliner::DeferedTransformation::DeferedTransformation(
+Outliner::DeferredTransformation::DeferredTransformation(
    SgClassDefinition* input_class_definition, 
    SgDeclarationStatement* input_target_class_member, 
    SgDeclarationStatement* input_new_function_prototype)
@@ -548,26 +562,27 @@ Outliner::DeferedTransformation::DeferedTransformation(
    {
    }
 
-Outliner::DeferedTransformation::DeferedTransformation (const DeferedTransformation& X)
+Outliner::DeferredTransformation::DeferredTransformation (const DeferredTransformation& X)
    : class_definition(X.class_definition),
      target_class_member(X.target_class_member),
      new_function_prototype(X.new_function_prototype),
-     targetFriends(X.targetFriends),
-     targetClasses(X.targetClasses)
+     targetClasses(X.targetClasses),
+     targetFriends(X.targetFriends)
    {
    }
 
-Outliner::DeferedTransformation & Outliner::DeferedTransformation::operator= (const DeferedTransformation& X)
+Outliner::DeferredTransformation & Outliner::DeferredTransformation::operator= (const DeferredTransformation& X)
    {
 #if 0
-     printf ("Inside of Outliner::DeferedTransformation::operator= (const DeferedTransformation& X) \n");
+     printf ("Inside of Outliner::DeferredTransformation::operator= (const DeferredTransformation& X) \n");
 #endif
 
      targetFriends = X.targetFriends;
      targetClasses = X.targetClasses;
+     return *this;
    }
 
 
-Outliner::DeferedTransformation::~DeferedTransformation (void) {}; //! Shallow; does not delete fields.
+Outliner::DeferredTransformation::~DeferredTransformation (void) {}; //! Shallow; does not delete fields.
 
 // eof

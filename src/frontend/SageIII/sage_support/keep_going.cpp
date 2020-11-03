@@ -833,7 +833,7 @@ Rose::KeepGoing::AppendToFile(const std::string& filename, const std::string& ms
   boost::interprocess::file_lock flock (lock_file_name.c_str());
   // introduce a scope to use the scoped lock, which automatically unlock when existing the scope
   {
-    scoped_lock<file_lock> e_lock(flock);
+    boost::interprocess::scoped_lock<file_lock> e_lock(flock);
     std::ofstream fout(filename.c_str(), std::ios::app);
     if(!fout.is_open())
     {
@@ -900,6 +900,6 @@ std::vector<std::string>
 Rose::KeepGoing::GetSourceFilenamesFromCommandline(const std::vector<std::string>& argv)
 {
   std::vector<std::string> filenames =
-      CommandlineProcessing::generateSourceFilenames(argv);
+      CommandlineProcessing::generateSourceFilenames(argv, false);
   return filenames;
 }

@@ -76,6 +76,9 @@ if ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
    AM_CPPFLAGS += -I${top_builddir}/src/3rdPartyLibraries/fortran-parser
 endif
 
+###Rasmussen:FIXME************************************
+   AM_CPPFLAGS += -I$(top_srcdir)/src/frontend/Experimental_General_Language_Support
+
 ## The grammar generator (ROSETTA) should use its own template repository
 CXX_TEMPLATE_REPOSITORY_PATH = .
 
@@ -192,11 +195,11 @@ libsage3Sources = \
    fixupCopy_symbols.C \
    fixupCopy_references.C \
    rtiHelpers.C \
+   rose_graph_support.C \
+   $(fSageSupport_la_sources) \
    OmpAttribute.C \
    ompFortranParser.C \
-   ompAstConstruction.cpp \
-   rose_graph_support.C \
-   $(fSageSupport_la_sources)
+   ompAstConstruction.cpp
 endif
 
 # DQ (2/15/2010): This fails in Hudson tests of ROSE compiling ROSE for code generation, but I can't 
@@ -341,12 +344,7 @@ nodist_pkginclude_HEADERS = \
    AstQueryMemoryPool.h \
    astFileIO/AstSpecificDataManagingClass.h
 
-if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-BUILT_SOURCES = $(GENERATED_SOURCE)
-else
-#BUILT_SOURCES = $(GENERATED_SOURCE) ompparser.cc ompparser.h omplexer.cc
 BUILT_SOURCES = $(GENERATED_SOURCE) expression_parser.cc expression_parser.h expression_lexer.cc
-endif
 
 # DQ (9/9/2007): Put C++_include_files.h back into place
 # since it is a convinient mechanism to handle included headers 
@@ -374,15 +372,3 @@ removeHashLineDirectivesFromGeneratedCode:
 	cp Cxx_Grammar.h  Cxx_Grammar.h.withLineDirectives
 	grep -v "#line" Cxx_Grammar.h > Cxx_Grammar.h.withoutLineDirectives
 	cp Cxx_Grammar.h.withoutLineDirectives Cxx_Grammar.h
-
-
-
-
-
-
-
-
-
-
-
-

@@ -173,6 +173,15 @@ static void calculateVariableRestorationSet(const ASTtools::VarSymSet_t& syms,
     if (readOnlyVars.find(i_name)==readOnlyVars.end() && isLiveOut)   // variables not in read-only set have to be restored
       restoreVars.insert(i_name);
   }
+
+  if (Outliner::enable_debug)
+  { 
+    cout<<"Executing calculateVariableRestorationSet()....."<<endl;
+    cout<<"Found "<<restoreVars.size()<<" symbols which must be restored in the end of the outlined function:";
+    for (std::set<SgInitializedName*> ::const_iterator iter=restoreVars.begin();iter!=restoreVars.end();iter++)
+      cout<<(*iter)->get_name().getString()<<" ";
+    cout<<endl;
+  }
 }
  
 //! A helper function to decide for the classic outlining, if a variable should be passed using its original type (a) or its pointer type (&a)
@@ -256,12 +265,19 @@ Outliner::outlineBlock (SgBasicBlock* s, const string& func_name_str)
 
     if (Outliner::enable_debug)
     {
-      cout<<"Outliner::Transform::generateFunction() -----Found "<<readOnlyVars.size()<<" read only variables..:";
+      cout<<"Transform.cc Outliner::outlineBlock() -----Found "<<readOnlyVars.size()<<" read only variables..:";
       for (std::set<SgInitializedName*>::const_iterator iter = readOnlyVars.begin();
           iter!=readOnlyVars.end(); iter++)
         cout<<" "<<(*iter)->get_name().getString()<<" ";
       cout<<endl;
-      cout<<"Outliner::Transform::generateFunction() -----Found "<<liveOuts.size()<<" live out variables..:";
+
+      cout<<"Outliner::outlineBlock() -----Found "<<pdSyms.size()<<" varaibles to be replaced as pointer dereferencing variables..:";
+      for (ASTtools::VarSymSet_t::const_iterator iter = pdSyms.begin();
+          iter!=pdSyms.end(); iter++)
+        cout<<" "<<(*iter)->get_name().getString()<<" ";
+      cout<<endl;
+
+      cout<<"Outliner::outlineBlock() -----Found "<<liveOuts.size()<<" live out variables..:";
       for (std::set<SgInitializedName*>::const_iterator iter = liveOuts.begin();
           iter!=liveOuts.end(); iter++)
         cout<<" "<<(*iter)->get_name().getString()<<" ";
@@ -347,7 +363,7 @@ Outliner::outlineBlock (SgBasicBlock* s, const string& func_name_str)
 
   // DQ (8/15/2019): Adding support to defere the transformations in header files (a performance improvement).
   // insert (func, glob_scope, s); //Outliner::insert() 
-     DeferedTransformation headerFileTransformation = insert (func, glob_scope, s); //Outliner::insert() 
+     DeferredTransformation headerFileTransformation = insert (func, glob_scope, s); //Outliner::insert() 
 
   // Liao 2/4/2020   
   // Some comments and #include directives may be attached after the global scope for an otherwise empty input file.
@@ -388,8 +404,10 @@ Outliner::outlineBlock (SgBasicBlock* s, const string& func_name_str)
   if (loops.size()>0)
   {
     Rose_STL_Container <SgNode*>::iterator liter =loops.begin();
-    SgForStatement* firstloop = isSgForStatement(*liter); 
+    SgForStatement* firstloop = isSgForStatement(*liter);
+#ifdef ROSE_BUILD_CPP_LANGUAGE_SUPPORT
     OmpSupport::generatePragmaFromOmpAttribute(firstloop);
+#endif
   }
 
   //-----------Step 4. Replace the outlining target with a function call-------------
@@ -464,6 +482,8 @@ Outliner::outlineBlock (SgBasicBlock* s, const string& func_name_str)
 
       appendExpression(exp_list_exp, wrapper_exp);
     }
+    else
+      appendExpression(exp_list_exp, buildIntVal(0)); // NULL pointer as parameter
     func_call = buildFunctionCallStmt(buildPointerDerefExp(buildVarRefExp(func_name_str+"p",p_scope)), exp_list_exp);   
   }
   else  // regular function call for other cases
@@ -841,10 +861,12 @@ std::string Outliner::generatePackingStatements(SgStatement* target, ASTtools::V
 SgSourceFile* 
 Outliner::generateNewSourceFile(SgBasicBlock* s, const string& file_name)
 {
+#ifdef __linux__
   if (enable_debug)  
   {
     cout<<"Entering "<< __PRETTY_FUNCTION__ <<endl;
   }
+#endif
  
   SgSourceFile* new_file = NULL;
   SgProject * project = getEnclosingNode<SgProject> (s);
@@ -888,10 +910,12 @@ Outliner::generateNewSourceFile(SgBasicBlock* s, const string& file_name)
  * 
  */
 std::string Outliner::generateLibSourceFileName(SgBasicBlock* target) {
+#ifdef __linux__
   if (enable_debug)  
   {
     cout<<"Entering "<< __PRETTY_FUNCTION__ <<endl;
   }
+#endif
     std::string lib_file_name;
  
     // s could be transformation generated, so use the root SgFile for file name
@@ -921,10 +945,12 @@ std::string Outliner::generateLibSourceFileName(SgBasicBlock* target) {
  * the lib source file's name convention is rose_input_lib.[c|cxx] by default. Or overrided by file_name.  
  */
 SgSourceFile* Outliner::getLibSourceFile(SgBasicBlock* target) {
+#ifdef __linux__
   if (enable_debug)  
   {
     cout<<"Entering "<< __PRETTY_FUNCTION__ <<endl;
   }
+#endif
     SgSourceFile* new_file = NULL;
     SgProject * project = getEnclosingNode<SgProject> (target);
     ROSE_ASSERT(project != NULL);
@@ -994,7 +1020,12 @@ SgSourceFile* Outliner::getLibSourceFile(SgBasicBlock* target) {
 #endif
 
       if (enable_debug)
+      {
         printf ("DONE: In Outliner::getLibSourceFile(): Calling buildSourceFile(): input_file_name = %s \n",input_file_name.c_str());
+        //generateDOTforMultipleFile(*project);   // this is too large
+      //  string filename = SageInterface::generateProjectName(project);
+       // generateWholeGraphOfAST(filename+".WholeAST");
+      }
 
       // buildFile() will set filename to be input file name by default. 
       // we have to rename the input file to be output file name. This is used to avoid duplicated creation later on
@@ -1007,7 +1038,21 @@ SgSourceFile* Outliner::getLibSourceFile(SgBasicBlock* target) {
    // DQ (3/20/2019): Need to eliminate possible undefined symbols in this file when it will be compiled into 
    // a dynamic shared library.  Any undefined symbols will cause an error when loading the library using dlopen().
    // convertFunctionDefinitionsToFunctionPrototypes(new_file);
-      SageInterface::convertFunctionDefinitionsToFunctionPrototypes(new_file);
+      //SageInterface::convertFunctionDefinitionsToFunctionPrototypes(new_file);
+      //Liao, 2020/8/11 We only convert non-static functions into prototypes. 
+      //Static function definitions should be preserved or undefined function during making of shared lib.
+      std::vector<SgFunctionDeclaration*> functionList = generateFunctionDefinitionsList(new_file);
+
+      std::vector<SgFunctionDeclaration*>::iterator i = functionList.begin();
+      while (i != functionList.end())
+      { 
+        SgFunctionDeclaration* functionDeclaration = *i;
+        ROSE_ASSERT(functionDeclaration != NULL);
+        // Transform into prototype.
+        if (!isStatic(functionDeclaration))
+          replaceDefiningFunctionDeclarationWithFunctionPrototype(functionDeclaration);
+        i++;
+      }
 #endif
 
 #if 0
@@ -1017,10 +1062,12 @@ SgSourceFile* Outliner::getLibSourceFile(SgBasicBlock* target) {
 
     }
 
+#ifdef __linux__
     if (enable_debug)  
     {
       cout<<"Exiting "<< __PRETTY_FUNCTION__ <<endl;
     }
+#endif
 
     //new_file = isSgSourceFile(buildFile(new_file_name, new_file_name));
     ROSE_ASSERT(new_file != NULL);

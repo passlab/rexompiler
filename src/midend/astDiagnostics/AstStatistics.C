@@ -48,7 +48,7 @@ std::string AstNodeTraversalCSVStatistics::toString(SgNode* node) {
   }
   return ss.str();
 }
- 
+
 string
 AstNodeTraversalStatistics::toString(SgNode* node) {
   string s;
@@ -65,7 +65,7 @@ AstNodeTraversalStatistics::toString(SgNode* node) {
 }
 
 void 
-AstNodeTraversalStatistics::visit(SgNode* node) { 
+AstNodeTraversalStatistics::visit(SgNode* node) {
   if(!node) return;
   ROSE_ASSERT(node->variantT()<V_SgNumVariants);
   numNodeTypes.at(node->variantT())++;
@@ -103,10 +103,10 @@ AstNodeTraversalStatistics::cmpStatistics( AstNodeTraversalStatistics & q ) {
     if (numNodeTypes.at(i)>0 || numNodeTypes2.at(i)>0) {
       ss << generateCMPStatisticsValueString(getVariantName(VariantT(i)), numNodeTypes[i], numNodeTypes2[i]);
     }
-    sum1 += numNodeTypes[i]; 
+    sum1 += numNodeTypes[i];
     sum2 += numNodeTypes2[i];
   }
-  
+
   ss << generateCMPStatisticsValueString("TOTAL", sum1, sum2);
   ss << "********************************************************************************************************************\n";
 

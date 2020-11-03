@@ -8,6 +8,8 @@
 
 #ifndef STORAGE_CLASS_MEMORY_MANAGEMENT_H
 #define STORAGE_CLASS_MEMORY_MANAGEMENT_H
+#include <rosePublicConfig.h>
+#include <Sawyer/BitVector.h>
 
 #define INITIAL_SIZE_OF_MEMORY_BLOCKS 10000
 #define MEMORY_BLOCK_LIST_INCREASE 10
@@ -135,6 +137,16 @@ class EasyStorage<std::string>
      void storeDataInEasyStorageClass(const std::string& data_); 
      std::string rebuildDataStoredInEasyStorageClass() const;
    };
+
+// EasyStorage for Sawyer bit vectors
+template<>
+class EasyStorage<Sawyer::Container::BitVector>: public StorageClassMemoryManagement<Sawyer::Container::BitVector::Word> {
+    typedef StorageClassMemoryManagement<Sawyer::Container::BitVector::Word> Base;
+public:
+    EasyStorage() {}
+    void storeDataInEasyStorageClass(const Sawyer::Container::BitVector &data_);
+    Sawyer::Container::BitVector rebuildDataStoredInEasyStorageClass() const;
+};
 
 // EasyStorage concerning STL vectors and lists of plain data, not sets ! 
 template <class BASIC_TYPE, template <class A> class CONTAINER >

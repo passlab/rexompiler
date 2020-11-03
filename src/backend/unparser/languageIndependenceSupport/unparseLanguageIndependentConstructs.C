@@ -37,11 +37,11 @@ bool isConstruct = false;
 
 UnparseLanguageIndependentConstructs::unparsed_as_enum_type global_unparsed_as = UnparseLanguageIndependentConstructs::e_unparsed_as_error;
 
-void 
-UnparseLanguageIndependentConstructs::initDiagnostics() 
+void
+UnparseLanguageIndependentConstructs::initDiagnostics()
    {
      static bool initialized = false;
-     if (!initialized) 
+     if (!initialized)
         {
           initialized = true;
           Rose::Diagnostics::initAndRegister(&mlog, "Rose::UnparseLanguageIndependentConstructs");
@@ -146,7 +146,7 @@ UnparseLanguageIndependentConstructs::curprint (const std::string & str) const
     }
 
     unp->u_sage->curprint(str);
-     
+
 #else  // ! USE_RICE_FORTRAN_WRAPPING
 
      // FMZ (3/22/2010) added fortran continue line support
@@ -157,15 +157,15 @@ UnparseLanguageIndependentConstructs::curprint (const std::string & str) const
      int str_len       = str.size();
      int curr_line_len = unp->cur.current_col();
 
-     if (is_fortran90 && 
-              curr_line_len!=0 && 
+     if (is_fortran90 &&
+              curr_line_len!=0 &&
                (str_len + curr_line_len)> MAX_F90_LINE_LEN) {
           unp->u_sage->curprint("&");
           unp->cur.insert_newline(1);
-     } 
+     }
 
      if (is_fortran90)
-     {  
+     {
        if (str_len <= MAX_F90_LINE_LEN || str[0] == '#' || str[0] == '!')
        {
          unp->u_sage->curprint(str);
@@ -181,14 +181,14 @@ UnparseLanguageIndependentConstructs::curprint (const std::string & str) const
              unp->u_sage->curprint("&");
              unp->cur.insert_newline(1);
            }
-         } 
+         }
        }
      }
      else
      {
        unp->u_sage->curprint(str);
      }
-     
+
 #endif  // USE_RICE_FORTRAN_WRAPPING
 }
 
@@ -209,35 +209,57 @@ UnparseLanguageIndependentConstructs::markGeneratedFile() const
 bool
 UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, string sourceFilename, SgUnparse_Info& info )
    {
-  // If the filename of the statement and the input filename are the same then 
+  // If the filename of the statement and the input filename are the same then
   // the return result is true.  IF not, then we have to look to see if there
   // was a "#line xx "filename"" macro that was used (to explain the difference).
 
-     ROSE_ASSERT (stmt != NULL);
+     ASSERT_not_null(stmt);
 
      bool statementInFile = false;
 
-#if 0
-     printf ("\nIn statementFromFile(): sourceFilename = %s stmt = %p = %s \n",sourceFilename.c_str(),stmt,stmt->class_name().c_str());
+  // DQ (5/19/2020): Debugging new support for include directives.
+     SgIncludeDirectiveStatement* includeDirectiveStatement = isSgIncludeDirectiveStatement(stmt);
+     if (includeDirectiveStatement != NULL)
+        {
+          printf ("**************** Found a SgIncludeDirectiveStatement IR node: directive = %s \n",includeDirectiveStatement->get_directiveString().c_str());
+          ROSE_ASSERT(includeDirectiveStatement->get_startOfConstruct() != NULL);
+
+#if 1
+       // DQ (6/23/2020): These are no longer introduced, so they should be an error.
+          printf ("Exiting as a test! \n");
+          ROSE_ASSERT(false);
 #endif
+        }
 
 #if 0
-     printf ("\n");
-     printf ("In statementFromFile(): sourceFilename = %s stmt = %p = %s \n",sourceFilename.c_str(),stmt,stmt->class_name().c_str());
-     printf ("   --- stmt = %s \n",SageInterface::get_name(stmt).c_str());
-     printf ("   --- stmt->get_file_info()->get_fileIDsToUnparse().size() = %zu \n",stmt->get_file_info()->get_fileIDsToUnparse().size());
+  // DQ (4/9/2020): Added header file unparsing feature specific debug level.
+     if (SgProject::get_unparseHeaderFilesDebug() > 0)
+        {
+          printf ("\nIn statementFromFile(): sourceFilename = %s stmt = %p = %s \n",sourceFilename.c_str(),stmt,stmt->class_name().c_str());
+        }
 #endif
 
+  // #if 0
+  // DQ (4/9/2020): Added header file unparsing feature specific debug level.
+     if (SgProject::get_unparseHeaderFilesDebug() >= 10)
+        {
+          printf ("\n");
+          printf ("In statementFromFile(): sourceFilename = %s stmt = %p = %s \n",sourceFilename.c_str(),stmt,stmt->class_name().c_str());
+          printf ("   --- stmt = %s \n",SageInterface::get_name(stmt).c_str());
+          printf ("   --- stmt->get_file_info()->get_fileIDsToUnparse().size() = %zu \n",stmt->get_file_info()->get_fileIDsToUnparse().size());
+        }
+  // #endif
+
 #if 0
-  // DQ (11/10/2019): This is too simple of a tests, and while it frequently will work we need to see if the 
+  // DQ (11/10/2019): This is too simple of a tests, and while it frequently will work we need to see if the
   // current file being unparse is actually in the list defined by fileIDsToUnparse.
 
   // DQ (2/26/2019): Adding support for multiple file to reference defining declaration and still unparse them.
      if (stmt->get_file_info()->get_fileIDsToUnparse().empty() == false)
         {
        // Found case of multiple file handling causing a defining declaration to be used within more than one file.
-       // This design permits both files to reference the single definig declaration, while having only one 
-       // defining declaration across the multi-file support (this permits global analysis, especially effective 
+       // This design permits both files to reference the single definig declaration, while having only one
+       // defining declaration across the multi-file support (this permits global analysis, especially effective
        // when used with the AST merge mechanism).
 
        // For the moment we can attemt to test this support by retuning true when we detect the use of this feature.
@@ -249,16 +271,16 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
 #endif
 
   // FMZ (comment by DQ (11/14/2008)):
-  // This is part of the support for module files in Fortran.  Modules seen in the compilation 
-  // of a Fortran program cause a "<module name>.rmod" file to be generated. When we unparse 
-  // the "*.rmod" we want to output all statements, but since they came from the original 
+  // This is part of the support for module files in Fortran.  Modules seen in the compilation
+  // of a Fortran program cause a "<module name>.rmod" file to be generated. When we unparse
+  // the "*.rmod" we want to output all statements, but since they came from the original
   // fortran file (a better translation would avoid this problem), the function would conclude
-  // that they should not be unparsed (this fix forces the statements in a "*.rmod" file to 
-  // always be unparsed.  If the SgSourceFile built to represent the "*.rmod" file had been 
+  // that they should not be unparsed (this fix forces the statements in a "*.rmod" file to
+  // always be unparsed.  If the SgSourceFile built to represent the "*.rmod" file had been
   // constructed as a transformation then the file info objects would have been marked as
   // part of a transforamtion and this fix would not have been required.  At some point this
   // can be improved.  So this is a fine temporary fix for now.
-     if (StringUtility::fileNameSuffix(sourceFilename) == "rmod") 
+     if (StringUtility::fileNameSuffix(sourceFilename) == "rmod")
         {
        // If we are to unparse a module into the .rmod file this this is ALWAYS true
           return true;
@@ -287,27 +309,27 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
   // DQ (2/15/2013): This might not be required now that we support physical filenames (and physical line numbers).
 
   // DQ (12/23/2012): This special handling of the "conftest.c" file is no linger required.
-  // It is used to map filenames generated from a specific #line directives used in autoconf 
-  // generated files to the physical filename.  However, now that we internally keep references 
-  // to both the logical source position AND the physical source position, this should not 
+  // It is used to map filenames generated from a specific #line directives used in autoconf
+  // generated files to the physical filename.  However, now that we internally keep references
+  // to both the logical source position AND the physical source position, this should not
   // be required.
 
 #error "DEAD CODE!"
 
   // DQ (9/17/2013): Updated this test to handle C++ versions of autoconf tests.
   // DQ (10/8/2012): We want to allow ROSE to work with autoconf tests.  The nature
-  // of these tests are that they have a #line directive "#line 1227 "configure"" 
-  // and are in a file called: "conftest.c" and in some cases have a include file 
+  // of these tests are that they have a #line directive "#line 1227 "configure""
+  // and are in a file called: "conftest.c" and in some cases have a include file
   // named: "confdef.h".
      string stmt_filename = StringUtility::stripPathFromFileName(sourceFilename);
      if ( (stmt_filename == "conftest.c") || (stmt_filename == "conftest.C") )
         {
-          ROSE_ASSERT(stmt->get_file_info() != NULL);
+          ASSERT_not_null(stmt->get_file_info());
           string statementfilename = stmt->get_file_info()->get_filenameString();
 #if 0
           printf ("statementfilename = %s \n",statementfilename.c_str());
 #endif
-       // Note that the #line directive will cause the statement's source file position 
+       // Note that the #line directive will cause the statement's source file position
        // to match that of the filename in the line directive.
           if (statementfilename == "configure")
              {
@@ -323,7 +345,7 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
      printf ("In statementFromFile(): unp->opt.get_unparse_includes_opt() = %s \n",unp->opt.get_unparse_includes_opt() ? "true" : "false");
 #endif
 
-  // DQ (8/7/2018): I think we can assert this (but check it). Definitely not, there is at least 
+  // DQ (8/7/2018): I think we can assert this (but check it). Definitely not, there is at least
   // one test of this feature in the C_tests directory.
   // ROSE_ASSERT(unp->opt.get_unparse_includes_opt() == false);
 
@@ -354,8 +376,8 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
 
        // DQ (8/17/2005): At some point all transformation should be marked as isOutputInCodeGeneration
        // DQ (6/17/2005): Not all compiler generated IR nodes are intended to be unparsed (e.g. implicit casts)
-       // some compiler generated IR nodes (e.g. required templates) are required in the generated source code 
-       // so check explicitly for compiler generated IR nodes which are marked for output withn the generated 
+       // some compiler generated IR nodes (e.g. required templates) are required in the generated source code
+       // so check explicitly for compiler generated IR nodes which are marked for output withn the generated
        // source code (unparser).
        // DQ (5/26/2005): Query isCompilerGenerated and isTransformation before processing the filename.
        // bool isCompilerGenerated = stmt->get_file_info()->isCompilerGenerated();
@@ -366,7 +388,7 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
              {
                printf ("Error: stmt->get_file_info() == NULL stmt = %p = %s \n",stmt,stmt->class_name().c_str());
              }
-          ROSE_ASSERT(stmt->get_file_info() != NULL);
+          ASSERT_not_null(stmt->get_file_info());
           bool isOutputInCodeGeneration = stmt->get_file_info()->isOutputInCodeGeneration();
 
           SgSourceFile* sourceFile = info.get_current_source_file();
@@ -375,7 +397,7 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
           bool forceOutputOfGeneratedCode = info.outputCompilerGeneratedStatements();
 
        // DQ (10/31/2018): Added assertion.
-       // ROSE_ASSERT(sourceFile != NULL);
+       // ASSERT_not_null(sourceFile);
 
 #if 0
           printf ("In statementFromFile(): isOutputInCodeGeneration = %s \n",isOutputInCodeGeneration ? "true" : "false");
@@ -386,16 +408,16 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
              }
           printf ("   --- forceOutputOfGeneratedCode                = %s \n",forceOutputOfGeneratedCode ? "true" : "false");
 #endif
-       // DQ (10/25/2018): If we are using the unarsing of header files then we require a more complex test to avoid 
+       // DQ (10/25/2018): If we are using the unarsing of header files then we require a more complex test to avoid
        // transformations in header files being unparsed in the output source (e.g. *.C) file.
        // if (isOutputInCodeGeneration == true && sourceFile->get_unparse_tokens() == true)
        // if (isOutputInCodeGeneration == true && (sourceFile->get_unparse_tokens() == true || sourceFile->get_unparseHeaderFiles() == true))
        // if ((isOutputInCodeGeneration == true || forceOutputOfGeneratedCode == true) && (sourceFile->get_unparse_tokens() == true || sourceFile->get_unparseHeaderFiles() == true))
           if ((isOutputInCodeGeneration == true || forceOutputOfGeneratedCode == true) && (sourceFile != NULL) && (sourceFile->get_unparse_tokens() == true || sourceFile->get_unparseHeaderFiles() == true))
              {
-            // We need to evaluate if this is a transformation which should be output, since under the header file unparsing it would 
-            // be output in every file using the existing logic.  This is because ROSE was originally designed to have only one file 
-            // output and now has been modified to unparse multiple files (the original input source file and posible many header files 
+            // We need to evaluate if this is a transformation which should be output, since under the header file unparsing it would
+            // be output in every file using the existing logic.  This is because ROSE was originally designed to have only one file
+            // output and now has been modified to unparse multiple files (the original input source file and posible many header files
             // as well).
 
             // The solution will be to match on the sourceFile name and the physical file name associated with the transformation.
@@ -418,12 +440,12 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
 #if 0
                printf ("In statementFromFile(): stmt isCompilerGenerated = %s \n",isCompilerGenerated ? "true" : "false");
 #endif
-               if (sourceFile->get_file_info()->get_physical_file_id() != stmt->get_file_info()->get_physical_file_id() && 
+               if (sourceFile->get_file_info()->get_physical_file_id() != stmt->get_file_info()->get_physical_file_id() &&
                    sourceFile->get_unparseHeaderFiles() == true && isCompilerGenerated == false)
                   {
                     isOutputInCodeGeneration   = false;
 
-                 // DQ (10/30/2018): Also for this to be false since it was required to trigger the traversal 
+                 // DQ (10/30/2018): Also for this to be false since it was required to trigger the traversal
                  // of the outer most scope that are referenced by header files.
                     forceOutputOfGeneratedCode = false;
                   }
@@ -449,7 +471,7 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
 #if 0
           info.display("In statementFromFile()");
 #endif
-       // DQ (1/11/2006): OutputCodeGeneration is not set to be true where transformations 
+       // DQ (1/11/2006): OutputCodeGeneration is not set to be true where transformations
        // require it.  Transformation to include header files don't set the OutputCodeGeneration flag.
        // if (isOutputInCodeGeneration || isTransformation)
        // if (isOutputInCodeGeneration == true)
@@ -461,7 +483,7 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
              }
             else
              {
-            // DQ (8/17/2005): Need to replace this with call to compare Sg_File_Info::file_id 
+            // DQ (8/17/2005): Need to replace this with call to compare Sg_File_Info::file_id
             // numbers so that we can remove the string comparision operator.
             // statementfilename = Rose::getFileName(stmt);
 
@@ -474,10 +496,10 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
                if (info.get_language() == SgFile::e_Fortran_language)
                   {
                  // DQ (9/24/2013): In the case of Fortran we need to generate the preprocessor name (at least for file requireing CPP).
-                 // This was handled properly under the previous implementation using the logical source position, so for Fortran we 
-                 // use the logical source position as a basis for knowing which statements to be output.  The case of C/C++ is 
-                 // more sophisticated (test autoconf test codes) and so it requires the physical source position.  Ideally, the 
-                 // fortran support would have the same implementation, but the handling of intermdiate preprocessed files makes 
+                 // This was handled properly under the previous implementation using the logical source position, so for Fortran we
+                 // use the logical source position as a basis for knowing which statements to be output.  The case of C/C++ is
+                 // more sophisticated (test autoconf test codes) and so it requires the physical source position.  Ideally, the
+                 // fortran support would have the same implementation, but the handling of intermdiate preprocessed files makes
                  // this more complex (and it should be a seperate fix to handle that).
                  // statementfilename = SgFile::generate_C_preprocessor_intermediate_filename(stmt->get_file_info()->get_physical_filename());
                  // statementfilename = SgFile::generate_C_preprocessor_intermediate_filename(sourceFilename);
@@ -511,10 +533,10 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
             // ROSE_ASSERT (statementfilename.empty() == false);
 
             // DQ (12/12/2018): Adding testing for failing test in virtual function analysis.
-            // ROSE_ASSERT(sourceFile != NULL);
-            // ROSE_ASSERT(sourceFile->get_file_info() != NULL);
-               ROSE_ASSERT(stmt != NULL);
-               ROSE_ASSERT(stmt->get_file_info() != NULL);
+            // ASSERT_not_null(sourceFile);
+            // ASSERT_not_null(sourceFile->get_file_info());
+               ASSERT_not_null(stmt);
+               ASSERT_not_null(stmt->get_file_info());
 
             // DQ (10/31/2018): Because the filenames are interpreted, we have to use the file_id values.
             // DQ (9/20/2013): If this is a performance issue, an optimization would be to use file_id's instead of strings (filenames).
@@ -541,6 +563,7 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
                          printf ("  fileIdList[%zu] = %d \n",i,fileIdList[i]);
                        }
 #endif
+                    ASSERT_not_null(sourceFile);
                     SgFileIdList::const_iterator pos = find(fileIdList.begin(),fileIdList.end(),sourceFile->get_file_info()->get_physical_file_id());
                     if (pos != fileIdList.end())
                        {
@@ -560,12 +583,20 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
             // negara1 (08/15/2011): Make a special consideration for header file bodies in include directive statements.
             // TODO: Change when SgIncludeDirectiveStatement is used instead of attached PreprocessingInfo.
                SgIncludeDirectiveStatement* includeDirectiveStatement = isSgIncludeDirectiveStatement(stmt);
-               if (includeDirectiveStatement != NULL) 
+               if (includeDirectiveStatement != NULL)
                   {
                  // DQ (3/24/2019): The newest use of this IR nodes does not accomidate the headerFileBody.
                  // if (includeDirectiveStatement->get_headerFileBody()->get_file_info()->get_filenameString() == sourceFilename)
+                 // if (includeDirectiveStatement->get_headerFileBody() != NULL && includeDirectiveStatement->get_headerFileBody()->get_file_info()->get_filenameString() == sourceFilename)
                     if (includeDirectiveStatement->get_headerFileBody() != NULL && includeDirectiveStatement->get_headerFileBody()->get_file_info()->get_filenameString() == sourceFilename)
                        {
+                         statementInFile = true;
+                       }
+
+                 // DQ (5/19/2020): Generalized to allow when headerFileBody == NULL.
+                    if (includeDirectiveStatement->get_headerFileBody() == NULL)
+                       {
+                         printf ("Allow to be unparsed when headerFileBody == NULL \n");
                          statementInFile = true;
                        }
                   }
@@ -597,9 +628,9 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
 #endif
 
 #if 0
-                 // DQ (5/28/2019): I think we should allow this to be unparsed, and so that any attached CPP directives 
+                 // DQ (5/28/2019): I think we should allow this to be unparsed, and so that any attached CPP directives
                  // can be ouput, even if within the unparser we don't output the function definition.
-                    if (sourcefile == NULL || sourcefile->get_unparse_edg_normalized_method_ROSE_1392() == false) 
+                    if (sourcefile == NULL || sourcefile->get_unparse_edg_normalized_method_ROSE_1392() == false)
                        {
 #if 0
                          printf ("In statementFromFile(): Detected a normalized template declaration: functionDeclaration = %p = %s name = %s \n",
@@ -612,7 +643,7 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
 #endif
 #if 0
           printf ("In statementFromFile (statementInFile = %s output = %s stmt = %p = %s = %s in file = %s sourceFilename = %s ) \n",
-               (statementInFile == true) ? "true": "false", (isOutputInCodeGeneration == true) ? "true": "false", stmt, 
+               (statementInFile == true) ? "true": "false", (isOutputInCodeGeneration == true) ? "true": "false", stmt,
                stmt->class_name().c_str(), SageInterface::get_name(stmt).c_str(),statementfilename.c_str(), sourceFilename.c_str());
 #endif
 #if 0
@@ -620,10 +651,15 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
 #endif
         }
 
-#if 0
-     printf ("Leaving statementFromFile(): stmt = %p = %s = %s statementInFile = %s sourceFilename = %s \n",
-          stmt,stmt->class_name().c_str(),SageInterface::get_name(stmt).c_str(),(statementInFile == true) ? "true" : "false",sourceFilename.c_str());
-#endif
+  // #if 0
+  // DQ (4/9/2020): Added header file unparsing feature specific debug level.
+     if (SgProject::get_unparseHeaderFilesDebug() >= 9)
+        {
+          printf ("Leaving statementFromFile(): stmt = %p = %s = %s statementInFile = %s sourceFilename = %s \n",
+               stmt,stmt->class_name().c_str(),SageInterface::get_name(stmt).c_str(),(statementInFile == true) ? "true" : "false",sourceFilename.c_str());
+        }
+  // #endif
+
 #if 0
      if (isSgFunctionDeclaration(stmt) != NULL)
         {
@@ -660,6 +696,21 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
           curprint ( string("\n/* Inside of UnparseLanguageIndependentConstructs::statementFromFile (" ) + StringUtility::numberToString(stmt) + "): class_name() = " + stmt->class_name() + " (skipped) */ \n");
         }
 #endif
+
+  // DQ (5/19/2020): Debugging new support for include directives.
+  // SgIncludeDirectiveStatement* includeDirectiveStatement = isSgIncludeDirectiveStatement(stmt);
+     if (includeDirectiveStatement != NULL)
+        {
+          printf ("BOTTOM: Found a SgIncludeDirectiveStatement IR node: directive = %s \n",includeDirectiveStatement->get_directiveString().c_str());
+          ROSE_ASSERT(includeDirectiveStatement->get_startOfConstruct() != NULL);
+
+          printf ("statementInFile = %s \n",statementInFile ? "true" : "false");
+
+#if 0
+          printf ("Exiting as a test! \n");
+          ROSE_ASSERT(false);
+#endif
+        }
 
      return statementInFile;
    }
@@ -701,10 +752,10 @@ UnparseLanguageIndependentConstructs::printOutComments ( SgLocatedNode* locatedN
    {
   // Debugging function to print out comments in the statements (added by DQ)
 
-     ROSE_ASSERT(locatedNode != NULL);
+     ASSERT_not_null(locatedNode);
 
-  // DQ (3/22/2019): Refactored code to SageInterface. Actually, this version needs to unparse 
-  // the comments to the output file AND to stdout, while the other version in SageInterface 
+  // DQ (3/22/2019): Refactored code to SageInterface. Actually, this version needs to unparse
+  // the comments to the output file AND to stdout, while the other version in SageInterface
   // outputs to stdout and is for debugging.
   // SageInterface::printOutComments(locatedNode);
 
@@ -724,7 +775,7 @@ UnparseLanguageIndependentConstructs::printOutComments ( SgLocatedNode* locatedN
           AttachedPreprocessingInfoType::iterator i;
           for (i = comments->begin(); i != comments->end(); i++)
              {
-               ROSE_ASSERT ( (*i) != NULL );
+               ASSERT_not_null((*i));
                printf ("          Attached Comment (relativePosition=%s): %s\n",
                     ((*i)->getRelativePosition() == PreprocessingInfo::before) ? "before" : "after",
                     (*i)->getString().c_str());
@@ -779,7 +830,7 @@ UnparseLanguageIndependentConstructs::unparseStatementNumbers ( SgStatement* stm
   // This is the base class (which is called only for C/C++ code generation).
 
   // This is a Fortran specific case (different from use of SgLabelStatement in C/C++).
-  // This is a virtual function and defined in the base class as just a test on the 
+  // This is a virtual function and defined in the base class as just a test on the
   // value range of the in the numeric_label (default value is -1).
   // ROSE_ASSERT(stmt->get_numeric_label() == -1);
      ROSE_ASSERT(stmt->get_numeric_label() == NULL);
@@ -848,13 +899,13 @@ UnparseLanguageIndependentConstructs::canBeUnparsedFromTokenStream(SgSourceFile*
    {
   // This function factors out the details of the conditions under which a statement can be unparsed from the token stream.
   // Note that it is conditional upon if there is a mapping identified between the token stream and the statement.  These
-  // mapping can be shared across more than one statement, or not exist, depending on the statement and the use of macro 
+  // mapping can be shared across more than one statement, or not exist, depending on the statement and the use of macro
   // expansion in the statement (or across multiple statements).
 
   // Note that we might want this function to return a pointer to a TokenStreamSequenceToNodeMapping instead (and NULL if no info is available)
 
-     ROSE_ASSERT(sourceFile != NULL);
-     ROSE_ASSERT(stmt != NULL);
+     ASSERT_not_null(sourceFile);
+     ASSERT_not_null(stmt);
 
      bool canBeUnparsed = false;
 
@@ -866,7 +917,7 @@ UnparseLanguageIndependentConstructs::canBeUnparsedFromTokenStream(SgSourceFile*
      if (tokenStreamSequenceMap.find(stmt) != tokenStreamSequenceMap.end())
         {
           TokenStreamSequenceToNodeMapping* tokenSubsequence = tokenStreamSequenceMap[stmt];
-       // ROSE_ASSERT(tokenSubsequence != NULL);
+       // ASSERT_not_null(tokenSubsequence);
           if (tokenSubsequence != NULL)
              {
 #if 0
@@ -875,14 +926,14 @@ UnparseLanguageIndependentConstructs::canBeUnparsedFromTokenStream(SgSourceFile*
                printf ("   --- tokenStreamSequenceMap: node     (start,end) = (%d,%d) \n",tokenSubsequence->token_subsequence_start,  tokenSubsequence->token_subsequence_end);
                printf ("   --- tokenStreamSequenceMap: trailing (start,end) = (%d,%d) \n",tokenSubsequence->trailing_whitespace_start,tokenSubsequence->trailing_whitespace_end);
 #endif
-               ROSE_ASSERT(stmt->get_file_info() != NULL);
+               ASSERT_not_null(stmt->get_file_info());
 #if 0
                stmt->get_file_info()->display("In canBeUnparsedFromTokenStream(): debug");
 #endif
                canBeUnparsed = (tokenSubsequence->token_subsequence_start != -1);
 
             // DQ (11/29/2013): Added support for the detection of redundantly mapped statements to token sequences.
-            // E.g. ROSE normalizations of variable declaration with multiple variables into seperate (multiple) 
+            // E.g. ROSE normalizations of variable declaration with multiple variables into seperate (multiple)
             // SgVariableDeclaration IR nodes in the AST.
                std::multimap<int,SgStatement*> & redundantlyMappedTokensToStatementMultimap = sourceFile->get_redundantlyMappedTokensToStatementMultimap();
 
@@ -931,8 +982,8 @@ UnparseLanguageIndependentConstructs::canBeUnparsedFromTokenStream(SgSourceFile*
 bool
 UnparseLanguageIndependentConstructs::redundantStatementMappingToTokenSequence(SgSourceFile* sourceFile, SgStatement* stmt)
    {
-     ROSE_ASSERT(sourceFile != NULL);
-     ROSE_ASSERT(stmt != NULL);
+     ASSERT_not_null(sourceFile);
+     ASSERT_not_null(stmt);
 
      static std::set<SgStatement*> previouslySeenStatement;
 
@@ -956,7 +1007,7 @@ UnparseLanguageIndependentConstructs::redundantStatementMappingToTokenSequence(S
           int lastTokenIndex = tokenSubsequence->token_subsequence_end;
 
        // DQ (11/29/2013): Added support for the detection of redundantly mapped statements to token sequences.
-       // E.g. ROSE normalizations of variable declaration with multiple variables into seperate (multiple) 
+       // E.g. ROSE normalizations of variable declaration with multiple variables into seperate (multiple)
        // SgVariableDeclaration IR nodes in the AST.
           std::multimap<int,SgStatement*> & redundantlyMappedTokensToStatementMultimap = sourceFile->get_redundantlyMappedTokensToStatementMultimap();
           std::set<int> & redundantTokenEndings = sourceFile->get_redundantTokenEndingsSet();
@@ -982,7 +1033,7 @@ UnparseLanguageIndependentConstructs::redundantStatementMappingToTokenSequence(S
 #if 0
                     printf ("   ---   --- Detected first use of statment = %p = %s \n",stmt,stmt->class_name().c_str());
 #endif
-                 // Add all of the redundnat statement to the previouslySeenStatement (so that they will all 
+                 // Add all of the redundnat statement to the previouslySeenStatement (so that they will all
                  // trigger redundantStatement = true when used (unparsed) later).
                     while (local_iterator != last_iterator)
                        {
@@ -1104,7 +1155,7 @@ UnparseLanguageIndependentConstructs::unparseAttachedPreprocessingInfoUsingToken
      SgSourceFile* sourceFile = info.get_current_source_file();
 
   // DQ (1/19/2015): Some new_app files demostrate that we can't assume that sourceFile != NULL.
-  // ROSE_ASSERT(sourceFile != NULL);
+  // ASSERT_not_null(sourceFile);
 
   // DQ (1/19/2015): Skip this case when info.get_current_source_file() == NULL.
      if (sourceFile != NULL)
@@ -1122,7 +1173,7 @@ UnparseLanguageIndependentConstructs::unparseAttachedPreprocessingInfoUsingToken
                               ROSE_ASSERT(tokenSubsequence->nodeVector.empty() == false);
 
                               SgStatement* last_shared_statement = isSgStatement(tokenSubsequence->nodeVector[tokenSubsequence->nodeVector.size()-1]);
-                              ROSE_ASSERT(last_shared_statement != NULL);
+                              ASSERT_not_null(last_shared_statement);
 #if 0
                               printf ("tokenSubsequence->nodeVector.size() = %zu \n",tokenSubsequence->nodeVector.size());
                               printf ("   --- stmt = %p = %s \n",stmt,stmt->class_name().c_str());
@@ -1175,9 +1226,9 @@ UnparseLanguageIndependentConstructs::unparseAttachedPreprocessingInfoUsingToken
              {
             // i is a pointer to the current prepInfo object, print current preprocessing info
             // Assert that i points to a valid preprocssingInfo object
-               ROSE_ASSERT ((*i) != NULL);
+               ASSERT_not_null((*i));
                ROSE_ASSERT ((*i)->getTypeOfDirective()  != PreprocessingInfo::CpreprocessorUnknownDeclaration);
-               ROSE_ASSERT ((*i)->getRelativePosition() == PreprocessingInfo::before || 
+               ROSE_ASSERT ((*i)->getRelativePosition() == PreprocessingInfo::before ||
                             (*i)->getRelativePosition() == PreprocessingInfo::after  ||
                             (*i)->getRelativePosition() == PreprocessingInfo::inside);
 #if 0
@@ -1199,7 +1250,7 @@ UnparseLanguageIndependentConstructs::unparseAttachedPreprocessingInfoUsingToken
              }
         }
 
-  // DQ (1/15/2015): Added support for token-based unparsing (transformations on the comments and CPP directives on a 
+  // DQ (1/15/2015): Added support for token-based unparsing (transformations on the comments and CPP directives on a
   // statement will triger a mode to unparse the comments and CPP directives from the AST and not from the token stream.
      if (stmt->get_containsTransformationToSurroundingWhitespace() == true)
         {
@@ -1225,8 +1276,8 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStreamForNodeCont
   // TODO: it would be better to add this specific logic to the canBeUnparsedFromTokenStream() function and eliminate this function.
   // TODO: Also this function is not clearly named under its revised semantics (doe not actaully unparse any tokens).
 
-     ROSE_ASSERT(sourceFile != NULL);
-     ROSE_ASSERT(stmt != NULL);
+     ASSERT_not_null(sourceFile);
+     ASSERT_not_null(stmt);
 
 #if 0
      printf ("In unparseStatementFromTokenStreamForNodeContainingTransformation(): stmt = %p = %s \n",stmt,stmt->class_name().c_str());
@@ -1262,7 +1313,7 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStreamForNodeCont
           if (redundantStatement == false)
              {
                TokenStreamSequenceToNodeMapping* statement_tokenSubsequence = tokenStreamSequenceMap[stmt];
-               ROSE_ASSERT(statement_tokenSubsequence != NULL);
+               ASSERT_not_null(statement_tokenSubsequence);
 
                if (statement_tokenSubsequence != NULL)
                   {
@@ -1290,14 +1341,14 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFi
    {
   // DQ (11/13/2015): Note that this function name is shared with one defined (overloaded) in the unparseCxx_Statements.C file.
 
-     ROSE_ASSERT(sourceFile != NULL);
-     ROSE_ASSERT(stmt != NULL);
+     ASSERT_not_null(sourceFile);
+     ASSERT_not_null(stmt);
 
 #define OUTPUT_TOKEN_STREAM_FOR_DEBUGGING 0
 
   // DQ (11/12/2014): turn this off to test test2014_101.c (which demonstrates an error, but for which this fixes the error).
-  // DQ (1/29/2014): Control use of format mechanism to unparse the token stream vs. a higher fedelity 
-  // mechanism that does not drop line endings.  The high fidelity version is just prettier, but 
+  // DQ (1/29/2014): Control use of format mechanism to unparse the token stream vs. a higher fedelity
+  // mechanism that does not drop line endings.  The high fidelity version is just prettier, but
   // pretty counts...!
 
      std::map<SgNode*,TokenStreamSequenceToNodeMapping*> & tokenStreamSequenceMap = sourceFile->get_tokenSubsequenceMap();
@@ -1329,7 +1380,7 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFi
        // Check if this is a previously processed statement (static map is located in redundantStatementMappingToTokenSequence() function.
           bool redundantStatement = redundantStatementMappingToTokenSequence(sourceFile,stmt);
 
-       // DQ (9/24/2018): These are always going to be redundant, since these are inserted after the token stream mapping, 
+       // DQ (9/24/2018): These are always going to be redundant, since these are inserted after the token stream mapping,
        // and redundantly represent the same tokens in the token stream.
           if (isSgIncludeDirectiveStatement(stmt) != NULL)
              {
@@ -1345,12 +1396,12 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFi
 #if 0
           curprint( string("/* In unparseStatementFromTokenStream(): redundantStatement = ") + (redundantStatement ? "true" : "false") + " */");
 #endif
-       // DQ (11/13/2015): Comment added: redundant statements are generated when multiple 
-       // statements in the AST are mapped to a single token sequence for a single statement 
+       // DQ (11/13/2015): Comment added: redundant statements are generated when multiple
+       // statements in the AST are mapped to a single token sequence for a single statement
        // in the token stream.  This happens for normalizations, generally, but really only
        // in the case of a variable declaration with multiple variables which in the AST is
        // currently normalized to multiple variable declaration statements, but in the token
-       // stream is the original variable declaration with multiple variables.  I have 
+       // stream is the original variable declaration with multiple variables.  I have
        // worked out the fix in the front-end to support mulple SgInitializedName objects in
        // a single SgVariableDeclStatement, but we have not taken the step to eliminate this
        // normalization because it would likely break code where people have grown dependent
@@ -1364,7 +1415,7 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFi
                std::map<SgNode*,PreviousAndNextNodeData*> & previousAndNextFrontierDataMap = sourceFile->get_token_unparse_frontier_adjacency();
 
                TokenStreamSequenceToNodeMapping* tokenSubsequence = tokenStreamSequenceMap[stmt];
-               ROSE_ASSERT(tokenSubsequence != NULL);
+               ASSERT_not_null(tokenSubsequence);
 #if 0
                printf ("In unparseStatementFromTokenStream(): tokenSubsequence = %p (%d,%d) \n",tokenSubsequence,tokenSubsequence->token_subsequence_start,tokenSubsequence->token_subsequence_end);
 #endif
@@ -1380,15 +1431,15 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFi
                if (previousAndNextFrontierDataMap.find(stmt) != previousAndNextFrontierDataMap.end())
                   {
                     PreviousAndNextNodeData* previousAndNextFrontierData = previousAndNextFrontierDataMap[stmt];
-                    ROSE_ASSERT(previousAndNextFrontierData != NULL);
-                    ROSE_ASSERT(previousAndNextFrontierData->previous != NULL);
+                    ASSERT_not_null(previousAndNextFrontierData);
+                    ASSERT_not_null(previousAndNextFrontierData->previous);
                     SgStatement* previousStatement = isSgStatement(previousAndNextFrontierData->previous);
-                    ROSE_ASSERT(previousStatement != NULL);
+                    ASSERT_not_null(previousStatement);
 
                  // This fails in the case where the whole AST is unparsed from the token stream.
                  // ROSE_ASSERT(previousStatement != stmt);
 
-                 // DQ (12/1/2013): Not clear if this is helpful or not (but it communicates in the 
+                 // DQ (12/1/2013): Not clear if this is helpful or not (but it communicates in the
                  // unparsed code what statements were unparse using either the AST or the token stream).
                     if ( SgProject::get_verbose() > 0 )
                        {
@@ -1452,7 +1503,7 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFi
                          for (size_t i = 0; i < globalScope->get_declarations().size(); i++)
                             {
                               SgDeclarationStatement* decl = globalScope->get_declarations()[i];
-                              ROSE_ASSERT(decl != NULL);
+                              ASSERT_not_null(decl);
                               printf ("   --- global scope statements: i = %p = %s \n",decl,decl->class_name().c_str());
                             }
                        }
@@ -1473,7 +1524,7 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFi
                          if (globalScope->get_declarations().empty() == true)
                             {
                            // If this is the empty global scope then consider the SgGlobal to be the last statement to be unparsed.
-                           // This will trigger the output of the remaining tokens in the file and suppress any CPP directives and 
+                           // This will trigger the output of the remaining tokens in the file and suppress any CPP directives and
                            // comments that are attached to the SgGlobal (because there was no other IR node to attach them to which
                            // could be considered a part of the input file).
                               lastStatementOfGlobalScopeUnparsedUsingTokenStream = true;
@@ -1481,13 +1532,13 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFi
                            else
                             {
                            // Else we have to make sure that none of the declarations in global scope are from this file.
-                           // These can de declarations from header files or the rose_edg_required_macros_and_functions.h 
+                           // These can de declarations from header files or the rose_edg_required_macros_and_functions.h
                            // file that is read to support GNU predefined macros.
                               lastStatementOfGlobalScopeUnparsedUsingTokenStream = true;
                               for (size_t i = 0; i < globalScope->get_declarations().size(); i++)
                                  {
                                    SgDeclarationStatement* decl = globalScope->get_declarations()[i];
-                                   ROSE_ASSERT(decl != NULL);
+                                   ASSERT_not_null(decl);
 #if OUTPUT_TOKEN_STREAM_FOR_DEBUGGING
                                    printf ("   --- global scope statements: i = %p = %s \n",decl,decl->class_name().c_str());
 #endif
@@ -1502,7 +1553,7 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFi
 
                               if (lastStatementOfGlobalScopeUnparsedUsingTokenStream == true)
                                  {
-                                // This SgGlobal will be treated as the last statement so that we can know to supporess the generation 
+                                // This SgGlobal will be treated as the last statement so that we can know to supporess the generation
                                 // of CPP directives and comments that are in the AST and associated with the SgGlobal.
 #if 0
                                    printf ("Global scope being treated as last statement in file (will be unparsed using the token sequence and CPP directives associated with SgGlobal will be supressed) \n");
@@ -1518,8 +1569,8 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFi
 #endif
                        }
 
-                 // DQ (11/13/2015): We want to unparse the leading tokens for a statement if there is an associated comment 
-                 // or CPP directive, but even if NOT we want to unparse the associated whitespace.  This handles only the 
+                 // DQ (11/13/2015): We want to unparse the leading tokens for a statement if there is an associated comment
+                 // or CPP directive, but even if NOT we want to unparse the associated whitespace.  This handles only the
                  // case where there is an associated comment or CPP directive.
 #if 0
                  // DQ (11/13/2015): Original version of code.
@@ -1543,7 +1594,7 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFi
                                    printf ("Output leading whitespace tokenVector[j=%d]->get_lexeme_string() = %s \n",j,tokenVector[j]->get_lexeme_string().c_str());
 #endif
 #if HIGH_FEDELITY_TOKEN_UNPARSING
-                                // DQ (1/29/2014): Implementing better fedility in the unparsing of tokens (avoid line ending interpretations 
+                                // DQ (1/29/2014): Implementing better fedility in the unparsing of tokens (avoid line ending interpretations
                                 // in curprint() function. Note that "unp->get_output_stream().output_stream()" is of type: "std::ostream*" type.
                                 // *(unp->get_output_stream().output_stream()) << tokenVector[j]->get_lexeme_string();
                                 // unp->get_output_stream() << tokenVector[j]->get_lexeme_string();
@@ -1573,7 +1624,7 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFi
                     printf ("Output tokenVector[j=%d]->get_lexeme_string() = %s \n",j,tokenVector[j]->get_lexeme_string().c_str());
 #endif
 #if HIGH_FEDELITY_TOKEN_UNPARSING
-                 // DQ (1/29/2014): Implementing better fedility in the unparsing of tokens (avoid line ending interpretations 
+                 // DQ (1/29/2014): Implementing better fedility in the unparsing of tokens (avoid line ending interpretations
                  // in curprint() function. Note that "unp->get_output_stream().output_stream()" is of type: "std::ostream*" type.
                  // *(unp->get_output_stream().output_stream()) << tokenVector[j]->get_lexeme_string();
                  // unp->get_output_stream() << tokenVector[j]->get_lexeme_string();
@@ -1588,10 +1639,10 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFi
                curprint(string("\n/* In UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFile*,,,): DONE with token output: stmt = ") + stmt->class_name().c_str() + " */");
 #endif
 #if 1
-            // DQ (1/6/2014): The code here is used to close off the global scope when the token stream unparsing is used, 
+            // DQ (1/6/2014): The code here is used to close off the global scope when the token stream unparsing is used,
             // else the global scope will be closed off by the code in the unparseGlobalScope function.
 
-            // DQ (1/29/2014): The only consequence that I can see in not closing off the trailing token stream is that we 
+            // DQ (1/29/2014): The only consequence that I can see in not closing off the trailing token stream is that we
             // will (at least sometimes) not output a trailing CR after the last line.
             // DQ (12/1/2013): I am not clear if there are cases where we need to output the associated trailing tokens.
             // None of these cases appear to be an issue in the C regression tests.
@@ -1662,7 +1713,7 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFi
                          if (tokenStreamSequenceMap.find(*i) != tokenStreamSequenceMap.end())
                             {
                               TokenStreamSequenceToNodeMapping* tmp_tokenSubsequence = tokenStreamSequenceMap[*i];
-                           // ROSE_ASSERT(tmp_tokenSubsequence != NULL);
+                           // ASSERT_not_null(tmp_tokenSubsequence);
                               if (tmp_tokenSubsequence != NULL)
                                  {
                                    tmp_tokenSubsequence->display("tmp_tokenSubsequence");
@@ -1738,14 +1789,14 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFi
                printf ("In unparseStatementFromTokenStream(): unparseTrailingTokenStream = %s \n",unparseTrailingTokenStream ? "true" : "false");
 #endif
             // The last statement has to handle the output of the tokens for the rest of the file.
-            // If the last statement is output from the AST, then it will be handled using information 
+            // If the last statement is output from the AST, then it will be handled using information
             // in the AST (not the token stream).
                if (isLastStatementOfScope == true)
                   {
 #if 0
                     printf ("In unparseStatementFromTokenStream(): Process the tokens associated with the trailing edge of the last statement \n");
 #endif
-                 // Set the return parameter to skip the unparsing of the tailing CPP directives and 
+                 // Set the return parameter to skip the unparsing of the tailing CPP directives and
                  // comments from the AST (since they are being output via the token stream).
                     lastStatementOfGlobalScopeUnparsedUsingTokenStream = true;
 
@@ -1757,7 +1808,7 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFi
                               printf ("Output trailing whitespace tokenVector[j=%d]->get_lexeme_string() = %s \n",j,tokenVector[j]->get_lexeme_string().c_str());
 #endif
 #if HIGH_FEDELITY_TOKEN_UNPARSING
-                           // DQ (1/29/2014): Implementing better fedility in the unparsing of tokens (avoid line ending interpretations 
+                           // DQ (1/29/2014): Implementing better fedility in the unparsing of tokens (avoid line ending interpretations
                            // in curprint() function. Note that "unp->get_output_stream().output_stream()" is of type: "std::ostream*" type.
                            // *(unp->get_output_stream().output_stream()) << tokenVector[j]->get_lexeme_string();
                            // unp->get_output_stream() << tokenVector[j]->get_lexeme_string();
@@ -1812,9 +1863,9 @@ UnparseLanguageIndependentConstructs::unparseStatementFromTokenStream(SgSourceFi
 bool
 UnparseLanguageIndependentConstructs::isTransitionFromTokenUnparsingToASTunparsing(SgStatement* statement)
    {
-  // This function helps support the token based unparsing. In transitions bewteen 
-  // the token unparsing and the AST unparsing, we have to suppress the output of 
-  // CPP directives and comments to avoid them being output redundanrtly (as part 
+  // This function helps support the token based unparsing. In transitions bewteen
+  // the token unparsing and the AST unparsing, we have to suppress the output of
+  // CPP directives and comments to avoid them being output redundanrtly (as part
   // of the token stream).
 
      printf ("In UnparseLanguageIndependentConstructs::isTransitionFromTokenUnparsingToASTunparsing(): statement = %p = %s \n",statement,statement->class_name().c_str());
@@ -1826,7 +1877,7 @@ UnparseLanguageIndependentConstructs::isTransitionFromTokenUnparsingToASTunparsi
      if (cur_file != NULL && cur_file->get_unparse_tokens() == true)
         {
           SgSourceFile* sourceFile = isSgSourceFile(cur_file);
-          ROSE_ASSERT(sourceFile != NULL);
+          ASSERT_not_null(sourceFile);
 
           bool unparse = unparseStatementFromTokenStream(sourceFile, statement);
 
@@ -1845,7 +1896,7 @@ UnparseLanguageIndependentConstructs::isTransitionFromTokenUnparsingToASTunparsi
 void
 UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnparse_Info & info)
    {
-     ROSE_ASSERT(stmt != NULL);
+     ASSERT_not_null(stmt);
 
 #if 0
   // DQ (10/30/2013): Debugging support for file info data for each IR node (added comment only)
@@ -1862,7 +1913,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
 #if 0
   // DQ (10/4/2018): Force agressive testing implemented within get_tokenSubsequenceMap() access function.
      SgSourceFile* sourceFile = isSgSourceFile(SageInterface::getEnclosingFileNode(stmt));
-     ROSE_ASSERT(sourceFile != NULL);
+     ASSERT_not_null(sourceFile);
      printf ("In unparseStatement(): sourceFile filename (from getEnclosingFileNode()) = %s \n",sourceFile->getFileName().c_str());
      printf ("In unparseStatement(): sourceFile->get_tokenSubsequenceMap().size()      = %zu \n",sourceFile->get_tokenSubsequenceMap().size());
 #endif
@@ -1874,20 +1925,20 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
   // DQ (9/9/2016): These should have been setup to be the same.
      ROSE_ASSERT(info.SkipClassDefinition() == info.SkipEnumDefinition());
 
-#if OUTPUT_DEBUGGING_FUNCTION_BOUNDARIES
+#if OUTPUT_DEBUGGING_FUNCTION_BOUNDARIES && 0
   // DQ (10/30/2013): Debugging support for file info data for each IR node (added comment only)
      printf ("Unparse statement (%p): %s name = %s \n",stmt,stmt->class_name().c_str(),SageInterface::get_name(stmt).c_str());
 
   // DQ (4/17/2007): Added enforcement for endOfConstruct().
-     ROSE_ASSERT (stmt->get_endOfConstruct() != NULL);
+     ASSERT_not_null(stmt->get_endOfConstruct());
 #endif
 
 #if 0
   // DQ (10/30/2013): Debugging support for file info data for each IR node (added comment only)
-     curprint ( string("\n/* Unparse statement (" ) + StringUtility::numberToString(stmt) 
-         + "): class_name() = " + stmt->class_name() 
-                + " raw line (start) = " + tostring(stmt->get_startOfConstruct()->get_raw_line()) 
-                + " raw line (end) = " + tostring(stmt->get_endOfConstruct()->get_raw_line()) 
+     curprint ( string("\n/* Unparse statement (" ) + StringUtility::numberToString(stmt)
+         + "): class_name() = " + stmt->class_name()
+                + " raw line (start) = " + tostring(stmt->get_startOfConstruct()->get_raw_line())
+                + " raw line (end) = " + tostring(stmt->get_endOfConstruct()->get_raw_line())
          + " */ \n");
      char buffer[100];
      snprintf (buffer,100,"%p",stmt);
@@ -1901,11 +1952,11 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
           printf ("Error in unparseStatement(): stmt = %p = %s stmt->get_endOfConstruct() == NULL \n",stmt,stmt->class_name().c_str());
           stmt->get_file_info()->display("unparseStatement (debug)");
         }
-  // ROSE_ASSERT(stmt->get_endOfConstruct() != NULL);
+  // ASSERT_not_null(stmt->get_endOfConstruct());
 
      curprint ( string("\n/* Top of unparseStatement(): (UnparseLanguageIndependentConstructs)" ) + string(stmt->sage_class_name()) + " */\n ");
-     ROSE_ASSERT(stmt->get_startOfConstruct() != NULL);
-  // ROSE_ASSERT(stmt->getAttachedPreprocessingInfo() != NULL);
+     ASSERT_not_null(stmt->get_startOfConstruct());
+  // ASSERT_not_null(stmt->getAttachedPreprocessingInfo());
      int numberOfComments = -1;
      if (stmt->getAttachedPreprocessingInfo() != NULL)
         {
@@ -1922,7 +1973,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
      if (stmt->get_endOfConstruct() != NULL)
         {
           curprint ( string("/* endOfConstruct: file = " ) + stmt->get_endOfConstruct()->get_filenameString()
-              + " raw filename = " + stmt->get_endOfConstruct()->get_raw_filename() 
+              + " raw filename = " + stmt->get_endOfConstruct()->get_raw_filename()
               + " raw line = "     + StringUtility::numberToString(stmt->get_endOfConstruct()->get_raw_line())
               + " raw column = "   + StringUtility::numberToString(stmt->get_endOfConstruct()->get_raw_col())
               + " */\n ");
@@ -1931,8 +1982,8 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
         {
           curprint ( string("/* endOfConstruct == NULL */\n " ) );
         }
-     
-  // ROSE_ASSERT(stmt->get_endOfConstruct() != NULL);
+
+  // ASSERT_not_null(stmt->get_endOfConstruct());
 
      SgVariableDeclaration* variableDeclaration = isSgVariableDeclaration(stmt);
      if (variableDeclaration != NULL)
@@ -1941,7 +1992,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
           SgInitializedNamePtrList::iterator i = nameList.begin();
           while(i != nameList.end())
              {
-               curprint ( string("\n/* SgInitializedName = " ) + (*i)->get_name()  + " in file: " 
+               curprint ( string("\n/* SgInitializedName = " ) + (*i)->get_name()  + " in file: "
                    + (*i)->get_file_info()->get_raw_filename() + " at line: "
                    + StringUtility::numberToString((*i)->get_file_info()->get_raw_line()) + " at column: "
                    + StringUtility::numberToString((*i)->get_file_info()->get_raw_col())  + " */\n ");
@@ -1955,7 +2006,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
      printOutComments (stmt);
 #endif
 
-     ROSE_ASSERT(stmt->get_file_info() != NULL);
+     ASSERT_not_null(stmt->get_file_info());
 
   // FIXME cause conflict in "make check"?
   // DQ (5/19/2011): Allow unparsing of even compiler generated statements when specified via the SgUnparse_Info object.
@@ -1987,7 +2038,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
           printf ("fixup ordering of comments and any compiler generated code: returning after push onto queue \n");
 #endif
 
-       // push all compiler generated nodes onto the static stack and unparse them after comments and directives 
+       // push all compiler generated nodes onto the static stack and unparse them after comments and directives
        // of the next statement are output but before the associated statement to which they are attached.
 
        // printf ("Save the compiler-generated statement (%s), putting it onto the queue \n",stmt->class_name().c_str());
@@ -2010,10 +2061,10 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
 #if 0
   // DQ (12;5;2019): Use this here to ouly generate output for statements that weill be unparsed.
   // DQ (10/30/2013): Debugging support for file info data for each IR node (added comment only)
-     curprint ( string("\n/* Unparse statement (" ) + StringUtility::numberToString(stmt) 
-         + "): class_name() = " + stmt->class_name() 
-                + " raw line (start) = " + tostring(stmt->get_startOfConstruct()->get_raw_line()) 
-                + " raw line (end) = " + tostring(stmt->get_endOfConstruct()->get_raw_line()) 
+     curprint ( string("\n/* Unparse statement (" ) + StringUtility::numberToString(stmt)
+         + "): class_name() = " + stmt->class_name()
+                + " raw line (start) = " + tostring(stmt->get_startOfConstruct()->get_raw_line())
+                + " raw line (end) = " + tostring(stmt->get_endOfConstruct()->get_raw_line())
          + " */ \n");
      char buffer[100];
      snprintf (buffer,100,"%p",stmt);
@@ -2085,7 +2136,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
   // DQ (5/27/2005): fixup ordering of comments and any compiler generated code
   // ROSE_ASSERT(line_to_unparse == 0);
 
-  // DQ (8/19/2007): Please let's get rid of this, it seems that it has been added back in after an intial 
+  // DQ (8/19/2007): Please let's get rid of this, it seems that it has been added back in after an intial
   // attempt to remove it.  See me if you feel your really need this mechanism.
   // ROSE_ASSERT(unp->ltu == 0);
 
@@ -2100,14 +2151,14 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
         }
 #endif
 
-  // DQ (12/26/2007): Moved from language independent handling to C/C++ specific handling 
+  // DQ (12/26/2007): Moved from language independent handling to C/C++ specific handling
   // becasue we don't want it to appear in the Fortran code generation.
   // DQ (added comments) this is where the new lines are introduced before statements.
   // unp->cur.format(stmt, info, FORMAT_BEFORE_STMT);
   // curprint("/* After FORMAT_BEFORE_STMT */ \n ");
 
   // This is the added code to support the copy based unparsing mechanism.
-  // Since there is a return here, it might be that comments after the 
+  // Since there is a return here, it might be that comments after the
   // statement will not be unparsed properly (check this at some point).
      if (unp->repl != NULL)
         {
@@ -2121,8 +2172,8 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
              }
         }
 
-  // DQ (1/30/204): We need this to permit knowing when to unparse the trialing CPP directives and 
-  // comments from the AST.  If they were unparsed from the token steam (as part of unparsing the 
+  // DQ (1/30/204): We need this to permit knowing when to unparse the trialing CPP directives and
+  // comments from the AST.  If they were unparsed from the token steam (as part of unparsing the
   // last statement from the token stream) then unparsing them from the AST would be redundant
   // (though likely harmless).
      bool lastStatementOfGlobalScopeUnparsedUsingTokenStream = false;
@@ -2130,31 +2181,36 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
   // DQ (10/30/2013): We can support the output of the statements using the token stream, it this is done then we don't output the statement as unparsed from the AST.
      bool outputStatementAsTokens = false;
 
-  // DQ (12/5/2014): For statements that contain transformations, we need to uparse the leading and 
+  // DQ (12/5/2014): For statements that contain transformations, we need to uparse the leading and
   // trailing parts of the statement from the token stream so that the diff is as small as possible.
   // The records where unparsing the leading and trailing parts (or middle part in the case of a SgIfStmt)
-  // was sucessful.  In this case the unparsing of the AST should be skipped for these leading and 
+  // was sucessful.  In this case the unparsing of the AST should be skipped for these leading and
   // trailing parts of the statement.
      bool outputPartialStatementAsTokens = false;
 
   // DQ (12/5/2014): Adding support to track transition between token stream unparsing, partial token stream unparsing, and AST unparsing.
      global_lastStatementUnparsed = stmt;
 
-  // DQ (12/5/2014): Adding support to track transitions between unparsing using 
+  // DQ (12/5/2014): Adding support to track transitions between unparsing using
   // tokens sequences, partial tokens sequences, and directly from the AST.
      unparsed_as_enum_type global_previous_unparsed_as = global_unparsed_as;
 
-  // DQ (7/20/2008): This mechanism is now extended to SgStatement and revised to handle 
-  // more cases than just replacement of the 
+  // DQ (7/20/2008): This mechanism is now extended to SgStatement and revised to handle
+  // more cases than just replacement of the
   // AST subtree with a string.  Now we can add arbitrary text into different locations
   // relative to the specific IR node.  For now we are supporting before, replace, and after.
      AstUnparseAttribute* unparseAttribute = dynamic_cast<AstUnparseAttribute*>(stmt->getAttribute(AstUnparseAttribute::markerName));
      if (unparseAttribute != NULL)
         {
-       // Note that in most cases unparseLanguageSpecificStatement() will be called, some formatting 
-       // via "unp->cur.format(stmt, info, FORMAT_BEFORE_STMT);" may be done.  This can cause extra 
-       // CRs to be inserted (which only looks bad).  Not clear now to best clean this up.
           string code = unparseAttribute->toString(AstUnparseAttribute::e_before);
+#if 0
+       // DQ (9/27/2020): Debugging use of SgTextAttribute node.
+          printf ("Found an AstUnparseAttribute: code = %s \n",code.c_str());
+          curprint (" /* In unparseStatement(): Found an AstUnparseAttribute */ \n");
+#endif
+       // Note that in most cases unparseLanguageSpecificStatement() will be called, some formatting
+       // via "unp->cur.format(stmt, info, FORMAT_BEFORE_STMT);" may be done.  This can cause extra
+       // CRs to be inserted (which only looks bad).  Not clear now to best clean this up.
           curprint (code);
         }
 
@@ -2172,20 +2228,20 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
        // DQ (10/30/2013): We can support the output of the statements using the token stream, it this is done then we don't output the statement as unparsed from the AST.
        // bool outputStatementAsTokens = false;
 
-       // DQ (12/5/2014): For statements that contain transformations, we need to uparse the leading and 
+       // DQ (12/5/2014): For statements that contain transformations, we need to uparse the leading and
        // trailing parts of the statement from the token stream so that the diff is as small as possible.
        // The records where unparsing the leading and trailing parts (or middle part in the case of a SgIfStmt)
-       // was sucessful.  In this case the unparsing of the AST should be skipped for these leading and 
+       // was sucessful.  In this case the unparsing of the AST should be skipped for these leading and
        // trailing parts of the statement.
        // bool outputPartialStatementAsTokens = false;
 
        // DQ (10/24/2018): This is a bug fix specific to supporting the header file unparsing using the token streams.
        // Namely we need to compute the file from the information in the Sg_Unparse_Info object instead of from the statement.
-       // This is because the statement chain of parents will alway lead to the input file translation unit, instead of to the 
+       // This is because the statement chain of parents will alway lead to the input file translation unit, instead of to the
        // additional SgSourceFile represented by the header file.  This is because the statements in the global scope are
        // owned by the translation unit (parent pointers lead to that SgGlobal scope) but shared by the SgGlobal that is
-       // introduced as part of the support for header files (that is itroduced in the AST only when header file unparsing 
-       // is turned on).  When header file unparsing is turned off, then the translaton unit and the current source file 
+       // introduced as part of the support for header files (that is itroduced in the AST only when header file unparsing
+       // is turned on).  When header file unparsing is turned off, then the translaton unit and the current source file
        // will be the same.
 
        // Get the file and check if -rose:unparse_tokens was used then we want to try to access the token stream and output this statement directly as tokens.
@@ -2197,7 +2253,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                printf ("Warning: In UnparseLanguageIndependentConstructs::unparseStatement(): cur_file == NULL: from info.get_current_source_file() \n");
              }
 #endif
-       // ROSE_ASSERT(cur_file != NULL);
+       // ASSERT_not_null(cur_file);
 
        // DQ (1/18/2015): Output a message when this is not true (note: sometimes info.get_current_source_file() == NULL).
 #if 0
@@ -2228,24 +2284,24 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
           ROSE_ASSERT(cur_file == NULL || info.get_current_source_file()->get_unparse_tokens() == cur_file->get_unparse_tokens());
 
        // DQ (10/30/2013): This command-line option controls the use of the token stream in the unparsing.
-       // Currently in it's development, we are always unparsing the statements using the token stream if 
-       // they qualify.  Later we need to connect a test that will detect if a transformation has been done 
-       // in the subtree rerpresented by a statement and only qualify the statement on the basis of this 
+       // Currently in it's development, we are always unparsing the statements using the token stream if
+       // they qualify.  Later we need to connect a test that will detect if a transformation has been done
+       // in the subtree rerpresented by a statement and only qualify the statement on the basis of this
        // additional test.
-       // Note that loopProcessing tests use a generated statement which are not processed for tokens and 
+       // Note that loopProcessing tests use a generated statement which are not processed for tokens and
        // in this case the (cur_file == NULL).
           if (cur_file != NULL && cur_file->get_unparse_tokens() == true)
              {
-            // First we want to restrict this to unparsing the simplest statements, e.g. those 
+            // First we want to restrict this to unparsing the simplest statements, e.g. those
             // that are expression statements (e.g. containing no nested statements).
 
                SgSourceFile* sourceFile = isSgSourceFile(cur_file);
-               ROSE_ASSERT(sourceFile != NULL);
+               ASSERT_not_null(sourceFile);
 #if 0
                curprint ("/* case of cur_file->get_unparse_tokens() == true */");
 #endif
-            // This will be connected to a test to check if the statement has been transformed (might be 
-            // precomputed in a single traversal with results propogated to statements).  Assume no transformations 
+            // This will be connected to a test to check if the statement has been transformed (might be
+            // precomputed in a single traversal with results propogated to statements).  Assume no transformations
             // in early stags of testing (note command-line option -rose:is also required).
                bool statementTransformed = false;
 
@@ -2264,7 +2320,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                FrontierNode* associatedFrontierNode = (isFrontierNode == true) ? i->second : NULL;
 
             // Check is this is marked as already being handled via the unparsing of the token stream from another statement.
-            // For example, variable declarations containing multiple variables will be represented as seperate SgVariableDeclaration 
+            // For example, variable declarations containing multiple variables will be represented as seperate SgVariableDeclaration
             // IR nodes in the AST, but will have been unparsed using a single token stream.
             // static int lastUnparsedToken = 0;
 
@@ -2322,7 +2378,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                  // If we are unparsing from the token stream, then we need to handle the attached preprocessing info as well.
                  // But we need to handle them as part of unparing the token stream, not from the AST. The reason this is important
                  // is demonstrated by test2014_101.c and test2014_102.c when used with the testing mode (ROSE_tokenUnparsingTestingMode == true).
-                 // In this mode AST nodes are periodically marked for unparsing from the AST and thus exersizing the logic to 
+                 // In this mode AST nodes are periodically marked for unparsing from the AST and thus exersizing the logic to
                  // switch back and forth between the unparsing from the token stream and unparsing from the AST.
 #endif
 #if 0
@@ -2347,9 +2403,9 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                  else
                   {
                  // DQ (12/4/2014): This is a candidate for a partial unparse using the token stream.
-                 // This would be unparsed via the AST, but since it is because it contains a transformation 
-                 // rather than that it is a transformation, we should inst3ead just unpars it using the 
-                 // token stream, but in two parts.  The first part is from the start of the current AST node 
+                 // This would be unparsed via the AST, but since it is because it contains a transformation
+                 // rather than that it is a transformation, we should inst3ead just unpars it using the
+                 // token stream, but in two parts.  The first part is from the start of the current AST node
                  // up to the start of the next AST node.  The last part will be to the end of the current
                  // AST node (not clear how to compute the start of the last part of the token stream).
 #if 0
@@ -2403,7 +2459,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                               if (ifStatement != NULL)
                                  {
                                    SgSourceFile* sourceFile = isSgSourceFile(SageInterface::getEnclosingFileNode(stmt));
-                                   ROSE_ASSERT(sourceFile != NULL);
+                                   ASSERT_not_null(sourceFile);
                                    std::map<SgNode*,TokenStreamSequenceToNodeMapping*> & tokenStreamSequenceMap = sourceFile->get_tokenSubsequenceMap();
 
                                    SgStatement* trueBody = ifStatement->get_true_body();
@@ -2420,7 +2476,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                                       }
                                  }
 
-                           // DQ (12/15/2014): This might also depend on the value of global_previous_unparsed_as 
+                           // DQ (12/15/2014): This might also depend on the value of global_previous_unparsed_as
                            // (perhaps only when global_previous_unparsed_as == e_unparsed_as_partial_token_sequence or
                            // global_previous_unparsed_as == e_unparsed_as_token_stream).
                               if (info.unparsedPartiallyUsingTokenStream() == true)
@@ -2433,7 +2489,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
 #endif
                                    if (unparseLeadingTokenStream == true)
                                       {
-                                     // DQ (12/15/2014): We need to skip the unparsing of the leading white space when unparsing the SgFunctionDefinition, 
+                                     // DQ (12/15/2014): We need to skip the unparsing of the leading white space when unparsing the SgFunctionDefinition,
                                      // because it is called by the SgFunctionDeclaration.
                                      // unparseStatementFromTokenStream (stmt, e_leading_whitespace_start, e_token_subsequence_start);
                                         SgFunctionDefinition* functionDefinition = isSgFunctionDefinition(stmt);
@@ -2466,7 +2522,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                                       }
                                      else
                                       {
-#if 1
+#if 0
                                         printf ("In unparseStatement(): Unparse the leading whitespace from the AST because it's comments and/or CPP directives have been modified \n");
 #endif
                                         bool unparseExtraNewLine = (stmt->getAttachedPreprocessingInfo() != NULL);
@@ -2476,6 +2532,9 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                                              curprint ("\n ");
                                            }
                                         unparseAttachedPreprocessingInfo(stmt,info,PreprocessingInfo::before);
+#if 0
+                                        curprint ("Test 1: This is where added test via AstUnparseAttribute using e_before_but_after_cpp_directives_and_comments \n ");
+#endif
                                       }
 #if 0
                                    curprint(string("\n/* In unparseStatement(): (suppress global scope?): stmt = ") + (stmt->class_name()) + " */");
@@ -2536,7 +2595,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
              }
 #endif
 
-       // DQ (12/5/2014): Adding support to track transitions between unparsing using 
+       // DQ (12/5/2014): Adding support to track transitions between unparsing using
        // tokens sequences, partial tokens sequences, and directly from the AST.
        // unparsed_as_enum_type global_unparsed_as = e_unparsed_as_error;
           if (outputStatementAsTokens == true)
@@ -2600,7 +2659,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
 
                  // DQ (11/14/2015): If we are unparsing statements in a SgBasicBlock, then we want to
                  // know if the SgBasicBlock is being unparsed using the partial_token_sequence so that
-                 // we can supress the formatting that adds a CR to the start of the current statement 
+                 // we can supress the formatting that adds a CR to the start of the current statement
                  // being unparsed.
                     bool parentStatementListBeingUnparsedUsingPartialTokenSequence = info.parentStatementListBeingUnparsedUsingPartialTokenSequence();
 
@@ -2632,7 +2691,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     unp->cur.reset_chars_on_line();
 
 #error "DEAD CODE!"
-                    
+
 #if 0
                     curprint("/* In unparseStatement(): before format: FORMAT_BEFORE_STMT */");
 #endif
@@ -2680,9 +2739,9 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
        // Only unparse using the AST if this was not able to be unparsed from the token stream.
           if (outputStatementAsTokens == false)
              {
-            // DQ (4/1/2014): Suggested fix to prevent unparsing of C style comments in Fortran 
+            // DQ (4/1/2014): Suggested fix to prevent unparsing of C style comments in Fortran
             // codes when using the verbose modes.
-            // DQ (12/1/2013): Not clear if this is helpful or not (but it communicates in the 
+            // DQ (12/1/2013): Not clear if this is helpful or not (but it communicates in the
             // unparsed code what statements were unparse using either the AST or the token stream).
             // if ( SgProject::get_verbose() > 0 )
             // if ( SgProject::get_verbose() > 0 && SageInterface::getProject()->get_C_only() == true)
@@ -2714,7 +2773,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                       // Add a new line.
                          printf ("##### Adding a new line (previous statement may have been unparsed using the token stream and be missing a CR at the end; error for CPP directives) \n");
 #endif
-                      // Adding a new line is more complex than it should be because the the CR is interpreted and 
+                      // Adding a new line is more complex than it should be because the the CR is interpreted and
                       // ignored if it is at the end of the string, so adding extra space fixes this temporarily.
                       // unp->cur.insert_newline(1);
                       // curprint ("// new line added \n  ");
@@ -2728,6 +2787,15 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
 #endif
                  // DQ (11/30/2013): Move from above to where we can better support the token unparsing.
                     unparseAttachedPreprocessingInfo(stmt, info, PreprocessingInfo::before);
+#if 0
+                    curprint ("/* Test 2: This is where added test via AstUnparseAttribute using e_before_but_after_cpp_directives_and_comments */ \n");
+#endif
+                 // DQ (10/4/2020): Part of new support for unparsing arbitrary strings into the unparsed code.
+                    if (unparseAttribute != NULL)
+                       {
+                         string code = unparseAttribute->toString(AstUnparseAttribute::e_before_but_after_cpp_directives_and_comments);
+                         curprint (code);
+                       }
 #if 0
                     printf("In UnparseLanguageIndependentConstructs::unparseStatement(): DONE calling unparseAttachedPreprocessingInfo test 4: before \n");
 #endif
@@ -2830,7 +2898,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpSingleStatement:
                     case V_SgOmpTaskStatement:
                     case V_SgOmpAtomicStatement: // Atomic may have clause now
-                         unparseOmpGenericStatement (stmt, info); 
+                         unparseOmpGenericStatement (stmt, info);
                          break;
 
                     default:
@@ -2869,20 +2937,20 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
   // DQ (1/10/2014): We need to handle the general case of trailing tokens at the end of a statements.
      if (outputStatementAsTokens == true)
         {
-       // If these is the case then the last statement for the collection of statements was notices and 
+       // If these is the case then the last statement for the collection of statements was notices and
        // if this statement matches it then the trailing tokens were used to close off the scope.
         }
        else
         {
        // Here we are either unparsing from the AST or partially from the token stream (based on the AST).
-       // This is the only case were we have to worry about unparsing the trailing tokens (since they case 
+       // This is the only case were we have to worry about unparsing the trailing tokens (since they case
        // when unparsing using the token stream is well handled, though not refactored to be located here).
 #if 0
           curprint(string("/* FORMATTING: UnparseLanguageIndependentConstructs::unparseStatement(): Here is where we want to output the trailing whitespace for the last statement in each scope: ") + stmt->class_name() + " */ \n ");
 #endif
           SgScopeStatement* scope = isSgScopeStatement(stmt->get_parent());
 
-       // ROSE_ASSERT(scope != NULL);
+       // ASSERT_not_null(scope);
        // Note that the parent of the global scope is not a scope, so we handle this as a special case.
        // Also the parent of a SgFunctionDefinition is a SgFunctionDeclaration (also not a scope).
           SgGlobal* globalScope = isSgGlobal(stmt);
@@ -2911,7 +2979,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
 #endif
 
        // DQ (1/10/2015): We can't enforce this for all expresions (not clear why).
-       // ROSE_ASSERT(sourceFile != NULL);
+       // ASSERT_not_null(sourceFile);
           if (sourceFile != NULL)
              {
                std::map<SgNode*,TokenStreamSequenceToNodeMapping*> & tokenStreamSequenceMap = sourceFile->get_tokenSubsequenceMap();
@@ -2919,7 +2987,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                SgStatement* lastStatement = NULL;
                if (scope != NULL)
                   {
-                 // DQ (1/12/2015): The call to lastStatementOfScopeWithTokenInfo() can fail when the scope is a SgIfStmt 
+                 // DQ (1/12/2015): The call to lastStatementOfScopeWithTokenInfo() can fail when the scope is a SgIfStmt
                  // (this happens in the tests/nonsmoke/functional/CompileTests/Cxx_tests test codes).
                  // lastStatement = SageInterface::lastStatementOfScopeWithTokenInfo (scope, tokenStreamSequenceMap);
                     if (sourceFile->get_unparse_tokens() == true)
@@ -2967,7 +3035,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
 #if 0
                     curprint("/* In UnparseLanguageIndependentConstructs::unparseStatement(): isLastStatementOfScope == true */ \n ");
 #endif
-                    ROSE_ASSERT(lastStatement != NULL);
+                    ASSERT_not_null(lastStatement);
 
 #if 0
                     printf ("In UnparseLanguageIndependentConstructs::unparseStatement(): isLastStatementOfScope == true: Calling unparseStatementFromTokenStream() \n");
@@ -3045,7 +3113,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
      if (outputStatementAsTokens == false && outputPartialStatementAsTokens == false)
         {
        // DQ (comments) This is where new lines are output after the statement.
-       // I think this will only output a newline if the statement unparsed is 
+       // I think this will only output a newline if the statement unparsed is
        // long enough (beyond some specific threshhold).
 #if 0
           curprint("/* FORMATTING: UnparseLanguageIndependentConstructs::unparseStatement(): calling unp->cur.format() (outputStatementAsTokens == false && outputPartialStatementAsTokens == false) */");
@@ -3125,7 +3193,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
      printf ("Leaving unparse statement (%p): sage_class_name() = %s name = %s \n",stmt,stmt->sage_class_name(),SageInterface::get_name(stmt).c_str());
   // printf ("Leaving unparse statement (%p): sage_class_name() = %s \n",stmt,stmt->sage_class_name());
   // curprint ( string("\n/* Bottom of unparseStatement: sage_class_name() = " + stmt->sage_class_name() + " */ \n";
-     curprint ( string("\n/* Bottom of unparseStatement (" ) + StringUtility::numberToString(stmt) 
+     curprint ( string("\n/* Bottom of unparseStatement (" ) + StringUtility::numberToString(stmt)
          + "): sage_class_name() = " + stmt->sage_class_name() + " */ \n");
 #endif
 
@@ -3160,10 +3228,10 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
 
 //-----------------------------------------------------------------------------------
 //  void Unparse_ExprStmt::unparseExpression
-//  
-//  General unparse function for expressions. Then it routes to the appropriate 
-//  function to unparse each kind of expression. Type and symbols still use the 
-//  original unparse function because they don't have file_info and therefore, 
+//
+//  General unparse function for expressions. Then it routes to the appropriate
+//  function to unparse each kind of expression. Type and symbols still use the
+//  original unparse function because they don't have file_info and therefore,
 //  will not print out file information
 //-----------------------------------------------------------------------------------
 void
@@ -3172,7 +3240,7 @@ UnparseLanguageIndependentConstructs::unparseExpression(SgExpression* expr, SgUn
   // directives(expr);
 
   // DQ (3/21/2004): This assertion should have been in place before now!
-     ROSE_ASSERT (expr != NULL);
+     ASSERT_not_null(expr);
 
 #if 0
      printf ("unparseExpression() (language independent = %s) expression (%p): %s compiler-generated = %s \n",
@@ -3192,21 +3260,21 @@ UnparseLanguageIndependentConstructs::unparseExpression(SgExpression* expr, SgUn
   // DQ (8/21/2005): Suppress comments when unparsing to build type names
      if ( !info.SkipComments() || !info.SkipCPPDirectives() )
         {
-          ROSE_ASSERT(expr->get_startOfConstruct() != NULL);
-          ROSE_ASSERT(expr->get_file_info() != NULL);
+          ASSERT_not_null(expr->get_startOfConstruct());
+          ASSERT_not_null(expr->get_file_info());
           printf ("Unparse expression (%p): %s compiler-generated = %s \n",expr,expr->class_name().c_str(),expr->get_file_info()->isCompilerGenerated() ? "true" : "false");
           char buffer[100];
           snprintf (buffer,100,"%p",expr);
-          curprint ( "\n/* Top of unparseExpression " + expr->class_name() 
-              + " at: " + buffer 
+          curprint ( "\n/* Top of unparseExpression " + expr->class_name()
+              + " at: " + buffer
               + " compiler-generated (file_info) = " + (expr->get_file_info()->isCompilerGenerated() ? "true" : "false")
               + " compiler-generated (startOfConstruct) = " + (expr->get_startOfConstruct()->isCompilerGenerated() ? "true" : "false") + " */ \n");
         }
 #endif
 
-     ROSE_ASSERT(expr != NULL);
-     ROSE_ASSERT(expr->get_startOfConstruct() != NULL);
-     ROSE_ASSERT(expr->get_file_info() != NULL);
+     ASSERT_not_null(expr);
+     ASSERT_not_null(expr->get_startOfConstruct());
+     ASSERT_not_null(expr->get_file_info());
 #define DEBUG_ROSE_2423 0
 #if DEBUG_ROSE_2423
      if (expr->get_file_info()->isCompilerGenerated() != expr->get_startOfConstruct()->isCompilerGenerated())
@@ -3218,18 +3286,18 @@ UnparseLanguageIndependentConstructs::unparseExpression(SgExpression* expr, SgUn
           printf ("  -- expr->get_startOfConstruct()->isCompilerGenerated() = %s \n",expr->get_startOfConstruct()->isCompilerGenerated() ? "true" : "false");
 
        // DQ (9/11/2011): Reorganize to make this better code that can be analyized using static analysis (static analysis tools don't understand access functions).
-       // ROSE_ASSERT(expr->get_file_info()->get_parent() != NULL);
+       // ASSERT_not_null(expr->get_file_info()->get_parent());
        // printf ("parent of file info = %p = %s \n",expr->get_file_info()->get_parent(),expr->get_file_info()->get_parent()->class_name().c_str());
-          ROSE_ASSERT(expr != NULL);
+          ASSERT_not_null(expr);
           Sg_File_Info* fileInfo = expr->get_file_info();
-          ROSE_ASSERT(fileInfo != NULL);
+          ASSERT_not_null(fileInfo);
           SgNode* fileInfoParent = fileInfo->get_parent();
           if (fileInfoParent == NULL) {
             printf ("[unparseExpression] file info = %p = %s has null parent.\n",fileInfo,fileInfo->class_name().c_str());
           } else {
             printf("parent of file info = %p = %s \n",fileInfoParent,fileInfoParent->class_name().c_str());
           }
-          ROSE_ASSERT(fileInfoParent != NULL);
+          ASSERT_not_null(fileInfoParent);
 
        // DQ (9/11/2011): Reorganize to make this better code that can be analyized using static analysis (static analysis tools don't understand access functions).
        // expr->get_file_info()->display("expr->get_file_info(): debug");
@@ -3238,7 +3306,7 @@ UnparseLanguageIndependentConstructs::unparseExpression(SgExpression* expr, SgUn
 
        // Sg_File_Info* startOfConstructFileInfo = expr->get_file_info();
           Sg_File_Info* startOfConstructFileInfo = expr->get_startOfConstruct();
-          ROSE_ASSERT(startOfConstructFileInfo != NULL);
+          ASSERT_not_null(startOfConstructFileInfo);
           startOfConstructFileInfo->display("expr->get_startOfConstruct(): debug");
         }
 #endif
@@ -3257,23 +3325,23 @@ UnparseLanguageIndependentConstructs::unparseExpression(SgExpression* expr, SgUn
           printf ("Error in unparseExpression(): expr = %p = %s expr->get_endOfConstruct() == NULL \n",expr,expr->class_name().c_str());
           expr->get_file_info()->display("unparseExpression (debug)");
         }
-  // ROSE_ASSERT(expr->get_endOfConstruct() != NULL);
+  // ASSERT_not_null(expr->get_endOfConstruct());
 
 #if 0
   // DQ (10/25/2006): Debugging support for file info data for each IR node
      curprint ( "\n/* Top of unparseExpression " + string(expr->sage_class_name()) + " */\n ");
-     ROSE_ASSERT (expr->get_startOfConstruct() != NULL);
-     curprint ( "/* startOfConstruct: file = " << expr->get_startOfConstruct()->get_filenameString() 
-         + " raw filename = " << expr->get_startOfConstruct()->get_raw_filename() 
-         + " raw line = " << expr->get_startOfConstruct()->get_raw_line() 
-         + " raw column = " << expr->get_startOfConstruct()->get_raw_col() 
+     ASSERT_not_null(expr->get_startOfConstruct());
+     curprint ( "/* startOfConstruct: file = " << expr->get_startOfConstruct()->get_filenameString()
+         + " raw filename = " << expr->get_startOfConstruct()->get_raw_filename()
+         + " raw line = " << expr->get_startOfConstruct()->get_raw_line()
+         + " raw column = " << expr->get_startOfConstruct()->get_raw_col()
          + " */\n ");
      if (expr->get_endOfConstruct() != NULL)
         {
           curprint ( "/* endOfConstruct: file = " << expr->get_endOfConstruct()->get_filenameString()
-              + " raw filename = " << expr->get_endOfConstruct()->get_raw_filename() 
-              + " raw line = " << expr->get_endOfConstruct()->get_raw_line() 
-              + " raw column = " << expr->get_endOfConstruct()->get_raw_col() 
+              + " raw filename = " << expr->get_endOfConstruct()->get_raw_filename()
+              + " raw line = " << expr->get_endOfConstruct()->get_raw_line()
+              + " raw column = " << expr->get_endOfConstruct()->get_raw_col()
               + " */\n ");
         }
 #endif
@@ -3295,7 +3363,7 @@ UnparseLanguageIndependentConstructs::unparseExpression(SgExpression* expr, SgUn
      SgFile* cur_file = SageInterface::getEnclosingFileNode(expr);
      if (cur_file != NULL)
      {
-       // normal file info 
+       // normal file info
        if (expr->get_file_info()->isTransformation() == false &&  expr->get_file_info()->isCompilerGenerated() ==false)
        {
          if (cur_file->get_file_info()->get_filename() != expr->get_file_info()->get_filename())
@@ -3319,7 +3387,7 @@ UnparseLanguageIndependentConstructs::unparseExpression(SgExpression* expr, SgUn
   // if (expr->attribute.exists("_UnparserSourceReplacement"))
   // if (expr->get_attribute() != NULL && expr->attribute().exists("_UnparserSourceReplacement"))
 
-  // DQ (7/20/2008): This is now revised to handle more cases than just replacement of the 
+  // DQ (7/20/2008): This is now revised to handle more cases than just replacement of the
   // AST subtree with a string.  Now we can add arbitrary text into different locations
   // relative to the specific IR node.  For now we are supporting before, replace, and after.
 
@@ -3345,14 +3413,14 @@ UnparseLanguageIndependentConstructs::unparseExpression(SgExpression* expr, SgUn
          }
        }
      }
-     
+
      AstUnparseAttribute* unparseAttribute = dynamic_cast<AstUnparseAttribute*>(expr->getAttribute(AstUnparseAttribute::markerName));
      if (unparseAttribute != NULL)
         {
           string code = unparseAttribute->toString(AstUnparseAttribute::e_before);
           curprint (code);
         }
-        
+
   // Only replace the unparsing of the IR node with a string if a string is marked as AstUnparseAttribute::e_replace.
      if (unparseAttribute != NULL && unparseAttribute->replacementStringExists() == true)
         {
@@ -3386,11 +3454,11 @@ UnparseLanguageIndependentConstructs::unparseExpression(SgExpression* expr, SgUn
                     if (dotExp != NULL)
                        {
                          SgMemberFunctionRefExp* memberFunctionRefExp = isSgMemberFunctionRefExp(dotExp->get_lhs_operand());
-                      // ROSE_ASSERT(memberFunctionRefExp != NULL);
+                      // ASSERT_not_null(memberFunctionRefExp);
                          if (memberFunctionRefExp != NULL)
                             {
                               SgMemberFunctionSymbol* memberFunctionSymbol = memberFunctionRefExp->get_symbol();
-                              ROSE_ASSERT(memberFunctionSymbol != NULL);
+                              ASSERT_not_null(memberFunctionSymbol);
                               name = memberFunctionSymbol->get_declaration()->get_name().str();
                             }
                            else
@@ -3414,7 +3482,7 @@ UnparseLanguageIndependentConstructs::unparseExpression(SgExpression* expr, SgUn
 #endif
 
        // if (printParen)
-       // ROSE_ASSERT(currentFile != NULL);
+       // ASSERT_not_null(currentFile);
        // if ( (printParen == true) && (currentFile->get_Fortran_only() == false) )
           if (printParen == true)
              {
@@ -3423,7 +3491,7 @@ UnparseLanguageIndependentConstructs::unparseExpression(SgExpression* expr, SgUn
                    printParen = false;
                  }
                else
-                 {               
+                 {
                    // Make sure this is not an expresion list
                    ROSE_ASSERT (isSgExprListExp(expr) == NULL);
 #if 0
@@ -3444,8 +3512,8 @@ UnparseLanguageIndependentConstructs::unparseExpression(SgExpression* expr, SgUn
              }
 
        // DQ (10/13/2006): Remove output of qualified names from this level of generality!
-       // DQ (12/22/2005): Output any name qualification that is required 
-       // (we only explicitly store the global scope qualification since 
+       // DQ (12/22/2005): Output any name qualification that is required
+       // (we only explicitly store the global scope qualification since
        // this is all that it seems that EDG stores).
        // unparseQualifiedNameList(expr->get_qualifiedNameList());
 
@@ -3458,7 +3526,7 @@ UnparseLanguageIndependentConstructs::unparseExpression(SgExpression* expr, SgUn
                     ROSE_ASSERT(false);
 
                     unparseUnaryExpr (expr, info);
-                    break; 
+                    break;
                   }
 
             // DQ (4/18/2013): I don't think this is ever called this way, IR node resolve to the derived classes not the base classes.
@@ -3476,14 +3544,14 @@ UnparseLanguageIndependentConstructs::unparseExpression(SgExpression* expr, SgUn
                  unparseMatrixExp(expr, info);
                  break;
                }
-                  
+
             // DQ (8/15/2007): This has been moved to the base class
                case EXPR_LIST: { unparseExprList(expr, info); break; }
 
             // DQ (7/31/2014): Adding support for C++11 nullptr const value expressions.
                case NULLPTR_VAL:
 
-            // DQ: These cases are separated out so that we can handle the 
+            // DQ: These cases are separated out so that we can handle the
             // original expression tree from any possible constant folding by EDG.
                case BOOL_VAL:
                case SHORT_VAL:
@@ -3515,7 +3583,7 @@ UnparseLanguageIndependentConstructs::unparseExpression(SgExpression* expr, SgUn
 
                     break;
                   }
-      
+
              }
 
           if (printParen)
@@ -3590,7 +3658,7 @@ UnparseLanguageIndependentConstructs::unparseNullStatement (SgStatement* stmt, S
    {
   // Nothing to do here! (unless we need a ";" or something)
      SgNullStatement* nullStatement = isSgNullStatement(stmt);
-     ROSE_ASSERT(nullStatement != NULL);
+     ASSERT_not_null(nullStatement);
 
 #if 0
      printf ("In unparseNullStatement() stmt = %p \n",stmt);
@@ -3620,16 +3688,16 @@ UnparseLanguageIndependentConstructs::unparseNullExpression (SgExpression* expr,
    }
 
 
-bool 
+bool
 UnparseLanguageIndependentConstructs::isTransformed(SgStatement* stmt)
    {
-  // This function must traverse the AST and look for any sign that 
-  // the subtree has been transformed.  This might be a difficult 
+  // This function must traverse the AST and look for any sign that
+  // the subtree has been transformed.  This might be a difficult
   // function to write.  We might have to force transformations to
   // do something to make their presence better known (e.g. removing
   // a statement will leave no trace in the AST of the transformation).
 
-  // DQ (3/2/2005): Change this to see if we can output each specialization 
+  // DQ (3/2/2005): Change this to see if we can output each specialization
   // as if we were transforming each template specialization
   // Assume no transformation at the moment while we debug templates.
 
@@ -3651,7 +3719,7 @@ void
 UnparseLanguageIndependentConstructs::unparseGlobalStmt (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgGlobal* globalScope = isSgGlobal(stmt);
-     ROSE_ASSERT(globalScope != NULL);
+     ASSERT_not_null(globalScope);
 
 #if 0
      printf ("\n ***** Unparsing the global Scope ***** \n\n");
@@ -3676,23 +3744,23 @@ UnparseLanguageIndependentConstructs::unparseGlobalStmt (SgStatement* stmt, SgUn
 
   // DQ (12/22/2014): We need to make sure that the last_statement is the last statement that had a token mapping.
   // SgSourceFile* sourceFile = isSgSourceFile(SageInterface::getEnclosingFileNode(stmt));
-  // ROSE_ASSERT(sourceFile != NULL);
+  // ASSERT_not_null(sourceFile);
   // DQ (12/10/2014): Unparse the trailing whitespace at the end of the file (global scope).
-     ROSE_ASSERT(globalScope->get_parent() != NULL);
+     ASSERT_not_null(globalScope->get_parent());
      SgSourceFile* sourceFile = isSgSourceFile(globalScope->get_parent());
 
-     ROSE_ASSERT(sourceFile != NULL);
-     ROSE_ASSERT(info.get_current_source_file() != NULL);
-     ROSE_ASSERT(sourceFile != NULL);
+     ASSERT_not_null(sourceFile);
+     ASSERT_not_null(info.get_current_source_file());
+     ASSERT_not_null(sourceFile);
 
 #if 0
      printf ("In unparseGlobalStmt(): info.get_current_source_file() = %p filename = %s \n",info.get_current_source_file(),info.get_current_source_file()->getFileName().c_str());
      printf ("In unparseGlobalStmt(): sourceFile                     = %p filename = %s \n",sourceFile,sourceFile->getFileName().c_str());
 #endif
 
-  // DQ (1/10/2014): Support new definition of the SgSourceFile via the SgUnparse_Info (verify it is the same, 
+  // DQ (1/10/2014): Support new definition of the SgSourceFile via the SgUnparse_Info (verify it is the same,
   // then we can eliminate the computation via the parent pointer).  This will be significantly more efficent
-  // where we need a reference to the SgSourceFile in the unparsing of more general statements when using the 
+  // where we need a reference to the SgSourceFile in the unparsing of more general statements when using the
   // token based unparsing.
   // ROSE_ASSERT(info.get_current_source_file() == sourceFile);
      if (info.get_current_source_file() != sourceFile)
@@ -3711,15 +3779,15 @@ UnparseLanguageIndependentConstructs::unparseGlobalStmt (SgStatement* stmt, SgUn
         }
 
   // DQ (3/16/2015): This can be the SgGlobal that is in the SgProject (used for a larger concept fo global scope across multiple files).
-  // In this case the globalScope->get_parent() is a SgProject. 
-  // ROSE_ASSERT(sourceFile != NULL);
+  // In this case the globalScope->get_parent() is a SgProject.
+  // ASSERT_not_null(sourceFile);
 
      if (sourceFile != NULL)
         {
           std::map<SgNode*,TokenStreamSequenceToNodeMapping*> & tokenStreamSequenceMap = sourceFile->get_tokenSubsequenceMap();
           if (sourceFile->get_unparse_tokens() == false)
              {
-            // DQ (12/14/2015): Even if we don't unparse using the token stream, we can still use the 
+            // DQ (12/14/2015): Even if we don't unparse using the token stream, we can still use the
             // token sequence mapping to build more accurate source position information in the AST.
             // ROSE_ASSERT(tokenStreamSequenceMap.size() == 0);
                if (sourceFile->get_use_token_stream_to_improve_source_position_info() == false)
@@ -3756,7 +3824,7 @@ UnparseLanguageIndependentConstructs::unparseGlobalStmt (SgStatement* stmt, SgUn
                while ( statementIterator != globalStatementList.end() )
                   {
                     SgStatement* currentStatement = *statementIterator;
-                    ROSE_ASSERT(currentStatement != NULL);
+                    ASSERT_not_null(currentStatement);
 #if 0
                     printf ("In unparseGlobalStmt(): currentStatement is %p = %s = %s \n",currentStatement,currentStatement->class_name().c_str(),SageInterface::get_name(currentStatement).c_str());
 #endif
@@ -3809,7 +3877,7 @@ UnparseLanguageIndependentConstructs::unparseGlobalStmt (SgStatement* stmt, SgUn
           while ( statementIterator != globalStatementList.end() )
              {
                SgStatement* currentStatement = *statementIterator;
-               ROSE_ASSERT(currentStatement != NULL);
+               ASSERT_not_null(currentStatement);
 #if 0
             // printf ("In unparseGlobalStmt(): declaration #%d is %p = %s = %s \n",declarationCounter++,currentStatement,currentStatement->class_name().c_str(),SageInterface::get_name(currentStatement).c_str());
                printf ("\nIn unparseGlobalStmt(): declaration = %p = %s = %s \n",currentStatement,currentStatement->class_name().c_str(),SageInterface::get_name(currentStatement).c_str());
@@ -3823,10 +3891,10 @@ UnparseLanguageIndependentConstructs::unparseGlobalStmt (SgStatement* stmt, SgUn
                          << currentStatement->get_file_info()->displayString()
 #else
                          << Rose::getLineNumber(currentStatement)
-                         << " getFileName(currentStatement) = " 
+                         << " getFileName(currentStatement) = "
                          << Rose::getFileName(currentStatement)
 #endif
-                         << " unp->cur_index = " 
+                         << " unp->cur_index = "
                          << unp->cur_index
                          << endl;
                   }
@@ -3855,7 +3923,7 @@ UnparseLanguageIndependentConstructs::unparseGlobalStmt (SgStatement* stmt, SgUn
                       // last_statement = currentStatement;
 #if 0
                          TokenStreamSequenceToNodeMapping* tokenStreamSequence = tokenStreamSequenceMap[currentStatement];
-                         ROSE_ASSERT(tokenStreamSequence != NULL);
+                         ASSERT_not_null(tokenStreamSequence);
                          tokenStreamSequence->display("In unparseGlobalStmt(): tokenStreamSequence");
 #endif
                        }
@@ -3871,11 +3939,11 @@ UnparseLanguageIndependentConstructs::unparseGlobalStmt (SgStatement* stmt, SgUn
 
        // DQ (12/10/2014): Unparse the trailing whitespace at the end of the file (global scope).
        // SgSourceFile* sourceFile = isSgSourceFile(globalScope->get_parent());
-       // ROSE_ASSERT(sourceFile != NULL);
+       // ASSERT_not_null(sourceFile);
           if (sourceFile->get_unparse_tokens() == true)
              {
             // DQ (12/26/2014): Handle case where last_statement == NULL.
-            // ROSE_ASSERT(last_statement != NULL);
+            // ASSERT_not_null(last_statement);
 #if 0
                if (last_statement != NULL)
                     printf ("In UnparseLanguageIndependentConstructs::unparseGlobalStmt(): last_statement = %p = %s \n",last_statement,last_statement->class_name().c_str());
@@ -3883,7 +3951,7 @@ UnparseLanguageIndependentConstructs::unparseGlobalStmt (SgStatement* stmt, SgUn
                printf ("global_unparsed_as:          %s \n",unparsed_as_kind(global_unparsed_as).c_str());
 #endif
 #if 0
-            // DQ (1/7/2014): We want to have this logic in the unparseStatement() function so it will 
+            // DQ (1/7/2014): We want to have this logic in the unparseStatement() function so it will
             // be in a single location instead of in each construct that contains a list of statements.
                if (globalScope->get_containsTransformation() == true)
                   {
@@ -3927,7 +3995,7 @@ UnparseLanguageIndependentConstructs::unparseGlobalStmt (SgStatement* stmt, SgUn
 #if 0
           printf ("In unparseGlobalStmt(): globalScope->get_parent() = %p = %s \n",globalScope->get_parent(),globalScope->get_parent()->class_name().c_str());
 #endif
-          ROSE_ASSERT(isSgProject(globalScope->get_parent()) != NULL);
+          ASSERT_not_null(isSgProject(globalScope->get_parent()));
         }
 
   // DQ (5/27/2005): Added support for compiler-generated statements that might appear at the end of the applications
@@ -3957,7 +4025,7 @@ void
 UnparseLanguageIndependentConstructs::unparseFuncTblStmt(SgStatement* stmt, SgUnparse_Info& info)
    {
      SgFunctionTypeTable* functbl_stmt = isSgFunctionTypeTable(stmt);
-     ROSE_ASSERT(functbl_stmt != NULL);
+     ASSERT_not_null(functbl_stmt);
 
      stringstream  out;
      functbl_stmt->print_functypetable(out);
@@ -3970,7 +4038,7 @@ UnparseLanguageIndependentConstructs::unparseFuncTblStmt(SgStatement* stmt, SgUn
 //  void Unparse_ExprStmt::num_stmt_in_block
 //
 //  returns the number of statements in the basic block
-//--------------------------------------------------------------------------------  
+//--------------------------------------------------------------------------------
 int
 UnparseLanguageIndependentConstructs::num_stmt_in_block(SgBasicBlock* basic_stmt)
    {
@@ -4018,9 +4086,9 @@ UnparseLanguageIndependentConstructs::unparseLineReplacement( SgLocatedNode* stm
         {
        // i ist a pointer to the current prepInfo object, print current preprocessing info
        // Assert that i points to a valid preprocssingInfo object
-          ROSE_ASSERT ( (*i) != NULL );
+          ASSERT_not_null( (*i));
           ROSE_ASSERT ( (*i)->getTypeOfDirective()  != PreprocessingInfo::CpreprocessorUnknownDeclaration );
-          ROSE_ASSERT ( (*i)->getRelativePosition() == PreprocessingInfo::before || 
+          ROSE_ASSERT ( (*i)->getRelativePosition() == PreprocessingInfo::before ||
                         (*i)->getRelativePosition() == PreprocessingInfo::after  ||
                         (*i)->getRelativePosition() == PreprocessingInfo::inside );
 
@@ -4029,7 +4097,7 @@ UnparseLanguageIndependentConstructs::unparseLineReplacement( SgLocatedNode* stm
              ((*i)->getRelativePosition() == PreprocessingInfo::before) ? "before" : "after", (*i)->getString().c_str());
 #endif
 
-       // Check and see if the info object would indicate that the statement would 
+       // Check and see if the info object would indicate that the statement would
        // be printed, if not then don't print the comments associated with it.
        // These might have to be handled on a case by case basis.
        // bool infoSaysGoAhead = !info.SkipDefinition();
@@ -4102,7 +4170,9 @@ UnparseLanguageIndependentConstructs::unparseAttachedPreprocessingInfo(
           printOutComments(stmt);
         }
 #endif
-
+#if 0
+     curprint ("/* In Unparse_ExprStmt::unparseAttachedPreprocessingInfo() */ \n");
+#endif
 #if 0
      printOutComments(stmt);
 #endif
@@ -4136,9 +4206,9 @@ UnparseLanguageIndependentConstructs::unparseAttachedPreprocessingInfo(
         {
        // i is a pointer to the current prepInfo object, print current preprocessing info
        // Assert that i points to a valid preprocssingInfo object
-          ROSE_ASSERT ((*i) != NULL);
+          ASSERT_not_null((*i));
           ROSE_ASSERT ((*i)->getTypeOfDirective()  != PreprocessingInfo::CpreprocessorUnknownDeclaration);
-          ROSE_ASSERT ((*i)->getRelativePosition() == PreprocessingInfo::before || 
+          ROSE_ASSERT ((*i)->getRelativePosition() == PreprocessingInfo::before ||
                        (*i)->getRelativePosition() == PreprocessingInfo::after  ||
                        (*i)->getRelativePosition() == PreprocessingInfo::inside);
 
@@ -4154,7 +4224,7 @@ UnparseLanguageIndependentConstructs::unparseAttachedPreprocessingInfo(
           printf (" --- file_id = %d line = %d filename = %s \n",(*i)->getFileId(),(*i)->getLineNumber(),(*i)->getFilename().c_str());
 #endif
 
-       // Check and see if the info object would indicate that the statement would 
+       // Check and see if the info object would indicate that the statement would
        // be printed, if not then don't print the comments associated with it.
        // These might have to be handled on a case by case basis.
        // bool infoSaysGoAhead = !info.SkipDefinition();
@@ -4179,10 +4249,10 @@ UnparseLanguageIndependentConstructs::unparseAttachedPreprocessingInfo(
           infoSaysGoAhead = (infoSaysGoAhead == true) || (isSgExpression(stmt) != NULL) || (isSgInitializedName (stmt) != NULL) || (isSgHeaderFileBody(stmt) != NULL);
 
        // DQ (2/27/2019): Added assertions for debugging.
-          ROSE_ASSERT(*i != NULL);
+          ASSERT_not_null(*i);
 
        // DQ (2/27/2019): Added assertions for debugging, for Cxx_tests/test2005_15.C (and many other files) this can be NULL.
-       // ROSE_ASSERT(info.get_current_source_file() != NULL);
+       // ASSERT_not_null(info.get_current_source_file());
           bool isCommentFromCurrentFile = true;
 
           bool isSharedLocatedNode = (stmt->get_file_info()->isShared() == true);
@@ -4192,7 +4262,7 @@ UnparseLanguageIndependentConstructs::unparseAttachedPreprocessingInfo(
        // if (infoSaysGoAhead == true && info.get_current_source_file() != NULL)
           if (isSharedLocatedNode == true && infoSaysGoAhead == true && info.get_current_source_file() != NULL)
              {
-               ROSE_ASSERT(info.get_current_source_file()->get_file_info() != NULL);
+               ASSERT_not_null(info.get_current_source_file()->get_file_info());
 
             // DQ (2/27/2019): If this is a comment from a different file (not current file) then we can't unparse it here.
                isCommentFromCurrentFile = (info.get_current_source_file()->get_file_info()->get_file_id() == (*i)->getFileId());
@@ -4254,7 +4324,7 @@ UnparseLanguageIndependentConstructs::unparseAttachedPreprocessingInfo(
        // I am trying to recover the old way which permitted all the test codes to work
        // before I fix it to be consistant with how it must work for the A++ transformation
        // to work properly.  This is work that was unfinished by Markus K. summer 2002.
-       // (Though he did do a great job not enough information was provided in SAGE from EDG 
+       // (Though he did do a great job not enough information was provided in SAGE from EDG
        // to finish it (I think)).
 
        // DQ (2/18/2003): Work to allow all CPP directives to be unparsed correctly on a statement
@@ -4281,9 +4351,9 @@ UnparseLanguageIndependentConstructs::unparseAttachedPreprocessingInfo(
                if (unp->opt.get_unparse_includes_opt() == true)
                   {
                  // DQ (9/16/2013): This is an error for C style comments spanning more than one line.
-                 // To fix this just unparse the comment directly, since the syntax to make it a comment 
+                 // To fix this just unparse the comment directly, since the syntax to make it a comment
                  // is included in the string.
-                 // Original comment: If we are unparsing the include files then we can simplify the 
+                 // Original comment: If we are unparsing the include files then we can simplify the
                  // CPP directive processing and unparse them all as comments!
                  // Comments can also be unparsed as comments (I think!).
                  // curprint (  "// " + (*i)->getString());
@@ -4324,10 +4394,10 @@ UnparseLanguageIndependentConstructs::unparseAttachedPreprocessingInfo(
                  // DQ (1/28/2013): Fixed indentation of code block.
                     switch ( (*i)->getTypeOfDirective() )
                        {
-                      // All #include directives are unparsed so that we can make the 
+                      // All #include directives are unparsed so that we can make the
                       // output codes as similar as possible to the input codes. This also
-                      // simplifies the debugging. On the down side it sets up a chain of 
-                      // problems that force us to unparse most of the other directives 
+                      // simplifies the debugging. On the down side it sets up a chain of
+                      // problems that force us to unparse most of the other directives
                       // which makes the unparsing a bit more complex.
                          case PreprocessingInfo::CpreprocessorIncludeDeclaration:
                          case PreprocessingInfo::CpreprocessorIncludeNextDeclaration:
@@ -4363,21 +4433,50 @@ UnparseLanguageIndependentConstructs::unparseAttachedPreprocessingInfo(
                          case PreprocessingInfo::ClinkageSpecificationEnd:
                               if ( !info.SkipComments() )
                                  {
+#if 0
+                                   curprint ( string("/* case PreprocessingInfo::ClinkageSpecification (Start/End)") + (*i)->getString() + " */ \n");
+#endif
                                    if (unp->opt.get_unparse_includes_opt() == true)
                                         curprint (  string("// ") + (*i)->getString());
                                      else
                                         curprint ( (*i)->getString());
+#if 0
+                                   curprint ( string("/* DONE: case PreprocessingInfo::ClinkageSpecification (Start/End)") + (*i)->getString() + " */ \n");
+#endif
+
+                                   if ( (*i)->getTypeOfDirective() == PreprocessingInfo::ClinkageSpecificationStart)
+                                      {
+#if 0
+                                        printf ("calling info.set_extern_C_with_braces(true) \n");
+#endif
+#if 0
+                                        curprint ( string("/* calling info.set_extern_C_with_braces(true): case PreprocessingInfo::ClinkageSpecificationStart") + (*i)->getString() + " */ \n");
+#endif
+                                        info.set_extern_C_with_braces(true);
+                                      }
+                                     else
+                                      {
+                                        ROSE_ASSERT( (*i)->getTypeOfDirective() == PreprocessingInfo::ClinkageSpecificationEnd );
+#if 0
+                                        printf ("calling info.set_extern_C_with_braces(false) \n");
+#endif
+#if 0
+                                        curprint ( string("/* calling info.set_extern_C_with_braces(true): case PreprocessingInfo::ClinkageSpecificationEnd") + (*i)->getString() + " */ \n");
+#endif
+                                        info.set_extern_C_with_braces(false);
+                                      }
+
                                  }
                               break;
 
-                      // Must unparse these because they could hide a #define 
+                      // Must unparse these because they could hide a #define
                       // directive which would then be seen e.g.
                       //      #if 0
                       //      #define printf parallelPrintf
                       //      #endif
-                      // So because we unparse the #define we must unparse 
+                      // So because we unparse the #define we must unparse
                       // the #if, #ifdef, #else, and #endif directives.
-                      // line declarations should also appear in the output 
+                      // line declarations should also appear in the output
                       // to permit the debugger to see the original code
                          case PreprocessingInfo::CpreprocessorIfdefDeclaration:
                          case PreprocessingInfo::CpreprocessorIfndefDeclaration:
@@ -4389,7 +4488,7 @@ UnparseLanguageIndependentConstructs::unparseAttachedPreprocessingInfo(
                          case PreprocessingInfo::CpreprocessorEndifDeclaration:
                          case PreprocessingInfo::CpreprocessorLineDeclaration:
                       // AS(120506) Added support for skipped tokens for Wave
-                         case PreprocessingInfo::CSkippedToken: 
+                         case PreprocessingInfo::CSkippedToken:
                               if ( !info.SkipComments() )
                                  {
                                    if (unp->opt.get_unparse_includes_opt() == true)
@@ -4422,7 +4521,7 @@ UnparseLanguageIndependentConstructs::unparseAttachedPreprocessingInfo(
                               break;
 
                       // We skip commenting out these cases for the moment
-                      // We must unparse these since they could control the path 
+                      // We must unparse these since they could control the path
                       // taken in header files included separately e.g.
                       //      #define OPTIMIZE_ME
                       //      // optimization.h could include two paths dependent on the value of OPTIMIZE_ME
@@ -4445,7 +4544,7 @@ UnparseLanguageIndependentConstructs::unparseAttachedPreprocessingInfo(
 #if 0
                                              printf ("In unparser: CPP macro = %s \n",(*i)->getString().c_str());
 #endif
-                                          // We need to supress the output of self-referential macros since they will be expanded 
+                                          // We need to supress the output of self-referential macros since they will be expanded
                                           // twice in the back-end compilation of the ROSE generated code.
                                              bool isSelfReferential = (*i)->isSelfReferential();
 #if 0
@@ -4527,16 +4626,16 @@ UnparseLanguageIndependentConstructs::unparseAttachedPreprocessingInfo(
         }
 
 #if 0
-     printf ("In unparseAttachedPreprocessingInfo(): stmt = %p = %s \n",stmt,stmt->class_name().c_str());
+     printf ("Leaving unparseAttachedPreprocessingInfo(): stmt = %p = %s \n",stmt,stmt->class_name().c_str());
   // curprint ("\n /* Inside of unparseAttachedPreprocessingInfo() */ \n");
-     curprint (string("/* Inside of unparseAttachedPreprocessingInfo() stmt = ") + stmt->class_name() + " */ \n");
+     curprint (string("/* Leaving unparseAttachedPreprocessingInfo() stmt = ") + stmt->class_name() + " */ \n");
 #endif
    }
 
 
 
 void
-UnparseLanguageIndependentConstructs::unparseUnaryExpr(SgExpression* expr, SgUnparse_Info& info) 
+UnparseLanguageIndependentConstructs::unparseUnaryExpr(SgExpression* expr, SgUnparse_Info& info)
    {
 #if 0
      printf ("In unparseUnaryExpr(): expr = %p = %s \n",expr,expr->class_name().c_str());
@@ -4551,7 +4650,7 @@ UnparseLanguageIndependentConstructs::unparseUnaryExpr(SgExpression* expr, SgUnp
 #endif
 
      SgUnaryOp* unary_op = isSgUnaryOp(expr);
-     ROSE_ASSERT(unary_op != NULL);
+     ASSERT_not_null(unary_op);
 
   // int toplevel_expression = !info.get_nested_expression();
 
@@ -4569,13 +4668,13 @@ UnparseLanguageIndependentConstructs::unparseUnaryExpr(SgExpression* expr, SgUnp
   // printf ("In Unparse_ExprStmt::unparseUnaryExpr: toplevel_expression = %d arrow_op = %d \n",toplevel_expression,arrow_op);
 #endif
 
-  // We have to test to see if the operand associated with this unary expression is a function pointer 
+  // We have to test to see if the operand associated with this unary expression is a function pointer
   // then we can use either function pointer calling syntax
   // (for void (*functionPointer) (int) as a declaration):
   //      1) functionPointer (x);
   //      2) (*functionPointer) (x);
   // Either is valid syntax (see Stroustrup (2nd Edition) section 7.7 "Pointer to Function" page 156.)
-  // It seems that EDG and SAGE represent the two similarly, so we have to choose which format we 
+  // It seems that EDG and SAGE represent the two similarly, so we have to choose which format we
   // want to have in the unparsing. Likely this should be an option to the unparser.
 
   // bool isFunctionType = (isSgFunctionType(unary_op->get_type()) != NULL) ? true : false;
@@ -4592,7 +4691,7 @@ UnparseLanguageIndependentConstructs::unparseUnaryExpr(SgExpression* expr, SgUnp
 #endif
 
   // DQ (2/22/2005): Ignoring if this is a SgFunctionType (test ...)
-  // Bugfix (2/26/2001) If this is for a function pointer then skip printing out 
+  // Bugfix (2/26/2001) If this is for a function pointer then skip printing out
   // the operator name (for dereferencing operator)
 #if 1
   // if (unary_op->get_mode() != SgUnaryOp::postfix && !arrow_op)
@@ -4605,7 +4704,7 @@ UnparseLanguageIndependentConstructs::unparseUnaryExpr(SgExpression* expr, SgUnp
 #if 0
           curprint ( "\n /* Unparsing a prefix unary operator */ \n");
 #endif
-       // DQ (2/25/2005): Trap case of SgPointerDerefExp so that "*" can't be 
+       // DQ (2/25/2005): Trap case of SgPointerDerefExp so that "*" can't be
        // turned into "/*" if preceeded by a SgDivideOp or overloaded "operator/()"
        // Put in an extra space so that if this happens we only generate "/ *"
        // test2005_09.C demonstrates this bug!
@@ -4662,7 +4761,7 @@ UnparseLanguageIndependentConstructs::isDotExprWithAnonymousUnion(SgExpression* 
    {
   // DQ (1/23/2014): This function support detecting when the supress the output of the SgDotExp
   // in the access of data members from un-named unions.  Note that variables of type that are
-  // un-named unions are given a unique generated name of the form "__anonymous_0x" as a 
+  // un-named unions are given a unique generated name of the form "__anonymous_0x" as a
   // prefix to the pointer value of the declaration that defines the un-named union.  The
   // handling here is not specific to unions and handles any type where the declaration is
   // using a generated name of this specific form.
@@ -4676,7 +4775,7 @@ UnparseLanguageIndependentConstructs::isDotExprWithAnonymousUnion(SgExpression* 
           if (binary_op != NULL)
              {
                SgExpression* rhs = binary_op->get_rhs_operand();
-               ROSE_ASSERT (rhs != NULL);
+               ASSERT_not_null(rhs);
                SgVarRefExp* varRefExp = isSgVarRefExp(rhs);
                if (varRefExp != NULL)
                   {
@@ -4726,7 +4825,7 @@ UnparseLanguageIndependentConstructs::isImplicitArrowExpWithinLambdaFunction(SgE
           if (arrowExp != NULL)
              {
                SgExpression* lhs = arrowExp->get_lhs_operand();
-               ROSE_ASSERT(lhs != NULL);
+               ASSERT_not_null(lhs);
 
                SgThisExp* thisExp = isSgThisExp(lhs);
                if (thisExp != NULL)
@@ -4794,7 +4893,7 @@ UnparseLanguageIndependentConstructs::isImplicitArrowExpWithinLambdaFunction(SgE
 #endif
                     if (nested_cast->get_file_info()->isCompilerGenerated() == true)
                        {
-                         ROSE_ASSERT(nested_cast->get_operand() != NULL);
+                         ASSERT_not_null(nested_cast->get_operand());
                          SgArrowExp* nested_arrowExp = isSgArrowExp(nested_cast->get_operand());
                          if (nested_arrowExp != NULL)
                             {
@@ -4834,7 +4933,7 @@ partOfArrowOperatorChain(SgExpression* expr)
 #error "DEAD CODE!"
 
      SgBinaryOp* binary_op = isSgBinaryOp(expr);
-     ROSE_ASSERT(binary_op != NULL);
+     ASSERT_not_null(binary_op);
 
      bool result = false;
 
@@ -4844,15 +4943,15 @@ partOfArrowOperatorChain(SgExpression* expr)
 
 #error "DEAD CODE!"
 
-  // DQ (4/9/2013): Added support for unparsing "operator+(x,y)" in place of "x+y".  This is 
-  // required in places even though we have historically defaulted to the generation of the 
+  // DQ (4/9/2013): Added support for unparsing "operator+(x,y)" in place of "x+y".  This is
+  // required in places even though we have historically defaulted to the generation of the
   // operator syntax (e.g. "x+y"), see test2013_100.C for an example of where this is required.
      SgNode* possibleParentFunctionCall = binary_op->get_parent();
 
 #error "DEAD CODE!"
 
   // DQ (4/9/2013): This fails for test2006_92.C.
-  // ROSE_ASSERT(possibleFunctionCall != NULL);
+  // ASSERT_not_null(possibleFunctionCall);
      bool parent_is_a_function_call                    = false;
      bool parent_function_call_uses_operator_syntax    = false;
      bool parent_function_is_overloaded_arrow_operator = false;
@@ -4927,13 +5026,13 @@ partOfArrowOperatorChain(SgExpression* expr)
 
 // DQ (4/14/2013): This is the new reimplemented version of the function (above).
 void
-UnparseLanguageIndependentConstructs::unparseBinaryExpr(SgExpression* expr, SgUnparse_Info& info) 
+UnparseLanguageIndependentConstructs::unparseBinaryExpr(SgExpression* expr, SgUnparse_Info& info)
    {
 
 #define DEBUG_BINARY_OPERATORS 0
 
      SgBinaryOp* binary_op = isSgBinaryOp(expr);
-     ROSE_ASSERT(binary_op != NULL);
+     ASSERT_not_null(binary_op);
 
 #if DEBUG_BINARY_OPERATORS
      curprint ( string("\n\n /* @@@@@ Inside of unparseBinaryExpr (operator name = ") + info.get_operator_name() + " */ \n");
@@ -4953,14 +5052,14 @@ UnparseLanguageIndependentConstructs::unparseBinaryExpr(SgExpression* expr, SgUn
              {
             // If this is a member function, then we will need to include that reference to the calling class through the arrow operator.
 
-            // DQ (7/5/2018): If we are going to force the output of the "->" operator, then we have to force the output of the lhs 
-            // expression (see test2018_120.C) or the lhs of the lhs, ... unclear how to handle this more complex case.  Unless we 
+            // DQ (7/5/2018): If we are going to force the output of the "->" operator, then we have to force the output of the lhs
+            // expression (see test2018_120.C) or the lhs of the lhs, ... unclear how to handle this more complex case.  Unless we
             // explicitly search the lhs expression for the "this" operand so that we can unparse it when there is not a variable
             // reference expression as in test2018_85.C.  I would rather output the "this->" part of the unparsed expression than
             // skip it, however, the case in test2018_120.C has a compiler generated "this" and so it might be better to use this
             // as a test for if we should make this a special case and unparse the "->" operator.  This would be inconsistant with
-            // the original code, but then the EDG AST does marks even the "this" expression as comnpiler generated and that is 
-            // equivalent semantics, so that might be the best solution.  EDG just normalizes the code with respect to the source 
+            // the original code, but then the EDG AST does marks even the "this" expression as comnpiler generated and that is
+            // equivalent semantics, so that might be the best solution.  EDG just normalizes the code with respect to the source
             // position information in this case.
 
 #if 0
@@ -4997,13 +5096,13 @@ UnparseLanguageIndependentConstructs::unparseBinaryExpr(SgExpression* expr, SgUn
      curprint ( string("\n /*                              suppressOutputOfDotExp = ") + (suppressOutputOfDotExp ? "true" : "false") + " */ \n");
 #endif
 
-  // DQ (4/9/2013): Added support for unparsing "operator+(x,y)" in place of "x+y".  This is 
-  // required in places even though we have historically defaulted to the generation of the 
+  // DQ (4/9/2013): Added support for unparsing "operator+(x,y)" in place of "x+y".  This is
+  // required in places even though we have historically defaulted to the generation of the
   // operator syntax (e.g. "x+y"), see test2013_100.C for an example of where this is required.
      SgNode* possibleParentFunctionCall = binary_op->get_parent();
 
   // DQ (4/9/2013): This fails for test2006_92.C.
-  // ROSE_ASSERT(possibleFunctionCall != NULL);
+  // ASSERT_not_null(possibleFunctionCall);
      bool parent_is_a_function_call                    = false;
      bool parent_function_call_uses_operator_syntax    = false;
 //   bool parent_function_is_overloaded_arrow_operator = false;
@@ -5048,7 +5147,7 @@ UnparseLanguageIndependentConstructs::unparseBinaryExpr(SgExpression* expr, SgUn
 
   // DQ (4/13/13): Checking the current level function call expression.
      SgNode* possibleFunctionCall = binary_op->get_lhs_operand();
-     ROSE_ASSERT(possibleFunctionCall != NULL);
+     ASSERT_not_null(possibleFunctionCall);
      bool is_currently_a_function_call = false;
      bool current_function_call_uses_operator_syntax = false;
      bool current_function_call_is_compiler_generated = false;
@@ -5140,7 +5239,7 @@ UnparseLanguageIndependentConstructs::unparseBinaryExpr(SgExpression* expr, SgUn
             // printf ("overload option is turned off! (output as "A+B" instead of "A.operator+(B)") \n");
             // First check if the right hand side is an unary operator function.
 #if DEBUG_BINARY_OPERATORS
-               curprint ( string("\n /* output as A+B instead of A.operator+(B): (u_sage->isUnaryOperator(binary_op->get_rhs_operand())) = ") + 
+               curprint ( string("\n /* output as A+B instead of A.operator+(B): (u_sage->isUnaryOperator(binary_op->get_rhs_operand())) = ") +
                     ((unp->u_sage->isUnaryOperator(binary_op->get_rhs_operand())) ? "true" : "false") + " */ \n");
 #endif
             // if (unp->u_sage->isUnaryOperator(binary_op->get_rhs_operand())
@@ -5158,7 +5257,7 @@ UnparseLanguageIndependentConstructs::unparseBinaryExpr(SgExpression* expr, SgUn
                          printf ("In unparseBinaryExp(): Case 1.1.1.1 \n");
 #endif
                        }
-                      else 
+                      else
                        {
                       // Prefix unary operator.
 #if DEBUG_BINARY_OPERATORS
@@ -5192,7 +5291,7 @@ UnparseLanguageIndependentConstructs::unparseBinaryExpr(SgExpression* expr, SgUn
             else
              {
                ROSE_ASSERT(current_function_call_uses_operator_syntax == false);
-                
+
 #if DEBUG_BINARY_OPERATORS
                printf ("In unparseBinaryExp(): Case 1.2 \n");
 #endif
@@ -5256,7 +5355,7 @@ UnparseLanguageIndependentConstructs::unparseBinaryExpr(SgExpression* expr, SgUn
                printf ("NOTE: suppressOutputOfImplicitArrowExp == false: unparse the binary_op->get_lhs_operand() = %p = %s \n",binary_op->get_lhs_operand(),binary_op->get_lhs_operand()->class_name().c_str());
 #endif
 #if 0
-           // Test for if this should be output by calling: 
+           // Test for if this should be output by calling:
                bool inner_suppressOutputOfImplicitArrowExp = isImplicitArrowExpWithinLambdaFunction(binary_op->get_lhs_operand(),info);
 #if 0
                printf ("################# inner_suppressOutputOfImplicitArrowExp = %s \n",inner_suppressOutputOfImplicitArrowExp ? "true" : "false");
@@ -5314,7 +5413,7 @@ UnparseLanguageIndependentConstructs::unparseBinaryExpr(SgExpression* expr, SgUn
 
 #if 0
        // DQ (1/22/2014): Look ahead to see if this is a SgVarRefExp of a variable with a generated name.
-       // We can't support this approach.  We have to look from the SgDotExp down to see if their is a 
+       // We can't support this approach.  We have to look from the SgDotExp down to see if their is a
        // variable reference to a variables named "__anonymous_0x" so that we can know to not output the
        // SgDotExp operator name, and then always in the SgVarRef supress the name when we detect the
        // "__anonymous_0x" named variables.
@@ -5330,11 +5429,11 @@ UnparseLanguageIndependentConstructs::unparseBinaryExpr(SgExpression* expr, SgUn
                printf ("Identified a SgVarRefExp: checking the name for __anonymous_0x \n");
 #endif
                SgVarRefExp* varRefExp = isSgVarRefExp(binary_op->get_rhs_operand());
-               ROSE_ASSERT(varRefExp != NULL);
+               ASSERT_not_null(varRefExp);
                SgVariableSymbol* variableSymbol = varRefExp->get_symbol();
-               ROSE_ASSERT(variableSymbol != NULL);
+               ASSERT_not_null(variableSymbol);
             // SgInitializedName* initializedName = variableSymbol->get_definition();
-            // ROSE_ASSERT(initializedName != NULL);
+            // ASSERT_not_null(initializedName);
             // isAnonymousName = (string(initializedName->get_name()).substr(0,14) == "__anonymous_0x");
                isAnonymousName = (string(variableSymbol->get_name()).substr(0,14) == "__anonymous_0x");
 #if DEBUG_BINARY_OPERATORS
@@ -5352,7 +5451,7 @@ UnparseLanguageIndependentConstructs::unparseBinaryExpr(SgExpression* expr, SgUn
        // if (suppressOutputOfDotExp == false)
           if (suppressOutputOfDotExp == false && suppressOutputOfImplicitArrowExp == false)
              {
-               if ( ( (current_function_call_uses_operator_syntax == false) && (parent_function_call_uses_operator_syntax == false) ) || 
+               if ( ( (current_function_call_uses_operator_syntax == false) && (parent_function_call_uses_operator_syntax == false) ) ||
                        isRequiredOperator(binary_op,current_function_call_uses_operator_syntax,parent_function_call_uses_operator_syntax) == true )
                   {
 #if DEBUG_BINARY_OPERATORS
@@ -5407,7 +5506,7 @@ UnparseLanguageIndependentConstructs::unparseBinaryExpr(SgExpression* expr, SgUn
 #endif
           SgExpression* rhs = binary_op->get_rhs_operand();
 
-       // DQ (4/13/2013): We need to detect if this is a prefix operator, and if we unparse it before 
+       // DQ (4/13/2013): We need to detect if this is a prefix operator, and if we unparse it before
        // the LHS if we are using the oprator syntax, e.g. when current_function_call_uses_operator_syntax == true
 
 #if DEBUG_BINARY_OPERATORS
@@ -5436,16 +5535,16 @@ UnparseLanguageIndependentConstructs::unparseBinaryExpr(SgExpression* expr, SgUn
        // if (current_function_call_uses_operator_syntax == false && parent_function_call_uses_operator_syntax == true)
        // if ( (is_currently_a_function_call == false) || (is_currently_a_function_call == true && current_function_call_uses_operator_syntax == false) )
 #if 0
-          if ( (parent_function_call_uses_operator_syntax == false) || 
-                    ( (is_currently_a_function_call == false) || 
-                      ( (is_currently_a_function_call == true) && 
-                        (current_function_call_uses_operator_syntax == false) && 
+          if ( (parent_function_call_uses_operator_syntax == false) ||
+                    ( (is_currently_a_function_call == false) ||
+                      ( (is_currently_a_function_call == true) &&
+                        (current_function_call_uses_operator_syntax == false) &&
                         (parent_function_is_overloaded_arrow_operator == false) ) ) )
 #endif
-          if ( (parent_function_call_uses_operator_syntax == false) || 
+          if ( (parent_function_call_uses_operator_syntax == false) ||
                     (parent_function_is_overloaded_arrow_operator == false) ||
-                    ( (is_currently_a_function_call == false) || 
-                      ( (is_currently_a_function_call == true) && 
+                    ( (is_currently_a_function_call == false) ||
+                      ( (is_currently_a_function_call == true) &&
                         (current_function_call_uses_operator_syntax == false) ) ) )
 #endif
              {
@@ -5457,12 +5556,12 @@ UnparseLanguageIndependentConstructs::unparseBinaryExpr(SgExpression* expr, SgUn
                  // DQ (4/20/2013): I think we want to restrict this to the case of overloaded operators for "->" (and maybe ".").
                  // test2013_114.C demonstrates where just because we detect a cast we don't want to skip the output of other operators.
                  // This is because the introduction of the compiler generated case causes only a restricted number of extra functions
-                 // to be calls (e.g. SgArrowExp or it's overloaded version).  I am unclear if the SgDotExp can be caused to be generated 
+                 // to be calls (e.g. SgArrowExp or it's overloaded version).  I am unclear if the SgDotExp can be caused to be generated
                  // by a cases (but I expect it can).
 
-                 // DQ (7/4/2014): I think that we need to check if the current_function_call_uses_operator_syntax, if true then we don't 
+                 // DQ (7/4/2014): I think that we need to check if the current_function_call_uses_operator_syntax, if true then we don't
                  // want to output the operator here.  This is the key point of the bug associated with test2014_75.C.  This would avoid
-                 // and elaborate lookup from the rhs expression to see if there were to sequential calls to output an overloaded operator 
+                 // and elaborate lookup from the rhs expression to see if there were to sequential calls to output an overloaded operator
                  // (such as "->").
 
                     ROSE_ASSERT(parent_function_call_uses_operator_syntax == true);
@@ -5499,9 +5598,9 @@ UnparseLanguageIndependentConstructs::unparseBinaryExpr(SgExpression* expr, SgUn
                     printf ("++++++++++++++++ isRelevantOverloadedOperator = %s \n",isRelevantOverloadedOperator ? "true" : "false");
 #endif
                  // If this is a consequence of a cast that was implicit (compiler generated), then we don't want to output this operator.
-                    ROSE_ASSERT(binary_op->get_parent() != NULL);
+                    ASSERT_not_null(binary_op->get_parent());
                  // TV (11/08/2018): that can be called when creating an array type where the index is a call expression to a method...
-                 // ROSE_ASSERT(binary_op->get_parent()->get_parent() != NULL);
+                 // ASSERT_not_null(binary_op->get_parent()->get_parent());
 
 #if DEBUG_BINARY_OPERATORS
                     printf ("++++++++++++++++ binary_op->get_parent()->get_parent() = %p = %s \n",binary_op->get_parent()->get_parent(),binary_op->get_parent()->get_parent()->class_name().c_str());
@@ -5656,7 +5755,7 @@ UnparseLanguageIndependentConstructs::isRequiredOperator( SgBinaryOp* binary_op,
   //    2) using the operator syntax, e,g, "i = (&result)->size();"
   // There are different function resolution lookup rules for each type of representaion.
   // So this is a subtle area of C++ to start with.  ROSE tracks in the IR (in the SgFunctionCallExp)
-  // if the function call uses the operator syntax (data member, p_uses_operator_syntax, with 
+  // if the function call uses the operator syntax (data member, p_uses_operator_syntax, with
   // set and get access functions automatically generated by ROSETTA.
 
   // Some complex examples are:
@@ -5666,7 +5765,7 @@ UnparseLanguageIndependentConstructs::isRequiredOperator( SgBinaryOp* binary_op,
 
      bool returnValue = false;
 
-     ROSE_ASSERT(binary_op != NULL);
+     ASSERT_not_null(binary_op);
 
 #if 0
      printf ("In isRequiredOperator(binary_op = %p = %s, current_function_call_uses_operator_syntax = %s, parent_function_call_uses_operator_syntax = %s \n",
@@ -5676,7 +5775,7 @@ UnparseLanguageIndependentConstructs::isRequiredOperator( SgBinaryOp* binary_op,
 
 #endif
 
-  // DQ (7/6/2014): Simpler approach, but wrong since overloaded operators unparsed 
+  // DQ (7/6/2014): Simpler approach, but wrong since overloaded operators unparsed
   // using operator syntax will always be marked as compiler generated.
   // bool is_compiler_generated = binary_op->isCompilerGenerated();
 
@@ -5693,16 +5792,16 @@ UnparseLanguageIndependentConstructs::isRequiredOperator( SgBinaryOp* binary_op,
   //      returnValue = true;
 
      SgExpression* lhs = binary_op->get_lhs_operand();
-     ROSE_ASSERT(lhs != NULL);
+     ASSERT_not_null(lhs);
   // SgFunctionCallExp* functionCallExp = isSgFunctionCallExp(lhs);
 
      SgType* lhs_type = lhs->get_type();
-     ROSE_ASSERT(lhs_type != NULL);
+     ASSERT_not_null(lhs_type);
 
   // DQ (4/15/2013): This is required for test2005_129.C
   // SgType::stripType (unsigned char bit_array=STRIP_MODIFIER_TYPE|STRIP_REFERENCE_TYPE|STRIP_POINTER_TYPE|STRIP_ARRAY_TYPE|STRIP_TYPEDEF_TYPE) const
      SgType* stripped_lhs_type = lhs_type->stripType (SgType::STRIP_MODIFIER_TYPE|SgType::STRIP_ARRAY_TYPE|SgType::STRIP_TYPEDEF_TYPE);
-     ROSE_ASSERT(stripped_lhs_type != NULL);
+     ASSERT_not_null(stripped_lhs_type);
 
 #if 0
      printf ("In isRequiredOperator(): lhs_type = %p = %s stripped_lhs_type = %p = %s \n",lhs_type,lhs_type->class_name().c_str(),stripped_lhs_type,stripped_lhs_type->class_name().c_str());
@@ -5714,7 +5813,7 @@ UnparseLanguageIndependentConstructs::isRequiredOperator( SgBinaryOp* binary_op,
 
   // DQ (4/15/2013): I think what makes a greater difference is that this is not a SgArrowExp (see test2013_108.C).
   // DQ (4/15/2013): Added support for SgClassType to handle test2005_141.C.
-  // DQ (4/15/2013): Note that of stripped_lhs_type is SgTypeBool we also want to process this branch, I think the 
+  // DQ (4/15/2013): Note that of stripped_lhs_type is SgTypeBool we also want to process this branch, I think the
   // point is that the type is not SgPointerType.
   // if (referenceType != NULL && isSgDotExp(binary_op) != NULL)
   // if (referenceType != NULL && isSgArrowExp(binary_op) == NULL)
@@ -5741,16 +5840,16 @@ UnparseLanguageIndependentConstructs::isRequiredOperator( SgBinaryOp* binary_op,
             // This make since unless the lhs is an operator->.
 
                SgFunctionCallExp* functionCallExp = isSgFunctionCallExp(lhs);
-               ROSE_ASSERT(functionCallExp != NULL);
+               ASSERT_not_null(functionCallExp);
 
                SgDotExp* dotExp = isSgDotExp(functionCallExp->get_function());
-               ROSE_ASSERT(dotExp != NULL);
+               ASSERT_not_null(dotExp);
 
                SgMemberFunctionRefExp* memberFunctionRefExp = isSgMemberFunctionRefExp(dotExp->get_rhs_operand());
                if (memberFunctionRefExp != NULL)
                   {
                     SgMemberFunctionDeclaration* memberFunctionDeclaration = memberFunctionRefExp->getAssociatedMemberFunctionDeclaration();
-                    ROSE_ASSERT(memberFunctionDeclaration != NULL);
+                    ASSERT_not_null(memberFunctionDeclaration);
 #if 0
                     printf ("In isRequiredOperator(): memberFunctionDeclaration->get_name() = %s \n",memberFunctionDeclaration->get_name().str());
 #endif
@@ -5791,7 +5890,7 @@ UnparseLanguageIndependentConstructs::unparseValue(SgExpression* expr, SgUnparse
      SgValueExp* valueExp = isSgValueExp(expr);
 
   // DQ (9/11/2011): Added error checking pointed out from static analysis.
-     ROSE_ASSERT(valueExp != NULL);
+     ASSERT_not_null(valueExp);
 
 #if 0
      printf ("Inside of unparseValue = %p \n",valueExp);
@@ -5856,7 +5955,7 @@ UnparseLanguageIndependentConstructs::unparseValue(SgExpression* expr, SgUnparse
                     printf ("Default reached in switch statement valueExp = %p = %s \n",valueExp,valueExp->class_name().c_str());
                     ROSE_ASSERT(false);
                   }
-                
+
              }
         }
    }
@@ -5866,7 +5965,7 @@ UnparseLanguageIndependentConstructs::unparseValue(SgExpression* expr, SgUnparse
 void
 UnparseLanguageIndependentConstructs::unparseNullptrVal (SgExpression* expr, SgUnparse_Info& info)
    {
-     ROSE_ASSERT(expr != NULL);
+     ASSERT_not_null(expr);
 #if 0
      printf ("In UnparseLanguageIndependentConstructs::unparseNullptrVal(): expr = %p = %s \n",expr,expr->class_name().c_str());
 #endif
@@ -5884,7 +5983,7 @@ void
 UnparseLanguageIndependentConstructs::unparseBoolVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgBoolValExp* bool_val = isSgBoolValExp(expr);
-     ROSE_ASSERT(bool_val != NULL);
+     ASSERT_not_null(bool_val);
 
   // Bug reported by Yarden (IBM), output for C should not use C++ keywords ("true" and "false")
   // Note that the getProject() function will use the parent pointers to traverse back to the SgProject node
@@ -5912,9 +6011,9 @@ UnparseLanguageIndependentConstructs::unparseBoolVal(SgExpression* expr, SgUnpar
              }
 #if 0
           printf ("Warning: getting the SgFile from SgBoolValExp() expr = %p (trace back to SgFile failed, assuming C language support) \n",expr);
-          ROSE_ASSERT(expr->get_file_info() != NULL);
+          ASSERT_not_null(expr->get_file_info());
           expr->get_file_info()->display("location of problem bool expression");
-          ROSE_ASSERT(expr->get_parent() != NULL);
+          ASSERT_not_null(expr->get_parent());
           printf ("expr->get_parent() = %p = %s \n",expr->get_parent(),expr->get_parent()->class_name().c_str());
           SgTemplateArgument* templateArgument = isSgTemplateArgument(expr->get_parent());
           if (templateArgument != NULL)
@@ -5925,14 +6024,14 @@ UnparseLanguageIndependentConstructs::unparseBoolVal(SgExpression* expr, SgUnpar
              }
             else
              {
-               ROSE_ASSERT(expr->get_parent()->get_file_info() != NULL);
+               ASSERT_not_null(expr->get_parent()->get_file_info());
                expr->get_parent()->get_file_info()->display("location of problem bool expression (parent)");
              }
 #endif
         }
        else
         {
-          ROSE_ASSERT(file != NULL);
+          ASSERT_not_null(file);
           C_language_support = file->get_C_only() || file->get_C99_only();
         }
 
@@ -5973,7 +6072,7 @@ void
 UnparseLanguageIndependentConstructs::unparseShortVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgShortVal* short_val = isSgShortVal(expr);
-     ROSE_ASSERT(short_val != NULL);
+     ASSERT_not_null(short_val);
 
   // DQ (8/30/2006): Make change suggested by Rama (patch)
   // curprint ( short_val->get_value();
@@ -5991,17 +6090,17 @@ void
 UnparseLanguageIndependentConstructs::unparseCharVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgCharVal* char_val = isSgCharVal(expr);
-     ROSE_ASSERT(char_val != NULL);
+     ASSERT_not_null(char_val);
 
-  // DQ (9/30/2006): Use the string where it is available (I think the string 
+  // DQ (9/30/2006): Use the string where it is available (I think the string
   // based literals for non-floating point cases are not finished yet).
      if (char_val->get_valueString() == "")
         {
        // curprint ( char_val->get_value();
 
-       // DQ (3/19/2005): Many different literal characters were not being output properly or were being output as 
+       // DQ (3/19/2005): Many different literal characters were not being output properly or were being output as
        // integers which when used as function parameters lead to the wrong function resolution.
-       // We can't just output the integer conversion of the character since where this is used as a function 
+       // We can't just output the integer conversion of the character since where this is used as a function
        // argument it will match a different function prototype (which might not even exist) (see bug 2005_30.C).
        // curprint ( (int) char_val->get_value();
           switch(char_val->get_value())
@@ -6020,8 +6119,8 @@ UnparseLanguageIndependentConstructs::unparseCharVal(SgExpression* expr, SgUnpar
             // case '\8': curprint ( "\'\\8\'"; break;
             // This case is replicated with ASCI HT case '\t' (below)
             // case '\9': curprint ( "\'\\9\'"; break;
-            // Note that if we skip this case then '\b' is converted to '^H' which is likely 
-            // equivalant but is different enough to be annoying.  Likely other literals have 
+            // Note that if we skip this case then '\b' is converted to '^H' which is likely
+            // equivalant but is different enough to be annoying.  Likely other literals have
             // similar equivalants.  I now expect that '^H' is the wrong translation of '\b'.
             // So the cases below are required.
                case '\n': curprint ( "\'\\n\'"); break;
@@ -6042,7 +6141,7 @@ UnparseLanguageIndependentConstructs::unparseCharVal(SgExpression* expr, SgUnpar
 
 #if 0
             // DQ (3/19/2005): These should no longer be required, since they are handled properly by the C++ string output!
-            // Provide these cases explicitly so that '0' is not converted to '48' 
+            // Provide these cases explicitly so that '0' is not converted to '48'
             // (which is a multi-character character constant, not what we want!)
                case '0': curprint ( "\'0\'"); break;
                case '1': curprint ( "\'1\'"); break;
@@ -6062,11 +6161,11 @@ UnparseLanguageIndependentConstructs::unparseCharVal(SgExpression* expr, SgUnpar
 #endif
                default:
                   {
-                 // I could not get char to be output as anything but an integer, so I converted the char to a string 
+                 // I could not get char to be output as anything but an integer, so I converted the char to a string
                  // and then output the string this resulted in not every case (value of char) requiring special handling.
-                 // Generate a C string and copy it to a C++ string and then output the C++ string so that we 
+                 // Generate a C string and copy it to a C++ string and then output the C++ string so that we
                  // can leverage the C++ string handling of character literals.
-                    char c[2]; 
+                    char c[2];
                     c[0] = char_val->get_value();
                     c[1] = '\0';
                     string s = c;
@@ -6087,7 +6186,7 @@ void
 UnparseLanguageIndependentConstructs::unparseUCharVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgUnsignedCharVal* uchar_val = isSgUnsignedCharVal(expr);
-     ROSE_ASSERT(uchar_val != NULL);
+     ASSERT_not_null(uchar_val);
 
   // DQ (8/30/2006): Make change suggested by Rama (patch)
   // curprint ( (int) uchar_val->get_value();
@@ -6105,7 +6204,7 @@ void
 UnparseLanguageIndependentConstructs::unparseWCharVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgWcharVal* wchar_val = isSgWcharVal(expr);
-     ROSE_ASSERT(wchar_val != NULL);
+     ASSERT_not_null(wchar_val);
 
   //DONT KNOW HOW TO GET ACCESS TO p_valueUL, so just use p_value for now
   //if(wchar_val->p_valueUL) {
@@ -6128,7 +6227,7 @@ void
 UnparseLanguageIndependentConstructs::unparseChar16Val(SgExpression* expr, SgUnparse_Info& info)
    {
      SgChar16Val* char_val = isSgChar16Val(expr);
-     ROSE_ASSERT(char_val != NULL);
+     ASSERT_not_null(char_val);
 
   // DQ (8/30/2006): Make change suggested by Rama (patch)
   // curprint ( (int) wchar_val->get_value();
@@ -6146,7 +6245,7 @@ void
 UnparseLanguageIndependentConstructs::unparseChar32Val(SgExpression* expr, SgUnparse_Info& info)
    {
      SgChar32Val* char_val = isSgChar32Val(expr);
-     ROSE_ASSERT(char_val != NULL);
+     ASSERT_not_null(char_val);
 
   // DQ (8/30/2006): Make change suggested by Rama (patch)
   // curprint ( (int) wchar_val->get_value();
@@ -6166,7 +6265,7 @@ void
 UnparseLanguageIndependentConstructs::unparseStringVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgStringVal* str_val = isSgStringVal(expr);
-     ROSE_ASSERT(str_val != NULL);
+     ASSERT_not_null(str_val);
 
   // Handle special case of macro specification (this is a temporary hack to permit us to
   // specify macros within transformations)
@@ -6184,7 +6283,7 @@ UnparseLanguageIndependentConstructs::unparseStringVal(SgExpression* expr, SgUnp
           printf ("Found an pointer in SgStringVal = %p for value of string! \n",str_val);
           str_val->get_file_info()->display("Called from unparseStringVal: debug");
         }
-     ROSE_ASSERT(str_val->get_value() != NULL);
+     ASSERT_not_null(str_val->get_value());
      if (strncmp(str_val->get_value(),targetString,targetStringLength) == 0)
         {
        // unparse the string without the surrounding quotes and with a new line at the end
@@ -6198,7 +6297,7 @@ UnparseLanguageIndependentConstructs::unparseStringVal(SgExpression* expr, SgUnp
         {
           curprint ( "\"" + str_val->get_value() + "\"");
         }
-     ROSE_ASSERT(str_val->get_value() != NULL);
+     ASSERT_not_null(str_val->get_value());
 #else
   // DQ (3/25/2006): Finally we can use the C++ string class
      string targetString = "ROSE-MACRO-CALL:";
@@ -6230,7 +6329,7 @@ void
 UnparseLanguageIndependentConstructs::unparseUShortVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgUnsignedShortVal* ushort_val = isSgUnsignedShortVal(expr);
-     ROSE_ASSERT(ushort_val != NULL);
+     ASSERT_not_null(ushort_val);
 
      curprint ( tostring(ushort_val->get_value()));
 #if 0
@@ -6253,7 +6352,7 @@ void
 UnparseLanguageIndependentConstructs::unparseEnumVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgEnumVal* enum_val = isSgEnumVal(expr);
-     ROSE_ASSERT(enum_val != NULL);
+     ASSERT_not_null(enum_val);
 
 #define DEBUG_UNPARSE_ENUM_VAL 0
 
@@ -6277,16 +6376,16 @@ UnparseLanguageIndependentConstructs::unparseEnumVal(SgExpression* expr, SgUnpar
        else
         {
        // DQ (12/20/2005): Added more general support for name qualification for enum values (to fix test2005_188.C).
-       // ROSE_ASSERT(enum_val->get_declaration() != NULL);
-       // ROSE_ASSERT(enum_val->get_declaration()->get_scope() != NULL);
+       // ASSERT_not_null(enum_val->get_declaration());
+       // ASSERT_not_null(enum_val->get_declaration()->get_scope());
 
        // DQ (10/14/2006): Reimplemented support for name qualification.
        // if (SageInterface::is_Cxx_language() == true)
           if (enum_val->get_declaration() != NULL)
              {
             // DQ (12/20/2005): Added more general support for name qualification for enum values (to fix test2005_188.C).
-               ROSE_ASSERT(enum_val->get_declaration() != NULL);
-               ROSE_ASSERT(enum_val->get_declaration()->get_scope() != NULL);
+               ASSERT_not_null(enum_val->get_declaration());
+               ASSERT_not_null(enum_val->get_declaration()->get_scope());
 
             // DQ (10/14/2006): Reimplemented support for name qualification.
                if (SageInterface::is_Cxx_language() == true)
@@ -6299,8 +6398,8 @@ UnparseLanguageIndependentConstructs::unparseEnumVal(SgExpression* expr, SgUnpar
                  // printf ("In unparseFuncRef(): Looking for name qualification for SgFunctionRefExp = %p \n",func_ref);
                     SgName nameQualifier = enum_val->get_qualified_name_prefix();
 #else
-                 // DQ (12/22/2006): This is use the information that qualification is required. This will trigger the use of 
-                 // global qualification even if it is not required with normal qualification.  That is that the specification 
+                 // DQ (12/22/2006): This is use the information that qualification is required. This will trigger the use of
+                 // global qualification even if it is not required with normal qualification.  That is that the specification
                  // of qualification triggers possible (likely) over qualification.  Overqualification is generally the default
                  // this flag is sometime taken to mean that the "::" is required as well.
 #if DEBUG_UNPARSE_ENUM_VAL
@@ -6349,7 +6448,7 @@ UnparseLanguageIndependentConstructs::unparseEnumVal(SgExpression* expr, SgUnpar
        // printf ("In Unparse_ExprStmt::unparseEnumVal: classdefn = %s pointer \n",classdefn ? "VALID" : "NULL");
           printf ("In Unparse_ExprStmt::unparseEnumVal: enum_val->get_name().is_null() = %s \n",enum_val->get_name().is_null() ? "true" : "false");
 #endif
-       // DQ (8/31/2012): We need to allow for values that would not be mapped to enum names and in this case 
+       // DQ (8/31/2012): We need to allow for values that would not be mapped to enum names and in this case
        // are output as enum values (see test2012_202.C for an example of this).
        // DQ (6/18/2006): Identify the case of an un-named enum, would be an error if we unparsed this directly.
        // ROSE_ASSERT (enum_val->get_name().is_null() == false);
@@ -6365,7 +6464,7 @@ UnparseLanguageIndependentConstructs::unparseEnumVal(SgExpression* expr, SgUnpar
           printf ("isGeneratedName = %s \n",isGeneratedName ? "true" : "false");
 #endif
 
-       // DQ (11/4/2012): Never output a generated name since it will cause link failures 
+       // DQ (11/4/2012): Never output a generated name since it will cause link failures
        // (and frequently also interpretation as implicit function calls in C).
        // if (enum_val->get_name().is_null() == false)
           if ( (enum_val->get_name().is_null() == false) && (isGeneratedName == false) )
@@ -6373,7 +6472,7 @@ UnparseLanguageIndependentConstructs::unparseEnumVal(SgExpression* expr, SgUnpar
             // This is the typical case.
             // curprint(enum_val->get_name().str());
 
-            // DQ (5/14/2018): For C++11 enum class declarations, the assocated enum value will 
+            // DQ (5/14/2018): For C++11 enum class declarations, the assocated enum value will
             // ALWAYS require an explicit cast or additional name qualification.
                SgEnumDeclaration* enumDeclaration = enum_val->get_declaration();
                if (enumDeclaration != NULL)
@@ -6417,11 +6516,11 @@ UnparseLanguageIndependentConstructs::unparseEnumVal(SgExpression* expr, SgUnpar
    }
 
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseIntVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgIntVal* int_val = isSgIntVal(expr);
-     ROSE_ASSERT(int_val != NULL);
+     ASSERT_not_null(int_val);
 
   // printf ("In Unparse_ExprStmt::unparseIntVal(): int_val->get_value() = %d \n",int_val->get_value());
   // curprint ( int_val->get_value();
@@ -6443,7 +6542,7 @@ void
 UnparseLanguageIndependentConstructs::unparseUIntVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgUnsignedIntVal* uint_val = isSgUnsignedIntVal(expr);
-     ROSE_ASSERT(uint_val != NULL);
+     ASSERT_not_null(uint_val);
 
   // curprint ( uint_val->get_value();
   // DQ (7/20/2006): Bug reported by Yarden, see test2006_94.C for where this is important (e.g. evaluation of "if (INT_MAX + 1U > 0)").
@@ -6464,7 +6563,7 @@ void
 UnparseLanguageIndependentConstructs::unparseLongIntVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgLongIntVal* longint_val = isSgLongIntVal(expr);
-     ROSE_ASSERT(longint_val != NULL);
+     ASSERT_not_null(longint_val);
 
   // curprint ( longint_val->get_value();
   // DQ (7/20/2006): Bug reported by Yarden, see test2006_94.C for where this is important (e.g. evaluation of "if (INT_MAX + 1U > 0)").
@@ -6485,7 +6584,7 @@ void
 UnparseLanguageIndependentConstructs::unparseLongLongIntVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgLongLongIntVal* longlongint_val = isSgLongLongIntVal(expr);
-     ROSE_ASSERT(longlongint_val != NULL);
+     ASSERT_not_null(longlongint_val);
 
   // curprint ( longlongint_val->get_value();
   // DQ (7/20/2006): Bug reported by Yarden, see test2006_94.C for where this is important (e.g. evaluation of "if (INT_MAX + 1U > 0)").
@@ -6506,7 +6605,7 @@ void
 UnparseLanguageIndependentConstructs::unparseULongLongIntVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgUnsignedLongLongIntVal* ulonglongint_val = isSgUnsignedLongLongIntVal(expr);
-     ROSE_ASSERT(ulonglongint_val != NULL);
+     ASSERT_not_null(ulonglongint_val);
 
   // curprint ( ulonglongint_val->get_value();
   // DQ (7/20/2006): Bug reported by Yarden, see test2006_94.C for where this is important (e.g. evaluation of "if (INT_MAX + 1U > 0)").
@@ -6527,7 +6626,7 @@ void
 UnparseLanguageIndependentConstructs::unparseULongIntVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgUnsignedLongVal* ulongint_val = isSgUnsignedLongVal(expr);
-     ROSE_ASSERT(ulongint_val != NULL);
+     ASSERT_not_null(ulongint_val);
 
   // curprint ( ulongint_val->get_value();
   // DQ (7/20/2006): Bug reported by Yarden, see test2006_94.C for where this is important (e.g. evaluation of "if (INT_MAX + 1U > 0)").
@@ -6548,16 +6647,16 @@ void
 UnparseLanguageIndependentConstructs::unparseFloatVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgFloatVal* float_val = isSgFloatVal(expr);
-     ROSE_ASSERT(float_val != NULL);
+     ASSERT_not_null(float_val);
 
 #if 0
      printf ("Inside of unparseFloatVal = %p \n",float_val);
      float_val->get_file_info()->display("unparseFloatVal");
 #endif
 
-  // DQ (10/18/2005): Need to handle C code which cannot use C++ mechanism to specify 
+  // DQ (10/18/2005): Need to handle C code which cannot use C++ mechanism to specify
   // infinity, quiet NaN, and signaling NaN values.  Note that we can't use the C++
-  // interface since the input program, and thus the generated code, might not have 
+  // interface since the input program, and thus the generated code, might not have
   // included the "limits" header file.
      float float_value = float_val->get_value();
 #if 0
@@ -6641,7 +6740,7 @@ void
 UnparseLanguageIndependentConstructs::unparseDoubleVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgDoubleVal* dbl_val = isSgDoubleVal(expr);
-     ROSE_ASSERT(dbl_val != NULL);
+     ASSERT_not_null(dbl_val);
 
 #if 0
      printf ("Inside of unparseDblVal = %p \n",dbl_val);
@@ -6654,14 +6753,14 @@ UnparseLanguageIndependentConstructs::unparseDoubleVal(SgExpression* expr, SgUnp
 
      setiosflags(ios::showpoint);
 
-  // DQ (10/16/2004): Not sure what 4 implies, but we get 16 digits after the decimal 
+  // DQ (10/16/2004): Not sure what 4 implies, but we get 16 digits after the decimal
   // point so it should be fine (see test2004_114.C)!
      setprecision(4);
 
   // curprint ( dbl_val->get_value();
   // os->unsetf(ios::showpoint);
 
-  // DQ (10/18/2005): Need to handle C code which cannot use C++ mechanism to specify 
+  // DQ (10/18/2005): Need to handle C code which cannot use C++ mechanism to specify
   // infinity, quiet NaN, and signaling NaN values.
      double double_value = dbl_val->get_value();
      if (double_value == std::numeric_limits<double>::infinity())
@@ -6704,12 +6803,12 @@ void
 UnparseLanguageIndependentConstructs::unparseLongDoubleVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgLongDoubleVal* longdbl_val = isSgLongDoubleVal(expr);
-     ROSE_ASSERT(longdbl_val != NULL);
+     ASSERT_not_null(longdbl_val);
   /* code inserted from specification */
-  
+
   // curprint ( longdbl_val->get_value();
 
-  // DQ (10/18/2005): Need to handle C code which cannot use C++ mechanism to specify 
+  // DQ (10/18/2005): Need to handle C code which cannot use C++ mechanism to specify
   // infinity, quiet NaN, and signaling NaN values.
      long double longDouble_value = longdbl_val->get_value();
      if (longDouble_value == std::numeric_limits<long double>::infinity())
@@ -6752,7 +6851,7 @@ void
 UnparseLanguageIndependentConstructs::unparseComplexVal(SgExpression* expr, SgUnparse_Info& info)
    {
      SgComplexVal* complex_val = isSgComplexVal(expr);
-     ROSE_ASSERT(complex_val != NULL);
+     ASSERT_not_null(complex_val);
 
      if (complex_val->get_valueString() != "") { // Has string
        curprint (complex_val->get_valueString());
@@ -6777,7 +6876,7 @@ void UnparseLanguageIndependentConstructs::unparseMatrixExp(SgExpression *expr, 
   SgExpressionPtrList::iterator i = matrix->get_expressions().begin();
 
   curprint("[");
-  
+
   for(; i != matrix->get_expressions().end(); ++i)
     {
       SgUnparse_Info newinfo(info);
@@ -6795,9 +6894,10 @@ void
 UnparseLanguageIndependentConstructs::unparseExprList(SgExpression* expr, SgUnparse_Info& info)
    {
      SgExprListExp* expr_list = isSgExprListExp(expr);
-     ROSE_ASSERT(expr_list != NULL);
+     ASSERT_not_null(expr_list);
 
 #if 0
+     printf ("In unparseExprList(): expr = %p = %s \n",expr,expr->class_name().c_str());
      curprint("/* output SgExprListExp */");
 #endif
 
@@ -6824,8 +6924,70 @@ UnparseLanguageIndependentConstructs::unparseExprList(SgExpression* expr, SgUnpa
                        }
                   }
 #endif
+#if 0
+            // DQ (8/24/2020): debugging Cxx_tests/test2020_44.C need to communicate when to suppress extra parenthesis use around SgFunctionType arguments.
+               printf ("In unparseExprList(): *i = %p = %s type = %s \n",*i,(*i)->class_name().c_str(),(*i)->get_type()->class_name().c_str());
+#endif
+            // DQ (8/24/2020): Added new data member to SgUnparse_Info.
+               bool context_for_added_parentheses = newinfo.get_context_for_added_parentheses();
+#if 0
+               printf ("In unparseExprList(): context_for_added_parentheses = %s \n",context_for_added_parentheses ? "true" : "false");
+#endif
+            // DQ (8/24/2020): Function types need an extra parenthesis, set Cxx_tests/test2020_44.C).
+               bool needParen = (isSgFunctionType((*i)->get_type()) != NULL);
+
+               needParen = needParen && (context_for_added_parentheses == false);
+
+            // DQ (8/25/2020): Chck if this argument is using the C++11 "{}" initializer, and if so skip the output of the extra parentheses.
+               SgExpression* argument_expr = *i;
+#if 0
+               printf ("In unparseExprList(): argument_expr = %p = %s \n",argument_expr,argument_expr->class_name().c_str());
+#endif
+               SgConstructorInitializer* constructorInitializer = isSgConstructorInitializer(argument_expr);
+               if (constructorInitializer != NULL)
+                  {
+                 // bool this_constructor_initializer_is_using_Cxx11_initializer_list = Unparse_ExprStmt::isAssociatedWithCxx11_initializationList(constructorInitializer,info);
+                    bool this_constructor_initializer_is_using_Cxx11_initializer_list = Unparse_ExprStmt::isAssociatedWithCxx11_initializationList(constructorInitializer,newinfo);
+#if 0
+                    printf ("Computed for argument: this_constructor_initializer_is_using_Cxx11_initializer_list = %s \n",this_constructor_initializer_is_using_Cxx11_initializer_list ? "true" : "false");
+#endif
+                    if (this_constructor_initializer_is_using_Cxx11_initializer_list == true)
+                       {
+#if 0
+                         printf ("In unparseExprList(): reset this_constructor_initializer_is_using_Cxx11_initializer_list == true \n");
+#endif
+                         needParen = false;
+                       }
+#if 0
+                    printf ("In unparseExprList(): constructorInitializer->get_is_braced_initialized() = %s \n",constructorInitializer->get_is_braced_initialized() ? "true" : "false");
+#endif
+                    if (constructorInitializer->get_is_braced_initialized() == true)
+                       {
+#if 0
+                         printf ("In unparseExprList(): reset needParen == false \n");
+#endif
+                         needParen = false;
+                       }
+
+                  }
+
+
+               if (needParen == true)
+                  {
+#if 0
+                    printf ("Output the extra parentheses \n");
+#endif
+                 // curprint("(");
+                    curprint("/* extra parentheses */ (");
+                  }
 
                unparseExpression(*i, newinfo);
+
+               if (needParen == true)
+                  {
+                    curprint(")");
+                  }
+
                i++;
                if (i != expr_list->get_expressions().end())
                   {
@@ -6837,17 +6999,22 @@ UnparseLanguageIndependentConstructs::unparseExprList(SgExpression* expr, SgUnpa
                   }
              }
         }
+
+#if 0
+     printf ("Leaving unparseExprList(): expr = %p = %s \n",expr,expr->class_name().c_str());
+     curprint("/* Leaving output SgExprListExp */");
+#endif
    }
 
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseIncludeDirectiveStatement (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgIncludeDirectiveStatement* directive = isSgIncludeDirectiveStatement(stmt);
-     ROSE_ASSERT(directive != NULL);
-     
+     ASSERT_not_null(directive);
+
   // negara1 (08/15/2011): Do not unparse the directive string as long as there are PreprocessorInfos attached to nodes in order to avoid double unparsing.
-  // Also, note that it might belong to a different file since the code can reach here when the include directive statement's header file body belongs to the unparsed file.     
+  // Also, note that it might belong to a different file since the code can reach here when the include directive statement's header file body belongs to the unparsed file.
   // curprint(directive->get_directiveString());
   // unp->cur.insert_newline(1);
 
@@ -6855,11 +7022,16 @@ UnparseLanguageIndependentConstructs::unparseIncludeDirectiveStatement (SgStatem
      info.display("In unparseIncludeDirectiveStatement");
 #endif
 
-     ROSE_ASSERT(info.get_current_source_file() != NULL);
+     ASSERT_not_null(info.get_current_source_file());
      bool usingTokenUnparsing = info.get_current_source_file()->get_unparse_tokens();
 
-#if 0
+#if 1
      printf ("In unparseIncludeDirectiveStatement: usingTokenUnparsing = %s \n",usingTokenUnparsing ? "true" : "false");
+#endif
+
+#if 0
+     printf ("Exiting as a test! \n");
+     ROSE_ASSERT(false);
 #endif
 
 #if 1
@@ -6873,9 +7045,11 @@ UnparseLanguageIndependentConstructs::unparseIncludeDirectiveStatement (SgStatem
        // This is the better choice because then the other comments and any other CPP directives will be unparsed as in the original code.
        // NOTE: If we don't suppores this here, then there will be two include directives unparsed.
           SgHeaderFileBody* headerFileBody = directive -> get_headerFileBody();
-
+#if 1
+          printf ("In unparseIncludeDirectiveStatement(): headerFileBody = %p \n",headerFileBody);
+#endif
        // DQ (3/24/2019): The newest use of this IR nodes does not accomidate the headerFileBody.
-       // ROSE_ASSERT(headerFileBody != NULL);
+       // ASSERT_not_null(headerFileBody);
           if (headerFileBody != NULL)
              {
 #if 0
@@ -6890,11 +7064,11 @@ UnparseLanguageIndependentConstructs::unparseIncludeDirectiveStatement (SgStatem
             else
              {
             // DQ (3/24/2019): The newest use of this IR nodes does not accomidate the headerFileBody.
-               ROSE_ASSERT(directive != NULL);
+               ASSERT_not_null(directive);
                curprint("\n ");
 
-  // DQ (3/24/2019): Adding extra CR.
-     unp->cur.insert_newline(1);
+            // DQ (3/24/2019): Adding extra CR.
+               unp->cur.insert_newline(1);
 
                curprint(directive->get_directiveString());
             // unp->u_sage->curprint_newline();
@@ -6906,11 +7080,11 @@ UnparseLanguageIndependentConstructs::unparseIncludeDirectiveStatement (SgStatem
 #endif
    }
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseDefineDirectiveStatement (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgDefineDirectiveStatement* directive = isSgDefineDirectiveStatement(stmt);
-     ROSE_ASSERT(directive != NULL);
+     ASSERT_not_null(directive);
 
   // DQ (3/24/2019): We need "\n " instead of "\n" to force a CR before unparsing the CPP directive.
   // ALSO: we need the "unp->cur.insert_newline(1);" statement as well.
@@ -6930,11 +7104,11 @@ UnparseLanguageIndependentConstructs::unparseDefineDirectiveStatement (SgStateme
 #endif
    }
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseUndefDirectiveStatement (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgUndefDirectiveStatement* directive = isSgUndefDirectiveStatement(stmt);
-     ROSE_ASSERT(directive != NULL);
+     ASSERT_not_null(directive);
      curprint("\n ");
 
   // DQ (3/24/2019): Adding extra CR.
@@ -6944,11 +7118,11 @@ UnparseLanguageIndependentConstructs::unparseUndefDirectiveStatement (SgStatemen
      unp->u_sage->curprint_newline();
    }
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseIfdefDirectiveStatement (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgIfdefDirectiveStatement* directive = isSgIfdefDirectiveStatement(stmt);
-     ROSE_ASSERT(directive != NULL);
+     ASSERT_not_null(directive);
      curprint("\n ");
 
   // DQ (3/24/2019): Adding extra CR.
@@ -6958,11 +7132,11 @@ UnparseLanguageIndependentConstructs::unparseIfdefDirectiveStatement (SgStatemen
      unp->u_sage->curprint_newline();
    }
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseIfndefDirectiveStatement (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgIfndefDirectiveStatement* directive = isSgIfndefDirectiveStatement(stmt);
-     ROSE_ASSERT(directive != NULL);
+     ASSERT_not_null(directive);
      curprint("\n ");
 
   // DQ (3/24/2019): Adding extra CR.
@@ -6972,11 +7146,11 @@ UnparseLanguageIndependentConstructs::unparseIfndefDirectiveStatement (SgStateme
      unp->u_sage->curprint_newline();
    }
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseDeadIfDirectiveStatement (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgDeadIfDirectiveStatement* directive = isSgDeadIfDirectiveStatement(stmt);
-     ROSE_ASSERT(directive != NULL);
+     ASSERT_not_null(directive);
      curprint("\n ");
 
   // DQ (3/24/2019): Adding extra CR.
@@ -6986,11 +7160,11 @@ UnparseLanguageIndependentConstructs::unparseDeadIfDirectiveStatement (SgStateme
      unp->u_sage->curprint_newline();
    }
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseIfDirectiveStatement (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgIfDirectiveStatement* directive = isSgIfDirectiveStatement(stmt);
-     ROSE_ASSERT(directive != NULL);
+     ASSERT_not_null(directive);
 
   // curprint("/* CR START */");
      curprint("\n ");
@@ -7004,11 +7178,11 @@ UnparseLanguageIndependentConstructs::unparseIfDirectiveStatement (SgStatement* 
      unp->u_sage->curprint_newline();
    }
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseElseDirectiveStatement (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgElseDirectiveStatement* directive = isSgElseDirectiveStatement(stmt);
-     ROSE_ASSERT(directive != NULL);
+     ASSERT_not_null(directive);
      curprint("\n ");
 
   // DQ (3/24/2019): Adding extra CR.
@@ -7018,11 +7192,11 @@ UnparseLanguageIndependentConstructs::unparseElseDirectiveStatement (SgStatement
      unp->u_sage->curprint_newline();
    }
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseElseifDirectiveStatement (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgElseifDirectiveStatement* directive = isSgElseifDirectiveStatement(stmt);
-     ROSE_ASSERT(directive != NULL);
+     ASSERT_not_null(directive);
      curprint("\n ");
 
   // DQ (3/24/2019): Adding extra CR.
@@ -7032,11 +7206,11 @@ UnparseLanguageIndependentConstructs::unparseElseifDirectiveStatement (SgStateme
      unp->u_sage->curprint_newline();
    }
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseEndifDirectiveStatement (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgEndifDirectiveStatement* directive = isSgEndifDirectiveStatement(stmt);
-     ROSE_ASSERT(directive != NULL);
+     ASSERT_not_null(directive);
      curprint("\n ");
 
   // DQ (3/24/2019): Adding extra CR.
@@ -7046,11 +7220,11 @@ UnparseLanguageIndependentConstructs::unparseEndifDirectiveStatement (SgStatemen
      unp->u_sage->curprint_newline();
    }
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseLineDirectiveStatement (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgLineDirectiveStatement* directive = isSgLineDirectiveStatement(stmt);
-     ROSE_ASSERT(directive != NULL);
+     ASSERT_not_null(directive);
      curprint("\n ");
 
   // DQ (3/24/2019): Adding extra CR.
@@ -7060,11 +7234,11 @@ UnparseLanguageIndependentConstructs::unparseLineDirectiveStatement (SgStatement
      unp->u_sage->curprint_newline();
    }
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseWarningDirectiveStatement (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgWarningDirectiveStatement* directive = isSgWarningDirectiveStatement(stmt);
-     ROSE_ASSERT(directive != NULL);
+     ASSERT_not_null(directive);
      curprint("\n ");
 
   // DQ (3/24/2019): Adding extra CR.
@@ -7074,11 +7248,11 @@ UnparseLanguageIndependentConstructs::unparseWarningDirectiveStatement (SgStatem
      unp->u_sage->curprint_newline();
    }
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseErrorDirectiveStatement (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgErrorDirectiveStatement* directive = isSgErrorDirectiveStatement(stmt);
-     ROSE_ASSERT(directive != NULL);
+     ASSERT_not_null(directive);
      curprint("\n ");
 
   // DQ (3/24/2019): Adding extra CR.
@@ -7088,11 +7262,11 @@ UnparseLanguageIndependentConstructs::unparseErrorDirectiveStatement (SgStatemen
      unp->u_sage->curprint_newline();
    }
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseEmptyDirectiveStatement (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgEmptyDirectiveStatement* directive = isSgEmptyDirectiveStatement(stmt);
-     ROSE_ASSERT(directive != NULL);
+     ASSERT_not_null(directive);
      curprint("\n ");
 
   // DQ (3/24/2019): Adding extra CR.
@@ -7102,11 +7276,11 @@ UnparseLanguageIndependentConstructs::unparseEmptyDirectiveStatement (SgStatemen
      unp->u_sage->curprint_newline();
    }
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseIdentDirectiveStatement (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgIdentDirectiveStatement* directive = isSgIdentDirectiveStatement(stmt);
-     ROSE_ASSERT(directive != NULL);
+     ASSERT_not_null(directive);
      curprint("\n ");
 
   // DQ (3/24/2019): Adding extra CR.
@@ -7116,11 +7290,11 @@ UnparseLanguageIndependentConstructs::unparseIdentDirectiveStatement (SgStatemen
      unp->u_sage->curprint_newline();
    }
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseIncludeNextDirectiveStatement (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgIncludeNextDirectiveStatement* directive = isSgIncludeNextDirectiveStatement(stmt);
-     ROSE_ASSERT(directive != NULL);
+     ASSERT_not_null(directive);
      curprint("\n ");
 
   // DQ (3/24/2019): Adding extra CR.
@@ -7130,11 +7304,11 @@ UnparseLanguageIndependentConstructs::unparseIncludeNextDirectiveStatement (SgSt
      unp->u_sage->curprint_newline();
    }
 
-void 
+void
 UnparseLanguageIndependentConstructs::unparseLinemarkerDirectiveStatement (SgStatement* stmt, SgUnparse_Info& info)
    {
      SgLinemarkerDirectiveStatement* directive = isSgLinemarkerDirectiveStatement(stmt);
-     ROSE_ASSERT(directive != NULL);
+     ASSERT_not_null(directive);
      curprint("\n ");
 
   // DQ (3/24/2019): Adding extra CR.
@@ -7146,11 +7320,11 @@ UnparseLanguageIndependentConstructs::unparseLinemarkerDirectiveStatement (SgSta
 
 void UnparseLanguageIndependentConstructs::unparseOmpDefaultClause(SgOmpClause* clause, SgUnparse_Info& info)
 {
-  ROSE_ASSERT(clause != NULL);
+  ASSERT_not_null(clause);
   SgOmpDefaultClause * c = isSgOmpDefaultClause(clause);
-  ROSE_ASSERT(c!= NULL);
+  ASSERT_not_null(c);
   curprint(string(" default("));
-  SgOmpClause::omp_default_option_enum dv = c->get_data_sharing(); 
+  SgOmpClause::omp_default_option_enum dv = c->get_data_sharing();
   switch (dv)
   {
     case SgOmpClause::e_omp_default_none:
@@ -7162,7 +7336,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpDefaultClause(SgOmpClause* 
       {
         curprint(string("shared"));
         break;
-      }   
+      }
     case SgOmpClause::e_omp_default_private:
       {
         curprint(string("private"));
@@ -7171,7 +7345,8 @@ void UnparseLanguageIndependentConstructs::unparseOmpDefaultClause(SgOmpClause* 
     case SgOmpClause::e_omp_default_firstprivate:
       {
         curprint(string("firstprivate"));
-        break; 
+        break;
+        break;
       }
     case SgOmpClause::e_omp_default_variant:
       {
@@ -7415,11 +7590,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpWhenClause(SgOmpClause* cla
 
 void UnparseLanguageIndependentConstructs::unparseOmpProcBindClause(SgOmpClause* clause, SgUnparse_Info& info)
 {
-  ROSE_ASSERT(clause != NULL);
+  ASSERT_not_null(clause);
   SgOmpProcBindClause * c = isSgOmpProcBindClause(clause);
-  ROSE_ASSERT(c!= NULL);
+  ASSERT_not_null(c);
   curprint(string(" proc_bind("));
-  SgOmpClause::omp_proc_bind_policy_enum dv = c->get_policy(); 
+  SgOmpClause::omp_proc_bind_policy_enum dv = c->get_policy();
   switch (dv)
   {
     case SgOmpClause::e_omp_proc_bind_policy_master:
@@ -7431,7 +7606,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpProcBindClause(SgOmpClause*
       {
         curprint(string("close"));
         break;
-      }   
+      }
     case SgOmpClause::e_omp_proc_bind_policy_spread:
       {
         curprint(string("spread"));
@@ -7443,7 +7618,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpProcBindClause(SgOmpClause*
         ROSE_ASSERT (false);
         break;
       }
-  }    
+  }
   curprint(string(")"));
 }
 
@@ -7453,7 +7628,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpOrderClause(SgOmpClause* cl
   SgOmpOrderClause * c = isSgOmpOrderClause(clause);
   ROSE_ASSERT(c!= NULL);
   curprint(string(" order("));
-  SgOmpClause::omp_order_kind_enum dv = c->get_kind(); 
+  SgOmpClause::omp_order_kind_enum dv = c->get_kind();
   switch (dv)
   {
     case SgOmpClause::e_omp_order_kind_concurrent:
@@ -7465,14 +7640,14 @@ void UnparseLanguageIndependentConstructs::unparseOmpOrderClause(SgOmpClause* cl
       {
         curprint(string(""));
         break;
-      }   
+      }
    default:
       {
         cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpOrderClause() meets unacceptable default option value:"<<dv<<endl;
         ROSE_ASSERT (false);
         break;
       }
-  }    
+  }
   curprint(string(")"));
 }
 
@@ -7482,7 +7657,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpBindClause(SgOmpClause* cla
   SgOmpBindClause * c = isSgOmpBindClause(clause);
   ROSE_ASSERT(c!= NULL);
   curprint(string(" bind("));
-  SgOmpClause::omp_bind_binding_enum dv = c->get_binding(); 
+  SgOmpClause::omp_bind_binding_enum dv = c->get_binding();
   switch (dv)
   {
     case SgOmpClause::e_omp_bind_binding_teams:
@@ -7504,24 +7679,24 @@ void UnparseLanguageIndependentConstructs::unparseOmpBindClause(SgOmpClause* cla
       {
         curprint(string(""));
         break;
-      }   
+      }
    default:
       {
         cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpBindClause() meets unacceptable default option value:"<<dv<<endl;
         ROSE_ASSERT (false);
         break;
       }
-  }    
+  }
   curprint(string(")"));
 }
 
 void UnparseLanguageIndependentConstructs::unparseOmpAtomicClause(SgOmpClause* clause, SgUnparse_Info& info)
 {
-  ROSE_ASSERT(clause != NULL);
+  ASSERT_not_null(clause);
   SgOmpAtomicClause * c = isSgOmpAtomicClause(clause);
-  ROSE_ASSERT(c!= NULL);
+  ASSERT_not_null(c);
 //  curprint(string(" "));
-  SgOmpClause::omp_atomic_clause_enum dv = c->get_atomicity(); 
+  SgOmpClause::omp_atomic_clause_enum dv = c->get_atomicity();
   switch (dv)
   {
     case SgOmpClause::e_omp_atomic_clause_read:
@@ -7548,7 +7723,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpAtomicClause(SgOmpClause* c
       cerr<<"Error: "<< __FUNCTION__ <<" meets unacceptable default option value:"<<dv<<endl;
       ROSE_ASSERT (false);
       break;
-  }    
+  }
 }
 
 #if 1
@@ -7559,91 +7734,91 @@ static std::string reductionIdentifierToString(SgOmpClause::omp_reduction_identi
   string result;
   switch (ro)
   {
-    case SgOmpClause::e_omp_reduction_plus: 
+    case SgOmpClause::e_omp_reduction_plus:
       {
         result = "+";
         break;
       }
-    case SgOmpClause::e_omp_reduction_mul: 
+    case SgOmpClause::e_omp_reduction_mul:
       {
         result = "*";
         break;
       }
-    case SgOmpClause::e_omp_reduction_minus:   
+    case SgOmpClause::e_omp_reduction_minus:
       {
         result = "-";
         break;
       }
-    case SgOmpClause::e_omp_reduction_bitand:  
+    case SgOmpClause::e_omp_reduction_bitand:
       {
         result = "&";
         break;
       }
-    case SgOmpClause::e_omp_reduction_bitor :  
+    case SgOmpClause::e_omp_reduction_bitor :
       {
         result = "|";
         break;
       }
       //------------
-    case SgOmpClause::e_omp_reduction_bitxor:  
+    case SgOmpClause::e_omp_reduction_bitxor:
       {
         result = "^";
         break;
       }
-    case SgOmpClause::e_omp_reduction_logand:  
+    case SgOmpClause::e_omp_reduction_logand:
       {
         result = "&&";
         break;
       }
-    case SgOmpClause::e_omp_reduction_logor :  
+    case SgOmpClause::e_omp_reduction_logor :
       {
         result = "||";
         break;
       }
-    case SgOmpClause::e_omp_reduction_and  : 
+    case SgOmpClause::e_omp_reduction_and  :
       {
         result = ".and.";
         break;
       }
-    case SgOmpClause::e_omp_reduction_or : 
+    case SgOmpClause::e_omp_reduction_or :
       {
         result = ".or.";
         break;
       }
      //------------
-    case SgOmpClause::e_omp_reduction_eqv:   
+    case SgOmpClause::e_omp_reduction_eqv:
       {
         result = ".eqv.";
         break;
       }
-    case SgOmpClause::e_omp_reduction_neqv : 
+    case SgOmpClause::e_omp_reduction_neqv :
       {
         result = ".neqv.";
         break;
       }
-    case SgOmpClause::e_omp_reduction_max  : 
+    case SgOmpClause::e_omp_reduction_max  :
       {
         result = "max";
         break;
       }
-    case SgOmpClause::e_omp_reduction_min  : 
+    case SgOmpClause::e_omp_reduction_min  :
       {
         result = "min";
         break;
       }
-    case SgOmpClause::e_omp_reduction_iand : 
+    case SgOmpClause::e_omp_reduction_iand :
       {
         result = "iand";
         break;
       }
 
       //------------
-    case SgOmpClause::e_omp_reduction_ior  : 
+    case SgOmpClause::e_omp_reduction_ior  :
       {
         result = "ior";
         break;
       }
-    case SgOmpClause::e_omp_reduction_ieor : 
+    case SgOmpClause::e_omp_reduction_ieor :
       {
         result = "ieor";
         break;
@@ -7664,91 +7839,91 @@ static std::string inReductionIdentifierToString(SgOmpClause::omp_in_reduction_i
   string result;
   switch (ro)
   {
-    case SgOmpClause::e_omp_in_reduction_identifier_plus: 
+    case SgOmpClause::e_omp_in_reduction_identifier_plus:
       {
         result = "+";
         break;
       }
-    case SgOmpClause::e_omp_in_reduction_identifier_mul: 
+    case SgOmpClause::e_omp_in_reduction_identifier_mul:
       {
         result = "*";
         break;
       }
-    case SgOmpClause::e_omp_in_reduction_identifier_minus:   
+    case SgOmpClause::e_omp_in_reduction_identifier_minus:
       {
         result = "-";
         break;
       }
-    case SgOmpClause::e_omp_in_reduction_identifier_bitand:  
+    case SgOmpClause::e_omp_in_reduction_identifier_bitand:
       {
         result = "&";
         break;
       }
-    case SgOmpClause::e_omp_in_reduction_identifier_bitor :  
+    case SgOmpClause::e_omp_in_reduction_identifier_bitor :
       {
         result = "|";
         break;
       }
       //------------
-    case SgOmpClause::e_omp_in_reduction_identifier_bitxor:  
+    case SgOmpClause::e_omp_in_reduction_identifier_bitxor:
       {
         result = "^";
         break;
       }
-    case SgOmpClause::e_omp_in_reduction_identifier_logand:  
+    case SgOmpClause::e_omp_in_reduction_identifier_logand:
       {
         result = "&&";
         break;
       }
-    case SgOmpClause::e_omp_in_reduction_identifier_logor :  
+    case SgOmpClause::e_omp_in_reduction_identifier_logor :
       {
         result = "||";
         break;
       }
-    case SgOmpClause::e_omp_in_reduction_identifier_and  : 
+    case SgOmpClause::e_omp_in_reduction_identifier_and  :
       {
         result = ".and.";
         break;
       }
-    case SgOmpClause::e_omp_in_reduction_identifier_or : 
+    case SgOmpClause::e_omp_in_reduction_identifier_or :
       {
         result = ".or.";
         break;
       }
      //------------
-    case SgOmpClause::e_omp_in_reduction_identifier_eqv:   
+    case SgOmpClause::e_omp_in_reduction_identifier_eqv:
       {
         result = ".eqv.";
         break;
       }
-    case SgOmpClause::e_omp_in_reduction_identifier_neqv : 
+    case SgOmpClause::e_omp_in_reduction_identifier_neqv :
       {
         result = ".neqv.";
         break;
       }
-    case SgOmpClause::e_omp_in_reduction_identifier_max  : 
+    case SgOmpClause::e_omp_in_reduction_identifier_max  :
       {
         result = "max";
         break;
       }
-    case SgOmpClause::e_omp_in_reduction_identifier_min  : 
+    case SgOmpClause::e_omp_in_reduction_identifier_min  :
       {
         result = "min";
         break;
       }
-    case SgOmpClause::e_omp_in_reduction_identifier_iand : 
+    case SgOmpClause::e_omp_in_reduction_identifier_iand :
       {
         result = "iand";
         break;
       }
 
       //------------
-    case SgOmpClause::e_omp_in_reduction_identifier_ior  : 
+    case SgOmpClause::e_omp_in_reduction_identifier_ior  :
       {
         result = "ior";
         break;
       }
-    case SgOmpClause::e_omp_in_reduction_identifier_ieor : 
+    case SgOmpClause::e_omp_in_reduction_identifier_ieor :
       {
         result = "ieor";
         break;
@@ -7769,91 +7944,91 @@ static std::string taskReductionIdentifierToString(SgOmpClause::omp_task_reducti
   string result;
   switch (ro)
   {
-    case SgOmpClause::e_omp_task_reduction_identifier_plus: 
+    case SgOmpClause::e_omp_task_reduction_identifier_plus:
       {
         result = "+";
         break;
       }
-    case SgOmpClause::e_omp_task_reduction_identifier_mul: 
+    case SgOmpClause::e_omp_task_reduction_identifier_mul:
       {
         result = "*";
         break;
       }
-    case SgOmpClause::e_omp_task_reduction_identifier_minus:   
+    case SgOmpClause::e_omp_task_reduction_identifier_minus:
       {
         result = "-";
         break;
       }
-    case SgOmpClause::e_omp_task_reduction_identifier_bitand:  
+    case SgOmpClause::e_omp_task_reduction_identifier_bitand:
       {
         result = "&";
         break;
       }
-    case SgOmpClause::e_omp_task_reduction_identifier_bitor :  
+    case SgOmpClause::e_omp_task_reduction_identifier_bitor :
       {
         result = "|";
         break;
       }
       //------------
-    case SgOmpClause::e_omp_task_reduction_identifier_bitxor:  
+    case SgOmpClause::e_omp_task_reduction_identifier_bitxor:
       {
         result = "^";
         break;
       }
-    case SgOmpClause::e_omp_task_reduction_identifier_logand:  
+    case SgOmpClause::e_omp_task_reduction_identifier_logand:
       {
         result = "&&";
         break;
       }
-    case SgOmpClause::e_omp_task_reduction_identifier_logor :  
+    case SgOmpClause::e_omp_task_reduction_identifier_logor :
       {
         result = "||";
         break;
       }
-    case SgOmpClause::e_omp_task_reduction_identifier_and  : 
+    case SgOmpClause::e_omp_task_reduction_identifier_and  :
       {
         result = ".and.";
         break;
       }
-    case SgOmpClause::e_omp_task_reduction_identifier_or : 
+    case SgOmpClause::e_omp_task_reduction_identifier_or :
       {
         result = ".or.";
         break;
       }
      //------------
-    case SgOmpClause::e_omp_task_reduction_identifier_eqv:   
+    case SgOmpClause::e_omp_task_reduction_identifier_eqv:
       {
         result = ".eqv.";
         break;
       }
-    case SgOmpClause::e_omp_task_reduction_identifier_neqv : 
+    case SgOmpClause::e_omp_task_reduction_identifier_neqv :
       {
         result = ".neqv.";
         break;
       }
-    case SgOmpClause::e_omp_task_reduction_identifier_max  : 
+    case SgOmpClause::e_omp_task_reduction_identifier_max  :
       {
         result = "max";
         break;
       }
-    case SgOmpClause::e_omp_task_reduction_identifier_min  : 
+    case SgOmpClause::e_omp_task_reduction_identifier_min  :
       {
         result = "min";
         break;
       }
-    case SgOmpClause::e_omp_task_reduction_identifier_iand : 
+    case SgOmpClause::e_omp_task_reduction_identifier_iand :
       {
         result = "iand";
         break;
       }
 
       //------------
-    case SgOmpClause::e_omp_task_reduction_identifier_ior  : 
+    case SgOmpClause::e_omp_task_reduction_identifier_ior  :
       {
         result = "ior";
         break;
       }
-    case SgOmpClause::e_omp_task_reduction_identifier_ieor : 
+    case SgOmpClause::e_omp_task_reduction_identifier_ieor :
       {
         result = "ieor";
         break;
@@ -7872,17 +8047,17 @@ static std::string reductionModifierToString(SgOmpClause::omp_reduction_modifier
   string result;
   switch (rm)
   {
-    case SgOmpClause::e_omp_reduction_inscan: 
+    case SgOmpClause::e_omp_reduction_inscan:
       {
         result = "inscan";
         break;
       }
-    case SgOmpClause::e_omp_reduction_task: 
+    case SgOmpClause::e_omp_reduction_task:
       {
         result = "task";
         break;
       }
-    case SgOmpClause::e_omp_reduction_default:   
+    case SgOmpClause::e_omp_reduction_default:
       {
         result = "default";
         break;
@@ -7901,12 +8076,12 @@ static std::string lastprivateModifierToString(SgOmpClause::omp_lastprivate_modi
   string result = "";
   switch (rm)
   {
-    case SgOmpClause::e_omp_lastprivate_modifier_unspecified: 
+    case SgOmpClause::e_omp_lastprivate_modifier_unspecified:
       {
         result = "";
         break;
       }
-    case SgOmpClause::e_omp_lastprivate_conditional: 
+    case SgOmpClause::e_omp_lastprivate_conditional:
       {
         result = "conditional";
         break;
@@ -7925,22 +8100,22 @@ static std::string scheduleModifierToString(SgOmpClause::omp_schedule_modifier_e
   string result = "";
   switch (rm)
   {
-    case SgOmpClause::e_omp_schedule_modifier_unspecified: 
+    case SgOmpClause::e_omp_schedule_modifier_unspecified:
       {
         result = "";
         break;
       }
-    case SgOmpClause::e_omp_schedule_modifier_monotonic: 
+    case SgOmpClause::e_omp_schedule_modifier_monotonic:
       {
         result = "monotonic";
         break;
       }
-    case SgOmpClause::e_omp_schedule_modifier_nonmonotonic: 
+    case SgOmpClause::e_omp_schedule_modifier_nonmonotonic:
       {
         result = "nonmonotonic";
         break;
       }
-    case SgOmpClause::e_omp_schedule_modifier_simd: 
+    case SgOmpClause::e_omp_schedule_modifier_simd:
       {
         result = "simd";
         break;
@@ -7959,32 +8134,32 @@ static std::string scheduleKindToString(SgOmpClause::omp_schedule_kind_enum rm)
   string result = "";
   switch (rm)
   {
-    case SgOmpClause::e_omp_schedule_kind_unspecified: 
+    case SgOmpClause::e_omp_schedule_kind_unspecified:
       {
         result = "";
         break;
       }
-    case SgOmpClause::e_omp_schedule_kind_static: 
+    case SgOmpClause::e_omp_schedule_kind_static:
       {
         result = "static";
         break;
       }
-    case SgOmpClause::e_omp_schedule_kind_dynamic: 
+    case SgOmpClause::e_omp_schedule_kind_dynamic:
       {
         result = "dynamic";
         break;
       }
-    case SgOmpClause::e_omp_schedule_kind_guided: 
+    case SgOmpClause::e_omp_schedule_kind_guided:
       {
         result = "guided";
         break;
       }
-    case SgOmpClause::e_omp_schedule_kind_auto: 
+    case SgOmpClause::e_omp_schedule_kind_auto:
       {
         result = "auto";
         break;
       }
-    case SgOmpClause::e_omp_schedule_kind_runtime: 
+    case SgOmpClause::e_omp_schedule_kind_runtime:
       {
         result = "runtime";
         break;
@@ -8003,12 +8178,12 @@ static std::string distScheduleKindToString(SgOmpClause::omp_dist_schedule_kind_
   string result = "";
   switch (rm)
   {
-    case SgOmpClause::e_omp_dist_schedule_kind_unspecified: 
+    case SgOmpClause::e_omp_dist_schedule_kind_unspecified:
       {
         result = "";
         break;
       }
-    case SgOmpClause::e_omp_dist_schedule_kind_static: 
+    case SgOmpClause::e_omp_dist_schedule_kind_static:
       {
         result = "static";
         break;
@@ -8027,42 +8202,42 @@ static std::string defaultmapBehaviorToString(SgOmpClause::omp_defaultmap_behavi
   string result = "";
   switch (rm)
   {
-    case SgOmpClause::e_omp_defaultmap_behavior_unspecified: 
+    case SgOmpClause::e_omp_defaultmap_behavior_unspecified:
       {
         result = "";
         break;
       }
-    case SgOmpClause::e_omp_defaultmap_behavior_alloc: 
+    case SgOmpClause::e_omp_defaultmap_behavior_alloc:
       {
         result = "alloc";
         break;
       }
-    case SgOmpClause::e_omp_defaultmap_behavior_to: 
+    case SgOmpClause::e_omp_defaultmap_behavior_to:
       {
         result = "to";
         break;
       }
-    case SgOmpClause::e_omp_defaultmap_behavior_from: 
+    case SgOmpClause::e_omp_defaultmap_behavior_from:
       {
         result = "from";
         break;
       }
-    case SgOmpClause::e_omp_defaultmap_behavior_tofrom: 
+    case SgOmpClause::e_omp_defaultmap_behavior_tofrom:
       {
         result = "tofrom";
         break;
       }
-    case SgOmpClause::e_omp_defaultmap_behavior_firstprivate: 
+    case SgOmpClause::e_omp_defaultmap_behavior_firstprivate:
       {
         result = "firstprivate";
         break;
       }
-    case SgOmpClause::e_omp_defaultmap_behavior_none: 
+    case SgOmpClause::e_omp_defaultmap_behavior_none:
       {
         result = "none";
         break;
       }
-    case SgOmpClause::e_omp_defaultmap_behavior_default: 
+    case SgOmpClause::e_omp_defaultmap_behavior_default:
       {
         result = "default";
         break;
@@ -8081,27 +8256,27 @@ static std::string defaultmapCategoryToString(SgOmpClause::omp_defaultmap_catego
   string result = "";
   switch (rm)
   {
-    case SgOmpClause::e_omp_defaultmap_category_unspecified: 
+    case SgOmpClause::e_omp_defaultmap_category_unspecified:
       {
         result = "";
         break;
       }
-    case SgOmpClause::e_omp_defaultmap_category_scalar: 
+    case SgOmpClause::e_omp_defaultmap_category_scalar:
       {
         result = "scalar";
         break;
       }
-    case SgOmpClause::e_omp_defaultmap_category_aggregate: 
+    case SgOmpClause::e_omp_defaultmap_category_aggregate:
       {
         result = "aggregate";
         break;
       }
-    case SgOmpClause::e_omp_defaultmap_category_pointer: 
+    case SgOmpClause::e_omp_defaultmap_category_pointer:
       {
         result = "pointer";
         break;
       }
-    case SgOmpClause::e_omp_defaultmap_category_allocatable: 
+    case SgOmpClause::e_omp_defaultmap_category_allocatable:
       {
         result = "allocatable";
         break;
@@ -8120,22 +8295,22 @@ static std::string linearModifierToString(SgOmpClause::omp_linear_modifier_enum 
   string result = "";
   switch (rm)
   {
-    case SgOmpClause::e_omp_linear_modifier_unspecified: 
+    case SgOmpClause::e_omp_linear_modifier_unspecified:
       {
         result = "";
         break;
       }
-    case SgOmpClause::e_omp_linear_modifier_ref: 
+    case SgOmpClause::e_omp_linear_modifier_ref:
       {
         result = "ref ";
         break;
       }
-    case SgOmpClause::e_omp_linear_modifier_val: 
+    case SgOmpClause::e_omp_linear_modifier_val:
       {
         result = "val ";
         break;
       }
-    case SgOmpClause::e_omp_linear_modifier_uval: 
+    case SgOmpClause::e_omp_linear_modifier_uval:
       {
         result = "uval ";
         break;
@@ -8220,12 +8395,12 @@ static std::string dependenceTypeToString(SgOmpClause::omp_dependence_type_enum 
         result = "in";
         break;
       }
-    case SgOmpClause::e_omp_depend_out:   
+    case SgOmpClause::e_omp_depend_out:
       {
         result = "out";
         break;
       }
-    case SgOmpClause::e_omp_depend_inout:   
+    case SgOmpClause::e_omp_depend_inout:
       {
         result = "inout";
         break;
@@ -8278,22 +8453,22 @@ static std::string mapOperatorToString(SgOmpClause::omp_map_operator_enum ro)
   string result;
   switch (ro)
   {
-    case SgOmpClause::e_omp_map_tofrom: 
+    case SgOmpClause::e_omp_map_tofrom:
       {
         result = "tofrom";
         break;
       }
-    case SgOmpClause::e_omp_map_to: 
+    case SgOmpClause::e_omp_map_to:
       {
         result = "to";
         break;
       }
-    case SgOmpClause::e_omp_map_from:   
+    case SgOmpClause::e_omp_map_from:
       {
         result = "from";
         break;
       }
-    case SgOmpClause::e_omp_map_alloc:  
+    case SgOmpClause::e_omp_map_alloc:
       {
         result = "alloc";
         break;
@@ -8312,17 +8487,17 @@ static std::string distPolicyToString(SgOmpClause::omp_map_dist_data_enum ro)
   string result;
   switch (ro)
   {
-    case SgOmpClause::e_omp_map_dist_data_duplicate: 
+    case SgOmpClause::e_omp_map_dist_data_duplicate:
       {
         result = "DUPLICATE";
         break;
       }
-    case SgOmpClause::e_omp_map_dist_data_block: 
+    case SgOmpClause::e_omp_map_dist_data_block:
       {
         result = "BLOCK";
         break;
       }
-    case SgOmpClause::e_omp_map_dist_data_cyclic:   
+    case SgOmpClause::e_omp_map_dist_data_cyclic:
       {
         result = "CYCLIC";
         break;
@@ -8405,12 +8580,12 @@ void UnparseLanguageIndependentConstructs::unparseOmpDefaultmapClause(SgOmpClaus
 }
 
 // Generate dist_data(p1, p2, p3)
-void UnparseLanguageIndependentConstructs::unparseMapDistDataPoliciesToString (std::vector< std::pair< SgOmpClause::omp_map_dist_data_enum, SgExpression * > > policies, SgUnparse_Info& info) 
+void UnparseLanguageIndependentConstructs::unparseMapDistDataPoliciesToString (std::vector< std::pair< SgOmpClause::omp_map_dist_data_enum, SgExpression * > > policies, SgUnparse_Info& info)
 {
   curprint(string(" dist_data("));
   for (size_t i =0; i< policies.size(); i++)
   {
-    curprint(distPolicyToString (policies[i].first)); 
+    curprint(distPolicyToString (policies[i].first));
     if (policies[i].second != NULL)
     {
       curprint(string("("));
@@ -8431,9 +8606,9 @@ void UnparseLanguageIndependentConstructs::unparseMapDistDataPoliciesToString (s
 //! Unparse an OpenMP clause with a variable list
 void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause* clause, SgUnparse_Info& info)
 {
-  ROSE_ASSERT(clause != NULL);
-  SgOmpVariablesClause* c= isSgOmpVariablesClause (clause);  
-  ROSE_ASSERT(c!= NULL);
+  ASSERT_not_null(clause);
+  SgOmpVariablesClause* c= isSgOmpVariablesClause (clause);
+  ASSERT_not_null(c);
   bool is_map = false;
   bool is_depend= false;
   // unparse the  clause name first
@@ -8478,7 +8653,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
     case V_SgOmpReductionClause:
       {
         curprint(string(" reduction("));
-        //reductionIdentifierToString() will handle language specific issues 
+        //reductionIdentifierToString() will handle language specific issues
         SgOmpClause::omp_reduction_modifier_enum modifier = isSgOmpReductionClause(c)->get_modifier();
         if (modifier != SgOmpClause::e_omp_reduction_modifier_unknown) {
             curprint(reductionModifierToString(modifier));
@@ -8577,11 +8752,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
               }
             }
             curprint(string(" ) "));
-            curprint(string(" , "));       
+            curprint(string(" , "));
           }
           curprint(dependenceTypeToString(isSgOmpDependClause(c)->get_dependence_type()));
           curprint(string(" : "));
-          is_depend = true; 
+          is_depend = true;
           break;
       }
     case V_SgOmpLinearClause:
@@ -8602,169 +8777,10 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
         curprint(string(" : "));
       break;
       }
- 
+
     case V_SgOmpSharedClause:
       curprint(string(" shared("));
       break;
-    default:
-      cerr<<"Error: unhandled clause type in UnparseLanguageIndependentConstructs::unparseOmpVariablesClause ():"<< clause->class_name()<<endl;
-      ROSE_ASSERT(false);
-      break;
-  }
-
-  // prepare array dimension info for map variables
-  std::map<SgSymbol*, std::vector<std::pair<SgExpression*, SgExpression*> > > dims;
-  std::map< SgSymbol *, std::vector< std::pair< SgOmpClause::omp_map_dist_data_enum, SgExpression * > > > dist_policies; 
-  if (is_map)
-  {
-    SgOmpMapClause * m_clause = isSgOmpMapClause (clause);
-    ROSE_ASSERT (m_clause != NULL);
-    dims = m_clause->get_array_dimensions();
-    dist_policies = m_clause->get_dist_data_policies();
-  } 
-  else if (is_depend) // task depend(A[i:BS][j:BS]) , is also stored as array section. 
-   // TODO: long term, we need a dedicated array section AST node
-  {
-    SgOmpDependClause* m_clause = isSgOmpDependClause (clause);
-    ROSE_ASSERT (m_clause != NULL);
-    dims = m_clause->get_array_dimensions();
-  }
-
-  //unparse variable list then
-  SgExpressionPtrList::iterator p = c->get_variables()->get_expressions().begin();
-  while ( p != c->get_variables()->get_expressions().end() )
-  {
-    // We now try to put array reference expression into variable list.
-    if (SgPntrArrRefExp* aref = isSgPntrArrRefExp(*p)) 
-    {
-      // curprint (aref->unparseToString()); // This does not work!
-      SgUnparse_Info ninfo(info);
-      unparseExpression(aref, ninfo);
-    }
-    else if (SgVarRefExp* vref= isSgVarRefExp(*p))
-    {
-      SgInitializedName* init_name = vref->get_symbol()->get_declaration();           
-      SgName tmp_name  = init_name->get_name();
-      curprint( tmp_name.str());
-      SgVariableSymbol * sym  = isSgVarRefExp(*p)->get_symbol();
-      ROSE_ASSERT (sym != NULL);
-      if (is_map)
-      {
-        std::vector<std::pair<SgExpression*, SgExpression*> > bounds = dims[sym];
-        if (bounds.size() >0)
-        {
-          std::vector<std::pair<SgExpression*, SgExpression*> >:: const_iterator iter;
-          for (iter = bounds.begin(); iter != bounds.end(); iter ++)
-          {
-            SgUnparse_Info ninfo(info);
-            std::pair<SgExpression*, SgExpression*> bound  = (*iter);
-            SgExpression* lower = bound.first;
-            SgExpression* upper = bound.second;
-            ROSE_ASSERT (lower != NULL);
-            ROSE_ASSERT (upper != NULL);
-
-            curprint(string("["));
-            //          curprint(lower->unparseToString());
-            unparseExpression(lower, ninfo);
-            curprint(string(":"));
-            //          curprint(upper->unparseToString());
-            unparseExpression(upper, ninfo);
-            curprint(string("]"));
-
-            std::vector< std::pair< SgOmpClause::omp_map_dist_data_enum, SgExpression * > > policies = dist_policies[sym];
-            if (policies.size() !=0)
-              unparseMapDistDataPoliciesToString (policies, ninfo);
-            //curprint(mapDistDataPoliciesToString (policies));
-
-          } // end for
-        } // end if has bounds
-      } // end if map 
-      else if (is_depend)
-      {
-        std::vector<std::pair<SgExpression*, SgExpression*> > bounds = dims[sym];
-        if (bounds.size() >0)
-        {
-          std::vector<std::pair<SgExpression*, SgExpression*> >:: const_iterator iter;
-          for (iter = bounds.begin(); iter != bounds.end(); iter ++)
-          {
-            SgUnparse_Info ninfo(info);
-            std::pair<SgExpression*, SgExpression*> bound  = (*iter);
-            SgExpression* lower = bound.first;
-            SgExpression* upper = bound.second;
-            ROSE_ASSERT (lower != NULL);
-            ROSE_ASSERT (upper != NULL);
-
-            curprint(string("["));
-            unparseExpression(lower, ninfo);
-            curprint(string(":"));
-            unparseExpression(upper, ninfo);
-            curprint(string("]"));
-          } // end for
-        } // end if has bounds
-      }
-    }
-    else
-    {
-      cerr<<"Unhandled type of variable in a varlist:"<< (*p)->class_name()<<endl;
-      ROSE_ASSERT (false);
-    }
-
-    // output the optional dimension info for map() variable 
-    // Move to the next argument
-    p++;
-
-    // Check if this is the last argument (output a "," separator if not)
-    if (p != c->get_variables()->get_expressions().end())
-    {
-      curprint( ",");
-    }
-  }
-
-  // optional :step  for linear(list:step)
-  if (isSgOmpLinearClause(c) && isSgOmpLinearClause(c)->get_modifier()) { curprint(string(")")); }
-  if (isSgOmpLinearClause(c) && isSgOmpLinearClause(c)->get_step())
-  {
-    curprint(string(":"));
-    unparseExpression(isSgOmpLinearClause(c)->get_step(), info);
-  }
-  
-   // optional :alignment for aligned(list:alignment)
-  if (isSgOmpAlignedClause(c) && isSgOmpAlignedClause(c)->get_alignment())
-  {
-    curprint(string(":"));
-    unparseExpression(isSgOmpAlignedClause(c)->get_alignment(), info);
-  }
- 
-  curprint(string(")"));
-}
-
-//! Unparse an OpenMP complex clause with a variable list
-void UnparseLanguageIndependentConstructs::unparseOmpVariablesComplexClause(SgOmpClause* clause, SgUnparse_Info& info)
-{
-  ROSE_ASSERT(clause != NULL);
-  SgOmpVariablesClause* c= isSgOmpVariablesClause (clause);
-  ROSE_ASSERT(c!= NULL);
-  bool is_map = false;
-  bool is_depend= false;
-  // unparse the  clause name first
-  switch (c->variantT())
-  {
-    case V_SgOmpAllocateClause: {
-        curprint(string(" allocate("));
-        //allocateModifierToString() will handle language specific issues
-        SgOmpClause::omp_allocate_modifier_enum modifier = isSgOmpAllocateClause(c)->get_modifier();
-        if (modifier != SgOmpClause::e_omp_allocate_modifier_unknown) {
-            if (modifier == SgOmpClause::e_omp_allocate_user_defined_modifier) {
-                SgUnparse_Info new_info(info);
-                unparseExpression(isSgOmpAllocateClause(c)->get_user_defined_modifier(), new_info);
-            }
-            else {
-                curprint(allocateModifierToString(modifier));
-            }
-            curprint(string(" : "));
-        }
-        break;
-    }
     default:
       cerr<<"Error: unhandled clause type in UnparseLanguageIndependentConstructs::unparseOmpVariablesClause ():"<< clause->class_name()<<endl;
       ROSE_ASSERT(false);
@@ -8880,6 +8896,165 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesComplexClause(SgOm
   }
 
   // optional :step  for linear(list:step)
+  if (isSgOmpLinearClause(c) && isSgOmpLinearClause(c)->get_modifier()) { curprint(string(")")); }
+  if (isSgOmpLinearClause(c) && isSgOmpLinearClause(c)->get_step())
+  {
+    curprint(string(":"));
+    unparseExpression(isSgOmpLinearClause(c)->get_step(), info);
+  }
+
+   // optional :alignment for aligned(list:alignment)
+  if (isSgOmpAlignedClause(c) && isSgOmpAlignedClause(c)->get_alignment())
+  {
+    curprint(string(":"));
+    unparseExpression(isSgOmpAlignedClause(c)->get_alignment(), info);
+  }
+
+  curprint(string(")"));
+}
+
+//! Unparse an OpenMP complex clause with a variable list
+void UnparseLanguageIndependentConstructs::unparseOmpVariablesComplexClause(SgOmpClause* clause, SgUnparse_Info& info)
+{
+  ROSE_ASSERT(clause != NULL);
+  SgOmpVariablesClause* c= isSgOmpVariablesClause (clause);
+  ROSE_ASSERT(c!= NULL);
+  bool is_map = false;
+  bool is_depend= false;
+  // unparse the  clause name first
+  switch (c->variantT())
+  {
+    case V_SgOmpAllocateClause: {
+        curprint(string(" allocate("));
+        //allocateModifierToString() will handle language specific issues
+        SgOmpClause::omp_allocate_modifier_enum modifier = isSgOmpAllocateClause(c)->get_modifier();
+        if (modifier != SgOmpClause::e_omp_allocate_modifier_unknown) {
+            if (modifier == SgOmpClause::e_omp_allocate_user_defined_modifier) {
+                SgUnparse_Info new_info(info);
+                unparseExpression(isSgOmpAllocateClause(c)->get_user_defined_modifier(), new_info);
+            }
+            else {
+                curprint(allocateModifierToString(modifier));
+            }
+            curprint(string(" : "));
+        }
+        break;
+    }
+    default:
+      cerr<<"Error: unhandled clause type in UnparseLanguageIndependentConstructs::unparseOmpVariablesClause ():"<< clause->class_name()<<endl;
+      ROSE_ASSERT(false);
+      break;
+  }
+
+  // prepare array dimension info for map variables
+  std::map<SgSymbol*, std::vector<std::pair<SgExpression*, SgExpression*> > > dims;
+  std::map< SgSymbol *, std::vector< std::pair< SgOmpClause::omp_map_dist_data_enum, SgExpression * > > > dist_policies;
+  if (is_map)
+  {
+    SgOmpMapClause * m_clause = isSgOmpMapClause (clause);
+    ASSERT_not_null(m_clause);
+    dims = m_clause->get_array_dimensions();
+    dist_policies = m_clause->get_dist_data_policies();
+  }
+  else if (is_depend) // task depend(A[i:BS][j:BS]) , is also stored as array section.
+   // TODO: long term, we need a dedicated array section AST node
+  {
+    SgOmpDependClause* m_clause = isSgOmpDependClause (clause);
+    ASSERT_not_null(m_clause);
+    dims = m_clause->get_array_dimensions();
+  }
+
+  //unparse variable list then
+  SgExpressionPtrList::iterator p = c->get_variables()->get_expressions().begin();
+  while ( p != c->get_variables()->get_expressions().end() )
+  {
+    // We now try to put array reference expression into variable list.
+    if (SgPntrArrRefExp* aref = isSgPntrArrRefExp(*p))
+    {
+      // curprint (aref->unparseToString()); // This does not work!
+      SgUnparse_Info ninfo(info);
+      unparseExpression(aref, ninfo);
+    }
+    else if (SgVarRefExp* vref= isSgVarRefExp(*p))
+    {
+      SgInitializedName* init_name = vref->get_symbol()->get_declaration();
+      SgName tmp_name  = init_name->get_name();
+      curprint( tmp_name.str());
+      SgVariableSymbol * sym  = isSgVarRefExp(*p)->get_symbol();
+      ASSERT_not_null(sym);
+      if (is_map)
+      {
+        std::vector<std::pair<SgExpression*, SgExpression*> > bounds = dims[sym];
+        if (bounds.size() >0)
+        {
+          std::vector<std::pair<SgExpression*, SgExpression*> >:: const_iterator iter;
+          for (iter = bounds.begin(); iter != bounds.end(); iter ++)
+          {
+            SgUnparse_Info ninfo(info);
+            std::pair<SgExpression*, SgExpression*> bound  = (*iter);
+            SgExpression* lower = bound.first;
+            SgExpression* upper = bound.second;
+            ASSERT_not_null(lower);
+            ASSERT_not_null(upper);
+
+            curprint(string("["));
+            //          curprint(lower->unparseToString());
+            unparseExpression(lower, ninfo);
+            curprint(string(":"));
+            //          curprint(upper->unparseToString());
+            unparseExpression(upper, ninfo);
+            curprint(string("]"));
+
+            std::vector< std::pair< SgOmpClause::omp_map_dist_data_enum, SgExpression * > > policies = dist_policies[sym];
+            if (policies.size() !=0)
+              unparseMapDistDataPoliciesToString (policies, ninfo);
+            //curprint(mapDistDataPoliciesToString (policies));
+
+          } // end for
+        } // end if has bounds
+      } // end if map
+      else if (is_depend)
+      {
+        std::vector<std::pair<SgExpression*, SgExpression*> > bounds = dims[sym];
+        if (bounds.size() >0)
+        {
+          std::vector<std::pair<SgExpression*, SgExpression*> >:: const_iterator iter;
+          for (iter = bounds.begin(); iter != bounds.end(); iter ++)
+          {
+            SgUnparse_Info ninfo(info);
+            std::pair<SgExpression*, SgExpression*> bound  = (*iter);
+            SgExpression* lower = bound.first;
+            SgExpression* upper = bound.second;
+            ASSERT_not_null(lower);
+            ASSERT_not_null(upper);
+
+            curprint(string("["));
+            unparseExpression(lower, ninfo);
+            curprint(string(":"));
+            unparseExpression(upper, ninfo);
+            curprint(string("]"));
+          } // end for
+        } // end if has bounds
+      }
+    }
+    else
+    {
+      cerr<<"Unhandled type of variable in a varlist:"<< (*p)->class_name()<<endl;
+      ROSE_ASSERT (false);
+    }
+
+    // output the optional dimension info for map() variable
+    // Move to the next argument
+    p++;
+
+    // Check if this is the last argument (output a "," separator if not)
+    if (p != c->get_variables()->get_expressions().end())
+    {
+      curprint( ",");
+    }
+  }
+
+  // optional :step  for linear(list:step)
   if (isSgOmpLinearClause(c) && isSgOmpLinearClause(c)->get_step())
   {
     curprint(string(":"));
@@ -8898,19 +9073,19 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesComplexClause(SgOm
 
 void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClause* clause, SgUnparse_Info& info)
 {
-  ROSE_ASSERT(clause != NULL);
+  ASSERT_not_null(clause);
   SgOmpExpressionClause * c = isSgOmpExpressionClause (clause);
   ROSE_ASSERT  (c);
   SgOmpExpressionClause* exp_clause = isSgOmpExpressionClause(c);
   ROSE_ASSERT(exp_clause);
- 
+
 
   // ordered (n) vs ordered : (n) is optional
   if (isSgOmpOrderedClause(c) && (exp_clause->get_expression() == NULL))
-  {  
+  {
     curprint(string(" ordered"));
-    return; 
-  }  
+    return;
+  }
 
   if (isSgOmpCollapseClause(c))
     curprint(string(" collapse("));
@@ -8985,7 +9160,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
   else {
     cerr<<"Error: unacceptable clause type within unparseOmpExpressionClause():"<< clause->class_name()<<endl;
     ROSE_ASSERT(false);
-  }    
+  }
 
   // unparse the expression
   SgUnparse_Info ninfo(info);
@@ -8998,6 +9173,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
   }
 
   curprint(string(")"));
+
 }    
 
 void UnparseLanguageIndependentConstructs::unparseOmpDepobjUpdateClause(SgOmpClause* clause, SgUnparse_Info& info)
@@ -9057,7 +9233,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpDepobjUpdateClause(SgOmpCla
 // Entry point for unparsing OpenMP clause
 void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause, SgUnparse_Info& info)
 {
-  ROSE_ASSERT(clause != NULL);
+  ASSERT_not_null(clause);
   switch (clause->variantT())
   {
     case V_SgOmpDefaultClause:
@@ -9085,12 +9261,13 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         unparseOmpAtomicClause(isSgOmpAtomicClause(clause),info);
         break;
       }
+
     case V_SgOmpDepobjUpdateClause:
       {
         unparseOmpDepobjUpdateClause(isSgOmpDepobjUpdateClause(clause), info);
         break;
       }
- 
+      
     case V_SgOmpNowaitClause:
       {
         curprint(string(" nowait"));
@@ -9182,7 +9359,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         curprint(string(" ordered"));
         break;
       }
-#endif      
+#endif
     case V_SgOmpUntiedClause:
       {
         curprint(string(" untied"));
@@ -9232,8 +9409,8 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpGrainsizeClause:
     case V_SgOmpDetachClause:
     case V_SgOmpNumTasksClause:
-    case V_SgOmpNumTeamsClause:  
-    case V_SgOmpHintClause: 
+    case V_SgOmpNumTeamsClause:
+    case V_SgOmpHintClause:
     case V_SgOmpThreadLimitClause:
     case V_SgOmpSafelenClause:  
     case V_SgOmpSimdlenClause:  
@@ -9242,7 +9419,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
       {
         unparseOmpExpressionClause(isSgOmpExpressionClause(clause), info);
         break; 
-      }                       
+      }
     case V_SgOmpAllocateClause: {
         unparseOmpVariablesComplexClause(isSgOmpVariablesClause(clause), info);
         break;
@@ -9266,11 +9443,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpSharedClause:
     case V_SgOmpUniformClause:
     case V_SgOmpAlignedClause:
-    case V_SgOmpLinearClause: 
-      {     
+    case V_SgOmpLinearClause:
+      {
         unparseOmpVariablesClause(isSgOmpVariablesClause(clause), info);
         break;
-      }     
+      }
     case V_SgOmpWhenClause:
       {
         unparseOmpWhenClause(isSgOmpWhenClause(clause), info);
@@ -9280,24 +9457,24 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
       {
         cerr<<"Unhandled OpenMP clause type in UnparseLanguageIndependentConstructs::unparseOmpClause():"<<clause->class_name()<<endl;
         ROSE_ASSERT(false);
-        break;  
+        break;
       }
-  }    
+  }
 }
 
 //! This is not intended to be directly called anytime.
-//  Individual languages should have implemented their own OpenMP prefixes 
+//  Individual languages should have implemented their own OpenMP prefixes
 void UnparseLanguageIndependentConstructs::unparseOmpPrefix(SgUnparse_Info& info)
 {
   cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpPrefix() should not be called directly!"<<endl;
-  cerr<<"Individual languages should have implemented their own OpenMP prefixes."<<endl; 
+  cerr<<"Individual languages should have implemented their own OpenMP prefixes."<<endl;
   ROSE_ASSERT (false);
 }
 // simple directives: atomic, section, taskwait, barrier
 void UnparseLanguageIndependentConstructs::unparseOmpSimpleStatement(SgStatement * stmt,  SgUnparse_Info& info)
 {
-  ROSE_ASSERT (stmt != NULL);
-  unparseOmpDirectivePrefixAndName(stmt, info); 
+  ASSERT_not_null(stmt);
+  unparseOmpDirectivePrefixAndName(stmt, info);
   unp->u_sage->curprint_newline();
   SgOmpBodyStatement* b_stmt = isSgOmpBodyStatement(stmt);
   if (b_stmt)
@@ -9311,20 +9488,20 @@ void UnparseLanguageIndependentConstructs::unparseOmpSimpleStatement(SgStatement
 //----- refactor unparsing for threadprivate and flush ???
 void UnparseLanguageIndependentConstructs::unparseOmpFlushStatement(SgStatement* stmt,     SgUnparse_Info& info)
 {
-  ROSE_ASSERT (stmt != NULL);
+  ASSERT_not_null(stmt);
   SgOmpFlushStatement * s = isSgOmpFlushStatement(stmt);
-  ROSE_ASSERT (s!= NULL);
+  ASSERT_not_null(s);
 
-  unparseOmpDirectivePrefixAndName(stmt, info); 
+  unparseOmpDirectivePrefixAndName(stmt, info);
   if (s->get_variables().size()>0)
     curprint(string ("("));
   //unparse variable list then
   SgVarRefExpPtrList::iterator p = s->get_variables().begin();
   while ( p != s->get_variables().end() )
   {
-    ROSE_ASSERT ((*p)->get_symbol() != NULL);
+    ASSERT_not_null((*p)->get_symbol());
     SgInitializedName* init_name = (*p)->get_symbol()->get_declaration();
-    ROSE_ASSERT (init_name != NULL);
+    ASSERT_not_null(init_name);
     SgName tmp_name  = init_name->get_name();
     curprint( tmp_name.str());
 
@@ -9344,11 +9521,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpFlushStatement(SgStatement*
 
 void UnparseLanguageIndependentConstructs::unparseOmpDeclareSimdStatement(SgStatement* stmt,     SgUnparse_Info& info)
 {
-  ROSE_ASSERT (stmt != NULL);
+  ASSERT_not_null(stmt);
   SgOmpDeclareSimdStatement * s = isSgOmpDeclareSimdStatement(stmt);
-  ROSE_ASSERT (s!= NULL);
+  ASSERT_not_null(s);
 //cout<<"debug "<<s->get_clauses().size()<<endl;
-  unparseOmpDirectivePrefixAndName(stmt, info); 
+  unparseOmpDirectivePrefixAndName(stmt, info);
 
   unparseOmpBeginDirectiveClauses(stmt, info);
   unp->u_sage->curprint_newline();
@@ -9358,16 +9535,16 @@ void UnparseLanguageIndependentConstructs::unparseOmpDeclareSimdStatement(SgStat
 
 void UnparseLanguageIndependentConstructs::unparseOmpThreadprivateStatement(SgStatement* stmt,     SgUnparse_Info& info)
 {
-  ROSE_ASSERT (stmt != NULL);
+  ASSERT_not_null(stmt);
   SgOmpThreadprivateStatement * s = isSgOmpThreadprivateStatement(stmt);
-  ROSE_ASSERT (s!= NULL);
-  unparseOmpDirectivePrefixAndName(stmt, info); 
+  ASSERT_not_null(s);
+  unparseOmpDirectivePrefixAndName(stmt, info);
   curprint(string ("("));
   //unparse variable list then
   SgVarRefExpPtrList::iterator p = s->get_variables().begin();
   while ( p != s->get_variables().end() )
   {
-    ROSE_ASSERT ( (*p)->get_symbol() != NULL);
+    ASSERT_not_null( (*p)->get_symbol());
     SgInitializedName* init_name = (*p)->get_symbol()->get_declaration();
     ROSE_ASSERT (init_name);
     SgName tmp_name  = init_name->get_name();
@@ -9388,9 +9565,9 @@ void UnparseLanguageIndependentConstructs::unparseOmpThreadprivateStatement(SgSt
 }
 
 // A helper function to just unparse omp-prefix directive-name, without bothering clauses
-// examples: 
-//  #pragma omp parallel, 
-//  !$omp parallel, 
+// examples:
+//  #pragma omp parallel,
+//  !$omp parallel,
 void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgStatement* stmt,     SgUnparse_Info& info)
 {
   ROSE_ASSERT(stmt != NULL);
@@ -9608,7 +9785,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpBeginDirectiveClauses      
 // Output the corresponding end directive text for an OpenMP AST nodes for directive
 void UnparseLanguageIndependentConstructs::unparseOmpEndDirectivePrefixAndName (SgStatement* stmt,     SgUnparse_Info& info)
 {
-  ROSE_ASSERT(stmt != NULL);
+  ASSERT_not_null(stmt);
   // This one should do nothing by default
   // Only Fortran derived implementation should output something there
 }
@@ -9620,10 +9797,10 @@ void UnparseLanguageIndependentConstructs::unparseOmpEndDirectiveClauses        
   // Derived implementation in Fortran should do something.
 }
 
-// This is a catch-all helper function 
+// This is a catch-all helper function
 void UnparseLanguageIndependentConstructs::unparseOmpGenericStatement (SgStatement* stmt,     SgUnparse_Info& info)
 {
-  ROSE_ASSERT(stmt != NULL);
+  ASSERT_not_null(stmt);
   // unparse the begin directive
   unparseOmpDirectivePrefixAndName (stmt, info);
   // unparse the parentheses of construct directive
@@ -9639,7 +9816,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpGenericStatement (SgStateme
   if (!isVariant) {
     unp->u_sage->curprint_newline();
   };
-  // unparse the body, if exists. 
+  // unparse the body, if exists.
   SgOmpBodyStatement* b_stmt = isSgOmpBodyStatement(stmt);
   if (!isVariant && b_stmt)
   {
@@ -9651,7 +9828,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpGenericStatement (SgStateme
    //TODO assertion for must-have bodies
   }
 
-  // unparse the end directive and name 
+  // unparse the end directive and name
   unparseOmpEndDirectivePrefixAndName (stmt, info);
   // unparse the end directive's clause
   unparseOmpEndDirectiveClauses(stmt, info);
@@ -9664,15 +9841,15 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
    {
   // DQ (11/24/2007): This is a redundant mechanism for computing the precedence of expressions (NO!)
   // DQ (4/20/2013): Actually, this is the support for operator precedence that is correctly handling
-  // overloaded operators to be the precedence of the operators that they are overloading, so this 
-  // is an important part of the unparser infrastructure.  There is also a specifictaion of 
-  // operator precedence a static data members on each expression IR node, and this function could 
+  // overloaded operators to be the precedence of the operators that they are overloading, so this
+  // is an important part of the unparser infrastructure.  There is also a specifictaion of
+  // operator precedence a static data members on each expression IR node, and this function could
   // and likely should use the values that are set there to avoud some level of redundancy.
 
   // DQ (2/5/2015): Added note from google search for precedence of the noexcept operator.
   // The standard itself doesn't specify precedence levels. They are derived from the grammar.
-  // const_cast, static_cast, dynamic_cast, reinterpret_cast, typeid, sizeof..., noexcept and 
-  // alignof are not included since they are never ambiguous. 
+  // const_cast, static_cast, dynamic_cast, reinterpret_cast, typeid, sizeof..., noexcept and
+  // alignof are not included since they are never ambiguous.
 
 #if PRINT_DEVELOPER_WARNINGS
      printf ("This is a redundant mechanism for computing the precedence of expressions \n");
@@ -9682,8 +9859,8 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
      printf ("In getPrecedence(): expr = %p = %s \n",expr,expr->class_name().c_str());
 #endif
 
-  // This call to GetOperatorVariant will map overloaded operators for syntax (e.g. operator+()) 
-  // to the associated operators (e.g. +) so that the overloaded operators will have the same 
+  // This call to GetOperatorVariant will map overloaded operators for syntax (e.g. operator+())
+  // to the associated operators (e.g. +) so that the overloaded operators will have the same
   // precedence as the operators they are overloading.
      int variant = GetOperatorVariant(expr);
 
@@ -9749,6 +9926,7 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
        // case V_SgRshiftOp:         return 11;
           case V_SgLshiftOp:         // return 11;
           case V_SgRshiftOp:         // return 11;
+                                     precedence_value = 11; break;
 
           case V_SgAddOp:            // return 12;
                                      precedence_value = 12; break;
@@ -9763,6 +9941,7 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
           case V_SgSubtractOp:       // return 12;
                                      precedence_value = 12; break;
 
+          case V_SgRemOp: // PP (14/10/20) add Ada operator
           case V_SgMultiplyOp:       // return 13;
           case V_SgIntegerDivideOp:
           case V_SgDivideOp:         // return 13;
@@ -9787,19 +9966,18 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
 
        // DQ (2/5/2015): Need to define the precedence of this new C++11 operator.
        // The rules say that this can never be ambigious, so it's precedence is not important (I am not yet clear on this point).
-          case V_SgNoexceptOp:        // return 15;
+          case V_SgNoexceptOp:       // return 15;
 
        // DQ (2/6/2015): Need to define the precedence of this new C++11 operator (but it is not clear to me that this is correcct).
        // I am so far unable to find data on the precedence of the lambda expression.
           case V_SgLambdaExp:        // return 15;
                                      precedence_value = 15; break;
 
-
           case V_SgFunctionCallExp:
              {
             // DQ (4/17/2013): If this is an overloaded operator then we can't just treat it like a normal function (must detect if it is an overloaded operator).
                SgFunctionCallExp* functionCallExp = isSgFunctionCallExp(expr);
-               ROSE_ASSERT(functionCallExp != NULL);
+               ASSERT_not_null(functionCallExp);
 #if 1
                if (functionCallExp->get_uses_operator_syntax() == true)
                   {
@@ -9864,12 +10042,12 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
                       // This should be an overloaded cast expression.
                          SgName name;
                          SgExpression* function = functionCallExp->get_function();
-                         ROSE_ASSERT(function != NULL);
+                         ASSERT_not_null(function);
                          SgBinaryOp* binaryOperator = isSgBinaryOp(function);
                          if (binaryOperator != NULL)
                             {
                               SgExpression* rhs = binaryOperator->get_rhs_operand();
-                              ROSE_ASSERT(rhs != NULL);
+                              ASSERT_not_null(rhs);
 
                            // This could be a member function from a class or a templated class.
                               SgMemberFunctionRefExp* mfunc_ref = isSgMemberFunctionRefExp(rhs);
@@ -9880,7 +10058,7 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
                                 else
                                  {
                                    SgTemplateMemberFunctionRefExp* template_mfunc_ref = isSgTemplateMemberFunctionRefExp(rhs);
-                                   ROSE_ASSERT(template_mfunc_ref != NULL);
+                                   ASSERT_not_null(template_mfunc_ref);
                                    name = template_mfunc_ref->get_symbol()->get_name();
                                  }
                             }
@@ -9900,7 +10078,7 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
                                 else
                                  {
                                    SgTemplateFunctionRefExp* template_func_ref = isSgTemplateFunctionRefExp(function);
-                                   ROSE_ASSERT(template_func_ref != NULL);
+                                   ASSERT_not_null(template_func_ref);
                                    name = template_func_ref->get_symbol()->get_name();
                                  }
 #if 0
@@ -9928,7 +10106,7 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
                   }
 
             // Since both SgCastExp and overloaded cast operators may be compiler generated we just want to know if this is compiler generated (so use "expr" instead of "castExp" below).
-               ROSE_ASSERT(expr->get_startOfConstruct() != NULL);
+               ASSERT_not_null(expr->get_startOfConstruct());
                if (expr->get_startOfConstruct()->isCompilerGenerated() == true)
                   {
                  // It is a problem to return zero since this causes the calling function to return "true" for needing parenthesis.
@@ -9942,12 +10120,12 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
                     if (castExp != NULL)
                        {
                       // return getPrecedence(castExp->get_operand());
-                         precedence_value = getPrecedence(castExp->get_operand()); 
+                         precedence_value = getPrecedence(castExp->get_operand());
                        }
                       else
                        {
-                      // DQ (8/29/2014): Changed the precedence to avoid over parenthization of user-defined conversion operators 
-                      // (see test2006_185.C).  If it is compiler generated then we can argue that it has a higher precedence and 
+                      // DQ (8/29/2014): Changed the precedence to avoid over parenthization of user-defined conversion operators
+                      // (see test2006_185.C).  If it is compiler generated then we can argue that it has a higher precedence and
                       // this avoids the redundant parenthization which is a bug for GNU 4.4 and other versions of GNU.
 
                       // If this is compiler generated then we have to look at the precedence of the unary operator's operand.
@@ -9955,12 +10133,12 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
                       // return 1;
                          mprintf ("WARNING: case of overloaded cast operator: If this is compiler generated then we have to look at the precedence of the unary operator's operand (returning 16) \n");
                       // return 16;
-                         precedence_value = 16; 
+                         precedence_value = 16;
                        }
                   }
                  else
                   {
-                    precedence_value = 0; 
+                    precedence_value = 0;
                   }
 
             // return 0;
@@ -10032,10 +10210,10 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
 #endif
             // DQ (4/17/2013): If this is an overloaded operator then we can't just treat it like a normal function.
                SgFunctionRefExp* functionRefExp = isSgFunctionRefExp(expr);
-               ROSE_ASSERT(functionRefExp != NULL);
-               ROSE_ASSERT(functionRefExp->get_parent() != NULL);
+               ASSERT_not_null(functionRefExp);
+               ASSERT_not_null(functionRefExp->get_parent());
                SgFunctionCallExp* functionCallExp = isSgFunctionCallExp(functionRefExp->get_parent()->get_parent());
-               ROSE_ASSERT(functionCallExp != NULL);
+               ASSERT_not_null(functionCallExp);
 
                ROSE_ASSERT(functionCallExp->get_uses_operator_syntax() == false);
 #if 0
@@ -10049,7 +10227,7 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
 #endif
 #endif
             // return 0;
-               precedence_value = 0; 
+               precedence_value = 0;
                break;
              }
 
@@ -10102,6 +10280,20 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
           case V_SgNonrealRefExp:
                                      precedence_value = 0; break;
 
+          case V_SgRangeExp:
+                                     precedence_value = 0; break;
+
+       // DQ (7/26/2020): Adding C++17 and C++20 support.
+       // DQ (7/26/2020): Not clear if this is the correct precedence for these C++17 and C++20 expressions.
+          case V_SgSpaceshipOp:      precedence_value = 12; break;
+          case V_SgFoldExpression:   precedence_value = 0; break;
+          case V_SgAwaitExpression:  precedence_value = 0; break;
+          case V_SgChooseExpression: precedence_value = 0; break;
+
+       // DQ (8/23/2020): Working on Cxx_tests/test2020_44.C (niehter setting appear to make a difference here).
+       // case V_SgConstructorInitializer: precedence_value = 0; break;
+       // case V_SgConstructorInitializer: precedence_value = 16; break;
+
           default:
              {
             // We want this to be a printed warning (so we can catch these missing cases), but it is not worthy of calling an error since the default works fine.
@@ -10126,36 +10318,31 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
 
 
 AssociativitySpecifier
-UnparseLanguageIndependentConstructs::getAssociativity(SgExpression* expr) 
+UnparseLanguageIndependentConstructs::getAssociativity(SgExpression* expr)
    {
   // DQ (7/23/2013): This should match the table in: http://en.wikipedia.org/wiki/Operators_in_C_and_C%2B%2B#Operator_precedence
   // Note also that this table has the precedence in the wrong order compared to how we have listed it in ROSE.
 
-  // I have added the case for SgCastExp, but noticed that there appear to be many incorrect entries for associativity for the 
+  // I have added the case for SgCastExp, but noticed that there appear to be many incorrect entries for associativity for the
   // other operators.  This function is called in the evaluation for added "()" using the operator precedence (obtained from
   // the function: getPrecedence()).
 
-  // DQ (9/25/2013): It is an additional issue that some associativity rules are language dependent.  For example, I understand 
-  // that Fortran supports A - B - C as A - (B - C) (right associative) where as C and C++ would treat it as (A - B) - C (left 
-  // associative).  Currently all associativity is defined in terms of C/C++, this is something to fix for the Fortran.  In 
-  // general we add parenthesis to support the explict handling wherever possible (I think). As a rule, Fortran relational 
-  // operators are not associative.  The exponentiation operator associates right to left (right associative).  Thus, A**B**C 
+  // DQ (9/25/2013): It is an additional issue that some associativity rules are language dependent.  For example, I understand
+  // that Fortran supports A - B - C as A - (B - C) (right associative) where as C and C++ would treat it as (A - B) - C (left
+  // associative).  Currently all associativity is defined in terms of C/C++, this is something to fix for the Fortran.  In
+  // general we add parenthesis to support the explict handling wherever possible (I think). As a rule, Fortran relational
+  // operators are not associative.  The exponentiation operator associates right to left (right associative).  Thus, A**B**C
   // is equal to A**(B**C) rather than (A**B)**C. All other FORTRAN operators are left to right associative (left associative)
   // (however it appears to contradict the stated rule for minus (above).
 
   // DQ (4/20/2018): Added assertion.
-     ROSE_ASSERT(expr != NULL);
+     ASSERT_not_null(expr);
 
      int variant = GetOperatorVariant(expr);
 
 #if 0
      printf ("In getAssociativity(): variant = %d = %s \n",variant,Cxx_GrammarTerminalNames[variant].name.c_str());
      curprint(string("\n/* In getAssociativity(): variant = ") + Cxx_GrammarTerminalNames[variant].name + " */ \n");
-#endif
-
-#if 0
-     printf ("Exiting as a test in getAssociativity() \n");
-     ROSE_ASSERT(false);
 #endif
 
      switch (variant)
@@ -10185,7 +10372,7 @@ UnparseLanguageIndependentConstructs::getAssociativity(SgExpression* expr)
 
                AssociativitySpecifier associativitySpecifier = e_assoc_none;
 
-               ROSE_ASSERT(expr != NULL);
+               ASSERT_not_null(expr);
                SgUnaryOp* unaryOp = isSgUnaryOp(expr);
 
             // DQ (4/20/2018): Added suppofr for function and member function operator++ and operator-- and there prefix and postfix variations.
@@ -10195,19 +10382,19 @@ UnparseLanguageIndependentConstructs::getAssociativity(SgExpression* expr)
                     printf ("ERROR: unaryOp == NULL: expr = %p = %s \n",expr,expr->class_name().c_str());
 #endif
                     SgFunctionCallExp* functionCallExp = isSgFunctionCallExp(expr);
-                    ROSE_ASSERT(functionCallExp != NULL);
+                    ASSERT_not_null(functionCallExp);
                     SgExpression* functionExp = functionCallExp->get_function();
-                    ROSE_ASSERT(functionExp != NULL);
+                    ASSERT_not_null(functionExp);
                     SgFunctionRefExp* functionRefExp = isSgFunctionRefExp(functionExp);
-                    ROSE_ASSERT(functionRefExp != NULL);
-                    ROSE_ASSERT(functionRefExp->get_symbol() != NULL);
+                    ASSERT_not_null(functionRefExp);
+                    ASSERT_not_null(functionRefExp->get_symbol());
 #if 0
                     printf ("function name = %s \n",functionRefExp->get_symbol()->get_name().str());
 #endif
                     SgFunctionSymbol* functionSymbol = functionRefExp->get_symbol();
-                    ROSE_ASSERT(functionSymbol != NULL);
+                    ASSERT_not_null(functionSymbol);
                     SgFunctionDeclaration* functionDeclaration = functionSymbol->get_declaration();
-                    ROSE_ASSERT(functionDeclaration != NULL);
+                    ASSERT_not_null(functionDeclaration);
 #if 0
                     printf ("functionDeclaration = %p = %s \n",functionDeclaration,functionDeclaration->class_name().c_str());
                     printf ("functionDeclaration->get_name() = %s \n",functionDeclaration->get_name().str());
@@ -10258,7 +10445,7 @@ UnparseLanguageIndependentConstructs::getAssociativity(SgExpression* expr)
                   }
                  else
                   {
-                    ROSE_ASSERT(unaryOp != NULL);
+                    ASSERT_not_null(unaryOp);
 
                     if (unaryOp->get_mode() == SgUnaryOp::prefix)
                        {
@@ -10273,7 +10460,7 @@ UnparseLanguageIndependentConstructs::getAssociativity(SgExpression* expr)
 
                return associativitySpecifier;
              }
-           
+
           case V_SgNotOp:
              {
 #if 0
@@ -10351,7 +10538,7 @@ UnparseLanguageIndependentConstructs::getAssociativity(SgExpression* expr)
              {
                return e_assoc_none;
              }
-          
+
           default:
              {
             // We want this to be a printed warning (so we can catch these missing cases), but it is not worthy of calling an error since the default works fine.
@@ -10369,9 +10556,9 @@ UnparseLanguageIndependentConstructs::getAssociativity(SgExpression* expr)
    }
 
 bool
-UnparseLanguageIndependentConstructs::requiresParentheses(SgExpression* expr, SgUnparse_Info& info) 
+UnparseLanguageIndependentConstructs::requiresParentheses(SgExpression* expr, SgUnparse_Info& info)
    {
-     ROSE_ASSERT(expr != NULL);
+     ASSERT_not_null(expr);
 
 #if 0
      if (isSgSubscriptExpression(expr) != NULL || isSgDotExp(expr) || isSgCAFCoExpression(expr) || isSgPntrArrRefExp(expr) )
@@ -10479,8 +10666,8 @@ UnparseLanguageIndependentConstructs::requiresParentheses(SgExpression* expr, Sg
        // printf ("In requiresParentheses(): Skipping case of supression of parentheses when parent is SgAssignInitializer \n");
 
        // DQ (1/9/2020): Need to check the precedence more directly.
-       // If this is associated with an initialization of a variable, the we should assume the SgAssignInitializer has the 
-       // same precedence as the SgAssignOp (precedence value == 2). Then the question is what is the precedence of the current 
+       // If this is associated with an initialization of a variable, the we should assume the SgAssignInitializer has the
+       // same precedence as the SgAssignOp (precedence value == 2). Then the question is what is the precedence of the current
        // expression relative to the SgAssignInitializer when it is used as an initializer for a variable declaration.
           SgFunctionCallExp* rhs_FunctionCallExpr = isSgFunctionCallExp(expr);
           if (rhs_FunctionCallExpr != NULL)
@@ -10577,7 +10764,7 @@ UnparseLanguageIndependentConstructs::requiresParentheses(SgExpression* expr, Sg
 
           default:
              {
-            // DQ (8/29/2014): If this is a user-defined operator (SgFunctionCallExp) nested in a user-defined 
+            // DQ (8/29/2014): If this is a user-defined operator (SgFunctionCallExp) nested in a user-defined
             // operator (SgFunctionCallExp) then we need a more useful parent than the parent function's SgExprListExpr.
                SgExprListExp* parent_exprListExp = isSgExprListExp(parentExpr);
 
@@ -10623,7 +10810,7 @@ UnparseLanguageIndependentConstructs::requiresParentheses(SgExpression* expr, Sg
 #endif
                       // Find a better parent node to use (reach to the parent SgFunctionCallExp).
                          SgNode* local_parentExpr = parentExpr;
-                         ROSE_ASSERT(local_parentExpr != NULL);
+                         ASSERT_not_null(local_parentExpr);
 
 #if DEBUG_PARENTHESIS_PLACEMENT
                          printf ("local_parentExpr = parentExpr: local_parentExpr = %p \n",local_parentExpr);
@@ -10637,7 +10824,7 @@ UnparseLanguageIndependentConstructs::requiresParentheses(SgExpression* expr, Sg
 #if DEBUG_PARENTHESIS_PLACEMENT
                          printf ("local_parentExpr = local_parentExpr->get_parent(): local_parentExpr = %p \n",local_parentExpr);
 #endif
-                      // ROSE_ASSERT(local_parentExpr != NULL);
+                      // ASSERT_not_null(local_parentExpr);
 
                          SgFunctionCallExp* functionCallExp = isSgFunctionCallExp(local_parentExpr);
 
@@ -10657,7 +10844,7 @@ UnparseLanguageIndependentConstructs::requiresParentheses(SgExpression* expr, Sg
 
                             }
 
-                      // ROSE_ASSERT(functionRefExp != NULL);
+                      // ASSERT_not_null(functionRefExp);
                          if (memberFunctionRefExp != NULL || functionRefExp != NULL)
                             {
                               SgFunctionSymbol* functionSymbol = NULL;
@@ -10671,13 +10858,13 @@ UnparseLanguageIndependentConstructs::requiresParentheses(SgExpression* expr, Sg
                                  }
                                 else
                                  {
-                                   ROSE_ASSERT(memberFunctionRefExp != NULL);
+                                   ASSERT_not_null(memberFunctionRefExp);
 #if DEBUG_PARENTHESIS_PLACEMENT
                                    printf ("memberFunctionRefExp != NULL: functionCallExp->get_function() = %p = %s \n",functionCallExp->get_function(),functionCallExp->get_function()->class_name().c_str());
 #endif
                                    functionSymbol = memberFunctionRefExp->get_symbol();
                                  }
-                              ROSE_ASSERT(functionSymbol != NULL);
+                              ASSERT_not_null(functionSymbol);
                               SgFunctionDeclaration* functionDeclaration = functionSymbol->get_declaration();
 
 #if DEBUG_PARENTHESIS_PLACEMENT

@@ -8,6 +8,7 @@
 #include <sstream>
 #include <iomanip>
 #include <boost/lexical_cast.hpp>
+#include <Sawyer/BitVector.h>
 
 // Helpful functions for Cxx_GrammarRTI.C
 // Probably should not be included anywhere else
@@ -28,6 +29,10 @@ static std::string toStringForRTI(const T& x) {
   std::ostringstream ss;
   ss << x;
   return ss.str();
+}
+
+static std::string toStringForRTI(const Sawyer::Container::BitVector &x) {
+    return "0x" + x.toHex();
 }
 
 template <typename T>

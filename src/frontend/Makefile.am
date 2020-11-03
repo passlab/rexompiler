@@ -1,7 +1,7 @@
 include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 
 SUBDIRS = \
-  SageIII 
+  SageIII
 
 # Note that CXX and C are either both defined or both undefined.
 if ROSE_BUILD_CXX_LANGUAGE_SUPPORT

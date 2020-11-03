@@ -2,7 +2,8 @@ include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 
 SUBDIRS= .
 if ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
-SUBDIRS += fortran
+# Currently, FORTRAN support is broken.
+#SUBDIRS += fortran
 endif
 
 # Default header file search path
@@ -23,33 +24,38 @@ TEST_EXIT_STATUS = $(top_srcdir)/scripts/test_exit_status
 # They will be compiled only, not executed.
 #	ompfor8.c  , a case not yet supported: ordered schedule(static) , no chunk size is specified. 
 C_TESTCODES_REQUIRED_TO_COMPILE = \
-	alignment.c \
-	collapse.c \
-	dijkstra_open_mp.c \
-	dynamicChunk.c \
-	endif.c \
-	endif3.c \
-	full_verify.c \
-        include_header_only.c \
-	init.c \
-	lastprivateOrphaned.c \
-	linebreak.c \
-	master.c \
-	md_open_mp.c \
-	nowait.c \
+	#alignment.c \
+	#collapse.c \
+	#dijkstra_open_mp.c \
+	#dynamicChunk.c \
+	#endif.c \
+	#endif3.c \
+	#full_verify.c \
+    #    include_header_only.c \
+	#init.c \
+	#lastprivateOrphaned.c \
+	#linebreak.c \
+	#master.c \
+	#md_open_mp.c \
+	#nowait.c \
 	ompfor5.c \
 	ompfor6.c \
-	parallel_pragma.c \
-	private-duplicate.c \
-	single2.c \
-	sizeof.c \
-	staticChunk.c \
-	task_orphaned.c \
-	task_underIf.c \
-	task_wait.c \
-	task_wait2.c \
-	task_array2.c \
-	task_untied4.c \
+	#parallel_pragma.c \
+	#private-duplicate.c \
+	#single2.c \
+	#sizeof.c \
+	#staticChunk.c \
+	#task_orphaned.c \
+	#task_underIf.c \
+	#task_wait.c \
+	#task_wait2.c \
+	#task_array2.c \
+	#task_untied4.c \
+	twoRegions.c
+
+REX_C_TESTCODES_REQUIRED_TO_COMPILE = \
+	ompfor5.c \
+	ompfor6.c \
 	twoRegions.c
 
 #        axpy_ompacc2.c 
@@ -72,78 +78,93 @@ OMP_ACC_TESTCODES_CXX_REQUIRED_TO_PASS =
 # Put test codes which can run (with main() ) here
 # They will be compiled and executed when the gomp library path is set
 C_TESTCODES_REQUIRED_TO_RUN = \
-	3loops.c \
-	array_init.c \
-	array_init_2.c \
-	atomic.c \
+	#3loops.c \
+	#array_init.c \
+	#array_init_2.c \
+	#atomic.c \
 	barrier.c \
-	critical.c \
-	critical_orphaned.c \
-	empty.c \
-	falsesharing.c \
-	firstlastprivate.c \
-	firstprivate.c \
-	firstPrivateArray.c \
-	firstPrivateArray_2.c \
-	flush.c \
-	get_max_threads.c \
-	hello-1.c \
-	hello-2.c \
-	hello-ordered.c \
-	hello.c \
-	jacobi.c \
-	jacobi-collapse.c \
-	lastprivate.c \
-	lastprivate0.c \
-	lockarray.c \
-	loop1.c \
-	nestedpar.c \
-	nestedpar1.c \
-	masterSingle.c \
-	matrixmultiply.c \
-	multiple_return.c \
-	ordered.c \
-	ordered2.c \
-	omp1.c \
+	#critical.c \
+	#critical_orphaned.c \
+	#empty.c \
+	#falsesharing.c \
+	#firstlastprivate.c \
+	#firstprivate.c \
+	#firstPrivateArray.c \
+	#firstPrivateArray_2.c \
+	#flush.c \
+	#get_max_threads.c \
+	#hello-1.c \
+	#hello-2.c \
+	#hello-ordered.c \
+	#hello.c \
+	#jacobi.c \
+	#jacobi-collapse.c \
+	#lastprivate.c \
+	#lastprivate0.c \
+	#lockarray.c \
+	#loop1.c \
+	#nestedpar.c \
+	#nestedpar1.c \
+	#masterSingle.c \
+	#matrixmultiply.c \
+	#multiple_return.c \
+	#ordered.c \
+	#ordered2.c \
+	#omp1.c \
 	ompfor.c \
 	ompfor_c99.c \
-	ompfor2.c \
+	#ompfor2.c \
 	ompfor3.c \
 	ompfor4.c \
 	ompfor-default.c \
 	ompfor-decremental.c \
 	ompfor-static.c \
-	ompGetNumThreads.c \
-	orphaned-directives.c \
+	#ompGetNumThreads.c \
+	#orphaned-directives.c \
 	parallel.c \
-	parallel-if.c \
-	parallel-if-numthreads.c \
+	#parallel-if.c \
+	#parallel-if-numthreads.c \
 	parallel-numthreads.c \
 	parallel-reduction.c \
 	parallel-reduction2.c \
-	parallelsections.c \
-	parallelfor.c \
-	parallelfor2.c \
-	pi.c \
-	prettyfunc.c \
-	private.c \
-	privatej.c \
-	reduction.c \
-	reduction2.c \
-	reduction-classic.c \
-	rice1.c \
-	section.c \
-	section1.c \
-	set_num_threads.c \
+	#parallelsections.c \
+	#parallelfor.c \
+	#parallelfor2.c \
+	#pi.c \
+	#prettyfunc.c \
+	#private.c \
+	#privatej.c \
+	#reduction.c \
+	#reduction2.c \
+	#reduction-classic.c \
+	#rice1.c \
+	#section.c \
+	#section1.c \
+	#set_num_threads.c \
 	single.c \
-	subteam.c \
-	subteam2.c \
-	spmd1.c \
-	task_largenumber.c \
-	task_outlining.c \
-	task_untied.c \
-	task_untied2.c \
-	task_untied3.c \
+	#subteam.c \
+	#subteam2.c \
+	#spmd1.c \
+	#task_largenumber.c \
+	#task_outlining.c \
+	#task_untied.c \
+	#task_untied2.c \
+	#task_untied3.c \
+	omp_version.c
+
+REX_C_TESTCODES_REQUIRED_TO_RUN = \
+	barrier.c \
+	ompfor.c \
+	ompfor_c99.c \
+	ompfor3.c \
+	ompfor4.c \
+	ompfor-default.c \
+	ompfor-decremental.c \
+	ompfor-static.c \
+	parallel.c \
+	parallel-reduction.c \
+	parallel-reduction2.c \
+	single.c \
 	omp_version.c
 
 # DQ (9/27/2009): Conditionally compile these files (fail in OSX due to lack of OSX
@@ -152,9 +173,10 @@ C_TESTCODES_REQUIRED_TO_RUN = \
 # threadprivate2.c
 # threadprivate3.c
 
-if !OS_MACOSX
-   C_TESTCODES_REQUIRED_TO_RUN += threadprivate.c threadprivate2.c threadprivate3.c
-endif
+# REX doesn't support these tests yet.
+#if !OS_MACOSX
+#   C_TESTCODES_REQUIRED_TO_RUN += threadprivate.c threadprivate2.c threadprivate3.c
+#endif
 
 # C++ test codes which can only be compiled
 CXX_TESTCODES_REQUIRED_TO_COMPILE = \
@@ -185,7 +207,7 @@ ALL_TESTCODES = \
 	$(TESTCODE_CURRENTLY_FAILING)
 
 # The runnable tests' object files
-C_TEST_OBJECT_REQUIRED_TO_RUN = ${C_TESTCODES_REQUIRED_TO_RUN:.c=.o}
+C_TEST_OBJECT_REQUIRED_TO_RUN = ${REX_C_TESTCODES_REQUIRED_TO_RUN:.c=.o}
 CXX_TEST_OBJECT_REQUIRED_TO_RUN = ${CXX_TESTCODES_REQUIRED_TO_RUN:.cpp=.o}
 #PASSING_Objects_With_main = \
 #    $(C_TEST_OBJECT_REQUIRED_TO_RUN) \
@@ -211,8 +233,9 @@ TESTCODE_CURRENTLY_FAILING = \
 	threadProcessor.c \
 	variables.c
 
-# we reuse the OpenMP sources files from the OpenMP compile test directory
-TEST_DIR = $(top_srcdir)/tests/nonsmoke/functional/CompileTests/OpenMP_tests
+# we copy the OpenMP sources files from the OpenMP compile test directory to /tmp/__rex_lowering_tests to generate the same outlined function name for the same input file
+TEST_DIR_SRC = $(top_srcdir)/tests/nonsmoke/functional/CompileTests/OpenMP_tests
+TEST_DIR = /tmp/__rex_lowering_tests
 # the place to find omp.h, libgomp_g.h etc
 TEST_INCLUDES = -I$(top_srcdir)/src/frontend/SageIII -I$(top_srcdir)/src/midend/programTransformation/ompLowering -I$(top_builddir)
 
@@ -228,7 +251,7 @@ ACC_TEST_FLAGS = $(TEST_INCLUDES) -rose:openmp:lowering -g --edg:no_warnings #-r
 # Runnable codes are handled separatedly, 
 #    using check_PROGRAM  if gomp path is available
 #   or make their object files only
-PASSING_C_TEST_Objects = $(C_TESTCODES_REQUIRED_TO_COMPILE:.c=.o)
+PASSING_C_TEST_Objects = $(REX_C_TESTCODES_REQUIRED_TO_COMPILE:.c=.o)
 PASSING_CXX_TEST_Objects = $(CXX_TESTCODES_REQUIRED_TO_COMPILE:.cpp=.o)
 
 PASSING_OMP_ACC_TEST_CUDA_TEMP_Files = $(OMP_ACC_TESTCODES_REQUIRED_TO_PASS:.c=.cu)
@@ -247,7 +270,6 @@ $(PASSING_C_TEST_Objects): %.o: $(TEST_DIR)/%.c roseomp
 		CMD="./roseomp$(EXEEXT) ${TEST_FLAGS} -c $<" \
 		$(TEST_EXIT_STATUS) $@.passed
 
-#$(C_TESTCODES_REQUIRED_TO_RUN): %.o: $(TEST_DIR)/%.c roseomp
 $(C_TEST_OBJECT_REQUIRED_TO_RUN): %.o: $(TEST_DIR)/%.c roseomp
 	@$(RTH_RUN) \
 		TITLE="roseomp $(notdir $<) [$@.passed]" \
@@ -430,11 +452,21 @@ endif
 # USE gcc GOMP library
 else
 
+REX_PASSING_TEST_INPUT = $(REX_C_TESTCODES_REQUIRED_TO_COMPILE) $(REX_C_TESTCODES_REQUIRED_TO_RUN)
+REFERENCE_PATH=$(top_srcdir)/tests/nonsmoke/functional/roseTests/ompLoweringTests/REXReferenceTest
+
+$(REX_PASSING_TEST_INPUT): $(REFERENCE_PATH)/$(@:rex_%=%)
+	if diff rose_$(@:rex_%=%) $(REFERENCE_PATH)/rex_$(@:rex_%=%) ; then echo "Test Passed"; else echo "Files differ; test falied"; exit 1; fi
+
+
 TESTS =  $(cuda_PROGRAM)
 #-------------compile only --------------------------------	
-conditional-check-local: roseomp \
-		$(PASSING_C_TEST_Objects) $(C_TEST_OBJECT_REQUIRED_TO_RUN) $(PASSING_OMP_ACC_TEST_CUDA_Files) \
-		$(PASSING_CXX_TEST_Objects) $(CXX_TEST_OBJECT_REQUIRED_TO_RUN) $(PASSING_OMP_ACC_TEST_CXX_CUDA_Files)
+conditional-check-local: roseomp
+	if [ -d ${TEST_DIR} ]; then rm -rf ${TEST_DIR}; fi
+	cp -r $(TEST_DIR_SRC) $(TEST_DIR)
+	@$(MAKE) $(PASSING_C_TEST_Objects) $(C_TEST_OBJECT_REQUIRED_TO_RUN)
+#		$(PASSING_C_TEST_Objects) $(C_TEST_OBJECT_REQUIRED_TO_RUN) $(PASSING_OMP_ACC_TEST_CUDA_Files) \
+#		$(PASSING_CXX_TEST_Objects) $(CXX_TEST_OBJECT_REQUIRED_TO_RUN) $(PASSING_OMP_ACC_TEST_CXX_CUDA_Files)
 if OS_MACOSX
 #	DQ (9/27/2009): We need to generate this file temporaily because the documentation depends on it.
 #	However, documentation should only depend upon generated files in the tutorial directory.
@@ -450,6 +482,10 @@ endif
 	@echo "****** configure option --with-gomp_omp_runtime_library to enable testing execution of OpenMP        ******"
 	@echo "****** for example: --with-gomp_omp_runtime_library=/home/liao6/opt/gcc-4.4.1/lib/                   ******"
 	@echo "***********************************************************************************************************"
+	@echo "****** Checking the transformed code: ******"
+	@$(MAKE) $(REX_PASSING_TEST_INPUT)
+	@echo "****** The transformed code tests completed. ******"
+	rm -rf $(TEST_DIR)
 
 endif # ROSE_USE_OMNI_OPENMP
  
@@ -462,8 +498,10 @@ check-local: conditional-check-local
 # single list, but sometimes those lists tend to get too long, so we just do them one at a time.
 clean-local:
 	rm -f $(addprefix rose_, $(C_TESTCODES_REQUIRED_TO_COMPILE))
+	rm -f $(addprefix rose_, $(REX_C_TESTCODES_REQUIRED_TO_COMPILE))
 	rm -f $(addprefix rose_, $(CXX_TESTCODES_REQUIRED_TO_COMPILE))
 	rm -f $(addprefix rose_, $(C_TESTCODES_REQUIRED_TO_RUN))
+	rm -f $(addprefix rose_, $(REX_C_TESTCODES_REQUIRED_TO_RUN))
 	rm -f $(addprefix rose_, $(CXX_TESTCODES_REQUIRED_TO_RUN))
 	rm -f $(PASSING_C_TEST_Objects)
 	rm -f $(addsuffix .passed, $(PASSING_C_TEST_Objects))

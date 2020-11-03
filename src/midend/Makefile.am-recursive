@@ -8,8 +8,7 @@ if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 SUBDIRS = \
         astDiagnostics \
         astProcessing \
-        astQuery \
-        BinaryAnalysis
+        astQuery
 else
 SUBDIRS = \
         abstractHandle \
@@ -21,8 +20,7 @@ SUBDIRS = \
         astRewriteMechanism \
         astUtil \
         programAnalysis \
-        programTransformation \
-        BinaryAnalysis
+        programTransformation
 endif
 
 EXTRA_DIST = CMakeLists.txt

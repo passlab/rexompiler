@@ -13,9 +13,16 @@
 #include <Sawyer/Database.h>
 
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
 #include <Sawyer/Optional.h>
 #include <sqlite3.h>
 #include <string>
+
+#if SQLITE_VERSION_NUMBER < 3007015
+std::string sqlite3_errstr(int status) {
+    return "sqlite3 error " + boost::lexical_cast<std::string>(status);
+}
+#endif
 
 namespace Sawyer {
 namespace Database {
@@ -61,15 +68,15 @@ public:
 private:
     void open(const boost::filesystem::path &filename) {
         close();
-        if (strlen(filename.native().c_str()) != filename.native().size())
+        if (strlen(filename.string().c_str()) != filename.string().size())
             throw Exception("invalid database name: internal NUL character");
-        int status = sqlite3_open(filename.native().c_str(), &connection);
+        int status = sqlite3_open(filename.string().c_str(), &connection);
         if (SQLITE_OK != status)
             throw Exception(sqlite3_errstr(status));
         sqlite3_busy_timeout(connection, 1000 /*ms*/);
     }
 
-    void close() {
+    void close() override {
         if (connection) {
             // Will return SQLITE_BUSY (a.k.a., "database is locked") if there are outstanding prepared statements. Due to
             // reference counting, this "close" function will only be called when none of those statements are in the EXECUTING
@@ -85,9 +92,9 @@ private:
         return "sqlite";
     }
     
-    Statement prepareStatement(const std::string &sql);
+    Statement prepareStatement(const std::string &sql) override;
 
-    size_t lastInsert() const {
+    size_t lastInsert() const override {
         ASSERT_not_null(connection);
         return boost::numeric_cast<size_t>(sqlite3_last_insert_rowid(connection));
     }

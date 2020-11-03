@@ -131,10 +131,15 @@ findRootFunc (const SgScopeStatement* scope)
 
                     SgScopeStatement* nextOuterScope = scope->get_scope();
                     ROSE_ASSERT(nextOuterScope != NULL);
-#if 0
-                    printf ("nextOuterScope = %p = %s \n",nextOuterScope,nextOuterScope->class_name().c_str());
-#endif
-                    ROSE_ASSERT(nextOuterScope != scope);
+
+                 // CR (10/19/2020): Allowing nextOuterScope == scope. Otherwise (see issue RC-227)
+                 // SgTypedefDeclaration::get_mangled_name() causes havoc for Jovial. It may be that
+                 // I'm not prepending typedef_ to the typename. But then I'm not sure how symbol
+                 // lookup goes.
+                 // ROSE_ASSERT(nextOuterScope != scope);
+                    if (nextOuterScope == scope) {
+                      return NULL;
+                    }
 
                     return findRootFunc(scope->get_scope());
                   }
@@ -305,6 +310,7 @@ mangleQualifiersToString (const SgScopeStatement* scope)
                          ROSE_ASSERT(tmp_scope != NULL);
                          printf ("In manglingSupport.C: mangleQualifiersToString(): tmp_scope = %p = %s \n",tmp_scope,tmp_scope->class_name().c_str());
 #endif
+                         ROSE_ASSERT(def != NULL);
                          mangled_name = def->get_mangled_name().getString();
 #if 0
                          printf ("DONE: In manglingSupport.C: mangleQualifiersToString(): Calling def->get_mangled_name(): def = %p = %s \n",def,def->class_name().c_str());
@@ -347,6 +353,7 @@ mangleQualifiersToString (const SgScopeStatement* scope)
                case V_SgNamespaceDefinitionStatement:
                   {
                     const SgNamespaceDefinitionStatement* def = isSgNamespaceDefinitionStatement (scope);
+                    ROSE_ASSERT(def != NULL);
                     mangled_name = def->get_mangled_name().getString();
 #if 0
                     printf ("In manglingSupport.C: mangleQualifiersToString(): mangled name for scope = %p = %s is: %s \n",scope,scope->class_name().c_str(),mangled_name.c_str());
@@ -361,7 +368,7 @@ mangleQualifiersToString (const SgScopeStatement* scope)
                   {
                  // 'scope' is part of scope for locally defined classes
                     const SgFunctionDefinition* def = isSgFunctionDefinition (scope);
-                    ROSE_ASSERT (def);
+                    ROSE_ASSERT(def != NULL);
                     mangled_name = def->get_mangled_name().getString();
                     break;
                   }
@@ -385,7 +392,11 @@ mangleQualifiersToString (const SgScopeStatement* scope)
                     mangled_name = joinMangledQualifiersToString (par_scope_name,stmt_name);
                     break;
                   }
-
+                  
+           
+           // PP (06/01/20) - not sure how to handle function parameter scope;
+           //                 for now, handle like SgGlobal
+               case V_SgFunctionParameterScope:
            // DQ (2/22/2007): I'm not sure this is best, but we can leave it for now.
            // I expect that global scope should contribute to the mangled name to avoid
            // confusion with name of declarations in un-name namespaces for example.
@@ -1282,10 +1293,11 @@ mangleExpression (const SgExpression* expr)
 
         case V_SgCastExp: {
           const SgCastExp * cast = isSgCastExp(expr);
-          SgType * cast_type = cast->get_type();
-          ROSE_ASSERT(cast_type != NULL);
+          ROSE_ASSERT(cast != NULL);
           SgExpression * op = cast->get_operand_i();
           ROSE_ASSERT(op != NULL);
+          SgType * cast_type = cast->get_type();
+          ROSE_ASSERT(cast_type != NULL);
           mangled_name << "_bCastExp_" << mangleExpression(op) << "_totype_" << cast_type->get_mangled().str() << "_eCastExp_";
           break;
         }
@@ -1384,6 +1396,7 @@ mangleExpression (const SgExpression* expr)
         }
         case V_SgConstructorInitializer: {
           const SgConstructorInitializer* e = isSgConstructorInitializer (expr);
+          ROSE_ASSERT(e != NULL);
 
           mangled_name << "_bConstructorInitializer_";
 
@@ -1444,6 +1457,11 @@ mangleExpression (const SgExpression* expr)
         case V_SgBracedInitializer: {
           const SgBracedInitializer* e = isSgBracedInitializer (expr);
           mangled_name << "_bBracedInitializer_" << mangleExpression (e->get_initializers()) << "_eBracedInitializer_";
+          break;
+        }
+        case V_SgAssignInitializer: {
+          const SgAssignInitializer* e = isSgAssignInitializer (expr);
+          mangled_name << "_bAssignInitializer_" << mangleExpression (e->get_operand_i()) << "_eAssignInitializer_";
           break;
         }
         case V_SgNewExp: {
@@ -1510,40 +1528,32 @@ declarationHasTranslationUnitScope (const SgDeclarationStatement* decl)
      return false;
    }
 
-string
-mangleTranslationUnitQualifiers (const SgDeclarationStatement* decl)
-   {
-  // DQ (4/30/2012): I think there is a problem with this code.  Declarations can be the same even when they 
-  // appear in different files or in different locations in the same file (or translation unit) and the inclusion 
-  // of this information in the mangled name will prevent them from beeing seen as the same.  I am not sure
-  // why this code is required and so we need to discuss this point.  
-  // Additionally, when the file_id() is a negative number (e.g. for compiler generated code) then the name
-  // mangling also fails the test (for mangled names to be useable as identifiers) since "-" appears in the name.
+std::string mangleTranslationUnitQualifiers (const SgDeclarationStatement * decl)  {
+  // Adds file-id prefix to mangled name of *static* declarations to prevent collision between translation units
+  if (declarationHasTranslationUnitScope(decl) == true) {
+    // Uses global (or enclosing) scope as reference because forward declaration can be compiler generated
+    SgLocatedNode * lnode_ref = SageInterface::getGlobalScope(decl);
+    if (lnode_ref == NULL) {
+      lnode_ref = SageInterface::getEnclosingScope(const_cast<SgDeclarationStatement *>(decl));
+    }
+    ROSE_ASSERT(lnode_ref != NULL);
 
-     if (declarationHasTranslationUnitScope(decl) == true)
-        {
-       // TV (04/22/11): I think 'decl' will refer to the same file_id than is enclosing file.
-       //         And as in EDGrose file and global scope are linked after the building of the global scope...
-       // return "_file_id_" + StringUtility::numberToString(SageInterface::getEnclosingFileNode(const_cast<SgDeclarationStatement *>(decl))->get_file_info()->get_file_id()) + "_";
-       // return "_file_id_" + StringUtility::numberToString(decl->get_file_info()->get_file_id()) + "_";
+    // We must find an actual file-id as we want to specify the file where this declaration is static
+    int file_id = lnode_ref->get_file_info()->get_file_id();
+    switch (file_id) {
+      case Sg_File_Info::COPY_FILE_ID:                                 return "_COPY_FILE_ID_";
+      case Sg_File_Info::NULL_FILE_ID:                                 return "_NULL_FILE_ID_";
+      case Sg_File_Info::TRANSFORMATION_FILE_ID:                       return "_TRANSFORMATION_FILE_ID_";
+      case Sg_File_Info::COMPILER_GENERATED_FILE_ID:                   return "_COMPILER_GENERATED_FILE_ID_";
+      case Sg_File_Info::COMPILER_GENERATED_MARKED_FOR_OUTPUT_FILE_ID: return "_COMPILER_GENERATED_MARKED_FOR_OUTPUT_FILE_ID_";
+      case Sg_File_Info::BAD_FILE_ID:                                  return "_BAD_FILE_ID_";
+      default: {
+        ROSE_ASSERT(file_id >= 0);
+        return "_file_id_" + StringUtility::numberToString(file_id) + "_";
+      }
+    }
+  } else {
+    return "";
+  }
+}
 
-       // DQ (4/30/2012): Modified this code, but I would like to better understand why it is required.
-          string returnString = "";
-          int fileIdNumber = decl->get_file_info()->get_file_id();
-          if (fileIdNumber >= 0)
-             {
-               returnString = "_file_id_" + StringUtility::numberToString(fileIdNumber) + "_";
-             }
-            else
-             {
-            // Put "_minus" into the generated name.
-               returnString = "_file_id_minus_" + StringUtility::numberToString(abs(fileIdNumber)) + "_";
-             }
-
-          return returnString;
-        }
-       else
-        {
-          return "";
-        }
-   }

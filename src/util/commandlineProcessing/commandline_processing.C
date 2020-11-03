@@ -6,6 +6,8 @@
 #include "commandline_processing.h"
 #include <vector>
 #include <algorithm>
+#include "Diagnostics.h"
+#include <boost/algorithm/string/predicate.hpp>
 #include <rose_paths.h>
 
 // Use Brian Gunney's String List Assignent (SLA) library
@@ -478,254 +480,19 @@ CommandlineProcessing::addListToCommandLine ( vector<string> & argv , string pre
         }
    }
 
-
-//Rama
-//Also refer to the code in functions isCppFileNameSuffix  Dan and I added in StringUtility
-//For now define CASE_SENSITIVE_SYSTEM to be true, as we are currently a UNIXish project.
-#ifndef CASE_SENSITIVE_SYSTEM
-#define CASE_SENSITIVE_SYSTEM 1
-#endif
-
-bool
-CommandlineProcessing::isOptionWithParameter ( vector<string> & argv, string optionPrefix, string option, string & optionParameter, bool removeOption )
-   {
-  // I could not make this work cleanly with valgrind withouth allocatting memory twice
-     string localString ="";
-
-     //   printf ("Calling sla for string! removeOption = %s \n",removeOption ? "true" : "false");
-     //printf ("   argv %d    optionPrefix %s  option %s   localString  %s \n",argv.size(), optionPrefix.c_str(), option.c_str() , localString.c_str() );
-     int optionCount = sla(argv, optionPrefix, "($)^", option, &localString, removeOption ? 1 : -1);
-  // printf ("DONE: Calling sla for string! optionCount = %d localString = %s \n",optionCount,localString.c_str());
-
-  // optionCount = sla(argv, optionPrefix, "($)^", option, &localString, removeOption ? 1 : -1);
-  // printf ("DONE: Calling sla for string! optionCount = %d localString = %s \n",optionCount,localString.c_str());
-
-     if (optionCount > 0)
-          optionParameter = localString;
-
-     return (optionCount > 0);
-   }
-
-// Note that moving this function from commandline_processing.C to this file (sageSupport.C)
-// permitted the validExecutableFileSuffixes to be initialized properly!
-void
-CommandlineProcessing::initExecutableFileSuffixList ( )
-   {
-     static bool first_call = true;
-
-     if ( first_call == true )
-        {
-       // DQ (1/5/2008): For a binary (executable) file, no suffix is a valid suffix, so allow this case
-          validExecutableFileSuffixes.push_back("");
-
-          // printf ("CASE_SENSITIVE_SYSTEM = %d \n",CASE_SENSITIVE_SYSTEM);
-
-#if(CASE_SENSITIVE_SYSTEM == 1)
-          validExecutableFileSuffixes.push_back(".exe");
-#else
-       // it is a case insensitive system
-          validExecutableFileSuffixes.push_back(".EXE");
-#endif
-          first_call = false;
-        }
-   }
-
-// DQ (1/16/2008): This function was moved from the commandling_processing.C file to support the debugging specific to binary analysis
-// bool CommandlineProcessing::isOptionTakingFileName( string argument )
-bool
-CommandlineProcessing::isOptionTakingSecondParameter( string argument )
-   {
-     bool result = false;
-  // printf ("In CommandlineProcessing::isOptionTakingFileName(): argument = %s \n",argument.c_str());
-
-  // List any rose options that take source filenames here, so that they can avoid
-  // being confused with the source file name that is to be read by EDG and translated.
-
-  // DQ (1/6/2008): Added another test for a rose option that takes a filename
-     if ( argument == "-o" ||                               // Used to specify output file to compiler
-          argument == "-opt" ||                             // Used in loopProcessor
-       // DQ (1/13/2009): This option should only have a single leading "-", not two.
-       // argument == "--include" ||                        // Used for preinclude list (to include some header files before all others, common requirement for compiler)
-          argument == "-include" ||                         // Used for preinclude file list (to include some header files before all others, common requirement for compiler)
-          argument == "-isystem" ||                         // Used for preinclude directory list (to specify include paths to be search before all others, common requirement for compiler)
-
-          // Darwin options
-          argument == "-dylib_file" ||                      // -dylib_file <something>:<something>
-          argument == "-framework"  ||                      // -iframeworkdir (see man page for Apple GCC)
-
-          // ROSE options
-          argument == "-rose:output" ||                     // Used to specify output file to ROSE
-          argument == "-rose:o" ||                          // Used to specify output file to ROSE (alternative to -rose:output)
-          argument == "-rose:compilationPerformanceFile" || // Use to output performance information about ROSE compilation phases
-          argument == "-rose:verbose" ||                    // Used to specify output of internal information about ROSE phases
-          argument == "-rose:log" ||                        // Used to conntrol Rose::Diagnostics
-          argument == "-rose:assert" ||                     // Controls behavior of failed assertions
-          argument == "-rose:test" ||
-          argument == "-rose:backendCompileFormat" ||
-          argument == "-rose:outputFormat" ||
 #if 0
-       // DQ (1/21/2017): Moved to be an option that has three parameters (rose option, edg option, and edg option's parameter).
-          argument == "-edg_parameter:" ||
-          argument == "--edg_parameter:" ||
-#endif
-          argument == "-rose:generateSourcePositionCodes" ||
-          argument == "-rose:embedColorCodesInGeneratedCode" ||
-          argument == "-rose:instantiation" ||
-          argument == "-rose:includeCommentsAndDirectives" ||
-          argument == "-rose:includeCommentsAndDirectivesFrom" ||
-          argument == "-rose:excludeCommentsAndDirectives" ||
-          argument == "-rose:excludeCommentsAndDirectivesFrom" ||
-          argument == "-rose:includePath" ||
-          argument == "-rose:excludePath" ||
-          argument == "-rose:includeFile" ||
-          argument == "-rose:excludeFile" ||
-          argument == "-rose:astMergeCommandFile" ||
-          argument == "-rose:projectSpecificDatabaseFile" ||
-
-          // TOO1 (2/13/2014): Starting to refactor CLI handling into separate namespaces
-          //Rose::Cmdline::Unparser::OptionRequiresArgument(argument) ||
-          //Rose::Cmdline::Fortran::OptionRequiresArgument(argument) ||
-
-       // negara1 (08/16/2011)
-          argument == "-rose:unparseHeaderFilesRootFolder" ||
-
-       // DQ (11/6/2018): Adding support to specify the root directory of an application for header file unparsing and token based unparsing).
-          argument == "-rose:applicationRootDirectory" ||
-
-       // DQ (8/20/2008): Add support for Qing's options!
-          argument == "-annot" ||
-          argument == "-bs" ||
-          isOptionTakingThirdParameter(argument) ||
-
-       // DQ (9/30/2008): Added support for java class specification required for Fortran use of OFP.
-          argument == "--class" ||
-
-       // AS (02/20/08):  When used with -M or -MM, -MF specifies a file to write
-       // the dependencies to. Need to tell ROSE to ignore that output paramater
-          argument == "-MF" ||
-          argument == "-MT" || argument == "-MQ" ||
-          argument == "-outputdir" ||  // FMZ (12/22/1009) added for caf compiler
-
-       // DQ (9/19/2010): UPC support for upc_threads to define the "THREADS" variable.
-          argument == "-rose:upc_threads" ||
-
-       // DQ (9/26/2011): Added support for detection of dangling pointers within translators built using ROSE.
-          argument == "-rose:detect_dangling_pointers" ||   // Used to specify level of debugging support for optional detection of dangling pointers 
-
-       // DQ (1/16/2012): Added all of the currently defined dot file options.
-          argument == "-rose:dotgraph:asmFileFormatFilter" ||
-          argument == "-rose:dotgraph:asmTypeFilter" ||
-          argument == "-rose:dotgraph:binaryExecutableFormatFilter" ||
-          argument == "-rose:dotgraph:commentAndDirectiveFilter" ||
-          argument == "-rose:dotgraph:ctorInitializerListFilter" ||
-          argument == "-rose:dotgraph:defaultColorFilter" ||
-          argument == "-rose:dotgraph:defaultFilter" ||
-          argument == "-rose:dotgraph:edgeFilter" ||
-          argument == "-rose:dotgraph:emptySymbolTableFilter" ||
-
-       // DQ (7/22/2012): Added support to ignore some specific empty IR nodes.
-          argument == "-rose:dotgraph:emptyBasicBlockFilter" ||
-          argument == "-rose:dotgraph:emptyFunctionParameterListFilter" ||
-
-          argument == "-rose:dotgraph:expressionFilter" ||
-          argument == "-rose:dotgraph:fileInfoFilter" ||
-          argument == "-rose:dotgraph:frontendCompatibilityFilter" ||
-          argument == "-rose:dotgraph:symbolFilter" ||
-          argument == "-rose:dotgraph:typeFilter" ||
-          argument == "-rose:dotgraph:variableDeclarationFilter" ||
-          argument == "-rose:dotgraph:noFilter" ||
-
-       // DQ (1/8/2014): We need the "-x" option which takes a single option to specify the language "c" or "c++".
-       // This is required where within the "git" build system the input file is "/dev/null" which does not have
-       // a suffix from which to compute the associated language.
-          argument == "-x" ||
-
-       // DQ (1/20/2014): Adding support for gnu's -undefined option.
-          argument == "-u" ||
-          argument == "-undefined" ||
-
-       // DQ (1/26/2014): Support for usage such as -version-info 8:9:8
-          argument == "-version-info" ||
-
-       // DQ (1/30/2014): Support for usage such as -rose:unparse_tokens_testing 4
-          argument == "-rose:unparse_tokens_testing" ||
-
-       // DQ (12/10/2016): This does not take a parameter on any later version compiler that I know of.
-       // DQ (1/26/2014): Support for make dependence option -MM <file name for dependence info>
-       // argument == "-MM" ||
-
-       // DQ (3/25/2014): We need the icpc/icc [-fp-model <arg>]  command-line compiler option to be
-       // passed to the backend compiler properly.  The [-fp-model] option always has a single argument.
-          argument == "-fp-model" ||
-
-       // DQ (1/21/2015): -diag-disable can take a collection of optional parameters: e.g. cpu-dispatch
-          argument == "-diag-enable"  ||
-          argument == "-diag-disable" ||
-          argument == "-diag-error"   ||
-          argument == "-diag-warning" ||
-          argument == "-diag-remark"  ||
-
-       // TOO1 (5/14/2015): Add support for GCC --param, e.g. "--param inline-unit-growth=900" found in Valgrind
-          argument == "--param" ||    // --param variable=value
-
-          false)
-        {
-          result = true;
-        }
-
-  // printf ("In CommandlineProcessing::isOptionTakingFileName(): argument = %s result = %s \n",argument.c_str(),result ? "true" : "false");
-
-     return result;
-   }
-
-bool
-CommandlineProcessing::isOptionTakingThirdParameter( string argument )
-   {
-     bool result = false;
-  // printf ("In CommandlineProcessing::isOptionTakingFileName(): argument = %s \n",argument.c_str());
-
-  // List any rose options that take source filenames here, so that they can avoid
-  // being confused with the source file name that is to be read by EDG and translated.
-
-  // DQ (1/6/2008): Added another test for a rose option that takes a filename
-     if ( false ||          // Used to specify yet another parameter
-
-       // DQ (8/20/2008): Add support for Qing's options!
-          argument == "-unroll" ||
-#if 1
-       // DQ (1/21/2017): Allow this to take the edg option plus it's parameter (3 paramters with the rose option wrapper, not two). 
-          argument == "-edg_parameter:" ||
-          argument == "--edg_parameter:" ||
-#endif
-          false )
-        {
-          result = true;
-        }
-
-  // printf ("In CommandlineProcessing::isOptionTakingFileName(): argument = %s result = %s \n",argument.c_str(),result ? "true" : "false");
-
-     return result;
-   }
-
-// DQ (1/16/2008): This function was moved from the commandling_processing.C file to support the debugging specific to binary analysis
-
 Rose_STL_Container<string>
-CommandlineProcessing::generateSourceFilenames ( Rose_STL_Container<string> argList )
+CommandlineProcessing::generateSourceFilenames ( Rose_STL_Container<string> argList, bool binaryMode )
    {
      Rose_STL_Container<string> sourceFileList;
 
      Rose_STL_Container<string>::iterator i = argList.begin();
 
-
-     if ( 0 /*SgProject::get_verbose() > 1 */ )
-        {
-          printf ("######################### Inside of CommandlineProcessing::generateSourceFilenames() ############################ \n");
-        }
-
   // skip the 0th entry since this is just the name of the program (e.g. rose)
      ROSE_ASSERT(argList.size() > 0);
      i++;
 
+     int counter = 0;
      while ( i != argList.end() )
         {
        // Count up the number of filenames (if it is ZERO then this is likely a
@@ -739,8 +506,18 @@ CommandlineProcessing::generateSourceFilenames ( Rose_STL_Container<string> argL
 
        // DQ (1/5/2008): Ignore things that would be obvious options using a "-" or "+" prefix.
        // if ( ((*i)[0] != '-') || ((*i)[0] != '+') )
-          if ( (*i).empty() || (((*i)[0] != '-') && ((*i)[0] != '+')) )
+          if ( ((*i)[0] != '-') && ((*i)[0] != '+') )
              {
+            // printf ("In CommandlineProcessing::generateSourceFilenames(): Look for file names:  argv[%d] = %s length = %" PRIuPTR " \n",counter,(*i).c_str(),(*i).size());
+
+            // bool foundSourceFile = false;
+
+               if ( isSourceFilename(*i) == false && isExecutableFilename(*i) == true )
+                  {
+                 // printf ("This is an executable file: *i = %s \n",(*i).c_str());
+                 // executableFileList.push_back(*i);
+                    sourceFileList.push_back(*i);
+                  }
             // PC (4/27/2006): Support for custom source file suffixes
             // if ( isSourceFilename(*i) )
                if ( isObjectFilename(*i) == false && isSourceFilename(*i) == true )
@@ -748,7 +525,6 @@ CommandlineProcessing::generateSourceFilenames ( Rose_STL_Container<string> argL
                  // printf ("This is a source file: *i = %s \n",(*i).c_str());
                  // foundSourceFile = true;
                     sourceFileList.push_back(*i);
-                    goto incrementPosition;
                   }
 #if 0
                if ( isObjectFilename(*i) )
@@ -756,36 +532,24 @@ CommandlineProcessing::generateSourceFilenames ( Rose_STL_Container<string> argL
                     objectFileList.push_back(*i);
                   }
 #endif
+
              }
 
        // DQ (12/8/2007): Looking for rose options that take filenames that would accidentally be considered as source files.
-       // if (isOptionTakingFileName(*i) == true)
-          if (isOptionTakingSecondParameter(*i) == true)
+          if (isOptionTakingFileName(*i) == true)
              {
-               if (isOptionTakingThirdParameter(*i) == true)
-                  {
-                 // Jump over the next argument when such options are identified.
-                    i++;
-                  }
-
             // Jump over the next argument when such options are identified.
+               counter++;
                i++;
              }
 
-incrementPosition:
-
+          counter++;
           i++;
-        }
-
-     if (0 /* SgProject::get_verbose() > 1 */)
-        {
-          printf ("sourceFileList = %s \n",StringUtility::listToString(sourceFileList).c_str());
-          printf ("######################### Leaving of CommandlineProcessing::generateSourceFilenames() ############################ \n");
         }
 
      return sourceFileList;
    }
-
+#endif
 
 // PC (4/27/2006): Support for custom source file suffixes
 bool
@@ -846,6 +610,14 @@ CommandlineProcessing::addCppSourceFileSuffix ( const string &suffix )
    {
      extraCppSourceFileSuffixes.push_back(suffix);
    }
+
+
+//Rama
+//Also refer to the code in functions isCppFileNameSuffix  Dan and I added in StringUtility
+//For now define CASE_SENSITIVE_SYSTEM to be true, as we are currently a UNIXish project.
+#ifndef CASE_SENSITIVE_SYSTEM
+#define CASE_SENSITIVE_SYSTEM 1
+#endif
 
 bool
 CommandlineProcessing::isCFileNameSuffix ( const std::string & suffix )
@@ -1156,130 +928,6 @@ CommandlineProcessing::isUPCFileNameSuffix ( const std::string & suffix )
      if ( suffix == "upc")
 #else//It is a case insensitive system
      if ( suffix == "upc" )
-#endif
-        {
-          returnValue = true;
-        }
-
-     return returnValue;
-   }
-
-bool
-CommandlineProcessing::isPHPFileNameSuffix ( const std::string & suffix )
-   {
-     bool returnValue = false;
-
-  // For now define CASE_SENSITIVE_SYSTEM to be true, as we are currently a UNIXish project.
-
-#if(CASE_SENSITIVE_SYSTEM == 1)
-     if ( suffix == "php" )
-#else//It is a case insensitive system
-     if ( suffix == "php" )
-#endif
-        {
-          returnValue = true;
-        }
-
-     return returnValue;
-   }
-
-bool
-CommandlineProcessing::isPythonFileNameSuffix ( const std::string & suffix )
-   {
-     bool returnValue = false;
-
-  // For now define CASE_SENSITIVE_SYSTEM to be true, as we are currently a UNIXish project.
-
-#if(CASE_SENSITIVE_SYSTEM == 1)
-     if ( suffix == "py" )
-#else//It is a case insensitive system
-     if ( suffix == "py" )
-#endif
-        {
-          returnValue = true;
-        }
-
-     return returnValue;
-   }
-
-// DQ (28/8/2017): Adding language support.
-bool
-CommandlineProcessing::isCsharpFileNameSuffix ( const std::string & suffix )
-   {
-     bool returnValue = false;
-
-  // For now define CASE_SENSITIVE_SYSTEM to be true, as we are currently a UNIXish project.
-
-#if(CASE_SENSITIVE_SYSTEM == 1)
-     if ( suffix == "cs" )
-#else //It is a case insensitive system
-     if ( suffix == "cs" )
-#endif
-        {
-          returnValue = true;
-        }
-
-     return returnValue;
-   }
-
-// DQ (28/8/2017): Adding language support.
-bool
-CommandlineProcessing::isAdaFileNameSuffix ( const std::string & suffix )
-   {
-     bool returnValue = false;
-
-  // For now define CASE_SENSITIVE_SYSTEM to be true, as we are currently a UNIXish project.
-
-  // Note that the filename extension is not defined as part of the Ada standard,
-  // but GNAT (Gnu Ada) is using "ads" (for the spec) and "adb" (for the body).
-
-#if(CASE_SENSITIVE_SYSTEM == 1)
-     if ( suffix == "ads" || suffix == "adb")
-#else //It is a case insensitive system
-     if ( suffix == "ads" || suffix == "adb")
-#endif
-        {
-          returnValue = true;
-        }
-
-     return returnValue;
-   }
-
-// DQ (28/8/2017): Adding language support.
-bool
-CommandlineProcessing::isJovialFileNameSuffix ( const std::string & suffix )
-   {
-     bool returnValue = false;
-
-  // For now define CASE_SENSITIVE_SYSTEM to be true, as we are currently a UNIXish project.
-
-  // Rasmussen (11/08/2017): Changed Jovial file extension to reflect usage found on web
-  // Rasmussen (11/11/2018): Added Jovial COMPOOL file extension "cpl"
-#if(CASE_SENSITIVE_SYSTEM == 1)
-     if ( suffix == "jov" || suffix == "cpl" || suffix == "j73" || suffix == "jovial" )
-#else //It is a case insensitive system
-     if ( suffix == "jov" || suffix == "cpl" || suffix == "j73" || suffix == "jovial" )
-#endif
-        {
-          returnValue = true;
-        }
-
-     return returnValue;
-   }
-
-// DQ (28/8/2017): Adding language support.
-bool
-CommandlineProcessing::isCobolFileNameSuffix ( const std::string & suffix )
-   {
-     bool returnValue = false;
-
-  // For now define CASE_SENSITIVE_SYSTEM to be true, as we are currently a UNIXish project.
-
-  // Rasmussen (11/08/2017): Changed Cobol file extension to reflect usage found on web
-#if(CASE_SENSITIVE_SYSTEM == 1)
-     if ( suffix == "cob"  || suffix == "cbl" || suffix == "cobol")
-#else //It is a case insensitive system
-     if ( suffix == "cob"  || suffix == "cbl" || suffix == "cobol")
 #endif
         {
           returnValue = true;

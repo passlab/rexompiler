@@ -330,7 +330,7 @@ AstTests::runAllTests(SgProject* sageProject)
   // DQ (9/21/2013): Force this to be skipped where ROSE's AST merge feature is active (since the point of 
   // merge is to share IR nodes, it is pointless to detect sharing and generate output for each identified case).
   // if (sageProject->get_astMerge() == false)
-     if (sageProject->get_astMerge() == false && sageProject->get_Fortran_only() == false)
+     if (sageProject->get_ast_merge() == false && sageProject->get_Fortran_only() == false)
         {
        // DQ (4/2/2012): Added test for unique IR nodes in the AST.
           if ( SgProject::get_verbose() >= DIAGNOSTICS_VERBOSE_LEVEL )
@@ -814,7 +814,7 @@ AstTests::runAllTests(SgProject* sageProject)
   // DQ (9/21/2013): Force this to be skipped where ROSE's AST merge feature is active (since the point of 
   // detect inconsistancy in parent child relationships and these will be present when astMerge is active.
   // if (sageProject->get_astMerge() == false)
-     if (sageProject->get_astMerge() == false && sageProject->get_Fortran_only() == false)
+     if (sageProject->get_ast_merge() == false && sageProject->get_Fortran_only() == false)
         {
        // DQ (3/19/2012): Added test from Robb for parents of the IR nodes in the AST.
           TestForParentsMatchingASTStructure::test(sageProject);
@@ -959,8 +959,9 @@ TestAstProperties::evaluateSynthesizedAttribute(SgNode* node, SynthesizedAttribu
   // DQ (11/20/2013): Added SgJavaImportStatementList and SgJavaClassDeclarationList to the exception list since they don't have a source position field.
   // if ( !isSgFile(node) && !isSgProject(node) )
   // if ( !isSgFile(node) && !isSgProject(node) && !isSgAsmNode(node))
-  // if ( !isSgFile(node) && !isSgProject(node) && !isSgAsmNode(node) && !isSgFileList(node) && !isSgDirectory(node))
-     if ( !isSgFile(node) && !isSgProject(node) && !isSgFileList(node) && !isSgDirectory(node) ) //&& !isSgJavaImportStatementList(node) && !isSgJavaClassDeclarationList(node) )
+  // if ( !isSgFile(node) && !isSgProject(node) && !isSgFileList(node) && !isSgDirectory(node) ) //&& !isSgJavaImportStatementList(node) && !isSgJavaClassDeclarationList(node) )
+     bool isFileNode = isSgFile(node) || isSgProject(node) || isSgFileList(node) || isSgDirectory(node);
+     if (!isFileNode)
         {
           Sg_File_Info* fileInfo = node->get_file_info();
           if ( fileInfo == NULL )
@@ -1369,11 +1370,15 @@ TestAstProperties::evaluateSynthesizedAttribute(SgNode* node, SynthesizedAttribu
                          SgInitializedNamePtrList::const_iterator result = std::find(initNameList.begin(), initNameList.end(), initializedName);
                          ROSE_ASSERT(result != initNameList.end());
                        }
-                      else
+                      else if (isSgTemplateDeclaration(parentParameterList->get_parent()))
                        {
                       // DQ (12/6/2011): Now that we have the template declarations in the AST, this could be a SgTemplateDeclaration.
-                         ROSE_ASSERT(isSgTemplateDeclaration(parentParameterList->get_parent()) != NULL);
                          printf ("WARNING: There are tests missing for the case of a parentParameterList->get_parent() that is a SgTemplateDeclaration \n");
+                       }
+                       else
+                       {
+                         //ROSE_ASSERT(isSgAdaAcceptStmt(parentParameterList->get_parent()));
+                         ROSE_ASSERT(NULL);
                        }
                   }
                  else
@@ -2714,12 +2719,36 @@ TestAstForProperlySetDefiningAndNondefiningDeclarations::visit ( SgNode* node )
                        }
                   }
 
+#if 0
+            // DQ (8/14/2020): After redesiging how access modifiers are set, we want to allow the defining and non-defigning declarations to have different access specifications.
             // DQ (6/30/2014): I think this is not an error for SgTemplateInstantiationDecl.
             // ROSE_ASSERT(definingDeclaration_access_modifier == firstNondefiningDeclaration_access_modifier);
                if (isSgTemplateInstantiationDecl(definingDeclaration) == NULL && firstNondefiningDeclaration->get_parent() == definingDeclaration->get_parent())
-                 {
-                   ROSE_ASSERT(definingDeclaration_access_modifier == firstNondefiningDeclaration_access_modifier);
-                 }
+                  {
+                 // DQ (8/11/2020): Debugging new change to e_default = e_public was changed from e_default = 4.
+                    if (definingDeclaration_access_modifier != firstNondefiningDeclaration_access_modifier)
+                       {
+#if 0
+                         printf ("Error: in AST consistancy tests: definingDeclaration_access_modifier != firstNondefiningDeclaration_access_modifier \n");
+#endif
+#if 0
+                         printf (" --- definingDeclaration = %p = %s \n",definingDeclaration,definingDeclaration->class_name().c_str());
+                         printf (" --- definingDeclaration_access_modifier         = %d \n",definingDeclaration_access_modifier);
+                         definingDeclaration->get_declarationModifier().get_accessModifier().display("definingDeclaration: definingDeclaration_access_modifier != firstNondefiningDeclaration_access_modifier");
+                         definingDeclaration->get_file_info()->display("definingDeclaration");
+                         printf (" --- firstNondefiningDeclaration_access_modifier = %d \n",firstNondefiningDeclaration_access_modifier);
+                         printf (" --- firstNondefiningDeclaration = %p = %s \n",firstNondefiningDeclaration,firstNondefiningDeclaration->class_name().c_str());
+                         firstNondefiningDeclaration->get_declarationModifier().get_accessModifier().display("firstNondefiningDeclaration: definingDeclaration_access_modifier != firstNondefiningDeclaration_access_modifier");
+                         firstNondefiningDeclaration->get_file_info()->display("firstNondefiningDeclaration");
+                      // definingDeclaration_access_modifier.display("definingDeclaration: definingDeclaration_access_modifier != firstNondefiningDeclaration_access_modifier");
+                      // firstNondefiningDeclaration_access_modifier.display("firstNondefiningDeclaration: definingDeclaration_access_modifier != firstNondefiningDeclaration_access_modifier");
+#endif
+                       }
+
+                 // DQ (8/11/2020): Test by commenting this out.  It might not make since to enforce this.
+                 // ROSE_ASSERT(definingDeclaration_access_modifier == firstNondefiningDeclaration_access_modifier);
+                  }
+#endif
              }
         }
 
@@ -2778,8 +2807,24 @@ TestAstForProperlySetDefiningAndNondefiningDeclarations::visit ( SgNode* node )
             // build a special non-defining declaration for these declarations.
                if (declaration != definingDeclaration)
                   {
-                    printf ("Warning: declaration %p = %s not equal to definingDeclaration = %p \n",
-                         declaration,declaration->sage_class_name(),definingDeclaration);
+                    printf ("declaration = %p (%s)\n",
+                                 declaration,
+                                 declaration->class_name().c_str());
+                    if (definingDeclaration) {
+                      printf ("definingDeclaration = %p (%s)\n",
+                                   definingDeclaration,
+                                   definingDeclaration->class_name().c_str());
+                    }
+                    if (declaration->get_definingDeclaration()) {
+                      printf ("declaration->get_definingDeclaration() = %p (%s)\n",
+                                   declaration->get_definingDeclaration(),
+                                   declaration->get_definingDeclaration()->class_name().c_str());
+                    }
+                    if (declaration->get_firstNondefiningDeclaration()) {
+                      printf ("declaration->get_firstNondefiningDeclaration() = %p (%s)\n",
+                                   declaration->get_firstNondefiningDeclaration(),
+                                   declaration->get_firstNondefiningDeclaration()->class_name().c_str());
+                    }
                   }
                ROSE_ASSERT(declaration == definingDeclaration);
                break;
@@ -2819,6 +2864,9 @@ TestAstForProperlySetDefiningAndNondefiningDeclarations::visit ( SgNode* node )
             // non-defining declarations in generated internally).
                if (firstNondefiningDeclaration == NULL)
                   {
+                 // DQ (8/11/2020): Fixed compiler warning.
+                 // ROSE_ASSERT(declaration->variantT() != NULL);
+                    ROSE_ASSERT(declaration != NULL);
                     switch (declaration->variantT())
                        {
                       // These nodes should have a non-defining declaration even if only a defining 
@@ -3059,13 +3107,15 @@ TestAstSymbolTables::visit ( SgNode* node )
                                    declarationStatement,declarationStatement->class_name().c_str(),SageInterface::get_name(declarationStatement).c_str(),
                                    symbol,symbol->class_name().c_str(),SageInterface::get_name(scope).c_str(),
                                    scope,scope->class_name().c_str(),SageInterface::get_name(scope).c_str());
+#if 0
                               declarationStatement->get_startOfConstruct()->display("declarationStatement->get_symbol_from_symbol_table() == NULL: debug");
-
+#endif
+#if 0
                               printf ("******************** START **********************\n");
                               printf ("In AST Consistantcy tests: Output the symbol table for scope = %p = %s: \n",scope,scope->class_name().c_str());
                               SageInterface::outputLocalSymbolTables(scope);
                               printf ("******************** DONE ***********************\n");
-
+#endif
 #if 1
                            // DQ (2/28/2018): Added testing (Tristan indicates that this is a problem for Fortran, above).
                               ROSE_ASSERT(declarationStatement->get_firstNondefiningDeclaration() != NULL);
@@ -3408,6 +3458,29 @@ TestAstSymbolTables::visit ( SgNode* node )
           symbolTable->print();
 #endif
         }
+#if 0
+    // for each namespace declaration: there are at least two SgNamespaceDefinitionStatement nodes:
+    // global definition and firstNondefinining declaration's definition
+     SgNamespaceDeclarationStatement *nsd = isSgNamespaceDeclarationStatement(node);
+       // global_definition should have the same alias symbol count as the first definition's symbol table
+       // check first nondefinining declaration
+     if (nsd&& nsd->get_firstNondefiningDeclaration() == nsd)
+     {
+       SgNamespaceDefinitionStatement* local_def = nsd->get_definition();
+       SgNamespaceDefinitionStatement* global_def = local_def->get_global_definition();
+
+       ROSE_ASSERT(local_def && global_def && (local_def!=global_def));
+
+       size_t countL= local_def->get_symbol_table()->get_symbols().size();
+       size_t countG= global_def->get_symbol_table()->get_symbols().size();
+       if (countG < countL)
+       {
+         printf ("Error: namespace definitions: global definition =%p alias symbol count %zd is smaller than local definition=%p symbol count %zd\n",
+            global_def, countG, local_def, countL);
+         ROSE_ASSERT(false);
+       }
+     }
+#endif
    }
 
 
@@ -4953,6 +5026,18 @@ TestParentPointersInMemoryPool::visit(SgNode* node)
                           ROSE_ASSERT(false);
                       }
                       break;
+                  }
+
+            // DQ (6/3/2019): Added support for SgIncludeFile (parent is a SgIncludeDirectiveStatement).
+            // case V_SgIncludeDirectiveStatement:
+               case V_SgIncludeFile:
+                  {
+                 // DQ (10/22/2019): Note that there is no parent pointer defined for this IR node, so no warning message really make sense, I think.
+#if 0
+                    printf ("NOTE: In AST Consistancy tests: TestParentPointersInMemoryPool::visit(): case SgIncludeFile: parent == NULL \n");
+#endif
+                 // ROSE_ASSERT(support->get_parent() != NULL);
+                    break;
                   }
 
                default:

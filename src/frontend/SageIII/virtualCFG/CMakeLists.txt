@@ -6,10 +6,6 @@ if(NOT enable-internalFrontendDevelopment)
     interproceduralCFG.C)
 endif()
 
-if(enable-binary-analysis)
-  list(APPEND virtualCFG_SRC virtualBinCFG.C)
-endif()
-
 add_library(virtualCFG OBJECT ${virtualCFG_SRC})
 add_dependencies(virtualCFG rosetta_generated)
 

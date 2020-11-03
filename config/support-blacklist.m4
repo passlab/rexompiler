@@ -36,8 +36,19 @@ AC_DEFUN([ROSE_SUPPORT_BLACKLIST],[
         if test "$rose_boost_version" -ge 106100 -a "$rose_boost_version" -le 106300 -a \
                 "$FRONTEND_CXX_COMPILER_VENDOR" = "intel" -a \
                 "$support_binaries_frontend" = "yes"; then
-            prohibited="binary analysis enabled with boost 1.62 with Intel compiler"
+            prohibited="binary analysis enabled with boost 1.61 through 1.63 with Intel compiler"
             break
+        fi
+
+        # Boost-1.65.x have segmentation faults in the destructors of some serialization static objects within the Boost
+        # library. I thought this was just for GCC 4 and 5, but after enabling wider testing, we're also getting the
+        # segmentation faults with GCC 7 and 8. Therefore, this version of boost is blacklisted if binary analysis
+        # support is enabled.
+        if test "$rose_boost_version" = 106500 -o "$rose_boost_version" = 106501; then
+            if test "$support_binaries_frontend" = yes -a "$FRONTEND_CXX_COMPILER_VENDOR" = gnu ; then
+                prohibited="binary analysis enabled with boost 1.65 with GCC compiler"
+                break
+            fi
         fi
 
         # Boost-1.68.0 has serialization bugs reported by numerous other projects. Within ROSE, 1.68.0 fails the
@@ -55,17 +66,6 @@ AC_DEFUN([ROSE_SUPPORT_BLACKLIST],[
             if test "$HOST_CXX_LANGUAGE" = "c++17" -o "$HOST_CXX_LANGUAGE" = "gnu++17"; then
                 prohibited="boost-$rose_boost_version with $HOST_CXX_LANGUAGE (problems with boost::lock)"
                 break
-            fi
-        fi
-
-        # Boost versions 1.69.0 and later are not compatible with the edg binaries generated as of January 2020. 
-        # Any bost 1.69.0 and later need to build ROSE from edg source.
-        if test "$rose_boost_version" -ge 106900; then
-            if test "$support_c_frontend" = "yes" -o "$support_cxx_frontend" = "yes"; then
-                if test "$has_edg_source" = "no"; then
-                    prohibited="boost-1.69.0 and later are not compatible with EDG binary"
-                    break
-                fi
             fi
         fi
 

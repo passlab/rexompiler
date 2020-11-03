@@ -75,9 +75,9 @@ void makeEdge(NodeT from, NodeT to, vector<EdgeT>& result) {
     SgReturnStmt* rs = isSgReturnStmt(fromNode);
     if (fromIndex == 1 || (fromIndex == 0 && !rs->get_expression())) return;
   }
-  if (isSgStopOrPauseStatement(fromNode) && toNode == fromNode->get_parent()) {
-    SgStopOrPauseStatement* sps = isSgStopOrPauseStatement(fromNode);
-    if (fromIndex == 0 && sps->get_stop_or_pause() == SgStopOrPauseStatement::e_stop) return;
+  if (isSgProcessControlStatement(fromNode) && toNode == fromNode->get_parent()) {
+    SgProcessControlStatement* sps = isSgProcessControlStatement(fromNode);
+    if (fromIndex == 0 && sps->get_control_kind() == SgProcessControlStatement::e_stop) return;
   }
   if (fromIndex == 1 && isSgSwitchStatement(fromNode) &&
       isSgSwitchStatement(fromNode)->get_body() == toNode) return;
@@ -88,6 +88,7 @@ void makeEdge(NodeT from, NodeT to, vector<EdgeT>& result) {
 
 static void addIncomingFortranGotos(SgStatement* stmt, unsigned int index, vector<CFGEdge>& result) {
   bool hasLabel = false;
+  ROSE_ASSERT(stmt != NULL);
   if (index == 0 && stmt->get_numeric_label()) hasLabel = true;
   if (index == stmt->cfgIndexForEnd() && stmt->has_end_numeric_label()) hasLabel = true;
   if (index == 0 &&
@@ -170,6 +171,8 @@ static CFGNode getNodeJustAfterInContainer(SgNode* n) {
   // Only handles next-statement control flow
   SgNode* parent = n->get_parent();
 
+  ROSE_ASSERT(parent != NULL);
+
 #if DEBUG_CALLGRAPH
   printf ("In getNodeJustAfterInContainer(): n = %p = %s parent = %p = %s \n",n,n->class_name().c_str(),parent,parent->class_name().c_str());
 #endif
@@ -225,15 +228,17 @@ static CFGNode getNodeJustAfterInContainer(SgNode* n) {
           printf ("In getNodeJustAfterInContainer(): found parent as SgLabelStatement: parentLabelStatement = %p = %s \n",parentLabelStatement,parentLabelStatement->class_name().c_str());
 #endif
           parent = parentLabelStatement->get_parent();
+          ROSE_ASSERT(parent != NULL);
           unsigned int idx;
 #if 0
           idx = parent->cfgFindNextChildIndex(parentLabelStatement);
 #else
           // MS (12/9/2019 ) - handling sequences of labels
           while(isSgLabelStatement(parent)) {
-            parentLabelStatement=isSgLabelStatement(parent);
-            parent=parent->get_parent();
+            parentLabelStatement = isSgLabelStatement(parent);
+            parent = parent->get_parent();
           }
+          ROSE_ASSERT(parent != NULL);
           idx = parent->cfgFindNextChildIndex(parentLabelStatement);
 #endif
 
@@ -270,10 +275,6 @@ static CFGNode getNodeJustAfterInContainer(SgNode* n) {
 #endif
              }
         }
-
-
-// DQ (10/12/2012): Added assertion.
-  ROSE_ASSERT(parent != NULL);
 
   unsigned int idx = parent->cfgFindNextChildIndex(n);
   if ( idx > parent->cfgIndexForEnd() ) {
@@ -675,9 +676,10 @@ unsigned int SgForStatement::cfgFindChildIndex(SgNode* n)
                        {
                          cerr<<"Error: SgForStatement::cfgFindChildIndex(): cannot find a matching child for SgNode n:";
                          cerr<<n->class_name()<<endl;
-                         if (isSgLocatedNode(n))
-                         {
-                           isSgLocatedNode(n)->get_file_info()->display();
+                         SgLocatedNode* locNode = isSgLocatedNode(n);
+                         if (locNode != NULL) {
+                           ROSE_ASSERT(locNode != NULL);
+                           locNode->get_file_info()->display();
                          }
                          ROSE_ASSERT (!"Bad child in for statement");
                        }
@@ -833,9 +835,10 @@ unsigned int SgRangeBasedForStatement::cfgFindChildIndex(SgNode* n)
                                       {
                                         cerr << "Error: SgForStatement::cfgFindChildIndex(): cannot find a matching child for SgNode n:";
                                         cerr << n->class_name() << endl;
-                                        if (isSgLocatedNode(n))
+                                        SgLocatedNode* located = isSgLocatedNode(n);
+                                        if (located != NULL)
                                            {
-                                             isSgLocatedNode(n)->get_file_info()->display();
+                                             located->get_file_info()->display();
                                            }
                                         ROSE_ASSERT (!"Bad child in range based for statement");
                                       }
@@ -2344,20 +2347,20 @@ std::vector<CFGEdge> SgUseStatement::cfgInEdges(unsigned int idx) {
 }
 
 unsigned int
-SgStopOrPauseStatement::cfgIndexForEnd() const {
+SgProcessControlStatement::cfgIndexForEnd() const {
   return 0;
 }
 
-std::vector<CFGEdge> SgStopOrPauseStatement::cfgOutEdges(unsigned int idx) {
+std::vector<CFGEdge> SgProcessControlStatement::cfgOutEdges(unsigned int idx) {
   ROSE_ASSERT (idx == 0);
   std::vector<CFGEdge> result;
-  if (this->get_stop_or_pause() == SgStopOrPauseStatement::e_pause) {
+  if (this->get_control_kind() == SgProcessControlStatement::e_pause) {
     makeEdge(CFGNode(this, idx), getNodeJustAfterInContainer(this), result);
   }
   return result;
 }
 
-std::vector<CFGEdge> SgStopOrPauseStatement::cfgInEdges(unsigned int idx) {
+std::vector<CFGEdge> SgProcessControlStatement::cfgInEdges(unsigned int idx) {
   ROSE_ASSERT (idx == 0);
   std::vector<CFGEdge> result;
   addIncomingFortranGotos(this, idx, result);
@@ -2365,7 +2368,7 @@ std::vector<CFGEdge> SgStopOrPauseStatement::cfgInEdges(unsigned int idx) {
   return result;
 }
 
-// Rasmussen (9/20/2018): TODO: Are image control statements correct?
+// CR (9/20/2018): TODO: Are image control statements correct?
 // I think expressions from the sync-stat-list may need to be added.
 unsigned int
 SgSyncAllStatement::cfgIndexForEnd() const {
@@ -3431,7 +3434,7 @@ SgAssociateStatement::cfgIndexForEnd() const {
 std::vector<CFGEdge> SgAssociateStatement::cfgOutEdges(unsigned int idx) {
   std::vector<CFGEdge> result;
   switch (idx) {
-    case 0: /* ROSE_ASSERT (!"No longer support, having SgDeclarationStatementPtrList instead");*/ break; 
+    case 0: /* ROSE_ASSERT (!"No longer support, having SgDeclarationStatementPtrList instead");*/ break;
            // makeEdge(CFGNode(this, idx), this->get_variable_declaration()->cfgForBeginning(), result); break;
     case 1: makeEdge(CFGNode(this, idx), this->get_body()->cfgForBeginning(), result); break;
     case 2: {
