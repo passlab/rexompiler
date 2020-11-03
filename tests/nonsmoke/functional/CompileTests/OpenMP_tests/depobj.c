@@ -37,7 +37,7 @@ void driver(int update, float a[], float b[], int n, omp_depend_t *obj)
     #pragma omp parallel num_threads(2)
     #pragma omp single
     {
-        #pragma omp task depend(depobj: *obj)   // Task 1, uses depend object
+        #pragma omp task depend(depobj: obj)   // Task 1, uses depend object
         update_copy(update, a, b, n);
         
         #pragma omp task depend(in: a[0:n])      // Task 2, only read a
