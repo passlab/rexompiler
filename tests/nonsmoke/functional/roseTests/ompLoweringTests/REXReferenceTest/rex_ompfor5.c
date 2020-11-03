@@ -8,27 +8,27 @@
 #endif 
 #include "rex_kmp.h" 
 
-struct OUT__1__5793___data 
+struct OUT__1__3484___data 
 {
   void *iend_p;
   void *ist_p;
 }
 ;
-static void OUT__1__5793__(int *__global_tid,int *__bound_tid,void *__out_argv);
+static void OUT__1__3484__(int *__global_tid,int *__bound_tid,void *__out_argv);
 
 void foo(int iend,int ist)
 {
   int i;
-  struct OUT__1__5793___data __out_argv1__5793__;
-  __out_argv1__5793__ . ist_p = ((void *)(&ist));
-  __out_argv1__5793__ . iend_p = ((void *)(&iend));
-  __kmpc_fork_call(0,1,OUT__1__5793__,&__out_argv1__5793__);
+  struct OUT__1__3484___data __out_argv1__3484__;
+  __out_argv1__3484__ . ist_p = ((void *)(&ist));
+  __out_argv1__3484__ . iend_p = ((void *)(&iend));
+  __kmpc_fork_call(0,1,OUT__1__3484__,&__out_argv1__3484__);
 }
 
-static void OUT__1__5793__(int *__global_tid,int *__bound_tid,void *__out_argv)
+static void OUT__1__3484__(int *__global_tid,int *__bound_tid,void *__out_argv)
 {
-  int *iend = (int *)(((struct OUT__1__5793___data *)__out_argv) -> iend_p);
-  int *ist = (int *)(((struct OUT__1__5793___data *)__out_argv) -> ist_p);
+  int *iend = (int *)(((struct OUT__1__3484___data *)__out_argv) -> iend_p);
+  int *ist = (int *)(((struct OUT__1__3484___data *)__out_argv) -> ist_p);
   if (__kmpc_single(0, *__global_tid)) {
     printf("Using %d threads.\n",(omp_get_num_threads()));
     __kmpc_end_single(0, *__global_tid);

@@ -33,16 +33,16 @@ void foo(int lower,int upper,int stride)
     __kmpc_barrier(0,(__kmpc_global_thread_num(0)));
   }
 }
-static void OUT__1__5891__(int *__global_tid,int *__bound_tid,void *__out_argv);
+static void OUT__1__4124__(int *__global_tid,int *__bound_tid,void *__out_argv);
 
 int main(int argc,char **argv)
 {
   int status = 0;
-  __kmpc_fork_call(0,1,OUT__1__5891__,0);
+  __kmpc_fork_call(0,1,OUT__1__4124__,0);
   return 0;
 }
 
-static void OUT__1__5891__(int *__global_tid,int *__bound_tid,void *__out_argv)
+static void OUT__1__4124__(int *__global_tid,int *__bound_tid,void *__out_argv)
 {
   if (__kmpc_single(0, *__global_tid)) {
     printf("Using %d threads.\n",(omp_get_num_threads()));

@@ -9,27 +9,27 @@
 #include "rex_kmp.h" 
 int a[20];
 
-struct OUT__1__5791___data 
+struct OUT__1__3482___data 
 {
   void *j_p;
 }
 ;
-static void OUT__1__5791__(int *__global_tid,int *__bound_tid,void *__out_argv);
+static void OUT__1__3482__(int *__global_tid,int *__bound_tid,void *__out_argv);
 
 int main(int argc,char **argv)
 {
   int status = 0;
   int i;
   int j = 100;
-  struct OUT__1__5791___data __out_argv1__5791__;
-  __out_argv1__5791__ . j_p = ((void *)(&j));
-  __kmpc_fork_call(0,1,OUT__1__5791__,&__out_argv1__5791__);
+  struct OUT__1__3482___data __out_argv1__3482__;
+  __out_argv1__3482__ . j_p = ((void *)(&j));
+  __kmpc_fork_call(0,1,OUT__1__3482__,&__out_argv1__3482__);
   return 0;
 }
 
-static void OUT__1__5791__(int *__global_tid,int *__bound_tid,void *__out_argv)
+static void OUT__1__3482__(int *__global_tid,int *__bound_tid,void *__out_argv)
 {
-  int *j = (int *)(((struct OUT__1__5791___data *)__out_argv) -> j_p);
+  int *j = (int *)(((struct OUT__1__3482___data *)__out_argv) -> j_p);
   if (__kmpc_single(0, *__global_tid)) {
     printf("Using %d threads.\n",(omp_get_num_threads()));
     __kmpc_end_single(0, *__global_tid);

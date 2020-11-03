@@ -16,16 +16,16 @@
 #endif 
 #include "rex_kmp.h" 
 int a[20];
-static void OUT__1__5794__(int *__global_tid,int *__bound_tid,void *__out_argv);
+static void OUT__1__3485__(int *__global_tid,int *__bound_tid,void *__out_argv);
 
 int main(int argc,char **argv)
 {
   int status = 0;
   int i;
-  __kmpc_fork_call(0,1,OUT__1__5794__,0);
+  __kmpc_fork_call(0,1,OUT__1__3485__,0);
 }
 
-static void OUT__1__5794__(int *__global_tid,int *__bound_tid,void *__out_argv)
+static void OUT__1__3485__(int *__global_tid,int *__bound_tid,void *__out_argv)
 {
   if (__kmpc_single(0, *__global_tid)) {
     printf("Using %d threads.\n",(omp_get_num_threads()));

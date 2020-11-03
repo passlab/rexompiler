@@ -6,18 +6,18 @@
 #include <omp.h>
 #endif 
 #include "rex_kmp.h" 
-static void OUT__1__6526__(int *__global_tid,int *__bound_tid,void *__out_argv);
+static void OUT__1__4217__(int *__global_tid,int *__bound_tid,void *__out_argv);
 
 int main(int argc,char **argv)
 {
   int status = 0;
   int i;
   int j;
-  __kmpc_fork_call(0,1,OUT__1__6526__,0);
+  __kmpc_fork_call(0,1,OUT__1__4217__,0);
   return 0;
 }
 
-static void OUT__1__6526__(int *__global_tid,int *__bound_tid,void *__out_argv)
+static void OUT__1__4217__(int *__global_tid,int *__bound_tid,void *__out_argv)
 {
   if (__kmpc_single(0, *__global_tid)) {
     printf("Using %d threads.\n",(omp_get_num_threads()));

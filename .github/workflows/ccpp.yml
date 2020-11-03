@@ -112,3 +112,5 @@ jobs:
         make check -j2
         cd $GITHUB_WORKSPACE/../rex_build/tests/nonsmoke/functional/roseTests/astInterfaceTests
         make check -j2
+        cd $GITHUB_WORKSPACE/../rex_build/tests/nonsmoke/functional/roseTests/ompLoweringTests
+        make check -j2
