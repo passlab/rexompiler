@@ -56,6 +56,7 @@ C_TESTCODES_REQUIRED_TO_COMPILE = \
 REX_C_TESTCODES_REQUIRED_TO_COMPILE = \
 	ompfor5.c \
 	ompfor6.c \
+	ompfor7.c \
 	twoRegions.c
 
 #        axpy_ompacc2.c 
@@ -122,14 +123,14 @@ C_TESTCODES_REQUIRED_TO_RUN = \
 	#ompGetNumThreads.c \
 	#orphaned-directives.c \
 	parallel.c \
-	#parallel-if.c \
-	#parallel-if-numthreads.c \
+	parallel-if.c \
+	parallel-if-numthreads.c \
 	parallel-numthreads.c \
 	parallel-reduction.c \
 	parallel-reduction2.c \
 	#parallelsections.c \
 	#parallelfor.c \
-	#parallelfor2.c \
+	parallelfor2.c \
 	#pi.c \
 	#prettyfunc.c \
 	#private.c \
@@ -162,9 +163,14 @@ REX_C_TESTCODES_REQUIRED_TO_RUN = \
 	ompfor-decremental.c \
 	ompfor-static.c \
 	parallel.c \
+	parallel-if.c \
+	parallel-if-numthreads.c \
+	parallel-numthreads.c \
 	parallel-reduction.c \
 	parallel-reduction2.c \
+	parallelfor2.c \
 	single.c \
+	single3.c \
 	omp_version.c
 
 # DQ (9/27/2009): Conditionally compile these files (fail in OSX due to lack of OSX

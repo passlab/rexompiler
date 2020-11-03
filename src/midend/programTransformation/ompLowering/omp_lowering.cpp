@@ -2413,25 +2413,22 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
         SgIfStmt* if_statement = buildIfStmt(if_condition, s1, NULL);
         SgExprStatement* else_stmt = NULL;
         SgExpression* thread_global_tid = get_kmpc_global_tid(node, p_scope);
+        SgBasicBlock* false_body = buildBasicBlock();
         // if global id is available, it can be used directly.
         if (isSgPointerDerefExp(thread_global_tid)) {
             parameters = buildExprListExp(buildAddressOfOp(thread_global_tid), buildIntVal(0), outlined_parameter);
-            else_stmt = buildFunctionCallStmt(outlined_func->get_name(), buildVoidType(), parameters, p_scope);
-            if_statement->set_false_body(else_stmt);
         }
         // if not, we need to assign the value to a int* variable and then pass the pointer to the outlined function.
         else {
-            SgBasicBlock* false_body = buildBasicBlock();
-            SgVariableDeclaration* global_tid_declaration = buildVariableDeclaration(SgName("__global_tid"), buildIntType(), NULL, false_body);
+            SgVariableDeclaration* global_tid_declaration = buildVariableDeclaration(SgName("__global_tid"), buildIntType(), buildAssignInitializer(thread_global_tid), false_body);
             SgExpression* global_tid_variable = buildVarRefExp(global_tid_declaration);
-            SgExprStatement* global_tid_assignment = buildAssignStatement(global_tid_variable, thread_global_tid);
-            parameters = buildExprListExp(buildAddressOfOp(global_tid_variable), buildIntVal(0), outlined_parameter);
-            else_stmt = buildFunctionCallStmt(outlined_func->get_name(), buildVoidType(), parameters, p_scope);
             false_body->append_statement(global_tid_declaration);
-            false_body->append_statement(global_tid_assignment);
-            false_body->append_statement(else_stmt);
-            if_statement->set_false_body(false_body);
+            parameters = buildExprListExp(buildAddressOfOp(global_tid_variable), buildIntVal(0), outlined_parameter);
         }
+        else_stmt = buildFunctionCallStmt(outlined_func->get_name(), buildVoidType(), parameters, p_scope);
+        false_body->append_statement(else_stmt);
+        if_statement->set_false_body(false_body);
+        false_body->set_parent(if_statement);
 
         // the head and tail are both changed to the if statement because all the other transformed code are included as children of if statement
         s1 = if_statement;
