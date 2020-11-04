@@ -41,6 +41,7 @@ static SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement*, std::pair<
 static void buildVariableList(SgOmpVariablesClause*);
 static SgOmpExpressionClause* convertExpressionClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpClause* convertSimpleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpDepobjUpdateClause *convertDepobjUpdateClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause);
 static SgOmpScheduleClause* convertScheduleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDistScheduleClause* convertDistScheduleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDefaultmapClause* convertDefaultmapClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
@@ -1826,6 +1827,56 @@ namespace OmpSupport
     setComplexClauseVariableList(result, current_clause); 
     return result;
   }
+  
+  static SgOmpClause::omp_depobj_modifier_enum toSgOmpClauseDepobjModifierType(OpenMPDepobjUpdateClauseDependeceType type)
+  {
+    SgOmpClause::omp_depobj_modifier_enum result = SgOmpClause::e_omp_depobj_modifier_unknown;
+    switch (type)
+    {
+        case OMPC_DEPOBJ_UPDATE_DEPENDENCE_TYPE_in:
+        {
+            result = SgOmpClause::omp_depobj_modifier_enum::e_omp_depobj_modifier_in;
+            break;
+        }
+        case OMPC_DEPOBJ_UPDATE_DEPENDENCE_TYPE_out:
+        {
+            result = SgOmpClause::omp_depobj_modifier_enum::e_omp_depobj_modifier_out;
+            break;
+        }
+        case OMPC_DEPOBJ_UPDATE_DEPENDENCE_TYPE_inout:
+        {
+            result = SgOmpClause::omp_depobj_modifier_enum::e_omp_depobj_modifier_inout;
+            break;
+        }
+        case OMPC_DEPOBJ_UPDATE_DEPENDENCE_TYPE_mutexinoutset:
+        {
+            result = SgOmpClause::omp_depobj_modifier_enum::e_omp_depobj_modifier_mutexinoutset;
+            break;
+        }
+        case OMPC_DEPOBJ_UPDATE_DEPENDENCE_TYPE_depobj:
+        {
+            result = SgOmpClause::omp_depobj_modifier_enum::e_omp_depobj_modifier_depobj;
+            break;
+        }
+        case OMPC_DEPOBJ_UPDATE_DEPENDENCE_TYPE_sink:
+        {
+            result = SgOmpClause::omp_depobj_modifier_enum::e_omp_depobj_modifier_sink;
+            break;
+        }
+        case OMPC_DEPOBJ_UPDATE_DEPENDENCE_TYPE_source:
+        {
+            result = SgOmpClause::omp_depobj_modifier_enum::e_omp_depobj_modifier_source;
+            break;
+        }
+        default:
+        {
+            printf("error: unacceptable omp construct enum for dependence type conversion:%d\n", type);
+            ROSE_ASSERT(false);
+            break;
+        }
+    }
+    return result;
+  }
 
   static SgOmpClause::omp_dependence_type_enum toSgOmpClauseDependenceType(OpenMPDependClauseType type)
   {
@@ -3290,6 +3341,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_for:
         case OMPD_target:
         case OMPD_critical:
+        case OMPD_depobj:
         case OMPD_sections:
         case OMPD_section:
         case OMPD_simd:
@@ -3431,6 +3483,10 @@ SgOmpClause* convertSimpleClause(SgOmpClauseBodyStatement* clause_body, std::pai
             sg_clause = new SgOmpRelaxedClause();
             break;
         }
+        case OMPC_destroy: {
+            sg_clause = new SgOmpDestroyClause();
+            break;
+        } break;
         default: {
             cerr<<"error: unknown clause "<<endl;
             ROSE_ASSERT(false);
@@ -3589,6 +3645,11 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             result = new SgOmpCriticalStatement(NULL, body, SgName(name));
             break;
         }
+        case OMPD_depobj: {
+            std::string name = ((OpenMPDepobjDirective*)(current_OpenMPIR_to_SageIII.second))->getDepobj();
+            result = new SgOmpDepobjStatement(NULL, body, SgName(name));
+            break;
+        }
         case OMPD_sections: {
             result = new SgOmpSectionsStatement(NULL, body);
             break;
@@ -3664,7 +3725,8 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             case OMPC_relaxed:
             case OMPC_mergeable:
             case OMPC_untied:
-            case OMPC_nogroup:         
+            case OMPC_nogroup:
+            case OMPC_destroy:         
             case OMPC_nowait: {
                 convertSimpleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
@@ -3687,6 +3749,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             }
             case OMPC_depend: {
                 convertDependClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            case OMPC_depobj_update: {
+                convertDepobjUpdateClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             default: {
@@ -3732,6 +3798,23 @@ SgStatement* convertOmpThreadprivateStatement(std::pair<SgPragmaDeclaration*, Op
 
     statement->set_definingDeclaration(statement);
     return statement;
+}
+
+SgOmpDepobjUpdateClause *convertDepobjUpdateClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser depobj update clause is ready.\n");
+    
+    OpenMPDepobjUpdateClauseDependeceType modifier = ((OpenMPDepobjUpdateClause*)current_omp_clause)->getType();
+    SgOmpClause::omp_depobj_modifier_enum sg_type = toSgOmpClauseDepobjModifierType(modifier);
+    SgOmpDepobjUpdateClause *result = new SgOmpDepobjUpdateClause(sg_type);
+    ROSE_ASSERT(result);
+    
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+    
+    printf("ompparser depobj update clause added!\n");
+    return result;
 }
 
 SgOmpScheduleClause* convertScheduleClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
@@ -3916,6 +3999,11 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         case OMPD_critical: {
             std::string name = ((OpenMPCriticalDirective*)(current_OpenMPIR_to_SageIII.second))->getCriticalName();
             result = new SgOmpCriticalStatement(NULL, NULL, SgName(name));
+            break;
+        }
+        case OMPD_depobj: {
+            std::string name = ((OpenMPDepobjDirective*)(current_OpenMPIR_to_SageIII.second))->getDepobj();
+            result = new SgOmpDepobjStatement(NULL, NULL, SgName(name));
             break;
         }
         case OMPD_metadirective: {
@@ -4928,6 +5016,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_for:
         case OMPD_target:
         case OMPD_critical:
+        case OMPD_depobj:
         case OMPD_sections:
         case OMPD_section:
         case OMPD_simd:
@@ -4986,6 +5075,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_read:
                 case OMPC_write:
                 case OMPC_update:
+                case OMPC_depobj_update:
                 case OMPC_capture:
                 case OMPC_seq_cst:
                 case OMPC_acq_rel:
@@ -5004,6 +5094,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_dist_schedule:
                 case OMPC_defaultmap:
                 case OMPC_map:
+                case OMPC_destroy:
                 case OMPC_when: {
                     break;
                 }
@@ -5013,7 +5104,6 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
             };
         };
     };
-
     return true;
 }
 

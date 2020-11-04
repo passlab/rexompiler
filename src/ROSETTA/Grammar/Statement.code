@@ -18969,6 +18969,12 @@ SgOmpTaskgroupStatement::post_construction_initialization()
    {}
 SOURCE_OMP_TASKGROUP_STATEMENT_END
 
+SOURCE_OMP_DEPOBJ_STATEMENT_START
+void
+SgOmpDepobjStatement::post_construction_initialization()
+    {}
+SOURCE_OMP_DEPOBJ_STATEMENT_END
+
 SOURCE_OMP_DISTRIBUTE_STATEMENT_START
 void
 SgOmpDistributeStatement::post_construction_initialization()

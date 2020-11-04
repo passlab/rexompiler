@@ -354,6 +354,7 @@ namespace sg
     GEN_VISIT(SgOmpDeclareMapperStatement)
     GEN_VISIT(SgOmpCancelStatement)
     GEN_VISIT(SgOmpTaskgroupStatement)
+    GEN_VISIT(SgOmpDepobjStatement)
     GEN_VISIT(SgOmpDistributeStatement)
     GEN_VISIT(SgOmpLoopStatement)
     GEN_VISIT(SgOmpScanStatement)

@@ -161,6 +161,7 @@ array_section_list : id_expression_opt_dimension
 
 /* mapped variables may have optional dimension information */
 id_expression_opt_dimension : ID_EXPRESSION { if (!addOmpVariable((const char*)$1)) YYABORT; } dimension_field_optseq
+                            | '*' ID_EXPRESSION { if (!addOmpVariable((const char*)$2)) YYABORT; } dimension_field_optseq
                             ;
 
 /* Parse optional dimension information associated with map(a[0:n][0:m]) Liao 1/22/2013 */

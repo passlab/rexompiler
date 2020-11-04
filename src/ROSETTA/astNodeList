@@ -308,6 +308,7 @@ SgOmpCancellationPointStatement
 SgOmpDeclareMapperStatement
 SgOmpCancelStatement
 SgOmpTaskgroupStatement
+SgOmpDepobjStatement
 SgOmpDistributeStatement
 SgOmpLoopStatement
 SgOmpScanStatement
@@ -343,6 +344,8 @@ SgOmpNowaitClause
 SgOmpReadClause
 SgOmpWriteClause
 SgOmpUpdateClause
+SgOmpDepobjUpdateClause
+SgOmpDestroyClause
 SgOmpCaptureClause
 SgOmpSeqCstClause
 SgOmpAcqRelClause

@@ -70,6 +70,8 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpReadClause, "OmpReadClause", "OmpReadClauseTag" );
      NEW_TERMINAL_MACRO (OmpWriteClause, "OmpWriteClause", "OmpWriteClauseTag" );
      NEW_TERMINAL_MACRO (OmpUpdateClause, "OmpUpdateClause", "OmpUpdateClauseTag" );
+     NEW_TERMINAL_MACRO (OmpDepobjUpdateClause, "OmpDepobjUpdateClause", "OmpDepobjUpdateClauseTag" );
+     NEW_TERMINAL_MACRO (OmpDestroyClause, "OmpDestroyClause", "OmpDestroyClauseTag" );
      NEW_TERMINAL_MACRO (OmpCaptureClause, "OmpCaptureClause", "OmpCaptureClauseTag" );
      NEW_TERMINAL_MACRO (OmpSeqCstClause, "OmpSeqCstClause", "OmpSeqCstClauseTag" );
      NEW_TERMINAL_MACRO (OmpAcqRelClause, "OmpAcqRelClause", "OmpAcqRelClauseTag" );
@@ -144,7 +146,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpWhenClause, "OmpWhenClause", "OmpWhenClauseTag" );
      NEW_TERMINAL_MACRO (OmpDistScheduleClause, "OmpDistScheduleClause", "OmpDistScheduleClauseTag" );
      NEW_TERMINAL_MACRO (OmpDefaultmapClause, "OmpDefaultmapClause", "OmpDefaultmapClauseTag" );
-     NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpReadClause | OmpWriteClause | OmpUpdateClause | OmpCaptureClause | OmpBeginClause |OmpEndClause | OmpUntiedClause | OmpSeqCstClause | OmpAcqRelClause | OmpReleaseClause | OmpAcquireClause | OmpRelaxedClause |
+     NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpReadClause | OmpWriteClause | OmpUpdateClause | OmpDepobjUpdateClause | OmpDestroyClause | OmpCaptureClause | OmpBeginClause |OmpEndClause | OmpUntiedClause | OmpSeqCstClause | OmpAcqRelClause | OmpReleaseClause | OmpAcquireClause | OmpRelaxedClause |
          OmpParallelClause | OmpSectionsClause | OmpForClause | OmpTaskgroupClause | OmpNogroupClause |
          OmpDefaultClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpDistScheduleClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpDefaultmapClause |
          OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause ,
@@ -1959,6 +1961,10 @@ Grammar::setUpNodes ()
      // I choose to attach this info. to map clauses since dist_data() does not exist alone. It must follow a map() clause
      OmpMapClause.setDataPrototype("std::map<SgSymbol*,  std::vector < std::pair <SgOmpClause::omp_map_dist_data_enum, SgExpression*> > >", "dist_data_policies", "",
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+                          
+     // update(in|out|inout|mutexinoutset|depobj)
+     OmpDepobjUpdateClause.setDataPrototype("SgOmpClause::omp_depobj_modifier_enum", "modifier", "=e_omp_depobj_modifier_unknown",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 #endif
 
 

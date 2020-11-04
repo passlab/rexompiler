@@ -2872,6 +2872,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
 
                  // Generic OpenMP directives with a format of : begin-directive, begin-clauses, body, end-directive , end-clauses
                     case V_SgOmpCriticalStatement:
+                    case V_SgOmpDepobjStatement:
                     case V_SgOmpMasterStatement:
                     case V_SgOmpTaskyieldStatement:
                     case V_SgOmpMetadirectiveStatement:
@@ -9172,6 +9173,61 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
   }
 
   curprint(string(")"));
+
+}    
+
+void UnparseLanguageIndependentConstructs::unparseOmpDepobjUpdateClause(SgOmpClause* clause, SgUnparse_Info& info)
+{
+    SgOmpDepobjUpdateClause *dep_clause = isSgOmpDepobjUpdateClause(clause);
+    ROSE_ASSERT(dep_clause);
+
+    curprint(string(" update("));
+    
+    switch (dep_clause->get_modifier())
+    {
+        case SgOmpClause::e_omp_depobj_modifier_in:
+        {
+            curprint("in");
+            break;
+        }
+        case SgOmpClause::e_omp_depobj_modifier_out:
+        {
+            curprint("out");
+            break;
+        }
+        case SgOmpClause::e_omp_depobj_modifier_inout:
+        {
+            curprint("inout");
+            break;
+        }
+        case SgOmpClause::e_omp_depobj_modifier_mutexinoutset:
+        {
+            curprint("mutexinoutset");
+            break;
+        }
+        case SgOmpClause::e_omp_depobj_modifier_depobj:
+        {
+            curprint("depobj");
+            break;
+        }
+        case SgOmpClause::e_omp_depobj_modifier_sink:
+        {
+            curprint("sink");
+            break;
+        }
+        case SgOmpClause::e_omp_depobj_modifier_source:
+        {
+            curprint("source");
+            break;
+        }
+        default:
+        {
+            cerr << "Invalid modifier in OMP DepObj Update Clause" << endl;
+            ROSE_ASSERT(false);
+        }
+    }
+    
+    curprint(string(")"));
 }
 
 // Entry point for unparsing OpenMP clause
@@ -9206,6 +9262,12 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         break;
       }
 
+    case V_SgOmpDepobjUpdateClause:
+      {
+        unparseOmpDepobjUpdateClause(isSgOmpDepobjUpdateClause(clause), info);
+        break;
+      }
+      
     case V_SgOmpNowaitClause:
       {
         curprint(string(" nowait"));
@@ -9316,6 +9378,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpEndClause:
       {
         curprint(string(" end"));
+        break;
+      }
+    case V_SgOmpDestroyClause:
+      {
+        curprint(string(" destroy"));
         break;
       }
     case V_SgOmpScheduleClause:
@@ -9632,6 +9699,17 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         {
           curprint (string ("("));
           curprint (isSgOmpCriticalStatement(stmt)->get_name().getString());
+          curprint (string (")"));
+        }
+        break;
+      }
+      case V_SgOmpDepobjStatement:
+      {
+        curprint(string("depobj "));
+        if (isSgOmpDepobjStatement(stmt)->get_name().getString()!="")
+        {
+          curprint (string ("("));
+          curprint (isSgOmpDepobjStatement(stmt)->get_name().getString());
           curprint (string (")"));
         }
         break;
