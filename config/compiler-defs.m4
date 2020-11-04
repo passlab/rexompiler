@@ -265,7 +265,20 @@ AC_DEFUN([GET_CXX_VERSION_MACROS],[
             fi
         fi
     done
+    
+    if test "$CXX_COMPILER_VENDOR" = clang; then
+    for symbol in __clang__ __clang_major__ __clang_minor__ __clang_patchlevel__; do
+        value="$(sed -ne "s/#define $symbol //p" <$tmp_output)"
+        if test "$value" != ""; then
+            if test "$CXX_VERSION_MACROS" = ""; then
+                CXX_VERSION_MACROS="-D$symbol=$value"
+            else
+                CXX_VERSION_MACROS="$CXX_VERSION_MACROS -D$symbol=$value"
+            fi
+        fi
+    done
 
+    fi    
     rm -f $tmp_input $tmp_output
 ])
 
@@ -391,6 +404,8 @@ AC_DEFUN([GET_COMPILER_SPECIFIC_DEFINES],[
     dnl ------------------------------------------------
     dnl --- Characteristics of the frontend compiler ---
     dnl ------------------------------------------------
+
+echo "START: Setup characteristics of the frontend compiler"
 
     ROSE_CONFIGURE_SECTION([Checking frontend compiler])
     GET_CXX_VERSION_INFO([$CXX], [$FRONTEND_CXX_COMPILER_VENDOR])
@@ -578,5 +593,8 @@ AC_DEFUN([GET_COMPILER_SPECIFIC_DEFINES],[
     AC_SUBST(BACKEND_COMPILER_VERSION_MAJOR_NUMBER)
     AC_SUBST(BACKEND_COMPILER_VERSION_MINOR_NUMBER)
     AC_SUBST(BACKEND_COMPILER_VERSION_PATCHLEVEL_NUMBER)
+
+echo "END: Setup characteristics of the frontend compiler"
+echo " --- FRONTEND_CXX_VERSION_MAJOR = $FRONTEND_CXX_VERSION_MAJOR"
 
 ])

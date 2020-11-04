@@ -1,4 +1,4 @@
-################################################################################################ -*- cmake -*- #########
+﻿################################################################################################ -*- cmake -*- #########
 # General warnings, instructions, and style guide.
 ########################################################################################################################
 
@@ -33,6 +33,21 @@
 ########################################################################################################################
 
 cmake_minimum_required(VERSION 2.8)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Enable ccache if not already enabled by symlink masquerading and if no other compiler launchers are already defined
+#-----------------------------------------------------------------------------------------------------------------------
+find_program(CCACHE_EXECUTABLE ccache)
+mark_as_advanced(CCACHE_EXECUTABLE)
+if(CCACHE_EXECUTABLE)
+  foreach(LANG C CXX)
+    if(NOT DEFINED CMAKE_${LANG}_COMPILER_LAUNCHER AND NOT CMAKE_${LANG}_COMPILER MATCHES ".*/ccache")
+      message(STATUS "Enabling ccache for ${LANG}")
+      set(CMAKE_${LANG}_COMPILER_LAUNCHER ${CCACHE_EXECUTABLE} CACHE STRING "")
+    endif()
+  endforeach()
+endif()
+
 project(ROSE CXX C)
 
 # CMake 2.8.12 and newer has support for using @rpath in a target’s install name. This was enabled by setting the target
@@ -306,6 +321,7 @@ endif()
 # Set ROSE_SHLIBPATH_VAR.  For Visual Studio, this is PATH.  Otherwise, it is just LD_LIBRARY_PATH.
 if(MSVC)
   set(ROSE_SHLIBPATH_VAR "PATH")
+  add_definitions("-D__STDC_LIMIT_MACROS")
 else()
   set(ROSE_SHLIBPATH_VAR "LD_LIBRARY_PATH")
 endif()
@@ -322,7 +338,7 @@ if(enable-c)
 endif()
 
 # CUDA
-option(enable-cuda "Enable CUDA analysis" OFF) # OFF because lack of CUDA is not handled properly
+option(enable-cuda "Enable CUDA analysis" ON) # OFF because lack of CUDA is not handled properly
 if(enable-cuda)
   if(APPLE)
     message(FATAL_ERROR "CUDA analysis (enable-cuda) is not supported on macOS")
@@ -343,7 +359,7 @@ if(enable-java)
   else()
     message(FATAL_ERROR "Java location cannot be explicit (-DJAVA_ROOT=...)")
   endif()
-  
+
   include(FindJava)
   find_program(GCJ gcj)
   find_program(GCJH gcjh)
@@ -364,7 +380,7 @@ if(enable-opencl)
 endif()
 
 # Fortran
-option(enable-fortran "Enable Fortran analysis." OFF) # OFF because lack of OFP is not handled properly
+option(enable-fortran "Enable Fortran analysis." ON) # OFF because lack of OFP is not handled properly
 if(enable-fortran)
   if(NOT enable-java)
     message(FATAL_ERROR "Fortran analysis also requires Java analysis.  Either turn on enable-java, or turn off enable-fortran")
@@ -384,11 +400,10 @@ if(enable-fortran)
   endif()
 endif()
 
-# PHP
-option(enable-php "Enable PHP analysis" ON)
-if(enable-php)
-  set(ROSE_BUILD_PHP_LANGUAGE_SUPPORT 1)
-  find_path(with-php php DOC "Specify the prefix where PHP (and phc) is installed")
+# The C preprocessor is enabled automatically if C, C++, or Fortran is enabled
+if(enable-c OR enable-fortran)
+  set(enable-cpp ON)
+  set(ROSE_BUILD_CPP_LANGUAGE_SUPPORT 1)
 endif()
 
 ########################################################################################################################
@@ -420,16 +435,12 @@ endif()
 # Check whether we have the EDG source code. Even if we have it, we might pretend (for testing) that we don't.
 option(EDG_COMPILE "Compile EDG source code if available" TRUE)
 if(EXISTS "${PROJECT_SOURCE_DIR}/src/frontend/CxxFrontend/EDG/CMakeLists.txt")
-  message(STATUS "ROBB: EDG/CMakeLists.txt is found")
   if(EDG_COMPILE)
-    message(STATUS "ROBB: EDG_COMPILE is true")
     set(have_EDG_source TRUE)
   else()
-    message(STATUS "ROBB: EDG_COMPILE is false")
     set(have_EDG_source FALSE)
   endif()
 else()
-  message(STATUS "ROBB: EDG/CMakeLists.txt is absent")
   set(have_EDG_source FALSE)
   set(EDG_COMPILE FALSE)
 endif()
@@ -443,15 +454,15 @@ if(NOT have_EDG_source)
     if(NOT WIN32)
       message(STATUS "EDG - downloaindg EDG-${EDG_VERSION} binary tar file")
       if(EXISTS "${PROJECT_BINARY_DIR}/src/frontend/CxxFrontend/EDG.tar.gz")
-	execute_process(COMMAND "tar" "-zxvf" "-C" "${PROJECT_BINARY_DIR}/src/frontend/CxxFrontend/EDG")
+        execute_process(COMMAND "tar" "-zxvf" "-C" "${PROJECT_BINARY_DIR}/src/frontend/CxxFrontend/EDG")
       else()
-	# no need to display this message after the file has been downloaded
-	if(NOT EXISTS "${PROJECT_BINARY_DIR}/src/frontend/CxxFrontend/EDG/.libs")
-	  message(WARNING
-	    "At build time, CMake will attempt to download a required library tarball.\n"
-	    "Please note that EDG binary tarballs are available for only certain configurations.")
-	endif()
-	include(${PROJECT_SOURCE_DIR}/cmake/DownloadEDG.cmake)
+        # no need to display this message after the file has been downloaded
+        if(NOT EXISTS "${PROJECT_BINARY_DIR}/src/frontend/CxxFrontend/EDG/.libs")
+          message(WARNING
+            "At build time, CMake will attempt to download a required library tarball.\n"
+            "Please note that EDG binary tarballs are available for only certain configurations.")
+        endif()
+        include(${PROJECT_SOURCE_DIR}/cmake/DownloadEDG.cmake)
       endif()
     endif()
   endif()
@@ -1055,10 +1066,19 @@ if(enable-c)
     execute_process(
       COMMAND ${CMAKE_COMMAND} -E create_symlink
       ${CMAKE_BINARY_DIR}/include-staging ${CMAKE_BINARY_DIR}/include)
+  elseif(MSVC)
+    set(INCLUDE_LIST $ENV{INCLUDE})
+    string(REPLACE "\\" "\\\\" INCLUDE_LIST "${INCLUDE_LIST}")
+    foreach(C_include_dir ${INCLUDE_LIST})
+      string(STRIP "${C_include_dir}" C_include_dir)
+      set(C_INCLUDE_STRING "${C_INCLUDE_STRING}, \"${C_include_dir}\"")
+    endforeach()
+    set(CXX_INCLUDE_STRING "${C_INCLUDE_STRING}")
   endif()
   set(C_INCLUDE_STRING "${C_INCLUDE_STRING}}")
   set(CXX_INCLUDE_STRING "${CXX_INCLUDE_STRING}}")
-
+message("NATHAN TEST REMOVE CXX ${CXX_INCLUDE_STRING}")
+message("NATHAN TEST REMOVE C   ${C_INCLUDE_STRING}")
 else()
   set(C_INCLUDE_STRING {\"none\"})
   set(CXX_INCLUDE_STRING {\"none\"})

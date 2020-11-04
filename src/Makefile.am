@@ -9,8 +9,7 @@ SUBDIRS = util ROSETTA roseSupport frontend midend backend \
           3rdPartyLibraries roseExtensions
 else
 SUBDIRS = util ROSETTA roseSupport frontend midend backend \
-	  3rdPartyLibraries roseExtensions
-
+          3rdPartyLibraries roseExtensions
 endif
 
 # This lists a large number of directories.  If "make install"
@@ -35,8 +34,12 @@ endif
 
 if ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
    libroseOpenFortranParserlibraries = frontend/OpenFortranParser_SAGE_Connection/libroseFortran.la
+   pkgdata_DATA += $(top_srcdir)/src/3rdPartyLibraries/fortran-parser/iso_c_binding.rmod
+   pkgdata_DATA += $(top_srcdir)/src/3rdPartyLibraries/fortran-parser/openacc.rmod
+#   libroseExperimentalGeneralLanguagelibraries = frontend/Experimental_General_Language_Support/libexperimentalRoseGeneralLanguage.la
 else
    libroseOpenFortranParserlibraries =
+#   libroseExperimentalGeneralLanguagelibraries =
 endif
 
 if ROSE_USE_SQLITE_DATABASE
@@ -62,7 +65,7 @@ libroseLibraries = \
    $(top_builddir)/src/util/support/libsupport.la \
    $(top_builddir)/src/util/graphs/libgraphs.la \
    $(top_builddir)/src/util/libroseutil.la \
-   $(top_builddir)/src/util/libroseSawyer.la
+   $(top_builddir)/src/util/Sawyer/libroseSawyer.la
 # DQ (12/18/2016): Moved below to make POET optional.
 #  $(top_builddir)/src/3rdPartyLibraries/POET/libpoet.la
 else
@@ -71,17 +74,18 @@ libroseLibraries = \
    $(top_builddir)/src/backend/libbackend.la \
    $(top_builddir)/src/frontend/SageIII/libsage3.la \
    $(libroseCxxlibraries) \
-   $(top_builddir)/src/midend/libmidend.la \
    $(libroseOpenFortranParserlibraries) \
+   $(libroseExperimentalGeneralLanguagelibraries) \
    $(top_builddir)/src/midend/programAnalysis/libprogramAnalysis.la \
    $(top_builddir)/src/midend/programTransformation/loopProcessing/libLoopProcessing.la \
    $(top_builddir)/src/midend/programTransformation/extractFunctionArgumentsNormalization/libExtractFunctionArgumentsNormalization.la \
    $(top_builddir)/src/midend/programTransformation/singleStatementToBlockNormalization/libSingleStatementToBlockNormalization.la \
+   $(top_builddir)/src/midend/libmidend.la \
    $(top_builddir)/src/roseSupport/libroseSupport.la \
    $(top_builddir)/src/util/support/libsupport.la \
    $(top_builddir)/src/util/graphs/libgraphs.la \
    $(top_builddir)/src/util/libroseutil.la \
-   $(top_builddir)/src/util/libroseSawyer.la \
+   $(top_builddir)/src/util/Sawyer/libroseSawyer.la \
    $(libroseSqlite3xConnection)
 
 if ROSE_WITH_LIBHARU
@@ -115,10 +119,12 @@ EXTRA_DIST = CMakeLists.txt extra.docs
 
 # Header files that need to be included in the distribution
 pkginclude_HEADERS = \
+     featureTests.h \
      rose.h \
      roseInternal.h \
      rose_msvc.h \
      msvc_stdint.h \
+     roseSupport/utility_functionsImpl.C \
      midend/astProcessing/AstDOTGeneration.h \
      midend/astProcessing/AstDOTGenerationImpl.C \
      frontend/SageIII/sage3basic.h \
@@ -179,8 +185,6 @@ endif
 # librose_la_LDFLAGS = -no-undefined --rpath $(INTEL_PIN_PATH)/intel64/lib-ext
 librose_la_LDFLAGS = -no-undefined $(ROSE_RPATHS)
 
-#librose_la_LDFLAGS = $(ROSE_DWARF_LIBS_WITH_PATH)
-
 # DQ (4/12/2016): This is required for use with clang (not clear how to compile ROSE with out it).
 if USING_CLANG_COMPILER
 # librose_la_LIBADD += -lstdc++
@@ -227,6 +231,9 @@ rose_config_LDFLAGS = $(ROSE_RPATHS)
 rose_config_DEPENDENCIES = $(REQUIRED_LIBS)
 rose_config_CPPFLAGS = -DLIBDIR='"$(libdir)"'
 rose_config_LDADD = $(ROSE_LIBS)
+if OS_MACOSX
+  rose_config_LDFLAGS += -Xlinker -rpath -Xlinker $(JAVA_JVM_PATH)
+endif
 
 # DQ (4/12/2016): This is required for use with clang (not clear how to compile ROSE with out it).
 if USING_CLANG_COMPILER
@@ -309,7 +316,7 @@ if USING_CLANG_COMPILER
 endif
   ROSEBIN_LDFLAGS += -fno-rtti
 if OS_MACOSX
-  ROSEBIN_LDFLAGS = -Xlinker -rpath $(JAVA_JVM_PATH)
+  ROSEBIN_LDFLAGS += -Xlinker -rpath -Xlinker $(JAVA_JVM_PATH)
 endif
 
 rose_compiler_SOURCES      = rose-compiler.C
@@ -357,15 +364,29 @@ check-config:
 	./rose-config --version
 
 if ROSE_BUILD_C_LANGUAGE_SUPPORT
+if OS_MACOSX
+check-hello-c: $(eval SHELL:=/bin/bash)
+	@echo "  TEST     ROSE C compiler [rose-cc]"
+	${AM_V_at}echo "#include <stdio.h>"                     >  hello-world.c
+	${AM_V_at}echo "int main() {"                           >> hello-world.c
+	${AM_V_at}echo "   printf(\"Hello World from C\\n\");" >> hello-world.c
+	${AM_V_at}echo "   return 0;"                           >> hello-world.c
+	${AM_V_at}echo "}"                                      >> hello-world.c
+	${AM_V_at}./rose-cc -rose:ast:write hello-world-c.ast hello-world.c -o hello-world-c
+	${AM_V_at}./hello-world-c
+	${AM_V_at}./rose-compiler -rose:ast:read hello-world-c.ast
+else
 check-hello-c:
 	@echo "  TEST     ROSE C compiler [rose-cc]"
 	${AM_V_at}echo "#include <stdio.h>"                     >  hello-world.c
 	${AM_V_at}echo "int main() {"                           >> hello-world.c
-	${AM_V_at}echo "   printf(\"Hello World from C!\\n\");" >> hello-world.c
+	${AM_V_at}echo "   printf(\"Hello World from C\\n\");" >> hello-world.c
 	${AM_V_at}echo "   return 0;"                           >> hello-world.c
 	${AM_V_at}echo "}"                                      >> hello-world.c
-	${AM_V_at}./rose-cc hello-world.c -o hello-world-c
+	${AM_V_at}./rose-cc -rose:ast:write hello-world-c.ast hello-world.c -o hello-world-c
 	${AM_V_at}./hello-world-c
+	${AM_V_at}./rose-compiler -rose:ast:read hello-world-c.ast
+endif
 endif
 if ROSE_BUILD_CXX_LANGUAGE_SUPPORT
 check-hello-cxx:
@@ -375,8 +396,9 @@ check-hello-cxx:
 	${AM_V_at}echo "    std::cout << \"Hello World from C++!\" << std::endl;" >> hello-world.cpp
 	${AM_V_at}echo "    return 0;"                                            >> hello-world.cpp
 	${AM_V_at}echo "}"                                                        >> hello-world.cpp
-	${AM_V_at}./rose-c++ hello-world.cpp -o hello-world-cpp
+	${AM_V_at}./rose-c++ -rose:ast:write hello-world-cxx.ast hello-world.cpp -o hello-world-cpp
 	${AM_V_at}./hello-world-cpp
+	${AM_V_at}./rose-compiler -rose:ast:read hello-world-cxx.ast
 endif
 if ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
 check-hello-fortran:
@@ -384,8 +406,9 @@ check-hello-fortran:
 	${AM_V_at}echo "program hello"                            >  hello-world.f90
 	${AM_V_at}echo "  print *, \"Hello World from Fortran!\"" >> hello-world.f90
 	${AM_V_at}echo "end program hello"                        >> hello-world.f90
-	${AM_V_at}./rose-fortran hello-world.f90 -o hello-world-f90
+	${AM_V_at}./rose-fortran -rose:ast:write hello-world-f90.ast hello-world.f90 -o hello-world-f90
 	${AM_V_at}./hello-world-f90
+#	${AM_V_at}./rose-compiler -rose:ast:read hello-world-f90.ast
 endif
 
 check-local: $(bin_PROGRAMS)
@@ -440,5 +463,6 @@ if ROSE_BUILD_CXX_LANGUAGE_SUPPORT
 	rm -f frontend/CxxFrontend/EDG/EDG_3.3/util/edg_prelink.lo
 endif
 	rm -f frontend/SageIII/Cxx_Grammar.lo
+	rm -f roseSupport/templateSupport.lo
 	$(MAKE)
 

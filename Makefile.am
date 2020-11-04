@@ -81,6 +81,8 @@ install-core: core rosePublicConfig.h
 install-tools: install-core tools
 	$(MAKE) install -C $(top_builddir)/tools
 	$(MAKE) install -C $(top_builddir)/exampleTranslators
+	$(MAKE) install -C $(top_builddir)/tests/nonsmoke/functional/roseTests/astInliningTests
+	$(MAKE) install -C $(top_builddir)/tests/nonsmoke/functional/roseTests/astOutliningTests
 	$(MAKE) install -C $(top_builddir)/tutorial
 
 check-recursive:
@@ -128,7 +130,7 @@ check-tools: tools
 # don't want to install anything else (perhaps because it doesn't compile). [Robb Matzke, 2016-03-07]
 install-rose-library: install-data-local
 	$(MAKE) -C $(top_builddir)/src install
-	cp rosePublicConfig.h $(pkgincludedir)
+	cp rosePublicConfig.h $(DESTDIR)/$(pkgincludedir)
 
 # Build a binary release of the ROSE library.  This assumes that you're running in the RMC-2 environment because it uses
 # some "make" variables that are initialized from shell exported variables. Other build environments will need other targets.

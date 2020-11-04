@@ -129,17 +129,7 @@ WalrusGraph::generateWalrusGraph( SgNode* node, string outputFilename )
 
 
      SgProject* project = isSgProject(node);
-     if (project != NULL)
-        {
-          printf ("Found the SgProject \n");
-
-          SgFile* fileNode = project->get_fileList()[0];
-          if (project->get_binary_only() == true)
-             {
-               printf ("Found a binary file \n");
-               WalrusGraph::isBinary = true;
-             }
-        }
+     if (project != NULL) printf ("Found the SgProject \n");
 
      Counter traversal;
      traversal.traverse(node,preorder);

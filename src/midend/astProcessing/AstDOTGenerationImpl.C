@@ -242,7 +242,7 @@ AstDOTGenerationExtended<ExtraNodeInfo_t, ExtraNodeOptions_t, ExtraEdgeInfo_t, E
                  }
 
         // case V_SgFile: 
-          case V_SgSourceFile: 
+          case V_SgSourceFile:
                  {
                    SgFile* file = dynamic_cast<SgFile*>(node);
                    ROSE_ASSERT(file != NULL);

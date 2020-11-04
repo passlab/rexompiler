@@ -394,10 +394,5 @@ Grammar::setUpSymbols ()
      AliasSymbol.setFunctionSource          ( "SOURCE_ALIAS_SYMBOL", "../Grammar/Symbol.code" );
 
      RenameSymbol.setFunctionSource         ( "SOURCE_RENAME_SYMBOL", "../Grammar/Symbol.code" );
-
-
-  // DQ (5/3/2010): Added symbol table support to the binary analysis within ROSE.  Values that
-  // are addresses or references to data will have symbols in a function symbol table.  All other 
-  // values are assumed to be literals and will not have associated symbols.
    }
 

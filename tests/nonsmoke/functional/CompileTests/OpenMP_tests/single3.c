@@ -2,7 +2,7 @@
 */
 #include <stdio.h>
 #include <omp.h>
-#include<assert.h> 
+#include<assert.h>
 
 int a;
 int b;

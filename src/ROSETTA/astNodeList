@@ -1,5 +1,6 @@
 SgAccessModifier
 SgActualArgumentExpression
+SgAbsOp
 SgAddOp
 SgAddressOfOp
 SgAggregateInitializer
@@ -23,6 +24,7 @@ SgAsteriskShapeExp
 SgAttribute
 SgAttributeSpecificationStatement
 SgAutoType
+SgAwaitExpression
 SgBackspaceStatement
 SgBaseClass
 SgExpBaseClass
@@ -34,6 +36,7 @@ SgBinaryOp
 SgBitAndOp
 SgBitAttribute
 SgBitComplementOp
+SgBitEqvOp
 SgBitOrOp
 SgBitXorOp
 SgBlockDataStatement
@@ -48,6 +51,7 @@ SgCatchStatementSeq
 SgCharVal
 SgChar16Val
 SgChar32Val
+SgChooseExpression
 SgClassDecl_attr
 SgClassDeclaration
 SgClassDefinition
@@ -143,6 +147,7 @@ SgFileList
 SgFloatVal
 SgFloat128Val
 SgFloat80Val
+SgFoldExpression
 SgFlushStatement
 SgForAllStatement
 SgForInitStatement
@@ -421,6 +426,7 @@ SgReadStatement
 SgRealPartOp
 SgRefExp
 SgReferenceType
+SgRemOp
 SgRenamePair
 SgRenameSymbol
 SgReturnStmt
@@ -436,6 +442,7 @@ SgShortVal
 SgSizeOfOp
 SgAlignOfOp
 SgSourceFile
+SgSpaceshipOp
 SgSpawnStmt
 SgSyncAllStatement
 SgSyncImagesStatement
@@ -443,6 +450,7 @@ SgSyncMemoryStatement
 SgSyncTeamStatement
 SgLockStatement
 SgUnlockStatement
+SgProcessControlStatement
 SgSpecialFunctionModifier
 SgStatement
 SgStaticAssertionDeclaration
@@ -454,6 +462,7 @@ SgStorageModifier
 SgStringConversion
 SgStringKeyedBidirectionalGraph
 SgStringVal
+SgStructureModifier
 SgSubscriptExpression
 SgSubtractOp
 SgSupport

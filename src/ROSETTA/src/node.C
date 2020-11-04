@@ -1,4 +1,4 @@
-
+#include <rosePublicConfig.h>
 #include "ROSETTA_macros.h"
 #include "grammar.h"
 #include "AstNodeClass.h"
@@ -382,7 +382,7 @@ Grammar::setUpNodes ()
   // NEW_NONTERMINAL_MACRO (LocatedNodeSupport, CommonBlockObject | InitializedName | InterfaceBody | HeaderFileBody | RenamePair | OmpClause , "LocatedNodeSupport", "LocatedNodeSupportTag", false );
   // NEW_NONTERMINAL_MACRO (LocatedNodeSupport, CommonBlockObject | InitializedName | InterfaceBody | HeaderFileBody | RenamePair | OmpClause | UntypedNode, "LocatedNodeSupport", "LocatedNodeSupportTag", false );
      NEW_NONTERMINAL_MACRO (LocatedNodeSupport, CommonBlockObject | InitializedName | InterfaceBody | 
-                            HeaderFileBody | RenamePair | OmpClause | UntypedNode | 
+                            HeaderFileBody | RenamePair | OmpClause | UntypedNode |
                             LambdaCapture | LambdaCaptureList, "LocatedNodeSupport", "LocatedNodeSupportTag", false );
 
   // DQ (3/24/2007): Added support for tokens in the IR (to support threading of the token stream 
@@ -1830,7 +1830,7 @@ Grammar::setUpNodes ()
      OmpWhenClause.setDataPrototype("SgStatement*", "variant_directive", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
 
-     // clauses with variable lists 
+     // clauses with variable lists
      // Liao 9/27/2010, per user's report, modeling the variable reference use SgVarRefExp
      //OmpVariablesClause.setDataPrototype ( "SgInitializedNamePtrList", "variables", "",
      //OmpVariablesClause.setDataPrototype ( "SgVarRefExpPtrList", "variables", "",
@@ -1844,7 +1844,7 @@ Grammar::setUpNodes ()
 
      OmpLinearClause.setDataPrototype("SgOmpClause::omp_linear_modifier_enum", "modifier", "=e_omp_linear_modifier_unspecified",
                                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     
+
      // aligned (varlist[:alignment])
      OmpAlignedClause.setDataPrototype ( "SgExpression*", "alignment", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
@@ -1863,25 +1863,33 @@ Grammar::setUpNodes ()
      OmpProcBindClause.setDataPrototype("SgOmpClause::omp_proc_bind_policy_enum", "policy", "=e_omp_proc_bind_policy_unknown",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-     // order(concurrent) 
+     // order(concurrent)
      OmpOrderClause.setDataPrototype("SgOmpClause::omp_order_kind_enum", "kind", "=e_omp_order_kind_unspecified",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-     // dist_schedule(kind[, chunk_size]) 
+     // dist_schedule(kind[, chunk_size])
      OmpDistScheduleClause.setDataPrototype("SgOmpClause::omp_dist_schedule_kind_enum", "kind", "=e_omp_dist_schedule_kind_unspecified",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      OmpDistScheduleClause.setDataPrototype ( "SgExpression*", "chunk_size", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
 
-     // defaultmap(implicit-behavior[:variable-category]) 
+     // defaultmap(implicit-behavior[:variable-category])
      OmpDefaultmapClause.setDataPrototype("SgOmpClause::omp_defaultmap_behavior_enum", "behavior", "=e_omp_defaultmap_behavior_unspecified",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      OmpDefaultmapClause.setDataPrototype("SgOmpClause::omp_defaultmap_category_enum", "category", "=e_omp_defaultmap_category_unspecified",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-     // bind(binding) 
+     // ext_implementation_defined_requirement
+     //OmpExtImplementationDefinedRequirementClause.setDataPrototype ( "SgExpression*", "implementation_defined_requirement", "= NULL",
+     //                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+
+     // bind(binding)
      OmpBindClause.setDataPrototype("SgOmpClause::omp_bind_binding_enum", "binding", "=e_omp_bind_binding_unspecified",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // atomic_default_mem_order(seq_cst | acq_rel | relaxed)
+     //OmpAtomicDefaultMemOrderClause.setDataPrototype("SgOmpClause::omp_atomic_default_mem_order_kind_enum", "kind", "=e_omp_atomic_default_mem_order_kind_unspecified",
+     //                     CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
      // reduction(modifier, identifier : variables)
      OmpReductionClause.setDataPrototype("SgOmpClause::omp_reduction_modifier_enum", "modifier", "=e_omp_reduction_modifier_unknown",
@@ -1895,7 +1903,7 @@ Grammar::setUpNodes ()
      OmpReductionClause.setDataPrototype("SgExpression*", "user_defined_identifier", "= NULL",
                                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-     // in_reduction(op:variables) 
+     // in_reduction(op:variables)
      OmpInReductionClause.setDataPrototype("SgOmpClause::omp_in_reduction_identifier_enum", "identifier", "=e_omp_in_reduction_identifier_unspecified",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
@@ -1903,7 +1911,7 @@ Grammar::setUpNodes ()
      OmpInReductionClause.setDataPrototype("SgExpression*", "user_defined_identifier", "= NULL",
                                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-     // task_reduction(op:variables) 
+     // task_reduction(op:variables)
      OmpTaskReductionClause.setDataPrototype("SgOmpClause::omp_task_reduction_identifier_enum", "identifier", "=e_omp_task_reduction_identifier_unspecified",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 

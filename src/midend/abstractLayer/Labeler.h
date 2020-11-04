@@ -2,7 +2,6 @@
 #define LABELER_H
 
 /*************************************************************
- * Copyright: (C) 2012 Markus Schordan                       *
  * Author   : Markus Schordan                                *
  *************************************************************/
 
@@ -17,7 +16,7 @@
 
 namespace CodeThorn {
 
-/*! 
+/*!
   * \author Markus Schordan
   * \date 2012, 2014.
  */
@@ -27,7 +26,7 @@ class Label {
   Label(size_t labelId);
   //Copy constructor
   Label(const Label& other);
-  //Copy assignemnt operator
+  //Copy assignment operator
   Label& operator=(const Label& other);
   bool operator<(const Label& other) const;
   bool operator==(const Label& other) const;
@@ -42,14 +41,14 @@ class Label {
   size_t getId() const;
   std::string toString() const;
   friend std::ostream& operator<<(std::ostream& os, const Label& label);
-
+  bool isValid() const;
  protected:
   size_t _labelId;
 };
 
 std::ostream& operator<<(std::ostream& os, const Label& label);
 
-/*! 
+/*!
   * \author Markus Schordan
   * \date 2012.
  */
@@ -57,7 +56,7 @@ std::ostream& operator<<(std::ostream& os, const Label& label);
 // internal data structure (not used in Labeler's interface)
 class LabelProperty {
  public:
-   enum LabelType { LABEL_UNDEF=1, LABEL_OTHER=2, 
+   enum LabelType { LABEL_UNDEF=1, LABEL_OTHER=2,
                     LABEL_FUNCTIONCALL=100, LABEL_FUNCTIONCALLRETURN,
                     LABEL_FUNCTIONENTRY, LABEL_FUNCTIONEXIT,
                     LABEL_BLOCKBEGIN, LABEL_BLOCKEND,
@@ -74,6 +73,7 @@ class LabelProperty {
    LabelProperty(SgNode* node, LabelType labelType, VariableIdMapping* variableIdMapping);
    std::string toString();
    SgNode* getNode();
+
    bool isFunctionCallLabel();
    bool isFunctionCallReturnLabel();
    bool isFunctionEntryLabel();
@@ -81,6 +81,7 @@ class LabelProperty {
    bool isBlockBeginLabel();
    bool isBlockEndLabel();
    bool isEmptyStmtLabel();
+
    // OpenMP related query functions
    bool isForkLabel();
    bool isJoinLabel();
@@ -109,6 +110,8 @@ class LabelProperty {
 
    bool isExternalFunctionCallLabel();
    void setExternalFunctionCallLabel();
+   
+   bool isValid() const { return _isValid; }
 
  private:
    bool _isValid;
@@ -124,15 +127,16 @@ class LabelProperty {
    bool _isExternalFunctionCallLabel;
 };
 
-/*! 
+/*!
   * \author Markus Schordan
   * \date 2012.
  */
 class LabelSet : public std::set<Label> {
  public:
-  // temporary until all sets are properly using the std:algorithms for set operations
   LabelSet operator+(LabelSet& s2);
   LabelSet& operator+=(LabelSet& s2);
+  LabelSet operator-(LabelSet& s2);
+  LabelSet& operator-=(LabelSet& s2);
 
   std::string toString();
   bool isElement(Label lab);
@@ -140,7 +144,7 @@ class LabelSet : public std::set<Label> {
 
 typedef std::set<LabelSet> LabelSetSet;
 
-/*! 
+/*!
   * \author Markus Schordan
   * \date 2012, 2013.
  */
@@ -150,7 +154,7 @@ class Labeler {
   static Label NO_LABEL; // default initialized label (used to check for non-existing labels)
   Labeler(SgNode* start);
   static std::string labelToString(Label lab);
-  int isLabelRelevantNode(SgNode* node);
+  int numberOfAssociatedLabels(SgNode* node);
   virtual void createLabels(SgNode* node);
 
   /** Labels are numbered 0..n-1 where n is the number of labels
@@ -169,35 +173,54 @@ class Labeler {
   std::string toString();
   Label functionCallLabel(SgNode* node);
   Label functionCallReturnLabel(SgNode* node);
-  Label blockBeginLabel(SgNode* node);
-  Label blockEndLabel(SgNode* node);
   Label functionEntryLabel(SgNode* node);
   Label functionExitLabel(SgNode* node);
+  Label blockBeginLabel(SgNode* node);
+  Label blockEndLabel(SgNode* node);
   Label joinLabel(SgNode *node);
   Label forkLabel(SgNode *node);
   Label workshareLabel(SgNode *node);
   Label barrierLabel(SgNode *node);
-  bool isFunctionEntryLabel(Label lab);
-  bool isFunctionExitLabel(Label lab);
-  bool isEmptyStmtLabel(Label lab);
-  bool isBlockBeginLabel(Label lab);
-  bool isBlockEndLabel(Label lab);
+
+  // info obtained from LabelProperty
   bool isFunctionCallLabel(Label lab);
   bool isFunctionCallReturnLabel(Label lab);
-  bool isConditionLabel(Label lab);
-  bool isSwitchExprLabel(Label lab);
+  bool isFunctionEntryLabel(Label lab);
+  bool isFunctionExitLabel(Label lab);
+  bool isBlockBeginLabel(Label lab);
+  bool isBlockEndLabel(Label lab);
+  bool isEmptyStmtLabel(Label lab);
   bool isFirstLabelOfMultiLabeledNode(Label lab);
   bool isSecondLabelOfMultiLabeledNode(Label lab);
+
+  // info obtained from AST node
   bool isForkLabel(Label lab);
   bool isJoinLabel(Label lab);
   bool isWorkshareLabel(Label lab);
   bool isBarrierLabel(Label lab);
+  bool isConditionLabel(Label lab);
+  bool isLoopConditionLabel(Label lab);
+  bool isSwitchExprLabel(Label lab);
+  
+  /** tests if @ref call and @ref ret are call and return labels of 
+   *  the same function call
+   */ 
+  virtual 
+  bool areCallAndReturnLabels(Label call, Label ret);
 
-#if 1
+  /** returns the call label for the provided return label. */
+  virtual 
+  Label getFunctionCallLabelFromReturnLabel(Label retnLabel);
+  
+  virtual
+  LabelProperty getProperty(Label lbl); 
+
   // by default false for all labels. This must be set by the CF analysis.
   bool isExternalFunctionCallLabel(Label lab);
   void setExternalFunctionCallLabel(Label lab);
-#endif
+
+  virtual
+  Label getFunctionCallReturnLabelFromCallLabel(Label callLabel);
 
   class iterator {
   public:
@@ -232,7 +255,7 @@ class IOLabeler : public Labeler {
   IOLabeler(SgNode* start, VariableIdMapping* variableIdMapping);
   virtual bool isStdIOLabel(Label label);
   virtual bool isStdInLabel(Label label, VariableId* id=0);
-  virtual bool isStdOutLabel(Label label); 
+  virtual bool isStdOutLabel(Label label);
   virtual bool isStdOutVarLabel(Label label, VariableId* id=0);
   virtual bool isStdOutConstLabel(Label label, int* constvalue=0);
   virtual bool isStdErrLabel(Label label, VariableId* id=0);
@@ -241,6 +264,7 @@ class IOLabeler : public Labeler {
  protected:
   VariableIdMapping* _variableIdMapping;
 };
+
 
 } // end of namespace CodeThorn
 

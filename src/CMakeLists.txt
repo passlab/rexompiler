@@ -161,7 +161,7 @@ set_target_properties(ROSE_DLL PROPERTIES
 install(TARGETS ROSE_DLL DESTINATION ${ROSE_LIB_DIR_NAME})
 install(
   FILES
-    rose.h roseInternal.h rose_msvc.h msvc_stdint.h
+    featureTests.h rose.h roseInternal.h rose_msvc.h msvc_stdint.h
     ${CMAKE_BINARY_DIR}/rosePublicConfig.h
   DESTINATION ${INCLUDE_INSTALL_DIR})
 
@@ -217,10 +217,12 @@ else ()
   target_link_libraries(ROSE_DLL ${ROSE_TARGET_LINK} )
 endif ()
 
-# If OpenMP is enabled, ROSE has some additional depenendencies
-add_dependencies(ROSE_DLL
-  OMPPARSER ROSE_PREPROCESSOR ${edg_lib} libhpdf
-  generate_rosePublicConfig)
+# If the C preprocessor is enabled, ROSE has some additional depenendencies
+if(enable-cpp)
+  add_dependencies(ROSE_DLL
+    OMPPARSER ROSE_PREPROCESSOR ${edg_lib} libhpdf
+    generate_rosePublicConfig)
+endif()
 
 # SQLite3 has an executable component and a development (library and headers) component that can be installed
 # independently of each other. Therfore SQLITE3_FOUND_EXE says whether the executable component was found, and

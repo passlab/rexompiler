@@ -43,10 +43,10 @@ Grammar::setUpTypes ()
      NEW_TERMINAL_MACRO ( TypeFixed           , "TypeFixed",            "T_FIXED" );
 
      //SK(08/20/2015): TypeMatrix to represent a Matlab matrix type
-     NEW_TERMINAL_MACRO ( TypeMatrix          , "TypeMatrix",           "T_MATRIX" );
+     NEW_TERMINAL_MACRO ( TypeMatrix          , "TypeMatrix",            "T_MATRIX" );
 
      //SK(08/20/2015): TypeTuple to represent the return type of a Matlab function that can return multiple types
-     NEW_TERMINAL_MACRO ( TypeTuple           , "TypeTuple",            "T_TUPLE");
+     NEW_TERMINAL_MACRO ( TypeTuple           , "TypeTuple",             "T_TUPLE");
 
   // DQ (7/29/2014): Added nullptr type (I think we require this for C++11 support).
      NEW_TERMINAL_MACRO ( TypeNullptr         , "TypeNullptr",          "T_NULLPTR" );
@@ -185,7 +185,7 @@ Grammar::setUpTypes ()
           ReferenceType        | NamedType               | ModifierType              | FunctionType         |
           ArrayType            | TypeEllipse             | TemplateType              | QualifiedNameType    |
           TypeComplex          | TypeImaginary           | TypeDefault               | TypeCAFTeam          |
-          TypeCrayPointer      | TypeLabel               | RvalueReferenceType  | 
+          TypeCrayPointer      | TypeLabel               | RvalueReferenceType       |
           TypeNullptr          | DeclType                | TypeOfType                | TypeMatrix           |
           TypeTuple            | TypeChar16              | TypeChar32                | TypeFloat128         |
           TypeFixed            | AutoType,
@@ -325,6 +325,11 @@ Grammar::setUpTypes ()
   // TypeUnknown.setFunctionPrototype ( "HEADER_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
   // TypeUnknown.setFunctionSource    ( "SOURCE_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
 
+  // CR (8/9/2020): Jovial allows implicit forward declarations of typed pointers
+     TypeUnknown.setDataPrototype("std::string", "type_name", "= \"\"",
+                                  NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     TypeUnknown.setDataPrototype("bool", "has_type_name", "= false",
+                                  NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // DQ (1/31/2006): Need to support addition of builtin_type pointers into the IR using ROSETTA
   // static $CLASSNAME* builtin_type;
@@ -361,6 +366,8 @@ Grammar::setUpTypes ()
   // Rasmussen (2/18/2020): Added TypeFixed for Jovial
      TypeFixed.excludeFunctionPrototype     ( "HEADER_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
      TypeFixed.excludeFunctionSource        ( "SOURCE_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
+     TypeFixed.excludeFunctionSource        ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
+     TypeFixed.setFunctionSource            ( "SOURCE_GET_MANGLED_TYPE_FIXED", "../Grammar/Type.code");
 
   // DQ (8/2/2014): Adding support for C++11 decltype().
      DeclType.excludeFunctionPrototype ( "HEADER_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
@@ -1172,22 +1179,3 @@ Grammar::setUpTypes ()
 
 #endif
    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

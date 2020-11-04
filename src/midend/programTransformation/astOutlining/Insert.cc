@@ -107,10 +107,11 @@ generateFriendPrototype (const SgFunctionDeclaration* full_decl, SgScopeStatemen
 
      if (enable_debug)  
      {
+#ifdef __linux__
        cout<<"Entering "<< __PRETTY_FUNCTION__ <<endl;
        cout<<"\t source func decl is:"<< full_decl <<endl;
        full_decl->get_file_info()->display();
-
+#endif
 
        cout<<"\t target class definition is:"<< scope<<endl;
        scope->get_file_info()->display();
@@ -461,7 +462,9 @@ findMatchingDefiningClassDeclaration(SgSourceFile* targetFile, SgClassDeclaratio
   // declarations across all files.
      if (enable_debug)  
      {
+#ifdef __linux__
        cout<<"Entering "<< __PRETTY_FUNCTION__ << " for the following pattern class declaration: "<<endl;
+#endif
        target->get_file_info()->display();
      }
 
@@ -568,7 +571,7 @@ insertFriendDecl (const SgFunctionDeclaration* func,
 
         // DQ (8/7/2019): Instead, save the information to use later to support the transformation, *i and friend_proto.
         // cls_def->get_members().insert(i, friend_proto);
-           bool inFront = true;
+        //   bool inFront = true;
         // SgStatement::insert_statement(*i,friend_proto,inFront);
         // cls_def->get_members().insert(i, friend_proto);
 
@@ -807,6 +810,7 @@ insertFriendDecl (const SgFunctionDeclaration* func,
 //  cout<<friend_proto->unparseToString()<<endl; 
 
   if (enable_debug)
+    ROSE_ASSERT(friend_proto != NULL);
     printf ("Exiting insertFriendDecl(): func = %p friend_proto = %p friend_proto->isFriend = %s \n",func,friend_proto,friend_proto->get_declarationModifier().isFriend() ? "true" : "false");
 
 
@@ -982,7 +986,7 @@ isProtPrivMember (SgMemberFunctionRefExp* f)
  */
 // static void insertFriendDecls (SgFunctionDeclaration* func, SgGlobal* scope, FuncDeclList_t& friends)
 static
-Outliner::DeferedTransformation
+Outliner::DeferredTransformation
 insertFriendDecls (SgFunctionDeclaration* func,
                    SgGlobal* scope,
                    FuncDeclList_t& friends)
@@ -1005,7 +1009,7 @@ insertFriendDecls (SgFunctionDeclaration* func,
   }
 
 // DQ (8/13/2019): Adding return value, used when header file unparsing is active.
-  Outliner::DeferedTransformation deferedFriendTransformation;
+  Outliner::DeferredTransformation deferedFriendTransformation;
 
   if (func && scope)
     {
@@ -1185,7 +1189,7 @@ insertFriendDecls (SgFunctionDeclaration* func,
 
 // DQ (8/15/2019): Adding support to defer the transformations to header files.
 // void Outliner::insert (SgFunctionDeclaration* func, SgGlobal* scope, SgBasicBlock* target_outlined_code )
-Outliner::DeferedTransformation
+Outliner::DeferredTransformation
 Outliner::insert (SgFunctionDeclaration* func,
                              SgGlobal* scope,
                              SgBasicBlock* target_outlined_code )
@@ -1244,9 +1248,9 @@ Outliner::insert (SgFunctionDeclaration* func,
      SgSourceFile* enclosingSourceFile = getEnclosingSourceFile(scope,false);
      ROSE_ASSERT(enclosingSourceFile != NULL);
 
-     SgGlobal* enclosingSourceFileGlobalScope = enclosingSourceFile->get_globalScope();
 
 #if 0
+     SgGlobal* enclosingSourceFileGlobalScope = enclosingSourceFile->get_globalScope();
      printf ("scope                          = %p = %s \n",scope,scope->class_name().c_str());
      printf ("enclosingSourceFileGlobalScope = %p = %s \n",enclosingSourceFileGlobalScope,enclosingSourceFileGlobalScope->class_name().c_str());
 #endif
@@ -1351,7 +1355,7 @@ Outliner::insert (SgFunctionDeclaration* func,
 #endif
 
   // DQ (8/15/2019): Adding support to defere the transformations in header files (a performance improvement).
-     DeferedTransformation headerFileTransformation;
+     DeferredTransformation headerFileTransformation;
 
   // Error checking...
      if (Outliner::useNewFile == false)
@@ -1408,7 +1412,7 @@ Outliner::insert (SgFunctionDeclaration* func,
        // The initialization of the headerFileTransformation can only be handled partially (filling in the class declaration/definition, but not the function prototype).
        // DQ (8/7/2019): Save the information to support the header file (class definition) to be done later (and optimization for header file unparsing).
        // insertFriendDecls (func, src_global, friendFunctionPrototypeList);
-       // Outliner::DeferedTransformation headerFileTransformation = insertFriendDecls (func, src_global, friendFunctionPrototypeList);
+       // Outliner::DeferredTransformation headerFileTransformation = insertFriendDecls (func, src_global, friendFunctionPrototypeList);
           headerFileTransformation = insertFriendDecls (func, src_global, friendFunctionPrototypeList);
 
 #if 0
@@ -1688,6 +1692,7 @@ Outliner::insert (SgFunctionDeclaration* func,
         // ROSE_ASSERT(sourceFileFunctionPrototype->get_definingDeclaration() != NULL);
            if (SageInterface::is_Fortran_language() == false)
             {
+              ROSE_ASSERT(sourceFileFunctionPrototype != NULL);
               sourceFileFunctionPrototype->set_definingDeclaration(func);
               ROSE_ASSERT(sourceFileFunctionPrototype->get_definingDeclaration() != NULL);
             }

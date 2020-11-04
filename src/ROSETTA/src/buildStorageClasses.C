@@ -797,7 +797,8 @@ AstNodeClass::evaluateType(std::string& varTypeString)
               varTypeString == "SgStorageModifier" || 
               varTypeString == "SgElaboratedTypeModifier" ||
               varTypeString == "SgUPC_AccessModifier" ||
-              varTypeString == "SgConstVolatileModifier")
+              varTypeString == "SgConstVolatileModifier" ||
+              varTypeString == "SgStructureModifier")
              {
                returnType = MODIFIERCLASS_WITHOUTEASYSTORAGE;
              }
@@ -828,6 +829,7 @@ AstNodeClass::evaluateType(std::string& varTypeString)
                  ( varTypeString == "SgStorageModifier::storage_modifier_enum" ) ||
                  ( varTypeString == "SgAccessModifier::access_modifier_enum" ) ||
                  ( varTypeString == "SgUPC_AccessModifier::upc_access_modifier_enum" ) ||
+                 ( varTypeString == "SgStructureModifier::jovial_structure_modifier_enum" ) ||
                  ( varTypeString == "SgElaboratedTypeModifier::elaborated_type_modifier_enum" ) ||
                  ( varTypeString == "SgDeclarationStatement::template_specialization_enum" ) ||
                  ( varTypeString == "SgDeclarationModifier::gnu_declaration_visability_enum" ) ||
@@ -836,14 +838,14 @@ AstNodeClass::evaluateType(std::string& varTypeString)
                  ( varTypeString == "SgLinkageModifier::linkage_modifier_enum" ) ||
                  ( varTypeString == "SgAsmOp::asm_operand_constraint_enum" ) ||
                  ( varTypeString == "SgAsmOp::asm_operand_modifier_enum" ) ||
+                 ( varTypeString == "SgImplicitStatement::implicit_spec_enum" ) ||
                  ( varTypeString == "SgInitializedName::asm_register_name_enum" ) ||
                  ( varTypeString == "SgInitializedName::excess_specifier_enum" ) ||
-                 ( varTypeString == "SgJovialDirectiveStatement::directive_types" ) ||
+                 ( varTypeString == "SgProcessControlStatement::control_enum" ) ||
                  ( varTypeString == "SgTypeComplex::floating_point_precision_enum" ) ||
                  ( varTypeString == "SgTypeImaginary::floating_point_precision_enum" ) ||
                  ( varTypeString == "SgClassDeclaration::class_types" ) ||
                  ( varTypeString == "SgTemplateClassDeclaration::class_types" ) ||
-                 ( varTypeString == "SgStopOrPauseStatement::stop_or_pause_enum" ) ||
                  ( varTypeString == "SgIOStatement::io_statement_enum" ) ||
                  ( varTypeString == "SgForAllStatement::forall_statement_kind_enum" ) ||
                  ( varTypeString == "SgImageControlStatement::image_control_statement_enum" ) ||
@@ -895,7 +897,8 @@ AstNodeClass::evaluateType(std::string& varTypeString)
                  ( varTypeString == "SgToken::ROSE_Fortran_Keywords" ) ||
               // DQ (12/9/2015): Added to support use of enums from SgUntypedType class.
                  ( varTypeString == "SgUntypedType::type_enum" ) ||
-                 false 
+                 ( varTypeString == "SgFile::standard_enum" ) ||
+                 false
               )
        {
           returnType = ENUM_TYPE;

@@ -63,8 +63,10 @@ createThisShadowDecl (const string& name,
                       SgFunctionDefinition* func_def /*The enclosing class member function*/)
 //                      SgScopeStatement* scope)
 {
+#ifdef __linux__
   if (enable_debug)  
     cout<<"Entering "<< __PRETTY_FUNCTION__ <<endl;
+#endif
   SgVariableDeclaration* decl = NULL;
   ROSE_ASSERT (sym && func_def);
 
@@ -81,7 +83,8 @@ createThisShadowDecl (const string& name,
   SgVariableSymbol * exist_symbol = func_body->lookup_variable_symbol(var_name);
   if (exist_symbol)
   {
-    decl = isSgVariableDeclaration(exist_symbol->get_declaration()->get_definition());
+    //decl = isSgVariableDeclaration(exist_symbol->get_declaration()->get_definition());
+    decl = isSgVariableDeclaration(exist_symbol->get_declaration()->get_declaration());
     ROSE_ASSERT (decl);
     ROSE_ASSERT (decl->get_scope() == isSgScopeStatement(func_body));
   }
@@ -116,6 +119,7 @@ createThisShadowDecl (const string& name,
     decl =  SageBuilder::buildVariableDeclaration (var_name, var_type, init, func_body);
     //SageBuilder::buildVariableDeclaration (var_name, var_type, init, scope);
     ROSE_ASSERT(decl->get_variableDeclarationContainsBaseTypeDefiningDeclaration ()==false);
+    SageInterface::prependStatement(decl, func_body);
   }
   ROSE_ASSERT (decl);
   // Add some comments to mark it
@@ -130,7 +134,6 @@ createThisShadowDecl (const string& name,
     func_body->unparseToString();
   }
 
-  SageInterface::prependStatement(decl, func_body);
   // Liao (1/i28/2020): When used in conjunction with header file unparsing we need to set the physical file id on entirety of the subtree being inserted.
   SgSourceFile* sfile = getEnclosingSourceFile (func_body);
   if (sfile->get_unparseHeaderFiles())
@@ -269,16 +272,19 @@ replaceThisExprs (ASTtools::ThisExprSet_t& this_exprs,
 SgBasicBlock *
 Outliner::Preprocess::transformThisExprs (SgBasicBlock* b)
 {
+#ifdef __linux__
   if (enable_debug)  
     cout<<"Entering "<< __PRETTY_FUNCTION__ <<endl;
-
+#endif
   // Find all 'this' expressions.
   ASTtools::ThisExprSet_t this_exprs;
   ASTtools::collectThisExpressions (b, this_exprs);
   if (this_exprs.empty ()) // No transformation required.
   {
+#ifdef __linux__
     if (enable_debug)  
       cout<<"empty this expression set, exiting "<< __PRETTY_FUNCTION__ <<" without create this shadow declaration. " <<endl;
+#endif
     return b;
   }
 

@@ -54,7 +54,7 @@ namespace boost {
         template<class Archive>
         void serialize(Archive &ar, boost::filesystem::path &path, const unsigned version) {
             if (Archive::is_saving::value) {
-                std::string nativePath = path.native();
+                std::string nativePath = path.string();
                 ar & BOOST_SERIALIZATION_NVP(nativePath);
             } else {
                 std::string nativePath;
@@ -370,6 +370,7 @@ namespace boost {
 // rosePublicConfig.h file (in the script scripts/publicConfiguration.pl).
 // #include "rose_config.h"
 #include "rosePublicConfig.h"
+#include "featureTests.h"
 
 // DQ (3/7/2013): I think that we need to use "" instead of <> and this may make a difference for SWIG.
 // DQ (9/21/2005): This is the simplest way to include this here

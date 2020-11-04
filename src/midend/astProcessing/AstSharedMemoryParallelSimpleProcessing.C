@@ -11,7 +11,7 @@
 #  ifdef _MSC_VER
 #   pragma message ("POSIX threads are unavailable on this platform.")
 #  else
-#   warning "POSIX threads are unavailable on this platform"
+#   warning "POSIX threads are unavailable on this platform" // blame initial commit
 #  endif
 # endif
 #endif

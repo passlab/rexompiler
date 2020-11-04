@@ -270,14 +270,14 @@ done
 #
 # Versions greater than 1.8 may work but haven't been tested [Rasmussen, 2019.02.27]
 #
-if test "x$support_fortran_frontend" = "xyes" ; then
-    if test "x$JAVA_VERSION_MAJOR" != x1; then
-	AC_MSG_FAILURE([Java version for Fortran front-end must be 1.8])
-    fi
-    if test "x$JAVA_VERSION_MINOR" != x8; then
-	AC_MSG_FAILURE([Java version for Fortran front-end must be 1.8 (minor version is not 8)])
-    fi
-fi
+#if test "x$support_fortran_frontend" = "xyes" ; then
+#    if test "x$JAVA_VERSION_MAJOR" != x13; then
+#	AC_MSG_FAILURE([Java version for Fortran front-end must be openjdk version 13.0.x [major version not 13]])
+#    fi
+#    if test "x$JAVA_VERSION_MINOR" != x0; then
+#	AC_MSG_FAILURE([Java version for Fortran front-end must be openjdk version 13.0.x [minor version not 0]])
+#    fi
+#fi
 
 
 #########################################################################################
@@ -359,6 +359,23 @@ AM_CONDITIONAL(ROSE_BUILD_CXX_LANGUAGE_SUPPORT, [test "x$support_cxx_frontend" =
 AM_CONDITIONAL(ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT, [test "x$support_fortran_frontend" = xyes])
 AM_CONDITIONAL(ROSE_BUILD_CUDA_LANGUAGE_SUPPORT, [test "x$support_cuda_frontend" = xyes])
 AM_CONDITIONAL(ROSE_BUILD_OPENCL_LANGUAGE_SUPPORT, [test "x$support_opencl_frontend" = xyes])
+
+########################################################################################################################
+# Automake doesn't support arbitrary logic expressions in "if" statements, so we have to define a boolean variable here for each
+# logic expression that we need somewhere in a makefile. Per custom, we also define the corresponding C preprocessor symbol.
+
+# The C preprocessor is supported when any of C, C++, or Fortran are supported.
+if test "$support_c_frontend" = yes -o "$support_cxx_frontend" = yes -o "$support_fortran_frontend" = yes; then
+    support_cpp_frontend=yes
+else
+    support_cpp_frontend=no
+fi
+AM_CONDITIONAL(ROSE_BUILD_CPP_LANGUAGE_SUPPORT, [test "$support_cpp_frontend" = yes])
+if test "$support_cpp_frontend" = yes; then
+    AC_DEFINE(ROSE_BUILD_CPP_LANGUAGE_SUPPORT, [], [Build ROSE to support the C preprocessor language])
+fi
+
+########################################################################################################################
 
 AC_MSG_CHECKING([if the C frontend is enabled])
 if test "x$support_c_frontend" = "xyes"; then

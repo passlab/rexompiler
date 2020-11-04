@@ -1,5 +1,5 @@
 if(enable-fortran)
-  set(enable-ofp-version "0.8.6" CACHE STRING "version number for OFP")
+  set(enable-ofp-version "20200819-JDK8" CACHE STRING "version number for OFP")
 
   ########### install files ###############
   set(jar_file

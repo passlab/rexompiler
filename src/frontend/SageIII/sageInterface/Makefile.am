@@ -29,13 +29,4 @@ pkginclude_HEADERS = \
 #     highLevelInterface.h
 #     loopHelpers.h
 
-#libsageInterface.la: $(libastFixup_la_OBJECTS) $(libastFixup_la_DEPENDENCIES)
-#	-rm -f $@
-#	$(CXX_SHARED_LIB_UPDATE) $@ $(libastFixup_la_OBJECTS) $(libastFixup_la_LIBADD)
-#	test -f $@ || exit 1
-
-
-# noinst_PROGRAMS = testForBug
-# testForBug_SOURCES = testForBug.C
-
 EXTRA_DIST = CMakeLists.txt
