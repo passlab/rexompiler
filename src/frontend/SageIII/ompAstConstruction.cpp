@@ -1835,37 +1835,37 @@ namespace OmpSupport
     {
         case OMPC_DEPOBJ_UPDATE_DEPENDENCE_TYPE_in:
         {
-            result = SgOmpClause::omp_depobj_modifier_enum::e_omp_depobj_modifier_in;
+            result = SgOmpClause::e_omp_depobj_modifier_in;
             break;
         }
         case OMPC_DEPOBJ_UPDATE_DEPENDENCE_TYPE_out:
         {
-            result = SgOmpClause::omp_depobj_modifier_enum::e_omp_depobj_modifier_out;
+            result = SgOmpClause::e_omp_depobj_modifier_out;
             break;
         }
         case OMPC_DEPOBJ_UPDATE_DEPENDENCE_TYPE_inout:
         {
-            result = SgOmpClause::omp_depobj_modifier_enum::e_omp_depobj_modifier_inout;
+            result = SgOmpClause::e_omp_depobj_modifier_inout;
             break;
         }
         case OMPC_DEPOBJ_UPDATE_DEPENDENCE_TYPE_mutexinoutset:
         {
-            result = SgOmpClause::omp_depobj_modifier_enum::e_omp_depobj_modifier_mutexinoutset;
+            result = SgOmpClause::e_omp_depobj_modifier_mutexinoutset;
             break;
         }
         case OMPC_DEPOBJ_UPDATE_DEPENDENCE_TYPE_depobj:
         {
-            result = SgOmpClause::omp_depobj_modifier_enum::e_omp_depobj_modifier_depobj;
+            result = SgOmpClause::e_omp_depobj_modifier_depobj;
             break;
         }
         case OMPC_DEPOBJ_UPDATE_DEPENDENCE_TYPE_sink:
         {
-            result = SgOmpClause::omp_depobj_modifier_enum::e_omp_depobj_modifier_sink;
+            result = SgOmpClause::e_omp_depobj_modifier_sink;
             break;
         }
         case OMPC_DEPOBJ_UPDATE_DEPENDENCE_TYPE_source:
         {
-            result = SgOmpClause::omp_depobj_modifier_enum::e_omp_depobj_modifier_source;
+            result = SgOmpClause::e_omp_depobj_modifier_source;
             break;
         }
         default:
