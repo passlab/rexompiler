@@ -17,6 +17,7 @@ jobs:
         config:
           - {os: ubuntu-20.04, gnu: 9}
           - {os: ubuntu-18.04, gnu: 7}
+          - {os: ubuntu-16.04, gnu: 5}
 
     runs-on: ${{ matrix.config.os }}
     env:
