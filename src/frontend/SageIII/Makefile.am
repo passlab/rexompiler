@@ -53,12 +53,7 @@ if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 # CXXFLAGS += -g
 endif
 
-# omplexer.cc needs a header generaetd from ompparser.yy
-expression_lexer.lo: expression_parser.h expression_lexer.cc
-expression_parser.h: expression_parser.cc
-	if test -f expression_parser.hh; then $(LN_S) -f expression_parser.hh expression_parser.h; fi;
-
-# Force sage.docs to be make by default 
+# Force sage.docs to be make by default
 # (if sage.docs.in is modified)
 all-local: roseh sage.docs 
 
@@ -96,11 +91,12 @@ CXX_TEMPLATE_REPOSITORY_PATH = .
 # Rasmussen (04/17/2019): Support for ATerms has been deprecated (atermSupport.h removed)
 EXTRA_DIST = CMakeLists.txt preproc-c.ll docs rtiHelpers.h attributeListMap.h \
              advanced_preprocessing_hooks.h rose_attributes_list.h \
-             expression_lexer.cc expression_parser.cc expression_parser.h sage3basic.hhh fileoffsetbits.h rosedll.h \
-	     ompAstConstruction.h PolicyControl.txt Utf8.h
+             sage3basic.hhh fileoffsetbits.h rosedll.h PolicyControl.txt Utf8.h  \
+             ompAstConstruction.h \
+             expression_lexer.cc expression_parser.cc expression_parser.hh
 CLEANFILES = haveRosettaGeneratedSource
 
-DISTCLEANFILES = preproc-c.cc expression_parser.cc expression_parser.h expression_lexer.cc
+DISTCLEANFILES = preproc-c.cc expression_lexer.cc expression_parser.hh expression_parser.cc
 
 # Some source code is generated (call make in ROSE/src/ROSETTA/src to generate these files)
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
@@ -344,7 +340,7 @@ nodist_pkginclude_HEADERS = \
    AstQueryMemoryPool.h \
    astFileIO/AstSpecificDataManagingClass.h
 
-BUILT_SOURCES = $(GENERATED_SOURCE) expression_parser.cc expression_parser.h expression_lexer.cc
+BUILT_SOURCES = $(GENERATED_SOURCE) expression_parser.cc expression_parser.hh expression_lexer.cc
 
 # DQ (9/9/2007): Put C++_include_files.h back into place
 # since it is a convinient mechanism to handle included headers 
