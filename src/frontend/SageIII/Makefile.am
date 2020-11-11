@@ -44,10 +44,12 @@ if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 # CXXFLAGS += -g
 endif
 
+expression_lexer.lo: expression_parser.hh expression_lexer.cc
+expression_parser.hh: expression_parser.cc
+
 # Force sage.docs to be make by default
 # (if sage.docs.in is modified)
 all-local: roseh sage.docs 
-
 
 # AM_CPPFLAGS = $(ROSE_INCLUDES)
 # AM_CPPFLAGS = $(ROSE_INCLUDES) -I$(top_srcdir)/src/frontend/EDG_SAGE_Connection -I$(top_srcdir)/src/frontend/EDG/EDG_3.3/src $(WAVE_INCLUDES)
