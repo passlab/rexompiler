@@ -779,7 +779,7 @@ AC_PROG_MAKE_SET
 AC_MSG_NOTICE([testing the value of CC: (CC = "$CC")])
 AC_MSG_NOTICE([testing the value of CPPFLAGS: (CPPFLAGS = "$CPPFLAGS")])
 
-ROSE_SUPPORT_LIBOMPPARSER
+#ROSE_SUPPORT_LIBOMPPARSER
 
 AX_BOOST_IOSTREAMS
 ROSE_SUPPORT_LIBGCRYPT
@@ -1537,6 +1537,7 @@ src/frontend/SageIII/astVisualization/Makefile
 src/frontend/SageIII/includeDirectivesProcessing/Makefile
 src/frontend/SageIII/sage.docs
 src/frontend/SageIII/sageInterface/Makefile
+src/frontend/SageIII/ompparser/Makefile
 src/frontend/SageIII/virtualCFG/Makefile
 src/midend/Makefile
 src/midend/programAnalysis/Makefile
