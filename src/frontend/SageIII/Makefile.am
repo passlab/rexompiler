@@ -24,7 +24,7 @@ fSageSupportPath=sage_support#
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
    SUBDIRS = astFixup astPostProcessing sageInterface astVisualization virtualCFG includeDirectivesProcessing
 else
-   SUBDIRS = astFileIO astMerge astFixup astPostProcessing sageInterface virtualCFG astTokenStream astHiddenTypeAndDeclarationLists astVisualization astFromString includeDirectivesProcessing
+   SUBDIRS = astFileIO astMerge astFixup astPostProcessing sageInterface virtualCFG astTokenStream astHiddenTypeAndDeclarationLists astVisualization astFromString includeDirectivesProcessing ompparser
 endif
 
 # DQ (12/29/2009): This is only used to handle generated code as smaller files.
@@ -35,15 +35,6 @@ SUBDIRS += GENERATED_CODE_DIRECTORY_Cxx_Grammar
 # ROSE_OPTIMIZATION_LEVEL = -O3
 ROSE_OPTIMIZATION_LEVEL =
 # ROSE_VERBOSE = -rose:verbose 2
-
-# Liao, 3/31/2009, moved the OpenMP parser here
-#Liao, 10/27/2008. I decide to parse OpenMP pragma string here
-# Bison flags
-AM_YFLAGS = -d
-# Flex flags
-AM_LFLAGS =
-# avoid unused Flex functions which are automatically generated
-#CXXFLAGS+= -DYY_NO_TOP_STATE -DYY_NO_POP_STATE $(ROSE_OPTIMIZATION_LEVEL)
 
 CXXFLAGS += $(ROSE_OPTIMIZATION_LEVEL) $(ROSE_VERBOSE)
 
@@ -65,7 +56,7 @@ all-local: roseh sage.docs
 # AM_CPPFLAGS = $(ROSE_INCLUDES) -I$(top_srcdir)/src/frontend/EDG_SAGE_Connection -I$(top_srcdir)/src/frontend/EDG/EDG_3.3/src
 # JJW 6-2-2008: We shouldn't be using anything from EDG outside these two directories
 # AM_CPPFLAGS = $(ROSE_INCLUDES) # -I$(top_srcdir)/src/frontend/EDG_SAGE_Connection -I$(top_srcdir)/src/frontend/EDG/EDG_3.3/src
-AM_CPPFLAGS = $(ROSE_INCLUDES)
+AM_CPPFLAGS = $(ROSE_INCLUDES) -I$(top_srcdir)/src/frontend/SageIII/ompparser/src
 
 # DQ (3/13/2010): sage_support.cpp requires the OFP fortran source files to be made available.
 # if ROSE_USE_OPEN_FORTRAN_PARSER
@@ -222,8 +213,6 @@ endif
 
 noinst_LTLIBRARIES = libsage3.la
 
-# libsage3_la_SOURCES = $(libsage3Sources) preproc.ll rose_paths.h omplexer.ll ompparser.yy
-# libsage3_la_SOURCES = $(libsage3Sources) preproc.ll omplexer.ll ompparser.yy
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 libsage3_la_SOURCES = $(libsage3Sources) preproc-c.ll
 else
@@ -243,15 +232,17 @@ libsage3_la_LIBADD  = \
 	astFixup/libastFixup.la \
 	astPostProcessing/libastPostProcessing.la \
 	sageInterface/libsageInterface.la \
-   astVisualization/libastVisualization.la \
+	ompparser/libompparser.la \
+        astVisualization/libastVisualization.la \
 	virtualCFG/libvirtualCFG.la \
-   includeDirectivesProcessing/libincludeDirectivesProcessing.la
+        includeDirectivesProcessing/libincludeDirectivesProcessing.la
 else
 libsage3_la_LIBADD  = \
 	astFixup/libastFixup.la \
 	astPostProcessing/libastPostProcessing.la \
 	astMerge/libastMerge.la \
 	sageInterface/libsageInterface.la \
+	ompparser/libompparser.la \
 	astTokenStream/libastTokenStream.la \
 	virtualCFG/libvirtualCFG.la \
         astVisualization/libastVisualization.la \
@@ -266,6 +257,7 @@ libsage3_la_LIBADD  = \
 	astPostProcessing/libastPostProcessing.la \
 	astMerge/libastMerge.la \
 	sageInterface/libsageInterface.la \
+	ompparser/libompparser.la \
 	virtualCFG/libvirtualCFG.la \
         astVisualization/libastVisualization.la \
         astFromString/libAstFromString.la \

@@ -78,24 +78,13 @@ jobs:
           zlib1g \
           zlib1g-dev
 
-    - name: Install ompparser
-      run: |
-        cd $GITHUB_WORKSPACE/..
-        git clone -b dev https://github.com/passlab/ompparser.git
-        cd ompparser
-        mkdir build
-        cd build
-        cmake -DCMAKE_INSTALL_PREFIX=../../ompparser_install ..
-        make
-        make install
-
     - name: Configure
       run: |
         cd $GITHUB_WORKSPACE
         ./build
         mkdir ../rex_build
         cd ../rex_build
-        $GITHUB_WORKSPACE/configure --prefix=$GITHUB_WORKSPACE/../rex_install --with-boost=/usr --with-boost-libdir=/usr/lib/x86_64-linux-gnu/ --enable-languages=c,c++,fortran --disable-tests-directory --disable-tutorial-directory --disable-projects-directory --with-ompparser=$GITHUB_WORKSPACE/../ompparser_install
+        $GITHUB_WORKSPACE/configure --prefix=$GITHUB_WORKSPACE/../rex_install --with-boost=/usr --with-boost-libdir=/usr/lib/x86_64-linux-gnu/ --enable-languages=c,c++,fortran --disable-tests-directory --disable-tutorial-directory
 
     - name: Build
       run: |
