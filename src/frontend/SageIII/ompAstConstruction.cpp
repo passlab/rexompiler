@@ -3339,6 +3339,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_target_data:
         case OMPD_single:
         case OMPD_for:
+        case OMPD_for_simd:
         case OMPD_target:
         case OMPD_critical:
         case OMPD_depobj:
@@ -3634,6 +3635,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         }
         case OMPD_for: {
             result = new SgOmpForStatement(NULL, body);
+            break;
+        }
+        case OMPD_for_simd: {
+            result = new SgOmpForSimdStatement(NULL, body);
             break;
         }
         case OMPD_target: {
@@ -5014,6 +5019,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_target_data:
         case OMPD_single:
         case OMPD_for:
+        case OMPD_for_simd:
         case OMPD_target:
         case OMPD_critical:
         case OMPD_depobj:
