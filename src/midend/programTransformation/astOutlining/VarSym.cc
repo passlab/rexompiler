@@ -303,9 +303,9 @@ ASTtools::collectRefdVarSyms (const SgStatement* s, VarSymSet_t& syms)
      string  vname = isSgVarRefExp(*iter)->get_symbol()->get_name().getString();
 
 #ifdef __linux__
-     if (vname == "__PRETTY_FUNCTION__" || vname == "__FUNCTION__" || vname == "__func__" || vname == "__global_tid" || vname == "__bound_tid")
+     if  (vname =="__PRETTY_FUNCTION__" || vname =="__FUNCTION__" ||vname == "__func__")
 #else
-     if (vname == "__FUNCTION__" || vname == "__func__" || vname == "__global_tid" || vname == "__bound_tid")
+     if  (vname =="__FUNCTION__" ||vname == "__func__")
 #endif
        continue; 
 

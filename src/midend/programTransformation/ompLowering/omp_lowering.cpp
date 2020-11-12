@@ -1266,7 +1266,7 @@ namespace OmpSupport
 
       // insert the upper bound checking
       SgExpression* if_condition = NULL;
-      if (isIncremental) { 
+      if (isIncremental) {
         if_condition = buildGreaterThanOp(buildVarRefExp(upper_decl), copyExpression(orig_upper));
       }
       else {
@@ -1542,7 +1542,7 @@ namespace OmpSupport
 
       // insert the upper bound checking
       SgExpression* if_condition = NULL;
-      if (isIncremental) { 
+      if (isIncremental) {
         if_condition = buildGreaterThanOp(buildVarRefExp(upper_decl), copyExpression(orig_upper));
       }
       else {

@@ -61,16 +61,6 @@ createFuncSkeleton (const string& name, SgType* ret_type,
         }
        else
         {
-          // insert two int* parameters as the first two required parameters in __kmpc_fork_call()
-          SgType* int_type = SgTypeInt::createType();
-          SgPointerType* int_pointer_type = buildPointerType(int_type);
-          SgName parameter_name1("__global_tid");
-          SgInitializedName* arg1 = buildInitializedName(parameter_name1, int_pointer_type);
-          SgName parameter_name2("__bound_tid");
-          SgInitializedName* arg2 = buildInitializedName(parameter_name2, int_pointer_type);
-          prependArg(params, arg2);
-          prependArg(params, arg1);
-
           func = SageBuilder::buildDefiningFunctionDeclaration(name,ret_type,params,scope);
         }
 
