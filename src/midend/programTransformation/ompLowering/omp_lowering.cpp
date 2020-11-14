@@ -43,7 +43,8 @@ static std::map<string , std::vector<SgExpression*> > offload_array_size_map;
 // This may not be elegant, but let's get something working first.
 static set<SgVarRefExp* > preservedHostVarRefs; 
 
-SgExpression* get_kmpc_global_tid(SgNode*, SgScopeStatement*);
+static SgExpression* get_kmpc_global_tid(SgNode*, SgScopeStatement*);
+static void insert_function_parameter(std::string, SgType*, SgFunctionDeclaration*, bool);
 
 #define ENABLE_XOMP 1  // Enable the middle layer (XOMP) of OpenMP runtime libraries
   //! Generate a symbol set from an initialized name list, 
@@ -2176,6 +2177,12 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
   }
 #endif
 
+  SgPointerType* int_pointer_type = buildPointerType(SgTypeInt::createType());
+  // insert the kmpc ids as the first two parameters
+  insert_function_parameter("__bound_tid", int_pointer_type, result, false);
+  insert_function_parameter("__global_tid", int_pointer_type, result, false);
+
+  // insert the forward declaration
   Outliner::insert(result, g_scope, body_block);
 
 #if 0 //Liao 12/20/2012 this logic is moved into outliner since using static function is generally a good idea.
@@ -6409,7 +6416,7 @@ void lower_omp(SgSourceFile* file)
 // it's could be available as a caller parameters, e.g. in a outlined function.
 // or, it must be retrieved by the function "__kmpc_global_thread_num".
 // this getter handles both cases.
-SgExpression* get_kmpc_global_tid(SgNode* node, SgScopeStatement* scope) {
+static SgExpression* get_kmpc_global_tid(SgNode* node, SgScopeStatement* scope) {
 
     SgExpression* thread_global_tid = NULL;
 
@@ -6420,16 +6427,48 @@ SgExpression* get_kmpc_global_tid(SgNode* node, SgScopeStatement* scope) {
     if (isSgBasicBlock(parent)) { // skip the padding block in between.
         parent = parent->get_parent();
     };
+    /*
     if (isSgOmpParallelStatement(parent)) {
         SgVarRefExp* thread_global_id_pointer = buildVarRefExp("__global_tid", scope);
         thread_global_tid = buildPointerDerefExp(thread_global_id_pointer);
     }
     // if not, we need to get the global id first.
     else {
+    */
         SgExprStatement* global_tid_statement = buildFunctionCallStmt("__kmpc_global_thread_num", buildIntType(), buildExprListExp(buildIntVal(0)), scope);
         thread_global_tid = global_tid_statement->get_expression();
-    };
+    //};
 
     return thread_global_tid;
 }
 
+// insert a parameter to the outlined function
+// it doesn't affect the forward declaration but the definition itself
+// please use it before inserting the forward declaration
+static void insert_function_parameter(std::string name, SgType* parameter_type, SgFunctionDeclaration* function, bool to_append) {
+
+    // prepare the parameter
+    SgName parameter_name(name);
+    SgFunctionParameterList* params = function->get_parameterList();
+    SgFunctionDefinition* function_definition = function->get_definition();
+    SgInitializedName* parameter = new SgInitializedName(NULL, parameter_name, parameter_type, 0, function, function_definition, 0);
+    setOneSourcePositionForTransformation(parameter);
+    SgVariableSymbol* parameter_symbol = new SgVariableSymbol(parameter);
+    function_definition->insert_symbol(parameter_name, parameter_symbol);
+
+    // insert the parameter at the end or the beginning
+    if (to_append) {
+        appendArg(params, parameter);
+    }
+    else {
+        prependArg(params, parameter);
+    };
+
+    // update the function metadata
+    SgType* stale_func_type = function->get_type();
+    function->set_type(buildFunctionType(function->get_type()->get_return_type(), buildFunctionParameterTypeList(function->get_parameterList())));
+    SgFunctionDeclaration* non_def_func = isSgFunctionDeclaration(function->get_firstNondefiningDeclaration());
+    ROSE_ASSERT(non_def_func != NULL);
+    ROSE_ASSERT(stale_func_type == non_def_func->get_type());
+    non_def_func->set_type(function->get_type());
+}
