@@ -45,6 +45,7 @@ static set<SgVarRefExp* > preservedHostVarRefs;
 
 static SgExpression* get_kmpc_global_tid(SgNode*, SgScopeStatement*);
 static void insert_function_parameter(std::string, SgType*, SgFunctionDeclaration*, bool);
+static std::vector<SgNode*>* kmpc_function_call_list = NULL;
 
 #define ENABLE_XOMP 1  // Enable the middle layer (XOMP) of OpenMP runtime libraries
   //! Generate a symbol set from an initialized name list, 
@@ -1204,6 +1205,7 @@ namespace OmpSupport
 
     SgExprStatement* func_init_stmt = buildFunctionCallStmt(func_init_name, buildVoidType(), parameters, bb1);
     appendStatement(func_init_stmt, bb1);
+    kmpc_function_call_list->push_back(func_init_stmt);
 #endif    
     //build function start
     SgExprListExp* para_list = buildExprListExp(copyExpression(orig_lower), 
@@ -1540,6 +1542,7 @@ namespace OmpSupport
       parameters = buildExprListExp(source_location_info, thread_global_tid, schedule_type, buildAddressOfOp(buildVarRefExp(last_iter_decl)), e4, e5, buildAddressOfOp(buildVarRefExp(stride_decl)), copyExpression(orig_stride), buildIntVal(1));
       SgStatement* call_stmt = buildFunctionCallStmt ("__kmpc_for_static_init_4", buildVoidType(), parameters, bb1);
       appendStatement(call_stmt, bb1);
+      kmpc_function_call_list->push_back(call_stmt);
 
       // insert the upper bound checking
       SgExpression* if_condition = NULL;
@@ -2404,6 +2407,7 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
         // set up the head of transformed code to num_threads setter
         // the tail is still the outlined function call
         s1 = set_num_threads_statement;
+        kmpc_function_call_list->push_back(set_num_threads_statement);
     };
 
     // transform the if clause
@@ -2440,6 +2444,7 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
         // the head and tail are both changed to the if statement because all the other transformed code are included as children of if statement
         s1 = if_statement;
         s2 = s1;
+        kmpc_function_call_list->push_back(else_stmt);
     };
 
     SageInterface::replaceStatement(target, s1, true);
@@ -5583,6 +5588,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
    {
 #ifdef ENABLE_XOMP
      SgExpression* func_exp = buildFunctionCallExp("__kmpc_single", buildBoolType(), parameters, scope);
+     kmpc_function_call_list->push_back(func_exp);
 #else
      SgExpression* func_exp = buildFunctionCallExp("GOMP_single_start", buildBoolType(), NULL, scope);
 #endif
@@ -6241,14 +6247,32 @@ void lower_omp(SgSourceFile* file)
   // AST manipulation with postorder traversal is not reliable,
   // We record nodes first then do changes to them
 
+  kmpc_function_call_list = new std::vector<SgNode*>();
+  bool has_added_temp_kmpc_id = false;
+  SgVariableDeclaration* temp_kmpc_global_tid = NULL;
+
   Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(file, V_SgStatement);
   Rose_STL_Container<SgNode*>::reverse_iterator nodeListIterator = nodeList.rbegin();
   for ( ;nodeListIterator !=nodeList.rend();  ++nodeListIterator)
   {
     SgStatement* node = isSgStatement(*nodeListIterator);
     ROSE_ASSERT(node != NULL);
-    //debug the order of the statements
-    //    cout<<"Debug lower_omp(). stmt:"<<node<<" "<<node->class_name() <<" "<< node->get_file_info()->get_line()<<endl;
+
+    if (!has_added_temp_kmpc_id) {
+      SgDeclarationStatement* insert_point = NULL;
+      SgNode* cur_parent = node->get_parent();
+      while (cur_parent && !isSgGlobal(cur_parent)) {
+        if (isSgDeclarationStatement (cur_parent)) {
+            insert_point = isSgDeclarationStatement(cur_parent);
+        }
+        cur_parent = cur_parent->get_parent();
+      };
+      SgScopeStatement* g_scope = insert_point->get_scope();
+      temp_kmpc_global_tid = buildVariableDeclaration(SgName("__global_tid"), buildPointerType(buildIntType()), buildAssignInitializer(buildIntVal(0)), g_scope);
+      g_scope->insert_statement(insert_point, temp_kmpc_global_tid, true);
+      temp_kmpc_global_tid->set_parent(g_scope);
+      has_added_temp_kmpc_id = true;
+    };
 
     // check if it is a variant
     //  std::cout << "About to start switching: " << node->variantT() << ".\n";
@@ -6398,6 +6422,46 @@ void lower_omp(SgSourceFile* file)
 
   } 
 
+  // iterate all the stored kmpc statements
+  // not all the kmpc calls need to be stored, only one for each omp directive is enough to mark the function (main, foo, outlined function, etc) having the omp directive.
+  // for example, the SINGLE directive could be transformed to kmpc_single, kmpc_end_single, and kmpc_barrier, we only store one of the three calls.
+  // if they are inside an outlined function, nothing need to be done because the kmpc id has been added to the symbol table and ready to use.
+  // if they are inside anywhere else, we need to declare the kmpc id and assign a proper value.
+  for (std::vector<SgNode*>::const_iterator iter = kmpc_function_call_list->begin(); iter != kmpc_function_call_list->end(); iter++) {
+      SgNode* kmpc_node = *iter;
+
+      // find the function using kmpc id
+      SgNode* parent = kmpc_node->get_parent();
+      while (!isSgFunctionDeclaration(parent)) {
+          parent = parent->get_parent();
+      }
+      ROSE_ASSERT(isSgFunctionDeclaration(parent));
+
+      SgFunctionDeclaration* func = isSgFunctionDeclaration(parent);
+      SgBasicBlock* insert_point = func->get_definition()->get_body();
+      SgScopeStatement* func_scope = insert_point->get_scope();
+
+      // if the kmpc id doesn't exist in the symbol table of the function, we need to add it
+      SgVariableSymbol* has_kmpc_id_symbol = func_scope->lookup_variable_symbol("__global_tid");
+      if (!has_kmpc_id_symbol) {
+        // __global_tid is a pointer and can't be initialized by kmpc function call directly.
+        // we have to use an intermediate int variable to pass the value
+        SgVariableDeclaration* kmpc_id_declaration = buildVariableDeclaration(SgName("__global_tid"), buildPointerType(buildIntType()), buildAssignInitializer(buildVarRefExp("&__global_tid_value")), func_scope);
+        prependStatement(kmpc_id_declaration, insert_point);
+        SgExprStatement* global_tid_statement = buildFunctionCallStmt("__kmpc_global_thread_num", buildIntType(), buildExprListExp(buildIntVal(0)), func_scope);
+        SgExpression* thread_global_tid = global_tid_statement->get_expression();
+        kmpc_id_declaration = buildVariableDeclaration(SgName("__global_tid_value"), buildIntType(), buildAssignInitializer(thread_global_tid), func_scope);
+        prependStatement(kmpc_id_declaration, insert_point);
+        SgName parameter_name("__global_tid");
+        SgPointerType* int_pointer_type = buildPointerType(SgTypeInt::createType());
+        SgInitializedName* parameter = new SgInitializedName(NULL, parameter_name, int_pointer_type, 0, kmpc_id_declaration, func_scope, 0);
+        SgVariableSymbol* parameter_symbol = new SgVariableSymbol(parameter);
+        insert_point->insert_symbol(parameter_name, parameter_symbol);
+      }
+  };
+  // remove the temporary kmpc global tid.
+  removeStatement(temp_kmpc_global_tid);
+
 #if 0
   //3. Special handling for files with main() 
   // rename main() to user_main()
@@ -6420,24 +6484,8 @@ static SgExpression* get_kmpc_global_tid(SgNode* node, SgScopeStatement* scope) 
 
     SgExpression* thread_global_tid = NULL;
 
-    // check if the processing node is in a parallel region.
-    // in this case, int* __global_tid is available in the current scope, it can be used directly.
-    SgNode* parent = node->get_parent();
-    ROSE_ASSERT (parent != NULL);
-    if (isSgBasicBlock(parent)) { // skip the padding block in between.
-        parent = parent->get_parent();
-    };
-    /*
-    if (isSgOmpParallelStatement(parent)) {
-        SgVarRefExp* thread_global_id_pointer = buildVarRefExp("__global_tid", scope);
-        thread_global_tid = buildPointerDerefExp(thread_global_id_pointer);
-    }
-    // if not, we need to get the global id first.
-    else {
-    */
-        SgExprStatement* global_tid_statement = buildFunctionCallStmt("__kmpc_global_thread_num", buildIntType(), buildExprListExp(buildIntVal(0)), scope);
-        thread_global_tid = global_tid_statement->get_expression();
-    //};
+    SgVarRefExp* thread_global_id_pointer = buildVarRefExp("__global_tid", scope);
+    thread_global_tid = buildPointerDerefExp(thread_global_id_pointer);
 
     return thread_global_tid;
 }
