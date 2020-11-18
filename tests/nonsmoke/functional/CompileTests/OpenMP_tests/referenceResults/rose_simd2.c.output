@@ -7,6 +7,3 @@
 #pragma omp simd  aligned(j,k:1)
 #pragma omp simd  private(tmp) reduction(+ : sum)
 #pragma omp simd  lastprivate(j)
-#pragma omp for simd  collapse(2) private(tmp)
-#pragma omp parallel 
-#pragma omp for simd  collapse(2) private(tmp)

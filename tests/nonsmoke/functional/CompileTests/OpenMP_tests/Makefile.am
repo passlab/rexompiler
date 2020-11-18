@@ -148,6 +148,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	simd2.c \
 	simd3.c \
 	simd4.c \
+	simd5.c \
 	#single.c \
 	#single2.c \
 	single3.c \
@@ -298,6 +299,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	simd2.c \
 	simd3.c \
 	simd4.c \
+	simd5.c \
 	single3.c \
 	sizeof.c \
 	spmd1.c \
