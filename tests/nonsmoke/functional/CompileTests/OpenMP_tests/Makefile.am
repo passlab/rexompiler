@@ -145,9 +145,10 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	set_num_threads.c \
 	shared.c \
 	#simd.c \
-	#simd2.c \
+	simd2.c \
 	simd3.c \
 	simd4.c \
+	simd5.c \
 	#single.c \
 	#single2.c \
 	single3.c \
@@ -295,8 +296,10 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	sections1.c \
 	set_num_threads.c \
 	shared.c \
+	simd2.c \
 	simd3.c \
 	simd4.c \
+	simd5.c \
 	single3.c \
 	sizeof.c \
 	spmd1.c \
