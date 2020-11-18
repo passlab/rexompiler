@@ -45,7 +45,10 @@ static set<SgVarRefExp* > preservedHostVarRefs;
 
 static SgExpression* get_kmpc_global_tid(SgNode*, SgScopeStatement*);
 static void insert_function_parameter(std::string, SgType*, SgFunctionDeclaration*, bool);
+// one SgNode per function to check whether its symbol table has the kmpc global tid
 static std::vector<SgNode*>* kmpc_function_call_list = NULL;
+// move the outlined function to a separate file
+static void move_outlined_function(SgFunctionDeclaration*, SgNode*);
 
 #define ENABLE_XOMP 1  // Enable the middle layer (XOMP) of OpenMP runtime libraries
   //! Generate a symbol set from an initialized name list, 
@@ -2113,7 +2116,6 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
     syms.insert(s);
   }
 
-  
   // a data structure used to wrap parameters
   SgClassDeclaration* struct_decl = NULL; 
   if (SageInterface::is_Fortran_language())
@@ -2481,7 +2483,7 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
    // move dangling #endif etc from the body to the end of s2
    movePreprocessingInfo(body, s2, PreprocessingInfo::before, PreprocessingInfo::after);
 
-   // SageInterface::deepDelete(target);
+   move_outlined_function(outlined_func, node);
   }
 
 void transOmpMetadirective(SgNode* node)
@@ -6519,4 +6521,39 @@ static void insert_function_parameter(std::string name, SgType* parameter_type, 
     ROSE_ASSERT(non_def_func != NULL);
     ROSE_ASSERT(stale_func_type == non_def_func->get_type());
     non_def_func->set_type(function->get_type());
+}
+
+static void move_outlined_function(SgFunctionDeclaration* outlined_func, SgNode* node) {
+
+    // prepare the required information of original file
+    SgGlobal* original_scope = getGlobalScope(outlined_func);
+    std::string original_name = outlined_func->get_name().getString();
+    SgBasicBlock* function_block = outlined_func->get_definition()->get_body();
+    SgSourceFile* new_file = NULL;
+    SgFile* cur_file = getEnclosingNode<SgFile>(node);
+    std::string original_file_name = StringUtility::stripFileSuffixFromFileName(StringUtility::stripPathFromFileName(cur_file->get_file_info()->get_filenameString()));
+
+    // create a new file with all the function declaration and preprocessing information of the original file
+    new_file = Outliner::getLibSourceFile(function_block);
+    ROSE_ASSERT(new_file != NULL);
+
+    // insert REX runtime header to the new file
+    SgGlobal* new_scope = new_file->get_globalScope();
+    SageInterface::insertHeader("rex_kmp.h", PreprocessingInfo::after, false, new_scope);
+
+    // copy the outlined function to the new file and remove the static modifier
+    SgFunctionDeclaration* new_outlined_function = isSgFunctionDeclaration(deepCopy(outlined_func));
+    new_outlined_function->get_declarationModifier().get_storageModifier().setUnspecified();
+    new_outlined_function->set_scope(new_scope);
+    SageInterface::fixVariableReferences(new_file, false);
+    appendStatement(new_outlined_function, new_scope);
+
+    // set the function declaration in the original file as extern
+    SgFunctionDeclaration* extern_header = isSgFunctionDeclaration(findFunctionDeclaration(original_scope->get_parent(), original_name, original_scope, false));
+    extern_header->get_declarationModifier().get_storageModifier().setExtern();
+
+    // remove the outlined function in the original file and perform post processing in the new file
+    removeStatement(outlined_func);
+    new_file->set_processedToIncludeCppDirectivesAndComments(true);
+    AstPostProcessing(new_file);
 }
