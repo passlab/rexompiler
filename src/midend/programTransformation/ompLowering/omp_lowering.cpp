@@ -5,8 +5,7 @@
 #include "Outliner.hh"
 #include "omp_lowering.h"
 #include "RoseAst.h"
-//#include <string>
-//#include <sstream>
+#include <sstream>
 
 using namespace std;
 using namespace Rose;
@@ -2035,8 +2034,9 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
   const Sg_File_Info* info = target->get_startOfConstruct();
   SgFunctionDeclaration * enclosing_function = getEnclosingFunctionDeclaration(target);
   std::string enclosing_function_name = enclosing_function->get_name().getString();
-  std::string statement_line_number = std::to_string(info->get_line());
-  func_name += enclosing_function_name + "__" + statement_line_number + "__";
+  std::stringstream statement_line_number;
+  statement_line_number << info->get_line();
+  func_name += enclosing_function_name + "__" + statement_line_number.str() + "__";
 
   SgGlobal* g_scope = SageInterface::getGlobalScope(body_block);
   ROSE_ASSERT(g_scope != NULL);
