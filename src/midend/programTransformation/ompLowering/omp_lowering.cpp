@@ -5,6 +5,8 @@
 #include "Outliner.hh"
 #include "omp_lowering.h"
 #include "RoseAst.h"
+//#include <string>
+//#include <sstream>
 
 using namespace std;
 using namespace Rose;
@@ -2027,6 +2029,15 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
   ASTtools::VarSymSet_t pSyms, fpSyms,reductionSyms, pdSyms;
 
   string func_name = Outliner::generateFuncName(target);
+
+  // add a meaningful suffix to the generated unique outlined function name
+  // the suffix is "<enclosing function name>__<line number of the original statement>__"
+  const Sg_File_Info* info = target->get_startOfConstruct();
+  SgFunctionDeclaration * enclosing_function = getEnclosingFunctionDeclaration(target);
+  std::string enclosing_function_name = enclosing_function->get_name().getString();
+  std::string statement_line_number = std::to_string(info->get_line());
+  func_name += enclosing_function_name + "__" + statement_line_number + "__";
+
   SgGlobal* g_scope = SageInterface::getGlobalScope(body_block);
   ROSE_ASSERT(g_scope != NULL);
 
