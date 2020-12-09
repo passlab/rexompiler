@@ -47,7 +47,10 @@ static set<SgVarRefExp* > preservedHostVarRefs;
 static SgVariableDeclaration* get_kmpc_global_tid(SgNode*, SgScopeStatement*);
 static void insert_function_parameter(std::string, SgType*, SgFunctionDeclaration*, bool);
 // move the outlined function to a separate file
-static void move_outlined_function(SgFunctionDeclaration*, SgNode*);
+static void move_outlined_function(SgFunctionDeclaration*, SgSourceFile*);
+static std::vector<SgFunctionDeclaration* >* outlined_function_list = NULL;
+static void post_processing();
+static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration*);
 
 #define ENABLE_XOMP 1  // Enable the middle layer (XOMP) of OpenMP runtime libraries
   //! Generate a symbol set from an initialized name list, 
@@ -2491,7 +2494,8 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
    // move dangling #endif etc from the body to the end of s2
    movePreprocessingInfo(body, s2, PreprocessingInfo::before, PreprocessingInfo::after);
 
-   move_outlined_function(outlined_func, node);
+   // store the outlined functions for post processing later
+   outlined_function_list->push_back(isSgFunctionDeclaration(outlined_func));
   }
 
 void transOmpMetadirective(SgNode* node)
@@ -6259,6 +6263,8 @@ void lower_omp(SgSourceFile* file)
   // AST manipulation with postorder traversal is not reliable,
   // We record nodes first then do changes to them
 
+  outlined_function_list = new std::vector<SgFunctionDeclaration* >();
+
   Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(file, V_SgStatement);
   Rose_STL_Container<SgNode*>::reverse_iterator nodeListIterator = nodeList.rbegin();
   for ( ;nodeListIterator !=nodeList.rend();  ++nodeListIterator)
@@ -6413,6 +6419,8 @@ void lower_omp(SgSourceFile* file)
 #endif
 
   } 
+  // post processing
+  post_processing();
 
 }
 
@@ -6467,23 +6475,16 @@ static void insert_function_parameter(std::string name, SgType* parameter_type, 
     non_def_func->set_type(function->get_type());
 }
 
-static void move_outlined_function(SgFunctionDeclaration* outlined_func, SgNode* node) {
+static void move_outlined_function(SgFunctionDeclaration* outlined_func, SgSourceFile* new_file) {
 
     // prepare the required information of original file
     SgGlobal* original_scope = getGlobalScope(outlined_func);
     std::string original_name = outlined_func->get_name().getString();
-    SgBasicBlock* function_block = outlined_func->get_definition()->get_body();
-    SgSourceFile* new_file = NULL;
-    SgFile* cur_file = getEnclosingNode<SgFile>(node);
+    SgFile* cur_file = getEnclosingNode<SgFile>(outlined_func);
     std::string original_file_name = StringUtility::stripFileSuffixFromFileName(StringUtility::stripPathFromFileName(cur_file->get_file_info()->get_filenameString()));
 
-    // create a new file with all the function declaration and preprocessing information of the original file
-    new_file = Outliner::getLibSourceFile(function_block);
-    ROSE_ASSERT(new_file != NULL);
-
-    // insert REX runtime header to the new file
+    // prepare the required information of new file
     SgGlobal* new_scope = new_file->get_globalScope();
-    SageInterface::insertHeader("rex_kmp.h", PreprocessingInfo::after, false, new_scope);
 
     // copy the outlined function to the new file and remove the static modifier
     SgFunctionDeclaration* new_outlined_function = isSgFunctionDeclaration(deepCopy(outlined_func));
@@ -6498,6 +6499,59 @@ static void move_outlined_function(SgFunctionDeclaration* outlined_func, SgNode*
 
     // remove the outlined function in the original file and perform post processing in the new file
     removeStatement(outlined_func);
-    new_file->set_processedToIncludeCppDirectivesAndComments(true);
+
     AstPostProcessing(new_file);
 }
+
+static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration* outlined_func) {
+
+    // prepare the required information of original file
+    std::string original_name = outlined_func->get_name().getString();
+    SgBasicBlock* function_block = outlined_func->get_definition()->get_body();
+    SgSourceFile* new_file = NULL;
+    SgFile* cur_file = getEnclosingNode<SgFile>(outlined_func);
+    std::string original_file_name = StringUtility::stripFileSuffixFromFileName(StringUtility::stripPathFromFileName(cur_file->get_file_info()->get_filenameString()));
+
+    // create a new file with all the function declaration and preprocessing information of the original file
+    new_file = Outliner::getLibSourceFile(function_block);
+    ROSE_ASSERT(new_file != NULL);
+
+    // insert REX runtime header to the new file
+    SgGlobal* new_scope = new_file->get_globalScope();
+    SageInterface::insertHeader("rex_kmp.h", PreprocessingInfo::after, false, new_scope);
+    new_file->set_processedToIncludeCppDirectivesAndComments(true);
+
+    AstPostProcessing(new_file);
+
+    return new_file;
+}
+
+static void post_processing() {
+
+    // create a new file
+    SgSourceFile* new_file = NULL;
+    if (outlined_function_list->size() > 0) {
+        new_file = generate_outlined_function_file(outlined_function_list->at(0));
+    };
+
+    // move the outlined functions
+    std::vector<SgFunctionDeclaration* >::iterator i;
+    for (i = outlined_function_list->begin(); i != outlined_function_list->end(); i++) {
+        move_outlined_function(*i, new_file);
+    };
+
+    // set the regular global variables in the new file to extern and remove their definition
+    Rose_STL_Container<SgNode*> global_variable_list = NodeQuery::querySubTree(new_file, V_SgVariableDeclaration);
+    Rose_STL_Container<SgNode*>::iterator global_variable_list_iterator;
+    for (global_variable_list_iterator = global_variable_list.begin(); global_variable_list_iterator != global_variable_list.end(); global_variable_list_iterator++) {
+        SgVariableDeclaration* global_variable = isSgVariableDeclaration(*global_variable_list_iterator);
+        if (isSgGlobal(global_variable->get_scope())) {
+            SgStorageModifier& variable_modifier = global_variable->get_declarationModifier().get_storageModifier();
+            if (!variable_modifier.isStatic()) {
+                variable_modifier.setExtern();
+                global_variable->reset_initializer(NULL);
+            };
+        };
+    };
+
+};
