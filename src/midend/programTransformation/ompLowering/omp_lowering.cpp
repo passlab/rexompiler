@@ -1986,7 +1986,6 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
 //
 // It calls the ROSE AST outliner internally. 
 SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_name, ASTtools::VarSymSet_t& syms, ASTtools::VarSymSet_t&pdSyms3)
-//SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_name, ASTtools::VarSymSet_t& syms, std::set<SgInitializedName*>& readOnlyVars, ASTtools::VarSymSet_t&pdSyms3)
 {
   ROSE_ASSERT(node != NULL);
   SgOmpClauseBodyStatement* target = isSgOmpClauseBodyStatement(node);  
@@ -2002,18 +2001,9 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
   SgFunctionDeclaration* result= NULL;
   //Initialize outliner
   Outliner::enable_classic = false; // we need use parameter wrapping, which is not classic behavior of outlining
-  if (SageInterface::is_Fortran_language())
-  {
-    //We pass one variable per parameter, at least for Fortran 77
-    Outliner::useParameterWrapper = false;
-//    Outliner::enable_classic = true; // use subroutine's parameters directly
-  }
-  else 
-  {
-    // C/C++ : always wrap parameters into a structure for outlining used during OpenMP translation
-    Outliner::useParameterWrapper = true; 
-    Outliner::useStructureWrapper = true;
-  }
+  // We pass one variable per parameter, at least for Fortran 77.
+  // For both C/C++ and Fortran, we use the same method to pass parameters separately instead of a struct or array wrapper.
+  Outliner::useParameterWrapper = false;
 
   //TODO there should be some semantics check for the regions to be outlined
   //for example, multiple entries or exists are not allowed for OpenMP
@@ -2133,11 +2123,6 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
 
   // a data structure used to wrap parameters
   SgClassDeclaration* struct_decl = NULL; 
-  if (SageInterface::is_Fortran_language())
-    struct_decl = NULL;  // We cannot use structure for Fortran
-  else  
-     struct_decl = Outliner::generateParameterStructureDeclaration (body_block, func_name, syms, pdSyms3, g_scope);
-  // ROSE_ASSERT (struct_decl != NULL); // can be NULL if no parameters to be passed
 
   //Generate the outlined function
   /* Parameter list
@@ -2381,17 +2366,19 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
     SgVariableDeclaration* kmpc_global_tid_declaration = get_kmpc_global_tid(target, p_scope);
     SgExpression* thread_global_tid = buildVarRefExp(getFirstVariable(*kmpc_global_tid_declaration).get_name(), p_scope);
 
-    // add __kmpc_fork_call (0, 1, OUT_func_xxx, &__out_argv1__5876__);
-    // or __kmpc_fork_call (0, 1, OUT_func_xxx, 0); // if no variables need to be passed
-    SgExpression * outlined_parameter = NULL;
-    if (syms.size() == 0)
-        outlined_parameter = buildIntVal(0);
-    else
-        outlined_parameter = buildAddressOfOp(buildVarRefExp(wrapper_name, p_scope));
-
+    // add __kmpc_fork_call (0, 2, OUT_func_xxx, &a, &sum);
+    // or __kmpc_fork_call (0, 0, OUT_func_xxx, 0); // if no variables need to be passed
     SgExpression* source_location_info = buildIntVal(0);
-    SgExpression* outlined_function_parameter_amount = buildIntVal(1);
-    parameters = buildExprListExp(source_location_info, outlined_function_parameter_amount, buildFunctionRefExp(outlined_func), outlined_parameter);
+    SgExpression* outlined_function_parameter_amount = buildIntVal(pdSyms3.size());
+    parameters = buildExprListExp(source_location_info, outlined_function_parameter_amount, buildFunctionRefExp(outlined_func));
+    ASTtools::VarSymSet_t::iterator iter;
+    for (iter = pdSyms3.begin(); iter!=pdSyms3.end(); iter++) {
+        const SgVariableSymbol* sb = *iter;
+        appendExpression(parameters, buildAddressOfOp(buildVarRefExp(const_cast<SgVariableSymbol* >(sb))));
+    }
+    if (pdSyms3.size() == 0) {
+        appendExpression(parameters, buildIntVal(0));
+    };
 
     ROSE_ASSERT (parameters != NULL);
 
@@ -2447,7 +2434,12 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
         SgIfStmt* if_statement = buildIfStmt(if_condition, s1, NULL);
         SgExprStatement* else_stmt = NULL;
         SgBasicBlock* false_body = buildBasicBlock();
-        parameters = buildExprListExp(buildAddressOfOp(thread_global_tid), buildIntVal(0), outlined_parameter);
+        parameters = buildExprListExp(buildAddressOfOp(thread_global_tid), buildIntVal(0));
+        ASTtools::VarSymSet_t::iterator iter;
+        for (iter = pdSyms3.begin(); iter!=pdSyms3.end(); iter++) {
+            const SgVariableSymbol* sb = *iter;
+            appendExpression(parameters, buildAddressOfOp(buildVarRefExp(const_cast<SgVariableSymbol* >(sb))));
+        }
         else_stmt = buildFunctionCallStmt(outlined_func->get_name(), buildVoidType(), parameters, p_scope);
         false_body->append_statement(else_stmt);
         if_statement->set_false_body(false_body);
@@ -6426,7 +6418,7 @@ void lower_omp(SgSourceFile* file)
 
 // global_tid is required as a parameter in many kmpc function calls
 // we always use the function "__kmpc_global_thread_num" to get the global_tid.
-// each OpenMP statement has such an id with unique name "__global_tid_<enclosing function name>_<original statement line number>"
+// each OpenMP statement has such an id with unique name "__global_tid_<enclosing function name>_<original statement line number>_<tid index>"
 static SgVariableDeclaration* get_kmpc_global_tid(SgNode* target, SgScopeStatement* scope) {
 
     const Sg_File_Info* info = target->get_startOfConstruct();
@@ -6542,15 +6534,17 @@ static void post_processing() {
     };
 
     // set the regular global variables in the new file to extern and remove their definition
-    Rose_STL_Container<SgNode*> global_variable_list = NodeQuery::querySubTree(new_file, V_SgVariableDeclaration);
-    Rose_STL_Container<SgNode*>::iterator global_variable_list_iterator;
-    for (global_variable_list_iterator = global_variable_list.begin(); global_variable_list_iterator != global_variable_list.end(); global_variable_list_iterator++) {
-        SgVariableDeclaration* global_variable = isSgVariableDeclaration(*global_variable_list_iterator);
-        if (isSgGlobal(global_variable->get_scope())) {
-            SgStorageModifier& variable_modifier = global_variable->get_declarationModifier().get_storageModifier();
-            if (!variable_modifier.isStatic()) {
-                variable_modifier.setExtern();
-                global_variable->reset_initializer(NULL);
+    if (new_file != NULL) {
+        Rose_STL_Container<SgNode*> global_variable_list = NodeQuery::querySubTree(new_file, V_SgVariableDeclaration);
+        Rose_STL_Container<SgNode*>::iterator global_variable_list_iterator;
+        for (global_variable_list_iterator = global_variable_list.begin(); global_variable_list_iterator != global_variable_list.end(); global_variable_list_iterator++) {
+            SgVariableDeclaration* global_variable = isSgVariableDeclaration(*global_variable_list_iterator);
+            if (isSgGlobal(global_variable->get_scope())) {
+                SgStorageModifier& variable_modifier = global_variable->get_declarationModifier().get_storageModifier();
+                if (!variable_modifier.isStatic()) {
+                    variable_modifier.setExtern();
+                    global_variable->reset_initializer(NULL);
+                };
             };
         };
     };
