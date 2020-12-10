@@ -51,6 +51,7 @@ static void move_outlined_function(SgFunctionDeclaration*, SgSourceFile*);
 static std::vector<SgFunctionDeclaration* >* outlined_function_list = NULL;
 static void post_processing();
 static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration*);
+static unsigned int kmpc_global_tid_counter = 0;
 
 #define ENABLE_XOMP 1  // Enable the middle layer (XOMP) of OpenMP runtime libraries
   //! Generate a symbol set from an initialized name list, 
@@ -1129,10 +1130,9 @@ namespace OmpSupport
     SgStatement * loop = for_loop!=NULL? (SgStatement*)for_loop:(SgStatement*)do_loop;
 
     SgExprListExp* parameters = NULL;
-    SgVariableDeclaration* kmpc_global_tid_declaration = get_kmpc_global_tid(target, p_scope);
-    SgExpression* thread_global_tid = buildVarRefExp(getFirstVariable(*kmpc_global_tid_declaration).get_name(), p_scope);
-    insertStatement(target, kmpc_global_tid_declaration);
-    kmpc_global_tid_declaration->set_parent(target->get_parent());
+    SgVariableDeclaration* kmpc_global_tid_declaration = get_kmpc_global_tid(target, bb1);
+    SgExpression* thread_global_tid = buildVarRefExp(getFirstVariable(*kmpc_global_tid_declaration).get_name(), bb1);
+    appendStatement(kmpc_global_tid_declaration, bb1);
     SgExpression* source_location_info = buildIntVal(0);
 
     SgInitializedName* orig_index; 
@@ -1445,12 +1445,6 @@ namespace OmpSupport
     // This newly introduced scope is used to hold loop variables, private variables ,etc
     SgBasicBlock * bb1 = SageBuilder::buildBasicBlock(); 
 
-    SgVariableDeclaration* kmpc_global_tid_declaration = get_kmpc_global_tid(node, bb1);
-    SgExpression* thread_global_tid = buildVarRefExp(getFirstVariable(*kmpc_global_tid_declaration).get_name(), bb1);
-    insertStatement(target, kmpc_global_tid_declaration);
-    kmpc_global_tid_declaration->set_parent(target->get_parent());
-
-
     //   fprintf(stderr, "target: %s\n", target->unparseToString().c_str() );
 
     replaceStatement(target, bb1, true);
@@ -1528,6 +1522,10 @@ namespace OmpSupport
     }
     else 
     {
+      SgVariableDeclaration* kmpc_global_tid_declaration = get_kmpc_global_tid(node, bb1);
+      SgExpression* thread_global_tid = buildVarRefExp(getFirstVariable(*kmpc_global_tid_declaration).get_name(), bb1);
+      appendStatement(kmpc_global_tid_declaration, bb1);
+
       //void XOMP_loop_default(int lower, int upper, int stride, long *n_lower, long * n_upper)
       // XOMP_loop_default (lower, upper, stride, &_p_lower, &_p_upper );
       // lower:  copyExpression(orig_lower)
@@ -6436,7 +6434,10 @@ static SgVariableDeclaration* get_kmpc_global_tid(SgNode* target, SgScopeStateme
     std::string enclosing_function_name = enclosing_function->get_name().getString();
     std::stringstream statement_line_number;
     statement_line_number << info->get_line();
-    std::string kmpc_tid_name = "__global_tid_" + enclosing_function_name + "_" + statement_line_number.str();
+    std::stringstream kmpc_global_tid_number;
+    kmpc_global_tid_number << kmpc_global_tid_counter;
+    kmpc_global_tid_counter += 1;
+    std::string kmpc_tid_name = "__global_tid_" + enclosing_function_name + "_" + statement_line_number.str() + "_" + kmpc_global_tid_number.str();
     SgExprStatement* global_tid_statement = buildFunctionCallStmt("__kmpc_global_thread_num", buildIntType(), buildExprListExp(buildIntVal(0)), scope);
     SgExpression* get_thread_global_tid = global_tid_statement->get_expression();
     SgVariableDeclaration* kmpc_tid_declaration = buildVariableDeclaration(SgName(kmpc_tid_name), buildIntType(), buildAssignInitializer(get_thread_global_tid), scope);
