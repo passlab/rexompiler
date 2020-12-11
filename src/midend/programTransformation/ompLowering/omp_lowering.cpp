@@ -2363,8 +2363,8 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
 
     // Generate the parameter list for the call to the XOMP runtime function
     SgExprListExp* parameters  = NULL;
-    SgVariableDeclaration* kmpc_global_tid_declaration = get_kmpc_global_tid(target, p_scope);
-    SgExpression* thread_global_tid = buildVarRefExp(getFirstVariable(*kmpc_global_tid_declaration).get_name(), p_scope);
+    SgVariableDeclaration* kmpc_global_tid_declaration = NULL;
+    SgExpression* thread_global_tid = NULL;
 
     // add __kmpc_fork_call (0, 2, OUT_func_xxx, &a, &sum);
     // or __kmpc_fork_call (0, 0, OUT_func_xxx, 0); // if no variables need to be passed
@@ -2407,6 +2407,8 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
       omp_num_threads = copyExpression(num_threads_clause->get_expression());
     }
     if (omp_num_threads != NULL) {
+        kmpc_global_tid_declaration = get_kmpc_global_tid(target, p_scope);
+        thread_global_tid = buildVarRefExp(getFirstVariable(*kmpc_global_tid_declaration).get_name(), p_scope);
         insertStatement(target, kmpc_global_tid_declaration);
         kmpc_global_tid_declaration->set_parent(target->get_parent());
         parameters = buildExprListExp(buildIntVal(0), thread_global_tid, omp_num_threads);
@@ -2428,6 +2430,8 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
     }
     if (if_condition != NULL) {
         if (omp_num_threads == NULL) {
+            kmpc_global_tid_declaration = get_kmpc_global_tid(target, p_scope);
+            thread_global_tid = buildVarRefExp(getFirstVariable(*kmpc_global_tid_declaration).get_name(), p_scope);
             insertStatement(target, kmpc_global_tid_declaration);
             kmpc_global_tid_declaration->set_parent(target->get_parent());
         };
