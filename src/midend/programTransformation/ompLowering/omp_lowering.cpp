@@ -6525,7 +6525,13 @@ static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration* outl
 
     // insert REX runtime header to the new file
     SgGlobal* new_scope = new_file->get_globalScope();
-    SageInterface::insertHeader("rex_kmp.h", PreprocessingInfo::after, false, new_scope);
+    if (file_extension == "cu") {
+        SageInterface::insertHeader("xomp_cuda_lib.cu", PreprocessingInfo::after, false, new_scope);
+        SageInterface::insertHeader("xomp_cuda_lib_inlined.cu", PreprocessingInfo::after, false, new_scope);
+    }
+    else {
+        SageInterface::insertHeader("rex_kmp.h", PreprocessingInfo::after, false, new_scope);
+    };
     new_file->set_processedToIncludeCppDirectivesAndComments(true);
 
     AstPostProcessing(new_file);
@@ -6569,11 +6575,34 @@ static void post_processing() {
     if (target_outlined_function_list->size() > 0) {
         // create a new file
         new_file = generate_outlined_function_file(target_outlined_function_list->at(0), "cu");
+        SgGlobal* new_scope = new_file->get_globalScope();
+        SgFile* cur_file = getEnclosingNode<SgFile>(target_outlined_function_list->at(0));
+        std::string file_extension = StringUtility::fileNameSuffix(cur_file->get_file_info()->get_filenameString());
+
+        if (file_extension == "c" || file_extension == "C") {
+            PreprocessingInfo* ifdef = new PreprocessingInfo(PreprocessingInfo::CpreprocessorIfdefDeclaration, "#ifdef __cplusplus", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
+            SageInterface::insertHeader(new_scope->lastStatement(), ifdef, 1);
+            PreprocessingInfo* ifdef_content = new PreprocessingInfo(PreprocessingInfo::ClinkageSpecificationStart, "extern \"C\" {", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
+            SageInterface::insertHeader(new_scope->lastStatement(), ifdef_content, 1);
+            PreprocessingInfo* endif = new PreprocessingInfo(PreprocessingInfo::CpreprocessorEndifDeclaration, "#endif", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
+            SageInterface::insertHeader(new_scope->lastStatement(), endif, 1);
+        };
+
         // move the outlined functions
         std::vector<SgFunctionDeclaration* >::iterator i;
         for (i = target_outlined_function_list->begin(); i != target_outlined_function_list->end(); i++) {
             move_outlined_function(*i, new_file);
         };
+
+        if (file_extension == "c" || file_extension == "C") {
+            PreprocessingInfo* ifdef = new PreprocessingInfo(PreprocessingInfo::CpreprocessorIfdefDeclaration, "#ifdef __cplusplus", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
+            SageInterface::insertHeader(new_scope->lastStatement(), ifdef, 1);
+            PreprocessingInfo* ifdef_content = new PreprocessingInfo(PreprocessingInfo::ClinkageSpecificationEnd, "}", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
+            SageInterface::insertHeader(new_scope->lastStatement(), ifdef_content, 1);
+            PreprocessingInfo* endif = new PreprocessingInfo(PreprocessingInfo::CpreprocessorEndifDeclaration, "#endif", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
+            SageInterface::insertHeader(new_scope->lastStatement(), endif, 1);
+        };
+
         fix_storage_modifier(new_file);
     };
 
