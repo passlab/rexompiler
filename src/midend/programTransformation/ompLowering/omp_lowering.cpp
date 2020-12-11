@@ -49,8 +49,10 @@ static void insert_function_parameter(std::string, SgType*, SgFunctionDeclaratio
 // move the outlined function to a separate file
 static void move_outlined_function(SgFunctionDeclaration*, SgSourceFile*);
 static std::vector<SgFunctionDeclaration* >* outlined_function_list = NULL;
+static std::vector<SgFunctionDeclaration* >* target_outlined_function_list = NULL;
 static void post_processing();
-static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration*);
+static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration*, std::string);
+static void fix_storage_modifier(SgSourceFile*);
 static unsigned int kmpc_global_tid_counter = 0;
 
 #define ENABLE_XOMP 1  // Enable the middle layer (XOMP) of OpenMP runtime libraries
@@ -4025,6 +4027,8 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     SageInterface::fixVariableReferences(num_blocks_decl->get_scope());
     //------------now remove omp parallel since everything within it has been outlined to a function
     removeStatement (target);
+
+    target_outlined_function_list->push_back(isSgFunctionDeclaration(result));
   }
 
 
@@ -6258,6 +6262,7 @@ void lower_omp(SgSourceFile* file)
   // We record nodes first then do changes to them
 
   outlined_function_list = new std::vector<SgFunctionDeclaration* >();
+  target_outlined_function_list = new std::vector<SgFunctionDeclaration* >();
 
   Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(file, V_SgStatement);
   Rose_STL_Container<SgNode*>::reverse_iterator nodeListIterator = nodeList.rbegin();
@@ -6500,7 +6505,7 @@ static void move_outlined_function(SgFunctionDeclaration* outlined_func, SgSourc
     AstPostProcessing(new_file);
 }
 
-static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration* outlined_func) {
+static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration* outlined_func, std::string file_extension) {
 
     // prepare the required information of original file
     std::string original_name = outlined_func->get_name().getString();
@@ -6508,10 +6513,15 @@ static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration* outl
     SgSourceFile* new_file = NULL;
     SgFile* cur_file = getEnclosingNode<SgFile>(outlined_func);
     std::string original_file_name = StringUtility::stripFileSuffixFromFileName(StringUtility::stripPathFromFileName(cur_file->get_file_info()->get_filenameString()));
+    if (file_extension == "") {
+        file_extension = StringUtility::fileNameSuffix(cur_file->get_file_info()->get_filenameString());
+    };
 
     // create a new file with all the function declaration and preprocessing information of the original file
     new_file = Outliner::getLibSourceFile(function_block);
     ROSE_ASSERT(new_file != NULL);
+    // reset the name of new outlined function file
+    new_file->set_unparse_output_filename("rex_lib_" + original_file_name + "." + file_extension);
 
     // insert REX runtime header to the new file
     SgGlobal* new_scope = new_file->get_globalScope();
@@ -6523,34 +6533,48 @@ static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration* outl
     return new_file;
 }
 
-static void post_processing() {
-
-    // create a new file
-    SgSourceFile* new_file = NULL;
-    if (outlined_function_list->size() > 0) {
-        new_file = generate_outlined_function_file(outlined_function_list->at(0));
-    };
-
-    // move the outlined functions
-    std::vector<SgFunctionDeclaration* >::iterator i;
-    for (i = outlined_function_list->begin(); i != outlined_function_list->end(); i++) {
-        move_outlined_function(*i, new_file);
-    };
-
+static void fix_storage_modifier(SgSourceFile* new_file) {
     // set the regular global variables in the new file to extern and remove their definition
-    if (new_file != NULL) {
-        Rose_STL_Container<SgNode*> global_variable_list = NodeQuery::querySubTree(new_file, V_SgVariableDeclaration);
-        Rose_STL_Container<SgNode*>::iterator global_variable_list_iterator;
-        for (global_variable_list_iterator = global_variable_list.begin(); global_variable_list_iterator != global_variable_list.end(); global_variable_list_iterator++) {
-            SgVariableDeclaration* global_variable = isSgVariableDeclaration(*global_variable_list_iterator);
-            if (isSgGlobal(global_variable->get_scope())) {
-                SgStorageModifier& variable_modifier = global_variable->get_declarationModifier().get_storageModifier();
-                if (!variable_modifier.isStatic()) {
-                    variable_modifier.setExtern();
-                    global_variable->reset_initializer(NULL);
-                };
+    Rose_STL_Container<SgNode*> global_variable_list = NodeQuery::querySubTree(new_file, V_SgVariableDeclaration);
+    Rose_STL_Container<SgNode*>::iterator global_variable_list_iterator;
+    for (global_variable_list_iterator = global_variable_list.begin(); global_variable_list_iterator != global_variable_list.end(); global_variable_list_iterator++) {
+        SgVariableDeclaration* global_variable = isSgVariableDeclaration(*global_variable_list_iterator);
+        if (isSgGlobal(global_variable->get_scope())) {
+            SgStorageModifier& variable_modifier = global_variable->get_declarationModifier().get_storageModifier();
+            if (!variable_modifier.isStatic()) {
+                variable_modifier.setExtern();
+                global_variable->reset_initializer(NULL);
             };
         };
+    };
+};
+
+static void post_processing() {
+
+    SgSourceFile* new_file = NULL;
+
+    // handle the outlined functions for CPU
+    if (outlined_function_list->size() > 0) {
+        // create a new file
+        new_file = generate_outlined_function_file(outlined_function_list->at(0), "");
+        // move the outlined functions
+        std::vector<SgFunctionDeclaration* >::iterator i;
+        for (i = outlined_function_list->begin(); i != outlined_function_list->end(); i++) {
+            move_outlined_function(*i, new_file);
+        };
+        fix_storage_modifier(new_file);
+    };
+
+    // handle the outlined functions for NVIDIA GPU
+    if (target_outlined_function_list->size() > 0) {
+        // create a new file
+        new_file = generate_outlined_function_file(target_outlined_function_list->at(0), "cu");
+        // move the outlined functions
+        std::vector<SgFunctionDeclaration* >::iterator i;
+        for (i = target_outlined_function_list->begin(); i != target_outlined_function_list->end(); i++) {
+            move_outlined_function(*i, new_file);
+        };
+        fix_storage_modifier(new_file);
     };
 
 };
