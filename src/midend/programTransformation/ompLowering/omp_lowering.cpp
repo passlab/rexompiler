@@ -3903,7 +3903,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     SgFunctionDeclaration* target_func = const_cast<SgFunctionDeclaration *>
        (SageInterface::getEnclosingFunctionDeclaration (target));
      ROSE_ASSERT(target_func!= NULL);
-    insertStatementBefore (target_func, result);
+    insertStatementAfter(target_func, result);
     // TODO: this really should be done within Outliner::generateFunction()
     // TODO: we have to patch up first nondefining function declaration since custom insertion is used
     SgGlobal* glob_scope = getGlobalScope(target);
@@ -3929,17 +3929,36 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
    // insert dim3 threadsPerBlock(xomp_get_maxThreadsPerBlock()); 
    // TODO: for 1-D mapping, int type is enough,  //TODO: a better interface accepting expression as initializer!!
     SgVariableDeclaration* threads_per_block_decl = buildVariableDeclaration ("_threads_per_block_", buildIntType(), 
-                  buildAssignInitializer(buildFunctionCallExp("xomp_get_maxThreadsPerBlock",buildIntType(), buildExprListExp(device_expression), p_scope)), 
+                  buildAssignInitializer(buildIntVal(1024)),
                   p_scope);
     //insertStatementBefore (target_directive_stmt, threads_per_block_decl);
     insertStatementBefore (target, threads_per_block_decl);
     attachComment(threads_per_block_decl, string("Launch CUDA kernel ..."));
 
+    SgClassDeclaration* tgt_offload_entry = buildStructDeclaration("__tgt_offload_entry", getGlobalScope(target));
+    SgVariableDeclaration* offload_entry_decl = buildVariableDeclaration("__omp_offload_entry", tgt_offload_entry->get_type(), NULL, p_scope);
+    SgVariableDeclaration* offload_entry_start_decl = buildVariableDeclaration("__start_omp_offloading_entries", buildPointerType(tgt_offload_entry->get_type()), NULL, p_scope);
+    SgVariableDeclaration* offload_entry_end_decl = buildVariableDeclaration("__stop_omp_offloading_entries", buildPointerType(tgt_offload_entry->get_type()), NULL, p_scope);
+    insertStatementBefore(target, offload_entry_decl);
+    insertStatementBefore(target, offload_entry_start_decl);
+    insertStatementBefore(target, offload_entry_end_decl);
+
+    // load the cubin file
+    SgFile* cur_file = getEnclosingNode<SgFile>(target);
+    std::string original_file_name = StringUtility::stripFileSuffixFromFileName(StringUtility::stripPathFromFileName(cur_file->get_file_info()->get_filenameString()));
+    std::string outlined_file_name = "rex_lib_" + original_file_name + ".cubin";
+    SgVariableDeclaration* outlined_file_name_decl = buildVariableDeclaration("cuda_entry_name", buildPointerType(buildCharType()), buildAssignInitializer(buildStringVal(outlined_file_name)), p_scope);
+    insertStatementBefore(target, outlined_file_name_decl);
+    SgExprListExp* register_cubin_parameters = buildExprListExp(buildVarRefExp(getFirstVariable(*outlined_file_name_decl).get_name(), p_scope), buildVarRefExp(getFirstVariable(*offload_entry_start_decl).get_name(), p_scope), buildVarRefExp(getFirstVariable(*offload_entry_end_decl).get_name(), p_scope));
+    SgClassDeclaration* tgt_bin_desc = buildStructDeclaration("__tgt_bin_desc", getGlobalScope(target));
+    SgVariableDeclaration* cubin_register_decl = buildVariableDeclaration("bin_desc", buildPointerType(tgt_bin_desc->get_type()), buildAssignInitializer(buildFunctionCallExp("register_cubin", buildPointerType(tgt_bin_desc->get_type()), register_cubin_parameters, p_scope)), p_scope);
+    insertStatementBefore(target, cubin_register_decl);
+
     // dim3 numBlocks (xomp_get_max1DBlock(VEC_LEN));
     // TODO: handle 2-D or 3-D using dim type
     ROSE_ASSERT (cuda_loop_iter_count_1 != NULL);
     SgVariableDeclaration* num_blocks_decl = buildVariableDeclaration ("_num_blocks_", buildIntType(), 
-                  buildAssignInitializer(buildFunctionCallExp("xomp_get_max1DBlock",buildIntType(), buildExprListExp(device_expression, cuda_loop_iter_count_1), p_scope)),
+                  buildAssignInitializer(buildIntVal(256)),
                   p_scope);
     //insertStatementBefore (target_directive_stmt, num_blocks_decl);
     insertStatementBefore (target, num_blocks_decl);
