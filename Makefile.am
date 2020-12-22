@@ -97,6 +97,10 @@ check-smoke:
 check-nonsmoke:
 	$(MAKE) check -C $(top_builddir)/tests/nonsmoke/functional
 
+check-openmp:
+	$(MAKE) check -C $(top_builddir)/tests/nonsmoke/functional/CompileTests/OpenMP_tests
+	$(MAKE) check -C $(top_builddir)/tests/nonsmoke/functional/roseTests/astInterfaceTests
+
 # The "check" target at this top makefile is what users will normally
 # run. This should only run tests that are portable and useful to
 # users.
