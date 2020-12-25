@@ -50,6 +50,7 @@ static void insert_function_parameter(std::string, SgType*, SgFunctionDeclaratio
 static void move_outlined_function(SgFunctionDeclaration*, SgSourceFile*);
 static std::vector<SgFunctionDeclaration* >* outlined_function_list = NULL;
 static std::vector<SgFunctionDeclaration* >* target_outlined_function_list = NULL;
+static std::vector<SgFunctionDeclaration* >* target_outlined_driver_list = NULL;
 static void post_processing();
 static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration*, std::string);
 static void fix_storage_modifier(SgSourceFile*);
@@ -2220,6 +2221,47 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
   return result;
 }
 
+SgFunctionDeclaration* generateTargetDriver(SgNode* node, ASTtools::VarSymSet_t& syms, ASTtools::VarSymSet_t& pdSyms3, std::string func_name) {
+
+    ROSE_ASSERT(node != NULL);
+    SgOmpClauseBodyStatement* target = isSgOmpClauseBodyStatement(node);
+    ROSE_ASSERT (target != NULL);
+
+    // must be either omp task or omp parallel
+    SgOmpTaskStatement* target1 = isSgOmpTaskStatement(node);
+    SgOmpParallelStatement* target2 = isSgOmpParallelStatement(node);
+    ROSE_ASSERT (target1 != NULL || target2 != NULL);
+
+    SgStatement* body = target->get_body();
+    ROSE_ASSERT(body != NULL);
+    SgFunctionDeclaration* result = NULL;
+    //Initialize outliner
+    Outliner::enable_classic = false; // we need use parameter wrapping, which is not classic behavior of outlining
+    // We pass one variable per parameter, at least for Fortran 77.
+    // For both C/C++ and Fortran, we use the same method to pass parameters separately instead of a struct or array wrapper.
+    Outliner::useParameterWrapper = false;
+
+    SgBasicBlock* body_block = Outliner::preprocess(body);
+
+    transOmpVariables(target, body_block);
+
+
+    SgGlobal* g_scope = SageInterface::getGlobalScope(body_block);
+    ROSE_ASSERT(g_scope != NULL);
+
+    // a data structure used to wrap parameters
+    SgClassDeclaration* struct_decl = NULL;
+
+    //Generate the outlined function
+    std::set< SgInitializedName *> restoreVars;
+    result = Outliner::generateFunction(body_block, func_name, syms, pdSyms3, restoreVars, struct_decl, g_scope);
+
+    // insert the forward declaration
+    Outliner::insert(result, g_scope, body_block);
+
+    return result;
+}
+
 #if 0 // Moved to SageInterface
 //! iterate through the statement within a scope, find the last declaration statement (if any) after which 
 //  another declaration statement can be inserted.  
@@ -3885,18 +3927,26 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     }
 
     string func_name = Outliner::generateFuncName(target);
+    // add a meaningful suffix to the generated unique outlined function name
+    // the suffix is "<enclosing function name>__<line number of the original statement>__"
+    const Sg_File_Info* info = target->get_startOfConstruct();
+    SgFunctionDeclaration * enclosing_function = getEnclosingFunctionDeclaration(target);
+    std::string enclosing_function_name = enclosing_function->get_name().getString();
+    std::string statement_line_number = std::to_string(info->get_line());
+    func_name += enclosing_function_name + "__" + statement_line_number + "__";
+
     SgGlobal* g_scope = SageInterface::getGlobalScope(body_block);
     ROSE_ASSERT(g_scope != NULL);
 
     std::set< SgInitializedName *> restoreVars;
-    SgFunctionDeclaration* result = Outliner::generateFunction(body_block, func_name, all_syms, addressOf_syms, restoreVars, NULL, g_scope);
+    SgFunctionDeclaration* result = Outliner::generateFunction(body_block, func_name + "kernel__", all_syms, addressOf_syms, restoreVars, NULL, g_scope);
     SgFunctionDeclaration* result_decl = isSgFunctionDeclaration(result->get_firstNondefiningDeclaration());
     ROSE_ASSERT (result_decl != NULL);
     result_decl->get_functionModifier().setCudaKernel(); // add __global__ modifier
 
     result->get_functionModifier().setCudaKernel();
 
-     // This one is not desired. It inserts the function to the end and prepend a prototype
+    // This one is not desired. It inserts the function to the end and prepend a prototype
     // Outliner::insert(result, g_scope, body_block); 
     // TODO: better interface to specify where exactly to insert the function!
     //Custom insertion:  insert right before the enclosing function of "omp target"
@@ -3910,58 +3960,28 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     ROSE_ASSERT (glob_scope!= NULL);
     SgFunctionSymbol * func_symbol = glob_scope->lookup_function_symbol(result->get_name());
     ROSE_ASSERT (func_symbol != NULL);
-    //SgFunctionDeclaration * proto_decl = func_symbol->get_declaration();
-    //ROSE_ASSERT (proto_decl != NULL);
-    //ROSE_ASSERT (proto_decl != result );
-    //result->set_firstNondefiningDeclaration(proto_decl);
 
-
-#if 0 // it turns out we don't need satic keyword for CUDA kernel
-    if (result->get_definingDeclaration() != NULL)
-      SageInterface::setStatic(result->get_definingDeclaration());
-    if (result->get_firstNondefiningDeclaration() != NULL)
-      SageInterface::setStatic(result->get_firstNondefiningDeclaration());
-#endif 
-
-    //SgScopeStatement * p_scope = target_directive_stmt ->get_scope(); // the scope of "omp parallel" will be destroyed later, so we use scope of "omp target"
     SgScopeStatement * p_scope = omp_target_stmt_body_block ; // the scope of "omp parallel" will be destroyed later, so we use scope of "omp target"
     ROSE_ASSERT(p_scope != NULL);
-   // insert dim3 threadsPerBlock(xomp_get_maxThreadsPerBlock()); 
-   // TODO: for 1-D mapping, int type is enough,  //TODO: a better interface accepting expression as initializer!!
-    SgVariableDeclaration* threads_per_block_decl = buildVariableDeclaration ("_threads_per_block_", buildIntType(), 
-                  buildAssignInitializer(buildIntVal(1024)),
-                  p_scope);
-    //insertStatementBefore (target_directive_stmt, threads_per_block_decl);
-    insertStatementBefore (target, threads_per_block_decl);
+
+    // create the outlined driver for GPU offloading, which is empty at this point
+    SgFunctionDeclaration* outlined_driver = generateTargetDriver(target, all_syms, addressOf_syms, func_name);
+    SgFunctionDefinition* outlined_driver_definition = outlined_driver->get_definition();
+    SgBasicBlock* outlined_driver_body = outlined_driver_definition->get_body();
+
+    // insert dim3 threadsPerBlock(xomp_get_maxThreadsPerBlock());
+    // TODO: for 1-D mapping, int type is enough,  //TODO: a better interface accepting expression as initializer!!
+    // the default number of threads per team is set to 1024
+    SgVariableDeclaration* threads_per_block_decl = buildVariableDeclaration ("_threads_per_block_", buildIntType(), buildAssignInitializer(buildIntVal(1024)), p_scope);
+    outlined_driver_body->append_statement(threads_per_block_decl);
     attachComment(threads_per_block_decl, string("Launch CUDA kernel ..."));
-
-    SgClassDeclaration* tgt_offload_entry = buildStructDeclaration("__tgt_offload_entry", getGlobalScope(target));
-    SgVariableDeclaration* offload_entry_decl = buildVariableDeclaration("__omp_offload_entry", tgt_offload_entry->get_type(), NULL, p_scope);
-    SgVariableDeclaration* offload_entry_start_decl = buildVariableDeclaration("__start_omp_offloading_entries", buildPointerType(tgt_offload_entry->get_type()), NULL, p_scope);
-    SgVariableDeclaration* offload_entry_end_decl = buildVariableDeclaration("__stop_omp_offloading_entries", buildPointerType(tgt_offload_entry->get_type()), NULL, p_scope);
-    insertStatementBefore(target, offload_entry_decl);
-    insertStatementBefore(target, offload_entry_start_decl);
-    insertStatementBefore(target, offload_entry_end_decl);
-
-    // load the cubin file
-    SgFile* cur_file = getEnclosingNode<SgFile>(target);
-    std::string original_file_name = StringUtility::stripFileSuffixFromFileName(StringUtility::stripPathFromFileName(cur_file->get_file_info()->get_filenameString()));
-    std::string outlined_file_name = "rex_lib_" + original_file_name + ".cubin";
-    SgVariableDeclaration* outlined_file_name_decl = buildVariableDeclaration("cuda_entry_name", buildPointerType(buildCharType()), buildAssignInitializer(buildStringVal(outlined_file_name)), p_scope);
-    insertStatementBefore(target, outlined_file_name_decl);
-    SgExprListExp* register_cubin_parameters = buildExprListExp(buildVarRefExp(getFirstVariable(*outlined_file_name_decl).get_name(), p_scope), buildVarRefExp(getFirstVariable(*offload_entry_start_decl).get_name(), p_scope), buildVarRefExp(getFirstVariable(*offload_entry_end_decl).get_name(), p_scope));
-    SgClassDeclaration* tgt_bin_desc = buildStructDeclaration("__tgt_bin_desc", getGlobalScope(target));
-    SgVariableDeclaration* cubin_register_decl = buildVariableDeclaration("bin_desc", buildPointerType(tgt_bin_desc->get_type()), buildAssignInitializer(buildFunctionCallExp("register_cubin", buildPointerType(tgt_bin_desc->get_type()), register_cubin_parameters, p_scope)), p_scope);
-    insertStatementBefore(target, cubin_register_decl);
 
     // dim3 numBlocks (xomp_get_max1DBlock(VEC_LEN));
     // TODO: handle 2-D or 3-D using dim type
     ROSE_ASSERT (cuda_loop_iter_count_1 != NULL);
-    SgVariableDeclaration* num_blocks_decl = buildVariableDeclaration ("_num_blocks_", buildIntType(), 
-                  buildAssignInitializer(buildIntVal(256)),
-                  p_scope);
-    //insertStatementBefore (target_directive_stmt, num_blocks_decl);
-    insertStatementBefore (target, num_blocks_decl);
+    // the default number of teams is set to 256
+    SgVariableDeclaration* num_blocks_decl = buildVariableDeclaration ("_num_blocks_", buildIntType(), buildAssignInitializer(buildIntVal(256)), p_scope);
+    outlined_driver_body->append_statement(num_blocks_decl);
 
     // Now we have num_block declaration, we can insert the per block declaration used for reduction variables
     SgExpression* shared_data = NULL; // shared data size expression for CUDA kernel execution configuration
@@ -4003,13 +4023,77 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     Outliner::appendIndividualFunctionCallArgs (all_syms, varsUsingOriginalForm, exp_list_exp);
     // TODO: builder interface without _nfi, and match function call exp builder interface convention: 
 
-    SgCudaKernelExecConfig * cuda_exe_conf = buildCudaKernelExecConfig_nfi (buildVarRefExp(num_blocks_decl), buildVarRefExp(threads_per_block_decl), shared_data, NULL);
-    setOneSourcePositionForTransformation (cuda_exe_conf);
-    // SgExpression* is not clear, change to SgFunctionRefExp at least!!
-    SgExprStatement* cuda_call_stmt = buildExprStatement(buildCudaKernelCallExp_nfi (buildFunctionRefExp(result), exp_list_exp, cuda_exe_conf) );
-    setSourcePositionForTransformation (cuda_call_stmt);
-    //insertStatementBefore (target_directive_stmt, cuda_call_stmt);
-    insertStatementBefore (target, cuda_call_stmt);
+    // in the original function, we call the outlined driver and pass all the required variables by reference
+    SgStatement* outlined_function_call = buildFunctionCallStmt(func_name, buildVoidType(), exp_list_exp, p_scope);
+    setSourcePositionForTransformation(outlined_function_call);
+    insertStatementBefore(target, outlined_function_call);
+
+    // prepare all the parameters for using LLVM GPU offloading
+    SgVariableDeclaration* entry_pointer_decl = buildVariableDeclaration ("__entry_ptr", buildPointerType(buildVoidType()), buildAssignInitializer(buildCastExp(buildAddressOfOp(buildFunctionRefExp(outlined_driver)), buildPointerType(buildVoidType()))), p_scope);
+    outlined_driver_body->append_statement(entry_pointer_decl);
+
+    SgVariableDeclaration* cuda_kernel_name_decl = buildVariableDeclaration ("__cuda_entry", buildArrayType(buildCharType()), buildAssignInitializer(buildStringVal(func_name + "kernel__")), p_scope);
+    outlined_driver_body->append_statement(cuda_kernel_name_decl);
+
+    // by default, the device id is set to 0
+    SgVariableDeclaration* device_id_decl = buildVariableDeclaration("__device_id", buildOpaqueType("int64_t", p_scope), buildAssignInitializer(buildIntVal(0)), p_scope);
+    outlined_driver_body->append_statement(device_id_decl);
+
+    SgClassDeclaration* tgt_offload_entry = buildStructDeclaration("__tgt_offload_entry", getGlobalScope(target));
+
+    SgExprListExp* offload_entry_parameters = buildExprListExp(buildCastExp(buildAddressOfOp(buildFunctionRefExp(outlined_driver)), buildPointerType(buildVoidType())), buildVarRefExp(cuda_kernel_name_decl), buildIntVal(0), buildIntVal(0), buildIntVal(0));
+    SgBracedInitializer* offload_entry_initilization = buildBracedInitializer(offload_entry_parameters);
+    SgVariableDeclaration* offload_entry_decl = buildVariableDeclaration("__omp_offload_entry", tgt_offload_entry->get_type(), buildAssignInitializer(offload_entry_initilization), p_scope);
+    outlined_driver_body->append_statement(offload_entry_decl);
+
+    SgVariableDeclaration* offload_entry_start_decl = buildVariableDeclaration("__start_omp_offloading_entries", buildPointerType(tgt_offload_entry->get_type()), buildAssignInitializer(buildAddressOfOp(buildVarRefExp(offload_entry_decl))), p_scope);
+    outlined_driver_body->append_statement(offload_entry_start_decl);
+
+    SgVariableDeclaration* offload_entry_end_decl = buildVariableDeclaration("__stop_omp_offloading_entries", buildPointerType(tgt_offload_entry->get_type()), buildAssignInitializer(buildAddressOfOp(buildPntrArrRefExp(buildVarRefExp(offload_entry_start_decl), buildIntVal(1)))), p_scope);
+    outlined_driver_body->append_statement(offload_entry_end_decl);
+
+    // load the cubin file
+    SgFile* cur_file = getEnclosingNode<SgFile>(target);
+    std::string original_file_name = StringUtility::stripFileSuffixFromFileName(StringUtility::stripPathFromFileName(cur_file->get_file_info()->get_filenameString()));
+    std::string outlined_file_name = "rex_lib_" + original_file_name + ".cubin";
+    SgVariableDeclaration* outlined_file_name_decl = buildVariableDeclaration("cuda_entry_name", buildPointerType(buildCharType()), buildAssignInitializer(buildStringVal(outlined_file_name)), p_scope);
+    outlined_driver_body->append_statement(outlined_file_name_decl);
+
+    SgExprListExp* register_cubin_parameters = buildExprListExp(buildVarRefExp(getFirstVariable(*outlined_file_name_decl).get_name(), p_scope), buildVarRefExp(getFirstVariable(*offload_entry_start_decl).get_name(), p_scope), buildVarRefExp(getFirstVariable(*offload_entry_end_decl).get_name(), p_scope));
+    SgClassDeclaration* tgt_bin_desc = buildStructDeclaration("__tgt_bin_desc", getGlobalScope(target));
+    SgVariableDeclaration* cubin_register_decl = buildVariableDeclaration("bin_desc", buildPointerType(tgt_bin_desc->get_type()), buildAssignInitializer(buildFunctionCallExp("register_cubin", buildPointerType(tgt_bin_desc->get_type()), register_cubin_parameters, p_scope)), p_scope);
+    outlined_driver_body->append_statement(cubin_register_decl);
+
+    SgVariableDeclaration* host_pointer_decl = buildVariableDeclaration ("__host_ptr", buildPointerType(buildVoidType()), buildAssignInitializer(buildVarRefExp(entry_pointer_decl)), p_scope);
+    outlined_driver_body->append_statement(host_pointer_decl);
+
+    int kernel_arg_num = exp_list_exp->get_expressions().size();
+    SgBracedInitializer* offloading_variables = buildBracedInitializer(exp_list_exp);
+    SgVariableDeclaration* args_base_decl = buildVariableDeclaration ("__args_base", buildArrayType(buildPointerType(buildVoidType())), buildAssignInitializer(offloading_variables), p_scope);
+    outlined_driver_body->append_statement(args_base_decl);
+
+    SgVariableDeclaration* args_decl = buildVariableDeclaration ("__args", buildArrayType(buildPointerType(buildVoidType())), buildAssignInitializer(offloading_variables), p_scope);
+    outlined_driver_body->append_statement(args_decl);
+
+    // the size and type of passing variables haven't been handled yet.
+    // they are always set to an empty array for now.
+    SgBracedInitializer* empty_braces = buildBracedInitializer(buildExprListExp());
+    SgVariableDeclaration* arg_sizes = buildVariableDeclaration ("__arg_sizes", buildArrayType(buildOpaqueType("int64_t", p_scope)), buildAssignInitializer(empty_braces), p_scope);
+    outlined_driver_body->append_statement(arg_sizes);
+
+    SgVariableDeclaration* arg_types = buildVariableDeclaration ("__arg_types", buildArrayType(buildOpaqueType("int64_t", p_scope)), buildAssignInitializer(empty_braces), p_scope);
+    outlined_driver_body->append_statement(arg_types);
+
+    SgVariableDeclaration* arg_number_decl = buildVariableDeclaration("__arg_num", buildOpaqueType("int32_t", p_scope), buildAssignInitializer(buildIntVal(kernel_arg_num)), p_scope);
+    outlined_driver_body->append_statement(arg_number_decl);
+
+    // call __tgt_target_teams to execute the CUDA kernel
+    SgExprListExp* parameters = NULL;
+    parameters = buildExprListExp(buildVarRefExp(device_id_decl), buildVarRefExp(host_pointer_decl), buildVarRefExp(arg_number_decl), buildVarRefExp(args_base_decl), buildVarRefExp(args_decl), buildVarRefExp(arg_sizes), buildVarRefExp(arg_types), buildVarRefExp(threads_per_block_decl), buildVarRefExp(num_blocks_decl));
+    string func_offloading_name = "__tgt_target_teams";
+    SgExprStatement* func_offloading_stmt = buildFunctionCallStmt(func_offloading_name, buildIntType(), parameters, p_scope);
+    setSourcePositionForTransformation(func_offloading_stmt);
+    outlined_driver_body->append_statement(func_offloading_stmt);
 
    // insert the beyond block level reduction statement
    // error = xomp_beyond_block_reduction_float (per_block_results, numBlocks.x, XOMP_REDUCTION_PLUS);
@@ -4048,6 +4132,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     removeStatement (target);
 
     target_outlined_function_list->push_back(isSgFunctionDeclaration(result));
+    target_outlined_driver_list->push_back(isSgFunctionDeclaration(outlined_driver));
   }
 
 
@@ -6282,6 +6367,7 @@ void lower_omp(SgSourceFile* file)
 
   outlined_function_list = new std::vector<SgFunctionDeclaration* >();
   target_outlined_function_list = new std::vector<SgFunctionDeclaration* >();
+  target_outlined_driver_list = new std::vector<SgFunctionDeclaration* >();
 
   Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(file, V_SgStatement);
   Rose_STL_Container<SgNode*>::reverse_iterator nodeListIterator = nodeList.rbegin();
@@ -6610,6 +6696,10 @@ static void post_processing() {
         // move the outlined functions
         std::vector<SgFunctionDeclaration* >::iterator i;
         for (i = target_outlined_function_list->begin(); i != target_outlined_function_list->end(); i++) {
+            move_outlined_function(*i, new_file);
+        };
+
+        for (i = target_outlined_driver_list->begin(); i != target_outlined_driver_list->end(); i++) {
             move_outlined_function(*i, new_file);
         };
 
