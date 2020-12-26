@@ -21,3 +21,5 @@ void __kmpc_for_static_init_4(ident_t*, int, int, int*, int*, int*, int*, int, i
 void __kmpc_for_static_fini(ident_t*, int);
 void __kmpc_dispatch_init_4(ident_t*, int, int, int, int, int, int);
 int __kmpc_dispatch_next_4(ident_t*, int, int*, int*, int*, int*);
+
+struct __tgt_bin_desc* register_cubin(char*, void*, void*);

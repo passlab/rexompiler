@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <omptarget.h>
+#include "omptarget.h"
 
 // clang++ -g -c register_cubin.cpp -I${LLVM_SRC}/openmp/libomptarget/include -o register_cubin.o
 
@@ -8,7 +8,11 @@
 extern "C" {
 #endif
 
-struct __tgt_bin_desc* register_cubin(char* filename, struct __tgt_offload_entry *__start_omp_offloading_entries, struct __tgt_offload_entry *__stop_omp_offloading_entries) {
+struct __tgt_bin_desc* register_cubin(char* filename, void* __start_offloading_entries, void* __stop_offloading_entries) {
+
+    // restore the pointer type from void
+    struct __tgt_offload_entry *__start_omp_offloading_entries = (struct __tgt_offload_entry *)__start_offloading_entries;
+    struct __tgt_offload_entry *__stop_omp_offloading_entries = (struct __tgt_offload_entry *)__stop_offloading_entries;
 
     //read cuda object file to char array
     FILE * file = fopen(filename, "r+");

@@ -4057,7 +4057,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     SgFile* cur_file = getEnclosingNode<SgFile>(target);
     std::string original_file_name = StringUtility::stripFileSuffixFromFileName(StringUtility::stripPathFromFileName(cur_file->get_file_info()->get_filenameString()));
     std::string outlined_file_name = "rex_lib_" + original_file_name + ".cubin";
-    SgVariableDeclaration* outlined_file_name_decl = buildVariableDeclaration("cuda_entry_name", buildPointerType(buildCharType()), buildAssignInitializer(buildStringVal(outlined_file_name)), p_scope);
+    SgVariableDeclaration* outlined_file_name_decl = buildVariableDeclaration("cuda_entry_name", buildArrayType(buildCharType()), buildAssignInitializer(buildStringVal(outlined_file_name)), p_scope);
     outlined_driver_body->append_statement(outlined_file_name_decl);
 
     SgExprListExp* register_cubin_parameters = buildExprListExp(buildVarRefExp(getFirstVariable(*outlined_file_name_decl).get_name(), p_scope), buildVarRefExp(getFirstVariable(*offload_entry_start_decl).get_name(), p_scope), buildVarRefExp(getFirstVariable(*offload_entry_end_decl).get_name(), p_scope));
@@ -4095,6 +4095,11 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     SgExprStatement* func_offloading_stmt = buildFunctionCallStmt(func_offloading_name, buildIntType(), parameters, p_scope);
     setSourcePositionForTransformation(func_offloading_stmt);
     outlined_driver_body->append_statement(func_offloading_stmt);
+
+    // unregister the cubin file
+    SgExprStatement* unregister_cubin_stmt = buildFunctionCallStmt("__tgt_unregister_lib", buildVoidType(), buildExprListExp(buildVarRefExp(cubin_register_decl)), p_scope);
+    outlined_driver_body->append_statement(unregister_cubin_stmt);
+
 
    // insert the beyond block level reduction statement
    // error = xomp_beyond_block_reduction_float (per_block_results, numBlocks.x, XOMP_REDUCTION_PLUS);
@@ -6634,12 +6639,15 @@ static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration* outl
     if (file_extension == "cu") {
         SageInterface::insertHeader("xomp_cuda_lib.cu", PreprocessingInfo::after, false, new_scope);
         SageInterface::insertHeader("xomp_cuda_lib_inlined.cu", PreprocessingInfo::after, false, new_scope);
+        SageInterface::insertHeader("omptarget.h", PreprocessingInfo::after, false, new_scope);
+        SageInterface::insertHeader("rex_kmp.h", PreprocessingInfo::after, false, new_scope);
     }
     else {
         SageInterface::insertHeader("rex_kmp.h", PreprocessingInfo::after, false, new_scope);
     };
     new_file->set_processedToIncludeCppDirectivesAndComments(true);
 
+    fix_storage_modifier(new_file);
     AstPostProcessing(new_file);
 
     return new_file;
@@ -6674,7 +6682,6 @@ static void post_processing() {
         for (i = outlined_function_list->begin(); i != outlined_function_list->end(); i++) {
             move_outlined_function(*i, new_file);
         };
-        fix_storage_modifier(new_file);
     };
 
     // handle the outlined functions for NVIDIA GPU
@@ -6694,9 +6701,22 @@ static void post_processing() {
             SageInterface::insertHeader(new_scope->lastStatement(), endif, 1);
         };
 
+        // set up an omp target parameter for each outlined function file
+        SgVariableDeclaration* omptarget_device_environment_decl = buildVariableDeclaration ("omptarget_device_environment", buildOpaqueType("int32_t", new_scope), NULL, new_scope);
+        SgStorageModifier& variable_modifier = omptarget_device_environment_decl->get_declarationModifier().get_storageModifier();
+        variable_modifier.setCudaGlobal();
+        appendStatement(omptarget_device_environment_decl, new_scope);
+
         // move the outlined functions
         std::vector<SgFunctionDeclaration* >::iterator i;
         for (i = target_outlined_function_list->begin(); i != target_outlined_function_list->end(); i++) {
+            // set up an omp target parameter for each generated CUDA kernel
+            // the naming pattern is "<kernel name>_exec_mode"
+            SgVariableDeclaration* kernel_exec_mode_decl = buildVariableDeclaration ((*i)->get_name().getString() + "_exec_mode", buildCharType(), buildAssignInitializer(buildIntVal(0)), new_scope);
+            SgStorageModifier& kernel_exec_mode_modifier = kernel_exec_mode_decl->get_declarationModifier().get_storageModifier();
+            kernel_exec_mode_modifier.setCudaGlobal();
+            appendStatement(kernel_exec_mode_decl, new_scope);
+
             move_outlined_function(*i, new_file);
         };
 
@@ -6712,8 +6732,6 @@ static void post_processing() {
             PreprocessingInfo* endif = new PreprocessingInfo(PreprocessingInfo::CpreprocessorEndifDeclaration, "#endif", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
             SageInterface::insertHeader(new_scope->lastStatement(), endif, 1);
         };
-
-        fix_storage_modifier(new_file);
     };
 
 };
