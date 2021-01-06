@@ -6632,7 +6632,9 @@ static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration* outl
     new_file = Outliner::getLibSourceFile(function_block);
     ROSE_ASSERT(new_file != NULL);
     // reset the name of new outlined function file
-    new_file->set_unparse_output_filename("rex_lib_" + original_file_name + "." + file_extension);
+    std::string new_file_name = "rex_lib_" + original_file_name + "." + file_extension;
+    new_file->get_file_info()->set_filenameString(new_file_name);
+    new_file->set_unparse_output_filename(new_file_name);
 
     // insert REX runtime header to the new file
     SgGlobal* new_scope = new_file->get_globalScope();
