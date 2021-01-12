@@ -50,11 +50,15 @@ static void insert_function_parameter(std::string, SgType*, SgFunctionDeclaratio
 static void move_outlined_function(SgFunctionDeclaration*, SgSourceFile*);
 static std::vector<SgFunctionDeclaration* >* outlined_function_list = NULL;
 static std::vector<SgFunctionDeclaration* >* target_outlined_function_list = NULL;
-static std::vector<SgFunctionDeclaration* >* target_outlined_driver_list = NULL;
-static void post_processing();
+static void post_processing(SgSourceFile*);
 static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration*, std::string);
 static void fix_storage_modifier(SgSourceFile*);
 static unsigned int kmpc_global_tid_counter = 0;
+static unsigned int kmpc_kernel_id_counter = 0;
+static unsigned long generate_kernel_id(const SgStatement*);
+static void generate_kmpc_kernel_helper(SgGlobal*);
+static SgFunctionDeclaration* kmpc_kernel_helper_declaration = NULL;
+static SgVariableDeclaration* offload_entries_decl = NULL;
 
 #define ENABLE_XOMP 1  // Enable the middle layer (XOMP) of OpenMP runtime libraries
   //! Generate a symbol set from an initialized name list, 
@@ -626,7 +630,6 @@ namespace OmpSupport
     SgGlobal* globalscope = file->get_globalScope() ; //isSgGlobal(*i);
     ROSE_ASSERT (globalscope != NULL);
 #ifdef ENABLE_XOMP
-    SageInterface::insertHeader("rex_kmp.h",PreprocessingInfo::after,false,globalscope);
     if (enable_accelerator)  // include inlined CUDA device codes
       SageInterface::insertHeader("xomp_cuda_lib_inlined.cu",PreprocessingInfo::after,false,globalscope);
 #else    
@@ -3939,6 +3942,11 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     SgGlobal* g_scope = SageInterface::getGlobalScope(body_block);
     ROSE_ASSERT(g_scope != NULL);
 
+    if  (kmpc_kernel_id_counter == 0) {
+        generate_kmpc_kernel_helper(g_scope);
+    };
+
+
     std::set< SgInitializedName *> restoreVars;
     SgFunctionDeclaration* result = Outliner::generateFunction(body_block, func_name + "kernel__", all_syms, addressOf_syms, restoreVars, NULL, g_scope);
     SgFunctionDeclaration* result_decl = isSgFunctionDeclaration(result->get_firstNondefiningDeclaration());
@@ -3966,9 +3974,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     ROSE_ASSERT(p_scope != NULL);
 
     // create the outlined driver for GPU offloading, which is empty at this point
-    SgFunctionDeclaration* outlined_driver = generateTargetDriver(target, all_syms, addressOf_syms, func_name);
-    SgFunctionDefinition* outlined_driver_definition = outlined_driver->get_definition();
-    SgBasicBlock* outlined_driver_body = outlined_driver_definition->get_body();
+    SgBasicBlock* outlined_driver_body = omp_target_stmt_body_block;
 
     // insert dim3 threadsPerBlock(xomp_get_maxThreadsPerBlock());
     // TODO: for 1-D mapping, int type is enough,  //TODO: a better interface accepting expression as initializer!!
@@ -4025,16 +4031,16 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     // TODO: builder interface without _nfi, and match function call exp builder interface convention: 
 
     // in the original function, we call the outlined driver and pass all the required variables by reference
-    SgStatement* outlined_function_call = buildFunctionCallStmt(func_name, buildVoidType(), exp_list_exp, p_scope);
-    setSourcePositionForTransformation(outlined_function_call);
-    insertStatementBefore(target, outlined_function_call);
+    SgStatement* register_offload_enteries_stmt = buildFunctionCallStmt("register_kernel_entries", buildVoidType(), SageBuilder::buildExprListExp(), p_scope);
+    SgIfStmt* if_register_offload_enteries_stmt = buildIfStmt(buildEqualityOp(buildVarRefExp("__stop_omp_offloading_entries", p_scope), buildIntVal(0)), register_offload_enteries_stmt, NULL);
+    setSourcePositionForTransformation(if_register_offload_enteries_stmt);
+    insertStatementBefore(target, if_register_offload_enteries_stmt);
 
     // prepare all the parameters for using LLVM GPU offloading
-    SgVariableDeclaration* entry_pointer_decl = buildVariableDeclaration ("__entry_ptr", buildPointerType(buildVoidType()), buildAssignInitializer(buildCastExp(buildAddressOfOp(buildFunctionRefExp(outlined_driver)), buildPointerType(buildVoidType()))), p_scope);
-    outlined_driver_body->append_statement(entry_pointer_decl);
-
-    SgVariableDeclaration* cuda_kernel_name_decl = buildVariableDeclaration ("__cuda_entry", buildArrayType(buildCharType()), buildAssignInitializer(buildStringVal(func_name + "kernel__")), p_scope);
-    outlined_driver_body->append_statement(cuda_kernel_name_decl);
+    SgBasicBlock* kmpc_kernel_helper_body = kmpc_kernel_helper_declaration->get_definition()->get_body();
+    unsigned long kmpc_kernel_id = generate_kernel_id(target);
+    SgVariableDeclaration* entry_point_decl = buildVariableDeclaration (func_name + "entry_ptr__", buildPointerType(buildVoidType()), buildAssignInitializer(buildCastExp(buildIntVal(kmpc_kernel_id), buildPointerType(buildVoidType()))), p_scope);
+    kmpc_kernel_helper_body->append_statement(entry_point_decl);
 
     // by default, the device id is set to 0
     SgVariableDeclaration* device_id_decl = buildVariableDeclaration("__device_id", buildOpaqueType("int64_t", p_scope), buildAssignInitializer(buildIntVal(0)), p_scope);
@@ -4042,16 +4048,13 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 
     SgClassDeclaration* tgt_offload_entry = buildStructDeclaration("__tgt_offload_entry", getGlobalScope(target));
 
-    SgExprListExp* offload_entry_parameters = buildExprListExp(buildCastExp(buildAddressOfOp(buildFunctionRefExp(outlined_driver)), buildPointerType(buildVoidType())), buildVarRefExp(cuda_kernel_name_decl), buildIntVal(0), buildIntVal(0), buildIntVal(0));
+    SgExprListExp* offload_entry_parameters = buildExprListExp(buildVarRefExp(entry_point_decl), buildStringVal(func_name + "kernel__"), buildIntVal(0), buildIntVal(0), buildIntVal(0));
     SgBracedInitializer* offload_entry_initilization = buildBracedInitializer(offload_entry_parameters);
-    SgVariableDeclaration* offload_entry_decl = buildVariableDeclaration("__omp_offload_entry", tgt_offload_entry->get_type(), buildAssignInitializer(offload_entry_initilization), p_scope);
-    outlined_driver_body->append_statement(offload_entry_decl);
+    SgVariableDeclaration* offload_entry_decl = buildVariableDeclaration(func_name + "omp_offload_entry__", tgt_offload_entry->get_type(), buildAssignInitializer(offload_entry_initilization), p_scope);
+    kmpc_kernel_helper_body->append_statement(offload_entry_decl);
 
-    SgVariableDeclaration* offload_entry_start_decl = buildVariableDeclaration("__start_omp_offloading_entries", buildPointerType(tgt_offload_entry->get_type()), buildAssignInitializer(buildAddressOfOp(buildVarRefExp(offload_entry_decl))), p_scope);
-    outlined_driver_body->append_statement(offload_entry_start_decl);
-
-    SgVariableDeclaration* offload_entry_end_decl = buildVariableDeclaration("__stop_omp_offloading_entries", buildPointerType(tgt_offload_entry->get_type()), buildAssignInitializer(buildAddressOfOp(buildPntrArrRefExp(buildVarRefExp(offload_entry_start_decl), buildIntVal(1)))), p_scope);
-    outlined_driver_body->append_statement(offload_entry_end_decl);
+    SgExprStatement* new_offload_entry_assignment = buildAssignStatement(buildPntrArrRefExp(buildVarRefExp(offload_entries_decl), buildIntVal(kmpc_kernel_id_counter - 1)), buildVarRefExp(offload_entry_decl));
+    kmpc_kernel_helper_body->append_statement(new_offload_entry_assignment);
 
     // load the cubin file
     SgFile* cur_file = getEnclosingNode<SgFile>(target);
@@ -4060,13 +4063,13 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     SgVariableDeclaration* outlined_file_name_decl = buildVariableDeclaration("cuda_entry_name", buildArrayType(buildCharType()), buildAssignInitializer(buildStringVal(outlined_file_name)), p_scope);
     outlined_driver_body->append_statement(outlined_file_name_decl);
 
-    SgExprListExp* register_cubin_parameters = buildExprListExp(buildVarRefExp(getFirstVariable(*outlined_file_name_decl).get_name(), p_scope), buildVarRefExp(getFirstVariable(*offload_entry_start_decl).get_name(), p_scope), buildVarRefExp(getFirstVariable(*offload_entry_end_decl).get_name(), p_scope));
+    SgExprListExp* register_cubin_parameters = buildExprListExp(buildVarRefExp(getFirstVariable(*outlined_file_name_decl).get_name(), p_scope), buildVarRefExp("__start_omp_offloading_entries", p_scope), buildVarRefExp("__stop_omp_offloading_entries", p_scope));
     SgClassDeclaration* tgt_bin_desc = buildStructDeclaration("__tgt_bin_desc", getGlobalScope(target));
     SgVariableDeclaration* cubin_register_decl = buildVariableDeclaration("bin_desc", buildPointerType(tgt_bin_desc->get_type()), buildAssignInitializer(buildFunctionCallExp("register_cubin", buildPointerType(tgt_bin_desc->get_type()), register_cubin_parameters, p_scope)), p_scope);
     outlined_driver_body->append_statement(cubin_register_decl);
 
-    SgVariableDeclaration* host_pointer_decl = buildVariableDeclaration ("__host_ptr", buildPointerType(buildVoidType()), buildAssignInitializer(buildVarRefExp(entry_pointer_decl)), p_scope);
-    outlined_driver_body->append_statement(host_pointer_decl);
+    SgVariableDeclaration* host_point_decl = buildVariableDeclaration("__host_ptr", buildPointerType(buildVoidType()), buildAssignInitializer(buildCastExp(buildIntVal(kmpc_kernel_id), buildPointerType(buildVoidType()))), p_scope);
+    outlined_driver_body->append_statement(host_point_decl);
 
     int kernel_arg_num = exp_list_exp->get_expressions().size();
     SgBracedInitializer* offloading_variables = buildBracedInitializer(exp_list_exp);
@@ -4090,7 +4093,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 
     // call __tgt_target_teams to execute the CUDA kernel
     SgExprListExp* parameters = NULL;
-    parameters = buildExprListExp(buildVarRefExp(device_id_decl), buildVarRefExp(host_pointer_decl), buildVarRefExp(arg_number_decl), buildVarRefExp(args_base_decl), buildVarRefExp(args_decl), buildVarRefExp(arg_sizes), buildVarRefExp(arg_types), buildVarRefExp(threads_per_block_decl), buildVarRefExp(num_blocks_decl));
+    parameters = buildExprListExp(buildVarRefExp(device_id_decl), buildVarRefExp(host_point_decl), buildVarRefExp(arg_number_decl), buildVarRefExp(args_base_decl), buildVarRefExp(args_decl), buildVarRefExp(arg_sizes), buildVarRefExp(arg_types), buildVarRefExp(threads_per_block_decl), buildVarRefExp(num_blocks_decl));
     string func_offloading_name = "__tgt_target_teams";
     SgExprStatement* func_offloading_stmt = buildFunctionCallStmt(func_offloading_name, buildIntType(), parameters, p_scope);
     setSourcePositionForTransformation(func_offloading_stmt);
@@ -4138,7 +4141,6 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     removeStatement (target);
 
     target_outlined_function_list->push_back(isSgFunctionDeclaration(result));
-    target_outlined_driver_list->push_back(isSgFunctionDeclaration(outlined_driver));
   }
 
 
@@ -6373,7 +6375,6 @@ void lower_omp(SgSourceFile* file)
 
   outlined_function_list = new std::vector<SgFunctionDeclaration* >();
   target_outlined_function_list = new std::vector<SgFunctionDeclaration* >();
-  target_outlined_driver_list = new std::vector<SgFunctionDeclaration* >();
 
   Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(file, V_SgStatement);
   Rose_STL_Container<SgNode*>::reverse_iterator nodeListIterator = nodeList.rbegin();
@@ -6530,7 +6531,7 @@ void lower_omp(SgSourceFile* file)
 
   } 
   // post processing
-  post_processing();
+  post_processing(file);
 
 }
 
@@ -6641,7 +6642,7 @@ static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration* outl
     if (file_extension == "cu") {
         SageInterface::insertHeader("xomp_cuda_lib.cu", PreprocessingInfo::after, false, new_scope);
         SageInterface::insertHeader("xomp_cuda_lib_inlined.cu", PreprocessingInfo::after, false, new_scope);
-        SageInterface::insertHeader("omptarget.h", PreprocessingInfo::after, false, new_scope);
+        //SageInterface::insertHeader("omptarget.h", PreprocessingInfo::after, false, new_scope);
         SageInterface::insertHeader("rex_kmp.h", PreprocessingInfo::after, false, new_scope);
     }
     else {
@@ -6671,7 +6672,41 @@ static void fix_storage_modifier(SgSourceFile* new_file) {
     };
 };
 
-static void post_processing() {
+static unsigned long generate_kernel_id(const SgStatement* target) {
+
+    const Sg_File_Info* info = target->get_startOfConstruct();
+    const std::string file_name = info->get_raw_filename();
+    size_t i;
+    unsigned long result = 0;
+    for (i = 0; i < file_name.size(); i++) {
+        result += (unsigned long)file_name[i];
+    };
+    result += kmpc_kernel_id_counter;
+    kmpc_kernel_id_counter += 1;
+
+    return result;
+};
+
+static void generate_kmpc_kernel_helper(SgGlobal* scope) {
+
+    SgClassDeclaration* tgt_offload_entry = buildStructDeclaration("__tgt_offload_entry", scope);
+    offload_entries_decl = buildVariableDeclaration ("__offload_entries", buildArrayType(tgt_offload_entry->get_type()), NULL, scope);
+    SgVariableDeclaration* offload_start_entry_decl = buildVariableDeclaration("__start_omp_offloading_entries", buildPointerType(tgt_offload_entry->get_type()), buildAssignInitializer(buildAddressOfOp(buildPntrArrRefExp(buildVarRefExp(offload_entries_decl), buildIntVal(0)))), scope);
+    SgVariableDeclaration* offload_stop_entry_decl = buildVariableDeclaration("__stop_omp_offloading_entries", buildPointerType(tgt_offload_entry->get_type()), buildAssignInitializer(buildIntVal(0)), scope);
+    kmpc_kernel_helper_declaration = SageBuilder::buildDefiningFunctionDeclaration("register_kernel_entries", buildVoidType(), SageBuilder::buildFunctionParameterList(), scope);
+
+    prependStatement(kmpc_kernel_helper_declaration, scope);
+    prependStatement(offload_stop_entry_decl, scope);
+    prependStatement(offload_start_entry_decl, scope);
+    prependStatement(offload_entries_decl, scope);
+
+};
+
+static void post_processing(SgSourceFile* file) {
+
+    SgGlobal* g_scope = file->get_globalScope();
+    ROSE_ASSERT(g_scope != NULL);
+    SageInterface::insertHeader("rex_kmp.h", PreprocessingInfo::before, false, g_scope);
 
     SgSourceFile* new_file = NULL;
 
@@ -6722,10 +6757,6 @@ static void post_processing() {
             move_outlined_function(*i, new_file);
         };
 
-        for (i = target_outlined_driver_list->begin(); i != target_outlined_driver_list->end(); i++) {
-            move_outlined_function(*i, new_file);
-        };
-
         if (file_extension == "c" || file_extension == "C") {
             PreprocessingInfo* ifdef = new PreprocessingInfo(PreprocessingInfo::CpreprocessorIfdefDeclaration, "#ifdef __cplusplus", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
             SageInterface::insertHeader(new_scope->lastStatement(), ifdef, 1);
@@ -6734,6 +6765,16 @@ static void post_processing() {
             PreprocessingInfo* endif = new PreprocessingInfo(PreprocessingInfo::CpreprocessorEndifDeclaration, "#endif", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
             SageInterface::insertHeader(new_scope->lastStatement(), endif, 1);
         };
+    };
+
+    if (kmpc_kernel_helper_declaration != NULL) {
+        SgClassDeclaration* tgt_offload_entry = buildStructDeclaration("__tgt_offload_entry", g_scope);
+        SgVariableDeclaration* new_offload_entries_decl = buildVariableDeclaration ("__offload_entries", buildArrayType(tgt_offload_entry->get_type(), buildIntVal(kmpc_kernel_id_counter)), NULL, g_scope);
+        replaceStatement(offload_entries_decl, new_offload_entries_decl, true);
+
+        SgBasicBlock* kmpc_kernel_helper_body = kmpc_kernel_helper_declaration->get_definition()->get_body();
+        SgExprStatement* offload_entry_stop_assignment = buildAssignStatement(buildVarRefExp(std::string("__stop_omp_offloading_entries")), buildAddressOfOp(buildPntrArrRefExp(buildVarRefExp(std::string("__offload_entries")), buildIntVal(kmpc_kernel_id_counter))));
+        kmpc_kernel_helper_body->append_statement(offload_entry_stop_assignment);
     };
 
 };
