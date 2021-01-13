@@ -6,6 +6,7 @@
 #include "omp_lowering.h"
 #include "RoseAst.h"
 #include <sstream>
+#include "rex_llvm.h"
 
 using namespace std;
 using namespace Rose;
@@ -3283,6 +3284,36 @@ static void generateMappedArrayMemoryHandling(
   }
 }
 
+static int generate_mapping_variable_type (
+    /* the array and the map information */
+    SgSymbol* sym,
+    SgOmpMapClause* map_alloc_clause, SgOmpMapClause* map_to_clause, SgOmpMapClause* map_from_clause, SgOmpMapClause* map_tofrom_clause,
+    std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > > & array_dimensions, SgExpression* device_expression,
+    /*Where to insert generated function calls*/
+    SgBasicBlock* insertion_scope, SgStatement* insertion_anchor_stmt) {
+    bool needCopyTo = false;
+    bool needCopyFrom = false;
+    if (((map_to_clause) && (isInClauseVariableList (map_to_clause,sym))) ||
+        ((map_tofrom_clause) && (isInClauseVariableList (map_tofrom_clause,sym))) )
+        needCopyTo = true;
+
+    if (((map_from_clause) && (isInClauseVariableList (map_from_clause,sym))) ||
+      ( (map_tofrom_clause) && (isInClauseVariableList (map_tofrom_clause,sym))))
+        needCopyFrom = true;
+
+    int type_value = OMP_TGT_MAPTYPE_TARGET_PARAM;
+
+    if (needCopyTo) {
+        type_value = type_value | OMP_TGT_MAPTYPE_TO;
+    };
+
+    if (needCopyFrom) {
+        type_value = type_value | OMP_TGT_MAPTYPE_FROM;
+    };
+
+    return type_value;
+}
+
 // trans OpenMP map variables
 // return all generated or remaining variables to be passed to the outliner  
   // Liao, 2/4/2013
@@ -3338,7 +3369,7 @@ static void generateMappedArrayMemoryHandling(
   //       To simplify the handling, we assume
   //         1. Both "target data"  and "target parallel for " should have map() clauses
   //         2. Using DDE, the translation is simplified as is identical for both directive
-ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_parallel_stmt  // either "target data" or "target parallel" statement
+ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_parallel_stmt, SgExprListExp* map_variable_list, SgExprListExp* map_variable_size_list, SgExprListExp* map_variable_type_list  // either "target data" or "target parallel" statement
                    ) 
 {
   ASTtools::VarSymSet_t all_syms;
@@ -3412,7 +3443,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     all_mapped_vars = collectClauseVariables (target_directive_stmt, VariantVector(V_SgOmpMapClause)); 
 
   // store all variables showing up in any of the device clauses
-  SgExpression* device_expression ;
+  SgExpression* device_expression = NULL;
   if (target_data_stmt)
     device_expression = getClauseExpression (target_data_stmt, VariantVector(V_SgOmpDeviceClause)); 
   else if (target_directive_stmt)
@@ -3455,20 +3486,9 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
   // collect used variables in the insertion scope
   std::map <SgVariableSymbol *, bool> variable_map = collectVariableAppearance (insertion_scope);
 
-  // Now insert xomp_deviceDataEnvironmentEnter() before xomp_deviceDataEnvironmentPrepareVariable()
-  SgExprListExp* argumentList = NULL;
-  if(device_expression)
-  {
-    argumentList = buildExprListExp(deepCopy(device_expression)); 
-  }
-  else  // use default device ID 0 if device_expression is NULL
-  {
+  if (device_expression == NULL) {
     device_expression = buildIntVal(0);
-    argumentList = buildExprListExp(device_expression);
-  }
-
-  SgExprStatement* dde_enter_stmt = buildFunctionCallStmt (SgName("xomp_deviceDataEnvironmentEnter"), buildVoidType(), argumentList, insertion_scope);
-  prependStatement(dde_enter_stmt, insertion_scope); 
+  };
 
   // handle array variables showing up in the map clauses:   
   for (std::set<SgSymbol*>::const_iterator iter = array_syms.begin(); iter != array_syms.end(); iter ++)
@@ -3510,10 +3530,6 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
         insertion_scope, insertion_anchor_stmt, true);
   }  // end for
 
-  // Generate a single DDE enter() call
-  SgExprStatement* dde_exit_stmt = buildFunctionCallStmt (SgName("xomp_deviceDataEnvironmentExit"), buildVoidType(), argumentList, insertion_scope);
-  appendStatement(dde_exit_stmt , insertion_anchor_stmt->get_scope()); 
-
   // Step 5. TODO  replace indexing element access with address calculation (only needed for 2/3 -D)
   // We switch the order of 4 and 5 since we want to rewrite the subscripts before the arrays are replaced
   rewriteArraySubscripts (insertion_scope, array_syms); 
@@ -3539,6 +3555,27 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     SgVariableSymbol * var_sym = isSgVariableSymbol(*iter);
     if (variable_map[var_sym] == true) // we should only collect map variables which show up in the current parallel region
       all_syms.insert (var_sym);
+
+    // check the type of current variable symbol and calculate its size
+    if (variable_map[var_sym] == true) {
+        SgInitializedName* mapping_variable = var_sym->get_declaration();
+        SgType* mapping_variable_type = mapping_variable->get_type();
+        SgExpression* mapping_variable_expression = NULL;
+        if (isPointerType(mapping_variable_type)) {
+            mapping_variable_expression = buildVarRefExp(var_sym);
+        }
+        else {
+            mapping_variable_expression = buildAddressOfOp(buildVarRefExp(var_sym));
+        };
+        map_variable_list->append_expression(mapping_variable_expression);
+        SgExpression* mapping_variable_size = buildCastExp(buildSizeOfOp(mapping_variable_type), buildOpaqueType("int64_t", insertion_scope));
+        map_variable_size_list->append_expression(mapping_variable_size);
+
+        int mapping_variable_type_enum = generate_mapping_variable_type(var_sym, map_alloc_clause, map_to_clause, map_from_clause, map_tofrom_clause,array_dimensions, device_expression,
+        insertion_scope, insertion_anchor_stmt);
+        SgExpression* mapping_variable_value = buildIntVal(mapping_variable_type_enum);
+        map_variable_type_list->append_expression(mapping_variable_value);
+    };
   }
 
   //Pei-Hung: subtract offset from the subscript in the offloaded array reference
@@ -3904,12 +3941,16 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
   // If we want to copy back value, we have to use memory copy  since they are in two different memory spaces. 
     ASTtools::VarSymSet_t addressOf_syms; // generated or remaining variables should be passed by using their addresses
 
+    SgExprListExp* map_variable_size_list = buildExprListExp();
+    SgExprListExp* map_variable_type_list = buildExprListExp();
+    SgExprListExp* map_variable_list = buildExprListExp();
+
     if (!useDDE)
     {   
       //transOmpMapVariables (target_directive_stmt, target, body_block, all_syms); //, addressOf_syms);
       transOmpMapVariables_v1 (target, all_syms); //, addressOf_syms);
     } else
-      all_syms = transOmpMapVariables (target); //, addressOf_syms);
+      all_syms = transOmpMapVariables(target, map_variable_list, map_variable_size_list, map_variable_type_list); //, addressOf_syms);
 
     ASTtools::VarSymSet_t per_block_reduction_syms; // translation generated per block reduction symbols with name like _dev_per_block within the enclosed for loop
 
@@ -4072,7 +4113,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     outlined_driver_body->append_statement(host_point_decl);
 
     int kernel_arg_num = exp_list_exp->get_expressions().size();
-    SgBracedInitializer* offloading_variables = buildBracedInitializer(exp_list_exp);
+    SgBracedInitializer* offloading_variables = buildBracedInitializer(map_variable_list);
     SgVariableDeclaration* args_base_decl = buildVariableDeclaration ("__args_base", buildArrayType(buildPointerType(buildVoidType())), buildAssignInitializer(offloading_variables), p_scope);
     outlined_driver_body->append_statement(args_base_decl);
 
@@ -4081,11 +4122,12 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 
     // the size and type of passing variables haven't been handled yet.
     // they are always set to an empty array for now.
-    SgBracedInitializer* empty_braces = buildBracedInitializer(buildExprListExp());
-    SgVariableDeclaration* arg_sizes = buildVariableDeclaration ("__arg_sizes", buildArrayType(buildOpaqueType("int64_t", p_scope)), buildAssignInitializer(empty_braces), p_scope);
+    SgBracedInitializer* map_variable_sizes = buildBracedInitializer(map_variable_size_list);
+    SgVariableDeclaration* arg_sizes = buildVariableDeclaration ("__arg_sizes", buildArrayType(buildOpaqueType("int64_t", p_scope)), buildAssignInitializer(map_variable_sizes), p_scope);
     outlined_driver_body->append_statement(arg_sizes);
 
-    SgVariableDeclaration* arg_types = buildVariableDeclaration ("__arg_types", buildArrayType(buildOpaqueType("int64_t", p_scope)), buildAssignInitializer(empty_braces), p_scope);
+    SgBracedInitializer* map_variable_types = buildBracedInitializer(map_variable_type_list);
+    SgVariableDeclaration* arg_types = buildVariableDeclaration ("__arg_types", buildArrayType(buildOpaqueType("int64_t", p_scope)), buildAssignInitializer(map_variable_types), p_scope);
     outlined_driver_body->append_statement(arg_types);
 
     SgVariableDeclaration* arg_number_decl = buildVariableDeclaration("__arg_num", buildOpaqueType("int32_t", p_scope), buildAssignInitializer(buildIntVal(kernel_arg_num)), p_scope);
@@ -4742,8 +4784,12 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     SgScopeStatement * scope = target->get_scope();
     ROSE_ASSERT(scope != NULL );
 
+    SgExprListExp* map_variables_size_list = NULL;
+    SgExprListExp* map_variable_type_list = NULL;
+    SgExprListExp* map_variable_list = NULL;
+
     if (useDDE)
-      transOmpMapVariables (target);
+      transOmpMapVariables(target, map_variable_list, map_variables_size_list, map_variable_type_list);
 
     SgBasicBlock* body = isSgBasicBlock(target->get_body());
     ROSE_ASSERT(body != NULL );
@@ -6642,7 +6688,6 @@ static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration* outl
     if (file_extension == "cu") {
         SageInterface::insertHeader("xomp_cuda_lib.cu", PreprocessingInfo::after, false, new_scope);
         SageInterface::insertHeader("xomp_cuda_lib_inlined.cu", PreprocessingInfo::after, false, new_scope);
-        //SageInterface::insertHeader("omptarget.h", PreprocessingInfo::after, false, new_scope);
         SageInterface::insertHeader("rex_kmp.h", PreprocessingInfo::after, false, new_scope);
     }
     else {
