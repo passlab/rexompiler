@@ -5483,11 +5483,11 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
 
        VariantVector vvt (V_SgOmpPrivateClause);
        vvt.push_back(V_SgOmpReductionClause);
+       vvt.push_back(V_SgOmpFirstprivateClause);
 
       //TODO: No such concept of firstprivate and lastprivate in accelerator model??
        if (!isAcceleratorModel) // we actually already has enable_accelerator, but it is too global for handling both CPU and GPU translation
        {
-         vvt.push_back(V_SgOmpFirstprivateClause);
          vvt.push_back(V_SgOmpLastprivateClause);
        }
    
