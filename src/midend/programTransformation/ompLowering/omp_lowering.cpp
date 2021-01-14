@@ -3987,6 +3987,8 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
         generate_kmpc_kernel_helper(g_scope);
     };
 
+    // pass all the parameters by reference
+    std::copy(all_syms.begin(), all_syms.end(), std::inserter(addressOf_syms, addressOf_syms.begin()));
 
     std::set< SgInitializedName *> restoreVars;
     SgFunctionDeclaration* result = Outliner::generateFunction(body_block, func_name + "kernel__", all_syms, addressOf_syms, restoreVars, NULL, g_scope);
