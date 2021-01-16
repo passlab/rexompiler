@@ -58,6 +58,7 @@ static unsigned int kmpc_global_tid_counter = 0;
 static unsigned int kmpc_kernel_id_counter = 0;
 static unsigned long generate_kernel_id(const SgStatement*);
 static void generate_kmpc_kernel_helper(SgGlobal*);
+static void generate_unregister_kmpc_kernel_helper(SgGlobal*);
 static SgFunctionDeclaration* kmpc_kernel_helper_declaration = NULL;
 static SgVariableDeclaration* offload_entries_decl = NULL;
 
@@ -3845,11 +3846,6 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     // TODO: builder interface without _nfi, and match function call exp builder interface convention: 
 
     // in the original function, we call the outlined driver and pass all the required variables by reference
-    SgStatement* register_offload_enteries_stmt = buildFunctionCallStmt("register_kernel_entries", buildVoidType(), SageBuilder::buildExprListExp(), p_scope);
-    SgIfStmt* if_register_offload_enteries_stmt = buildIfStmt(buildEqualityOp(buildVarRefExp("__stop_omp_offloading_entries", p_scope), buildIntVal(0)), register_offload_enteries_stmt, NULL);
-    setSourcePositionForTransformation(if_register_offload_enteries_stmt);
-    insertStatementBefore(target, if_register_offload_enteries_stmt);
-
     // prepare all the parameters for using LLVM GPU offloading
     SgBasicBlock* kmpc_kernel_helper_body = kmpc_kernel_helper_declaration->get_definition()->get_body();
     unsigned long kmpc_kernel_id = generate_kernel_id(target);
@@ -3869,18 +3865,6 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 
     SgExprStatement* new_offload_entry_assignment = buildAssignStatement(buildPntrArrRefExp(buildVarRefExp(offload_entries_decl), buildIntVal(kmpc_kernel_id_counter - 1)), buildVarRefExp(offload_entry_decl));
     kmpc_kernel_helper_body->append_statement(new_offload_entry_assignment);
-
-    // load the cubin file
-    SgFile* cur_file = getEnclosingNode<SgFile>(target);
-    std::string original_file_name = StringUtility::stripFileSuffixFromFileName(StringUtility::stripPathFromFileName(cur_file->get_file_info()->get_filenameString()));
-    std::string outlined_file_name = "rex_lib_" + original_file_name + ".cubin";
-    SgVariableDeclaration* outlined_file_name_decl = buildVariableDeclaration("cuda_entry_name", buildArrayType(buildCharType()), buildAssignInitializer(buildStringVal(outlined_file_name)), p_scope);
-    outlined_driver_body->append_statement(outlined_file_name_decl);
-
-    SgExprListExp* register_cubin_parameters = buildExprListExp(buildVarRefExp(getFirstVariable(*outlined_file_name_decl).get_name(), p_scope), buildVarRefExp("__start_omp_offloading_entries", p_scope), buildVarRefExp("__stop_omp_offloading_entries", p_scope));
-    SgClassDeclaration* tgt_bin_desc = buildStructDeclaration("__tgt_bin_desc", getGlobalScope(target));
-    SgVariableDeclaration* cubin_register_decl = buildVariableDeclaration("bin_desc", buildPointerType(tgt_bin_desc->get_type()), buildAssignInitializer(buildFunctionCallExp("register_cubin", buildPointerType(tgt_bin_desc->get_type()), register_cubin_parameters, p_scope)), p_scope);
-    outlined_driver_body->append_statement(cubin_register_decl);
 
     SgVariableDeclaration* host_point_decl = buildVariableDeclaration("__host_ptr", buildPointerType(buildVoidType()), buildAssignInitializer(buildCastExp(buildIntVal(kmpc_kernel_id), buildPointerType(buildVoidType()))), p_scope);
     outlined_driver_body->append_statement(host_point_decl);
@@ -3912,10 +3896,6 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     SgExprStatement* func_offloading_stmt = buildFunctionCallStmt(func_offloading_name, buildIntType(), parameters, p_scope);
     setSourcePositionForTransformation(func_offloading_stmt);
     outlined_driver_body->append_statement(func_offloading_stmt);
-
-    // unregister the cubin file
-    SgExprStatement* unregister_cubin_stmt = buildFunctionCallStmt("__tgt_unregister_lib", buildVoidType(), buildExprListExp(buildVarRefExp(cubin_register_decl)), p_scope);
-    outlined_driver_body->append_statement(unregister_cubin_stmt);
 
 
    // insert the beyond block level reduction statement
@@ -6523,7 +6503,6 @@ static void post_processing(SgSourceFile* file) {
 
     SgGlobal* g_scope = file->get_globalScope();
     ROSE_ASSERT(g_scope != NULL);
-    SageInterface::insertHeader("rex_kmp.h", PreprocessingInfo::before, false, g_scope);
 
     SgSourceFile* new_file = NULL;
 
@@ -6592,6 +6571,42 @@ static void post_processing(SgSourceFile* file) {
         SgBasicBlock* kmpc_kernel_helper_body = kmpc_kernel_helper_declaration->get_definition()->get_body();
         SgExprStatement* offload_entry_stop_assignment = buildAssignStatement(buildVarRefExp(std::string("__stop_omp_offloading_entries")), buildAddressOfOp(buildPntrArrRefExp(buildVarRefExp(std::string("__offload_entries")), buildIntVal(kmpc_kernel_id_counter))));
         kmpc_kernel_helper_body->append_statement(offload_entry_stop_assignment);
+
+        // load the cubin file
+        std::string original_file_name = StringUtility::stripFileSuffixFromFileName(StringUtility::stripPathFromFileName(file->get_file_info()->get_filenameString()));
+        std::string outlined_file_name = "rex_lib_" + original_file_name + ".cubin";
+        SgVariableDeclaration* outlined_file_name_decl = buildVariableDeclaration("cuda_entry_name", buildArrayType(buildCharType()), buildAssignInitializer(buildStringVal(outlined_file_name)), kmpc_kernel_helper_body);
+        kmpc_kernel_helper_body->append_statement(outlined_file_name_decl);
+
+        SgExprListExp* register_cubin_parameters = buildExprListExp(buildVarRefExp(getFirstVariable(*outlined_file_name_decl).get_name(), kmpc_kernel_helper_body), buildVarRefExp("__start_omp_offloading_entries", kmpc_kernel_helper_body), buildVarRefExp("__stop_omp_offloading_entries", kmpc_kernel_helper_body));
+        SgClassDeclaration* tgt_bin_desc = buildStructDeclaration("__tgt_bin_desc", g_scope);
+        //SgExprStatement* cubin_register_decl = buildAssignStatement(buildVarRefExp(std::string("__cubin_desc")), buildAssignInitializer(buildFunctionCallExp("register_cubin", buildPointerType(tgt_bin_desc->get_type()), register_cubin_parameters, kmpc_kernel_helper_body)));
+        SgExprStatement* cubin_register_decl = buildAssignStatement(buildVarRefExp(std::string("__cubin_desc")), buildFunctionCallExp("register_cubin", buildPointerType(tgt_bin_desc->get_type()), register_cubin_parameters, kmpc_kernel_helper_body));
+        kmpc_kernel_helper_body->append_statement(cubin_register_decl);
+
+        kmpc_kernel_helper_declaration->get_functionModifier().setGnuAttributeConstructor();
+
+        generate_unregister_kmpc_kernel_helper(g_scope);
     };
 
+    SageInterface::insertHeader("rex_kmp.h", PreprocessingInfo::before, false, g_scope);
 };
+
+static void generate_unregister_kmpc_kernel_helper(SgGlobal* scope) {
+
+    SgClassDeclaration* tgt_bin_desc = buildStructDeclaration("__tgt_bin_desc", scope);
+
+
+    SgFunctionDeclaration* unregister_kmpc_kernel_helper_declaration = SageBuilder::buildDefiningFunctionDeclaration("unregister_kernel_entries", buildVoidType(), SageBuilder::buildFunctionParameterList(), scope);
+    prependStatement(unregister_kmpc_kernel_helper_declaration, scope);
+    unregister_kmpc_kernel_helper_declaration->get_functionModifier().setGnuAttributeDestructor();
+
+    // unregister the cubin file
+    SgBasicBlock* unregister_kmpc_kernel_helper_body = unregister_kmpc_kernel_helper_declaration->get_definition()->get_body();
+    SgExprStatement* unregister_cubin_stmt = buildFunctionCallStmt("__tgt_unregister_lib", buildVoidType(), buildExprListExp(buildVarRefExp(std::string("__cubin_desc"))), scope);
+    unregister_kmpc_kernel_helper_body->append_statement(unregister_cubin_stmt);
+
+    SgVariableDeclaration* cubin_desc_decl = buildVariableDeclaration("__cubin_desc", buildPointerType(tgt_bin_desc->get_type()), buildAssignInitializer(buildIntVal(0)), scope);
+    prependStatement(cubin_desc_decl, scope);
+};
+
