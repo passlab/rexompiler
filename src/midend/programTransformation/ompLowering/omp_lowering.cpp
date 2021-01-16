@@ -56,7 +56,6 @@ static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration*, std
 static void fix_storage_modifier(SgSourceFile*);
 static unsigned int kmpc_global_tid_counter = 0;
 static unsigned int kmpc_kernel_id_counter = 0;
-static unsigned long generate_kernel_id(const SgStatement*);
 static void generate_kmpc_kernel_helper(SgGlobal*);
 static void generate_unregister_kmpc_kernel_helper(SgGlobal*);
 static SgFunctionDeclaration* kmpc_kernel_helper_declaration = NULL;
@@ -3847,9 +3846,12 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 
     // in the original function, we call the outlined driver and pass all the required variables by reference
     // prepare all the parameters for using LLVM GPU offloading
+    kmpc_kernel_id_counter += 1;
+    SgVariableDeclaration* outlined_function_pointer_id_decl = buildVariableDeclaration(func_name + "id__", buildArrayType(buildCharType()), buildAssignInitializer(buildStringVal(func_name)), g_scope);
+    prependStatement(outlined_function_pointer_id_decl, g_scope);
+
     SgBasicBlock* kmpc_kernel_helper_body = kmpc_kernel_helper_declaration->get_definition()->get_body();
-    unsigned long kmpc_kernel_id = generate_kernel_id(target);
-    SgVariableDeclaration* entry_point_decl = buildVariableDeclaration (func_name + "entry_ptr__", buildPointerType(buildVoidType()), buildAssignInitializer(buildCastExp(buildIntVal(kmpc_kernel_id), buildPointerType(buildVoidType()))), p_scope);
+    SgVariableDeclaration* entry_point_decl = buildVariableDeclaration (func_name + "entry_ptr__", buildPointerType(buildVoidType()), buildAssignInitializer(buildCastExp(buildVarRefExp(outlined_function_pointer_id_decl), buildPointerType(buildVoidType()))), p_scope);
     kmpc_kernel_helper_body->append_statement(entry_point_decl);
 
     // by default, the device id is set to 0
@@ -3866,7 +3868,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     SgExprStatement* new_offload_entry_assignment = buildAssignStatement(buildPntrArrRefExp(buildVarRefExp(offload_entries_decl), buildIntVal(kmpc_kernel_id_counter - 1)), buildVarRefExp(offload_entry_decl));
     kmpc_kernel_helper_body->append_statement(new_offload_entry_assignment);
 
-    SgVariableDeclaration* host_point_decl = buildVariableDeclaration("__host_ptr", buildPointerType(buildVoidType()), buildAssignInitializer(buildCastExp(buildIntVal(kmpc_kernel_id), buildPointerType(buildVoidType()))), p_scope);
+    SgVariableDeclaration* host_point_decl = buildVariableDeclaration("__host_ptr", buildPointerType(buildVoidType()), buildAssignInitializer(buildCastExp(buildVarRefExp(outlined_function_pointer_id_decl), buildPointerType(buildVoidType()))), p_scope);
     outlined_driver_body->append_statement(host_point_decl);
 
     int kernel_arg_num = exp_list_exp->get_expressions().size();
@@ -6469,21 +6471,6 @@ static void fix_storage_modifier(SgSourceFile* new_file) {
     };
 };
 
-static unsigned long generate_kernel_id(const SgStatement* target) {
-
-    const Sg_File_Info* info = target->get_startOfConstruct();
-    const std::string file_name = info->get_raw_filename();
-    size_t i;
-    unsigned long result = 0;
-    for (i = 0; i < file_name.size(); i++) {
-        result += (unsigned long)file_name[i];
-    };
-    result += kmpc_kernel_id_counter;
-    kmpc_kernel_id_counter += 1;
-
-    return result;
-};
-
 static void generate_kmpc_kernel_helper(SgGlobal* scope) {
 
     SgClassDeclaration* tgt_offload_entry = buildStructDeclaration("__tgt_offload_entry", scope);
@@ -6580,7 +6567,6 @@ static void post_processing(SgSourceFile* file) {
 
         SgExprListExp* register_cubin_parameters = buildExprListExp(buildVarRefExp(getFirstVariable(*outlined_file_name_decl).get_name(), kmpc_kernel_helper_body), buildVarRefExp("__start_omp_offloading_entries", kmpc_kernel_helper_body), buildVarRefExp("__stop_omp_offloading_entries", kmpc_kernel_helper_body));
         SgClassDeclaration* tgt_bin_desc = buildStructDeclaration("__tgt_bin_desc", g_scope);
-        //SgExprStatement* cubin_register_decl = buildAssignStatement(buildVarRefExp(std::string("__cubin_desc")), buildAssignInitializer(buildFunctionCallExp("register_cubin", buildPointerType(tgt_bin_desc->get_type()), register_cubin_parameters, kmpc_kernel_helper_body)));
         SgExprStatement* cubin_register_decl = buildAssignStatement(buildVarRefExp(std::string("__cubin_desc")), buildFunctionCallExp("register_cubin", buildPointerType(tgt_bin_desc->get_type()), register_cubin_parameters, kmpc_kernel_helper_body));
         kmpc_kernel_helper_body->append_statement(cubin_register_decl);
 
