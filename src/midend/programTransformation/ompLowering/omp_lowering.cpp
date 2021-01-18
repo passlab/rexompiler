@@ -6513,12 +6513,8 @@ static void post_processing(SgSourceFile* file) {
         std::string file_extension = StringUtility::fileNameSuffix(cur_file->get_file_info()->get_filenameString());
 
         if (file_extension == "c" || file_extension == "C") {
-            PreprocessingInfo* ifdef = new PreprocessingInfo(PreprocessingInfo::CpreprocessorIfdefDeclaration, "#ifdef __cplusplus", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
-            SageInterface::insertHeader(new_scope->lastStatement(), ifdef, 1);
-            PreprocessingInfo* ifdef_content = new PreprocessingInfo(PreprocessingInfo::ClinkageSpecificationStart, "extern \"C\" {", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
-            SageInterface::insertHeader(new_scope->lastStatement(), ifdef_content, 1);
-            PreprocessingInfo* endif = new PreprocessingInfo(PreprocessingInfo::CpreprocessorEndifDeclaration, "#endif", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
-            SageInterface::insertHeader(new_scope->lastStatement(), endif, 1);
+            PreprocessingInfo* c_linkage_start = new PreprocessingInfo(PreprocessingInfo::ClinkageSpecificationStart, "#ifdef __cplusplus\nextern \"C\" {\n#endif", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
+            SageInterface::insertHeader(new_scope->lastStatement(), c_linkage_start, 1);
         };
 
         // set up an omp target parameter for each outlined function file
@@ -6541,12 +6537,8 @@ static void post_processing(SgSourceFile* file) {
         };
 
         if (file_extension == "c" || file_extension == "C") {
-            PreprocessingInfo* ifdef = new PreprocessingInfo(PreprocessingInfo::CpreprocessorIfdefDeclaration, "#ifdef __cplusplus", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
-            SageInterface::insertHeader(new_scope->lastStatement(), ifdef, 1);
-            PreprocessingInfo* ifdef_content = new PreprocessingInfo(PreprocessingInfo::ClinkageSpecificationEnd, "}", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
-            SageInterface::insertHeader(new_scope->lastStatement(), ifdef_content, 1);
-            PreprocessingInfo* endif = new PreprocessingInfo(PreprocessingInfo::CpreprocessorEndifDeclaration, "#endif", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
-            SageInterface::insertHeader(new_scope->lastStatement(), endif, 1);
+            PreprocessingInfo* c_linkage_end = new PreprocessingInfo(PreprocessingInfo::ClinkageSpecificationEnd, "#ifdef __cplusplus\n}\n#endif", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
+            SageInterface::insertHeader(new_scope->lastStatement(), c_linkage_end, 1);
         };
     };
 
