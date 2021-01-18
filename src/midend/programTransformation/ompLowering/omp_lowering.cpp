@@ -2914,17 +2914,6 @@ void extractMapClauses(Rose_STL_Container<SgOmpClause*> map_clauses,
 {
   if ( map_clauses.size() == 0) return; // stop if no map clauses at all
 
-#if 0
-  // a map between original symbol and its device version (replacement) 
-  std::map <SgVariableSymbol*, SgVariableSymbol*>  cpu_gpu_var_map; 
-
-  // store all variables showing up in any of the map clauses
-  SgInitializedNamePtrList all_vars ;
-  if (target_data_stmt != NULL)
-    all_vars = collectClauseVariables (target_data_stmt, VariantVector(V_SgOmpMapClause)); 
-  else 
-    all_vars = collectClauseVariables (target_directive_stmt, VariantVector(V_SgOmpMapClause));
-#endif 
   for (Rose_STL_Container<SgOmpClause*>::const_iterator iter = map_clauses.begin(); iter != map_clauses.end(); iter++)
   {
     SgOmpMapClause* m_cls = isSgOmpMapClause (*iter);
@@ -2934,6 +2923,11 @@ void extractMapClauses(Rose_STL_Container<SgOmpClause*> map_clauses,
       array_dimensions = m_cls->get_array_dimensions();
       dist_data_policies = m_cls->get_dist_data_policies ();
     }
+    else // array sections in other MAP clauses should be retrieved as well
+    {
+      std::map<SgSymbol*, std::vector<std::pair <SgExpression*, SgExpression*> > > new_array_dimensions = m_cls->get_array_dimensions();
+      array_dimensions.insert(new_array_dimensions.begin(), new_array_dimensions.end());
+    };
 
     SgOmpClause::omp_map_operator_enum map_operator = m_cls->get_operation();
     if (map_operator == SgOmpClause::e_omp_map_alloc)
