@@ -6542,7 +6542,7 @@ static void post_processing(SgSourceFile* file) {
         replaceStatement(offload_entries_decl, new_offload_entries_decl, true);
 
         SgBasicBlock* kmpc_kernel_helper_body = kmpc_kernel_helper_declaration->get_definition()->get_body();
-        SgExprStatement* offload_entry_stop_assignment = buildAssignStatement(buildVarRefExp(std::string("__stop_omp_offloading_entries")), buildAddressOfOp(buildPntrArrRefExp(buildVarRefExp(std::string("__offload_entries")), buildIntVal(kmpc_kernel_id_counter))));
+        SgExprStatement* offload_entry_stop_assignment = buildAssignStatement(buildVarRefExp(std::string("__stop_omp_offloading_entries"), g_scope), buildAddressOfOp(buildPntrArrRefExp(buildVarRefExp(std::string("__offload_entries"), g_scope), buildIntVal(kmpc_kernel_id_counter))));
         kmpc_kernel_helper_body->append_statement(offload_entry_stop_assignment);
 
         // load the cubin file
@@ -6553,7 +6553,7 @@ static void post_processing(SgSourceFile* file) {
 
         SgExprListExp* register_cubin_parameters = buildExprListExp(buildVarRefExp(getFirstVariable(*outlined_file_name_decl).get_name(), kmpc_kernel_helper_body), buildVarRefExp("__start_omp_offloading_entries", kmpc_kernel_helper_body), buildVarRefExp("__stop_omp_offloading_entries", kmpc_kernel_helper_body));
         SgClassDeclaration* tgt_bin_desc = buildStructDeclaration("__tgt_bin_desc", g_scope);
-        SgExprStatement* cubin_register_decl = buildAssignStatement(buildVarRefExp(std::string("__cubin_desc")), buildFunctionCallExp("register_cubin", buildPointerType(tgt_bin_desc->get_type()), register_cubin_parameters, kmpc_kernel_helper_body));
+        SgExprStatement* cubin_register_decl = buildAssignStatement(buildVarRefExp(std::string("__cubin_desc"), g_scope), buildFunctionCallExp("register_cubin", buildPointerType(tgt_bin_desc->get_type()), register_cubin_parameters, kmpc_kernel_helper_body));
         kmpc_kernel_helper_body->append_statement(cubin_register_decl);
 
         kmpc_kernel_helper_declaration->get_functionModifier().setGnuAttributeConstructor();
@@ -6562,12 +6562,13 @@ static void post_processing(SgSourceFile* file) {
     };
 
     SageInterface::insertHeader("rex_kmp.h", PreprocessingInfo::before, false, g_scope);
+    AstPostProcessing(new_file);
+    AstPostProcessing(file);
 };
 
 static void generate_unregister_kmpc_kernel_helper(SgGlobal* scope) {
 
     SgClassDeclaration* tgt_bin_desc = buildStructDeclaration("__tgt_bin_desc", scope);
-
 
     SgFunctionDeclaration* unregister_kmpc_kernel_helper_declaration = SageBuilder::buildDefiningFunctionDeclaration("unregister_kernel_entries", buildVoidType(), SageBuilder::buildFunctionParameterList(), scope);
     prependStatement(unregister_kmpc_kernel_helper_declaration, scope);
@@ -6575,7 +6576,7 @@ static void generate_unregister_kmpc_kernel_helper(SgGlobal* scope) {
 
     // unregister the cubin file
     SgBasicBlock* unregister_kmpc_kernel_helper_body = unregister_kmpc_kernel_helper_declaration->get_definition()->get_body();
-    SgExprStatement* unregister_cubin_stmt = buildFunctionCallStmt("__tgt_unregister_lib", buildVoidType(), buildExprListExp(buildVarRefExp(std::string("__cubin_desc"))), scope);
+    SgExprStatement* unregister_cubin_stmt = buildFunctionCallStmt("__tgt_unregister_lib", buildVoidType(), buildExprListExp(buildVarRefExp(std::string("__cubin_desc"), scope)), unregister_kmpc_kernel_helper_body);
     unregister_kmpc_kernel_helper_body->append_statement(unregister_cubin_stmt);
 
     SgVariableDeclaration* cubin_desc_decl = buildVariableDeclaration("__cubin_desc", buildPointerType(tgt_bin_desc->get_type()), buildAssignInitializer(buildIntVal(0)), scope);
