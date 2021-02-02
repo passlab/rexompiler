@@ -6309,6 +6309,11 @@ void lower_omp(SgSourceFile* file)
           transOmpTargetData(node);
           break;
         }
+      case V_SgOmpSimdStatement:
+        {
+          transOmpSimd(node, file);
+          break;
+        }
       case V_SgOmpMetadirectiveStatement:
         {
           std::cout << "switch here....\n";

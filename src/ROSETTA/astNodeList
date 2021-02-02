@@ -442,6 +442,14 @@ SgScopeStatement
 SgSequenceStatement
 SgSetComprehension
 SgShortVal
+SgSIMDBinaryOp
+SgSIMDAddOp
+SgSIMDSubOp
+SgSIMDMulOp
+SgSIMDDivOp
+SgSIMDFmaOp
+SgSIMDLoad
+SgSIMDStore
 SgSizeOfOp
 SgAlignOfOp
 SgSourceFile
