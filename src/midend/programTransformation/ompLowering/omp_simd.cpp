@@ -485,7 +485,7 @@ void OmpSupport::transOmpSimd(SgNode *node, SgSourceFile *file) {
     // Now work on the body
     SgBasicBlock *new_block = SageBuilder::buildBasicBlock();
     SgBasicBlock *new_block2 = SageBuilder::buildBasicBlock();
-    SgBasicBlock *new_block3 = SageBuilder::buildBasicBlock();
+    //SgBasicBlock *new_block3 = SageBuilder::buildBasicBlock();
     
     omp_simd_pass1(for_loop, new_block);
     omp_simd_pass2(new_block, new_block2);

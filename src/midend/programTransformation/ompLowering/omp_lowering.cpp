@@ -6567,7 +6567,9 @@ static void post_processing(SgSourceFile* file) {
     };
 
     SageInterface::insertHeader("rex_kmp.h", PreprocessingInfo::before, false, g_scope);
-    AstPostProcessing(new_file);
+    if (new_file != NULL) {
+        AstPostProcessing(new_file);
+    }
     AstPostProcessing(file);
 };
 
