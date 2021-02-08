@@ -356,6 +356,7 @@ Grammar::setUpExpressions ()
                             
   // SIMD operators
      NEW_TERMINAL_MACRO (SIMDLoad, "SIMDLoad", "SIMD_LOAD");
+     NEW_TERMINAL_MACRO (SIMDBroadcast, "SIMDBroadcast", "SIMD_BROADCAST");
      NEW_TERMINAL_MACRO (SIMDStore, "SIMDStore", "SIMD_STORE");
      
      NEW_TERMINAL_MACRO (SIMDAddOp, "SIMDAddOp", "SIMD_ADD_OP");
@@ -396,7 +397,7 @@ Grammar::setUpExpressions ()
           ConcatenationOp | PointerAssignOp | UserDefinedBinaryOp | CompoundAssignOp | MembershipOp         | SpaceshipOp    |
           NonMembershipOp | IsOp            | IsNotOp             | ElementwiseOp        | PowerOp        |
           LeftDivideOp    | RemOp |
-          SIMDBinaryOp | SIMDLoad | SIMDStore,
+          SIMDBinaryOp | SIMDLoad | SIMDBroadcast | SIMDStore,
           "BinaryOp","BINARY_EXPRESSION", false);
 
      NEW_NONTERMINAL_MACRO (NaryOp,
@@ -1049,6 +1050,7 @@ Grammar::setUpExpressions ()
      SIMDDivOp.editSubstitute ( "PRECEDENCE_VALUE", "16" );
      SIMDFmaOp.editSubstitute ( "PRECEDENCE_VALUE", "16" );
      SIMDLoad.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDBroadcast.editSubstitute ("PRECEDENCE_VALUE", "16" );
      SIMDStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
 
 #if USE_FORTRAN_IR_NODES
@@ -3357,14 +3359,6 @@ Grammar::setUpExpressions ()
      SIMDBinaryOp.excludeSubTreeFunctionPrototype ( "HEADER_GET_TYPE", "../Grammar/Expression.code" );
      SIMDBinaryOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", 
                                   "../Grammar/Expression.code" );
-                                  
-     //BinaryOp.setFunctionPrototype ( "HEADER_BINARY_EXPRESSION", "../Grammar/Expression.code" );
-     /*SIMDBinaryOp.setDataPrototype ( "SgExpression*", "lhs_operand_i"  , "= NULL",
-            CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     SIMDBinaryOp.setDataPrototype ( "SgExpression*", "rhs_operand_i"  , "= NULL",
-            CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     SIMDBinaryOp.setDataPrototype ( "SgType*"      , "expression_type", "= NULL",
-            CONSTRUCTOR_PARAMETER, NO_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);*/
      
      SIMDAddOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", 
                                   "../Grammar/Expression.code" );
@@ -3387,13 +3381,12 @@ Grammar::setUpExpressions ()
      SIMDFmaOp.setFunctionPrototype ( "HEADER_SIMD_FMA_OP", "../Grammar/Expression.code" );
      
      SIMDLoad.setFunctionPrototype ( "HEADER_SIMD_LOAD", "../Grammar/Expression.code" );
-     /*SIMDLoad.setDataPrototype ( "SgExpression*", "value", "= NULL",
-             CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);*/
      SIMDLoad.setFunctionSource ( "SOURCE_SIMD_LOAD", "../Grammar/Expression.code" );
      
+     SIMDBroadcast.setFunctionPrototype ( "HEADER_SIMD_BROADCAST", "../Grammar/Expression.code" );
+     SIMDBroadcast.setFunctionSource ( "SOURCE_SIMD_BROADCAST", "../Grammar/Expression.code" );
+     
      SIMDStore.setFunctionPrototype ( "HEADER_SIMD_STORE", "../Grammar/Expression.code" );
-     /*SIMDStore.setDataPrototype ( "SgExpression*", "value", "= NULL",
-             CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);*/
      SIMDStore.setFunctionSource ( "SOURCE_SIMD_STORE", "../Grammar/Expression.code" );
      
    }

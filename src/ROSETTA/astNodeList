@@ -449,6 +449,7 @@ SgSIMDMulOp
 SgSIMDDivOp
 SgSIMDFmaOp
 SgSIMDLoad
+SgSIMDBroadcast
 SgSIMDStore
 SgSizeOfOp
 SgAlignOfOp
