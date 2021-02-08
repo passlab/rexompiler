@@ -342,6 +342,34 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
         if (lval->variantT() == V_SgVarRefExp && rval->variantT() == V_SgPntrArrRefExp) {
             SgSIMDLoad *ld = buildBinaryExpression<SgSIMDLoad>(deepCopy(lval), deepCopy(rval));
             ir_block->push_back(ld);
+        } else if (lval->variantT() == V_SgVarRefExp && rval->variantT() == V_SgExprListExp) {
+            SgExprListExp *expr_list = static_cast<SgExprListExp *>(rval);
+            SgExpression *first = expr_list->get_expressions().front();
+            if (!isSgBinaryOp(first)) {
+                continue;
+            }
+            
+            SgVarRefExp *dest = static_cast<SgVarRefExp *>(lval);
+            SgBinaryOp *math_stmt = static_cast<SgBinaryOp *>(first);
+            lval = math_stmt->get_lhs_operand();
+            rval = math_stmt->get_rhs_operand();
+            
+            if (!isSgVarRefExp(lval) || !isSgVarRefExp(rval)) {
+                std::cout << "Error: invalid arguments in math expression." << std::endl;
+                continue;
+            }
+            
+            SgSIMDBinaryOp *math = nullptr;
+            SgExprListExp *parameters = buildExprListExp(deepCopy(lval), deepCopy(rval));
+            
+            switch (math_stmt->variantT()) {
+                case V_SgAddOp: math = buildBinaryExpression<SgSIMDAddOp>(dest, parameters); break;
+                case V_SgSubtractOp: math = buildBinaryExpression<SgSIMDSubOp>(dest, parameters); break;
+                case V_SgMultiplyOp: math = buildBinaryExpression<SgSIMDMulOp>(dest, parameters); break;
+                case V_SgDivideOp: math = buildBinaryExpression<SgSIMDDivOp>(dest, parameters); break;
+            }
+            
+            if (math != nullptr) ir_block->push_back(math);
         }
     }
 }
@@ -359,6 +387,29 @@ SgType *omp_simd_get_intel_type(SgType *type, SgBasicBlock *new_block) {
     }
 
     return vector_type;
+}
+
+// TODO: Take types into consideration
+std::string omp_simd_get_intel_func(VariantT op_type, SgType *type) {
+    switch (op_type) {
+        case V_SgSIMDAddOp: {
+            return "_mm256_add_ps";
+        }
+        
+        case V_SgSIMDSubOp: {
+            return "_mm256_sub_ps";
+        }
+        
+        case V_SgSIMDMulOp: {
+            return "_mm256_mul_ps";
+        }
+        
+        case V_SgSIMDDivOp: {
+            return "_mm256_div_ps";
+        }
+    }
+    
+    return "";
 }
 
 void omp_simd_write_intel(SgBasicBlock *new_block, Rose_STL_Container<SgNode *> *ir_block) {
@@ -395,6 +446,22 @@ void omp_simd_write_intel(SgBasicBlock *new_block, Rose_STL_Container<SgNode *> 
 
                 // Build the function call
                 SgExpression *ld = buildFunctionCallExp("_mm256_loadu_ps", vector_type, parameters, new_block);
+                SgExprStatement *expr = buildAssignStatement(va, ld);
+                appendStatement(expr, new_block);
+            } break;
+            
+            case V_SgSIMDAddOp:
+            case V_SgSIMDSubOp:
+            case V_SgSIMDMulOp:
+            case V_SgSIMDDivOp: {
+                SgVarRefExp *va = static_cast<SgVarRefExp *>(lval);
+                SgType *vector_type = omp_simd_get_intel_type(va->get_type(), new_block);
+                SgExprListExp *parameters = static_cast<SgExprListExp *>(rval);
+                
+                // Build the function call
+                std::string func_type = omp_simd_get_intel_func((*i)->variantT(), va->get_type());
+                
+                SgExpression *ld = buildFunctionCallExp(func_type, vector_type, parameters, new_block);
                 SgExprStatement *expr = buildAssignStatement(va, ld);
                 appendStatement(expr, new_block);
             } break;
