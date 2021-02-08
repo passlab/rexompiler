@@ -311,6 +311,42 @@ void omp_simd_pass1(SgForStatement *for_loop, SgBasicBlock *new_block) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
+// Pass 2-> Convert to SIMD IR
+
+/* Use this for lvals
+    SgType *type = buildFloatType();
+    SgVarRefExp *var = buildVarRefExp("__vec1", old_block);
+    ir_block->push_back(var);
+*/
+void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_block) {
+    Rose_STL_Container<SgStatement *> bodyList = old_block->get_statements();
+    
+    for (Rose_STL_Container<SgStatement *>::iterator i = bodyList.begin(); i != bodyList.end(); i++) {
+        if ((*i)->variantT() != V_SgExprStatement) {
+            continue;
+        }
+        
+        SgExprStatement *expr_statement = static_cast<SgExprStatement *>(*i);
+        if (!isSgBinaryOp(expr_statement->get_expression())) {
+            continue;
+        }
+        
+        // Build the IR
+        // The left-value will be the variable reference, which will be translated to a vector variable declaration
+        // The right-value is either a pointer reference or a math expression
+        SgBinaryOp *assign_stmt = static_cast<SgBinaryOp *>(expr_statement->get_expression());
+        SgExpression *lval = assign_stmt->get_lhs_operand();
+        SgExpression *rval = assign_stmt->get_rhs_operand();
+        
+        // Load
+        if (lval->variantT() == V_SgVarRefExp && rval->variantT() == V_SgPntrArrRefExp) {
+            SgSIMDLoad *ld = buildBinaryExpression<SgSIMDLoad>(deepCopy(lval), deepCopy(rval));
+            ir_block->push_back(ld);
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////
 // The final conversion step- Convert to Intel intrinsics
 
 SgType *omp_simd_get_intel_type(SgType *type, SgBasicBlock *new_block) {
@@ -325,12 +361,23 @@ SgType *omp_simd_get_intel_type(SgType *type, SgBasicBlock *new_block) {
     return vector_type;
 }
 
-void omp_simd_write_intel(SgBasicBlock *old_block, SgBasicBlock *new_block) {
-    std::string name = "__vec1";
+void omp_simd_write_intel(SgBasicBlock *new_block, Rose_STL_Container<SgNode *> *ir_block) {
+    /*std::string name = "__vec1";
     SgType *type = buildOpaqueType("__m256", new_block);
     
     SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
-    appendStatement(vd, new_block);
+    appendStatement(vd, new_block);*/
+    
+    for (Rose_STL_Container<SgNode *>::iterator i = ir_block->begin(); i != ir_block->end(); i++) {
+        std::cout << "Class name: " << (*i)->class_name() << std::endl;
+        /*switch ((*i)->variantT()) {
+            case V_SgVarRefExp: {
+                SgVarRefExp *var = static_cast<SgVarRefExp *>(*i);
+                std::cout << "Name: " << var->get_symbol()->get_name() << std::endl;
+                std::cout << "Type: " << var->get_type()->class_name() << std::endl << std::endl;
+            } break;
+        }*/
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -357,9 +404,11 @@ void OmpSupport::transOmpSimd(SgNode *node, SgSourceFile *file) {
     // Now work on the body
     SgBasicBlock *new_block = SageBuilder::buildBasicBlock();
     SgBasicBlock *final_block = SageBuilder::buildBasicBlock();
+    Rose_STL_Container<SgNode *> *ir_block = new Rose_STL_Container<SgNode *>();
     
     omp_simd_pass1(for_loop, new_block);
-    omp_simd_write_intel(new_block, final_block);
+    omp_simd_pass2(new_block, ir_block);
+    omp_simd_write_intel(final_block, ir_block);
     
     // debug
     // TODO remove
