@@ -311,85 +311,7 @@ void omp_simd_pass1(SgForStatement *for_loop, SgBasicBlock *new_block) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-// This is all the Pass-2 code
-// Pass-2 converts the scalar functions to SIMD IR
-
-void omp_simd_build_ir(SgBasicBlock *new_block, SgBinaryOp *assign_stmt) {
-    // Determine the type first
-    SgType *type = assign_stmt->get_type();
-    
-    SgExpression *lval = assign_stmt->get_lhs_operand();
-    if (isSgPntrArrRefExp(lval)) {
-        // Final store
-    } else {
-        SgVarRefExp *old_var = static_cast<SgVarRefExp *>(lval);
-        std::string name = old_var->get_symbol()->get_name();
-        
-        SgVarRefExp *vector_var = buildVarRefExp(name, new_block);
-        SgExprStatement *expr;
-
-        SgExpression *rval = assign_stmt->get_rhs_operand();
-        if (rval == nullptr) return;
-        
-        switch (rval->variantT()) {
-            case V_SgPntrArrRefExp: {
-                SgSIMDLoad *ld = new SgSIMDLoad(vector_var, assign_stmt->get_rhs_operand(), type, NULL);
-                expr = buildExprStatement(ld);
-                appendStatement(expr, new_block);
-            } break;
-
-            // Ordinarily, this should be only one long
-            /*case V_SgExprListExp: {
-                SgExprListExp *list = static_cast<SgExprListExp *>(rval);
-                Rose_STL_Container<SgExpression *> expressions = list->get_expressions();
-
-                for (Rose_STL_Container<SgExpression *>::iterator i = expressions.begin(); i != expressions.end(); i++) {
-                    if (!isSgBinaryOp(*i)) continue;
-                    SgBinaryOp *op1 = static_cast<SgBinaryOp *>(*i);
-                    SgSIMDBinaryOp *op = NULL;
-                    
-                    switch ((*i)->variantT()) {
-                        case V_SgAddOp: op = new SgSIMDAddOp(NULL, NULL); break;
-                        //case V_SgMultiplyOp: op = new SgSIMDMultiplyOp(NULL, NULL); break;
-                    }
-
-                    if (op == NULL) continue;
-
-                    op->set_lhs_operand(deepCopy(op1->get_lhs_operand()));
-                    op->set_rhs_operand(deepCopy(op1->get_rhs_operand()));
-                    
-                    expr = buildAssignStatement(vector_var, op);
-                    appendStatement(expr, new_block);
-                }
-            } break;*/
-        }
-
-        /*if (expr != nullptr)
-            appendStatement(expr, new_block);*/
-    }
-}
-
-void omp_simd_pass2(SgBasicBlock *old_block, SgBasicBlock *new_block) {
-    Rose_STL_Container<SgStatement *> bodyList = old_block->get_statements();
-    
-    for (Rose_STL_Container<SgStatement *>::iterator i = bodyList.begin(); i != bodyList.end(); i++) {
-        switch ((*i)->variantT()) {
-            case V_SgVariableDeclaration: {
-                SgStatement *vd = deepCopy(*i);
-                appendStatement(vd, new_block);
-            } break;
-            
-            case V_SgExprStatement: {
-                SgExprStatement *expr = static_cast<SgExprStatement *>(*i);
-                SgBinaryOp *assign_stmt = static_cast<SgBinaryOp *>(expr->get_expression());
-                omp_simd_build_ir(new_block, assign_stmt);
-            } break;
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////
-// The final conversion step (Intel)
+// The final conversion step- Convert to Intel intrinsics
 
 SgType *omp_simd_get_intel_type(SgType *type, SgBasicBlock *new_block) {
     SgType *vector_type;
@@ -404,53 +326,11 @@ SgType *omp_simd_get_intel_type(SgType *type, SgBasicBlock *new_block) {
 }
 
 void omp_simd_write_intel(SgBasicBlock *old_block, SgBasicBlock *new_block) {
-    Rose_STL_Container<SgStatement *> bodyList = old_block->get_statements();
-
-    for (Rose_STL_Container<SgStatement *>::iterator i = bodyList.begin(); i != bodyList.end(); i++) {
-        switch ((*i)->variantT()) {
-            // With variable declarations, we have to convert to the appropriate type
-            case V_SgVariableDeclaration: {
-                SgVariableDeclaration *old_vd = static_cast<SgVariableDeclaration *>(*i);
-                SgVariableDeclaration *vd = deepCopy(old_vd);
-
-                Rose_STL_Container<SgInitializedName *> vars = vd->get_variables();
-                for (Rose_STL_Container<SgInitializedName *>::iterator j = vars.begin(); j != vars.end(); j++) {
-                    SgType *vector_type = omp_simd_get_intel_type((*j)->get_type(), new_block);
-                    (*j)->set_type(vector_type);
-                }
-                
-                appendStatement(vd, new_block);
-            } break;
-            
-            case V_SgExprStatement: {
-                SgExprStatement *expr = static_cast<SgExprStatement *>(*i);
-                SgBinaryOp *simd_stmt = static_cast<SgBinaryOp *>(expr->get_expression());
-                
-                switch (simd_stmt->variantT()) {
-                    //SIMD Load
-                    case V_SgSIMDLoad: {
-                        SgSIMDLoad *ld = static_cast<SgSIMDLoad *>(simd_stmt);
-                        //SgType *vector_type = omp_simd_get_intel_type(ld->get_type(), new_block);
-                        SgType *vector_type = buildOpaqueType("__m256", new_block);
-                        
-                        SgPntrArrRefExp *array = static_cast<SgPntrArrRefExp *>(ld->get_rhs_operand());
-                        SgAddressOfOp *addr = buildAddressOfOp(array);
-                        SgExprListExp *parameters = buildExprListExp(addr);
-                        
-                        SgVarRefExp *va = static_cast<SgVarRefExp *>(deepCopy(ld->get_lhs_operand()));
-                        
-                        /*if (new_block == NULL) std::cout << "NULL!!" << std::endl;
-                        SgExpression *ld_fc = buildFunctionCallExp("_mm256_loadu_ps", vector_type, NULL, new_block);*/
-                        
-                        SgFunctionCallExp *ld_fc = buildFunctionCallExp("foo2", vector_type, NULL, new_block);
-                        
-                        SgExprStatement *expr = buildAssignStatement(va, ld_fc);
-                        appendStatement(expr, new_block);
-                    } break;
-                }
-            } break;
-        }
-    }
+    std::string name = "__vec1";
+    SgType *type = buildOpaqueType("__m256", new_block);
+    
+    SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
+    appendStatement(vd, new_block);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -474,28 +354,16 @@ void OmpSupport::transOmpSimd(SgNode *node, SgSourceFile *file) {
     ROSE_ASSERT(for_loop != NULL);
     SageInterface::forLoopNormalization(for_loop);
 
-    // Update the loop increment
-    /*SgExpression *inc = for_loop->get_increment();
-
-    Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(inc, V_SgExpression);
-    SgIntVal *inc_amount = isSgIntVal(nodeList.at(2));
-    ROSE_ASSERT(inc_amount != NULL);
-    inc_amount->set_value(8);*/
-
     // Now work on the body
     SgBasicBlock *new_block = SageBuilder::buildBasicBlock();
-    SgBasicBlock *new_block2 = SageBuilder::buildBasicBlock();
-    //SgBasicBlock *new_block3 = SageBuilder::buildBasicBlock();
+    SgBasicBlock *final_block = SageBuilder::buildBasicBlock();
     
     omp_simd_pass1(for_loop, new_block);
-    omp_simd_pass2(new_block, new_block2);
-    //omp_simd_write_intel(new_block2, new_block3);
-    
-    //printAST(new_block);
+    omp_simd_write_intel(new_block, final_block);
     
     // debug
     // TODO remove
     SgStatement *loop_body = getLoopBody(for_loop);
-    replaceStatement(loop_body, new_block, true);       // Change to block3
+    replaceStatement(loop_body, final_block, true);
 }
 
