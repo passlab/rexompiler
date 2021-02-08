@@ -369,6 +369,11 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
             SgSIMDBroadcast *ld = buildBinaryExpression<SgSIMDBroadcast>(deepCopy(lval), deepCopy(rval));
             ir_block->push_back(ld);
             
+        // Store
+        } else if (lval->variant() == V_SgPntrArrRefExp && rval->variantT() == V_SgVarRefExp) {
+            SgSIMDStore *str = buildBinaryExpression<SgSIMDStore>(deepCopy(lval), deepCopy(rval));
+            ir_block->push_back(str);
+            
         // Math
         } else if (lval->variantT() == V_SgVarRefExp && rval->variantT() == V_SgExprListExp) {
             SgExprListExp *expr_list = static_cast<SgExprListExp *>(rval);
@@ -426,6 +431,10 @@ std::string omp_simd_get_intel_func(VariantT op_type, SgType *type) {
         
         case V_SgSIMDBroadcast: {
             return "_mm256_broadcast_ps";
+        }
+        
+        case V_SgSIMDStore: {
+            return "_mm256_storeu_ps";
         }
     
         case V_SgSIMDAddOp: {
@@ -507,6 +516,20 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgBasicBlock *new_block, R
                 SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
                 SgExprStatement *expr = buildAssignStatement(v_dest, ld);
                 insertStatementBefore(target, expr);
+            } break;
+            
+            case V_SgSIMDStore: {
+                SgVarRefExp *v_src = static_cast<SgVarRefExp *>(rval);
+                
+                // Function call parameters
+                SgAddressOfOp *addr = buildAddressOfOp(lval);
+                SgExprListExp *parameters = buildExprListExp(addr, v_src);
+                
+                // Build the function call
+                std::string func_name = omp_simd_get_intel_func((*i)->variantT(), v_src->get_type());
+                
+                SgExprStatement *fc = buildFunctionCallStmt("_mm256_storeu_ps", buildVoidType(), parameters, new_block);
+                appendStatement(fc, new_block);
             } break;
             
             case V_SgSIMDAddOp:
