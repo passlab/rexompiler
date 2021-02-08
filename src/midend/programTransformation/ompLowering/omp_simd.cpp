@@ -102,12 +102,14 @@ void omp_simd_build_ptr_assign(SgExpression *pntr_exp, SgBasicBlock *new_block, 
     appendStatement(expr, new_block);
 }
 
-void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, std::stack<std::string> *nameStack, SgType *type) {
+void omp_simd_build_scalar_assign(SgExpression *node, SgOmpSimdStatement *target, SgBasicBlock *new_block,
+                                    std::stack<std::string> *nameStack, SgType *type) {
     std::string name = simdGenName();
     nameStack->push(name);
 
     // Build the assignment
     SgExpression *expr;
+    bool is_const = true;
     
     switch (node->variantT()) {
         case V_SgIntVal: {
@@ -127,7 +129,25 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
         
         case V_SgVarRefExp: {
             expr = copyExpression(node);
+            is_const = false;
         } break;
+    }
+    
+    // If our scalar is a constant, we need to declare a new variable outside the for loop
+    // The intrinsics only allow broadcasting from a memory location, so we need to reference
+    // this new variable.
+    if (is_const) {
+        std::string const_name = "__const" + std::to_string(name_pos);
+        ++name_pos;
+        
+        SgVariableDeclaration *const_vd = buildVariableDeclaration(const_name, type, NULL, new_block);
+        insertStatementBefore(target, const_vd);
+        
+        SgVarRefExp *const_va = buildVarRefExp(const_name, new_block);
+        SgExprStatement *assign = buildAssignStatement(const_va, expr);
+        insertStatementBefore(target, assign);
+        
+        expr = buildVarRefExp(const_name, new_block);
     }
     
     // Build the variable declaration
@@ -177,7 +197,8 @@ void omp_simd_build_math(SgBasicBlock *new_block, std::stack<std::string> *nameS
     nameStack->push(name);
 }
 
-void omp_simd_build_3addr(SgExpression *rval, SgBasicBlock *new_block, std::stack<std::string> *nameStack,
+void omp_simd_build_3addr(SgExpression *rval, SgOmpSimdStatement *target, SgBasicBlock *new_block,
+                            std::stack<std::string> *nameStack,
                             std::vector<std::string> loop_indexes, SgType *type) {
     switch (rval->variantT()) {
         case V_SgAddOp:
@@ -186,8 +207,8 @@ void omp_simd_build_3addr(SgExpression *rval, SgBasicBlock *new_block, std::stac
         case V_SgDivideOp: {
             // Build math
             SgBinaryOp *op = static_cast<SgBinaryOp *>(rval);
-            omp_simd_build_3addr(op->get_lhs_operand(), new_block, nameStack, loop_indexes, type);
-            omp_simd_build_3addr(op->get_rhs_operand(), new_block, nameStack, loop_indexes, type);
+            omp_simd_build_3addr(op->get_lhs_operand(), target, new_block, nameStack, loop_indexes, type);
+            omp_simd_build_3addr(op->get_rhs_operand(), target, new_block, nameStack, loop_indexes, type);
             omp_simd_build_math(new_block, nameStack, rval->variantT(), type);
         } break;
         
@@ -199,12 +220,12 @@ void omp_simd_build_3addr(SgExpression *rval, SgBasicBlock *new_block, std::stac
         case V_SgIntVal: 
         case V_SgFloatVal: 
         case V_SgDoubleVal: {
-            omp_simd_build_scalar_assign(rval, new_block, nameStack, type);
+            omp_simd_build_scalar_assign(rval, target, new_block, nameStack, type);
         } break;
         
         case V_SgCastExp: {
             SgCastExp *cast = static_cast<SgCastExp *>(rval);
-            omp_simd_build_scalar_assign(cast->get_operand(), new_block, nameStack, type);
+            omp_simd_build_scalar_assign(cast->get_operand(), target, new_block, nameStack, type);
         } break;
 
         default: {
@@ -246,7 +267,7 @@ std::string omp_simd_max_var(SgStatement *test_stmt) {
 // and then converts the statements to 3-address scalar code
 //
 // The main purpose of this function is to break each expression between the load and store
-void omp_simd_pass1(SgForStatement *for_loop, SgBasicBlock *new_block) {
+void omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasicBlock *new_block) {
     
     // Get the size from the for loop (we will need this for converting multi-dimensional loops)
     SgStatement *stmt = for_loop;
@@ -299,7 +320,7 @@ void omp_simd_pass1(SgForStatement *for_loop, SgBasicBlock *new_block) {
         }
         
         // Build the rval (the expression)
-        omp_simd_build_3addr(op->get_rhs_operand(), new_block, &nameStack, loop_indexes, type);
+        omp_simd_build_3addr(op->get_rhs_operand(), target, new_block, &nameStack, loop_indexes, type);
         
         // Build the lval (the store/assignment)
         std::string name = nameStack.top();
@@ -495,11 +516,12 @@ void OmpSupport::transOmpSimd(SgNode *node, SgSourceFile *file) {
     SgBasicBlock *final_block = SageBuilder::buildBasicBlock();
     Rose_STL_Container<SgNode *> *ir_block = new Rose_STL_Container<SgNode *>();
     
-    omp_simd_pass1(for_loop, new_block);
+    omp_simd_pass1(target, for_loop, new_block);
     omp_simd_pass2(new_block, ir_block);
     
     // Set the new block, and convert to Intel intrinsics
     SgStatement *loop_body = getLoopBody(for_loop);
+    //replaceStatement(loop_body, new_block, true);
     replaceStatement(loop_body, final_block, true);
     
     omp_simd_write_intel(final_block, ir_block);
