@@ -102,7 +102,7 @@ void omp_simd_build_ptr_assign(SgExpression *pntr_exp, SgBasicBlock *new_block, 
     appendStatement(expr, new_block);
 }
 
-void omp_simd_build_scalar_assign(SgExpression *node, SgOmpSimdStatement *target, SgBasicBlock *new_block,
+void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block,
                                     std::stack<std::string> *nameStack, SgType *type) {
     std::string name = simdGenName();
     nameStack->push(name);
@@ -180,8 +180,7 @@ void omp_simd_build_math(SgBasicBlock *new_block, std::stack<std::string> *nameS
     nameStack->push(name);
 }
 
-void omp_simd_build_3addr(SgExpression *rval, SgOmpSimdStatement *target, SgBasicBlock *new_block,
-                            std::stack<std::string> *nameStack,
+void omp_simd_build_3addr(SgExpression *rval, SgBasicBlock *new_block, std::stack<std::string> *nameStack,
                             std::vector<std::string> loop_indexes, SgType *type) {
     switch (rval->variantT()) {
         case V_SgAddOp:
@@ -190,8 +189,8 @@ void omp_simd_build_3addr(SgExpression *rval, SgOmpSimdStatement *target, SgBasi
         case V_SgDivideOp: {
             // Build math
             SgBinaryOp *op = static_cast<SgBinaryOp *>(rval);
-            omp_simd_build_3addr(op->get_lhs_operand(), target, new_block, nameStack, loop_indexes, type);
-            omp_simd_build_3addr(op->get_rhs_operand(), target, new_block, nameStack, loop_indexes, type);
+            omp_simd_build_3addr(op->get_lhs_operand(), new_block, nameStack, loop_indexes, type);
+            omp_simd_build_3addr(op->get_rhs_operand(), new_block, nameStack, loop_indexes, type);
             omp_simd_build_math(new_block, nameStack, rval->variantT(), type);
         } break;
         
@@ -203,12 +202,12 @@ void omp_simd_build_3addr(SgExpression *rval, SgOmpSimdStatement *target, SgBasi
         case V_SgIntVal: 
         case V_SgFloatVal: 
         case V_SgDoubleVal: {
-            omp_simd_build_scalar_assign(rval, target, new_block, nameStack, type);
+            omp_simd_build_scalar_assign(rval, new_block, nameStack, type);
         } break;
         
         case V_SgCastExp: {
             SgCastExp *cast = static_cast<SgCastExp *>(rval);
-            omp_simd_build_scalar_assign(cast->get_operand(), target, new_block, nameStack, type);
+            omp_simd_build_scalar_assign(cast->get_operand(), new_block, nameStack, type);
         } break;
 
         default: {
@@ -250,7 +249,7 @@ std::string omp_simd_max_var(SgStatement *test_stmt) {
 // and then converts the statements to 3-address scalar code
 //
 // The main purpose of this function is to break each expression between the load and store
-void omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasicBlock *new_block) {
+void omp_simd_pass1(SgForStatement *for_loop, SgBasicBlock *new_block) {
     
     // Get the size from the for loop (we will need this for converting multi-dimensional loops)
     SgStatement *stmt = for_loop;
@@ -303,7 +302,7 @@ void omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasi
         }
         
         // Build the rval (the expression)
-        omp_simd_build_3addr(op->get_rhs_operand(), target, new_block, &nameStack, loop_indexes, type);
+        omp_simd_build_3addr(op->get_rhs_operand(), new_block, &nameStack, loop_indexes, type);
         
         // Build the lval (the store/assignment)
         std::string name = nameStack.top();
@@ -329,11 +328,7 @@ bool omp_simd_is_load_operand(VariantT val) {
     return false;
 }
 
-/* Use this for lvals
-    SgType *type = buildFloatType();
-    SgVarRefExp *var = buildVarRefExp("__vec1", old_block);
-    ir_block->push_back(var);
-*/
+// The main pass2 loop
 void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_block) {
     Rose_STL_Container<SgStatement *> bodyList = old_block->get_statements();
     
@@ -408,6 +403,8 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
 ////////////////////////////////////////////////////////////////////////////////////
 // The final conversion step- Convert to Intel intrinsics
 
+#define SIMD_LENGTH 8
+
 SgType *omp_simd_get_intel_type(SgType *type, SgBasicBlock *new_block) {
     SgType *vector_type;
         
@@ -420,8 +417,6 @@ SgType *omp_simd_get_intel_type(SgType *type, SgBasicBlock *new_block) {
     return vector_type;
 }
 
-// TODO: Take types into consideration
-// Float _ps ; Double: _pd ; Int _si256
 std::string omp_simd_get_intel_func(VariantT op_type, SgType *type) {
     std::string instr = "_mm256_";
 
@@ -452,6 +447,7 @@ std::string omp_simd_get_intel_func(VariantT op_type, SgType *type) {
     return instr;
 }
 
+// Write the Intel intrinsics
 void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block) {
     // Setup the for loop
     SgBasicBlock *new_block = SageBuilder::buildBasicBlock();
@@ -459,13 +455,7 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
     SgStatement *loop_body = getLoopBody(for_loop);
     replaceStatement(loop_body, new_block, true);
     
-    // Update the loop increment
-    SgExpression *inc = for_loop->get_increment();
-
-    Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(inc, V_SgExpression);
-    SgIntVal *inc_amount = isSgIntVal(nodeList.at(2));
-    ROSE_ASSERT(inc_amount != NULL);
-    inc_amount->set_value(8);
+    int loop_increment = SIMD_LENGTH;
     
     // Translate the IR
     for (Rose_STL_Container<SgNode *>::iterator i = ir_block->begin(); i != ir_block->end(); i++) {
@@ -497,6 +487,12 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 SgVarRefExp *va = static_cast<SgVarRefExp *>(lval);
                 SgType *vector_type = omp_simd_get_intel_type(va->get_type(), new_block);
                 SgPntrArrRefExp *array = static_cast<SgPntrArrRefExp *>(rval);
+                
+                // Check the loop increment
+                // TODO: Is this the best location for this?
+                if (va->get_type()->variantT() == V_SgTypeDouble) {
+                    loop_increment = SIMD_LENGTH / 2;
+                }
                 
                 // Build function call parameters
                 SgExprListExp *parameters;
@@ -566,6 +562,14 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
             } break;
         }
     }
+    
+    // Update the loop increment
+    SgExpression *inc = for_loop->get_increment();
+
+    Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(inc, V_SgExpression);
+    SgIntVal *inc_amount = isSgIntVal(nodeList.at(2));
+    ROSE_ASSERT(inc_amount != NULL);
+    inc_amount->set_value(loop_increment);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -593,7 +597,7 @@ void OmpSupport::transOmpSimd(SgNode *node, SgSourceFile *file) {
     SgBasicBlock *new_block = SageBuilder::buildBasicBlock();
     Rose_STL_Container<SgNode *> *ir_block = new Rose_STL_Container<SgNode *>();
     
-    omp_simd_pass1(target, for_loop, new_block);
+    omp_simd_pass1(for_loop, new_block);
     omp_simd_pass2(new_block, ir_block);
     
     // Uncomment to test the 3-address translation
