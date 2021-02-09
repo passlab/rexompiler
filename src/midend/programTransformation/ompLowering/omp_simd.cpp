@@ -133,23 +133,6 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgOmpSimdStatement *target
         } break;
     }
     
-    // If our scalar is a constant, we need to declare a new variable outside the for loop
-    // The intrinsics only allow broadcasting from a memory location, so we need to reference
-    // this new variable.
-    if (is_const) {
-        std::string const_name = "__const" + std::to_string(name_pos);
-        ++name_pos;
-        
-        SgVariableDeclaration *const_vd = buildVariableDeclaration(const_name, type, NULL, new_block);
-        insertStatementBefore(target, const_vd);
-        
-        SgVarRefExp *const_va = buildVarRefExp(const_name, new_block);
-        SgExprStatement *assign = buildAssignStatement(const_va, expr);
-        insertStatementBefore(target, assign);
-        
-        expr = buildVarRefExp(const_name, new_block);
-    }
-    
     // Build the variable declaration
     SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
     appendStatement(vd, new_block);
@@ -334,6 +317,18 @@ void omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasi
 ////////////////////////////////////////////////////////////////////////////////////
 // Pass 2-> Convert to SIMD IR
 
+bool omp_simd_is_load_operand(VariantT val) {
+    switch (val) {
+        case V_SgPntrArrRefExp:
+        case V_SgVarRefExp:
+        case V_SgIntVal: 
+        case V_SgFloatVal: 
+        case V_SgDoubleVal: return true;
+    }
+    
+    return false;
+}
+
 /* Use this for lvals
     SgType *type = buildFloatType();
     SgVarRefExp *var = buildVarRefExp("__vec1", old_block);
@@ -365,7 +360,10 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
             ir_block->push_back(ld);
             
         // Broadcast
-        } else if (lval->variantT() == V_SgVarRefExp && rval->variantT() == V_SgVarRefExp) {
+        // TODO: This is not the most elegent piece of code...
+        } else if (lval->variantT() == V_SgVarRefExp &&
+                    (rval->variantT() == V_SgVarRefExp || rval->variantT() == V_SgIntVal
+                    || rval->variantT() == V_SgFloatVal || rval->variantT() == V_SgDoubleVal)) {
             SgSIMDBroadcast *ld = buildBinaryExpression<SgSIMDBroadcast>(deepCopy(lval), deepCopy(rval));
             ir_block->push_back(ld);
             
@@ -423,38 +421,35 @@ SgType *omp_simd_get_intel_type(SgType *type, SgBasicBlock *new_block) {
 }
 
 // TODO: Take types into consideration
+// Float _ps ; Double: _pd ; Int _si256
 std::string omp_simd_get_intel_func(VariantT op_type, SgType *type) {
+    std::string instr = "_mm256_";
+
     switch (op_type) {
-        case V_SgSIMDLoad: {
-            return "_mm256_loadu_ps";
-        }
+        case V_SgSIMDLoad: instr += "loadu_"; break;
+        case V_SgSIMDBroadcast: instr += "set1_"; break;
         
-        case V_SgSIMDBroadcast: {
-            return "_mm256_broadcast_ps";
-        }
-        
-        case V_SgSIMDStore: {
-            return "_mm256_storeu_ps";
-        }
+        case V_SgSIMDStore: instr += "storeu_"; break;
     
-        case V_SgSIMDAddOp: {
-            return "_mm256_add_ps";
-        }
-        
-        case V_SgSIMDSubOp: {
-            return "_mm256_sub_ps";
-        }
-        
-        case V_SgSIMDMulOp: {
-            return "_mm256_mul_ps";
-        }
-        
-        case V_SgSIMDDivOp: {
-            return "_mm256_div_ps";
-        }
+        case V_SgSIMDAddOp: instr += "add_"; break;
+        case V_SgSIMDSubOp: instr += "sub_"; break;
+        case V_SgSIMDMulOp: instr += "mul_"; break;
+        case V_SgSIMDDivOp: instr += "div_"; break;
     }
     
-    return "";
+    switch (type->variantT()) {
+        case V_SgTypeInt: {
+            if (op_type == V_SgSIMDLoad || op_type == V_SgSIMDStore)
+                instr += "si256";
+            else
+                instr += "epi32";
+        } break;
+        
+        case V_SgTypeFloat: instr += "ps"; break;
+        case V_SgTypeDouble: instr += "pd"; break;
+    }
+    
+    return instr;
 }
 
 void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block) {
@@ -504,8 +499,17 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 SgPntrArrRefExp *array = static_cast<SgPntrArrRefExp *>(rval);
                 
                 // Build function call parameters
-                SgAddressOfOp *addr = buildAddressOfOp(array);
-                SgExprListExp *parameters = buildExprListExp(addr);
+                SgExprListExp *parameters;
+                
+                if (va->get_type()->variantT() == V_SgTypeInt) {
+                    SgAddressOfOp *addr = buildAddressOfOp(array);
+                    SgPointerType *ptr_type = buildPointerType(vector_type);
+                    SgCastExp *cast = buildCastExp(addr, ptr_type);
+                    parameters = buildExprListExp(cast);
+                } else {
+                    SgAddressOfOp *addr = buildAddressOfOp(array);
+                    parameters = buildExprListExp(addr);
+                }
 
                 // Build the function call
                 std::string func_name = omp_simd_get_intel_func((*i)->variantT(), va->get_type());
@@ -521,8 +525,7 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 SgType *vector_type = omp_simd_get_intel_type(v_dest->get_type(), new_block);
                 
                 // Function call parameters
-                SgAddressOfOp *addr = buildAddressOfOp(v_src);
-                SgExprListExp *parameters = buildExprListExp(addr);
+                SgExprListExp *parameters = buildExprListExp(v_src);
                 
                 // Build the function call and place it above the for loop
                 std::string func_name = omp_simd_get_intel_func((*i)->variantT(), v_dest->get_type());
@@ -592,6 +595,10 @@ void OmpSupport::transOmpSimd(SgNode *node, SgSourceFile *file) {
     
     omp_simd_pass1(target, for_loop, new_block);
     omp_simd_pass2(new_block, ir_block);
+    
+    // Uncomment to test the 3-address translation
+    //SgStatement *loop_body = getLoopBody(for_loop);
+    //replaceStatement(loop_body, new_block, true);
     
     // Set the new block, and convert to Intel intrinsics
     omp_simd_write_intel(target, for_loop, ir_block);
