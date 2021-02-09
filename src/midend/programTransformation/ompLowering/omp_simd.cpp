@@ -457,8 +457,22 @@ std::string omp_simd_get_intel_func(VariantT op_type, SgType *type) {
     return "";
 }
 
-void omp_simd_write_intel(SgOmpSimdStatement *target, SgBasicBlock *new_block, Rose_STL_Container<SgNode *> *ir_block) {
+void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block) {
+    // Setup the for loop
+    SgBasicBlock *new_block = SageBuilder::buildBasicBlock();
     
+    SgStatement *loop_body = getLoopBody(for_loop);
+    replaceStatement(loop_body, new_block, true);
+    
+    // Update the loop increment
+    SgExpression *inc = for_loop->get_increment();
+
+    Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(inc, V_SgExpression);
+    SgIntVal *inc_amount = isSgIntVal(nodeList.at(2));
+    ROSE_ASSERT(inc_amount != NULL);
+    inc_amount->set_value(8);
+    
+    // Translate the IR
     for (Rose_STL_Container<SgNode *>::iterator i = ir_block->begin(); i != ir_block->end(); i++) {
         if (!isSgBinaryOp(*i)) {
             continue;
@@ -528,7 +542,7 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgBasicBlock *new_block, R
                 // Build the function call
                 std::string func_name = omp_simd_get_intel_func((*i)->variantT(), v_src->get_type());
                 
-                SgExprStatement *fc = buildFunctionCallStmt("_mm256_storeu_ps", buildVoidType(), parameters, new_block);
+                SgExprStatement *fc = buildFunctionCallStmt(func_name, buildVoidType(), parameters, new_block);
                 appendStatement(fc, new_block);
             } break;
             
@@ -574,17 +588,12 @@ void OmpSupport::transOmpSimd(SgNode *node, SgSourceFile *file) {
 
     // Now work on the body. Run the first two passes
     SgBasicBlock *new_block = SageBuilder::buildBasicBlock();
-    SgBasicBlock *final_block = SageBuilder::buildBasicBlock();
     Rose_STL_Container<SgNode *> *ir_block = new Rose_STL_Container<SgNode *>();
     
     omp_simd_pass1(target, for_loop, new_block);
     omp_simd_pass2(new_block, ir_block);
     
     // Set the new block, and convert to Intel intrinsics
-    SgStatement *loop_body = getLoopBody(for_loop);
-    //replaceStatement(loop_body, new_block, true);
-    replaceStatement(loop_body, final_block, true);
-    
-    omp_simd_write_intel(target, final_block, ir_block);
+    omp_simd_write_intel(target, for_loop, ir_block);
 }
 
