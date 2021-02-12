@@ -26,8 +26,7 @@ std::string simdGenName() {
     return name;
 }
 
-void omp_simd_build_ptr_assign(SgExpression *pntr_exp, SgBasicBlock *new_block, std::stack<std::string> *nameStack,
-                                std::vector<std::string> loop_indexes, SgType *type) {
+SgPntrArrRefExp *omp_simd_convert_ptr(SgExpression *pntr_exp, SgBasicBlock *new_block, std::vector<std::string> loop_indexes) {
     // Perform a check and convert a multi-dimensional array to a 1-D array reference
     SgPntrArrRefExp *pntr = static_cast<SgPntrArrRefExp *>(pntr_exp);
     SgExpression *lval = pntr->get_lhs_operand();
@@ -92,6 +91,13 @@ void omp_simd_build_ptr_assign(SgExpression *pntr_exp, SgBasicBlock *new_block, 
         
         array = buildPntrArrRefExp(copyExpression(lval), topAdd);
     }
+    
+    return array;
+}
+
+void omp_simd_build_ptr_assign(SgExpression *pntr_exp, SgBasicBlock *new_block, std::stack<std::string> *nameStack,
+                                std::vector<std::string> loop_indexes, SgType *type) {
+    SgPntrArrRefExp *array = omp_simd_convert_ptr(pntr_exp, new_block, loop_indexes);
     
     // Now that we are done, build the assignment
     std::string name = simdGenName();
@@ -297,6 +303,7 @@ void omp_simd_pass1(SgForStatement *for_loop, SgBasicBlock *new_block) {
         SgExpression *orig = static_cast<SgExpression *>(op->get_lhs_operand());
         SgPntrArrRefExp *array = static_cast<SgPntrArrRefExp *>(copyExpression(orig));
         SgType *type = array->get_type();
+        array = omp_simd_convert_ptr(copyExpression(orig), new_block, loop_indexes);
         
         switch (type->variantT()) {
             case V_SgTypeInt: type = buildIntType(); break;
