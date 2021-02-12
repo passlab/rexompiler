@@ -14,22 +14,22 @@ using namespace SageBuilder;
 ////////////////////////////////////////////////////////////////////////////////////
 // The final conversion step- Convert to Intel intrinsics
 
-#define SIMD_LENGTH 8
+#define SIMD_LENGTH 16
 
 SgType *omp_simd_get_intel_type(SgType *type, SgBasicBlock *new_block) {
     SgType *vector_type;
         
     switch (type->variantT()) {
-        case V_SgTypeInt: vector_type = buildOpaqueType("__m256i", new_block); break;
-        case V_SgTypeFloat: vector_type = buildOpaqueType("__m256", new_block); break;
-        case V_SgTypeDouble: vector_type = buildOpaqueType("__m256d", new_block); break;
+        case V_SgTypeInt: vector_type = buildOpaqueType("__m512i", new_block); break;
+        case V_SgTypeFloat: vector_type = buildOpaqueType("__m512", new_block); break;
+        case V_SgTypeDouble: vector_type = buildOpaqueType("__m512d", new_block); break;
     }
 
     return vector_type;
 }
 
 std::string omp_simd_get_intel_func(VariantT op_type, SgType *type) {
-    std::string instr = "_mm256_";
+    std::string instr = "_mm512_";
 
     switch (op_type) {
         case V_SgSIMDLoad: instr += "loadu_"; break;
@@ -46,7 +46,7 @@ std::string omp_simd_get_intel_func(VariantT op_type, SgType *type) {
     switch (type->variantT()) {
         case V_SgTypeInt: {
             if (op_type == V_SgSIMDLoad || op_type == V_SgSIMDStore)
-                instr += "si256";
+                instr += "si512";
             else
                 instr += "epi32";
         } break;
