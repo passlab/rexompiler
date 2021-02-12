@@ -2535,10 +2535,11 @@ Unparse_MOD_SAGE::printAttributes(SgInitializedName* initializedName, SgUnparse_
      if (initializedName->isGnuAttributeNoReturn() == true)
         {
           curprint(" __attribute__((noreturn)) ");
-#if 0
-          printf ("Detected initializedName->isGnuAttributeNoReturn() == true: (not implemented) \n");
-          ROSE_ASSERT(false);
-#endif
+        }
+
+     if (initializedName->get_gnu_attribute_section_name() != "")
+        {
+          curprint(" __attribute__((section(\"" + initializedName->get_gnu_attribute_section_name() + "\"))) ");
         }
 
 #if 0
