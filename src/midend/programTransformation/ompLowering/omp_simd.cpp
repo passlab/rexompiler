@@ -1,7 +1,7 @@
 
 #include <iostream>
 #include <stack>
-#include <queue>
+#include <stdio.h>
 
 #include "sage3basic.h"
 #include "sageBuilder.h"
@@ -21,7 +21,11 @@ extern void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for
 int name_pos = 0;
 
 std::string simdGenName() {
-    std::string name = "__vec" + std::to_string(name_pos);
+    char str[5];
+    sprintf(str, "%d", name_pos);
+    
+    //std::string name = "__vec" + std::stoi(name_pos);
+    std::string name = "__vec" + std::string(str);
     ++name_pos;
     return name;
 }
