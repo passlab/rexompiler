@@ -69,7 +69,7 @@ SgPntrArrRefExp *omp_simd_convert_ptr(SgExpression *pntr_exp, SgBasicBlock *new_
             
             // If the left-hand expression is not NULL, we need to build another layer
             // and shift the left to the right
-            if (topAdd->get_lhs_operand() != nullptr) {
+            if (topAdd->get_lhs_operand() != NULL) {
                 SgExpression *orig = copyExpression(topAdd->get_lhs_operand());
                 SgAddOp *oldAdd = buildAddOp(mul, orig);
                 
@@ -83,7 +83,7 @@ SgPntrArrRefExp *omp_simd_convert_ptr(SgExpression *pntr_exp, SgBasicBlock *new_
         SgExpression *last_index = stack.top();
         stack.pop();
         
-        if (topAdd->get_lhs_operand() == nullptr) {
+        if (topAdd->get_lhs_operand() == NULL) {
             topAdd->set_lhs_operand(last_index);
         } else {
             topAdd->set_rhs_operand(last_index);
@@ -400,7 +400,7 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
                 continue;
             }
             
-            SgSIMDBinaryOp *math = nullptr;
+            SgSIMDBinaryOp *math = NULL;
             SgExprListExp *parameters = buildExprListExp(deepCopy(lval), deepCopy(rval));
             
             switch (math_stmt->variantT()) {
@@ -411,7 +411,7 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
                 default: {}
             }
             
-            if (math != nullptr) ir_block->push_back(math);
+            if (math != NULL) ir_block->push_back(math);
         }
     }
 }
