@@ -140,6 +140,8 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block,
             expr = copyExpression(node);
             is_const = false;
         } break;
+        
+        default: {}
     }
     
     // Build the variable declaration
@@ -178,6 +180,7 @@ void omp_simd_build_math(SgBasicBlock *new_block, std::stack<std::string> *nameS
         case V_SgSubtractOp: op = buildSubtractOp(var1, var2); break;
         case V_SgMultiplyOp: op = buildMultiplyOp(var1, var2); break;
         case V_SgDivideOp: op = buildDivideOp(var1, var2); break;
+        default: {}
     }
     
     // The rest of the assignment
@@ -309,6 +312,7 @@ void omp_simd_pass1(SgForStatement *for_loop, SgBasicBlock *new_block) {
             case V_SgTypeInt: type = buildIntType(); break;
             case V_SgTypeFloat: type = buildFloatType(); break;
             case V_SgTypeDouble: type = buildDoubleType(); break;
+            default: {}
         }
         
         // Build the rval (the expression)
@@ -333,6 +337,7 @@ bool omp_simd_is_load_operand(VariantT val) {
         case V_SgIntVal: 
         case V_SgFloatVal: 
         case V_SgDoubleVal: return true;
+        default: return false;
     }
     
     return false;
@@ -403,6 +408,7 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
                 case V_SgSubtractOp: math = buildBinaryExpression<SgSIMDSubOp>(dest, parameters); break;
                 case V_SgMultiplyOp: math = buildBinaryExpression<SgSIMDMulOp>(dest, parameters); break;
                 case V_SgDivideOp: math = buildBinaryExpression<SgSIMDDivOp>(dest, parameters); break;
+                default: {}
             }
             
             if (math != nullptr) ir_block->push_back(math);

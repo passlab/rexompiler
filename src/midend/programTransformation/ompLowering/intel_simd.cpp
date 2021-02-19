@@ -23,6 +23,7 @@ SgType *omp_simd_get_intel_type(SgType *type, SgBasicBlock *new_block) {
         case V_SgTypeInt: vector_type = buildOpaqueType("__m512i", new_block); break;
         case V_SgTypeFloat: vector_type = buildOpaqueType("__m512", new_block); break;
         case V_SgTypeDouble: vector_type = buildOpaqueType("__m512d", new_block); break;
+        default: {}
     }
 
     return vector_type;
@@ -41,6 +42,8 @@ std::string omp_simd_get_intel_func(VariantT op_type, SgType *type) {
         case V_SgSIMDSubOp: instr += "sub_"; break;
         case V_SgSIMDMulOp: instr += "mul_"; break;
         case V_SgSIMDDivOp: instr += "div_"; break;
+        
+        default: {}
     }
     
     switch (type->variantT()) {
@@ -53,6 +56,8 @@ std::string omp_simd_get_intel_func(VariantT op_type, SgType *type) {
         
         case V_SgTypeFloat: instr += "ps"; break;
         case V_SgTypeDouble: instr += "pd"; break;
+        
+        default: {}
     }
     
     return instr;
@@ -171,6 +176,8 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 SgExprStatement *expr = buildAssignStatement(va, ld);
                 appendStatement(expr, new_block);
             } break;
+            
+            default: {}
         }
     }
     
