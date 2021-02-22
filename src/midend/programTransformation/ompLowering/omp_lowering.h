@@ -125,6 +125,9 @@ namespace OmpSupport
   void transOmpSingle(SgNode* node);
   //! Translate omp metadirective
   void transOmpMetadirective(SgNode* node);
+  
+  //! Translate omp simd
+  void transOmpSimd(SgNode *node, SgSourceFile *file);
 
   //! A helper function to generate implicit or explicit task for either omp parallel or omp task
   // It calls the ROSE AST outliner internally. 

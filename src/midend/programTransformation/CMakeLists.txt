@@ -43,6 +43,8 @@ add_library(midend_pt OBJECT
   astOutlining/Transform.cc
   astOutlining/GenerateCall.cc
   ompLowering/omp_lowering.cpp
+  ompLowering/omp_simd.cpp
+  ompLowering/intel_simd.cpp
   astInlining/isPotentiallyModified.C
   astInlining/replaceExpressionWithStatement.C
   astInlining/inliner.C
