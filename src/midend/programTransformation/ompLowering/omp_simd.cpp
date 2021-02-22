@@ -454,5 +454,7 @@ void OmpSupport::transOmpSimd(SgNode *node, SgSourceFile *file) {
     
     // Set the new block, and convert to Intel intrinsics
     omp_simd_write_intel(target, for_loop, ir_block);
+    
+    replaceStatement(target, for_loop);
 }
 
