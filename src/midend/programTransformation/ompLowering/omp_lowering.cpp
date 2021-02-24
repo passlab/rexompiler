@@ -1177,7 +1177,7 @@ namespace OmpSupport
       ROSE_ASSERT(s_clause);
       s_kind = s_clause->get_kind();
       orig_chunk_size = s_clause->get_chunk_size();
-      schedule_type = buildIntVal(33);
+      schedule_type = buildIntVal(kmp_sched_t::kmp_sched_static_chunk);
       parameters = buildExprListExp(source_location_info, thread_global_tid, schedule_type, buildAddressOfOp(buildVarRefExp(last_iter_decl)), buildAddressOfOp(buildVarRefExp(lower_decl)), buildAddressOfOp(buildVarRefExp(upper_decl)), buildAddressOfOp(buildVarRefExp(stride_decl)), copyExpression(orig_stride), orig_chunk_size);
 
       // chunk size is 1 for dynamic and guided schedule, if not specified. 
@@ -1185,7 +1185,7 @@ namespace OmpSupport
       {
         orig_chunk_size = createAdjustedChunkSize(orig_chunk_size);
         func_init_name = "__kmpc_dispatch_init_4";
-        schedule_type = buildIntVal(35);
+        schedule_type = buildIntVal(kmp_sched_t::kmp_sched_dynamic);
         parameters = buildExprListExp(source_location_info, thread_global_tid, schedule_type, buildVarRefExp(lower_decl), buildVarRefExp(upper_decl), buildVarRefExp(stride_decl), orig_chunk_size);
 
       }
@@ -1550,7 +1550,7 @@ namespace OmpSupport
       }
       ROSE_ASSERT (e4&&e5);
       // by default, LLVM uses 34 as the scheduling policy enum
-      SgExpression* schedule_type = buildIntVal(34);
+      SgExpression* schedule_type = buildIntVal(kmp_sched_t::kmp_sched_static_nochunk);
       parameters = buildExprListExp(source_location_info, thread_global_tid, schedule_type, buildAddressOfOp(buildVarRefExp(last_iter_decl)), e4, e5, buildAddressOfOp(buildVarRefExp(stride_decl)), copyExpression(orig_stride), buildIntVal(1));
       SgStatement* call_stmt = buildFunctionCallStmt ("__kmpc_for_static_init_4", buildVoidType(), parameters, bb1);
       appendStatement(call_stmt, bb1);
