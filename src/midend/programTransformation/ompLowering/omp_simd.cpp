@@ -32,7 +32,7 @@ std::string simdGenName(bool is_ptr = false) {
     return name;
 }
 
-SgPntrArrRefExp *omp_simd_convert_ptr(SgExpression *pntr_exp, SgBasicBlock *new_block, std::vector<SgExpression *> loop_indexes) {
+SgPntrArrRefExp *omp_simd_convert_ptr(SgExpression *pntr_exp, SgBasicBlock *new_block) {
     // Perform a check and convert a multi-dimensional array to a 1-D array reference
     SgPntrArrRefExp *pntr = static_cast<SgPntrArrRefExp *>(pntr_exp);
     SgExpression *lval = pntr->get_lhs_operand();
@@ -59,43 +59,9 @@ SgPntrArrRefExp *omp_simd_convert_ptr(SgExpression *pntr_exp, SgBasicBlock *new_
     if (stack.size() == 1) {
         array = static_cast<SgPntrArrRefExp *>(copyExpression(pntr));
     } else {
-        /*SgAddOp *topAdd = buildAddOp();
-        int index_pos = loop_indexes.size() - 1;
-        
-        while (stack.size() > 1) {
-            SgExpression *index = stack.top();
-            stack.pop();
-            
-            SgExpression *maxVar = loop_indexes.at(index_pos);
-            --index_pos;
-            
-            SgMultiplyOp *mul = buildMultiplyOp(index, maxVar);
-            
-            // If the left-hand expression is not NULL, we need to build another layer
-            // and shift the left to the right
-            if (topAdd->get_lhs_operand() != NULL) {
-                SgExpression *orig = copyExpression(topAdd->get_lhs_operand());
-                SgAddOp *oldAdd = buildAddOp(mul, orig);
-                
-                topAdd = buildAddOp(NULL, oldAdd);
-            } else {
-                topAdd->set_lhs_operand(mul);
-            }
-        }
-        
-        // Pop the final index and add to the math expression
-        SgExpression *last_index = stack.top();
-        stack.pop();
-        
-        if (topAdd->get_lhs_operand() == NULL) {
-            topAdd->set_lhs_operand(last_index);
-        } else {
-            topAdd->set_rhs_operand(last_index);
-        }
-        
-        array = buildPntrArrRefExp(copyExpression(lval), topAdd);*/
         SgVarRefExp *lastPntr;
         
+        // Iterate down the stack
         while (stack.size() > 1) {
             SgExpression *index = stack.top();
             stack.pop();
@@ -126,7 +92,7 @@ SgPntrArrRefExp *omp_simd_convert_ptr(SgExpression *pntr_exp, SgBasicBlock *new_
 
 void omp_simd_build_ptr_assign(SgExpression *pntr_exp, SgBasicBlock *new_block, std::stack<std::string> *nameStack,
                                 std::vector<SgExpression *> loop_indexes, SgType *type) {
-    SgPntrArrRefExp *array = omp_simd_convert_ptr(pntr_exp, new_block, loop_indexes);
+    SgPntrArrRefExp *array = omp_simd_convert_ptr(pntr_exp, new_block);
     
     // Now that we are done, build the assignment
     std::string name = simdGenName();
@@ -338,17 +304,16 @@ void omp_simd_pass1(SgForStatement *for_loop, SgBasicBlock *new_block) {
         SgExpression *dest;
         SgType *type;
         
-        // TODO: Should we support this? This would require embedding a lot of extra code
         if (orig->variantT() == V_SgVarRefExp) {
-            /*SgVarRefExp *var = static_cast<SgVarRefExp *>(copyExpression(orig));
+            SgVarRefExp *var = static_cast<SgVarRefExp *>(copyExpression(orig));
             type = var->get_type();
-            dest = var;*/
-            std::cout << "Fatal: The store of a SIMD expression must be an array location." << std::endl;
-            return;
+            dest = var;
+            /*std::cout << "Fatal: The store of a SIMD expression must be an array location." << std::endl;
+            return;*/
         } else {
             SgPntrArrRefExp *array = static_cast<SgPntrArrRefExp *>(copyExpression(orig));
             type = array->get_type();
-            dest = omp_simd_convert_ptr(copyExpression(orig), new_block, loop_indexes);
+            dest = omp_simd_convert_ptr(copyExpression(orig), new_block);
         }
         
         switch (type->variantT()) {
@@ -417,10 +382,22 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
                 ir_block->push_back(ld);
             }
             
+        // This could be a broadcast or a scalar store
+        } else if (lval->variantT() == V_SgVarRefExp && rval->variantT() == V_SgVarRefExp) {
+            SgVarRefExp *lvar = static_cast<SgVarRefExp *>(lval);
+            std::string name = lvar->get_symbol()->get_name().getString();
+            
+            if (name.rfind("__vec", 0) == 0) {
+                SgSIMDBroadcast *ld = buildBinaryExpression<SgSIMDBroadcast>(deepCopy(lval), deepCopy(rval));
+                ir_block->push_back(ld);
+            } else {
+                std::cout << "Scalar store" << std::endl;
+            }
+            
         // Broadcast
         // TODO: This is not the most elegent piece of code...
         } else if (lval->variantT() == V_SgVarRefExp &&
-                    (rval->variantT() == V_SgVarRefExp || rval->variantT() == V_SgIntVal
+                    (/*rval->variantT() == V_SgVarRefExp ||*/ rval->variantT() == V_SgIntVal
                     || rval->variantT() == V_SgFloatVal || rval->variantT() == V_SgDoubleVal)) {
             SgSIMDBroadcast *ld = buildBinaryExpression<SgSIMDBroadcast>(deepCopy(lval), deepCopy(rval));
             ir_block->push_back(ld);
