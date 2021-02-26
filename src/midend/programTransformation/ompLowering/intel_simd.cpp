@@ -160,20 +160,68 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
             } break;
             
             // Scalar store:
-            // c = __vec
-            // ->
-            // float __c_buf[SIMD_LENGTH];
-            // for (int i = 0; i<SIMD_LENGTH; i++)
-            //     c += __c_buf[i]
+            //
+            //__m256 __sub1 = _mm512_extractf32x8_ps(__vec6, 0);
+            //__m256 __sub2 = _mm512_extractf32x8_ps(__vec6, 1);
+            //__sub2 = _mm256_add_ps(__sub1, __sub2);
+            //__sub2 = _mm256_hadd_ps(__sub2,__sub2);
+            //__sub2 = _mm256_hadd_ps(__sub2,__sub2);
+            //float __buf0[8];
+            //_mm256_storeu_ps(&__buf0,__sub2);
+            //temp = __buf0[1] + __buf0[5];
+            //
+            // TODO: This needs abstracting for types and function names
             //
             case V_SgSIMDScalarStore: {
                 SgVarRefExp *scalar = static_cast<SgVarRefExp *>(lval);
                 SgVarRefExp *vec = static_cast<SgVarRefExp *>(rval);
                 
+                // Create the types
+                SgAssignInitializer *local_init;
+                SgType *vector_type = buildOpaqueType("__m256", new_block);
+                std::string vec1 = intelGenBufName();
+                std::string vec2 = intelGenBufName();
+                
+                // Extract
+                SgIntVal *val = buildIntVal(0);
+                SgExprListExp *parameters = buildExprListExp(vec, val);
+                SgExpression *fc1 = buildFunctionCallExp("_mm512_extractf32x8_ps", vector_type, parameters, new_block);
+                
+                local_init = buildAssignInitializer(fc1);
+                SgVariableDeclaration *vd1 = buildVariableDeclaration(vec1, vector_type, local_init, new_block);
+                appendStatement(vd1, new_block);
+                
+                val = buildIntVal(1);
+                parameters = buildExprListExp(vec, val);
+                SgExpression *fc2 = buildFunctionCallExp("_mm512_extractf32x8_ps", vector_type, parameters, new_block);
+                
+                local_init = buildAssignInitializer(fc2);
+                SgVariableDeclaration *vd2 = buildVariableDeclaration(vec2, vector_type, local_init, new_block);
+                appendStatement(vd2, new_block);
+                
+                // Add the two sub vectors
+                SgVarRefExp *sub1 = buildVarRefExp(vec1, new_block);
+                SgVarRefExp *sub2 = buildVarRefExp(vec2, new_block);
+                
+                parameters = buildExprListExp(sub1, sub2);
+                SgExpression *fc3 = buildFunctionCallExp("_mm256_add_ps", vector_type, parameters, new_block);
+                SgExprStatement *expr = buildAssignStatement(sub2, fc3);
+                appendStatement(expr, new_block);
+                
+                // Perform two horizontal adds
+                parameters = buildExprListExp(sub2, sub2);
+                
+                SgExpression *fc4 = buildFunctionCallExp("_mm256_hadd_ps", vector_type, parameters, new_block);
+                expr = buildAssignStatement(sub2, fc4);
+                appendStatement(expr, new_block);
+                
+                expr = buildAssignStatement(sub2, fc4);
+                appendStatement(expr, new_block);
+                
                 // Create the buffer
                 std::string name = intelGenBufName();
                 
-                SgIntVal *length = buildIntVal(SIMD_LENGTH);
+                SgIntVal *length = buildIntVal(8);
                 SgExprListExp *index_list = buildExprListExp(length);
                 SgType *type = buildArrayType(scalar->get_type(), length);
                 
@@ -184,38 +232,21 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 
                 // Store
                 SgAddressOfOp *addr = buildAddressOfOp(vd_ref);
-                SgExprListExp *parameters = buildExprListExp(addr, vec);
+                parameters = buildExprListExp(addr, sub2);
                 
-                std::string func_name = omp_simd_get_intel_func((*i)->variantT(), vec->get_type());
-                
-                SgExprStatement *fc = buildFunctionCallStmt(func_name, buildVoidType(), parameters, new_block);
+                SgExprStatement *fc = buildFunctionCallStmt("_mm256_storeu_ps", buildVoidType(), parameters, new_block);
                 appendStatement(fc, new_block);
                 
-                // Now for the loop (get it?)
-                // int __i = 0
-                std::string i_name = "__i";
-                type = buildIntType();
+                // Scalar store
+                // temp = __buf0[1] + __buf0[5];
+                SgPntrArrRefExp *pntr1 = buildPntrArrRefExp(vd_ref, buildIntVal(0));
+                SgPntrArrRefExp *pntr2 = buildPntrArrRefExp(vd_ref, buildIntVal(6));
+                SgAddOp *add = buildAddOp(pntr1, pntr2);
+                SgPlusAssignOp *assign = buildPlusAssignOp(scalar, add);
                 
-                SgIntVal *val = buildIntVal(0);
-                SgAssignInitializer *local_init = buildAssignInitializer(val);
-                SgVariableDeclaration *index_var = buildVariableDeclaration(i_name, type, local_init, NULL);
+                expr = buildExprStatement(assign);
+                appendStatement(expr, new_block);
                 
-                // __i < SIMD_LENGTH
-                SgVarRefExp *index_ref = buildVarRefExp(i_name);
-                SgLessThanOp *cmp_op = buildLessThanOp(index_ref, length);
-                SgExprStatement *cmp_expr = buildExprStatement(cmp_op);
-                
-                // i++
-                SgPlusPlusOp *inc = buildPlusPlusOp(index_ref);
-                
-                // c += __c_buf[i]
-                SgPntrArrRefExp *pntr = buildPntrArrRefExp(vd_ref, index_ref);
-                SgPlusAssignOp *assign = buildPlusAssignOp(scalar, pntr);
-                SgExprStatement *body = buildExprStatement(assign);
-                
-                // The for loop
-                SgForStatement *for_stmt = buildForStatement(index_var, cmp_expr, inc, body);
-                appendStatement(for_stmt, new_block);
             } break;
             
             case V_SgSIMDAddOp:

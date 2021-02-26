@@ -90,8 +90,7 @@ SgPntrArrRefExp *omp_simd_convert_ptr(SgExpression *pntr_exp, SgBasicBlock *new_
     return array;
 }
 
-void omp_simd_build_ptr_assign(SgExpression *pntr_exp, SgBasicBlock *new_block, std::stack<std::string> *nameStack,
-                                std::vector<SgExpression *> loop_indexes, SgType *type) {
+void omp_simd_build_ptr_assign(SgExpression *pntr_exp, SgBasicBlock *new_block, std::stack<std::string> *nameStack, SgType *type) {
     SgPntrArrRefExp *array = omp_simd_convert_ptr(pntr_exp, new_block);
     
     // Now that we are done, build the assignment
@@ -106,8 +105,7 @@ void omp_simd_build_ptr_assign(SgExpression *pntr_exp, SgBasicBlock *new_block, 
     appendStatement(expr, new_block);
 }
 
-void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block,
-                                    std::stack<std::string> *nameStack, SgType *type) {
+void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, std::stack<std::string> *nameStack, SgType *type) {
     std::string name = simdGenName();
     nameStack->push(name);
 
@@ -187,8 +185,7 @@ void omp_simd_build_math(SgBasicBlock *new_block, std::stack<std::string> *nameS
     nameStack->push(name);
 }
 
-void omp_simd_build_3addr(SgExpression *rval, SgBasicBlock *new_block, std::stack<std::string> *nameStack,
-                            std::vector<SgExpression *> loop_indexes, SgType *type) {
+void omp_simd_build_3addr(SgExpression *rval, SgBasicBlock *new_block, std::stack<std::string> *nameStack, SgType *type) {
     switch (rval->variantT()) {
         case V_SgAddOp:
         case V_SgSubtractOp:
@@ -196,13 +193,13 @@ void omp_simd_build_3addr(SgExpression *rval, SgBasicBlock *new_block, std::stac
         case V_SgDivideOp: {
             // Build math
             SgBinaryOp *op = static_cast<SgBinaryOp *>(rval);
-            omp_simd_build_3addr(op->get_lhs_operand(), new_block, nameStack, loop_indexes, type);
-            omp_simd_build_3addr(op->get_rhs_operand(), new_block, nameStack, loop_indexes, type);
+            omp_simd_build_3addr(op->get_lhs_operand(), new_block, nameStack, type);
+            omp_simd_build_3addr(op->get_rhs_operand(), new_block, nameStack, type);
             omp_simd_build_math(new_block, nameStack, rval->variantT(), type);
         } break;
         
         case V_SgPntrArrRefExp: {
-            omp_simd_build_ptr_assign(rval, new_block, nameStack, loop_indexes, type);
+            omp_simd_build_ptr_assign(rval, new_block, nameStack, type);
         } break;
         
         case V_SgVarRefExp:
@@ -223,59 +220,11 @@ void omp_simd_build_3addr(SgExpression *rval, SgBasicBlock *new_block, std::stac
     }
 }
 
-// Get the maximum variable from the for loop test expression
-// This is needed for multi-dimension loop transformation
-SgExpression *omp_simd_max_var(SgStatement *test_stmt) {
-    SgExpression *test_expr = static_cast<SgExprStatement *>(test_stmt)->get_expression();
-
-    if (!isSgBinaryOp(test_expr)) {
-        std::cout << "Invalid test (for-loop max_var)" << std::endl;
-        return NULL;
-    }
-    
-    SgBinaryOp *op = static_cast<SgBinaryOp *>(test_expr);
-    SgExpression *rval = op->get_rhs_operand();
-    
-    if (isSgBinaryOp(rval)) {
-        op = static_cast<SgBinaryOp *>(rval);
-        if (!isSgVarRefExp(op->get_lhs_operand())) {
-            return NULL;
-        }
-        
-        /*SgVarRefExp *var_ref = static_cast<SgVarRefExp *>(op->get_lhs_operand());
-        return var_ref->get_symbol()->get_name();*/
-        return op->get_lhs_operand();
-    } else /*if (isSgVarRefExp(rval))*/ {
-        /*SgVarRefExp *var_ref = static_cast<SgVarRefExp *>(rval);
-        return var_ref->get_symbol()->get_name();*/
-        return rval;
-    }
-
-    return NULL;
-}
-
 // This runs the first pass of the SIMD lowering. This pass converts multi-dimensional arrays
 // and then converts the statements to 3-address scalar code
 //
 // The main purpose of this function is to break each expression between the load and store
 void omp_simd_pass1(SgForStatement *for_loop, SgBasicBlock *new_block) {
-    
-    // Get the size from the for loop (we will need this for converting multi-dimensional loops)
-    SgStatement *stmt = for_loop;
-    std::vector<SgExpression *> loop_indexes;
-    
-    do {
-        SgForStatement *for_loop2 = static_cast<SgForStatement *>(stmt);
-        SgExpression *index = omp_simd_max_var(for_loop2->get_test());
-        loop_indexes.push_back(index);
-        
-        stmt = getEnclosingScope(stmt);
-    
-        if (stmt->variantT() == V_SgBasicBlock) {
-            stmt = getEnclosingScope(stmt);
-        }
-        
-    } while (stmt->variantT() == V_SgForStatement);
 
     // Get the loop body
     SgStatement *loop_body = getLoopBody(for_loop);
@@ -333,8 +282,6 @@ void omp_simd_pass1(SgForStatement *for_loop, SgBasicBlock *new_block) {
             SgVarRefExp *var = static_cast<SgVarRefExp *>(copyExpression(orig));
             type = var->get_type();
             dest = var;
-            /*std::cout << "Fatal: The store of a SIMD expression must be an array location." << std::endl;
-            return;*/
         } else {
             SgPntrArrRefExp *array = static_cast<SgPntrArrRefExp *>(copyExpression(orig));
             type = array->get_type();
@@ -349,7 +296,7 @@ void omp_simd_pass1(SgForStatement *for_loop, SgBasicBlock *new_block) {
         }
         
         // Build the rval (the expression)
-        omp_simd_build_3addr(op->get_rhs_operand(), new_block, &nameStack, loop_indexes, type);
+        omp_simd_build_3addr(op->get_rhs_operand(), new_block, &nameStack, type);
         
         // Build the lval (the store/assignment)
         std::string name = nameStack.top();
