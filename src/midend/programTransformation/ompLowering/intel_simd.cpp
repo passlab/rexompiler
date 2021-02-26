@@ -96,20 +96,7 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
         SgExpression *lval = op->get_lhs_operand();
         SgExpression *rval = op->get_rhs_operand();
         
-        // The variable declaration
-        if (isSgVarRefExp(lval) && (*i)->variantT() != V_SgSIMDScalarStore) {
-            SgVarRefExp *var = static_cast<SgVarRefExp *>(lval);
-            
-            SgType *vector_type = omp_simd_get_intel_type(var->get_type(), new_block);
-            SgName name = var->get_symbol()->get_name();
-            
-            SgVariableDeclaration *vd = buildVariableDeclaration(name, vector_type, NULL, new_block);
-            
-            if ((*i)->variantT() == V_SgSIMDBroadcast)
-                insertStatementBefore(target, vd);
-            else
-                appendStatement(vd, new_block);
-        }
+        SgAssignInitializer *init = NULL;
         
         switch ((*i)->variantT()) {
             case V_SgSIMDLoad: {
@@ -140,8 +127,7 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 std::string func_name = omp_simd_get_intel_func((*i)->variantT(), va->get_type());
                 
                 SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
-                SgExprStatement *expr = buildAssignStatement(va, ld);
-                appendStatement(expr, new_block);
+                init = buildAssignInitializer(ld);
             } break;
             
             case V_SgSIMDBroadcast: {
@@ -156,8 +142,7 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 std::string func_name = omp_simd_get_intel_func((*i)->variantT(), v_dest->get_type());
                 
                 SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
-                SgExprStatement *expr = buildAssignStatement(v_dest, ld);
-                insertStatementBefore(target, expr);
+                init = buildAssignInitializer(ld);
             } break;
             
             case V_SgSIMDStore: {
@@ -207,13 +192,13 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 appendStatement(fc, new_block);
                 
                 // Now for the loop (get it?)
-                // int __i
+                // int __i = 0
                 std::string i_name = "__i";
                 type = buildIntType();
                 
                 SgIntVal *val = buildIntVal(0);
-                SgAssignInitializer *init = buildAssignInitializer(val);
-                SgVariableDeclaration *index_var = buildVariableDeclaration(i_name, type, init, NULL);
+                SgAssignInitializer *local_init = buildAssignInitializer(val);
+                SgVariableDeclaration *index_var = buildVariableDeclaration(i_name, type, local_init, NULL);
                 
                 // __i < SIMD_LENGTH
                 SgVarRefExp *index_ref = buildVarRefExp(i_name);
@@ -245,14 +230,27 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 std::string func_type = omp_simd_get_intel_func((*i)->variantT(), va->get_type());
                 
                 SgExpression *ld = buildFunctionCallExp(func_type, vector_type, parameters, new_block);
-                SgExprStatement *expr = buildAssignStatement(va, ld);
-                appendStatement(expr, new_block);
+                init = buildAssignInitializer(ld);
             } break;
             
             default: {
-                SgExprStatement *expr = buildAssignStatement(lval, rval);
-                appendStatement(expr, new_block);
+                init = buildAssignInitializer(rval);
             }
+        }
+        
+        // The variable declaration
+        if (isSgVarRefExp(lval) && (*i)->variantT() != V_SgSIMDScalarStore) {
+            SgVarRefExp *var = static_cast<SgVarRefExp *>(lval);
+            
+            SgType *vector_type = omp_simd_get_intel_type(var->get_type(), new_block);
+            SgName name = var->get_symbol()->get_name();
+            
+            SgVariableDeclaration *vd = buildVariableDeclaration(name, vector_type, init, new_block);
+            
+            if ((*i)->variantT() == V_SgSIMDBroadcast)
+                insertStatementBefore(target, vd);
+            else
+                appendStatement(vd, new_block);
         }
     }
     

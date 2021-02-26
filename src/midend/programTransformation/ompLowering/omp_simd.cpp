@@ -299,6 +299,31 @@ void omp_simd_pass1(SgForStatement *for_loop, SgBasicBlock *new_block) {
         SgBinaryOp *op = static_cast<SgBinaryOp *>(line);
         std::stack<std::string> nameStack;
         
+        // Expand +=
+        if (isSgPlusAssignOp(op)) {
+            SgExpression *expr = static_cast<SgExpression *>(op->get_rhs_operand());
+            SgAddOp *add = buildAddOp(copyExpression(op->get_lhs_operand()), expr);
+            op->set_rhs_operand(add);
+            
+        // -=
+        } else if (isSgMinusAssignOp(op)) {
+            SgExpression *expr = static_cast<SgExpression *>(op->get_rhs_operand());
+            SgSubtractOp *add = buildSubtractOp(copyExpression(op->get_lhs_operand()), expr);
+            op->set_rhs_operand(add);
+            
+        // *=
+        } else if (isSgMultAssignOp(op)) {
+            SgExpression *expr = static_cast<SgExpression *>(op->get_rhs_operand());
+            SgMultiplyOp *add = buildMultiplyOp(copyExpression(op->get_lhs_operand()), expr);
+            op->set_rhs_operand(add);
+            
+        // /=
+        } else if (isSgDivAssignOp(op)) {
+            SgExpression *expr = static_cast<SgExpression *>(op->get_rhs_operand());
+            SgDivideOp *add = buildDivideOp(copyExpression(op->get_lhs_operand()), expr);
+            op->set_rhs_operand(add);
+        }
+        
         // Copy the store expression and determine the proper type
         SgExpression *orig = static_cast<SgExpression *>(op->get_lhs_operand());
         SgExpression *dest;
