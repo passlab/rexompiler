@@ -391,7 +391,8 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
                 SgSIMDBroadcast *ld = buildBinaryExpression<SgSIMDBroadcast>(deepCopy(lval), deepCopy(rval));
                 ir_block->push_back(ld);
             } else {
-                std::cout << "Scalar store" << std::endl;
+                SgSIMDScalarStore *str = buildBinaryExpression<SgSIMDScalarStore>(deepCopy(lval), deepCopy(rval));
+                ir_block->push_back(str);
             }
             
         // Broadcast
