@@ -20,17 +20,19 @@ extern void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for
 // For generating names
 int name_pos = 0;
 
-std::string simdGenName() {
+std::string simdGenName(bool is_ptr = false) {
     char str[5];
     sprintf(str, "%d", name_pos);
     
-    //std::string name = "__vec" + std::stoi(name_pos);
-    std::string name = "__vec" + std::string(str);
+    std::string prefix = "__vec";
+    if (is_ptr) prefix = "__ptr";
+    
+    std::string name = prefix + std::string(str);
     ++name_pos;
     return name;
 }
 
-SgPntrArrRefExp *omp_simd_convert_ptr(SgExpression *pntr_exp, SgBasicBlock *new_block, std::vector<std::string> loop_indexes) {
+SgPntrArrRefExp *omp_simd_convert_ptr(SgExpression *pntr_exp, SgBasicBlock *new_block, std::vector<SgExpression *> loop_indexes) {
     // Perform a check and convert a multi-dimensional array to a 1-D array reference
     SgPntrArrRefExp *pntr = static_cast<SgPntrArrRefExp *>(pntr_exp);
     SgExpression *lval = pntr->get_lhs_operand();
@@ -57,17 +59,15 @@ SgPntrArrRefExp *omp_simd_convert_ptr(SgExpression *pntr_exp, SgBasicBlock *new_
     if (stack.size() == 1) {
         array = static_cast<SgPntrArrRefExp *>(copyExpression(pntr));
     } else {
-        SgAddOp *topAdd = buildAddOp();
+        /*SgAddOp *topAdd = buildAddOp();
         int index_pos = loop_indexes.size() - 1;
         
         while (stack.size() > 1) {
             SgExpression *index = stack.top();
             stack.pop();
             
-            std::string max_var = loop_indexes.at(index_pos);
+            SgExpression *maxVar = loop_indexes.at(index_pos);
             --index_pos;
-            
-            SgVarRefExp *maxVar = buildVarRefExp(max_var, new_block);
             
             SgMultiplyOp *mul = buildMultiplyOp(index, maxVar);
             
@@ -93,14 +93,39 @@ SgPntrArrRefExp *omp_simd_convert_ptr(SgExpression *pntr_exp, SgBasicBlock *new_
             topAdd->set_rhs_operand(last_index);
         }
         
-        array = buildPntrArrRefExp(copyExpression(lval), topAdd);
+        array = buildPntrArrRefExp(copyExpression(lval), topAdd);*/
+        SgVarRefExp *lastPntr;
+        
+        while (stack.size() > 1) {
+            SgExpression *index = stack.top();
+            stack.pop();
+            
+            SgType *baseType = buildFloatType();
+            SgType *type = buildPointerType(baseType);
+            
+            std::string name = simdGenName(true);
+            SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
+            appendStatement(vd, new_block);
+            
+            SgVarRefExp *va = buildVarRefExp(name, new_block);
+            lastPntr = va;
+            
+            SgPntrArrRefExp *pntr = buildPntrArrRefExp(copyExpression(lval), index);
+            SgExprStatement *expr = buildAssignStatement(va, pntr);
+            appendStatement(expr, new_block);
+        }
+        
+        SgExpression *last_index = stack.top();
+        stack.pop();
+        
+        array = buildPntrArrRefExp(lastPntr, last_index);
     }
     
     return array;
 }
 
 void omp_simd_build_ptr_assign(SgExpression *pntr_exp, SgBasicBlock *new_block, std::stack<std::string> *nameStack,
-                                std::vector<std::string> loop_indexes, SgType *type) {
+                                std::vector<SgExpression *> loop_indexes, SgType *type) {
     SgPntrArrRefExp *array = omp_simd_convert_ptr(pntr_exp, new_block, loop_indexes);
     
     // Now that we are done, build the assignment
@@ -197,7 +222,7 @@ void omp_simd_build_math(SgBasicBlock *new_block, std::stack<std::string> *nameS
 }
 
 void omp_simd_build_3addr(SgExpression *rval, SgBasicBlock *new_block, std::stack<std::string> *nameStack,
-                            std::vector<std::string> loop_indexes, SgType *type) {
+                            std::vector<SgExpression *> loop_indexes, SgType *type) {
     switch (rval->variantT()) {
         case V_SgAddOp:
         case V_SgSubtractOp:
@@ -234,12 +259,12 @@ void omp_simd_build_3addr(SgExpression *rval, SgBasicBlock *new_block, std::stac
 
 // Get the maximum variable from the for loop test expression
 // This is needed for multi-dimension loop transformation
-std::string omp_simd_max_var(SgStatement *test_stmt) {
+SgExpression *omp_simd_max_var(SgStatement *test_stmt) {
     SgExpression *test_expr = static_cast<SgExprStatement *>(test_stmt)->get_expression();
 
     if (!isSgBinaryOp(test_expr)) {
         std::cout << "Invalid test (for-loop max_var)" << std::endl;
-        return "";
+        return NULL;
     }
     
     SgBinaryOp *op = static_cast<SgBinaryOp *>(test_expr);
@@ -248,17 +273,19 @@ std::string omp_simd_max_var(SgStatement *test_stmt) {
     if (isSgBinaryOp(rval)) {
         op = static_cast<SgBinaryOp *>(rval);
         if (!isSgVarRefExp(op->get_lhs_operand())) {
-            return "";
+            return NULL;
         }
         
-        SgVarRefExp *var_ref = static_cast<SgVarRefExp *>(op->get_lhs_operand());
-        return var_ref->get_symbol()->get_name();
-    } else if (isSgVarRefExp(rval)) {
-        SgVarRefExp *var_ref = static_cast<SgVarRefExp *>(rval);
-        return var_ref->get_symbol()->get_name();
+        /*SgVarRefExp *var_ref = static_cast<SgVarRefExp *>(op->get_lhs_operand());
+        return var_ref->get_symbol()->get_name();*/
+        return op->get_lhs_operand();
+    } else /*if (isSgVarRefExp(rval))*/ {
+        /*SgVarRefExp *var_ref = static_cast<SgVarRefExp *>(rval);
+        return var_ref->get_symbol()->get_name();*/
+        return rval;
     }
 
-    return "";
+    return NULL;
 }
 
 // This runs the first pass of the SIMD lowering. This pass converts multi-dimensional arrays
@@ -269,11 +296,11 @@ void omp_simd_pass1(SgForStatement *for_loop, SgBasicBlock *new_block) {
     
     // Get the size from the for loop (we will need this for converting multi-dimensional loops)
     SgStatement *stmt = for_loop;
-    std::vector<std::string> loop_indexes;
+    std::vector<SgExpression *> loop_indexes;
     
     do {
         SgForStatement *for_loop2 = static_cast<SgForStatement *>(stmt);
-        std::string index = omp_simd_max_var(for_loop2->get_test());
+        SgExpression *index = omp_simd_max_var(for_loop2->get_test());
         loop_indexes.push_back(index);
         
         stmt = getEnclosingScope(stmt);
@@ -308,9 +335,21 @@ void omp_simd_pass1(SgForStatement *for_loop, SgBasicBlock *new_block) {
         
         // Copy the store expression and determine the proper type
         SgExpression *orig = static_cast<SgExpression *>(op->get_lhs_operand());
-        SgPntrArrRefExp *array = static_cast<SgPntrArrRefExp *>(copyExpression(orig));
-        SgType *type = array->get_type();
-        array = omp_simd_convert_ptr(copyExpression(orig), new_block, loop_indexes);
+        SgExpression *dest;
+        SgType *type;
+        
+        // TODO: Should we support this? This would require embedding a lot of extra code
+        if (orig->variantT() == V_SgVarRefExp) {
+            /*SgVarRefExp *var = static_cast<SgVarRefExp *>(copyExpression(orig));
+            type = var->get_type();
+            dest = var;*/
+            std::cout << "Fatal: The store of a SIMD expression must be an array location." << std::endl;
+            return;
+        } else {
+            SgPntrArrRefExp *array = static_cast<SgPntrArrRefExp *>(copyExpression(orig));
+            type = array->get_type();
+            dest = omp_simd_convert_ptr(copyExpression(orig), new_block, loop_indexes);
+        }
         
         switch (type->variantT()) {
             case V_SgTypeInt: type = buildIntType(); break;
@@ -326,7 +365,7 @@ void omp_simd_pass1(SgForStatement *for_loop, SgBasicBlock *new_block) {
         std::string name = nameStack.top();
 
         SgVarRefExp *var = buildVarRefExp(name, new_block);
-        SgExprStatement *storeExpr = buildAssignStatement(array, var);
+        SgExprStatement *storeExpr = buildAssignStatement(dest, var);
         appendStatement(storeExpr, new_block);
     }
 }
@@ -370,8 +409,13 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
         
         // Load
         if (lval->variantT() == V_SgVarRefExp && rval->variantT() == V_SgPntrArrRefExp) {
-            SgSIMDLoad *ld = buildBinaryExpression<SgSIMDLoad>(deepCopy(lval), deepCopy(rval));
-            ir_block->push_back(ld);
+            SgVarRefExp *lvar = static_cast<SgVarRefExp *>(lval);
+            if (lvar->get_type()->variantT() == V_SgPointerType) {
+                ir_block->push_back(deepCopy(assign_stmt));
+            } else {
+                SgSIMDLoad *ld = buildBinaryExpression<SgSIMDLoad>(deepCopy(lval), deepCopy(rval));
+                ir_block->push_back(ld);
+            }
             
         // Broadcast
         // TODO: This is not the most elegent piece of code...
@@ -412,7 +456,7 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
                 case V_SgSubtractOp: math = buildBinaryExpression<SgSIMDSubOp>(dest, parameters); break;
                 case V_SgMultiplyOp: math = buildBinaryExpression<SgSIMDMulOp>(dest, parameters); break;
                 case V_SgDivideOp: math = buildBinaryExpression<SgSIMDDivOp>(dest, parameters); break;
-                default: {}
+                default: std::cout << "Error: Invalid math." << std::endl;
             }
             
             if (math != NULL) ir_block->push_back(math);

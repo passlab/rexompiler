@@ -23,7 +23,7 @@ SgType *omp_simd_get_intel_type(SgType *type, SgBasicBlock *new_block) {
         case V_SgTypeInt: vector_type = buildOpaqueType("__m512i", new_block); break;
         case V_SgTypeFloat: vector_type = buildOpaqueType("__m512", new_block); break;
         case V_SgTypeDouble: vector_type = buildOpaqueType("__m512d", new_block); break;
-        default: {}
+        default: vector_type = type;
     }
 
     return vector_type;
@@ -177,7 +177,10 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 appendStatement(expr, new_block);
             } break;
             
-            default: {}
+            default: {
+                SgExprStatement *expr = buildAssignStatement(lval, rval);
+                appendStatement(expr, new_block);
+            }
         }
     }
     
