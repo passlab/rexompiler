@@ -28,43 +28,80 @@ std::string intelGenBufName() {
     return name;
 }
 
-SgType *omp_simd_get_intel_type(SgType *type, SgBasicBlock *new_block) {
+// If half_type == true, we return the 256-bit version
+// This is needed for scalar stores
+SgType *omp_simd_get_intel_type(SgType *type, SgBasicBlock *new_block, bool half_type = false) {
     SgType *vector_type;
-        
-    switch (type->variantT()) {
-        case V_SgTypeInt: vector_type = buildOpaqueType("__m512i", new_block); break;
-        case V_SgTypeFloat: vector_type = buildOpaqueType("__m512", new_block); break;
-        case V_SgTypeDouble: vector_type = buildOpaqueType("__m512d", new_block); break;
-        default: vector_type = type;
+       
+    if (half_type) {
+        switch (type->variantT()) {
+            case V_SgTypeInt: vector_type = buildOpaqueType("__m256i", new_block); break;
+            case V_SgTypeFloat: vector_type = buildOpaqueType("__m256", new_block); break;
+            case V_SgTypeDouble: vector_type = buildOpaqueType("__m256d", new_block); break;
+            default: vector_type = type;
+        }
+    } else {
+        switch (type->variantT()) {
+            case V_SgTypeInt: vector_type = buildOpaqueType("__m512i", new_block); break;
+            case V_SgTypeFloat: vector_type = buildOpaqueType("__m512", new_block); break;
+            case V_SgTypeDouble: vector_type = buildOpaqueType("__m512d", new_block); break;
+            default: vector_type = type;
+        }
     }
 
     return vector_type;
 }
 
-std::string omp_simd_get_intel_func(VariantT op_type, SgType *type) {
+enum IntelType {
+    Load,
+    Broadcast,
+    ScalarStore,
+    Store,
+    HAdd,
+    Add,
+    Sub,
+    Mul,
+    Div,
+    Extract
+};
+
+std::string omp_simd_get_intel_func(IntelType op_type, SgType *type, bool half_type = false) {
     std::string instr = "_mm512_";
+    if (half_type) instr = "_mm256_";
 
     switch (op_type) {
-        case V_SgSIMDLoad: instr += "loadu_"; break;
-        case V_SgSIMDBroadcast: instr += "set1_"; break;
+        case Load: instr += "loadu_"; break;
+        case Broadcast: instr += "set1_"; break;
         
-        case V_SgSIMDScalarStore:
-        case V_SgSIMDStore: instr += "storeu_"; break;
+        case ScalarStore:
+        case Store: instr += "storeu_"; break;
     
-        case V_SgSIMDAddOp: instr += "add_"; break;
-        case V_SgSIMDSubOp: instr += "sub_"; break;
-        case V_SgSIMDMulOp: instr += "mul_"; break;
-        case V_SgSIMDDivOp: instr += "div_"; break;
+        case HAdd: instr += "hadd_"; break;
+        case Add: instr += "add_"; break;
+        case Sub: instr += "sub_"; break;
+        case Mul: instr += "mul_"; break;
+        case Div: instr += "div_"; break;
+        
+        case Extract: {
+            switch (type->variantT()) {
+                case V_SgTypeInt: instr += "extracti32x8_"; break;
+                case V_SgTypeFloat: instr += "extractf32x8_"; break;
+                case V_SgTypeDouble: instr += "extractf64x4_"; break;
+                default: {}
+            }
+        } break;
         
         default: {}
     }
     
     switch (type->variantT()) {
         case V_SgTypeInt: {
-            if (op_type == V_SgSIMDLoad || op_type == V_SgSIMDStore || op_type == V_SgSIMDScalarStore)
-                instr += "si512";
-            else
+            if (op_type == Load || op_type == Store || op_type == ScalarStore) {
+                if (half_type) instr += "si256";
+                else instr += "si512";
+            } else {
                 instr += "epi32";
+            }
         } break;
         
         case V_SgTypeFloat: instr += "ps"; break;
@@ -124,7 +161,7 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 }
 
                 // Build the function call
-                std::string func_name = omp_simd_get_intel_func((*i)->variantT(), va->get_type());
+                std::string func_name = omp_simd_get_intel_func(Load, va->get_type());
                 
                 SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
                 init = buildAssignInitializer(ld);
@@ -139,7 +176,7 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 SgExprListExp *parameters = buildExprListExp(v_src);
                 
                 // Build the function call and place it above the for loop
-                std::string func_name = omp_simd_get_intel_func((*i)->variantT(), v_dest->get_type());
+                std::string func_name = omp_simd_get_intel_func(Broadcast, v_dest->get_type());
                 
                 SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
                 init = buildAssignInitializer(ld);
@@ -153,7 +190,7 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 SgExprListExp *parameters = buildExprListExp(addr, v_src);
                 
                 // Build the function call
-                std::string func_name = omp_simd_get_intel_func((*i)->variantT(), v_src->get_type());
+                std::string func_name = omp_simd_get_intel_func(Store, v_src->get_type());
                 
                 SgExprStatement *fc = buildFunctionCallStmt(func_name, buildVoidType(), parameters, new_block);
                 appendStatement(fc, new_block);
@@ -178,14 +215,16 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 
                 // Create the types
                 SgAssignInitializer *local_init;
-                SgType *vector_type = buildOpaqueType("__m256", new_block);
+                SgType *vector_type = omp_simd_get_intel_type(scalar->get_type(), new_block, true);
                 std::string vec1 = intelGenBufName();
                 std::string vec2 = intelGenBufName();
                 
                 // Extract
+                std::string extract_name = omp_simd_get_intel_func(Extract, vec->get_type());
+                
                 SgIntVal *val = buildIntVal(0);
                 SgExprListExp *parameters = buildExprListExp(vec, val);
-                SgExpression *fc1 = buildFunctionCallExp("_mm512_extractf32x8_ps", vector_type, parameters, new_block);
+                SgExpression *fc1 = buildFunctionCallExp(extract_name, vector_type, parameters, new_block);
                 
                 local_init = buildAssignInitializer(fc1);
                 SgVariableDeclaration *vd1 = buildVariableDeclaration(vec1, vector_type, local_init, new_block);
@@ -193,7 +232,7 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 
                 val = buildIntVal(1);
                 parameters = buildExprListExp(vec, val);
-                SgExpression *fc2 = buildFunctionCallExp("_mm512_extractf32x8_ps", vector_type, parameters, new_block);
+                SgExpression *fc2 = buildFunctionCallExp(extract_name, vector_type, parameters, new_block);
                 
                 local_init = buildAssignInitializer(fc2);
                 SgVariableDeclaration *vd2 = buildVariableDeclaration(vec2, vector_type, local_init, new_block);
@@ -204,24 +243,35 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 SgVarRefExp *sub2 = buildVarRefExp(vec2, new_block);
                 
                 parameters = buildExprListExp(sub1, sub2);
-                SgExpression *fc3 = buildFunctionCallExp("_mm256_add_ps", vector_type, parameters, new_block);
+                std::string func_name = omp_simd_get_intel_func(Add, vec->get_type(), true);
+                SgExpression *fc3 = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
                 SgExprStatement *expr = buildAssignStatement(sub2, fc3);
                 appendStatement(expr, new_block);
                 
                 // Perform two horizontal adds
                 parameters = buildExprListExp(sub2, sub2);
                 
-                SgExpression *fc4 = buildFunctionCallExp("_mm256_hadd_ps", vector_type, parameters, new_block);
+                func_name = omp_simd_get_intel_func(HAdd, vec->get_type(), true);
+                SgExpression *fc4 = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
                 expr = buildAssignStatement(sub2, fc4);
                 appendStatement(expr, new_block);
                 
-                expr = buildAssignStatement(sub2, fc4);
-                appendStatement(expr, new_block);
+                if (vec->get_type()->variantT() != V_SgTypeDouble) {
+                    expr = buildAssignStatement(sub2, fc4);
+                    appendStatement(expr, new_block);
+                }
                 
                 // Create the buffer
                 std::string name = intelGenBufName();
                 
-                SgIntVal *length = buildIntVal(8);
+                int buf_length = 8;
+                int pos2 = 6;
+                if (vec->get_type()->variantT() == V_SgTypeDouble) {
+                    buf_length = 4;
+                    pos2 = 2;
+                }
+                
+                SgIntVal *length = buildIntVal(buf_length);
                 SgExprListExp *index_list = buildExprListExp(length);
                 SgType *type = buildArrayType(scalar->get_type(), length);
                 
@@ -234,13 +284,14 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 SgAddressOfOp *addr = buildAddressOfOp(vd_ref);
                 parameters = buildExprListExp(addr, sub2);
                 
-                SgExprStatement *fc = buildFunctionCallStmt("_mm256_storeu_ps", buildVoidType(), parameters, new_block);
+                func_name = omp_simd_get_intel_func(Store, vec->get_type(), true);
+                SgExprStatement *fc = buildFunctionCallStmt(func_name, buildVoidType(), parameters, new_block);
                 appendStatement(fc, new_block);
                 
                 // Scalar store
                 // temp = __buf0[1] + __buf0[5];
                 SgPntrArrRefExp *pntr1 = buildPntrArrRefExp(vd_ref, buildIntVal(0));
-                SgPntrArrRefExp *pntr2 = buildPntrArrRefExp(vd_ref, buildIntVal(6));
+                SgPntrArrRefExp *pntr2 = buildPntrArrRefExp(vd_ref, buildIntVal(pos2));
                 SgAddOp *add = buildAddOp(pntr1, pntr2);
                 SgPlusAssignOp *assign = buildPlusAssignOp(scalar, add);
                 
@@ -258,7 +309,16 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 SgExprListExp *parameters = static_cast<SgExprListExp *>(rval);
                 
                 // Build the function call
-                std::string func_type = omp_simd_get_intel_func((*i)->variantT(), va->get_type());
+                IntelType x86Type;
+                switch ((*i)->variantT()) {
+                    case V_SgSIMDAddOp: x86Type = Add; break;
+                    case V_SgSIMDSubOp: x86Type = Sub; break;
+                    case V_SgSIMDMulOp: x86Type = Mul; break;
+                    case V_SgSIMDDivOp: x86Type = Div; break;
+                    default: {}
+                }
+                
+                std::string func_type = omp_simd_get_intel_func(x86Type, va->get_type());
                 
                 SgExpression *ld = buildFunctionCallExp(func_type, vector_type, parameters, new_block);
                 init = buildAssignInitializer(ld);

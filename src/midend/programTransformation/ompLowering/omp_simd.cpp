@@ -66,7 +66,8 @@ SgPntrArrRefExp *omp_simd_convert_ptr(SgExpression *pntr_exp, SgBasicBlock *new_
             SgExpression *index = stack.top();
             stack.pop();
             
-            SgType *baseType = buildFloatType();
+            //SgType *baseType = buildFloatType();
+            SgType *baseType = pntr->get_type()->findBaseType();
             SgType *type = buildPointerType(baseType);
             
             std::string name = simdGenName(true);
