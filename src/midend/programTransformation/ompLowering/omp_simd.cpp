@@ -117,12 +117,22 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
     switch (node->variantT()) {
         case V_SgIntVal: {
             SgIntVal *val = static_cast<SgIntVal *>(node);
-            expr = buildFloatVal(val->get_value());
+            
+            if (type->variantT() == V_SgTypeInt) {
+                expr = buildIntVal(val->get_value());
+            } else {
+                expr = buildFloatVal(val->get_value());
+            }
         } break;
         
         case V_SgFloatVal: {
             SgFloatVal *val = static_cast<SgFloatVal *>(node);
-            expr = buildFloatVal(val->get_value());
+            
+            if (type->variantT() == V_SgTypeInt) {
+                expr = buildIntVal(val->get_value());
+            } else {
+                expr = buildFloatVal(val->get_value());
+            }
         } break;
         
         case V_SgDoubleVal: {

@@ -79,8 +79,12 @@ std::string omp_simd_get_intel_func(IntelType op_type, SgType *type, bool half_t
         case HAdd: instr += "hadd_"; break;
         case Add: instr += "add_"; break;
         case Sub: instr += "sub_"; break;
-        case Mul: instr += "mul_"; break;
         case Div: instr += "div_"; break;
+        
+        case Mul: {
+            if (type->variantT() == V_SgTypeInt) instr += "mullo_";
+            else instr += "mul_";
+        } break;
         
         case Extract: {
             switch (type->variantT()) {
@@ -281,8 +285,18 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 SgVarRefExp *vd_ref = buildVarRefExp(name, new_block);
                 
                 // Store
-                SgAddressOfOp *addr = buildAddressOfOp(vd_ref);
-                parameters = buildExprListExp(addr, sub2);
+                if (vec->get_type()->variantT() == V_SgTypeInt) {
+                    SgAddressOfOp *addr = buildAddressOfOp(vd_ref);
+                    SgPointerType *ptr_type = buildPointerType(vector_type);
+                    SgCastExp *cast = buildCastExp(addr, ptr_type);
+                    parameters = buildExprListExp(cast, sub2);
+                } else {
+                    SgAddressOfOp *addr = buildAddressOfOp(vd_ref);
+                    parameters = buildExprListExp(addr, sub2);
+                }
+                
+                /*SgAddressOfOp *addr = buildAddressOfOp(vd_ref);
+                parameters = buildExprListExp(addr, sub2);*/
                 
                 func_name = omp_simd_get_intel_func(Store, vec->get_type(), true);
                 SgExprStatement *fc = buildFunctionCallStmt(func_name, buildVoidType(), parameters, new_block);
