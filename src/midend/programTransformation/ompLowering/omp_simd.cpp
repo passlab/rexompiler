@@ -118,26 +118,25 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
         case V_SgIntVal: {
             SgIntVal *val = static_cast<SgIntVal *>(node);
             
-            if (type->variantT() == V_SgTypeInt) {
-                expr = buildIntVal(val->get_value());
-            } else {
-                expr = buildFloatVal(val->get_value());
-            }
+            if (type->variantT() == V_SgTypeInt) expr = buildIntVal(val->get_value());
+            else if (type->variantT() == V_SgTypeDouble) expr = buildDoubleVal(val->get_value());
+            else expr = buildFloatVal(val->get_value());
         } break;
         
         case V_SgFloatVal: {
             SgFloatVal *val = static_cast<SgFloatVal *>(node);
             
-            if (type->variantT() == V_SgTypeInt) {
-                expr = buildIntVal(val->get_value());
-            } else {
-                expr = buildFloatVal(val->get_value());
-            }
+            if (type->variantT() == V_SgTypeInt) expr = buildIntVal(val->get_value());
+            else if (type->variantT() == V_SgTypeDouble) expr = buildDoubleVal(val->get_value());
+            else expr = buildFloatVal(val->get_value());
         } break;
         
         case V_SgDoubleVal: {
             SgDoubleVal *val = static_cast<SgDoubleVal *>(node);
-            expr = buildDoubleVal(val->get_value());
+            
+            if (type->variantT() == V_SgTypeInt) expr = buildIntVal(val->get_value());
+            else if (type->variantT() == V_SgTypeDouble) expr = buildDoubleVal(val->get_value());
+            else expr = buildFloatVal(val->get_value());
         } break;
         
         case V_SgVarRefExp: {

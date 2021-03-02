@@ -295,9 +295,6 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                     parameters = buildExprListExp(addr, sub2);
                 }
                 
-                /*SgAddressOfOp *addr = buildAddressOfOp(vd_ref);
-                parameters = buildExprListExp(addr, sub2);*/
-                
                 func_name = omp_simd_get_intel_func(Store, vec->get_type(), true);
                 SgExprStatement *fc = buildFunctionCallStmt(func_name, buildVoidType(), parameters, new_block);
                 appendStatement(fc, new_block);
