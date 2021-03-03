@@ -1164,7 +1164,7 @@ namespace OmpSupport
     SgOmpClause::omp_schedule_kind_enum s_kind = SgOmpClause::e_omp_schedule_kind_static;
     SgExpression* orig_chunk_size = NULL;
     string func_init_name = "__kmpc_for_static_init_4";
-    SgExpression* schedule_type = NULL;
+    int32_t schedule_type = 0;
     bool hasOrder = false;
     if (hasClause(target, V_SgOmpOrderedClause))
       hasOrder = true;
@@ -1172,32 +1172,58 @@ namespace OmpSupport
     // Most cases: with schedule(kind,chunk_size)
     if (clauses.size() != 0)
     {  
-      ROSE_ASSERT(clauses.size() ==1);
+      ROSE_ASSERT(clauses.size() == 1);
       SgOmpScheduleClause* s_clause = isSgOmpScheduleClause(clauses[0]);
       ROSE_ASSERT(s_clause);
       s_kind = s_clause->get_kind();
       orig_chunk_size = s_clause->get_chunk_size();
-      schedule_type = buildIntVal(kmp_sched_static_chunk);
-      parameters = buildExprListExp(source_location_info, thread_global_tid, schedule_type, buildAddressOfOp(buildVarRefExp(last_iter_decl)), buildAddressOfOp(buildVarRefExp(lower_decl)), buildAddressOfOp(buildVarRefExp(upper_decl)), buildAddressOfOp(buildVarRefExp(stride_decl)), copyExpression(orig_stride), orig_chunk_size);
+      SgOmpClause::omp_schedule_modifier_enum schedule_modifier = s_clause->get_modifier();
+      if ((hasOrder || s_kind == SgOmpClause::e_omp_schedule_kind_static) && schedule_modifier != SgOmpClause::e_omp_schedule_modifier_nonmonotonic) {
+          schedule_type = kmp_sched_modifier_monotonic;
+      }
+      else {
+          schedule_type = kmp_sched_modifier_nonmonotonic;
+      };
 
       // chunk size is 1 for dynamic and guided schedule, if not specified. 
-      if (s_kind == SgOmpClause::e_omp_schedule_kind_dynamic|| s_kind == SgOmpClause::e_omp_schedule_kind_guided)
+      if (s_kind == SgOmpClause::e_omp_schedule_kind_dynamic || s_kind == SgOmpClause::e_omp_schedule_kind_guided)
       {
         orig_chunk_size = createAdjustedChunkSize(orig_chunk_size);
         func_init_name = "__kmpc_dispatch_init_4";
-        schedule_type = buildIntVal(kmp_sched_dynamic);
-        parameters = buildExprListExp(source_location_info, thread_global_tid, schedule_type, buildVarRefExp(lower_decl), buildVarRefExp(upper_decl), buildVarRefExp(stride_decl), orig_chunk_size);
+        if (s_kind == SgOmpClause::e_omp_schedule_kind_dynamic) {
+            schedule_type += kmp_sched_dynamic;
+        }
+        else {
+            schedule_type += kmp_sched_guided;
+        };
+        parameters = buildExprListExp(source_location_info, thread_global_tid, buildIntVal(schedule_type), buildVarRefExp(lower_decl), buildVarRefExp(upper_decl), buildVarRefExp(stride_decl), orig_chunk_size);
 
+      }
+      else if (s_kind == SgOmpClause::e_omp_schedule_kind_auto || s_kind == SgOmpClause::e_omp_schedule_kind_runtime)
+      {
+        orig_chunk_size = buildIntVal(1);
+        func_init_name = "__kmpc_dispatch_init_4";
+        if (s_kind == SgOmpClause::e_omp_schedule_kind_auto) {
+            schedule_type += kmp_sched_auto;
+        }
+        else {
+            schedule_type += kmp_sched_runtime;
+        };
+        parameters = buildExprListExp(source_location_info, thread_global_tid, buildIntVal(schedule_type), buildVarRefExp(lower_decl), buildVarRefExp(upper_decl), buildVarRefExp(stride_decl), orig_chunk_size);
+
+      }
+      else
+      {
+        schedule_type += kmp_sched_static_chunk;
+        parameters = buildExprListExp(source_location_info, thread_global_tid, buildIntVal(schedule_type), buildAddressOfOp(buildVarRefExp(last_iter_decl)), buildAddressOfOp(buildVarRefExp(lower_decl)), buildAddressOfOp(buildVarRefExp(upper_decl)), buildAddressOfOp(buildVarRefExp(stride_decl)), copyExpression(orig_stride), orig_chunk_size);
       }
     }
     else
       orig_chunk_size = buildIntVal(0);
 
     // schedule(auto) does not have chunk size 
-    if (s_kind != SgOmpClause::e_omp_schedule_kind_auto  && s_kind != SgOmpClause::e_omp_schedule_kind_runtime)
+    if (s_kind != SgOmpClause::e_omp_schedule_kind_auto && s_kind != SgOmpClause::e_omp_schedule_kind_runtime)
       ROSE_ASSERT(orig_chunk_size != NULL);
-    // (GOMP_loop_static_start (orig_lower, orig_upper, adj_stride, orig_chunk, &_p_lower, &_p_upper)) 
-    // (GOMP_loop_ordered_static_start (orig_lower, orig_upper, adj_stride, orig_chunk, &_p_lower, &_p_upper)) 
     string func_start_name= generateGOMPLoopStartFuncName(hasOrder, s_kind);
     // Assembling function call expression's parameters
     // first three are identical for all cases: 
