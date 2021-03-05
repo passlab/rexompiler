@@ -20,12 +20,13 @@ extern void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for
 // For generating names
 int name_pos = 0;
 
-std::string simdGenName(bool is_ptr = false) {
+std::string simdGenName(int type = 0) {
     char str[5];
     sprintf(str, "%d", name_pos);
     
     std::string prefix = "__vec";
-    if (is_ptr) prefix = "__ptr";
+    if (type == 1) prefix = "__ptr";
+    else if (type == 2) prefix = "__part";
     
     std::string name = prefix + std::string(str);
     ++name_pos;
@@ -70,7 +71,7 @@ SgPntrArrRefExp *omp_simd_convert_ptr(SgExpression *pntr_exp, SgBasicBlock *new_
             SgType *baseType = pntr->get_type()->findBaseType();
             SgType *type = buildPointerType(baseType);
             
-            std::string name = simdGenName(true);
+            std::string name = simdGenName(1);
             SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
             appendStatement(vd, new_block);
             
@@ -288,9 +289,16 @@ void omp_simd_pass1(SgForStatement *for_loop, SgBasicBlock *new_block) {
         SgExpression *dest;
         SgType *type;
         
+        bool need_partial = false;
+        
+        // If we have a variable, we need to indicate a partial sum variable
+        // These are prefixed with __part, and in this step, they are simply assigned
+        // Like this: __part0 = scalar;
         if (orig->variantT() == V_SgVarRefExp) {
             SgVarRefExp *var = static_cast<SgVarRefExp *>(copyExpression(orig));
             type = var->get_type();
+            
+            need_partial = true;
             dest = var;
         } else {
             SgPntrArrRefExp *array = static_cast<SgPntrArrRefExp *>(copyExpression(orig));
@@ -310,6 +318,22 @@ void omp_simd_pass1(SgForStatement *for_loop, SgBasicBlock *new_block) {
         
         // Build the lval (the store/assignment)
         std::string name = nameStack.top();
+        
+        if (need_partial) {
+            std::string dest_vec = name;
+            name = simdGenName(2);
+            SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
+            appendStatement(vd, new_block);
+            
+            // Build the reduction assignment
+            SgVarRefExp *va = buildVarRefExp(name, new_block);
+            SgVarRefExp *vec = buildVarRefExp(dest_vec, new_block);
+            
+            SgAddOp *op = buildAddOp(va, vec);
+            SgExprListExp *exprList = buildExprListExp(op);
+            SgExprStatement *assign = buildAssignStatement(va, exprList);
+            appendStatement(assign, new_block);
+        }
 
         SgVarRefExp *var = buildVarRefExp(name, new_block);
         SgExprStatement *storeExpr = buildAssignStatement(dest, var);
@@ -369,9 +393,17 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
             SgVarRefExp *lvar = static_cast<SgVarRefExp *>(lval);
             std::string name = lvar->get_symbol()->get_name().getString();
             
-            if (name.rfind("__vec", 0) == 0) {
+            // If the variable name starts with __part, we store to a partial sums register
+            if (name.rfind("__part", 0) == 0) {
+                SgSIMDPartialStore *str = buildBinaryExpression<SgSIMDPartialStore>(deepCopy(lval), deepCopy(rval));
+                ir_block->push_back(str);
+                
+            // If the variable name starts with __vec, we broadcast
+            } else if (name.rfind("__vec", 0) == 0) {
                 SgSIMDBroadcast *ld = buildBinaryExpression<SgSIMDBroadcast>(deepCopy(lval), deepCopy(rval));
                 ir_block->push_back(ld);
+                
+            // Otherwise, we have a scalar store
             } else {
                 SgSIMDScalarStore *str = buildBinaryExpression<SgSIMDScalarStore>(deepCopy(lval), deepCopy(rval));
                 ir_block->push_back(str);
@@ -408,6 +440,14 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
                 continue;
             }
             
+            // First, check to see if its a reduction assignment
+            std::string name = dest->get_symbol()->get_name().getString();
+            if (name.rfind("__part", 0) == 0) {
+                SgSIMDPartialStore *str = buildBinaryExpression<SgSIMDPartialStore>(deepCopy(lval), NULL);
+                ir_block->push_back(str);
+            }
+            
+            // Then, build math
             SgSIMDBinaryOp *math = NULL;
             SgExprListExp *parameters = buildExprListExp(deepCopy(lval), deepCopy(rval));
             

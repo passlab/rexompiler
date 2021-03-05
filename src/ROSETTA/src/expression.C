@@ -358,6 +358,7 @@ Grammar::setUpExpressions ()
      NEW_TERMINAL_MACRO (SIMDLoad, "SIMDLoad", "SIMD_LOAD");
      NEW_TERMINAL_MACRO (SIMDBroadcast, "SIMDBroadcast", "SIMD_BROADCAST");
      NEW_TERMINAL_MACRO (SIMDStore, "SIMDStore", "SIMD_STORE");
+     NEW_TERMINAL_MACRO (SIMDPartialStore, "SIMDPartialStore", "SIMD_PARTIAL_STORE");
      NEW_TERMINAL_MACRO (SIMDScalarStore, "SIMDScalarStore", "SIMD_SCALAR_STORE");
      
      NEW_TERMINAL_MACRO (SIMDAddOp, "SIMDAddOp", "SIMD_ADD_OP");
@@ -398,7 +399,7 @@ Grammar::setUpExpressions ()
           ConcatenationOp | PointerAssignOp | UserDefinedBinaryOp | CompoundAssignOp | MembershipOp         | SpaceshipOp    |
           NonMembershipOp | IsOp            | IsNotOp             | ElementwiseOp        | PowerOp        |
           LeftDivideOp    | RemOp |
-          SIMDBinaryOp | SIMDLoad | SIMDBroadcast | SIMDStore | SIMDScalarStore,
+          SIMDBinaryOp | SIMDLoad | SIMDBroadcast | SIMDStore | SIMDPartialStore | SIMDScalarStore,
           "BinaryOp","BINARY_EXPRESSION", false);
 
      NEW_NONTERMINAL_MACRO (NaryOp,
@@ -1053,6 +1054,7 @@ Grammar::setUpExpressions ()
      SIMDLoad.editSubstitute ( "PRECEDENCE_VALUE", "16" );
      SIMDBroadcast.editSubstitute ("PRECEDENCE_VALUE", "16" );
      SIMDStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDPartialStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
      SIMDScalarStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
 
 #if USE_FORTRAN_IR_NODES
@@ -3390,6 +3392,9 @@ Grammar::setUpExpressions ()
      
      SIMDStore.setFunctionPrototype ( "HEADER_SIMD_STORE", "../Grammar/Expression.code" );
      SIMDStore.setFunctionSource ( "SOURCE_SIMD_STORE", "../Grammar/Expression.code" );
+     
+     SIMDPartialStore.setFunctionPrototype ( "HEADER_SIMD_PARTIAL_STORE", "../Grammar/Expression.code" );
+     SIMDPartialStore.setFunctionSource ( "SOURCE_SIMD_PARTIAL_STORE", "../Grammar/Expression.code" );
      
      SIMDScalarStore.setFunctionPrototype ( "HEADER_SIMD_SCALAR_STORE", "../Grammar/Expression.code" );
      SIMDScalarStore.setFunctionSource ( "SOURCE_SIMD_SCALAR_STORE", "../Grammar/Expression.code" );
