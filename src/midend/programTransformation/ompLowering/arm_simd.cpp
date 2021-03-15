@@ -11,6 +11,9 @@ using namespace SageBuilder;
 ////////////////////////////////////////////////////////////////////////////////////
 // The final conversion step- Convert to Arm SVE intrinsics
 
+// Global variables to for naming control
+int pg_pos = 0;
+
 // Write the Arm intrinsics
 void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block) {
     // Setup the for loop
@@ -20,6 +23,28 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
     replaceStatement(loop_body, new_block, true);
     
     // Create the predicate variable
+    // Determine the name of the predicate variable
+    char str[5];
+    sprintf(str, "%d", pg_pos);
+    
+    std::string prefix = "__pg";
+    std::string pg_name = prefix + std::string(str);
+    ++pg_pos;
+    
+    // Determine the proper function
+    std::string pred_func_name = "svwhilelt_b32";
+    std::string pred_count_name = "svcntw";
+    
+    SgNode *first_node = ir_block->at(0);
+    if (!isSgBinaryOp(first_node)) return;
+    SgBinaryOp *first = static_cast<SgBinaryOp *>(first_node);
+    
+    if (first->get_type()->variantT() == V_SgTypeDouble) {
+        pred_func_name = "svwhilelt_b64";
+        pred_count_name = "svcntd";
+    }
+
+    // Get for loop information
     SgExprStatement *test_stmt = static_cast<SgExprStatement *>(for_loop->get_test());
     SgBinaryOp *test_op = static_cast<SgBinaryOp *>(test_stmt->get_expression());
     SgExpression *max_val = test_op->get_rhs_operand();
@@ -28,10 +53,10 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
     SgExprListExp *parameters = buildExprListExp(start, max_val);
     
     SgType *pred_type = buildOpaqueType("svbool_t", new_block);
-    SgExpression *predicate = buildFunctionCallExp("svwhilelt_b32", pred_type, parameters, new_block);
+    SgExpression *predicate = buildFunctionCallExp(pred_func_name, pred_type, parameters, new_block);
     SgAssignInitializer *init = buildAssignInitializer(predicate);
     
-    SgVariableDeclaration *vd = buildVariableDeclaration("pg", pred_type, init, new_block);
+    SgVariableDeclaration *vd = buildVariableDeclaration(pg_name, pred_type, init, new_block);
     insertStatementBefore(target, vd);
     
     // Translate the IR
@@ -44,8 +69,8 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
         SgExpression *lval = op->get_lhs_operand();
         SgExpression *rval = op->get_rhs_operand();
         
-        SgVarRefExp *pred_ref = buildVarRefExp("pg", new_block);
-        init = NULL;
+        SgVarRefExp *pred_ref = buildVarRefExp(pg_name, new_block);
+        SgAssignInitializer *init = NULL;
         
         switch ((*i)->variantT()) {
             // The regular vector load
@@ -150,17 +175,17 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
     
     // At the end of each loop, we need to update the predicate
     SgExpression *loop_var = test_op->get_lhs_operand();
-    SgVarRefExp *pred_var = buildVarRefExp("pg", new_block);
+    SgVarRefExp *pred_var = buildVarRefExp(pg_name, new_block);
     
     parameters = buildExprListExp(loop_var, max_val);
-    predicate = buildFunctionCallExp("svwhilelt_b32", pred_type, parameters, new_block);
+    predicate = buildFunctionCallExp(pred_func_name, pred_type, parameters, new_block);
     
     SgExprStatement *pred_update = buildAssignStatement(pred_var, predicate);
     appendStatement(pred_update, new_block);
     
     // Update the loop increment
     SgVarRefExp *inc = buildVarRefExp("i", for_loop);
-    SgExpression *inc_fc = buildFunctionCallExp("svcntw", buildIntType(), NULL, for_loop);
+    SgExpression *inc_fc = buildFunctionCallExp(pred_count_name, buildIntType(), NULL, for_loop);
     
     SgPlusAssignOp *assign = buildPlusAssignOp(inc, inc_fc);
     for_loop->set_increment(assign);
