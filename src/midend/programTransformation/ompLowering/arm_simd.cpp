@@ -14,6 +14,18 @@ using namespace SageBuilder;
 // Global variables to for naming control
 int pg_pos = 0;
 
+SgType *arm_get_type(SgType *input, SgBasicBlock *new_block) {
+    switch (input->variantT()) {
+        case V_SgTypeInt: return buildOpaqueType("svint32_t", new_block);
+        case V_SgTypeFloat: return buildOpaqueType("svfloat32_t", new_block);
+        case V_SgTypeDouble: return buildOpaqueType("svfloat64_t", new_block);
+        
+        default: return input;
+    }
+    
+    return input;
+}
+
 // Write the Arm intrinsics
 void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block) {
     // Setup the for loop
@@ -76,7 +88,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
             // The regular vector load
             case V_SgSIMDLoad: {
                 SgVarRefExp *dest = static_cast<SgVarRefExp *>(lval);
-                SgType *vector_type = buildOpaqueType("svfloat32_t", new_block);
+                SgType *vector_type = arm_get_type(dest->get_type(), new_block);
                 SgPntrArrRefExp *array = static_cast<SgPntrArrRefExp *>(rval);
                 
                 SgAddressOfOp *addr = buildAddressOfOp(array);
@@ -90,7 +102,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
             case V_SgSIMDBroadcast: {
                 SgVarRefExp *dest = static_cast<SgVarRefExp *>(lval);
                 SgVarRefExp *src = static_cast<SgVarRefExp *>(rval);
-                SgType *vector_type = buildOpaqueType("svfloat32_t", new_block);
+                SgType *vector_type = arm_get_type(dest->get_type(), new_block);
                 
                 SgExprListExp *parameters = buildExprListExp(src);
                 std::string func_name = "svdup_f32";
@@ -125,7 +137,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
             case V_SgSIMDDivOp: {
                 SgVarRefExp *dest = static_cast<SgVarRefExp *>(lval);
                 std::string name = dest->get_symbol()->get_name().getString();
-                SgType *vector_type = buildOpaqueType("svfloat32_t", new_block);
+                SgType *vector_type = arm_get_type(dest->get_type(), new_block);
                 
                 SgExprListExp *parameters = static_cast<SgExprListExp *>(rval);
                 parameters->prepend_expression(pred_ref);
@@ -157,7 +169,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
             if (isSgVarRefExp(lval)) {
                 SgVarRefExp *var = static_cast<SgVarRefExp *>(lval);
                 
-                SgType *vector_type = buildOpaqueType("svfloat32_t", new_block);
+                SgType *vector_type = arm_get_type(var->get_type(), new_block);
                 SgName name = var->get_symbol()->get_name();
                 
                 if (name.getString().rfind("__part", 0) != 0) {
