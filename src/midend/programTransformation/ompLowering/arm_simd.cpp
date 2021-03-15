@@ -14,6 +14,57 @@ using namespace SageBuilder;
 // Global variables to for naming control
 int pg_pos = 0;
 
+enum class ArmType {
+    Add,
+    Sub,
+    Mul,
+    Div,
+    Broadcast
+};
+
+// Returns the corresponding function based on a given type
+std::string arm_get_func(SgType *input, ArmType type) {
+    switch (input->variantT()) {
+        case V_SgTypeInt: {
+            switch (type) {
+                case ArmType::Add: return "svadd_s32_m";
+                case ArmType::Sub: return "svsub_s32_m";
+                case ArmType::Mul: return "svmul_s32_m";
+                case ArmType::Div: return "svdiv_s32_m";
+                case ArmType::Broadcast: return "svdup_s32";
+                default: {}
+            }
+        } break;
+        
+        case V_SgTypeFloat: {
+            switch (type) {
+                case ArmType::Add: return "svadd_f32_m";
+                case ArmType::Sub: return "svsub_f32_m";
+                case ArmType::Mul: return "svmul_f32_m";
+                case ArmType::Div: return "svdiv_f32_m";
+                case ArmType::Broadcast: return "svdup_f32";
+                default: {}
+            }
+        } break;
+        
+        case V_SgTypeDouble: {
+            switch (type) {
+                case ArmType::Add: return "svadd_f64_m";
+                case ArmType::Sub: return "svsub_f64_m";
+                case ArmType::Mul: return "svmul_f64_m";
+                case ArmType::Div: return "svdiv_f64_m";
+                case ArmType::Broadcast: return "svdup_f64";
+                default: {}
+            }
+        } break;
+        
+        default: return "";
+    }
+
+    return "";
+}
+
+// Returns the corresponding vector type for a given scalar type
 SgType *arm_get_type(SgType *input, SgBasicBlock *new_block) {
     switch (input->variantT()) {
         case V_SgTypeInt: return buildOpaqueType("svint32_t", new_block);
@@ -105,7 +156,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 SgType *vector_type = arm_get_type(dest->get_type(), new_block);
                 
                 SgExprListExp *parameters = buildExprListExp(src);
-                std::string func_name = "svdup_f32";
+                std::string func_name = arm_get_func(dest->get_type(), ArmType::Broadcast);
                 
                 SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
                 init = buildAssignInitializer(ld);
@@ -144,10 +195,10 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 
                 std::string func_name = "";
                 switch ((*i)->variantT()) {
-                    case V_SgSIMDAddOp: func_name = "svadd_f32_m"; break;
-                    case V_SgSIMDSubOp: func_name = "svsub_f32_m"; break;
-                    case V_SgSIMDMulOp: func_name = "svmul_f32_m"; break;
-                    case V_SgSIMDDivOp: func_name = "svdiv_f32_m"; break;
+                    case V_SgSIMDAddOp: func_name = arm_get_func(dest->get_type(), ArmType::Add); break;
+                    case V_SgSIMDSubOp: func_name = arm_get_func(dest->get_type(), ArmType::Sub); break;
+                    case V_SgSIMDMulOp: func_name = arm_get_func(dest->get_type(), ArmType::Mul); break;
+                    case V_SgSIMDDivOp: func_name = arm_get_func(dest->get_type(), ArmType::Div); break;
                 }
                 
                 SgExpression *fc = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
