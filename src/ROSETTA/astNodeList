@@ -454,6 +454,8 @@ SgSIMDFmaOp
 SgSIMDLoad
 SgSIMDBroadcast
 SgSIMDStore
+SgSIMDPartialStore
+SgSIMDScalarStore
 SgSizeOfOp
 SgAlignOfOp
 SgSourceFile
