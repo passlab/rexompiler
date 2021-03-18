@@ -149,7 +149,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 SgType *vector_type = arm_get_type(dest->get_type(), new_block);
                 
                 SgExprListExp *parameters = buildExprListExp(src);
-                std::string func_name = arm_get_func(dest->get_type(), OpType::Broadcast);
+                std::string func_name = arm_get_func(dest->get_type(), Broadcast);
                 
                 SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
                 init = buildAssignInitializer(ld);

@@ -342,7 +342,7 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 SgExprListExp *parameters = static_cast<SgExprListExp *>(rval);
                 
                 // Build the function call
-                OpType x86Type = OpType::None;
+                OpType x86Type = None;
                 switch ((*i)->variantT()) {
                     case V_SgSIMDAddOp: x86Type = Add; break;
                     case V_SgSIMDSubOp: x86Type = Sub; break;
