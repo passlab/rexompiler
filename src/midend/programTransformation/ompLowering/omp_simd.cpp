@@ -61,7 +61,7 @@ SgPntrArrRefExp *omp_simd_convert_ptr(SgExpression *pntr_exp, SgBasicBlock *new_
     if (stack.size() == 1) {
         array = static_cast<SgPntrArrRefExp *>(copyExpression(pntr));
     } else {
-        SgVarRefExp *lastPntr;
+        SgVarRefExp *lastPntr = NULL;
         
         // Iterate down the stack
         while (stack.size() > 1) {
@@ -113,8 +113,7 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
     nameStack->push(name);
 
     // Build the assignment
-    SgExpression *expr;
-    bool is_const = true;
+    SgExpression *expr = NULL;
     
     switch (node->variantT()) {
         case V_SgIntVal: {
@@ -143,7 +142,6 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
         
         case V_SgVarRefExp: {
             expr = copyExpression(node);
-            is_const = false;
         } break;
         
         default: {}
@@ -178,7 +176,7 @@ void omp_simd_build_math(SgBasicBlock *new_block, std::stack<std::string> *nameS
     SgVarRefExp *var2 = buildVarRefExp(name2, new_block);
     
     // The operators
-    SgBinaryOp *op;
+    SgBinaryOp *op = NULL;
     
     switch (op_type) {
         case V_SgAddOp: op = buildAddOp(var1, var2); break;
@@ -239,7 +237,7 @@ void omp_simd_build_3addr(SgExpression *rval, SgBasicBlock *new_block, std::stac
 //
 char omp_simd_get_reduction_mod(SgOmpSimdStatement *target, SgVarRefExp *var) {
     SgOmpClausePtrList clauses = target->get_clauses();
-    for (int i = 0; i<clauses.size(); i++) {
+    for (size_t i = 0; i<clauses.size(); i++) {
         if (clauses.at(i)->variantT() != V_SgOmpReductionClause)
             continue;
     
@@ -247,7 +245,7 @@ char omp_simd_get_reduction_mod(SgOmpSimdStatement *target, SgVarRefExp *var) {
         SgExpressionPtrList vars = rc->get_variables()->get_expressions();
         bool found = false;
         
-        for (int j = 0; j<vars.size(); j++) {
+        for (size_t j = 0; j<vars.size(); j++) {
             if (vars.at(j)->variantT() != V_SgVarRefExp)
                 continue;
                 
@@ -376,7 +374,7 @@ bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasi
             SgVarRefExp *va = buildVarRefExp(name, new_block);
             SgVarRefExp *vec = buildVarRefExp(dest_vec, new_block);
             
-            SgBinaryOp *op;
+            SgBinaryOp *op = NULL;
             switch (reduction_mod) {
                 case '+': op = buildAddOp(va, vec); break;
                 case '-': op = buildSubtractOp(va, vec); break;

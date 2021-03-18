@@ -53,6 +53,7 @@ SgType *omp_simd_get_intel_type(SgType *type, SgBasicBlock *new_block, bool half
 }
 
 enum IntelType {
+    None,
     Load,
     Broadcast,
     BroadcastZero,
@@ -305,7 +306,6 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 }
                 
                 SgIntVal *length = buildIntVal(buf_length);
-                SgExprListExp *index_list = buildExprListExp(length);
                 SgType *type = buildArrayType(scalar->get_type(), length);
                 
                 SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
@@ -357,7 +357,7 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 SgExprListExp *parameters = static_cast<SgExprListExp *>(rval);
                 
                 // Build the function call
-                IntelType x86Type;
+                IntelType x86Type = IntelType::None;
                 switch ((*i)->variantT()) {
                     case V_SgSIMDAddOp: x86Type = Add; break;
                     case V_SgSIMDSubOp: x86Type = Sub; break;
