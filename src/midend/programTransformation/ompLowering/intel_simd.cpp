@@ -1,11 +1,11 @@
 
 #include <iostream>
 #include <stack>
-#include <queue>
 
 #include "sage3basic.h"
 #include "sageBuilder.h"
 #include "omp_lowering.h"
+#include "omp_simd.h"
 
 using namespace Rose;
 using namespace SageInterface;
@@ -52,22 +52,7 @@ SgType *omp_simd_get_intel_type(SgType *type, SgBasicBlock *new_block, bool half
     return vector_type;
 }
 
-enum IntelType {
-    None,
-    Load,
-    Broadcast,
-    BroadcastZero,
-    ScalarStore,
-    Store,
-    HAdd,
-    Add,
-    Sub,
-    Mul,
-    Div,
-    Extract
-};
-
-std::string omp_simd_get_intel_func(IntelType op_type, SgType *type, bool half_type = false) {
+std::string omp_simd_get_intel_func(OpType op_type, SgType *type, bool half_type = false) {
     std::string instr = "_mm512_";
     if (half_type) instr = "_mm256_";
 
@@ -357,7 +342,7 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 SgExprListExp *parameters = static_cast<SgExprListExp *>(rval);
                 
                 // Build the function call
-                IntelType x86Type = IntelType::None;
+                OpType x86Type = OpType::None;
                 switch ((*i)->variantT()) {
                     case V_SgSIMDAddOp: x86Type = Add; break;
                     case V_SgSIMDSubOp: x86Type = Sub; break;
