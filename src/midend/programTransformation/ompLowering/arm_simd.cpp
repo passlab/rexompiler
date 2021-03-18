@@ -199,6 +199,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                     case V_SgSIMDSubOp: func_name = arm_get_func(dest->get_type(), ArmType::Sub); break;
                     case V_SgSIMDMulOp: func_name = arm_get_func(dest->get_type(), ArmType::Mul); break;
                     case V_SgSIMDDivOp: func_name = arm_get_func(dest->get_type(), ArmType::Div); break;
+                    default: {}
                 }
                 
                 SgExpression *fc = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
