@@ -120,6 +120,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
         if (!isSgBinaryOp(*i)) {
             continue;
         }
+        std::cout << "IR: " << (*i)->class_name() << std::endl;
         
         SgBinaryOp *op = static_cast<SgBinaryOp *>(*i);
         SgExpression *lval = op->get_lhs_operand();
@@ -167,10 +168,32 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 appendStatement(str, new_block);
             } break;
             
+            // Partial store (save partial sums to a register)
+            // Basically, all we do is create a zero'ed register outside the for-loop
             case V_SgSIMDPartialStore: {
-                init = NULL;
+                SgVarRefExp *dest = static_cast<SgVarRefExp *>(lval);
+                
+                SgType *vector_type = arm_get_type(dest->get_type(), new_block);
+                SgName dest_name = dest->get_symbol()->get_name();
+                
+                SgExpression *val;
+                switch (dest->get_type()->variantT()) {
+                    case V_SgTypeFloat: val = buildFloatVal(0); break;
+                    case V_SgTypeDouble: val = buildDoubleVal(0); break; 
+                    default: val = buildIntVal(0);
+                }
+                
+                SgExprListExp *parameters = buildExprListExp(val);
+                std::string func_name = arm_get_func(dest->get_type(), Broadcast);
+                
+                SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
+                SgAssignInitializer *local_init = buildAssignInitializer(ld);
+                
+                SgVariableDeclaration *vd = buildVariableDeclaration(dest_name, vector_type, local_init, new_block);
+                insertStatementBefore(target, vd);
             } break;
             
+            // Scalar store
             case V_SgSIMDScalarStore: {
                 init = NULL;
             } break;
@@ -198,7 +221,8 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 SgExpression *fc = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
                 
                 if (name.rfind("__part", 0) == 0) {
-                
+                    SgExprStatement *assign = buildAssignStatement(dest, fc);
+                    appendStatement(assign, new_block);
                 } else {
                     init = buildAssignInitializer(fc);
                 }
