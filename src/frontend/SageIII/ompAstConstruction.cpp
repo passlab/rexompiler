@@ -3279,7 +3279,6 @@ namespace OmpSupport
     postParsingProcessing (sageFilePtr);
     //
 
-
     // stop here if only OpenMP parsing is requested
     if (sageFilePtr->get_openmp_parse_only())
     {
@@ -3292,6 +3291,8 @@ namespace OmpSupport
 
     // Build OpenMP AST nodes based on parsing results
     build_OpenMP_AST(sageFilePtr);
+
+    analyze_omp(sageFilePtr);
 
     // stop here if only OpenMP AST construction is requested
     if (sageFilePtr->get_openmp_ast_only())

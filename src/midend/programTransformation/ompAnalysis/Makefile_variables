@@ -1,0 +1,14 @@
+mptOmpAnalysis_la_sources =\
+  $(mptOmpAnalysisPath)/ompAnalysis.cpp
+
+mptOmpAnalysis_includeHeaders =\
+  $(mptOmpAnalysisPath)/ompAnalysis.h
+
+mptOmpAnalysis_extraDist=\
+  $(mptOmpAnalysisPath)/readme
+
+mptOmpAnalysis_cleanLocal=\
+  rm -rf \
+   $(mptOmpAnalysisPath)/core \
+   $(mptOmpAnalysisPath)/ii_files \
+   $(mptOmpAnalysisPath)/Templates.DB

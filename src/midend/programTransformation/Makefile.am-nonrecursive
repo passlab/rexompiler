@@ -18,6 +18,7 @@ include $(srcdir)/implicitCodeGeneration/Makefile_variables
 include $(srcdir)/astInlining/Makefile_variables
 include $(srcdir)/astOutlining/Makefile_variables
 include $(srcdir)/ompLowering/Makefile_variables
+include $(srcdir)/ompAnalysis/Makefile_variables
 
 #
 # Don't use $(srcdir) in conjunction with [subdir-objects], otherwise
@@ -33,6 +34,7 @@ mptImplicitCodeGenerationPath=implicitCodeGeneration#
 mptAstInliningPath=astInlining#
 mptOutliningPath=astOutlining#
 mptOmpLoweringPath=ompLowering#
+mptOmpAnalysisPath=ompAnalysis#
 
 SUBDIRS = \
 	loopProcessing
@@ -59,6 +61,7 @@ libprogramTransformation_la_SOURCES = \
 	$(mptImplicitCodeGeneration_la_sources) \
 	$(mptAstInlining_la_sources) \
 	$(mptAstOutlining_la_sources) \
+	$(mptOmpAnalysis_la_sources) \
 	$(mptOmpLowering_la_sources)
 
 include_HEADERS = \
@@ -69,6 +72,7 @@ include_HEADERS = \
 	$(mptImplicitCodeGeneration_includeHeaders) \
 	$(mptAstInlining_includeHeaders) \
 	$(mptAstOutlining_includeHeaders) \
+	$(mptOmpAnalysis_includeHeaders) \
 	$(mptOmpLowering_includeHeaders)
 
 # ------------------------------------------------------------------------------
@@ -84,6 +88,7 @@ EXTRA_DIST = \
 	$(mptImplicitCodeGeneration_extraDist) \
 	$(mptAstInlining_extraDist) \
 	$(mptAstOutlining_extraDist) \
+	$(mptOmpAnalysis_extraDist) \
 	$(mptOmpLowering_extraDist)
 
 clean-local:
@@ -93,5 +98,6 @@ clean-local:
 	$(mptConstantFolding_cleanLocal)
 	$(mptAstInlining_cleanLocal)
 	$(mptAstOutlining_cleanLocal)
+	$(mptOmpAnalysis_cleanLocal)
 	$(mptOmpLowering_cleanLocal)
 

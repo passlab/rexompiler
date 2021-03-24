@@ -49,6 +49,7 @@ namespace OmpSupport
 
   //! The top level interface to translate OpenMP directives
   void lower_omp(SgSourceFile*);
+  void analyze_omp(SgSourceFile*);
 
 
   //! Insert #include "xxx.h", the interface of a runtime library to the compiler
