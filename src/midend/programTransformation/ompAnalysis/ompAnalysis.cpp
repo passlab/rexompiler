@@ -7,7 +7,6 @@ using namespace SageInterface;
 namespace OmpSupport {
 
     void analyzeOmpFor(SgNode* node)
-    //void transOmpFor(SgNode* node)
   {
     ROSE_ASSERT(node != NULL);
     SgOmpForStatement* target1 = isSgOmpForStatement(node);
@@ -39,7 +38,15 @@ namespace OmpSupport {
       SgExpression* orig_chunk_size = s_clause->get_chunk_size();
       if (!orig_chunk_size)
       {
-        orig_chunk_size = buildIntVal(1);
+        printf("A default chunk size is added.\n");
+        SgExpression* chunk_size = buildIntVal(1);
+        s_clause->set_chunk_size(chunk_size);
+
+        printf("A default schedule modifier is added.\n");
+        SgOmpClause::omp_schedule_modifier_enum sg_modifier1 = s_clause->get_modifier1();
+        if (sg_modifier1 == SgOmpClause::e_omp_schedule_modifier_unspecified)
+            sg_modifier1 = SgOmpClause::e_omp_schedule_modifier_nonmonotonic;
+        s_clause->set_modifier1(sg_modifier1);
       }
     }
     else
@@ -58,7 +65,7 @@ namespace OmpSupport {
 
     }
 
-  } // end trans omp for
+  } // end analyze omp for
 
     void analyze_omp(SgSourceFile* file) {
         std::cout << "Omp Analysis\n";
@@ -80,7 +87,6 @@ namespace OmpSupport {
       default:
         {
           //std::cout << "Nothing happened.\n";
-          // do nothing here    
         }
     }// switch
 
