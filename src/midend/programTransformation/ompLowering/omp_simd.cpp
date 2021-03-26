@@ -14,10 +14,6 @@ using namespace SageBuilder;
 
 SimdType simd_arch = Nothing;
 
-// TODO: We may eventually want this in a separate header
-extern void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block);
-extern void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block);
-
 ////////////////////////////////////////////////////////////////////////////////////
 // This is all the Pass-1 code
 
@@ -526,7 +522,6 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
 
 void OmpSupport::transOmpSimd(SgNode *node, SgSourceFile *file) {
     if (simd_arch == Nothing) {
-    std::cout << "IN" << std::endl;
         return;
     }
 

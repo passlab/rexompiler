@@ -190,7 +190,6 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
             
             case V_SgSIMDPartialStore: {
                 SgVarRefExp *var = static_cast<SgVarRefExp *>(lval);
-                //SgVarRefExp *src = static_cast<SgVarRefExp *>(rval);
                 
                 // First, create the vector outside the loop and zero it
                 SgType *vector_type = omp_simd_get_intel_type(var->get_type(), new_block);
@@ -203,15 +202,6 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 
                 SgVariableDeclaration *vd = buildVariableDeclaration(name, vector_type, local_init, new_block);
                 insertStatementBefore(target, vd);
-                
-                // Now, in the loop, add to the partial register
-                /*func_name = omp_simd_get_intel_func(Add, var->get_type());
-                
-                SgExprListExp *parameters = buildExprListExp(var, src);
-                SgExpression *add = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
-                
-                SgExprStatement *expr = buildAssignStatement(var, add);
-                appendStatement(expr, new_block);*/
             } break;
             
             // Scalar store:

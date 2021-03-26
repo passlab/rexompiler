@@ -108,6 +108,12 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
     if (first->get_type()->variantT() == V_SgTypeDouble) {
         pred_func_name = "svwhilelt_b64";
         pred_count_name = "svcntd";
+    } else if (first->get_type()->variantT() == V_SgPointerType) {
+        SgPointerType *pt = static_cast<SgPointerType *>(first->get_type());
+        if (pt->get_base_type()->variantT() == V_SgTypeDouble) {
+            pred_func_name = "svwhilelt_b64";
+            pred_count_name = "svcntd";
+        }
     }
 
     // Get for loop information
@@ -130,7 +136,6 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
         if (!isSgBinaryOp(*i)) {
             continue;
         }
-        std::cout << "IR: " << (*i)->class_name() << std::endl;
         
         SgBinaryOp *op = static_cast<SgBinaryOp *>(*i);
         SgExpression *lval = op->get_lhs_operand();
@@ -225,7 +230,6 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 SgType *buf_type = buildArrayType(scalar->get_type(), len_fc);
                 
                 SgVariableDeclaration *vd = buildVariableDeclaration(name, buf_type, NULL, new_block);
-                //to_insert.push_back(vd);
                 insertStatementAfter(target, vd);
                 
                 SgVarRefExp *buf_ref = buildVarRefExp(name, new_block);
@@ -240,7 +244,6 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 
                 SgVarRefExp *pred_var = buildVarRefExp(pg_name, new_block);
                 SgExprStatement *pred_update = buildAssignStatement(pred_var, predicate);
-                //to_insert.push_back(pred_update);
                 insertStatementAfter(vd, pred_update);
                 
                 // Store
@@ -248,7 +251,6 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 SgExprListExp *parameters = buildExprListExp(pred_ref, addr, vec);
                 
                 SgExprStatement *str = buildFunctionCallStmt("svst1", buildVoidType(), parameters, new_block);
-                //to_insert.push_back(str);
                 insertStatementAfter(pred_update, str);
                 
                 // Now the for-loop
@@ -258,8 +260,13 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 SgVariableDeclaration *i_vd = buildVariableDeclaration("__i", buildIntType(), local_init, new_block);
                 
                 // __i < scntw()
+                std::string max_name = "svcntw";
+                if (scalar->get_type()->variantT() == V_SgTypeDouble) {
+                    max_name = "svcntd";
+                }
+                
                 SgVarRefExp *i_ref = buildVarRefExp("__i", new_block);
-                SgExpression *i_fc = buildFunctionCallExp("svcntw", buildIntType(), NULL, new_block);
+                SgExpression *i_fc = buildFunctionCallExp(max_name, buildIntType(), NULL, new_block);
                 SgLessThanOp *lt_op = buildLessThanOp(i_ref, i_fc);
                 SgExprStatement *lt = buildExprStatement(lt_op);
                 
@@ -273,14 +280,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 
                 // The loop
                 SgForStatement *for_stmt = buildForStatement(i_vd, lt, i_inc, empty);
-                //to_insert.push_back(for_stmt);
                 insertStatementAfter(str, for_stmt);
-                
-                // Now, add it all to the end of the loop
-                // We have to add backwards to put them in the right order
-                /*for (int i = to_insert.size() - 1; i >= 0; i--) {
-                    insertStatementAfter(target, to_insert.at(i));
-                }*/
             } break;
             
             case V_SgSIMDAddOp:
@@ -314,7 +314,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
             } break;
             
             default: {
-                std::cout << "Invalid or unknown IR" << std::endl;
+                init = buildAssignInitializer(rval);
             }
         }
         
@@ -350,10 +350,8 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
     appendStatement(pred_update, new_block);
     
     // Update the loop increment
-    SgVarRefExp *inc = buildVarRefExp("i", for_loop);
     SgExpression *inc_fc = buildFunctionCallExp(pred_count_name, buildIntType(), NULL, for_loop);
-    
-    SgPlusAssignOp *assign = buildPlusAssignOp(inc, inc_fc);
+    SgPlusAssignOp *assign = buildPlusAssignOp(loop_var, inc_fc);
     for_loop->set_increment(assign);
 }
 
