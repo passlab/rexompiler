@@ -6,13 +6,16 @@
 #include "sage3basic.h"
 #include "sageBuilder.h"
 #include "omp_lowering.h"
+#include "omp_simd.h"
 
 using namespace Rose;
 using namespace SageInterface;
 using namespace SageBuilder;
 
+SimdType simd_arch = Nothing;
+
 // TODO: We may eventually want this in a separate header
-//extern void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block);
+extern void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block);
 extern void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block);
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -522,9 +525,14 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
 // The entry point to the SIMD analyzer
 
 void OmpSupport::transOmpSimd(SgNode *node, SgSourceFile *file) {
+    if (simd_arch == Nothing) {
+    std::cout << "IN" << std::endl;
+        return;
+    }
+
     // Insert the needed headers
     //insertHeader(file, "immintrin.h", true, true);
-    insertHeader(file, "arm_sve.h", true, true);
+    //insertHeader(file, "arm_sve.h", true, true);
     
     // Make sure the tree is correct
     SgOmpSimdStatement *target = isSgOmpSimdStatement(node);
@@ -551,14 +559,20 @@ void OmpSupport::transOmpSimd(SgNode *node, SgSourceFile *file) {
     
     omp_simd_pass2(new_block, ir_block);
     
-    // Uncomment to test the 3-address translation
-    //SgStatement *loop_body = getLoopBody(for_loop);
-    //replaceStatement(loop_body, new_block, true);
-    
-    // Set the new block, and convert to Intel intrinsics
-    //omp_simd_write_intel(target, for_loop, ir_block);
-    omp_simd_write_arm(target, for_loop, ir_block);
-    
-    replaceStatement(target, for_loop);
+    // Output the final result
+    if (simd_arch == Addr3) {
+        SgStatement *loop_body = getLoopBody(for_loop);
+        replaceStatement(loop_body, new_block, true);
+    } else {
+        if (simd_arch == Intel_AVX512) {
+            insertHeader(file, "immintrin.h", true, true);
+            omp_simd_write_intel(target, for_loop, ir_block);
+        } else if (simd_arch == Arm_SVE2) {
+            insertHeader(file, "arm_sve.h", true, true);
+            omp_simd_write_arm(target, for_loop, ir_block);
+        }
+        
+        replaceStatement(target, for_loop);
+    }
 }
 
