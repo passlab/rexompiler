@@ -3291,14 +3291,25 @@ namespace OmpSupport
     // Build OpenMP AST nodes based on parsing results
     build_OpenMP_AST(sageFilePtr);
 
-    analyze_omp(sageFilePtr);
-
     // stop here if only OpenMP AST construction is requested
     if (sageFilePtr->get_openmp_ast_only())
     {
       if (SgProject::get_verbose() > 1)
       {
-        printf ("Skipping calls to lower OpenMP sageFilePtr->get_openmp_ast_only() = %s \n",sageFilePtr->get_openmp_ast_only() ? "true" : "false");
+        printf ("Skipping calls to analyze/lower OpenMP sageFilePtr->get_openmp_ast_only() = %s \n",sageFilePtr->get_openmp_ast_only() ? "true" : "false");
+      }
+      return;
+    }
+
+    // Analyze OpenMP AST
+    analyze_omp(sageFilePtr);
+
+    // stop here if only OpenMP AST analyzing is requested
+    if (sageFilePtr->get_openmp_analyzing())
+    {
+      if (SgProject::get_verbose() > 1)
+      {
+        printf ("Skipping calls to lower OpenMP sageFilePtr->get_openmp_analyzing() = %s \n",sageFilePtr->get_openmp_analyzing() ? "true" : "false");
       }
       return;
     }
