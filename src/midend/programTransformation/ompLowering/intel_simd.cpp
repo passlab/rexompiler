@@ -14,7 +14,7 @@ using namespace SageBuilder;
 ////////////////////////////////////////////////////////////////////////////////////
 // The final conversion step- Convert to Intel intrinsics
 
-#define SIMD_LENGTH 16
+int simd_len = 16;
 
 // For generating names
 int buf_pos = 0;
@@ -106,14 +106,21 @@ std::string omp_simd_get_intel_func(OpType op_type, SgType *type, bool half_type
 }
 
 // Write the Intel intrinsics
-void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block) {
+void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block, int simd_length) {
+    // Set the simd_len variable
+    if (simd_length == 0) {
+        simd_len = 16;
+    } else {
+        simd_len = simd_length;
+    }
+    
     // Setup the for loop
     SgBasicBlock *new_block = SageBuilder::buildBasicBlock();
     
     SgStatement *loop_body = getLoopBody(for_loop);
     replaceStatement(loop_body, new_block, true);
     
-    int loop_increment = SIMD_LENGTH;
+    int loop_increment = simd_len;
     
     // Translate the IR
     for (Rose_STL_Container<SgNode *>::iterator i = ir_block->begin(); i != ir_block->end(); i++) {
@@ -136,7 +143,7 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 // Check the loop increment
                 // TODO: Is this the best location for this?
                 if (va->get_type()->variantT() == V_SgTypeDouble) {
-                    loop_increment = SIMD_LENGTH / 2;
+                    loop_increment = simd_len / 2;
                 }
                 
                 // Build function call parameters

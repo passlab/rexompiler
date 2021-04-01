@@ -12,7 +12,7 @@ using namespace Rose;
 using namespace SageInterface;
 using namespace SageBuilder;
 
-SimdType simd_arch = Nothing;
+SimdType simd_arch = Intel_AVX512;
 
 ////////////////////////////////////////////////////////////////////////////////////
 // This is all the Pass-1 code
@@ -517,6 +517,73 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
     }
 }
 
+// Scans an OMP SIMD statement for a simdlen clause
+// If none is provided, we return -1, which means the compiler should use the default length
+// If we return -2, an error has occurred
+int omp_simd_get_simdlen(SgOmpSimdStatement *target, bool safelen) {
+    SgOmpClausePtrList clauses = target->get_clauses();
+    for (size_t i = 0; i<clauses.size(); i++) {
+        if (safelen) {
+            if (clauses.at(i)->variantT() != V_SgOmpSafelenClause)
+                continue;
+        } else {
+            if (clauses.at(i)->variantT() != V_SgOmpSimdlenClause)
+                continue;
+        }
+        
+        SgOmpExpressionClause *sl_clause = static_cast<SgOmpExpressionClause *>(clauses.at(i));
+        SgExpression *sl_expr = sl_clause->get_expression();
+        
+        if (sl_expr->variantT() != V_SgIntVal) {
+            std::cout << "Error: SIMDLEN value must currently only be an integer." << std::endl;
+            return -1;
+        }
+        
+        int val = static_cast<SgIntVal *>(sl_expr)->get_value();
+        if (val < 0) {
+            std::cout << "Error: SIMDLEN and SAFELEN >= 0" << std::endl;
+            return -1;
+        }
+        
+        return val;
+    }
+    
+    return -1;
+}
+
+// Determines the SIMD length we should use
+// Returning 0 means to use default
+//
+// This is platform-specific. Currently, I haven't decided what to with Arm yet. For intel:
+// <= 4 -> SSE (Not sure why someone would want to use this...)
+// > 4 <= 8 -> AVX2
+// > 8 <= 16 -> AVX-512
+// For now, ignore anything greater than 16. At some point, we may want to implement some kind of lowering
+int omp_simd_get_length(SgOmpSimdStatement *target) {
+    int simdlen = omp_simd_get_simdlen(target, false);
+    int safelen = omp_simd_get_simdlen(target, true);
+    
+    std::cout << "SIMDLEN: " << simdlen << " | SAFELEN: " << safelen << std::endl;
+    
+    if (simdlen < 0 || safelen < 0) {
+        return 0;
+    }
+    
+    if (simdlen >= safelen) {
+        simdlen = safelen;
+    }
+    
+    if (simd_arch == Intel_AVX512) {
+        if (simdlen <= 4) return 4;
+        else if (simdlen > 4 && simdlen <= 8) return 8;
+        return 16;
+    } else if (simd_arch == Arm_SVE2) {
+        return 0;
+    }
+    
+    return 0;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////
 // The entry point to the SIMD analyzer
 
@@ -554,14 +621,17 @@ void OmpSupport::transOmpSimd(SgNode *node, SgSourceFile *file) {
     
     omp_simd_pass2(new_block, ir_block);
     
+    int simd_length = omp_simd_get_length(target);
+    
     // Output the final result
     if (simd_arch == Addr3) {
         SgStatement *loop_body = getLoopBody(for_loop);
         replaceStatement(loop_body, new_block, true);
     } else {
         if (simd_arch == Intel_AVX512) {
+            std::cout << "Using SIMD Length of: " << simd_length << std::endl;
             insertHeader(file, "immintrin.h", true, true);
-            omp_simd_write_intel(target, for_loop, ir_block);
+            omp_simd_write_intel(target, for_loop, ir_block, simd_length);
         } else if (simd_arch == Arm_SVE2) {
             insertHeader(file, "arm_sve.h", true, true);
             omp_simd_write_arm(target, for_loop, ir_block);
