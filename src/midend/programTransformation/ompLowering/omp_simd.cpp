@@ -563,13 +563,11 @@ int omp_simd_get_length(SgOmpSimdStatement *target) {
     int simdlen = omp_simd_get_simdlen(target, false);
     int safelen = omp_simd_get_simdlen(target, true);
     
-    std::cout << "SIMDLEN: " << simdlen << " | SAFELEN: " << safelen << std::endl;
-    
-    if (simdlen < 0 || safelen < 0) {
+    if (simdlen < 0 && safelen < 0) {
         return 0;
     }
     
-    if (simdlen >= safelen) {
+    if (simdlen >= safelen && safelen != -1) {
         simdlen = safelen;
     }
     
@@ -621,15 +619,17 @@ void OmpSupport::transOmpSimd(SgNode *node, SgSourceFile *file) {
     
     omp_simd_pass2(new_block, ir_block);
     
-    int simd_length = omp_simd_get_length(target);
-    
     // Output the final result
     if (simd_arch == Addr3) {
         SgStatement *loop_body = getLoopBody(for_loop);
         replaceStatement(loop_body, new_block, true);
     } else {
         if (simd_arch == Intel_AVX512) {
-            std::cout << "Using SIMD Length of: " << simd_length << std::endl;
+            int simd_length = omp_simd_get_length(target);
+            if (simd_length > 0) {
+                std::cout << "Using SIMD Length of: " << simd_length << std::endl;
+            }
+            
             insertHeader(file, "immintrin.h", true, true);
             omp_simd_write_intel(target, for_loop, ir_block, simd_length);
         } else if (simd_arch == Arm_SVE2) {

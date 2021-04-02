@@ -32,19 +32,22 @@ std::string intelGenBufName() {
 // This is needed for scalar stores
 SgType *omp_simd_get_intel_type(SgType *type, SgBasicBlock *new_block, bool half_type = false) {
     SgType *vector_type;
-       
-    if (half_type) {
-        switch (type->variantT()) {
-            case V_SgTypeInt: vector_type = buildOpaqueType("__m256i", new_block); break;
-            case V_SgTypeFloat: vector_type = buildOpaqueType("__m256", new_block); break;
-            case V_SgTypeDouble: vector_type = buildOpaqueType("__m256d", new_block); break;
-            default: vector_type = type;
-        }
-    } else {
+    
+    int len = simd_len;
+    if (half_type) len /= 2;
+    
+    if (len == 16) {
         switch (type->variantT()) {
             case V_SgTypeInt: vector_type = buildOpaqueType("__m512i", new_block); break;
             case V_SgTypeFloat: vector_type = buildOpaqueType("__m512", new_block); break;
             case V_SgTypeDouble: vector_type = buildOpaqueType("__m512d", new_block); break;
+            default: vector_type = type;
+        }
+    } else {
+        switch (type->variantT()) {
+            case V_SgTypeInt: vector_type = buildOpaqueType("__m256i", new_block); break;
+            case V_SgTypeFloat: vector_type = buildOpaqueType("__m256", new_block); break;
+            case V_SgTypeDouble: vector_type = buildOpaqueType("__m256d", new_block); break;
             default: vector_type = type;
         }
     }
@@ -53,8 +56,11 @@ SgType *omp_simd_get_intel_type(SgType *type, SgBasicBlock *new_block, bool half
 }
 
 std::string omp_simd_get_intel_func(OpType op_type, SgType *type, bool half_type = false) {
-    std::string instr = "_mm512_";
-    if (half_type) instr = "_mm256_";
+    int len = simd_len;
+    if (half_type) len /= 2;
+    
+    std::string instr = "_mm256_";
+    if (len == 16) instr = "_mm512_";
 
     switch (op_type) {
         case Load: instr += "loadu_"; break;
@@ -88,9 +94,11 @@ std::string omp_simd_get_intel_func(OpType op_type, SgType *type, bool half_type
     
     switch (type->variantT()) {
         case V_SgTypeInt: {
-            if (op_type == Load || op_type == Store || op_type == ScalarStore) {
-                if (half_type) instr += "si256";
-                else instr += "si512";
+            if (op_type == BroadcastZero && len == 8) {
+                instr += "si256";
+            } else if (op_type == Load || op_type == Store || op_type == ScalarStore) {
+                if (len == 16) instr += "si512";
+                else instr += "si256";
             } else {
                 instr += "epi32";
             }
@@ -230,46 +238,57 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 std::vector<SgStatement *> to_insert;
                 
                 // Create the types
-                SgAssignInitializer *local_init;
                 SgType *vector_type = omp_simd_get_intel_type(scalar->get_type(), new_block, true);
+                
+                SgAssignInitializer *local_init;
                 std::string vec1 = intelGenBufName();
                 std::string vec2 = intelGenBufName();
                 
+                SgExprListExp *hadd_params;
+                
                 // Extract
-                std::string extract_name = omp_simd_get_intel_func(Extract, vec->get_type());
-                
-                SgIntVal *val = buildIntVal(0);
-                SgExprListExp *parameters = buildExprListExp(vec, val);
-                SgExpression *fc1 = buildFunctionCallExp(extract_name, vector_type, parameters, new_block);
-                
-                local_init = buildAssignInitializer(fc1);
-                SgVariableDeclaration *vd1 = buildVariableDeclaration(vec1, vector_type, local_init, new_block);
-                to_insert.push_back(vd1);
-                
-                val = buildIntVal(1);
-                parameters = buildExprListExp(vec, val);
-                SgExpression *fc2 = buildFunctionCallExp(extract_name, vector_type, parameters, new_block);
-                
-                local_init = buildAssignInitializer(fc2);
-                SgVariableDeclaration *vd2 = buildVariableDeclaration(vec2, vector_type, local_init, new_block);
-                to_insert.push_back(vd2);
-                
-                // Add the two sub vectors
-                SgVarRefExp *sub1 = buildVarRefExp(vec1, new_block);
-                SgVarRefExp *sub2 = buildVarRefExp(vec2, new_block);
-                
-                parameters = buildExprListExp(sub1, sub2);
-                std::string func_name = omp_simd_get_intel_func(Add, vec->get_type(), true);
-                SgExpression *fc3 = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
-                SgExprStatement *expr = buildAssignStatement(sub2, fc3);
-                to_insert.push_back(expr);
+                if (simd_len == 16) {
+                    std::string extract_name = omp_simd_get_intel_func(Extract, vec->get_type());
+                    
+                    SgIntVal *val = buildIntVal(0);
+                    SgExprListExp *parameters = buildExprListExp(vec, val);
+                    SgExpression *fc1 = buildFunctionCallExp(extract_name, vector_type, parameters, new_block);
+                    
+                    local_init = buildAssignInitializer(fc1);
+                    SgVariableDeclaration *vd1 = buildVariableDeclaration(vec1, vector_type, local_init, new_block);
+                    to_insert.push_back(vd1);
+                    
+                    val = buildIntVal(1);
+                    parameters = buildExprListExp(vec, val);
+                    SgExpression *fc2 = buildFunctionCallExp(extract_name, vector_type, parameters, new_block);
+                    
+                    local_init = buildAssignInitializer(fc2);
+                    SgVariableDeclaration *vd2 = buildVariableDeclaration(vec2, vector_type, local_init, new_block);
+                    to_insert.push_back(vd2);
+                    
+                    // Add the two sub vectors
+                    SgVarRefExp *sub1 = buildVarRefExp(vec1, new_block);
+                    SgVarRefExp *sub2 = buildVarRefExp(vec2, new_block);
+                    
+                    parameters = buildExprListExp(sub1, sub2);
+                    std::string func_name = omp_simd_get_intel_func(Add, vec->get_type(), true);
+                    SgExpression *fc3 = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
+                    SgExprStatement *expr = buildAssignStatement(sub2, fc3);
+                    to_insert.push_back(expr);
+                } else if (simd_len == 8) {
+                    local_init = buildAssignInitializer(vec);
+                    
+                    SgVariableDeclaration *vd2 = buildVariableDeclaration(vec2, vector_type, local_init, new_block);
+                    to_insert.push_back(vd2);
+                }
                 
                 // Perform two horizontal adds
-                parameters = buildExprListExp(sub2, sub2);
+                SgVarRefExp *sub2 = buildVarRefExp(vec2, new_block);
+                hadd_params = buildExprListExp(sub2, sub2);
                 
-                func_name = omp_simd_get_intel_func(HAdd, vec->get_type(), true);
-                SgExpression *fc4 = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
-                expr = buildAssignStatement(sub2, fc4);
+                std::string func_name = omp_simd_get_intel_func(HAdd, vec->get_type(), true);
+                SgExpression *fc4 = buildFunctionCallExp(func_name, vector_type, hadd_params, new_block);
+                SgExprStatement *expr = buildAssignStatement(sub2, fc4);
                 to_insert.push_back(expr);
                 
                 if (vec->get_type()->variantT() != V_SgTypeDouble) {
@@ -294,6 +313,7 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 to_insert.push_back(vd);
                 
                 SgVarRefExp *vd_ref = buildVarRefExp(name, new_block);
+                SgExprListExp *parameters;
                 
                 // Store
                 if (vec->get_type()->variantT() == V_SgTypeInt) {
