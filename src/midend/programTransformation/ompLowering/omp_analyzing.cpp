@@ -5,7 +5,6 @@ using namespace SageBuilder;
 using namespace SageInterface;
 
 namespace OmpSupport {
-
 void analyzeOmpFor(SgNode *node) {
   ROSE_ASSERT(node != NULL);
   SgOmpForStatement *target1 = isSgOmpForStatement(node);
@@ -134,10 +133,9 @@ std::set<SgInitializedName *> collectThreadprivateVariables() {
 }
 
 // Check if a variable that is determined to be shared in all enclosing
-// constructs, up to and including the innermost enclosing parallel construct, is
-// shared
-// start_stmt is the start point to find enclosing OpenMP constructs. It is
-// excluded as an enclosing construct for itself.
+// constructs, up to and including the innermost enclosing parallel construct,
+// is shared start_stmt is the start point to find enclosing OpenMP constructs.
+// It is excluded as an enclosing construct for itself.
 // TODO: we only check if it is shared to the innermost enclosing parallel
 // construct for now
 static bool isSharedInEnclosingConstructs(SgInitializedName *init_var,
@@ -204,7 +202,6 @@ static bool isSharedInEnclosingConstructs(SgInitializedName *init_var,
       // declared within an orphaned function, should be private
       result = false;
     } else {
-#if 1
       cerr << "Error: OmpSupport::isSharedInEnclosingConstructs() \n Unhandled "
               "variables within an orphaned construct:"
            << endl;
@@ -213,7 +210,6 @@ static bool isSharedInEnclosingConstructs(SgInitializedName *init_var,
       dumpInfo(init_var);
       init_var->get_file_info()->display("tttt");
       ROSE_ASSERT(false);
-#endif
     }
   }
   return result;
@@ -440,7 +436,14 @@ int patchUpImplicitMappingVariables(SgFile *file) {
       if (isSharedInEnclosingConstructs(init_var, target))
         continue;
       // Now it should be a shared variable
-      addClauseVariable(init_var, target, V_SgOmpSharedClause);
+      SgNode *parent = target->get_parent();
+      if (isSgBasicBlock(parent)) // skip the padding block in between.
+        parent = parent->get_parent();
+      if (isSgOmpTargetStatement(parent)) {
+        addClauseVariable(init_var, target, V_SgOmpFirstprivateClause);
+      } else {
+        addClauseVariable(init_var, target, V_SgOmpSharedClause);
+      }
       // std::cout << init_var->get_name() << "\n";
       result++;
     } // end for each variable reference
