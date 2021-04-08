@@ -361,6 +361,9 @@ Grammar::setUpExpressions ()
      NEW_TERMINAL_MACRO (SIMDPartialStore, "SIMDPartialStore", "SIMD_PARTIAL_STORE");
      NEW_TERMINAL_MACRO (SIMDScalarStore, "SIMDScalarStore", "SIMD_SCALAR_STORE");
      
+     NEW_TERMINAL_MACRO (SIMDGather, "SIMDGather", "SIMD_GATHER");
+     NEW_TERMINAL_MACRO (SIMDScatter, "SIMDScatter", "SIMD_SCATTER");
+     
      NEW_TERMINAL_MACRO (SIMDAddOp, "SIMDAddOp", "SIMD_ADD_OP");
      NEW_TERMINAL_MACRO (SIMDSubOp, "SIMDSubOp", "SIMD_SUB_OP");
      NEW_TERMINAL_MACRO (SIMDMulOp, "SIMDMulOp", "SIMD_MUL_OP");
@@ -399,7 +402,8 @@ Grammar::setUpExpressions ()
           ConcatenationOp | PointerAssignOp | UserDefinedBinaryOp | CompoundAssignOp | MembershipOp         | SpaceshipOp    |
           NonMembershipOp | IsOp            | IsNotOp             | ElementwiseOp        | PowerOp        |
           LeftDivideOp    | RemOp |
-          SIMDBinaryOp | SIMDLoad | SIMDBroadcast | SIMDStore | SIMDPartialStore | SIMDScalarStore,
+          SIMDBinaryOp | SIMDLoad | SIMDBroadcast | SIMDStore | SIMDPartialStore | SIMDScalarStore |
+          SIMDGather | SIMDScatter,
           "BinaryOp","BINARY_EXPRESSION", false);
 
      NEW_NONTERMINAL_MACRO (NaryOp,
@@ -1056,6 +1060,8 @@ Grammar::setUpExpressions ()
      SIMDStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
      SIMDPartialStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
      SIMDScalarStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDGather.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDScatter.editSubstitute ( "PRECEDENCE_VALUE", "16" );
 
 #if USE_FORTRAN_IR_NODES
   // DQ (3/19/2007): Support for Fortran IR nodes (not sure if these are correct values)
@@ -3399,4 +3405,9 @@ Grammar::setUpExpressions ()
      SIMDScalarStore.setFunctionPrototype ( "HEADER_SIMD_SCALAR_STORE", "../Grammar/Expression.code" );
      SIMDScalarStore.setFunctionSource ( "SOURCE_SIMD_SCALAR_STORE", "../Grammar/Expression.code" );
      
+     SIMDGather.setFunctionPrototype ( "HEADER_SIMD_GATHER", "../Grammar/Expression.code" );
+     SIMDGather.setFunctionSource ( "SOURCE_SIMD_GATHER", "../Grammar/Expression.code" );
+     
+     SIMDScatter.setFunctionPrototype ( "HEADER_SIMD_SCATTER", "../Grammar/Expression.code" );
+     SIMDScatter.setFunctionSource ( "SOURCE_SIMD_SCATTER", "../Grammar/Expression.code" );
    }
