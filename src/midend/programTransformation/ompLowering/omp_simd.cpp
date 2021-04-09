@@ -437,8 +437,14 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
             if (lvar->get_type()->variantT() == V_SgPointerType) {
                 ir_block->push_back(deepCopy(assign_stmt));
             } else {
-                SgSIMDLoad *ld = buildBinaryExpression<SgSIMDLoad>(deepCopy(lval), deepCopy(rval));
-                ir_block->push_back(ld);
+                SgPntrArrRefExp *pntr = static_cast<SgPntrArrRefExp *>(rval);
+                if (pntr->get_rhs_operand()->variantT() == V_SgPntrArrRefExp) {
+                    SgSIMDGather *ld = buildBinaryExpression<SgSIMDGather>(deepCopy(lval), deepCopy(rval));
+                    ir_block->push_back(ld);
+                } else {
+                    SgSIMDLoad *ld = buildBinaryExpression<SgSIMDLoad>(deepCopy(lval), deepCopy(rval));
+                    ir_block->push_back(ld);
+                }
             }
             
         // This could be a broadcast or a scalar store

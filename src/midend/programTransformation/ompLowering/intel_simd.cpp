@@ -18,6 +18,7 @@ int simd_len = 16;
 
 // For generating names
 int buf_pos = 0;
+int mask_pos = 0;
 
 std::string intelGenBufName() {
     char str[5];
@@ -25,6 +26,15 @@ std::string intelGenBufName() {
     
     std::string name = "__buf" + std::string(str);
     ++buf_pos;
+    return name;
+}
+
+std::string intel_gen_mask() {
+    char str[5];
+    sprintf(str, "%d", mask_pos);
+    
+    std::string name = "__mask" + std::string(str);
+    ++mask_pos;
     return name;
 }
 
@@ -186,6 +196,37 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 std::string func_name = omp_simd_get_intel_func(Broadcast, v_dest->get_type());
                 
                 SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
+                init = buildAssignInitializer(ld);
+            } break;
+            
+            case V_SgSIMDGather: {
+                SgVarRefExp *dest = static_cast<SgVarRefExp *>(lval);
+                SgPntrArrRefExp *element = static_cast<SgPntrArrRefExp *>(rval);
+                SgPntrArrRefExp *mask_pntr = static_cast<SgPntrArrRefExp *>(element->get_rhs_operand());
+                
+                // Load the mask first
+                std::string mask_name = intel_gen_mask();
+                SgType *mask_type = buildOpaqueType("__m512i", new_block);
+                SgType *vector_type = omp_simd_get_intel_type(dest->get_type(), new_block);
+                
+                SgAddressOfOp *addr = buildAddressOfOp(mask_pntr);
+                SgPointerType *ptr_type = buildPointerType(mask_type);
+                SgCastExp *cast = buildCastExp(addr, ptr_type);
+                
+                SgExprListExp *parameters = buildExprListExp(cast);
+                SgExpression *ld = buildFunctionCallExp("_mm512_loadu_si512", vector_type, parameters, new_block);
+                SgAssignInitializer *local_init = buildAssignInitializer(ld);
+                
+                SgVariableDeclaration *mask_vd = buildVariableDeclaration(mask_name, mask_type, local_init, new_block);
+                appendStatement(mask_vd, new_block);
+                
+                // Now for the gather statement
+                SgVarRefExp *mask_ref = buildVarRefExp(mask_name, new_block);
+                SgVarRefExp *base_ref = static_cast<SgVarRefExp *>(element->get_lhs_operand());
+                
+                parameters = buildExprListExp(mask_ref, base_ref, buildIntVal(4));
+                
+                ld = buildFunctionCallExp("_mm512_i32gather_ps", vector_type, parameters, new_block);
                 init = buildAssignInitializer(ld);
             } break;
             
