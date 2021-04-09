@@ -12,6 +12,7 @@ enum OpType {
     Load,
     Broadcast,
     BroadcastZero,
+    Gather,
     ScalarStore,
     Store,
     HAdd,
