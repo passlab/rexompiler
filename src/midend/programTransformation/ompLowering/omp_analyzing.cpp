@@ -440,14 +440,86 @@ int patchUpImplicitMappingVariables(SgFile *file) {
       if (isSgBasicBlock(parent)) // skip the padding block in between.
         parent = parent->get_parent();
       if (isSgOmpTargetStatement(parent)) {
-        addClauseVariable(init_var, target, V_SgOmpFirstprivateClause);
+        SgVariableSymbol *sym = var_ref->get_symbol();
+        ROSE_ASSERT(sym != NULL);
+        SgType *orig_type = sym->get_type();
+        SgArrayType *a_type = isSgArrayType(orig_type);
+        if (a_type != NULL) {
+          std::vector<SgExpression *> dims = get_C_array_dimensions(a_type);
+          SgExpression *array_length = NULL;
+          for (std::vector<SgExpression *>::const_iterator iter = dims.begin();
+               iter != dims.end(); iter++) {
+            SgExpression *length_exp = *iter;
+            // TODO: get_C_array_dimensions returns one extra null expression
+            // somehow.
+            if (!isSgNullExpression(length_exp))
+              array_length = length_exp;
+          }
+          ROSE_ASSERT(array_length != NULL);
+          SgOmpMapClause *map_clause = NULL;
+          std::map<SgSymbol *,
+                   std::vector<std::pair<SgExpression *, SgExpression *>>>
+              array_dimensions;
+          SgExprListExp *explist = NULL;
+          SgVariableSymbol *array_symbol = var_ref->get_symbol();
+
+          SgOmpTargetStatement *target_parent = isSgOmpTargetStatement(parent);
+          if (hasClause(target_parent, V_SgOmpMapClause)) {
+            Rose_STL_Container<SgOmpClause *> map_clauses =
+                getClause(target_parent, V_SgOmpMapClause);
+            Rose_STL_Container<SgOmpClause *>::const_iterator iter;
+            for (iter = map_clauses.begin(); iter != map_clauses.end();
+                 iter++) {
+              SgOmpMapClause *temp_map_clause = isSgOmpMapClause(*iter);
+              if (temp_map_clause->get_operation() ==
+                  SgOmpClause::e_omp_map_tofrom) {
+                map_clause = temp_map_clause;
+                array_dimensions = map_clause->get_array_dimensions();
+                explist = map_clause->get_variables();
+                break;
+              }
+            }
+          }
+
+          if (map_clause == NULL) {
+            explist = buildExprListExp();
+            SgOmpClause::omp_map_operator_enum sg_type =
+                SgOmpClause::e_omp_map_tofrom;
+            map_clause = new SgOmpMapClause(explist, sg_type);
+            explist->set_parent(map_clause);
+            setOneSourcePositionForTransformation(map_clause);
+            map_clause->set_parent(target_parent);
+          }
+
+          bool has_mapped = false;
+          Rose_STL_Container<SgExpression *>::iterator iter;
+          SgExpressionPtrList expression_list = explist->get_expressions();
+          for (iter = expression_list.begin(); iter != expression_list.end();
+               iter++) {
+            if (isSgVarRefExp(*iter)->get_symbol() == array_symbol) {
+              has_mapped = true;
+              break;
+            }
+          }
+
+          if (has_mapped == false) {
+            SgExpression *lower_exp = buildIntVal(0);
+            explist->append_expression(buildVarRefExp(var_ref->get_symbol()));
+            array_dimensions[array_symbol].push_back(
+                std::make_pair(lower_exp, array_length));
+            map_clause->set_array_dimensions(array_dimensions);
+          }
+
+        } else {
+          addClauseVariable(init_var, target, V_SgOmpFirstprivateClause);
+        }
       } else {
         addClauseVariable(init_var, target, V_SgOmpSharedClause);
       }
       // std::cout << init_var->get_name() << "\n";
       result++;
     } // end for each variable reference
-  }   // end for each SgOmpTaskStatement
+  }
   return result;
 } // end patchUpImplicitMappingVariables()
 
