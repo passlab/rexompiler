@@ -478,8 +478,15 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
             
         // Store
         } else if (lval->variant() == V_SgPntrArrRefExp && rval->variantT() == V_SgVarRefExp) {
-            SgSIMDStore *str = buildBinaryExpression<SgSIMDStore>(deepCopy(lval), deepCopy(rval));
-            ir_block->push_back(str);
+            SgPntrArrRefExp *pntr = static_cast<SgPntrArrRefExp *>(lval);
+            
+            if (pntr->get_rhs_operand()->variantT() == V_SgPntrArrRefExp) {
+                SgSIMDScatter *str = buildBinaryExpression<SgSIMDScatter>(deepCopy(lval), deepCopy(rval));
+                ir_block->push_back(str);
+            } else {
+                SgSIMDStore *str = buildBinaryExpression<SgSIMDStore>(deepCopy(lval), deepCopy(rval));
+                ir_block->push_back(str);
+            }
             
         // Math
         } else if (lval->variantT() == V_SgVarRefExp && rval->variantT() == V_SgExprListExp) {

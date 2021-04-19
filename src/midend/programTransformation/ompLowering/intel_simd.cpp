@@ -80,6 +80,7 @@ std::string omp_simd_get_intel_func(OpType op_type, SgType *type, bool half_type
         
         case ScalarStore:
         case Store: instr += "storeu_"; break;
+        case Scatter: instr += "i32scatter_"; break;
     
         case HAdd: instr += "hadd_"; break;
         case Add: instr += "add_"; break;
@@ -274,6 +275,65 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                 // Build the function call
                 std::string func_name = omp_simd_get_intel_func(Store, v_src->get_type());
                 
+                SgExprStatement *fc = buildFunctionCallStmt(func_name, buildVoidType(), parameters, new_block);
+                appendStatement(fc, new_block);
+            } break;
+            
+            case V_SgSIMDScatter: {
+                SgVarRefExp *dest = static_cast<SgVarRefExp *>(rval);
+                SgPntrArrRefExp *element = static_cast<SgPntrArrRefExp *>(lval);
+                SgPntrArrRefExp *mask_pntr = static_cast<SgPntrArrRefExp *>(element->get_rhs_operand());
+                
+                // Load the mask first
+                std::string mask_name = intel_gen_mask();
+                SgType *mask_type = omp_simd_get_intel_type(mask_pntr->get_type(), new_block);
+                SgType *vector_type = omp_simd_get_intel_type(dest->get_type(), new_block);
+                
+                SgAddressOfOp *addr = buildAddressOfOp(mask_pntr);
+                SgPointerType *ptr_type = buildPointerType(mask_type);
+                SgCastExp *cast = buildCastExp(addr, ptr_type);
+                
+                std::string func_name = omp_simd_get_intel_func(Load, mask_pntr->get_type());
+                SgExprListExp *parameters = buildExprListExp(cast);
+                SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
+                SgAssignInitializer *local_init = buildAssignInitializer(ld);
+                
+                SgVariableDeclaration *mask_vd = buildVariableDeclaration(mask_name, mask_type, local_init, new_block);
+                appendStatement(mask_vd, new_block);
+                
+                // Now for the scatter statement
+                SgVarRefExp *mask_ref = buildVarRefExp(mask_name, new_block);
+                SgVarRefExp *base_ref = static_cast<SgVarRefExp *>(element->get_lhs_operand());
+                
+                int scale = 4;
+                if (dest->get_type()->variantT() == V_SgTypeDouble) {
+                    loop_increment = simd_len / 2;
+                    scale = 8;
+                    
+                    // If we have a double, we also need to do an extraction of the mask
+                    SgType *extract_type;
+                    std::string extract_name = "";
+                    std::string mask_name2 = mask_name + "2";
+                    
+                    if (simd_len == 16) {
+                        extract_type = buildOpaqueType("__m256i", new_block);
+                        extract_name = "_mm512_extracti32x8_epi32";
+                    } else {
+                        extract_type = buildOpaqueType("__m128i", new_block);
+                        extract_name = "_mm256_extractf128_si256";
+                    }
+                    
+                    parameters = buildExprListExp(mask_ref, buildIntVal(0));
+                    ld = buildFunctionCallExp(extract_name, extract_type, parameters, new_block);
+                    local_init = buildAssignInitializer(ld);
+                    mask_vd = buildVariableDeclaration(mask_name2, extract_type, local_init, new_block);
+                    appendStatement(mask_vd, new_block);
+                    
+                    mask_ref = buildVarRefExp(mask_name2, new_block);
+                }
+                
+                func_name = omp_simd_get_intel_func(Scatter, dest->get_type());
+                parameters = buildExprListExp(base_ref, mask_ref, dest, buildIntVal(scale));
                 SgExprStatement *fc = buildFunctionCallStmt(func_name, buildVoidType(), parameters, new_block);
                 appendStatement(fc, new_block);
             } break;
