@@ -82,13 +82,23 @@ int patchUpPrivateVariables(SgFile *file) {
   Rose_STL_Container<SgNode *> nodeList2 =
       NodeQuery::querySubTree(file, V_SgOmpDoStatement);
 
-  Rose_STL_Container<SgNode *> nodeList_merged(nodeList.size() +
-                                               nodeList2.size());
+  Rose_STL_Container<SgNode *> nodeList2_merged(nodeList.size() +
+                                                nodeList2.size());
 
   std::sort(nodeList.begin(), nodeList.end());
   std::sort(nodeList2.begin(), nodeList2.end());
   std::merge(nodeList.begin(), nodeList.end(), nodeList2.begin(),
-             nodeList2.end(), nodeList_merged.begin());
+             nodeList2.end(), nodeList2_merged.begin());
+
+  // TODO: implement a helper function to collect all the nodes into one list
+  Rose_STL_Container<SgNode *> nodeList3 =
+      NodeQuery::querySubTree(file, V_SgOmpTargetParallelForStatement);
+  std::sort(nodeList3.begin(), nodeList3.end());
+  Rose_STL_Container<SgNode *> nodeList_merged;
+  std::merge(nodeList2_merged.begin(), nodeList2_merged.end(),
+             nodeList3.begin(), nodeList3.end(),
+             std::insert_iterator<Rose_STL_Container<SgNode *>>(
+                 nodeList_merged, nodeList_merged.end()));
 
   Rose_STL_Container<SgNode *>::iterator nodeListIterator =
       nodeList_merged.begin();
@@ -97,10 +107,14 @@ int patchUpPrivateVariables(SgFile *file) {
     SgStatement *omp_loop = NULL;
     SgOmpForStatement *for_node = isSgOmpForStatement(*nodeListIterator);
     SgOmpDoStatement *do_node = isSgOmpDoStatement(*nodeListIterator);
+    SgOmpTargetParallelForStatement *target_parallel_for_node =
+        isSgOmpTargetParallelForStatement(*nodeListIterator);
     if (for_node)
       omp_loop = for_node;
     else if (do_node)
       omp_loop = do_node;
+    else if (target_parallel_for_node)
+      omp_loop = target_parallel_for_node;
     else
       ROSE_ASSERT(false);
     result += patchUpPrivateVariables(omp_loop);
@@ -393,11 +407,24 @@ int patchUpFirstprivateVariables(SgFile *file) {
 int patchUpImplicitMappingVariables(SgFile *file) {
   int result = 0;
   ROSE_ASSERT(file != NULL);
-  Rose_STL_Container<SgNode *> node_list =
+  Rose_STL_Container<SgNode *> node_list1 =
       NodeQuery::querySubTree(file, V_SgOmpParallelStatement);
+
+  // TODO: implement a helper function to collect all the nodes into one list
+  Rose_STL_Container<SgNode *> node_list2 =
+      NodeQuery::querySubTree(file, V_SgOmpTargetParallelForStatement);
+  std::sort(node_list1.begin(), node_list1.end());
+  std::sort(node_list2.begin(), node_list2.end());
+  Rose_STL_Container<SgNode *> node_list;
+  std::merge(node_list1.begin(), node_list1.end(), node_list2.begin(),
+             node_list2.end(),
+             std::insert_iterator<Rose_STL_Container<SgNode *>>(
+                 node_list, node_list.end()));
+
   Rose_STL_Container<SgNode *>::iterator iter = node_list.begin();
   for (iter = node_list.begin(); iter != node_list.end(); iter++) {
-    SgOmpParallelStatement *target = isSgOmpParallelStatement(*iter);
+    SgOmpClauseBodyStatement *target = NULL;
+    target = isSgOmpClauseBodyStatement(*iter);
     SgScopeStatement *directive_scope = target->get_scope();
     SgStatement *body = target->get_body();
     ROSE_ASSERT(body != NULL);
@@ -419,8 +446,10 @@ int patchUpImplicitMappingVariables(SgFile *file) {
       if (isAncestor(directive_scope, var_scope))
         continue;
 
-      if (SageInterface::isUseByAddressVariableRef(var_ref))
-        continue;
+      // TODO: is it necessary?
+      // if (SageInterface::isUseByAddressVariableRef(var_ref))
+      // continue;
+
       // Skip variables already with explicit data-sharing attributes
       VariantVector vv(V_SgOmpDefaultClause);
       vv.push_back(V_SgOmpPrivateClause);
@@ -439,11 +468,18 @@ int patchUpImplicitMappingVariables(SgFile *file) {
       SgNode *parent = target->get_parent();
       if (isSgBasicBlock(parent)) // skip the padding block in between.
         parent = parent->get_parent();
-      if (isSgOmpTargetStatement(parent)) {
+      if (isSgOmpTargetStatement(parent) ||
+          isSgOmpTargetParallelForStatement(target)) {
         SgVariableSymbol *sym = var_ref->get_symbol();
         ROSE_ASSERT(sym != NULL);
         SgType *orig_type = sym->get_type();
         SgArrayType *a_type = isSgArrayType(orig_type);
+        SgOmpClauseBodyStatement *target_parent = NULL;
+        if (isSgOmpTargetParallelForStatement(target)) {
+          target_parent = isSgOmpTargetParallelForStatement(target);
+        } else {
+          target_parent = isSgOmpTargetStatement(parent);
+        }
         if (a_type != NULL) {
           std::vector<SgExpression *> dims = get_C_array_dimensions(a_type);
           SgExpression *array_length = NULL;
@@ -463,7 +499,6 @@ int patchUpImplicitMappingVariables(SgFile *file) {
           SgExprListExp *explist = NULL;
           SgVariableSymbol *array_symbol = var_ref->get_symbol();
 
-          SgOmpTargetStatement *target_parent = isSgOmpTargetStatement(parent);
           if (hasClause(target_parent, V_SgOmpMapClause)) {
             Rose_STL_Container<SgOmpClause *> map_clauses =
                 getClause(target_parent, V_SgOmpMapClause);
@@ -511,12 +546,11 @@ int patchUpImplicitMappingVariables(SgFile *file) {
           }
 
         } else {
-          addClauseVariable(init_var, target, V_SgOmpFirstprivateClause);
+          addClauseVariable(init_var, target_parent, V_SgOmpFirstprivateClause);
         }
       } else {
         addClauseVariable(init_var, target, V_SgOmpSharedClause);
       }
-      // std::cout << init_var->get_name() << "\n";
       result++;
     } // end for each variable reference
   }
@@ -524,12 +558,12 @@ int patchUpImplicitMappingVariables(SgFile *file) {
 } // end patchUpImplicitMappingVariables()
 
 void analyze_omp(SgSourceFile *file) {
-  int shared_vars = patchUpImplicitMappingVariables(file);
-  // std::cout << "New shared vars: " << shared_vars << "\n";
 
   patchUpPrivateVariables(file); // the order of these two functions matter! We
                                  // want to patch up private variable first!
   patchUpFirstprivateVariables(file);
+
+  int shared_vars = patchUpImplicitMappingVariables(file);
 
   Rose_STL_Container<SgNode *> node_list =
       NodeQuery::querySubTree(file, V_SgStatement);
