@@ -77,7 +77,7 @@ std::string intel_simd_func(OpType op_type, SgType *type, bool half_type = false
         case Load: instr += "loadu_"; break;
         case Broadcast: instr += "set1_"; break;
         case BroadcastZero: instr += "setzero_"; break;
-        case Gather: instr += "i32gather_"; break;
+        case Gather: instr += "mask_i32gather_"; break;
         
         case ScalarStore:
         case Store: instr += "storeu_"; break;
@@ -193,7 +193,7 @@ SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgOmpSimdStatement *targ
     SgPntrArrRefExp *element = static_cast<SgPntrArrRefExp *>(rval);
     SgPntrArrRefExp *mask_pntr = static_cast<SgPntrArrRefExp *>(element->get_rhs_operand());
     
-    // Load the mask first
+    // Load the array indexes first
     std::string mask_name = intel_gen_mask();
     SgType *mask_type = intel_simd_type(mask_pntr->get_type(), target->get_scope());
     SgType *vector_type = intel_simd_type(dest->get_type(), target->get_scope());
@@ -210,9 +210,46 @@ SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgOmpSimdStatement *targ
     SgVariableDeclaration *mask_vd = buildVariableDeclaration(mask_name, mask_type, local_init, new_block);
     appendStatement(mask_vd, new_block);
     
+    // Generate the two mask statements
+    std::string mask1 = intel_gen_mask();
+    std::string mask2 = intel_gen_mask();
+    std::string kmask = intel_gen_mask();
+    
+    SgType *kmask_type;
+    if (simd_len == 16) kmask_type = buildOpaqueType("__mmask16", new_block);
+    else kmask_type = buildOpaqueType("__mmask8", new_block);
+    
+    SgVariableDeclaration *mask1_vd = buildVariableDeclaration(mask1, kmask_type, NULL, new_block);
+    SgVariableDeclaration *mask2_vd = buildVariableDeclaration(mask2, kmask_type, NULL, new_block);
+    
+    appendStatement(mask1_vd, new_block);
+    appendStatement(mask2_vd, new_block);
+    
+    func_name = "_kxnor_mask16";
+    if (simd_len == 8) func_name = "_kxnor_mask8";
+    
+    parameters = buildExprListExp(buildVarRefExp(mask1, new_block), buildVarRefExp(mask2, new_block));
+    ld = buildFunctionCallExp(func_name, kmask_type, parameters, new_block);
+    local_init = buildAssignInitializer(ld);
+    
+    SgVariableDeclaration *kmask_vd = buildVariableDeclaration(kmask, kmask_type, local_init, new_block);
+    appendStatement(kmask_vd, new_block);
+    
+    // Create the empty register
+    std::string zero_name = intel_gen_buf();
+    
+    func_name = intel_simd_func(BroadcastZero, dest->get_type());
+    ld = buildFunctionCallExp(func_name, vector_type, NULL, new_block);
+    local_init = buildAssignInitializer(ld);
+    
+    SgVariableDeclaration *zero_vd = buildVariableDeclaration(zero_name, vector_type, local_init, new_block);
+    appendStatement(zero_vd, new_block);
+    
     // Now for the gather statement
     SgVarRefExp *mask_ref = buildVarRefExp(mask_name, new_block);
     SgVarRefExp *base_ref = static_cast<SgVarRefExp *>(element->get_lhs_operand());
+    SgVarRefExp *zero_ref = buildVarRefExp(zero_name, new_block);
+    SgVarRefExp *kmask_ref = buildVarRefExp(kmask, new_block);
     
     int scale = 4;
     if (dest->get_type()->variantT() == V_SgTypeDouble) {
@@ -241,11 +278,7 @@ SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgOmpSimdStatement *targ
         mask_ref = buildVarRefExp(mask_name2, new_block);
     }
     
-    if (simd_len == 16) {
-        parameters = buildExprListExp(mask_ref, base_ref, buildIntVal(scale));
-    } else {
-        parameters = buildExprListExp(base_ref, mask_ref, buildIntVal(scale));
-    }
+    parameters = buildExprListExp(zero_ref, kmask_ref, mask_ref, base_ref, buildIntVal(scale));
     
     func_name = intel_simd_func(Gather, dest->get_type());
     ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);

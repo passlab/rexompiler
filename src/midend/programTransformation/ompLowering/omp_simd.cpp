@@ -143,7 +143,7 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
             expr = copyExpression(node);
         } break;
         
-        default: {}
+        default: expr = copyExpression(node);
     }
     
     // Build the variable declaration
