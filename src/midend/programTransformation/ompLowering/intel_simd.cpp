@@ -20,6 +20,7 @@ int loop_increment = 16;
 // For generating names
 int buf_pos = 0;
 int mask_pos = 0;
+int vindex_pos = 0;
 
 std::string intel_gen_buf() {
     char str[5];
@@ -36,6 +37,15 @@ std::string intel_gen_mask() {
     
     std::string name = "__mask" + std::string(str);
     ++mask_pos;
+    return name;
+}
+
+std::string intel_gen_vindex() {
+    char str[5];
+    sprintf(str, "%d", vindex_pos);
+    
+    std::string name = "__vindex" + std::string(str);
+    ++vindex_pos;
     return name;
 }
 
@@ -194,7 +204,7 @@ SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgOmpSimdStatement *targ
     SgPntrArrRefExp *mask_pntr = static_cast<SgPntrArrRefExp *>(element->get_rhs_operand());
     
     // Load the array indexes first
-    std::string mask_name = intel_gen_mask();
+    std::string vindex_name = intel_gen_vindex();
     SgType *mask_type = intel_simd_type(mask_pntr->get_type(), target->get_scope());
     SgType *vector_type = intel_simd_type(dest->get_type(), target->get_scope());
     
@@ -207,7 +217,7 @@ SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgOmpSimdStatement *targ
     SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
     SgAssignInitializer *local_init = buildAssignInitializer(ld);
     
-    SgVariableDeclaration *mask_vd = buildVariableDeclaration(mask_name, mask_type, local_init, new_block);
+    SgVariableDeclaration *mask_vd = buildVariableDeclaration(vindex_name, mask_type, local_init, new_block);
     appendStatement(mask_vd, new_block);
     
     // Generate the two mask statements
@@ -222,8 +232,8 @@ SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgOmpSimdStatement *targ
     SgVariableDeclaration *mask1_vd = buildVariableDeclaration(mask1, kmask_type, NULL, new_block);
     SgVariableDeclaration *mask2_vd = buildVariableDeclaration(mask2, kmask_type, NULL, new_block);
     
-    appendStatement(mask1_vd, new_block);
-    appendStatement(mask2_vd, new_block);
+    insertStatementBefore(target, mask1_vd);
+    insertStatementBefore(target, mask2_vd);
     
     func_name = "_kxnor_mask16";
     if (simd_len == 8) func_name = "_kxnor_mask8";
@@ -233,7 +243,7 @@ SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgOmpSimdStatement *targ
     local_init = buildAssignInitializer(ld);
     
     SgVariableDeclaration *kmask_vd = buildVariableDeclaration(kmask, kmask_type, local_init, new_block);
-    appendStatement(kmask_vd, new_block);
+    insertStatementBefore(target, kmask_vd);
     
     // Create the empty register
     std::string zero_name = intel_gen_buf();
@@ -243,10 +253,10 @@ SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgOmpSimdStatement *targ
     local_init = buildAssignInitializer(ld);
     
     SgVariableDeclaration *zero_vd = buildVariableDeclaration(zero_name, vector_type, local_init, new_block);
-    appendStatement(zero_vd, new_block);
+    insertStatementBefore(target, zero_vd);
     
     // Now for the gather statement
-    SgVarRefExp *mask_ref = buildVarRefExp(mask_name, new_block);
+    SgVarRefExp *mask_ref = buildVarRefExp(vindex_name, new_block);
     SgVarRefExp *base_ref = static_cast<SgVarRefExp *>(element->get_lhs_operand());
     SgVarRefExp *zero_ref = buildVarRefExp(zero_name, new_block);
     SgVarRefExp *kmask_ref = buildVarRefExp(kmask, new_block);
@@ -259,7 +269,7 @@ SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgOmpSimdStatement *targ
         // If we have a double, we also need to do an extraction of the mask
         SgType *extract_type;
         std::string extract_name = "";
-        std::string mask_name2 = mask_name + "2";
+        std::string vindex_name2 = vindex_name + "2";
         
         if (simd_len == 16) {
             extract_type = buildOpaqueType("__m256i", new_block);
@@ -272,10 +282,10 @@ SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgOmpSimdStatement *targ
         parameters = buildExprListExp(mask_ref, buildIntVal(0));
         ld = buildFunctionCallExp(extract_name, extract_type, parameters, new_block);
         local_init = buildAssignInitializer(ld);
-        mask_vd = buildVariableDeclaration(mask_name2, extract_type, local_init, new_block);
+        mask_vd = buildVariableDeclaration(vindex_name2, extract_type, local_init, new_block);
         appendStatement(mask_vd, new_block);
         
-        mask_ref = buildVarRefExp(mask_name2, new_block);
+        mask_ref = buildVarRefExp(vindex_name2, new_block);
     }
     
     parameters = buildExprListExp(zero_ref, kmask_ref, mask_ref, base_ref, buildIntVal(scale));
