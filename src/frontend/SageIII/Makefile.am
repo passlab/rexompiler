@@ -44,8 +44,8 @@ if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 # CXXFLAGS += -g
 endif
 
-expression_lexer.lo: expression_parser.hh expression_lexer.cc
-expression_parser.hh: expression_parser.cc
+omp_exprparser_lexer.lo: omp_exprparser_parser.hh omp_exprparser_lexer.cc
+omp_exprparser_parser.hh: omp_exprparser_parser.cc
 
 # Force sage.docs to be make by default
 # (if sage.docs.in is modified)
@@ -86,10 +86,10 @@ EXTRA_DIST = CMakeLists.txt preproc-c.ll docs rtiHelpers.h attributeListMap.h \
              advanced_preprocessing_hooks.h rose_attributes_list.h \
              sage3basic.hhh fileoffsetbits.h rosedll.h PolicyControl.txt Utf8.h  \
              ompAstConstruction.h \
-             expression_lexer.cc expression_parser.cc expression_parser.hh
+             omp_exprparser_lexer.cc omp_exprparser_parser.cc omp_exprparser_parser.hh
 CLEANFILES = haveRosettaGeneratedSource
 
-DISTCLEANFILES = preproc-c.cc expression_lexer.cc expression_parser.hh expression_parser.cc
+DISTCLEANFILES = preproc-c.cc omp_exprparser_lexer.cc omp_exprparser_parser.hh omp_exprparser_parser.cc
 
 # Some source code is generated (call make in ROSE/src/ROSETTA/src to generate these files)
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
@@ -216,7 +216,7 @@ noinst_LTLIBRARIES = libsage3.la
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 libsage3_la_SOURCES = $(libsage3Sources) preproc-c.ll
 else
-libsage3_la_SOURCES = $(libsage3Sources) preproc-c.ll expression_lexer.ll expression_parser.yy
+libsage3_la_SOURCES = $(libsage3Sources) preproc-c.ll omp_exprparser_lexer.ll omp_exprparser_parser.yy
 endif
 
 # DQ (3/8/2009): I think that the dependence upon $(top_builddir)/rose_config.h 
@@ -334,7 +334,7 @@ nodist_pkginclude_HEADERS = \
    AstQueryMemoryPool.h \
    astFileIO/AstSpecificDataManagingClass.h
 
-BUILT_SOURCES = $(GENERATED_SOURCE) expression_parser.cc expression_parser.hh expression_lexer.cc
+BUILT_SOURCES = $(GENERATED_SOURCE) omp_exprparser_parser.cc omp_exprparser_parser.hh omp_exprparser_lexer.cc
 
 # DQ (9/9/2007): Put C++_include_files.h back into place
 # since it is a convinient mechanism to handle included headers 

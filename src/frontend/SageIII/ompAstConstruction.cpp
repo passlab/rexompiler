@@ -17,10 +17,10 @@ extern OpenMPDirective* parseOpenMP(const char*, void * _exprParse(const char*))
 
 //Liao, 10/27/2008: parsing OpenMP pragma here
 //Handle OpenMP pragmas. This should be called after preprocessing information is attached since macro calls may exist within pragmas, Liao, 3/31/2009
-extern int omp_parse();
+extern int omp_exprparser_parse();
 extern SgExpression* parseExpression(SgNode*, bool, const char*);
 extern SgExpression* parseArraySectionExpression(SgNode*, bool, const char*);
-extern void omp_parser_init(SgNode* aNode, const char* str);
+extern void omp_exprparser_parser_init(SgNode* aNode, const char* str);
 //Fortran OpenMP parser interface
 void parse_fortran_openmp(SgSourceFile *sageFilePtr);
 static OpenMPDirective* ompparser_OpenMPIR;
@@ -262,8 +262,8 @@ namespace OmpSupport
             if (use_ompparser) {
                 OpenMPIR_list.push_back(std::make_pair(pragmaDeclaration, ompparser_OpenMPIR));
             } else {
-                omp_parser_init(pragmaDeclaration, pragmaString.c_str());
-                omp_parse();
+                omp_exprparser_parser_init(pragmaDeclaration, pragmaString.c_str());
+                omp_exprparser_parse();
             };
 #endif
             if (!use_ompparser) {
@@ -3798,8 +3798,8 @@ SgStatement* convertOmpThreadprivateStatement(std::pair<SgPragmaDeclaration*, Op
         std::vector<const char*>::iterator iter;
         for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
             std::string expr_string = std::string() + "varlist " + *iter + "\n";
-            omp_parser_init(current_OpenMPIR_to_SageIII.first, expr_string.c_str());
-            omp_parse();
+            omp_exprparser_parser_init(current_OpenMPIR_to_SageIII.first, expr_string.c_str());
+            omp_exprparser_parse();
         }
     }
 
@@ -4409,8 +4409,8 @@ SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::
         std::vector<const char*>::iterator iter;
         for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
             std::string expr_string = std::string() + "varlist " + *iter + "\n";
-            omp_parser_init(current_OpenMPIR_to_SageIII.first, expr_string.c_str());
-            omp_parse();
+            omp_exprparser_parser_init(current_OpenMPIR_to_SageIII.first, expr_string.c_str());
+            omp_exprparser_parse();
         }
     }
 

@@ -1,4 +1,4 @@
-%option prefix="omp_"
+%option prefix="omp_exprparser_"
 %option outfile="lex.yy.c"
 %option stack
 %option nounput
@@ -17,7 +17,7 @@
 #endif
 
 /* lex requires me to use extern "C" here */
-extern "C" int omp_wrap() { return 1; }
+extern "C" int omp_exprparser_wrap() { return 1; }
 
 extern int omp_lex();
 
@@ -51,7 +51,7 @@ digit           [0-9]
 id              [a-zA-Z_][a-zA-Z0-9_]*
 
 %%
-{digit}{digit}* { omp_lval.itype = atoi(strdup(yytext)); return (ICONSTANT); }
+{digit}{digit}* { omp_exprparser_lval.itype = atoi(strdup(yytext)); return (ICONSTANT); }
 
 "="             { return ('='); }
 "("             { return ('('); }
@@ -101,7 +101,7 @@ expr            { return (EXPRESSION); }
 varlist         { return (VARLIST); }
 identifier      { return (IDENTIFIER); /*not in use for now*/ }
 array_section   { return (ARRAY_SECTION); }
-{id}            { omp_lval.stype = strdup(yytext); 
+{id}            { omp_exprparser_lval.stype = strdup(yytext);
                   return (ID_EXPRESSION); }
 
 {blank}*        ;
@@ -111,13 +111,12 @@ array_section   { return (ARRAY_SECTION); }
 
 
 /* entry point invoked by callers to start scanning for a string */
-extern void omp_lexer_init(const char* str) {
+extern void omp_exprparser_lexer_init(const char* str) {
   ompparserinput = str;
   /* We have omp_ suffix for all flex functions */
-  omp_restart(omp_in);
+  omp_exprparser_restart(omp_exprparser_in);
 }
 /**
  * @file
  * Lexer for OpenMP-pragmas.
  */
-

@@ -61,7 +61,7 @@ add_custom_command(
 set(SAGE3_SOURCES ${SAGE3_SOURCES}
   OmpAttribute.C
   ompAstConstruction.cpp ompFortranParser.C
-  expression_lexer.ll expression_parser.yy
+        omp_exprparser_lexer.ll omp_exprparser_parser.yy
   ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.C
   ${CMAKE_CURRENT_BINARY_DIR}/expression_parser.C
   ${CMAKE_CURRENT_BINARY_DIR}/omp-lex.yy.C)

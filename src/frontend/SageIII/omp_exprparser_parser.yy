@@ -7,10 +7,10 @@
 /*
 To debug bison conflicts, use the following command line in the build tree
 
-/bin/sh ../../../../sourcetree/config/ylwrap ../../../../sourcetree/src/frontend/Sab.h `echo ompparser.cc | sed -e s/cc$/hh/ -e s/cpp$/hpp/ -e s/cxx$/hxx/ -e s/c++$/h++/ -e s/c$/h/` y.output ompparser.output -- bison -y -d -r state
+/bin/sh ../../../../sourcetree/config/ylwrap ../../../../sourcetree/src/frontend/Sab.h `echo expression_parser.cc | sed -e s/cc$/hh/ -e s/cpp$/hpp/ -e s/cxx$/hxx/ -e s/c++$/h++/ -e s/c$/h/` y.output expression_parser.output -- bison -y -d -r state
 in the build tree
 */
-%name-prefix "omp_"
+%name-prefix "omp_exprparser_"
 %defines
 %error-verbose
 
@@ -36,17 +36,17 @@ using namespace SageInterface;
 /* Parser - BISON */
 
 /*the scanner function*/
-extern int omp_lex(); 
+extern int omp_exprparser_lex();
 
 /*A customized initialization function for the scanner, str is the string to be scanned.*/
-extern void omp_lexer_init(const char* str);
+extern void omp_exprparser_lexer_init(const char* str);
 
 //! Initialize the parser with the originating SgPragmaDeclaration and its pragma text
-extern void omp_parser_init(SgNode* aNode, const char* str);
+extern void omp_exprparser_parser_init(SgNode* aNode, const char* str);
 extern SgExpression* parseExpression(SgNode*, const char*);
 extern SgExpression* parseArraySectionExpression(SgNode*, const char*);
 
-static int omp_error(const char*);
+static int omp_exprparser_error(const char*);
 
 // The context node with the pragma annotation being parsed
 //
@@ -61,7 +61,7 @@ static const char* orig_str;
 // The current expression node being generated 
 static SgExpression* current_exp = NULL;
 // a flag to indicate if the program is looking forward in the symbol table
-static bool omp_look_forward = false;
+static bool omp_exprparser_look_forward = false;
 
 // We now follow the OpenMP 4.0 standard's C-style array section syntax: [lower-bound:length] or just [length]
 // the latest variable symbol being parsed, used to help parsing the array dimensions associated with array symbol
@@ -559,9 +559,9 @@ int yyerror(const char *s) {
     return 0; // we want to the program to stop on error
 }
 
-void omp_parser_init(SgNode* directive, const char* str) {
+void omp_exprparser_parser_init(SgNode* directive, const char* str) {
     orig_str = str;
-    omp_lexer_init(str);
+    omp_exprparser_lexer_init(str);
     omp_directive_node = directive;
 }
 
@@ -570,7 +570,7 @@ static bool addOmpVariable(const char* var)  {
     SgVariableSymbol* symbol = NULL;
     SgScopeStatement* scope = NULL;
 
-    if (omp_look_forward != true) {
+    if (omp_exprparser_look_forward != true) {
         scope = SageInterface::getScope(omp_directive_node);
     }
     else {
@@ -604,28 +604,24 @@ static bool addOmpVariable(const char* var)  {
 }
 
 SgExpression* parseArraySectionExpression(SgNode* directive, bool look_forward, const char* str) {
-
     orig_str = str;
-    omp_lexer_init(str);
+    omp_exprparser_lexer_init(str);
     omp_directive_node = directive;
-    omp_look_forward = look_forward;
-    omp_parse();
+    omp_exprparser_look_forward = look_forward;
+    omp_exprparser_parse();
     SgExpression* sg_expression = current_exp;
 
     return sg_expression;
-
 }
 
 SgExpression* parseExpression(SgNode* directive, bool look_forward, const char* str) {
-
     orig_str = str;
-    omp_lexer_init(str);
+    omp_exprparser_lexer_init(str);
     omp_directive_node = directive;
-    omp_look_forward = look_forward;
-    omp_parse();
+    omp_exprparser_look_forward = look_forward;
+    omp_exprparser_parse();
     assert (current_exp != NULL);
     SgExpression* sg_expression = current_exp;
 
     return sg_expression;
-
 }
