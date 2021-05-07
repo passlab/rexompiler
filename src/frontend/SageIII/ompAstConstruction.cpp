@@ -4399,7 +4399,7 @@ SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement* clause_body, std::p
 
 
 SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
-    printf("ompparser clause is ready.\n");
+   // printf("ompparser clause is ready.\n");
     omp_variable_list.clear();
     SgOmpVariablesClause* result = NULL;
     OpenMPClauseKind clause_kind = current_omp_clause->getKind();
