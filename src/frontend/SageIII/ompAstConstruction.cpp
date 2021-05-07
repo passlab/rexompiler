@@ -3277,8 +3277,6 @@ namespace OmpSupport
     //};
 
     postParsingProcessing (sageFilePtr);
-    //
-
 
     // stop here if only OpenMP parsing is requested
     if (sageFilePtr->get_openmp_parse_only())
@@ -3298,7 +3296,20 @@ namespace OmpSupport
     {
       if (SgProject::get_verbose() > 1)
       {
-        printf ("Skipping calls to lower OpenMP sageFilePtr->get_openmp_ast_only() = %s \n",sageFilePtr->get_openmp_ast_only() ? "true" : "false");
+        printf ("Skipping calls to analyze/lower OpenMP sageFilePtr->get_openmp_ast_only() = %s \n",sageFilePtr->get_openmp_ast_only() ? "true" : "false");
+      }
+      return;
+    }
+
+    // Analyze OpenMP AST
+    analyze_omp(sageFilePtr);
+
+    // stop here if only OpenMP AST analyzing is requested
+    if (sageFilePtr->get_openmp_analyzing())
+    {
+      if (SgProject::get_verbose() > 1)
+      {
+        printf ("Skipping calls to lower OpenMP sageFilePtr->get_openmp_analyzing() = %s \n",sageFilePtr->get_openmp_analyzing() ? "true" : "false");
       }
       return;
     }
@@ -3334,11 +3345,13 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_taskloop:
         case OMPD_target_enter_data:
         case OMPD_target_exit_data:
+        case OMPD_target_parallel_for:
         case OMPD_task:
         case OMPD_taskwait:
         case OMPD_target_data:
         case OMPD_single:
         case OMPD_for:
+        case OMPD_for_simd:
         case OMPD_target:
         case OMPD_critical:
         case OMPD_depobj:
@@ -3349,7 +3362,8 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
             result = convertBodyDirective(current_OpenMPIR_to_SageIII);
             break;
         }
-        case OMPD_parallel_for: {
+        case OMPD_parallel_for:
+        case OMPD_parallel_for_simd: {
             result = convertCombinedBodyDirective(current_OpenMPIR_to_SageIII);
             break;
         }
@@ -3414,7 +3428,8 @@ SgOmpBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*,
     OpenMPClauseKind clause_kind;
 
     switch (directive_kind) {
-        case OMPD_parallel_for: {
+        case OMPD_parallel_for:
+        case OMPD_parallel_for_simd: {
             result = convertOmpParallelStatementFromCombinedDirectives(current_OpenMPIR_to_SageIII);
             break;
         }
@@ -3636,6 +3651,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             result = new SgOmpForStatement(NULL, body);
             break;
         }
+        case OMPD_for_simd: {
+            result = new SgOmpForSimdStatement(NULL, body);
+            break;
+        }
         case OMPD_target: {
             result = new SgOmpTargetStatement(NULL, body);
             break;
@@ -3660,6 +3679,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         }
         case OMPD_metadirective: {
             result = new SgOmpMetadirectiveStatement(NULL, body);
+            break;
+        }
+        case OMPD_target_parallel_for: {
+            result = new SgOmpTargetParallelForStatement(NULL, body);
             break;
         }
         case OMPD_end: {
@@ -4008,6 +4031,10 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         }
         case OMPD_metadirective: {
             result = new SgOmpMetadirectiveStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_target_parallel_for: {
+            result = new SgOmpTargetParallelForStatement(NULL, NULL);
             break;
         }
         case OMPD_end: {
@@ -4874,15 +4901,21 @@ SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::p
       case OMPD_parallel_for:
         {
           second_stmt = new SgOmpForStatement(NULL, body);
-          setOneSourcePositionForTransformation(second_stmt);
           break;
+        }
+      case OMPD_parallel_for_simd:
+        {
+            second_stmt = new SgOmpForSimdStatement(NULL, body);
+            break;
         }
       default:
         {
           cerr<<"error: unacceptable directive type in convertOmpParallelStatementFromCombinedDirectives() "<<endl;
           ROSE_ASSERT(false);
         }
-    } 
+    }
+    
+    setOneSourcePositionForTransformation(second_stmt);
 
     ROSE_ASSERT(second_stmt);
     body->set_parent(second_stmt);
@@ -5009,11 +5042,13 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_taskloop:
         case OMPD_target_enter_data:
         case OMPD_target_exit_data:
+        case OMPD_target_parallel_for:
         case OMPD_task:
         case OMPD_taskwait:
         case OMPD_target_data:
         case OMPD_single:
         case OMPD_for:
+        case OMPD_for_simd:
         case OMPD_target:
         case OMPD_critical:
         case OMPD_depobj:
@@ -5021,6 +5056,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_section:
         case OMPD_simd:
         case OMPD_parallel_for:
+        case OMPD_parallel_for_simd:
         case OMPD_threadprivate:
         case OMPD_parallel: {
             break;

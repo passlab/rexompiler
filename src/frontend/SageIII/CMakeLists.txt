@@ -55,7 +55,7 @@ add_custom_command(
   COMMAND ${BISON_EXECUTABLE}
     ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/expression_parser.yy -o
     ${CMAKE_BINARY_DIR}/src/frontend/SageIII/expression_parser.C
-    && mv expression_parser.H expression_parser.h
+    && mv expression_parser.H expression_parser.hh
   DEPENDS  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/expression_parser.yy)
 
 set(SAGE3_SOURCES ${SAGE3_SOURCES}

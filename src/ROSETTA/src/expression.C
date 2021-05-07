@@ -353,6 +353,24 @@ Grammar::setUpExpressions ()
                             AggregateInitializer | CompoundInitializer | ConstructorInitializer | 
                             AssignInitializer | DesignatedInitializer | BracedInitializer,
                             "Initializer","EXPR_INIT", false);
+                            
+  // SIMD operators
+     NEW_TERMINAL_MACRO (SIMDLoad, "SIMDLoad", "SIMD_LOAD");
+     NEW_TERMINAL_MACRO (SIMDBroadcast, "SIMDBroadcast", "SIMD_BROADCAST");
+     NEW_TERMINAL_MACRO (SIMDStore, "SIMDStore", "SIMD_STORE");
+     NEW_TERMINAL_MACRO (SIMDPartialStore, "SIMDPartialStore", "SIMD_PARTIAL_STORE");
+     NEW_TERMINAL_MACRO (SIMDScalarStore, "SIMDScalarStore", "SIMD_SCALAR_STORE");
+     
+     NEW_TERMINAL_MACRO (SIMDAddOp, "SIMDAddOp", "SIMD_ADD_OP");
+     NEW_TERMINAL_MACRO (SIMDSubOp, "SIMDSubOp", "SIMD_SUB_OP");
+     NEW_TERMINAL_MACRO (SIMDMulOp, "SIMDMulOp", "SIMD_MUL_OP");
+     NEW_TERMINAL_MACRO (SIMDDivOp, "SIMDDivOp", "SIMD_DIV_OP");
+     NEW_TERMINAL_MACRO (SIMDFmaOp, "SIMDFmaOp", "SIMD_FMA_OP");
+     
+     NEW_NONTERMINAL_MACRO (SIMDBinaryOp,
+            SIMDAddOp | SIMDSubOp | SIMDMulOp | SIMDDivOp |
+            SIMDFmaOp,
+            "SIMDBinaryOp", "SIMD_BINARY_OP", false);
 
   // User defined operator for Fortran named operators.
      NEW_TERMINAL_MACRO (UserDefinedUnaryOp,    "UserDefinedUnaryOp",    "USER_DEFINED_UNARY_OP" );
@@ -380,7 +398,8 @@ Grammar::setUpExpressions ()
           RshiftOp       | PntrArrRefExp    | ScopeOp             | AssignOp         | ExponentiationOp     |
           ConcatenationOp | PointerAssignOp | UserDefinedBinaryOp | CompoundAssignOp | MembershipOp         | SpaceshipOp    |
           NonMembershipOp | IsOp            | IsNotOp             | ElementwiseOp        | PowerOp        |
-          LeftDivideOp    | RemOp,
+          LeftDivideOp    | RemOp |
+          SIMDBinaryOp | SIMDLoad | SIMDBroadcast | SIMDStore | SIMDPartialStore | SIMDScalarStore,
           "BinaryOp","BINARY_EXPRESSION", false);
 
      NEW_NONTERMINAL_MACRO (NaryOp,
@@ -1024,6 +1043,19 @@ Grammar::setUpExpressions ()
 
   // DQ (7/25/2020): Adding C++20 support (need to lookup the correct operator precedence, made it the same as AddOp for now).
      SpaceshipOp.editSubstitute           ( "PRECEDENCE_VALUE", "12" );
+     
+  // SIMD operators
+     SIMDBinaryOp.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDAddOp.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDSubOp.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDMulOp.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDDivOp.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDFmaOp.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDLoad.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDBroadcast.editSubstitute ("PRECEDENCE_VALUE", "16" );
+     SIMDStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDPartialStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDScalarStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
 
 #if USE_FORTRAN_IR_NODES
   // DQ (3/19/2007): Support for Fortran IR nodes (not sure if these are correct values)
@@ -3325,4 +3357,46 @@ Grammar::setUpExpressions ()
      RangeExp.setFunctionSource     ( "SOURCE_DEFAULT_GET_TYPE","../Grammar/Expression.code" );
      RangeExp.setFunctionSource    ( "SOURCE_RANGE_EXP", "../Grammar/Expression.code" );
 
+    // SIMD operators
+     SIMDBinaryOp.setFunctionPrototype            ( "HEADER_EXTRA_FUNCTIONS", "../Grammar/Expression.code" );
+     SIMDBinaryOp.excludeFunctionPrototype        ( "HEADER_GET_TYPE", "../Grammar/Expression.code" );
+     SIMDBinaryOp.excludeSubTreeFunctionPrototype ( "HEADER_GET_TYPE", "../Grammar/Expression.code" );
+     SIMDBinaryOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", 
+                                  "../Grammar/Expression.code" );
+     
+     SIMDAddOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", 
+                                  "../Grammar/Expression.code" );
+     SIMDAddOp.setFunctionPrototype ( "HEADER_SIMD_ADD_OP", "../Grammar/Expression.code" );
+     
+     SIMDSubOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", 
+                                  "../Grammar/Expression.code" );
+     SIMDSubOp.setFunctionPrototype ( "HEADER_SIMD_SUB_OP", "../Grammar/Expression.code" );
+     
+     SIMDMulOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", 
+                                  "../Grammar/Expression.code" );
+     SIMDMulOp.setFunctionPrototype ( "HEADER_SIMD_MUL_OP", "../Grammar/Expression.code" );
+     
+     SIMDDivOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", 
+                                  "../Grammar/Expression.code" );
+     SIMDDivOp.setFunctionPrototype ( "HEADER_SIMD_DIV_OP", "../Grammar/Expression.code" );
+     
+     SIMDFmaOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", 
+                                  "../Grammar/Expression.code" );
+     SIMDFmaOp.setFunctionPrototype ( "HEADER_SIMD_FMA_OP", "../Grammar/Expression.code" );
+     
+     SIMDLoad.setFunctionPrototype ( "HEADER_SIMD_LOAD", "../Grammar/Expression.code" );
+     SIMDLoad.setFunctionSource ( "SOURCE_SIMD_LOAD", "../Grammar/Expression.code" );
+     
+     SIMDBroadcast.setFunctionPrototype ( "HEADER_SIMD_BROADCAST", "../Grammar/Expression.code" );
+     SIMDBroadcast.setFunctionSource ( "SOURCE_SIMD_BROADCAST", "../Grammar/Expression.code" );
+     
+     SIMDStore.setFunctionPrototype ( "HEADER_SIMD_STORE", "../Grammar/Expression.code" );
+     SIMDStore.setFunctionSource ( "SOURCE_SIMD_STORE", "../Grammar/Expression.code" );
+     
+     SIMDPartialStore.setFunctionPrototype ( "HEADER_SIMD_PARTIAL_STORE", "../Grammar/Expression.code" );
+     SIMDPartialStore.setFunctionSource ( "SOURCE_SIMD_PARTIAL_STORE", "../Grammar/Expression.code" );
+     
+     SIMDScalarStore.setFunctionPrototype ( "HEADER_SIMD_SCALAR_STORE", "../Grammar/Expression.code" );
+     SIMDScalarStore.setFunctionSource ( "SOURCE_SIMD_SCALAR_STORE", "../Grammar/Expression.code" );
+     
    }

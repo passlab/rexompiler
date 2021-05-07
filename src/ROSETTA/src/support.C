@@ -161,7 +161,11 @@ Grammar::setUpSupport ()
      NEW_TERMINAL_MACRO (DirectedGraphEdge,   "DirectedGraphEdge",   "DirectedGraphEdgeTag" );
 
   // Types of graph nodes and edges:
-     NEW_TERMINAL_MACRO (GraphNode,  "GraphNode", "GraphNodeTag");
+  // SgNode to represent OpenMP flow graph
+     NEW_TERMINAL_MACRO (OmpFlowGraphTaskNode, "OmpFlowGraphTaskNode", "OmpFlowGraphTaskNodeTag" );
+     NEW_NONTERMINAL_MACRO (OmpFlowGraphSerialNode, OmpFlowGraphTaskNode, "OmpFlowGraphSerialNode", "OmpFlowGraphSerialNodeTag", false);
+     NEW_NONTERMINAL_MACRO (OmpFlowGraphNode, OmpFlowGraphSerialNode, "OmpFlowGraphNode", "OmpFlowGraphNodeTag", false);
+     NEW_NONTERMINAL_MACRO (GraphNode,  OmpFlowGraphNode, "GraphNode", "GraphNodeTag", false);
      NEW_NONTERMINAL_MACRO (GraphEdge, DirectedGraphEdge | UndirectedGraphEdge, "GraphEdge", "GraphEdgeTag", false);
 
   // Types of Bi-directional graphs:
@@ -1047,6 +1051,8 @@ Grammar::setUpSupport ()
   // Lowering OpenMP directives to code with explicit runtime calls
      File.setDataPrototype         ( "bool", "openmp_lowering", "= false",
                                      NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     File.setDataPrototype         ( "bool", "openmp_analyzing", "= false",
+                                     NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      File.setDataPrototype         ( "bool", "cray_pointer_support", "= false",
                                      NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
@@ -1565,6 +1571,22 @@ Grammar::setUpSupport ()
      GraphNode.setDataPrototype("std::map<int, std::string>","properties", "",
                            NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
+     OmpFlowGraphNode.setDataPrototype("std::list<SgNode* >", "parents", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpFlowGraphNode.setDataPrototype("std::list<SgNode* >", "children", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpFlowGraphNode.setDataPrototype("SgNode*", "node", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpFlowGraphNode.setDataPrototype("SgNode*", "begin_statement", "= NULL",
+                       NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpFlowGraphNode.setDataPrototype("SgNode*", "end_statement", "= NULL",
+                       NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpFlowGraphNode.setDataPrototype("int", "cost", "= 0",
+                       NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpFlowGraphSerialNode.setDataPrototype("std::list<SgExpression* >", "data", "",
+                       NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpFlowGraphTaskNode.setDataPrototype("int", "num_threads", "= 0",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // ******************************************************************************
   //                                SgGraphEdge

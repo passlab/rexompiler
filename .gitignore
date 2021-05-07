@@ -42,6 +42,7 @@ GTAGS
 /config/lt~obsolete.m4
 /config/support-projects.m4
 /config/test-driver
+/config/missing
 
 # Eclipse project files
 .cproject

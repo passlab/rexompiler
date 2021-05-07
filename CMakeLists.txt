@@ -338,7 +338,7 @@ if(enable-c)
 endif()
 
 # CUDA
-option(enable-cuda "Enable CUDA analysis" ON) # OFF because lack of CUDA is not handled properly
+option(enable-cuda "Enable CUDA analysis" OFF) # OFF because lack of CUDA is not handled properly
 if(enable-cuda)
   if(APPLE)
     message(FATAL_ERROR "CUDA analysis (enable-cuda) is not supported on macOS")
@@ -380,7 +380,7 @@ if(enable-opencl)
 endif()
 
 # Fortran
-option(enable-fortran "Enable Fortran analysis." ON) # OFF because lack of OFP is not handled properly
+option(enable-fortran "Enable Fortran analysis." OFF) # OFF because lack of OFP is not handled properly
 if(enable-fortran)
   if(NOT enable-java)
     message(FATAL_ERROR "Fortran analysis also requires Java analysis.  Either turn on enable-java, or turn off enable-fortran")

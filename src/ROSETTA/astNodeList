@@ -180,6 +180,9 @@ SgGraphEdge
 SgGraphEdgeList
 SgGraphNode
 SgGraphNodeList
+SgOmpFlowGraphNode
+SgOmpFlowGraphSerialNode
+SgOmpFlowGraphTaskNode
 SgGreaterOrEqualOp
 SgGreaterThanOp
 SgIOItemExpression
@@ -324,6 +327,7 @@ SgOmpThreadprivateStatement
 SgOmpWorkshareStatement
 SgOmpTargetStatement
 SgOmpTargetDataStatement
+SgOmpTargetParallelForStatement
 SgOmpSimdStatement
 SgOmpClause
 SgOmpAllocateClause
@@ -442,6 +446,17 @@ SgScopeStatement
 SgSequenceStatement
 SgSetComprehension
 SgShortVal
+SgSIMDBinaryOp
+SgSIMDAddOp
+SgSIMDSubOp
+SgSIMDMulOp
+SgSIMDDivOp
+SgSIMDFmaOp
+SgSIMDLoad
+SgSIMDBroadcast
+SgSIMDStore
+SgSIMDPartialStore
+SgSIMDScalarStore
 SgSizeOfOp
 SgAlignOfOp
 SgSourceFile

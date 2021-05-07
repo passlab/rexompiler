@@ -50,6 +50,7 @@ namespace OmpSupport
   //! The top level interface to translate OpenMP directives
   void lower_omp(SgSourceFile*);
 
+  void analyze_omp(SgSourceFile*);
 
   //! Insert #include "xxx.h", the interface of a runtime library to the compiler
   void insertRTLHeaders(SgSourceFile*);
@@ -125,6 +126,9 @@ namespace OmpSupport
   void transOmpSingle(SgNode* node);
   //! Translate omp metadirective
   void transOmpMetadirective(SgNode* node);
+  
+  //! Translate omp simd
+  void transOmpSimd(SgNode *node, SgSourceFile *file);
 
   //! A helper function to generate implicit or explicit task for either omp parallel or omp task
   // It calls the ROSE AST outliner internally. 

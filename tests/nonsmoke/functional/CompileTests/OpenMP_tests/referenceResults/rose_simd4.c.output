@@ -1,1 +1,1 @@
-#pragma omp simd  order(concurrent)
+#pragma omp simd  if(simd : test) simdlen(8) safelen(8)

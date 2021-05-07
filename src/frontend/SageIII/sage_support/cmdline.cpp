@@ -3529,6 +3529,27 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
        }
      }
 
+     if ( CommandlineProcessing::isOption(argv,"-rose:OpenMP:","analyzing",true) == true
+         ||CommandlineProcessing::isOption(argv,"-rose:openmp:","analyzing",true) == true
+         ||CommandlineProcessing::isOption(argv,"--rose:openmp:","analyzing",true) == true
+         ||CommandlineProcessing::isOption(argv,"--rose:OpenMP:","analyzing",true) == true
+         )
+     {
+       if ( SgProject::get_verbose() >= 1 )
+         printf ("OpenMP sub option for AST analyzing specified \n");
+       set_openmp_analyzing(true);
+       // we don't want to stop after parsing or ast construction
+       set_openmp_parse_only(false);
+       set_openmp_ast_only(false);
+       // turn on OpenMP if not set explicitly by standalone -rose:OpenMP
+       if (!get_openmp())
+       {
+         set_openmp(true);
+         if (!Outliner::select_omp_loop)
+           argv.push_back(ompmacro);
+       }
+     }
+
      if ( CommandlineProcessing::isOption(argv,"-rose:OpenMP:","lowering",true) == true
          ||CommandlineProcessing::isOption(argv,"-rose:openmp:","lowering",true) == true
          ||CommandlineProcessing::isOption(argv,"--rose:openmp:","lowering",true) == true
@@ -3541,6 +3562,7 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
        // we don't want to stop after parsing or ast construction
        set_openmp_parse_only(false);
        set_openmp_ast_only(false);
+       set_openmp_analyzing(false);
        // turn on OpenMP if not set explicitly by standalone -rose:OpenMP
        if (!get_openmp())
        {
@@ -4190,10 +4212,12 @@ SgFile::stripRoseCommandLineOptions ( vector<string> & argv )
      optionCount = sla(argv, "-rose:", "($)", "(openmp:parse_only|OpenMP:parse_only)",1);
      optionCount = sla(argv, "-rose:", "($)", "(openmp:ast_only|OpenMP:ast_only)",1);
      optionCount = sla(argv, "-rose:", "($)", "(openmp:lowering|OpenMP:lowering)",1);
+     optionCount = sla(argv, "-rose:", "($)", "(openmp:analyzing|OpenMP:analyzing)",1);
      // support --rose:openmp variants
      optionCount = sla(argv, "--rose:", "($)", "(openmp:parse_only|OpenMP:parse_only)",1);
      optionCount = sla(argv, "--rose:", "($)", "(openmp:ast_only|OpenMP:ast_only)",1);
      optionCount = sla(argv, "--rose:", "($)", "(openmp:lowering|OpenMP:lowering)",1);
+     optionCount = sla(argv, "--rose:", "($)", "(openmp:analyzing|OpenMP:analyzing)",1);
 
      optionCount = sla(argv, "-rose:", "($)", "(C89|C89_only)",1);
      optionCount = sla(argv, "-rose:", "($)", "(C99|C99_only)",1);
