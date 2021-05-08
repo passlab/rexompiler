@@ -26,10 +26,7 @@ using namespace Rose;                                   // temporary, until this
  *  Variable Definitions
  *---------------------------------------------------------------------------*/
 ROSE_DLL_API int Rose::Cmdline::verbose = 0;
-ROSE_DLL_API bool Rose::Cmdline::Java::Ecj::batch_mode = false;
 ROSE_DLL_API std::list<std::string> Rose::Cmdline::Fortran::Ofp::jvm_options;
-ROSE_DLL_API std::list<std::string> Rose::Cmdline::Java::Ecj::jvm_options;
-std::list<std::string> Rose::Cmdline::X10::X10c::jvm_options;
 
 /*-----------------------------------------------------------------------------
  *  namespace Rose::Cmdline {
@@ -367,7 +364,7 @@ CommandlineProcessing::isOptionTakingSecondParameter( string argument )
           // TOO1 (2/13/2014): Starting to refactor CLI handling into separate namespaces
           Rose::Cmdline::Unparser::OptionRequiresArgument(argument) ||
           Rose::Cmdline::Fortran::OptionRequiresArgument(argument) ||
-          Rose::Cmdline::Java::OptionRequiresArgument(argument) ||
+          //Rose::Cmdline::Java::OptionRequiresArgument(argument) ||
 
        // negara1 (08/16/2011)
           argument == "-rose:unparseHeaderFilesRootFolder" ||
@@ -396,9 +393,6 @@ CommandlineProcessing::isOptionTakingSecondParameter( string argument )
           argument == "-rose:detect_dangling_pointers" ||   // Used to specify level of debugging support for optional detection of dangling pointers
 
        // DQ (1/16/2012): Added all of the currently defined dot file options.
-          argument == "-rose:dotgraph:asmFileFormatFilter" ||
-          argument == "-rose:dotgraph:asmTypeFilter" ||
-          argument == "-rose:dotgraph:binaryExecutableFormatFilter" ||
           argument == "-rose:dotgraph:commentAndDirectiveFilter" ||
           argument == "-rose:dotgraph:ctorInitializerListFilter" ||
           argument == "-rose:dotgraph:defaultColorFilter" ||
@@ -501,16 +495,6 @@ Rose_STL_Container<string>
 CommandlineProcessing::generateSourceFilenames ( Rose_STL_Container<string> argList, bool binaryMode )
    {
      Rose_STL_Container<string> sourceFileList;
-
-#ifdef ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
-  // DQ (1/10/2019): This is an issue when using ROSE for non Java language support in some environment.
-  // This was the cause of a bug that contaminated the backend compiler command line for an installation
-  // or ROSE for a specific sponsor.
-
-      { // Expand Javac's @argfile since it may contain filenames
-          argList = Rose::Cmdline::Java::ExpandArglist(argList);
-      }
-#endif
 
      bool isSourceCodeCompiler = false;
 
@@ -671,18 +655,6 @@ SgProject::processCommandLine(const vector<string>& input_argv)
           Rose::Cmdline::NormalizeIncludePathOptions(
               local_commandLineArgumentList);
   }
-
-#ifdef ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
-  // DQ (1/10/2019): This is an issue when using ROSE for non Java language support in some environment.
-  // This was the cause of a bug that contaminated the backend compiler command line for an installation
-  // or ROSE for a specific sponsor.
-
-  { // Expand Javac's @argfile before CLI processing
-      local_commandLineArgumentList =
-          Rose::Cmdline::Java::ExpandArglist(
-              local_commandLineArgumentList);
-  }
-#endif
 
 // DQ (11/29/2020): Clang linker does not understand the -pthread option (issues a warning, but I think it is a makefile commandline issue).
 // Add "-D_REENTRANT" if "-pthread" is present before we save the command-line or do any other processing.
@@ -1090,9 +1062,7 @@ SgProject::processCommandLine(const vector<string>& input_argv)
 
       Rose::Cmdline::Unparser::Process(this, local_commandLineArgumentList);
       Rose::Cmdline::Fortran::Process(this, local_commandLineArgumentList);
-      Rose::Cmdline::Java::Process(this, local_commandLineArgumentList);
       Rose::Cmdline::Gnu::Process(this, local_commandLineArgumentList);
-      Rose::Cmdline::X10::Process(this, local_commandLineArgumentList);
 
   // DQ (9/14/2013): Adding option to copy the location of the input file as the position for the generated output file.
   // This is now demonstrated to be important in the case of ffmpeg-1.2 for the file "file.c" where it is specified as
@@ -1707,7 +1677,6 @@ StripRoseOptions (std::vector<std::string>& argv)
 {
   Cmdline::Unparser::StripRoseOptions(argv);
   Cmdline::Fortran::StripRoseOptions(argv);
-  Cmdline::Java::StripRoseOptions(argv);
 }// Cmdline::StripRoseOptions
 
 void
@@ -2109,1007 +2078,6 @@ ProcessParam (SgProject* project, std::vector<std::string>& argv)
   }
 }
 
-//------------------------------------------------------------------------------
-//                                  Java
-//------------------------------------------------------------------------------
-
-bool
-Rose::Cmdline::Java::
-OptionRequiresArgument (const std::string& option)
-{
-  return
-      // Javac Options
-      option == "-bootclasspath"            ||
-      option == "-classpath"                ||
-      option == "-cp"                       ||
-      option == "-sourcepath"               ||
-      option == "-d"                        ||
-      option == "-source"                   ||
-      option == "-target"                   ||
-      option == "-encoding"                 ||
-      option == "-s"                        ||
-      // ROSE Options
-      option == "-rose:java:cp"             ||
-      option == "-rose:java:classpath"      ||
-      option == "-rose:java:sourcepath"     ||
-      option == "-rose:java:d"              ||
-      option == "-rose:java:ds"             ||
-      option == "-rose:java:source"         ||
-      option == "-rose:java:target"         ||
-      option == "-rose:java:encoding"       ||
-      option == "-rose:java:ecj:jvm_options";
-}// Cmdline:Java:::OptionRequiresArgument
-
-void
-Rose::Cmdline::Java::
-StripRoseOptions (std::vector<std::string>& argv)
-{
-  std::string argument;
-
-  // (1) Options WITHOUT an argument
-  sla(argv, "-rose:", "($)", "(j|J|java|Java)",1);
-
-  //
-  // (2) Options WITH an argument
-  //
-
-  Cmdline::Java::Ecj::StripRoseOptions(argv);
-
-  // Remove Java options with ROSE-Java prefix; option arguments removed
-  // by generateOptionWithNameParameterList.
-  //
-  // For example,
-  //
-  //    BEFORE: argv = [-rose:java:classpath, "/some/class/path", -rose:verbose, "3"]
-  //    AFTER:  argv = [-rose:verbose, "3"]
-  //            java_options = [-classpath, "/some/class/path"]
-  std::vector<std::string> java_options =
-      CommandlineProcessing::generateOptionWithNameParameterList(
-          argv,                           // Remove ROSE-Java options from here
-          Cmdline::Java::option_prefix,   // Current prefix
-          "-");                           // New prefix
-
-  for (std::vector<std::string>::iterator it = java_options.begin();
-       it != java_options.end();
-       ++it)
-  {
-      std::string java_option = *it;
-
-      // Skip ROSE-specific Java options
-      //
-      // "-ds": source destination directory for unparsed code is specific to ROSE.
-      if (java_option == "-ds")
-          ++it; // skip over argument, i.e. "-ds <argument>"; TODO: add argument verification
-      else
-          argv.push_back(java_option);
-  }
-}// Cmdline::Java::StripRoseOptions
-
-void
-Rose::Cmdline::Java::
-Process (SgProject* project, std::vector<std::string>& argv)
-{
-  if (SgProject::get_verbose() > 1)
-  {
-      std::cout
-          << "[INFO] Processing Java commandline options: "
-          << CommandlineProcessing::generateStringFromArgList(argv, true, false)
-          << std::endl;
-  }
-
-  Cmdline::Java::ProcessJavaOnly(project, argv);
-  Cmdline::Java::ProcessClasspath(project, argv);
-  Cmdline::Java::ProcessSourcepath(project, argv);
-  Cmdline::Java::ProcessDestdir(project, argv);
-  Cmdline::Java::ProcessSourceDestdir(project, argv);
-  Cmdline::Java::ProcessS(project, argv);
-  Cmdline::Java::ProcessSource(project, argv);
-  Cmdline::Java::ProcessTarget(project, argv);
-  Cmdline::Java::ProcessEncoding(project, argv);
-  Cmdline::Java::ProcessG(project, argv);
-  Cmdline::Java::ProcessNoWarn(project, argv);
-  Cmdline::Java::ProcessVerbose(project, argv);
-  Cmdline::Java::ProcessDeprecation(project, argv);
-  Cmdline::Java::ProcessBootclasspath(project, argv);
-
-  Cmdline::Java::Ecj::Process(project, argv);
-}
-
-void
-Rose::Cmdline::Java::
-ProcessJavaOnly (SgProject* project, std::vector<std::string>& argv)
-   {
-     project->set_Java_only(false);
-     bool is_java_only = CommandlineProcessing::isOption(argv,"-rose:java","",true);
-
-     if (is_java_only)
-        {
-          if (SgProject::get_verbose() > 1)
-               std::cout << "[INFO] Turning on Java only mode" << std::endl;
-
-       // Java code is only compiled, not linked as is C/C++ and Fortran.
-          project->set_compileOnly(true);
-          project->set_Java_only(true);
-        }
-   }
-
-void
-Rose::Cmdline::Java::
-ProcessClasspath (SgProject* project, std::vector<std::string>& argv)
-{
-  std::string classpath = "";
-
-  bool has_java_classpath =
-      // -rose:java:classpath
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          Java::option_prefix,
-          "classpath",
-          classpath,
-          Cmdline::REMOVE_OPTION_FROM_ARGV) ||
-      // -rose:java:cp
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          Java::option_prefix,
-          "cp",
-          classpath,
-          Cmdline::REMOVE_OPTION_FROM_ARGV) ||
-      // -classpath
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          "-classpath",
-          "",
-          classpath,
-          Cmdline::REMOVE_OPTION_FROM_ARGV) ||
-      // -cp
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          "-cp",
-          "",
-          classpath,
-          Cmdline::REMOVE_OPTION_FROM_ARGV);
-
-  if (has_java_classpath)
-  {
-      if (SgProject::get_verbose() > 1)
-          std::cout << "[INFO] Processing Java classpath option" << std::endl;
-
-      // Parse and register the Java classpath in the project
-      std::list<std::string> classpath_list =
-          StringUtility::tokenize(classpath, ':');
-      project->set_Java_classpath(classpath_list);
-
-      // Sanity check: Check existence of paths in Classpath
-      BOOST_FOREACH(std::string path, classpath_list)
-      {
-          bool path_exists = boost::filesystem::exists(path);
-          if (!path_exists)
-          {
-              std::cout
-                  << "[WARN] "
-                  << "Invalid path specified in -classpath; path does not exist: "
-                  << "'" << path << "'"
-                  << std::endl;
-          }
-      }// sanity check
-  }// has_java_classpath
-}// Cmdline::Java::ProcessClasspath
-
-void
-Rose::Cmdline::Java::
-ProcessBootclasspath (SgProject* project, std::vector<std::string>& argv)
-{
-  std::string bootclasspath = "";
-
-  bool has_java_bootclasspath =
-      // -bootclasspath
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          "-bootclasspath",
-          "",
-          bootclasspath,
-          Cmdline::REMOVE_OPTION_FROM_ARGV);
-
-  if (has_java_bootclasspath)
-  {
-      if (SgProject::get_verbose() > 1)
-          std::cout << "[INFO] Processing Java -bootclasspath option" << std::endl;
-
-      // Parse and register the Java bootclasspath in the project
-      std::list<std::string> bootclasspath_list =
-          StringUtility::tokenize(bootclasspath, ':');
-      project->set_Java_bootclasspath(bootclasspath_list);
-
-      // Sanity check: Check existence of paths in Bootbootclasspath
-      BOOST_FOREACH(std::string path, bootclasspath_list)
-      {
-          bool path_exists = boost::filesystem::exists(path);
-          if (!path_exists)
-          {
-              std::cout
-                  << "[WARN] "
-                  << "Invalid path specified in -bootclasspath; path does not exist: "
-                  << "'" << path << "'"
-                  << std::endl;
-          }
-      }// sanity check
-  }// has_java_bootclasspath
-}// Cmdline::Java::ProcessBootclasspath
-
-void
-Rose::Cmdline::Java::
-ProcessSourcepath (SgProject* project, std::vector<std::string>& argv)
-{
-  std::string sourcepath = "";
-
-  bool has_java_sourcepath =
-      // -rose:java:sourcepath
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          Java::option_prefix,
-          "sourcepath",
-          sourcepath,
-          Cmdline::REMOVE_OPTION_FROM_ARGV) ||
-      // -sourcepath
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          "-sourcepath",
-          "",
-          sourcepath,
-          Cmdline::REMOVE_OPTION_FROM_ARGV);
-
-  if (has_java_sourcepath)
-  {
-      if (SgProject::get_verbose() > 1)
-          std::cout << "[INFO] Processing Java sourcepath option" << std::endl;
-
-      // Parse and register the Java sourcepath in the project
-      std::list<std::string> sourcepath_list =
-          StringUtility::tokenize(sourcepath, ':');
-      project->set_Java_sourcepath(sourcepath_list);
-
-      // Sanity check: Check existence of paths in sourcepath
-      BOOST_FOREACH(std::string path, sourcepath_list)
-      {
-          bool path_exists = boost::filesystem::exists(path);
-          if (!path_exists)
-          {
-              std::cout
-                  << "[WARN] "
-                  << "Invalid path specified in -sourcepath; path does not exist: "
-                  << "'" << path << "'"
-                  << std::endl;
-          }
-      }// sanity check
-  }// has_java_sourcepath
-}// Cmdline::Java::ProcessSourcepath
-
-void
-Rose::Cmdline::Java::
-ProcessDestdir (SgProject* project, std::vector<std::string>& argv)
-{
-  std::string destdir = "";
-
-  bool has_java_destdir =
-      // -rose:java:d
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          Java::option_prefix,
-          "destdir",
-          destdir,
-          Cmdline::REMOVE_OPTION_FROM_ARGV) ||
-      // -d
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          "-d",
-          "",
-          destdir,
-          Cmdline::REMOVE_OPTION_FROM_ARGV);
-
-  if (has_java_destdir)
-  {
-      if (SgProject::get_verbose() > 1)
-          std::cout << "[INFO] Processing Java destdir option" << std::endl;
-
-      project->set_Java_destdir(destdir);
-
-      // Sanity check: Check existence of destdir path
-      {
-          bool directory_exists = boost::filesystem::is_directory(destdir);
-          if (!directory_exists)
-          {
-              std::cout
-                  << "[WARN] "
-                  << "Invalid -destdir directory path; path does not exist: "
-                  << "'" << destdir << "'"
-                  << std::endl;
-          }
-      }// sanity check
-  }// has_java_destdir
-}// Cmdline::Java::ProcessDestdir
-
-void
-Rose::Cmdline::Java::
-ProcessSourceDestdir (SgProject* project, std::vector<std::string>& argv)
-{
-  std::string source_destdir = "";
-
-  bool has_java_source_destdir =
-      // -rose:java:ds
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          Java::option_prefix,
-          "ds",
-          source_destdir,
-          Cmdline::REMOVE_OPTION_FROM_ARGV);
-
-  if (has_java_source_destdir)
-  {
-      if (SgProject::get_verbose() > 1)
-          std::cout << "[INFO] Processing ROSE-Java source destdir option" << std::endl;
-
-      project->set_Java_source_destdir(source_destdir);
-
-      // Sanity check: Check existence of source destdir path
-      {
-          bool directory_exists = boost::filesystem::is_directory(source_destdir);
-          if (!directory_exists)
-          {
-              std::cout
-                  << "[WARN] "
-                  << "Invalid source destdir directory path; path does not exist: "
-                  << "'" << source_destdir << "'"
-                  << std::endl;
-          }
-      }// sanity check
-  }// has_java_source_destdir
-}// Cmdline::Java::ProcessSourceDestdir
-
-void
-Rose::Cmdline::Java::
-ProcessS (SgProject* project, std::vector<std::string>& argv)
-{
-  std::string generate_source_file_dir = "";
-
-  bool has_java_source_destdir =
-      // -s
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          "-s",
-          "",
-          generate_source_file_dir,
-          Cmdline::REMOVE_OPTION_FROM_ARGV);
-
-  if (has_java_source_destdir)
-  {
-      if (SgProject::get_verbose() > 1)
-          std::cout << "[INFO] Processing javac -s option" << std::endl;
-
-      project->set_Java_s(generate_source_file_dir);
-
-      // Sanity check: Check existence of source destdir path
-      {
-          bool directory_exists = boost::filesystem::is_directory(generate_source_file_dir);
-          if (!directory_exists)
-          {
-              std::cout
-                  << "[WARN] "
-                  << "Invalid javac -s directory path; path does not exist: "
-                  << "'" << generate_source_file_dir << "'"
-                  << std::endl;
-          }
-      }// sanity check
-  }// has_java_source_destdir
-}// Cmdline::Java::ProcessSourceDestdir
-
-void
-Rose::Cmdline::Java::
-ProcessSource (SgProject* project, std::vector<std::string>& argv)
-{
-  if (SgProject::get_verbose() > 1)
-      std::cout << "[INFO] Processing Java -source " << std::endl;
-
-  std::string source = "";
-
-  bool has_java_source =
-      // -source
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          "-source",
-          "",
-          source,
-          Cmdline::REMOVE_OPTION_FROM_ARGV) ||
-      // -rose:java:source
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          Java::option_prefix,
-          "source",
-          source,
-          Cmdline::REMOVE_OPTION_FROM_ARGV);
-
-// DQ (3/25/2017): Eliminate warning of unused variable via a trivial use.
-   ROSE_ASSERT(has_java_source == true || has_java_source == false);
-
-  // Default
-  //if (has_java_source == false)
-  //{
-  //    source = "1.6";
-  //}
-
-  project->set_Java_source(source);
-}// Cmdline::Java::ProcessSource
-
-void
-Rose::Cmdline::Java::
-ProcessTarget (SgProject* project, std::vector<std::string>& argv)
-{
-  if (SgProject::get_verbose() > 1)
-      std::cout << "[INFO] Processing Java -target " << std::endl;
-
-  std::string target = "";
-
-#if 0
-  // DQ (9/20/2018): This is an unused variable now (and a compiler warning).
-  bool has_java_target =
-      // -target
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          "-target",
-          "",
-          target,
-          Cmdline::REMOVE_OPTION_FROM_ARGV) ||
-      // -rose:java:target
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          Java::option_prefix,
-          "target",
-          target,
-          Cmdline::REMOVE_OPTION_FROM_ARGV);
-
-  // Default
-  //if (has_java_target == false)
-  //{
-  //    target = "1.6";
-  //}
-#endif
-
-  project->set_Java_target(target);
-}// Cmdline::Java::Processtarget
-
-void
-Rose::Cmdline::Java::
-ProcessEncoding (SgProject* project, std::vector<std::string>& argv)
-{
-  std::string encoding = "";
-
-  bool has_java_encoding =
-      // -encoding
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          "-encoding",
-          "",
-          encoding,
-          Cmdline::REMOVE_OPTION_FROM_ARGV) ||
-      // -rose:java:encoding
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          Java::option_prefix,
-          "encoding",
-          encoding,
-          Cmdline::REMOVE_OPTION_FROM_ARGV);
-
-  if (has_java_encoding)
-  {
-      if (SgProject::get_verbose() > 1)
-          std::cout << "[INFO] Processing Java -encoding " << encoding << std::endl;
-
-      project->set_Java_encoding(encoding);
-  }// has_java_encoding
-}// Cmdline::Java::Processencoding
-
-void
-Rose::Cmdline::Java::
-ProcessG (SgProject* project, std::vector<std::string>& argv)
-{
-  std::string g = "";
-
-  bool has_java_g =
-      // -g
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          "-g",
-          "",
-          g,
-          Cmdline::REMOVE_OPTION_FROM_ARGV);
-
-  if (has_java_g)
-  {
-      if (SgProject::get_verbose() > 1)
-          std::cout << "[INFO] Processing Java -g[:none,source,lines,vars] " << g << std::endl;
-
-      project->set_Java_g(g);
-  }// has_java_g
-}// Cmdline::Java::Processg
-
-void
-Rose::Cmdline::Java::
-ProcessNoWarn (SgProject* project, std::vector<std::string>& argv)
-{
-  bool has_java_nowarn =
-      // -nowarn
-      CommandlineProcessing::isOption(
-          argv,
-          "-nowarn",
-          "",
-          Cmdline::REMOVE_OPTION_FROM_ARGV);
-
-  if (has_java_nowarn)
-  {
-      if (SgProject::get_verbose() > 1)
-          std::cout << "[INFO] Processing Java -nowarn " << std::endl;
-  }// has_java_nowarn
-
-  project->set_Java_nowarn(has_java_nowarn);
-}// Cmdline::Java::Processnowarn
-
-void
-Rose::Cmdline::Java::
-ProcessVerbose (SgProject* project, std::vector<std::string>& argv)
-{
-  bool has_java_verbose =
-      // -verbose
-      CommandlineProcessing::isOption(
-          argv,
-          "-verbose",
-          "",
-          Cmdline::REMOVE_OPTION_FROM_ARGV);
-
-  if (has_java_verbose)
-  {
-      if (SgProject::get_verbose() > 1)
-          std::cout << "[INFO] Processing Java -verbose " << std::endl;
-  }// has_java_verbose
-
-  project->set_Java_verbose(has_java_verbose);
-}// Cmdline::Java::ProcessVerbose
-
-void
-Rose::Cmdline::Java::
-ProcessDeprecation (SgProject* project, std::vector<std::string>& argv)
-{
-  bool has_deprecation =
-      // -deprecation
-      CommandlineProcessing::isOption(
-          argv,
-          "-deprecation",
-          "",
-          Cmdline::REMOVE_OPTION_FROM_ARGV);
-
-  if (has_deprecation)
-  {
-      if (SgProject::get_verbose() > 1)
-          std::cout << "[INFO] Processing Java -deprecation " << std::endl;
-  }
-
-  project->set_Java_deprecation(has_deprecation);
-}// ::Rose::Cmdline::Java::ProcessDeprecation
-
-Rose_STL_Container<std::string>
-Rose::Cmdline::Java::
-ExpandArglist (const std::string& arglist_string)
-{
-  ROSE_ASSERT(!arglist_string.empty());
-  ROSE_ASSERT(arglist_string[0] == '@'); // @filename
-
-  Rose_STL_Container<std::string> arglist;
-
-  if (arglist_string.size() < 2)
-  {
-      std::cout
-          << "[FATAL] No filename found after @ symbol "
-          << "on the command line. Should be @<filename>."
-          << std::endl;
-      ROSE_ABORT();
-  }
-  else
-  {
-      std::string filename = arglist_string.substr(1);
-      ROSE_ASSERT(filename.empty() == false);
-
-      arglist = Rose::Cmdline::Java::GetListFromFile(filename);
-      if (SgProject::get_verbose() > 2)
-      {
-          printf ("[INFO] "
-                  "Expanded @%s = '%s'\n",
-                  filename.c_str(),
-                  StringUtility::listToString(arglist).c_str());
-      }
-      return arglist;
-  }
-}// Cmdline::Java::ExpandArglist
-
-// TODO: should we validate that '@arglist' is only
-// passed once on the commandline?
-Rose_STL_Container<std::string>
-Rose::Cmdline::Java::
-ExpandArglist (const Rose_STL_Container<std::string>& p_argv)
-{
-  Rose_STL_Container<std::string> argv = p_argv;
-  Rose_STL_Container<std::string>::iterator i = argv.begin();
-  while (i != argv.end())
-  {
-      std::string argument = *i;
-      if (argument[0] == '@')
-      {
-          Rose_STL_Container<std::string> arglist =
-              Rose::Cmdline::Java::ExpandArglist(argument);
-
-          // Insert actual list of arguments in-place where @filename was found
-          int i_offset = std::distance(argv.begin(), i);
-          argv.erase(i);
-          argv.insert(argv.end(), arglist.begin(), arglist.end());
-          i = argv.begin() + i_offset;
-      }
-      else
-      {
-          ++i; // next commandline argument
-      }
-  }
-  return argv;
-}
-
-std::vector<std::string>
-Rose::Cmdline::Java::
-GetListFromFile (const std::string& filename)
-{
-    ROSE_ASSERT(! filename.empty());
-
-    std::vector<std::string> list;
-    std::ifstream            file(filename.c_str());
-    std::string              line;
-
-    while (!file.fail() && std::getline(file, line))
-    {
-        // TOO1 (3/4/2014): Strip quotes surrounding arguments; this is specific
-        //                  to how Maven utilizes javac @argfiles, e.g.:
-        //
-        //                      "javac"
-        //                      "-target 1.6"
-        //                      "-source 1.6"
-        //                      "File.java"
-        //
-        //                  TODO: Re-implement since this will not handle the case
-        //                  where file paths contain spaces and require quotations:
-        //
-        //                      "javac"
-        //                      "C:\ Program Files\Foo Bar Workspace\File.java"
-        line.erase(
-            std::remove(line.begin(), line.end(), '\"'),
-            line.end());
-        list.push_back(line);
-    }
-
-    file.close();
-
-    if (list.empty())
-    {
-        std::cout
-            << "[FATAL] No arguments found in file "
-            << "'" << filename << "'"
-            << std::endl;
-        ROSE_ABORT();
-    }
-
-    return list;
-}
-
-// -rose:java:ecj options have already been transformed by Cmdline::Java::StripRoseOptions.
-// Therefore, for example,
-//
-//    -rose:java:ecj:jvm_options
-//
-//    is now actually:
-//
-//    -ecj:jvm_options
-//
-void
-Rose::Cmdline::Java::Ecj::
-StripRoseOptions (std::vector<std::string>& argv)
-{
-  if (SgProject::get_verbose() > 1)
-  {
-      std::cout
-          << "[INFO] "
-          << "Stripping ROSE Java ECJ commandline options"
-          << std::endl;
-  }
-
-  // (1) Options WITHOUT an argument
-  sla(argv, "-rose:java:ecj:", "($)", "batch_mode", 1);
-
-  //
-  // (2) Options WITH an argument
-  //
-
-  // Remove ECJ options with ROSE-ECJ prefix; option arguments removed
-  // by generateOptionWithNameParameterList.
-  std::vector<std::string> ecj_options =
-      CommandlineProcessing::generateOptionWithNameParameterList(
-          argv,     // Remove ROSE-Java options from here
-          "-ecj:",  // Current prefix
-          "-");     // New prefix
-
-  // TOO1 (2/11/2014): Skip ALL ROSE-specific ECJ options;
-  //                   at this stage, we only have "-rose:java:ecj:jvm_options",
-  //                   and this is only inteded for the ECJ frontend's JVM.
-  BOOST_FOREACH(std::string ecj_option, ecj_options)
-  {
-      if (SgProject::get_verbose() > 1)
-      {
-          std::cout
-              << "[INFO] "
-              << "Stripping ECJ JVM commandline argument '" << ecj_option << "'"
-              << std::endl;
-      }
-  }
-}// Cmdline::Java::StripRoseOptions
-
-std::string
-Rose::Cmdline::Java::Ecj::
-GetRoseClasspath ()
-{
-
-#ifdef _MSC_VER
-  std::string separator = ";";
-#else
-  std::string separator = ":";
-#endif
-
-  std::string classpath = "-Djava.class.path=";
-
-  // Java (ECJ front-end) support (adding specific jar file)
-  std::string ecj_jar_file_name = std::string("ecj-3.8.2.jar");
-  std::string ecj_class_path_jarfile =
-      "src/3rdPartyLibraries/java-parser/" +
-      ecj_jar_file_name;
-
-  classpath +=
-      findRoseSupportPathFromBuild(
-          ecj_class_path_jarfile,
-          std::string("lib/") + ecj_jar_file_name
-      );
-  classpath += separator;
-
-  // Java (ECJ front-end) support (adding path to source tree for the jar file).
-  // This allows us to avoid copying the jar file to the build tree which is
-  // write protected in the execution of the "make distcheck" rule.
-  std::string ecj_class_path = "src/3rdPartyLibraries/java-parser/";
-  classpath +=
-      findRoseSupportPathFromBuild(
-          ecj_class_path,
-          std::string("lib/"));
-  classpath += separator;
-
-  // Everything else?
-  classpath += ".";
-
-  return classpath;
-}
-
-void
-Rose::Cmdline::Java::Ecj::
-ProcessBatchMode (SgProject* project, std::vector<std::string>& argv)
-{
-  if (SgProject::get_verbose() > 1)
-      std::cout << "[INFO] Processing Java -rose:java:ecj:batch_mode " << std::endl;
-
-  bool has_batch_mode =
-      // -rose:java:ecj:batch_mode
-      CommandlineProcessing::isOption(
-          argv,
-          Java::option_prefix,
-          "ecj:batch_mode",
-          Cmdline::REMOVE_OPTION_FROM_ARGV);
-
-  if (SgProject::get_verbose() > 1)
-      std::cout << "[INFO] -rose:java:ecj:batch_mode=" << has_batch_mode << std::endl;
-
-  Rose::Cmdline::Java::Ecj::batch_mode = has_batch_mode;
-  project->set_Java_batch_mode(has_batch_mode);
-}// ::Rose::Cmdline::Java::Ecj::ProcessBatchMode
-
-void
-Rose::Cmdline::Java::Ecj::
-Process (SgProject* project, std::vector<std::string>& argv)
-{
-  if (SgProject::get_verbose() > 1)
-      std::cout << "[INFO] Processing Java's ECJ frontend commandline options" << std::endl;
-
-  ProcessBatchMode(project, argv);
-  ProcessJvmOptions(project, argv);
-  ProcessEnableRemoteDebugging(project, argv);
-}
-
-void
-Rose::Cmdline::Java::Ecj::
-ProcessJvmOptions (SgProject* project, std::vector<std::string>& argv)
-{
-  if (SgProject::get_verbose() > 1)
-      std::cout << "[INFO] Processing Java's ECJ frontend JVM commandline options" << std::endl;
-
-  std::string ecj_jvm_options = "";
-
-  bool has_ecj_jvm_options =
-      // -rose:java:ecj:jvm_options
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          Java::option_prefix,
-          "ecj:jvm_options",
-          ecj_jvm_options,
-          Cmdline::REMOVE_OPTION_FROM_ARGV);
-
-  if (has_ecj_jvm_options)
-  {
-      if (SgProject::get_verbose() > 1)
-      {
-          std::cout
-              << "[INFO] Processing ECJ JVM options: "
-              << "'" << ecj_jvm_options << "'"
-              << std::endl;
-      }
-
-      std::list<std::string> ecj_jvm_options_list =
-          StringUtility::tokenize(ecj_jvm_options, ' ');
-
-      project->set_Java_ecj_jvm_options(ecj_jvm_options_list);
-
-      Cmdline::Java::Ecj::jvm_options.insert(
-          Cmdline::Java::Ecj::jvm_options.begin(),
-          ecj_jvm_options_list.begin(),
-          ecj_jvm_options_list.end());
-  }// has_ecj_jvm_options
-}// Cmdline::Java::ProcessJvmOptions
-
-void
-Rose::Cmdline::Java::Ecj::
-ProcessEnableRemoteDebugging (SgProject* project, std::vector<std::string>& argv)
-{
-  bool has_java_remote_debug =
-      // -rose:java:remoteDebug
-      CommandlineProcessing::isOption(
-          argv,
-          Java::option_prefix,
-          "ecj:enable_remote_debugging",
-          Cmdline::REMOVE_OPTION_FROM_ARGV);
-
-  if (has_java_remote_debug)
-  {
-      if (SgProject::get_verbose() > 1)
-          std::cout << "[INFO] Processing Java remote debugging option" << std::endl;
-
-#ifdef ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
-          Cmdline::Java::Ecj::jvm_options.push_back(
-              "-agentlib:jdwp=transport=dt_socket,server=y,address=8000");
-#else
-          std::cout
-              << "[FATAL] "
-              << "JVM remote debugging cannot be enabled since ROSE-Java "
-              << "support is turned off"
-              << std::endl;
-          ROSE_ABORT();
-#endif
-  }// has_java_remote_debug
-}// Cmdline::Java::Ecj::ProcessEnableRemoteDebugging
-
-//------------------------------------------------------------------------------
-//                                  X10
-//------------------------------------------------------------------------------
-
-void
-Rose::Cmdline::X10::
-Process (SgProject* project, std::vector<std::string>& argv)
-{
-  if (SgProject::get_verbose() > 1)
-      std::cout << "[INFO] Processing X10 commandline options" << std::endl;
-
-  ProcessX10Only(project, argv);
-}
-
-void
-Rose::Cmdline::X10::
-ProcessX10Only (SgProject* project, std::vector<std::string>& argv)
-{
-  bool is_x10_only =
-      CommandlineProcessing::isOption(
-          argv,
-          X10::option_prefix,
-          "",
-          true);
-
-  if (is_x10_only)
-  {
-      if (SgProject::get_verbose() > 1)
-          std::cout << "[INFO] Turning on X10 only mode" << std::endl;
-
-      // X10 code is only compiled, not linked as is C/C++ and Fortran.
-      project->set_compileOnly(true);
-      project->set_X10_only(true);
-  }
-}
-
-void
-Rose::Cmdline::X10::X10c::
-Process (SgProject* project, std::vector<std::string>& argv)
-{
-  if (SgProject::get_verbose() > 1)
-      std::cout << "[INFO] Processing X10 compiler frontend commandline options" << std::endl;
-
-  ProcessJvmOptions(project, argv);
-}
-
-void
-Rose::Cmdline::X10::X10c::
-ProcessJvmOptions (SgProject* project, std::vector<std::string>& argv)
-{
-  if (SgProject::get_verbose() > 1)
-      std::cout << "[INFO] Processing X10 compiler frontend JVM commandline options" << std::endl;
-
-  std::string x10c_jvm_options = "";
-
-  bool has_x10c_jvm_options =
-      CommandlineProcessing::isOptionWithParameter(
-          argv,
-          X10::option_prefix,
-          "x10c:jvm_options",
-          x10c_jvm_options,
-          Cmdline::REMOVE_OPTION_FROM_ARGV);
-
-  if (has_x10c_jvm_options)
-  {
-      if (SgProject::get_verbose() > 1)
-      {
-          std::cout
-              << "[INFO] Processing X10 compiler options: "
-              << "'" << x10c_jvm_options << "'"
-              << std::endl;
-      }
-
-      std::list<std::string> x10c_jvm_options_list =
-          StringUtility::tokenize(x10c_jvm_options, ' ');
-
-      Cmdline::X10::X10c::jvm_options.insert(
-          Cmdline::X10::X10c::jvm_options.begin(),
-          x10c_jvm_options_list.begin(),
-          x10c_jvm_options_list.end());
-  }// has_x10c_jvm_options
-}// Cmdline::X10::ProcessJvmOptions
-
-std::string
-Rose::Cmdline::X10::X10c::
-GetRoseClasspath ()
-{
-  std::string classpath = "-Djava.class.path=";
-
-#ifdef ROSE_BUILD_X10_LANGUAGE_SUPPORT
-  classpath +=
-      std::string(X10_INSTALL_PATH) + "/lib/x10c.jar" + ":" +
-      std::string(X10_INSTALL_PATH) + "/lib/lpg.jar" + ":" +
-      std::string(X10_INSTALL_PATH) + "/lib/com.ibm.wala.cast.java_1.0.0.201101071300.jar" + ":" +
-      std::string(X10_INSTALL_PATH) + "/lib/com.ibm.wala.cast_1.0.0.201101071300.jar" + ":" +
-      std::string(X10_INSTALL_PATH) + "/lib/com.ibm.wala.core_1.1.3.201101071300.jar" + ":" +
-      std::string(X10_INSTALL_PATH) + "/lib/com.ibm.wala.shrike_1.3.1.201101071300.jar" + ":" +
-      std::string(X10_INSTALL_PATH) + "/lib/x10wala.jar" + ":" +
-      std::string(X10_INSTALL_PATH) + "/lib/org.eclipse.equinox.common_3.6.0.v20100503.jar";
-#endif // ROSE_BUILD_X10_LANGUAGE_SUPPORT
-
-  classpath += ":";
-
-  // Everything else?
-  classpath += ".";
-
-  return classpath;
-}
-
 /*-----------------------------------------------------------------------------
  *  namespace SgFile {
  *---------------------------------------------------------------------------*/
@@ -3166,32 +2134,6 @@ SgFile::usage ( int status )
 "                             follow C++11 standard\n"
 "     -rose:Cxx14_only, -rose:Cxx14\n"
 "                             follow C++14 standard\n"
-"     -rose:java\n"
-"                             compile Java code (work in progress)\n"
-"     -rose:java:cp, -rose:java:classpath, -cp, -classpath\n"
-"                             Classpath to look for java classes\n"
-"     -rose:java:sourcepath, -sourcepath\n"
-"                             Sourcepath to look for java sources\n"
-"     -rose:java:d, -d\n"
-"                             Specifies generated classes destination dir\n"
-"     -rose:java:ds\n"
-"                             Specifies translated sources destination dir\n"
-"     -rose:java:source\n"
-"                             Specifies java sources version (default=1.6)\n"
-"     -rose:java:target\n"
-"                             Specifies java classes target version (default=1.6)\n"
-"     -rose:java:encoding\n"
-"                             Specifies the character encoding\n"
-"     -rose:java:ecj:jvm_options\n"
-"                             Specifies the JVM startup options\n"
-// "     -rose:java:Xms<size>\n"
-// "                             Set initial Java heap size\n"
-// "     -rose:java:Xmx<size>\n"
-// "                             Set maximum Java heap size\n"
-// "     -rose:java:Xss<size>\n"
-// "                             Set java thread stack size\n"
-"     -rose:Python, -rose:python, -rose:py\n"
-"                             compile Python code\n"
 "     -rose:OpenMP, -rose:openmp\n"
 "                             follow OpenMP 3.0 specification for C/C++ and Fortran, perform one of the following actions:\n"
 "     -rose:OpenMP:parse_only, -rose:openmp:parse_only\n"
@@ -3201,20 +2143,6 @@ SgFile::usage ( int status )
 "     -rose:OpenMP:lowering, -rose:openmp:lowering\n"
 "                             on top of -rose:openmp:ast_only, transform AST with OpenMP nodes into multithreaded code \n"
 "                             targeting GCC GOMP runtime library\n"
-"     -rose:OpenACC, -rose:openacc\n"
-"                             follow OpenACC 3.0 specification for Fortran, perform one of the following actions:\n"
-"     -rose:OpenACC:parse_only, -rose:openacc:parse_only\n"
-"                             parse OpenACC directives to OmpAccAttributes, no further actions (default behavior now)\n"
-"     -rose:OpenACC:ast_only, -rose:openacc:ast_only\n"
-"                             on top of -rose:openacc:parse_only, build OpenACC AST nodes from OmpAccAttributes, no further actions\n"
-"     -rose:UPC_only, -rose:UPC\n"
-"                             follow Unified Parallel C 1.2 specification\n"
-"     -rose:UPCxx_only, -rose:UPCxx\n"
-"                             allows C++ within UPC (follows UPC 1.2 but simpily allows \n"
-"                             using C++ as the base language) (not a legitimate language, \n"
-"                             since there is no backend compiler to support this).\n"
-"     -rose:upc_threads n     Enable UPC static threads compilation with n threads\n"
-"                             n>=1: static threads; dynamic(default) otherwise\n"
 "     -rose:fortran\n"
 "                             compile Fortran code, determining version of\n"
 "                             Fortran from file suffix)\n"
@@ -3240,14 +2168,7 @@ SgFile::usage ( int status )
 "                             compile Fortran I code (not implemented yet)\n"
 "     -rose:fortran:ofp:jvm_options\n"
 "                             Specifies the JVM startup options\n"
-"     -rose:x10\n"
-"                             compile X10 code (work in progress)\n"
 "     -rose:strict            strict enforcement of ANSI/ISO standards\n"
-"     -rose:binary, -rose:binary_only\n"
-"                             assume input file is for binary analysis (this avoids\n"
-"                             ambiguity when ROSE might want to assume linking instead)\n"
-"     -rose:FailSafe, -rose:failsafe\n"
-"                             Enable experimental processing of resilience directives defined by FAIL-SAFE annotation language specification.\n"
 "     -rose:projectSpecificDatabaseFile FILE\n"
 "                             filename where a database of all files used in a project are stored\n"
 "                             for producing unique trace ids and retrieving the reverse mapping from trace to files"
@@ -4386,140 +3307,6 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
      ROSE_ABORT();
 #endif
 
-  // DQ (2/5/2009): We now have one at the SgProject and the SgFile levels.
-  // DQ (2/4/2009): Moved to SgProject.
-  // DQ (12/27/2007): Allow defaults to be set based on filename extension.
-     if ( CommandlineProcessing::isOption(argv,"-rose:","(binary|binary_only)",true) == true )
-        {
-          if ( SgProject::get_verbose() >= 1 )
-               printf ("Binary mode ON \n");
-          set_binary_only(true);
-          if (get_sourceFileUsesBinaryFileExtension() == false)
-             {
-               printf ("Warning, Non binary file name specificed with explicit -rose:binary option! \n");
-               set_binary_only(false);
-             }
-        }
-
-  // DQ (10/11/2010): Adding initial Java support.
-     if ( CommandlineProcessing::isOption(argv,"-rose:","(j|J|Java)",true) == true )
-        {
-          if ( SgProject::get_verbose() >= 1 )
-               printf ("Java mode ON \n");
-          set_Java_only(true);
-          if (get_sourceFileUsesJavaFileExtension() == false)
-             {
-               printf ("Warning, Non Java source file name specified with explicit -rose:Java Java language option! \n");
-               set_Java_only(false);
-
-            // DQ (4/2/2011): Java code is only compiled, not linked as is C/C++ and Fortran.
-               set_compileOnly(true);
-             }
-        }
-
-  // driscoll6 (8/8/11): python support
-     if ( CommandlineProcessing::isOption(argv,"-rose:","(py|python|Python)",true) == true )
-        {
-          if ( SgProject::get_verbose() >= 1 )
-               printf ("Python mode ON \n");
-          set_Python_only(true);
-          if (get_sourceFileUsesPythonFileExtension() == false)
-             {
-               printf ("Warning, Non Python source file name specificed with explicit -rose:python Python language option! \n");
-               set_Python_only(false);
-             }
-        }
-
-  // DQ (28/8/17): Csharp support
-     if ( CommandlineProcessing::isOption(argv,"-rose:","(cs|csharp|Csharp)",true) == true )
-        {
-          if ( SgProject::get_verbose() >= 0 )
-               printf ("Csharp mode ON \n");
-          set_Csharp_only(true);
-          if (get_sourceFileUsesCsharpFileExtension() == false)
-             {
-               printf ("Warning, Non Csharp source file name specificed with explicit -rose:csharp Csharp language option! \n");
-               set_Csharp_only(false);
-             }
-
-       // DQ (30/8/2017): For Csharp we need to only compile and not link (as best I understand csharp presently).
-          printf ("NOTE: For Csharp support disable link step, since it is not a part of the languages the way it is with C/C++ (calling set_compileOnly(true)). \n");
-
-          set_compileOnly(true);
-
-          ROSE_ASSERT(get_compileOnly() == true);
-        }
-
-  // DQ (28/8/17): Ada support
-     if ( CommandlineProcessing::isOption(argv,"-rose:","(ada|Ada)",true) == true )
-        {
-          if ( SgProject::get_verbose() >= 0 )
-               printf ("Ada mode ON \n");
-          set_Ada_only(true);
-          if (get_sourceFileUsesAdaFileExtension() == false)
-             {
-               printf ("Warning, Non Ada source file name specificed with explicit -rose:ada Ada language option! \n");
-               set_Ada_only(false);
-             }
-
-       // DQ (30/8/2017): For Ada we need to only compile and not link (at least while debugging initial support).
-          printf ("NOTE: For Ada support disable link step, at least while debugging initial support \n");
-
-          set_compileOnly(true);
-
-          ROSE_ASSERT(get_compileOnly() == true);
-        }
-
-  // DQ (28/8/17): Jovial support
-     if ( CommandlineProcessing::isOption(argv,"-rose:","(jovial|Jovial)",true) == true )
-        {
-          if ( SgProject::get_verbose() > 0 )
-             std::cout << "Jovial mode ON \n";
-          if (get_sourceFileUsesJovialFileExtension() == false)
-             {
-               printf ("Warning, Non Jovial source file name specificed with explicit -rose:jovial Jovial language option! \n");
-               set_Jovial_only(false);
-             }
-
-          set_Jovial_only(true);
-          set_compileOnly(true);
-        }
-
-  // DQ (28/8/17): Cobol support
-     if ( CommandlineProcessing::isOption(argv,"-rose:","(ada|Ada)",true) == true )
-        {
-          if ( SgProject::get_verbose() > 0 )
-             std::cout << "Ada mode ON \n";
-          if (get_sourceFileUsesAdaFileExtension() == false)
-             {
-               printf ("Warning, Non Ada source file name specificed with explicit -rose:ada Ada language option! \n");
-               set_Ada_only(false);
-             }
-
-          set_Ada_only(true);
-          set_compileOnly(true);
-        }
-
-  // DQ (28/8/17): Cobol support
-     if ( CommandlineProcessing::isOption(argv,"-rose:","(cobol|Cobol)",true) == true )
-        {
-          if ( SgProject::get_verbose() >= 0 )
-               printf ("Cobol mode ON \n");
-          set_Cobol_only(true);
-          if (get_sourceFileUsesCobolFileExtension() == false)
-             {
-               printf ("Warning, Non Cobol source file name specificed with explicit -rose:cobol Cobol language option! \n");
-               set_Cobol_only(false);
-             }
-
-       // DQ (30/8/2017): For Cobol we need to only compile and not link (at least while debugging initial support).
-          printf ("NOTE: For Cobol support disable link step, at least while debugging initial support \n");
-
-          set_compileOnly(true);
-
-          ROSE_ASSERT(get_compileOnly() == true);
-        }
-
   // Fixed format v.s. free format option handling (ROSE defaults to fix or free format, depending on the file extension).
   // F77 default is fixed format, F90 and later default is free format.
   // Fortran source file format options for different compilers(for IBM/XL,Intel,Portland,GNU):
@@ -4666,71 +3453,6 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
              }
         }
 
-  // Liao 3/12/2020: handle options for OpenACC support
-  // Allows handling of OpenACC "!$omp" directives in free form and "c$omp", *$omp and "!$omp" directives in fixed form, enables "!$" conditional
-  // compilation sentinels in free form and "c$", "*$" and "!$" sentinels in fixed form and when linking arranges for the OpenMP runtime library
-  // to be linked in. (Not implemented yet).
-     set_openacc(false);
-     //string ompmacro="-D_OPENMP="+ boost::to_string(OMPVERSION); // Mac OS complains this function does not exist!
-     string ompacc_macro="-D_OPENACC="+ StringUtility::numberToString(3);
-     ROSE_ASSERT (get_openacc() == false);
-     ROSE_ASSERT (get_openacc_parse_only() == false);
-     ROSE_ASSERT (get_openacc_ast_only() == false);
-     if ( CommandlineProcessing::isOption(argv,"-rose:","(OpenACC|openacc)",true) == true
-         ||CommandlineProcessing::isOption(argv,"-","(acc|openacc|fopenacc)",true) == true
-         )
-        {
-          if ( SgProject::get_verbose() >= 1 )
-               printf ("OpenACC option specified \n");
-          set_openacc(true);
-          set_openacc_parse_only(true); // default is parse_only for now
-        //side effect for enabling OpenACC, define the macro as required
-         //This new option does not reach the backend compiler
-         //But it is enough to reach EDG only.
-         //We can later on back end option to turn on their OpenMP handling flags,
-         //like -fopenacc for GCC, depending on the version of gcc
-         //which will define this macro for GCC
-          argv.push_back(ompacc_macro);
-        }
-
-     // Process sub-options
-     // We want to turn on OpenACC if any of its suboptions is used.
-     if ( CommandlineProcessing::isOption(argv,"-rose:OpenACC:","parse_only",true) == true
-         ||CommandlineProcessing::isOption(argv,"-rose:openacc:","parse_only",true) == true
-         ||CommandlineProcessing::isOption(argv,"--rose:OpenACC:","parse_only",true) == true
-         ||CommandlineProcessing::isOption(argv,"--rose:openacc:","parse_only",true) == true
-         )
-     {
-       if ( SgProject::get_verbose() >= 1 )
-         printf ("OpenACC sub option for parsing specified \n");
-       set_openacc_parse_only(true);
-       // turn on OpenMP if not set explicitly by standalone -rose:OpenMP
-       if (!get_openacc())
-       {
-         set_openacc(true);
-         argv.push_back(ompacc_macro);
-       }
-     }
-
-     if ( CommandlineProcessing::isOption(argv,"-rose:OpenACC:","ast_only",true) == true
-         ||CommandlineProcessing::isOption(argv,"-rose:openacc:","ast_only",true) == true
-         ||CommandlineProcessing::isOption(argv,"--rose:openacc:","ast_only",true) == true
-         ||CommandlineProcessing::isOption(argv,"--rose:OpenACC:","ast_only",true) == true
-         )
-     {
-       if ( SgProject::get_verbose() >= 1 )
-         printf ("OpenACC option for AST construction specified \n");
-       set_openacc_ast_only(true);
-       // we don't want to stop after parsing  if we want to proceed to ast creation before stopping
-       set_openacc_parse_only(false);
-       if (!get_openacc())
-       {
-         set_openacc(true);
-         argv.push_back(ompacc_macro);
-       }
-     }
-
-
   // Liao 10/28/2008: I changed it to a more generic flag to indicate support for either Fortran or C/C++
   // DQ (8/19/2007): I have added the option here so that we can start to support OpenMP for Fortran.
   // Allows handling of OpenMP "!$omp" directives in free form and "c$omp", *$omp and "!$omp" directives in fixed form, enables "!$" conditional
@@ -4810,6 +3532,27 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
        }
      }
 
+     if ( CommandlineProcessing::isOption(argv,"-rose:OpenMP:","analyzing",true) == true
+         ||CommandlineProcessing::isOption(argv,"-rose:openmp:","analyzing",true) == true
+         ||CommandlineProcessing::isOption(argv,"--rose:openmp:","analyzing",true) == true
+         ||CommandlineProcessing::isOption(argv,"--rose:OpenMP:","analyzing",true) == true
+         )
+     {
+       if ( SgProject::get_verbose() >= 1 )
+         printf ("OpenMP sub option for AST analyzing specified \n");
+       set_openmp_analyzing(true);
+       // we don't want to stop after parsing or ast construction
+       set_openmp_parse_only(false);
+       set_openmp_ast_only(false);
+       // turn on OpenMP if not set explicitly by standalone -rose:OpenMP
+       if (!get_openmp())
+       {
+         set_openmp(true);
+         if (!Outliner::select_omp_loop)
+           argv.push_back(ompmacro);
+       }
+     }
+
      if ( CommandlineProcessing::isOption(argv,"-rose:OpenMP:","lowering",true) == true
          ||CommandlineProcessing::isOption(argv,"-rose:openmp:","lowering",true) == true
          ||CommandlineProcessing::isOption(argv,"--rose:openmp:","lowering",true) == true
@@ -4822,6 +3565,7 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
        // we don't want to stop after parsing or ast construction
        set_openmp_parse_only(false);
        set_openmp_ast_only(false);
+       set_openmp_analyzing(false);
        // turn on OpenMP if not set explicitly by standalone -rose:OpenMP
        if (!get_openmp())
        {
@@ -4937,18 +3681,6 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
           if ( SgProject::get_verbose() >= 1 )
                printf ("Use the Fortran language code generator (unparser) \n");
           set_outputLanguage(SgFile::e_Fortran_language);
-        }
-     if ( CommandlineProcessing::isOption(argv,"-rose:","Promela_output_language",true) == true )
-        {
-          if ( SgProject::get_verbose() >= 1 )
-               printf ("Use the Promela language code generator (unparser) \n");
-          set_outputLanguage(SgFile::e_Promela_language);
-        }
-     if ( CommandlineProcessing::isOption(argv,"-rose:","PHP_output_language",true) == true )
-        {
-          if ( SgProject::get_verbose() >= 1 )
-               printf ("Use the PHP language code generator (unparser) \n");
-          set_outputLanguage(SgFile::e_PHP_language);
         }
 
 #if 0
@@ -5478,25 +4210,17 @@ SgFile::stripRoseCommandLineOptions ( vector<string> & argv )
      optionCount = sla(argv, "-rose:", "($)", "(keep_going)",1);
      int integerOption = 0;
      optionCount = sla(argv, "-rose:", "($)^", "(v|verbose)", &integerOption, 1);
-     optionCount = sla(argv, "-rose:", "($)^", "(upc_threads)", &integerOption, 1);
      optionCount = sla(argv, "-rose:", "($)", "(C|C_only)",1);
-     optionCount = sla(argv, "-rose:", "($)", "(UPC|UPC_only)",1);
-
-     optionCount = sla(argv, "-rose:", "($)", "(OpenACC|openacc)",1);
-     optionCount = sla(argv, "-rose:", "($)", "(openacc:parse_only|OpenACC:parse_only)",1);
-     optionCount = sla(argv, "-rose:", "($)", "(openacc:ast_only|OpenACC:ast_only)",1);
-     // support --rose:openacc variants
-     optionCount = sla(argv, "--rose:", "($)", "(openacc:parse_only|OpenACC:parse_only)",1);
-     optionCount = sla(argv, "--rose:", "($)", "(openacc:ast_only|OpenACC:ast_only)",1);
-
      optionCount = sla(argv, "-rose:", "($)", "(OpenMP|openmp)",1);
      optionCount = sla(argv, "-rose:", "($)", "(openmp:parse_only|OpenMP:parse_only)",1);
      optionCount = sla(argv, "-rose:", "($)", "(openmp:ast_only|OpenMP:ast_only)",1);
      optionCount = sla(argv, "-rose:", "($)", "(openmp:lowering|OpenMP:lowering)",1);
+     optionCount = sla(argv, "-rose:", "($)", "(openmp:analyzing|OpenMP:analyzing)",1);
      // support --rose:openmp variants
      optionCount = sla(argv, "--rose:", "($)", "(openmp:parse_only|OpenMP:parse_only)",1);
      optionCount = sla(argv, "--rose:", "($)", "(openmp:ast_only|OpenMP:ast_only)",1);
      optionCount = sla(argv, "--rose:", "($)", "(openmp:lowering|OpenMP:lowering)",1);
+     optionCount = sla(argv, "--rose:", "($)", "(openmp:analyzing|OpenMP:analyzing)",1);
 
      optionCount = sla(argv, "-rose:", "($)", "(C89|C89_only)",1);
      optionCount = sla(argv, "-rose:", "($)", "(C99|C99_only)",1);
@@ -5506,7 +4230,6 @@ SgFile::stripRoseCommandLineOptions ( vector<string> & argv )
      optionCount = sla(argv, "-rose:", "($)", "(Cxx0x|Cxx0x_only)",1);
      optionCount = sla(argv, "-rose:", "($)", "(Cxx11|Cxx11_only)",1);
      optionCount = sla(argv, "-rose:", "($)", "(Cxx14|Cxx14_only)",1);
-     optionCount = sla(argv, "-rose:", "($)", "(FailSafe|failsafe)",1);
 
      optionCount = sla(argv, "-rose:", "($)", "(output_warnings)",1);
      optionCount = sla(argv, "-rose:", "($)", "(cray_pointer_support)",1);
@@ -5644,9 +4367,6 @@ SgFile::stripRoseCommandLineOptions ( vector<string> & argv )
   // DQ (8/26/2007): Disassembly support from segments (true) instead of sections (false, default).
      optionCount = sla(argv, "-rose:", "($)", "(aggressive)",1);
 
-  // DQ (2/5/2009): Remove use of "-rose:binary" to prevent it being passed on.
-     optionCount = sla(argv, "-rose:", "($)", "(binary|binary_only)",1);
-
   // DQ (10/3/2010): Adding support for having CPP directives explicitly in the AST (as IR nodes instead of handled similar to comments).
      optionCount = sla(argv, "-rose:", "($)^", "(addCppDirectivesToAST)",filename,1);
 
@@ -5654,9 +4374,6 @@ SgFile::stripRoseCommandLineOptions ( vector<string> & argv )
      optionCount = sla(argv, "-rose:", "($)^", "detect_dangling_pointers",&integerOption,1);
 
   // DQ (1/16/2012): Added all of the currently defined dot file options.
-     optionCount = sla(argv, "-rose:dotgraph:", "($)^", "(asmFileFormatFilter)",&integerOption,1);
-     optionCount = sla(argv, "-rose:dotgraph:", "($)^", "(asmTypeFilter)",&integerOption,1);
-     optionCount = sla(argv, "-rose:dotgraph:", "($)^", "(binaryExecutableFormatFilter)",&integerOption,1);
      optionCount = sla(argv, "-rose:dotgraph:", "($)^", "(commentAndDirectiveFilter)",&integerOption,1);
      optionCount = sla(argv, "-rose:dotgraph:", "($)^", "(ctorInitializerListFilter)",&integerOption,1);
      optionCount = sla(argv, "-rose:dotgraph:", "($)^", "(defaultColorFilter)",&integerOption,1);
@@ -5716,15 +4433,6 @@ SgFile::stripRoseCommandLineOptions ( vector<string> & argv )
 
   // DQ (30/8/2017): Removing option to specify Csharp language support.
      optionCount = sla(argv, "-rose:", "($)", "(cs|cs_only)",1);
-
-  // DQ (30/8/2017): Removing option to specify Ada language support.
-     optionCount = sla(argv, "-rose:", "($)", "(ada|ada_only)",1);
-
-  // DQ (30/8/2017): Removing option to specify Jovial language support.
-     optionCount = sla(argv, "-rose:", "($)", "(joval|jovial_only)",1);
-
-  // DQ (30/8/2017): Removing option to specify Cobol language support.
-     optionCount = sla(argv, "-rose:", "($)", "(cobol|cobol_only)",1);
 
   // DQ (9/20/2018): Removing option to specify support for header file unparsing report.
      optionCount = sla(argv, "-rose:", "($)", "(headerFileUnparsingReport)",1);
@@ -6474,8 +5182,6 @@ SgFile::build_EDG_CommandLine ( vector<string> & inputCommandLine, vector<string
           printf ("   --- C   compiler              = %s \n",BACKEND_C_COMPILER_NAME_WITH_PATH);
           printf ("   --- C++ compiler              = %s \n",BACKEND_CXX_COMPILER_NAME_WITH_PATH);
           printf ("   --- Fortran compiler          = %s \n",BACKEND_FORTRAN_COMPILER_NAME_WITH_PATH);
-          printf ("   --- Java compiler             = %s \n",BACKEND_JAVA_COMPILER_NAME_WITH_PATH);
-          printf ("   --- Python interpreter        = %s \n",BACKEND_PYTHON_INTERPRETER_NAME_WITH_PATH);
           printf ("   --- get_C_only()              = %s \n",(get_C_only() == true) ? "true" : "false");
           printf ("   --- get_C99_only()            = %s \n",(get_C99_only() == true) ? "true" : "false");
           printf ("   --- get_C11_only()            = %s \n",(get_C11_only() == true) ? "true" : "false");
@@ -6491,7 +5197,6 @@ SgFile::build_EDG_CommandLine ( vector<string> & inputCommandLine, vector<string
           printf ("   --- get_F2008_only()          = %s \n",(get_F2008_only() == true) ? "true" : "false");
           printf ("   --- get_CoArrayFortran_only() = %s \n",(get_CoArrayFortran_only() == true) ? "true" : "false");
           printf ("   --- get_Java_only()           = %s \n",(get_Java_only() == true) ? "true" : "false");
-          printf ("   --- get_Python_only()         = %s \n",(get_Python_only() == true) ? "true" : "false");
 #endif
 
        // if (get_C_only() == true || get_C99_only() == true)
@@ -7583,8 +6288,6 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
      printf ("   --- C   compiler              = %s \n",BACKEND_C_COMPILER_NAME_WITH_PATH);
      printf ("   --- C++ compiler              = %s \n",BACKEND_CXX_COMPILER_NAME_WITH_PATH);
      printf ("   --- Fortran compiler          = %s \n",BACKEND_FORTRAN_COMPILER_NAME_WITH_PATH);
-     printf ("   --- Java compiler             = %s \n",BACKEND_JAVA_COMPILER_NAME_WITH_PATH);
-     printf ("   --- Python interpreter        = %s \n",BACKEND_PYTHON_INTERPRETER_NAME_WITH_PATH);
      printf ("   --- get_C_only()              = %s \n",(get_C_only() == true) ? "true" : "false");
      printf ("   --- get_C99_only()            = %s \n",(get_C99_only() == true) ? "true" : "false");
      printf ("   --- get_C11_only()            = %s \n",(get_C11_only() == true) ? "true" : "false");
@@ -7600,7 +6303,6 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
      printf ("   --- get_F2008_only()          = %s \n",(get_F2008_only() == true) ? "true" : "false");
      printf ("   --- get_CoArrayFortran_only() = %s \n",(get_CoArrayFortran_only() == true) ? "true" : "false");
      printf ("   --- get_Java_only()           = %s \n",(get_Java_only() == true) ? "true" : "false");
-     printf ("   --- get_Python_only()         = %s \n",(get_Python_only() == true) ? "true" : "false");
 #endif
 
   // For now let's enforce this, for internal testing, but translators will fail for this assertion in the future.
@@ -7655,16 +6357,6 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
 #endif
                compilerNameString[0] = BACKEND_CXX_COMPILER_NAME_WITH_PATH;
 
-               break;
-             }
-
-       // DQ (11/15/2017): Added case to support binary handling, but there is no tool that we run the output code through for a binary that is disassembled (I think).
-          case SgFile::e_Binary_language:
-             {
-            // DQ (11/15/2017): Perhaps we should run the output through the gnu assembler?
-#if 0
-               printf ("SgFile::e_Binary_language detected in SgFile::buildCompilerCommandLineOptions(): nothing to do here! \n");
-#endif
                break;
              }
 
@@ -7723,99 +6415,6 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
 #endif
                        }
                   }
-               break;
-             }
-
-          case SgFile::e_Java_language:
-             {
-               printf ("Error: SgFile::e_Java_language detected in SgFile::buildCompilerCommandLineOptions() \n");
-
-               compilerNameString[0] = BACKEND_JAVA_COMPILER_NAME_WITH_PATH;
-               break;
-             }
-          case SgFile::e_X10_language:
-             {
-               printf ("Error: SgFile::e_X10_language detected in SgFile::buildCompilerCommandLineOptions() \n");
-
-               compilerNameString[0] = BACKEND_X10_COMPILER_NAME_WITH_PATH;
-               break;
-             }
-
-          case SgFile::e_Promela_language:
-             {
-               printf ("Error: SgFile::e_Promela_language detected in SgFile::buildCompilerCommandLineOptions() \n");
-               ROSE_ABORT();
-             }
-
-          case SgFile::e_PHP_language:
-             {
-               printf ("Error: SgFile::e_PHP_language detected in SgFile::buildCompilerCommandLineOptions() \n");
-               ROSE_ABORT();
-             }
-
-          case SgFile::e_Python_language:
-             {
-               printf ("Error: SgFile::e_Python_language detected in SgFile::buildCompilerCommandLineOptions() \n");
-
-               compilerNameString[0] = BACKEND_PYTHON_INTERPRETER_NAME_WITH_PATH;
-               ROSE_ABORT();
-             }
-
-          case SgFile::e_Csharp_language:
-             {
-               printf ("Error: SgFile::e_Csharp_language detected in SgFile::buildCompilerCommandLineOptions() \n");
-
-            // Rasmussen (11/14/2017): Added check to ensure that C# is configured
-#ifdef ROSE_EXPERIMENTAL_CSHARP_ROSE_CONNECTION
-               compilerNameString[0] = BACKEND_CSHARP_COMPILER_NAME_WITH_PATH;
-#else
-               ROSE_ABORT();
-#endif
-               break;
-             }
-
-          case SgFile::e_Ada_language:
-             {
-
-            // Rasmussen (11/14/2017): Added check to ensure that Ada is configured
-#ifdef ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION
-               //~ printf ("Todo: SgFile::e_Ada_language detected in SgFile::buildCompilerCommandLineOptions() \n");
-               compilerNameString[0] = BACKEND_ADA_COMPILER_NAME_WITH_PATH;
-
-            // DQ (9/12/2017): We need to add the "compile" option to the "gnat" command line ahead of the rest of the command line.
-               compilerNameString.push_back("compile");
-
-            // PP (04/17/21): add -I. to override -I- added by gnat compile
-            //                RC-637
-               compilerNameString.push_back("-I.");
-#else
-               printf ("Error: SgFile::e_Ada_language detected in SgFile::buildCompilerCommandLineOptions() \n");
-               ROSE_ABORT();
-#endif
-               break;
-             }
-
-          case SgFile::e_Jovial_language:
-             {
-            // Rasmussen (11/14/2017): Added check to ensure that JOVIAL is configured
-#ifdef ROSE_EXPERIMENTAL_JOVIAL_ROSE_CONNECTION
-               compilerNameString[0] = BACKEND_JOVIAL_COMPILER_NAME_WITH_PATH;
-#else
-               ROSE_ABORT();
-#endif
-               break;
-             }
-
-          case SgFile::e_Cobol_language:
-             {
-               printf ("Error: SgFile::e_Cobol_language detected in SgFile::buildCompilerCommandLineOptions() \n");
-
-            // Rasmussen (11/14/2017): Added check to ensure that COBOL is configured
-#ifdef ROSE_EXPERIMENTAL_COBOL_ROSE_CONNECTION
-               compilerNameString[0] = BACKEND_COBOL_COMPILER_NAME_WITH_PATH;
-#else
-               ROSE_ABORT();
-#endif
                break;
              }
 
@@ -8565,18 +7164,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
 #if 0
           printf ("Build -w option for some backend language compilers \n");
 #endif
-       // DQ (9/7/2017): Avoid use of "-w" on other language compilers as well.
-       // DQ (3/7/2017): Avoid use of "-w" on X10 compiler.
-       // if (get_X10_only() == false)
-          if (get_X10_only() == false && get_Csharp_only() == false && get_Ada_only() == false && get_Jovial_only() == false && get_Cobol_only() == false)
-             {
-            // This is a portable way to turn off warnings in the backend compilers (GNU, Intel, Clang).
-               argcArgvList.push_back("-w");
-             }
-            else
-             {
-            // X10 command line generation using "-w" will cause X10 compiler to fail.
-             }
+          argcArgvList.push_back("-w");
         }
 // Pei-Hung (05/08/2020) Fortran output might not fulfill standard requirement.-
 // "std" option needs to be removed for Intel compiler commmand line

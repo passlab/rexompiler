@@ -217,9 +217,6 @@ class ROSE_DLL_API CustomMemoryPoolDOTGeneration
          class ROSE_DLL_API s_Filter_Flags
          {
            public:
-             int m_asmFileFormat;          /*asmFileFormatFilter()*/
-             int m_asmType;            /* asmTypeFilter()*/
-             int m_binaryExecutableFormat; /*binaryExecutableFormatFilter()*/
              int m_commentAndDirective;    /* commentAndDirectiveFilter()*/  
              int m_ctorInitializer;    /*ctorInitializerListFilter()*/
 
@@ -314,11 +311,6 @@ class ROSE_DLL_API CustomMemoryPoolDOTGeneration
           void ctorInitializerListFilter(SgNode* n);
           void symbolFilter(SgNode* n);
 
-       // DQ (10/18/2009): Added support to skip output of binary file format in generation of AST visualization.
-          void asmFileFormatFilter(SgNode* n);
-
-       // DQ (10/18/2009): Added support to skip output of binary expression type information in generation of AST visualization.
-          void asmTypeFilter(SgNode* n);
       private:
          void internal_init(s_Filter_Flags* f = NULL);
    };

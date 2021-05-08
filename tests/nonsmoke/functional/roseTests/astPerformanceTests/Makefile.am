@@ -44,24 +44,6 @@ EXTRA_DIST += input.C ExampleTimings.txt
 MOSTLYCLEANFILES += ROSE_PERFORMANCE_DATA.csv
 
 ################################################################################
-# astThreadedCreation -- creates/deletes nodes with lots of threads
-################################################################################
-if ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-noinst_PROGRAMS += astThreadedCreation
-astThreadedCreation_SOURCES = astThreadedCreation.C
-astThreadedCreation_LDADD = $(ROSE_SEPARATE_LIBS)
-ROSE_TESTS += astThreadedCreation
-astThreadedCreation.passed: astThreadedCreation
-	@$(RTH_RUN) EXE=./$< $(srcdir)/tests.conf $@
-endif
-
-
-
-
-
-
-
-################################################################################
 # Run all tests
 ################################################################################
 check-local: $(addsuffix .passed, $(ROSE_TESTS)) $(srcdir)/tests.conf

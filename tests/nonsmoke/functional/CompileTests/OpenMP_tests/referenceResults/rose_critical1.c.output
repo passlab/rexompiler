@@ -1,0 +1,4 @@
+#pragma omp parallel 
+#pragma omp critical (aaa) hint(test)
+#pragma omp critical (bbb) hint(test)
+#pragma omp critical 

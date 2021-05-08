@@ -981,7 +981,7 @@ atTraversalEnd()
 // which requires:
 //      -fpermissive to compile without error (and then it generates a lot of warnings).
 #if !_MSC_VER
-  #include "AstSharedMemoryParallelProcessing.h"
+//  #include "AstSharedMemoryParallelProcessing.h"
 #endif
 
 #endif

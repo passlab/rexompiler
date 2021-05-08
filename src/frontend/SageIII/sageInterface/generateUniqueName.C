@@ -837,7 +837,6 @@ SageInterface::generateUniqueName ( const SgNode* node, bool ignoreDifferenceBet
                case V_SgTemplateClassDeclaration:
 
                case V_SgClassDeclaration:
-               case V_SgJavaPackageDeclaration:
                case V_SgTemplateInstantiationDecl:
                   {
                     const SgClassDeclaration* classDeclaration = isSgClassDeclaration(statement);
@@ -1480,9 +1479,6 @@ SageInterface::generateUniqueName ( const SgNode* node, bool ignoreDifferenceBet
 
             // case V_SgFile:
                case V_SgSourceFile:
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-               case V_SgBinaryComposite:
-#endif
                   {
                     key = "__sourceFile_file_id_";
 

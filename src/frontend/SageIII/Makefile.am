@@ -17,7 +17,7 @@ fSageSupportPath=sage_support#
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
    SUBDIRS = astFixup astPostProcessing sageInterface astVisualization virtualCFG includeDirectivesProcessing
 else
-   SUBDIRS = astFileIO astMerge astFixup astPostProcessing sageInterface virtualCFG astTokenStream astHiddenTypeAndDeclarationLists astVisualization astFromString includeDirectivesProcessing
+   SUBDIRS = astFileIO astMerge astFixup astPostProcessing sageInterface virtualCFG astTokenStream astHiddenTypeAndDeclarationLists astVisualization astFromString includeDirectivesProcessing ompparser
 endif
 
 # DQ (12/29/2009): This is only used to handle generated code as smaller files.
@@ -29,15 +29,6 @@ SUBDIRS += GENERATED_CODE_DIRECTORY_Cxx_Grammar
 ROSE_OPTIMIZATION_LEVEL =
 # ROSE_VERBOSE = -rose:verbose 2
 
-# Liao, 3/31/2009, moved the OpenMP parser here
-#Liao, 10/27/2008. I decide to parse OpenMP pragma string here
-# Bison flags
-AM_YFLAGS = -d
-# Flex flags
-AM_LFLAGS =
-# avoid unused Flex functions which are automatically generated
-#CXXFLAGS+= -DYY_NO_TOP_STATE -DYY_NO_POP_STATE $(ROSE_OPTIMIZATION_LEVEL)
-
 CXXFLAGS += $(ROSE_OPTIMIZATION_LEVEL) $(ROSE_VERBOSE)
 
 # DQ (11/14/2011): Add debug support when doing selective frontend development.
@@ -46,22 +37,19 @@ if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 # CXXFLAGS += -g
 endif
 
-# omplexer.cc needs a header generaetd from ompparser.yy
-omplexer.lo: ompparser.h omplexer.cc
-ompparser.h: ompparser.cc
-	if test -f ompparser.hh; then $(LN_S) -f ompparser.hh ompparser.h; fi;
+omp_exprparser_lexer.lo: omp_exprparser_parser.hh omp_exprparser_lexer.cc
+omp_exprparser_parser.hh: omp_exprparser_parser.cc
 
-# Force sage.docs to be make by default 
+# Force sage.docs to be make by default
 # (if sage.docs.in is modified)
 all-local: roseh sage.docs 
-
 
 # AM_CPPFLAGS = $(ROSE_INCLUDES)
 # AM_CPPFLAGS = $(ROSE_INCLUDES) -I$(top_srcdir)/src/frontend/EDG_SAGE_Connection -I$(top_srcdir)/src/frontend/EDG/EDG_3.3/src $(WAVE_INCLUDES)
 # AM_CPPFLAGS = $(ROSE_INCLUDES) -I$(top_srcdir)/src/frontend/EDG_SAGE_Connection -I$(top_srcdir)/src/frontend/EDG/EDG_3.3/src
 # JJW 6-2-2008: We shouldn't be using anything from EDG outside these two directories
 # AM_CPPFLAGS = $(ROSE_INCLUDES) # -I$(top_srcdir)/src/frontend/EDG_SAGE_Connection -I$(top_srcdir)/src/frontend/EDG/EDG_3.3/src
-AM_CPPFLAGS = $(ROSE_INCLUDES)
+AM_CPPFLAGS = $(ROSE_INCLUDES) -I$(top_srcdir)/src/frontend/SageIII/ompparser/src
 
 # DQ (3/13/2010): sage_support.cpp requires the OFP fortran source files to be made available.
 # if ROSE_USE_OPEN_FORTRAN_PARSER
@@ -87,17 +75,14 @@ CXX_TEMPLATE_REPOSITORY_PATH = .
 # This will hopefull avoid a linking problem where multiple files
 # are called preproc.o (from here and from EDG).
 # Rasmussen (04/17/2019): Support for ATerms has been deprecated (atermSupport.h removed)
-EXTRA_DIST = CMakeLists.txt docs rtiHelpers.h attributeListMap.h \
-             advanced_preprocessing_hooks.h rose_attributes_list.h dwarfSupport.h \
-             sage3basic.hhh fileoffsetbits.h rosedll.h \
-	     PolicyControl.txt Utf8.h
-if ROSE_BUILD_CPP_LANGUAGE_SUPPORT
-EXTRA_DIST += preproc-c.ll omplexer.cc ompparser.cc ompparser.h ompAstConstruction.h
-endif
-
+EXTRA_DIST = CMakeLists.txt preproc-c.ll docs rtiHelpers.h attributeListMap.h \
+             advanced_preprocessing_hooks.h rose_attributes_list.h \
+             sage3basic.hhh fileoffsetbits.h rosedll.h PolicyControl.txt Utf8.h  \
+             ompAstConstruction.h \
+             omp_exprparser_lexer.cc omp_exprparser_parser.cc omp_exprparser_parser.hh
 CLEANFILES = haveRosettaGeneratedSource
 
-DISTCLEANFILES = preproc-c.cc ompparser.cc ompparser.h omplexer.cc
+DISTCLEANFILES = preproc-c.cc omp_exprparser_lexer.cc omp_exprparser_parser.hh omp_exprparser_parser.cc
 
 # Some source code is generated (call make in ROSE/src/ROSETTA/src to generate these files)
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
@@ -192,15 +177,11 @@ libsage3Sources = \
    fixupCopy_symbols.C \
    fixupCopy_references.C \
    rtiHelpers.C \
-   dwarfSupport.C \
    rose_graph_support.C \
-   $(fSageSupport_la_sources)
-if ROSE_BUILD_CPP_LANGUAGE_SUPPORT
-libsage3Sources += \
+   $(fSageSupport_la_sources) \
    OmpAttribute.C \
    ompFortranParser.C \
    ompAstConstruction.cpp
-endif
 endif
 
 # DQ (2/15/2010): This fails in Hudson tests of ROSE compiling ROSE for code generation, but I can't 
@@ -225,18 +206,11 @@ endif
 
 noinst_LTLIBRARIES = libsage3.la
 
-# libsage3_la_SOURCES = $(libsage3Sources) preproc.ll rose_paths.h omplexer.ll ompparser.yy
-# libsage3_la_SOURCES = $(libsage3Sources) preproc.ll omplexer.ll ompparser.yy
-libsage3_la_SOURCES = $(libsage3Sources)
-
-if ROSE_BUILD_CPP_LANGUAGE_SUPPORT
-libsage3_la_SOURCES += preproc-c.ll
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
+libsage3_la_SOURCES = $(libsage3Sources) preproc-c.ll
 else
-libsage3_la_SOURCES += omplexer.ll ompparser.yy
+libsage3_la_SOURCES = $(libsage3Sources) preproc-c.ll omp_exprparser_lexer.ll omp_exprparser_parser.yy
 endif
-endif
-
 
 # DQ (3/8/2009): I think that the dependence upon $(top_builddir)/rose_config.h 
 # is what was forcing a lot of files to be compiled after reruning configure.
@@ -249,6 +223,7 @@ libsage3_la_LIBADD= \
   astMerge/libastMerge.la \
   astFileIO/libastFileIO.la \
   astFixup/libastFixup.la \
+  ompparser/libompparser.la \
   astPostProcessing/libastPostProcessing.la \
   sageInterface/libsageInterface.la \
   virtualCFG/libvirtualCFG.la \
@@ -262,6 +237,7 @@ libsage3_la_LIBADD= \
   astMerge/libastMerge.la \
   astFileIO/libastFileIO.la \
   astFixup/libastFixup.la \
+  ompparser/libompparser.la \
   astPostProcessing/libastPostProcessing.la \
   sageInterface/libsageInterface.la \
   virtualCFG/libvirtualCFG.la \
@@ -270,7 +246,6 @@ libsage3_la_LIBADD= \
   astHiddenTypeAndDeclarationLists/libastHiddenTypeAndDeclarationLists.la \
   includeDirectivesProcessing/libincludeDirectivesProcessing.la
 endif
-
 
 # DQ (6/25/2011): Readded this directory so that we can support the older behavior as a default
 # although this will likely fail at least some of the nearly one hundred new name qualification tests.
@@ -327,7 +302,7 @@ pkginclude_HEADERS = \
    attach_all_info.h manglingSupport.h C++_include_files.h \
    fixupCopy.h \
    general_token_defs.h rtiHelpers.h \
-   OmpAttribute.h omp.h dwarfSupport.h \
+   OmpAttribute.h omp.h \
    omp_lib_kinds.h omp_lib.h sage3basic.hhh rosedefs.h  fileoffsetbits.h rosedll.h \
    Cxx_GrammarSerialization.h \
    $(fSageSupport_includeHeaders)
@@ -341,13 +316,7 @@ nodist_pkginclude_HEADERS = \
    AstQueryMemoryPool.h \
    astFileIO/AstSpecificDataManagingClass.h
 
-BUILT_SOURCES = $(GENERATED_SOURCE)
-if ROSE_BUILD_CPP_LANGUAGE_SUPPORT
-if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-else
-BUILT_SOURCES += ompparser.cc ompparser.h omplexer.cc
-endif
-endif
+BUILT_SOURCES = $(GENERATED_SOURCE) omp_exprparser_parser.cc omp_exprparser_parser.hh omp_exprparser_lexer.cc
 
 # DQ (9/9/2007): Put C++_include_files.h back into place
 # since it is a convinient mechanism to handle included headers 

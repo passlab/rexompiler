@@ -22,12 +22,6 @@
 
 // Headers required only to obtain version numbers
 #include <boost/version.hpp>
-#ifdef ROSE_HAVE_LIBREADLINE
-#   include <readline/readline.h>
-#endif
-#ifdef ROSE_HAVE_LIBMAGIC
-#   include <magic.h>
-#endif
 #ifdef ROSE_HAVE_LIBYICES
 #   include <yices_c.h>
 #endif
@@ -197,24 +191,16 @@ std::map<std::string, SgIncludeFile*> Rose::includeFileMapForUnparsing;
 // DQ (11/25/2020): These are the boolean variables that are computed in the function compute_language_kind() 
 // and inlined via the SageInterface::is_<language kind>_language() functions.  See more details comment in 
 // the header file.
-bool Rose::is_Ada_language        = false;
 bool Rose::is_C_language          = false;
-bool Rose::is_Cobol_language      = false;
 bool Rose::is_OpenMP_language     = false;
 bool Rose::is_UPC_language        = false;
 bool Rose::is_UPC_dynamic_threads = false;
 bool Rose::is_C99_language        = false;
 bool Rose::is_Cxx_language        = false;
-bool Rose::is_Java_language       = false;
-bool Rose::is_Jovial_language     = false;
 bool Rose::is_Fortran_language    = false;
 bool Rose::is_CAF_language        = false;
-bool Rose::is_PHP_language        = false;
-bool Rose::is_Python_language     = false;
 bool Rose::is_Cuda_language       = false;
 bool Rose::is_OpenCL_language     = false;
-bool Rose::is_X10_language        = false;
-bool Rose::is_binary_executable   = false;
 
 
 // DQ (3/24/2016): Adding Robb's message logging mechanism to contrl output debug message from the EDG/ROSE connection code.
@@ -268,37 +254,6 @@ std::string ofpVersionString()
 
      return ofp_version;
    }
-
-static std::string
-readlineVersionString() {
-#ifdef ROSE_HAVE_LIBREADLINE
-    return StringUtility::numberToString(RL_VERSION_MAJOR) + "." + StringUtility::numberToString(RL_VERSION_MINOR);
-#else
-    return "unknown (readline is disabled)";
-#endif
-}
-
-static std::string
-libmagicVersionString() {
-#ifdef ROSE_HAVE_LIBMAGIC
-#ifdef MAGIC_VERSION
-    return StringUtility::numberToString(MAGIC_VERSION);
-#else
-    return "unknown (but enabled)";
-#endif
-#else
-    return "unknown (libmagic is disabled)";
-#endif
-}
-
-static std::string
-yamlcppVersionString() {
-#ifdef ROSE_HAVE_LIBYAML
-    return "unknown (but enabled)";                     // not sure how to get a version number for this library
-#else
-    return "unknown (yaml-cpp is disabled)";
-#endif
-}
 
 static std::string
 yicesVersionString() {
@@ -374,30 +329,7 @@ std::string version_message()
 #endif
          "\n  --- using original build tree path: " + build_tree_path +
          "\n  --- using instalation path: " + install_path +
-         "\n  --- using GNU readline version: " + readlineVersionString() +
-         "\n  --- using libmagic version: " + libmagicVersionString() +
-         "\n  --- using yaml-cpp version: " + yamlcppVersionString() +
-         "\n  --- using lib-yices version: " + yicesVersionString() +
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-         "\n  --- binary analysis is enabled"
-#ifdef ROSE_ENABLE_ASM_AARCH64
-         "\n  ---   ARM AArch64 is enabled"
-#else
-         "\n  ---   ARM AArch64 is disabled"
-#endif
-#ifdef ROSE_ENABLE_ASM_AARCH32
-         "\n  ---   ARM AArch32 is enabled"
-#else
-         "\n  ---   ARM AArch32 is disasbled"
-#endif
-#ifdef ROSE_ENABLE_CONCOLIC_TESTING
-         "\n  ---   concolic testing is enabled"
-#else
-         "\n  ---   concolic testing is disabled"
-#endif
-#else
-         "\n  --- binary analysis is disabled"
-#endif
+         "\n  --- using lib-yices version: " + yicesVersionString()
          ;
   }
 
@@ -674,17 +606,11 @@ backend ( SgProject* project, UnparseFormatHelp *unparseFormatHelp, UnparseDeleg
           printf ("Inside of backend(SgProject*) \n");
         }
 
-#ifdef ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION
-  // DQ (9/8/2017): Debugging ROSE_ASSERT. Call sighandler_t signal(int signum, sighandler_t handler);
-  // signal(SIG_DFL,NULL);
-     signal(SIGABRT,SIG_DFL);
-#endif
-
      std::string const & astfile_out = project->get_astfile_out();
      if (astfile_out != "") {
        std::list<std::string> empty_file_list;
        project->set_astfiles_in(empty_file_list);
-       project->get_astfile_out() = "";
+       project->get_astfile_out() == "";
        AST_FILE_IO::reset();
        AST_FILE_IO::startUp(project);
        AST_FILE_IO::writeASTToFile(astfile_out);
@@ -696,17 +622,6 @@ backend ( SgProject* project, UnparseFormatHelp *unparseFormatHelp, UnparseDeleg
      printf ("Exiting as a test! \n");
      ROSE_ABORT();
 #endif
-
-     if (project->get_binary_only() == true)
-        {
-          ROSE_ASSERT(project != NULL);
-
-       // DQ (8/21/2008): Only output a message when we we use verbose option.
-          if ( SgProject::get_verbose() >= 1 )
-               printf ("Note: Binary executables are unparsed, but not passed to gcc as assembly source code \n");
-
-          project->skipfinalCompileStep(true);
-        }
 
   // printf ("   project->get_useBackendOnly() = %s \n",project->get_useBackendOnly() ? "true" : "false");
      if (project->get_useBackendOnly() == false)
@@ -1925,10 +1840,3 @@ Rose::getPreviousStatement ( SgStatement *targetStatement , bool climbOutScope /
 
      return previousStatement;
    }
-
-
-
-
-
-
-

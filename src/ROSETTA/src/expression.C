@@ -14,9 +14,6 @@ Grammar::setUpExpressions ()
 
      NEW_TERMINAL_MACRO (VarRefExp,              "VarRefExp",              "VAR_REF" );
      NEW_TERMINAL_MACRO (NonrealRefExp,          "NonrealRefExp",          "NONREAL_REF" );
-     NEW_TERMINAL_MACRO (AdaTaskRefExp,          "AdaTaskRefExp",          "ADA_TASK_REF" );
-     NEW_TERMINAL_MACRO (AdaRenamingRefExp,      "AdaRenamingRefExp",      "ADA_RENAMING_REF" );
-     NEW_TERMINAL_MACRO (AdaAttributeExp,        "AdaAttributeExp",        "ADA_ATTRIBUTE_EXP" );
 
   // DQ (9/4/2013): Adding support for compound literals.  These are not the same as initializers and define
   // a memory location that is un-named (much like an un-named variable).  When they are const they cannot
@@ -48,20 +45,6 @@ Grammar::setUpExpressions ()
 
   // DQ (2/4/2015): Added C++11 noexcept operator.
      NEW_TERMINAL_MACRO (NoexceptOp,                   "NoexceptOp",                   "NOEXCEPT_OP" );
-
-     NEW_TERMINAL_MACRO (JavaInstanceOfOp,             "JavaInstanceOfOp",             "JAVA_INSTANCEOF_OP" );
-
-  // DQ (1/13/2014): Added Java support for Java annotations.
-     NEW_TERMINAL_MACRO (JavaMarkerAnnotation,         "JavaMarkerAnnotation",         "JAVA_MARKER_ANNOTATION" );
-     NEW_TERMINAL_MACRO (JavaSingleMemberAnnotation,   "JavaSingleMemberAnnotation",   "JAVA_SINGLE_MEMBER_ANNOTATION" );
-     NEW_TERMINAL_MACRO (JavaNormalAnnotation,         "JavaNormalAnnotation",         "JAVA_NORMAL_ANNOTATION" );
-
-  // DQ (1/13/2014): Added Java support for Java annotations (hierarchy).
-     NEW_NONTERMINAL_MACRO (JavaAnnotation,
-                            JavaMarkerAnnotation | JavaSingleMemberAnnotation | JavaNormalAnnotation,
-                            "JavaAnnotation","JAVA_ANNOTATION", false);
-
-     NEW_TERMINAL_MACRO (JavaTypeExpression, "JavaTypeExpression", "JAVA_TYPE_EXPRESSION");
 
   // DQ (7/24/2014): C11 Generic macros requires additional IR support.  This IR node is likely to be
   // similar to the SgJavaTypeExpression node and it might be that that IR node could be eliminated in
@@ -144,8 +127,6 @@ Grammar::setUpExpressions ()
      NEW_TERMINAL_MACRO (CommaOpExp,             "CommaOpExp",             "COMMA_OP" );
      NEW_TERMINAL_MACRO (LshiftOp,               "LshiftOp",               "LSHIFT_OP" );
      NEW_TERMINAL_MACRO (RshiftOp,               "RshiftOp",               "RSHIFT_OP" );
-  // DQ (7/17/2011): Added this function to support new Java ">>>" operator.
-     NEW_TERMINAL_MACRO (JavaUnsignedRshiftOp,   "JavaUnsignedRshiftOp",   "JAVA_UNSIGNED_RSHIFT_OP" );
      NEW_TERMINAL_MACRO (PntrArrRefExp,          "PntrArrRefExp",          "ARRAY_OP" );
      NEW_TERMINAL_MACRO (ScopeOp,                "ScopeOp",                "SCOPE_OP" );
      NEW_TERMINAL_MACRO (AssignOp,               "AssignOp",               "ASSIGN_OP" );
@@ -159,22 +140,11 @@ Grammar::setUpExpressions ()
      NEW_TERMINAL_MACRO (XorAssignOp,            "XorAssignOp",            "XOR_ASSIGN_OP" );
      NEW_TERMINAL_MACRO (LshiftAssignOp,         "LshiftAssignOp",         "LSHIFT_ASSIGN_OP" );
      NEW_TERMINAL_MACRO (RshiftAssignOp,         "RshiftAssignOp",         "RSHIFT_ASSIGN_OP" );
-  // DQ (7/17/2011): Added this function to support new Java ">>>" operator.
-     NEW_TERMINAL_MACRO (JavaUnsignedRshiftAssignOp, "JavaUnsignedRshiftAssignOp", "JAVA_UNSIGNED_RSHIFT_ASSIGN_OP" );
      NEW_TERMINAL_MACRO (IntegerDivideAssignOp,  "IntegerDivideAssignOp",  "IDIV_ASSIGN_OP" );
      NEW_TERMINAL_MACRO (ExponentiationAssignOp, "ExponentiationAssignOp", "EXP_ASSIGN_OP" );
 
   // DQ (12/13/2007): Added support for Fortran string concatenation operator
      NEW_TERMINAL_MACRO (ConcatenationOp,        "ConcatenationOp",        "CONCATENATION_OP" );
-
-  // CR (07/26/2020): Jovial replication operator for initialization expressions, also seen in Fortran
-     NEW_TERMINAL_MACRO (ReplicationOp,          "ReplicationOp",          "REPLICATION_OP" );
-  // CR (9/23/2020): Jovial binary "@" operator is used to dereference pointers "member @ object".
-     NEW_TERMINAL_MACRO (AtOp,                   "AtOp",                   "AT_OP" );
-
-  // PP (06/08/2020): Added support for Ada remainder (different from mod) and abs operators
-     NEW_TERMINAL_MACRO (RemOp,                  "RemOp",                  "REM_OP" );
-     NEW_TERMINAL_MACRO (AbsOp,                  "AbsOp",                  "ABS_OP" );
 
   // driscoll6 (7/20/11): Support for n-ary operators in python
      NEW_TERMINAL_MACRO (NaryComparisonOp,       "NaryComparisonOp",       "NARY_COMPARISON_OP");
@@ -203,8 +173,6 @@ Grammar::setUpExpressions ()
      NEW_TERMINAL_MACRO (LongDoubleVal,          "LongDoubleVal",          "LONG_DOUBLE_VAL" );
      NEW_TERMINAL_MACRO (Float80Val,             "Float80Val",             "FLOAT_80_VAL" );
      NEW_TERMINAL_MACRO (Float128Val,            "Float128Val",            "FLOAT_128_VAL" );
-     NEW_TERMINAL_MACRO (AdaFloatVal,            "AdaFloatVal",            "ADA_FLOAT_VAL" );
-     NEW_TERMINAL_MACRO (JovialBitVal,           "JovialBitVal",           "JOVIAL_BIT_VAL" );
 
   // DQ (7/31/2014): Added support for C++11 nullptr constant value expression (using type nullptr_t).
      NEW_TERMINAL_MACRO (NullptrValExp,          "NullptrValExp",          "NULLPTR_VAL" );
@@ -231,9 +199,6 @@ Grammar::setUpExpressions ()
 
   // DQ (12/13/2005): Added support for empty expression (and empty statement).
      NEW_TERMINAL_MACRO (NullExpression,         "NullExpression",             "NULL_EXPR" );
-
-  // PP (04/24/21): Adding explicit support for Ada others expressions
-     NEW_TERMINAL_MACRO (AdaOthersExp,           "AdaOthersExp",               "ADA_OTHERS_EXPR" );
 
 
   // DQ (12/13/2005): Added variant expression to support future patterns
@@ -279,8 +244,6 @@ Grammar::setUpExpressions ()
 
   // DQ (7/25/2020): Adding C++20 spaceship operator support.
      NEW_TERMINAL_MACRO (SpaceshipOp,               "SpaceshipOp",               "SPACESHIP_OP" );
-
-#include "x10/exp_terminals.cpp"
 
 #if USE_FORTRAN_IR_NODES
   // Intrisic function are just like other functions, but explicitly marked to be intrinsic.
@@ -351,12 +314,6 @@ Grammar::setUpExpressions ()
   // SgAggregateInitializer
      NEW_TERMINAL_MACRO (DesignatedInitializer, "DesignatedInitializer", "DESIGNATED_INITIALIZER" );
 
-  // Rasmussen (06/24/2020) Initializer for Jovial tables (wraps SgExprListExp, useful for unparsing/analysis)
-     NEW_TERMINAL_MACRO (JovialTablePresetExp, "JovialTablePresetExp", "JOVIAL_TABLE_PRESET_EXP" );
-
-  // Rasmussen (04/09/2021) Used for specifying a value at a position/location in a Jovial table
-     NEW_TERMINAL_MACRO (JovialPresetPositionExp, "JovialPresetPositionExp", "JOVIAL_PRESET_POSITION_EXP" );
-
      //SK (06/23/2015) SgMatrixExp for Matlab Matrix
      NEW_TERMINAL_MACRO (MatrixExp, "MatrixExp", "MATRIX_EXP");
 
@@ -393,6 +350,24 @@ Grammar::setUpExpressions ()
                             AggregateInitializer | CompoundInitializer | ConstructorInitializer |
                             AssignInitializer | DesignatedInitializer | BracedInitializer,
                             "Initializer","EXPR_INIT", false);
+                            
+  // SIMD operators
+     NEW_TERMINAL_MACRO (SIMDLoad, "SIMDLoad", "SIMD_LOAD");
+     NEW_TERMINAL_MACRO (SIMDBroadcast, "SIMDBroadcast", "SIMD_BROADCAST");
+     NEW_TERMINAL_MACRO (SIMDStore, "SIMDStore", "SIMD_STORE");
+     NEW_TERMINAL_MACRO (SIMDPartialStore, "SIMDPartialStore", "SIMD_PARTIAL_STORE");
+     NEW_TERMINAL_MACRO (SIMDScalarStore, "SIMDScalarStore", "SIMD_SCALAR_STORE");
+     
+     NEW_TERMINAL_MACRO (SIMDAddOp, "SIMDAddOp", "SIMD_ADD_OP");
+     NEW_TERMINAL_MACRO (SIMDSubOp, "SIMDSubOp", "SIMD_SUB_OP");
+     NEW_TERMINAL_MACRO (SIMDMulOp, "SIMDMulOp", "SIMD_MUL_OP");
+     NEW_TERMINAL_MACRO (SIMDDivOp, "SIMDDivOp", "SIMD_DIV_OP");
+     NEW_TERMINAL_MACRO (SIMDFmaOp, "SIMDFmaOp", "SIMD_FMA_OP");
+     
+     NEW_NONTERMINAL_MACRO (SIMDBinaryOp,
+            SIMDAddOp | SIMDSubOp | SIMDMulOp | SIMDDivOp |
+            SIMDFmaOp,
+            "SIMDBinaryOp", "SIMD_BINARY_OP", false);
 
   // User defined operator for Fortran named operators.
      NEW_TERMINAL_MACRO (UserDefinedUnaryOp,    "UserDefinedUnaryOp",    "USER_DEFINED_UNARY_OP" );
@@ -403,13 +378,13 @@ Grammar::setUpExpressions ()
                             ExpressionRoot | MinusOp            | UnaryAddOp | NotOp           | PointerDerefExp |
                             AddressOfOp    | MinusMinusOp       | PlusPlusOp | BitComplementOp | CastExp         |
                             ThrowOp        | RealPartOp         | ImagPartOp | ConjugateOp     | UserDefinedUnaryOp |
-                            MatrixTransposeOp | AbsOp,
+                            MatrixTransposeOp,
                             "UnaryOp","UNARY_EXPRESSION", false);
 
      NEW_NONTERMINAL_MACRO (CompoundAssignOp,
                             PlusAssignOp   | MinusAssignOp    | AndAssignOp  | IorAssignOp    | MultAssignOp     |
                             DivAssignOp    | ModAssignOp      | XorAssignOp  | LshiftAssignOp | RshiftAssignOp   |
-                            JavaUnsignedRshiftAssignOp        | IntegerDivideAssignOp | ExponentiationAssignOp,
+                            IntegerDivideAssignOp | ExponentiationAssignOp,
                             "CompoundAssignOp", "COMPOUND_ASSIGN_OP", false);
 
      NEW_NONTERMINAL_MACRO (BinaryOp,
@@ -417,10 +392,11 @@ Grammar::setUpExpressions ()
           GreaterThanOp  | NotEqualOp       | LessOrEqualOp       | GreaterOrEqualOp | AddOp                | SubtractOp     |
           MultiplyOp     | DivideOp         | IntegerDivideOp     | ModOp            | AndOp                | OrOp           |
           BitXorOp       | BitAndOp         | BitOrOp             | BitEqvOp         | CommaOpExp           | LshiftOp       |
-          RshiftOp       | PntrArrRefExp    | ScopeOp             | AssignOp         | ExponentiationOp     | JavaUnsignedRshiftOp |
+          RshiftOp       | PntrArrRefExp    | ScopeOp             | AssignOp         | ExponentiationOp     |
           ConcatenationOp | PointerAssignOp | UserDefinedBinaryOp | CompoundAssignOp | MembershipOp         | SpaceshipOp    |
-          NonMembershipOp | IsOp            | IsNotOp             | DotDotExp        | ElementwiseOp        | PowerOp        |
-          LeftDivideOp    | RemOp           | ReplicationOp       | AtOp,
+          NonMembershipOp | IsOp            | IsNotOp             | ElementwiseOp        | PowerOp        |
+          LeftDivideOp    |
+          SIMDBinaryOp | SIMDLoad | SIMDBroadcast | SIMDStore | SIMDPartialStore | SIMDScalarStore,
           "BinaryOp","BINARY_EXPRESSION", false);
 
      NEW_NONTERMINAL_MACRO (NaryOp,
@@ -434,8 +410,8 @@ Grammar::setUpExpressions ()
           WcharVal             | UnsignedShortVal | IntVal                 | EnumVal         | UnsignedIntVal  |
           LongIntVal           | LongLongIntVal   | UnsignedLongLongIntVal | UnsignedLongVal | FloatVal        |
           DoubleVal            | LongDoubleVal    | ComplexVal             | UpcThreads      | UpcMythread     |
-          TemplateParameterVal | NullptrValExp    | Char16Val              | Char32Val       | Float80Val      |
-          Float128Val          | VoidVal          | AdaFloatVal            | JovialBitVal /* | LabelAddressVal */,
+          TemplateParameterVal | NullptrValExp    | Char16Val              | Char32Val       | Float80Val      | 
+          Float128Val          | VoidVal       /* | LabelAddressVal */,
           "ValueExp","ValueExpTag", false);
 
      NEW_NONTERMINAL_MACRO (ExprListExp,
@@ -461,7 +437,7 @@ Grammar::setUpExpressions ()
      NEW_NONTERMINAL_MACRO (Expression,
           UnaryOp                  | BinaryOp                 | ExprListExp             | VarRefExp           | ClassNameRefExp          |
           FunctionRefExp           | MemberFunctionRefExp     | ValueExp                | CallExpression      | SizeOfOp                 |
-          UpcLocalsizeofExpression | UpcBlocksizeofExpression | UpcElemsizeofExpression | JavaInstanceOfOp    | SuperExp                 |
+          UpcLocalsizeofExpression | UpcBlocksizeofExpression | UpcElemsizeofExpression | SuperExp            |
           TypeIdOp                 | ConditionalExp           | NewExp                  | DeleteExp           | ThisExp                  |
           RefExp                   | Initializer              | VarArgStartOp           | VarArgOp            | VarArgEndOp              |
           VarArgCopyOp             | VarArgStartOneOperandOp  | NullExpression          | VariantExpression   | SubscriptExpression      |
@@ -473,10 +449,10 @@ Grammar::setUpExpressions ()
           Comprehension       | ListComprehension       | SetComprehension         | DictionaryComprehension      | NaryOp |
           StringConversion    | YieldExpression         | TemplateFunctionRefExp   | TemplateMemberFunctionRefExp | AlignOfOp |
           RangeExp            | MagicColonExp           | //SK(08/20/2015): RangeExp and MagicColonExp for Matlab
-          TypeTraitBuiltinOperator | CompoundLiteralExp | JavaAnnotation           | JavaTypeExpression           | TypeExpression |
-          ClassExp            | FunctionParameterRefExp | LambdaExp | HereExp | AtExp | FinishExp | NoexceptOp | NonrealRefExp |
-          AdaTaskRefExp       | FoldExpression | AwaitExpression | ChooseExpression | AdaAttributeExp |
-          JovialTablePresetExp| JovialPresetPositionExp | AdaOthersExp | AdaRenamingRefExp, "Expression", "ExpressionTag", false);
+          TypeTraitBuiltinOperator | CompoundLiteralExp | TypeExpression |
+          ClassExp            | FunctionParameterRefExp | LambdaExp | NoexceptOp | NonrealRefExp |
+          FoldExpression | AwaitExpression | ChooseExpression,
+          "Expression", "ExpressionTag", false);
 
   // ***********************************************************************
   // ***********************************************************************
@@ -582,14 +558,6 @@ Grammar::setUpExpressions ()
   // DQ (8/6/2013): We need to implement this member function explicitly and cannot use the default implementation.
      TemplateParameterVal.excludeFunctionPrototype        ( "HEADER_GET_TYPE", "../Grammar/Expression.code" );
 
-  // DQ (1/13/2014): Define the get_type meber function in the JavaAnnotation (default), but exclude it from the subtree.
-  // JavaAnnotation.excludeFunctionPrototype        ( "HEADER_GET_TYPE", "../Grammar/Expression.code" );
-     JavaAnnotation.excludeSubTreeFunctionPrototype ( "HEADER_GET_TYPE", "../Grammar/Expression.code" );
-
-  // DQ (3/7/2014): We want to use the automatically generated access function instead (so I think I need to include this).
-     JavaTypeExpression.excludeFunctionPrototype        ( "HEADER_GET_TYPE", "../Grammar/Expression.code" );
-     JavaTypeExpression.excludeSubTreeFunctionPrototype ( "HEADER_GET_TYPE", "../Grammar/Expression.code" );
-
   // DQ (7/24/2014): Added more general support for type expressions (required for C11 generic macro support.
      TypeExpression.excludeFunctionPrototype        ( "HEADER_GET_TYPE", "../Grammar/Expression.code" );
      TypeExpression.excludeSubTreeFunctionPrototype ( "HEADER_GET_TYPE", "../Grammar/Expression.code" );
@@ -636,15 +604,6 @@ Grammar::setUpExpressions ()
   // function on certain types of expressions (because the type should be computed from the operands
   // or the value types directly).
      VarRefExp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
-                                  "../Grammar/Expression.code" );
-
-     AdaTaskRefExp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
-                                  "../Grammar/Expression.code" );
-
-     AdaRenamingRefExp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
-                                  "../Grammar/Expression.code" );
-
-     AdaAttributeExp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
                                   "../Grammar/Expression.code" );
 
      NonrealRefExp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
@@ -713,8 +672,6 @@ Grammar::setUpExpressions ()
                                   "../Grammar/Expression.code" );
      RshiftOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
                                   "../Grammar/Expression.code" );
-     JavaUnsignedRshiftOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
-                                  "../Grammar/Expression.code" );
      MinusOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
                                   "../Grammar/Expression.code" );
      UnaryAddOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
@@ -724,8 +681,6 @@ Grammar::setUpExpressions ()
      AlignOfOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
                                   "../Grammar/Expression.code" );
      NoexceptOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
-                                  "../Grammar/Expression.code" );
-     JavaInstanceOfOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
                                   "../Grammar/Expression.code" );
      TypeIdOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
                                   "../Grammar/Expression.code" );
@@ -788,8 +743,6 @@ Grammar::setUpExpressions ()
                                   "../Grammar/Expression.code" );
      RshiftAssignOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
                                   "../Grammar/Expression.code" );
-     JavaUnsignedRshiftAssignOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
-                                  "../Grammar/Expression.code" );
      PointerAssignOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
                                   "../Grammar/Expression.code" );
      IntegerDivideAssignOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
@@ -801,16 +754,6 @@ Grammar::setUpExpressions ()
                                   "../Grammar/Expression.code" );
 
      ConcatenationOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
-                                  "../Grammar/Expression.code" );
-
-     ReplicationOp.setFunctionSource   ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
-                                  "../Grammar/Expression.code" );
-
-     RemOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
-                                  "../Grammar/Expression.code" );
-     AbsOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
-                                  "../Grammar/Expression.code" );
-     AtOp.setFunctionSource  ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
                                   "../Grammar/Expression.code" );
 
      MembershipOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION",
@@ -857,8 +800,6 @@ Grammar::setUpExpressions ()
      LongDoubleVal.setFunctionSource    ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", "../Grammar/Expression.code" );
      Float80Val.setFunctionSource       ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", "../Grammar/Expression.code" );
      Float128Val.setFunctionSource      ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", "../Grammar/Expression.code" );
-     AdaFloatVal.setFunctionSource      ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", "../Grammar/Expression.code" );
-     JovialBitVal.setFunctionSource     ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", "../Grammar/Expression.code" );
 
      VoidVal.setFunctionSource          ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", "../Grammar/Expression.code" );
 
@@ -900,7 +841,6 @@ Grammar::setUpExpressions ()
 
 
      NullExpression.setFunctionSource   ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", "../Grammar/Expression.code" );
-     AdaOthersExp.setFunctionSource   ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", "../Grammar/Expression.code" );
      VariantExpression.setFunctionSource( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", "../Grammar/Expression.code" );
 
      StatementExpression.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", "../Grammar/Expression.code" );
@@ -948,14 +888,6 @@ Grammar::setUpExpressions ()
 
      CompoundAssignOp.excludeFunctionPrototype ( "HEADER_PRECEDENCE", "../Grammar/Expression.code" );
 
-  // DQ (1/13/2014): Added Java support for Java annotations.
-     JavaAnnotation.setFunctionSource             ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", "../Grammar/Expression.code" );
-     JavaMarkerAnnotation.setFunctionSource       ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", "../Grammar/Expression.code" );
-     JavaSingleMemberAnnotation.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", "../Grammar/Expression.code" );
-     JavaNormalAnnotation.setFunctionSource       ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", "../Grammar/Expression.code" );
-
-     JavaTypeExpression.setFunctionSource         ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", "../Grammar/Expression.code" );
-
   // DQ (7/24/2014): Added more general support for type expressions (required for C11 generic macro support.
      TypeExpression.setFunctionSource         ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", "../Grammar/Expression.code" );
 
@@ -980,17 +912,6 @@ Grammar::setUpExpressions ()
      SizeOfOp.editSubstitute        ( "PRECEDENCE_VALUE", "16" );
      AlignOfOp.editSubstitute       ( "PRECEDENCE_VALUE", "16" );
      NoexceptOp.editSubstitute      ( "PRECEDENCE_VALUE", "16" );
-
-  // DQ (7/18/2011): What is the precedence of this operator?
-     JavaInstanceOfOp.editSubstitute        ( "PRECEDENCE_VALUE", "16" );
-
-  // DQ (1/13/2014): Added Java support for Java annotations.
-     JavaAnnotation.editSubstitute             ( "PRECEDENCE_VALUE", "16" );
-     JavaMarkerAnnotation.editSubstitute       ( "PRECEDENCE_VALUE", "16" );
-     JavaSingleMemberAnnotation.editSubstitute ( "PRECEDENCE_VALUE", "16" );
-     JavaNormalAnnotation.editSubstitute       ( "PRECEDENCE_VALUE", "16" );
-
-     JavaTypeExpression.editSubstitute         ( "PRECEDENCE_VALUE", "16" );
 
   // DQ (7/24/2014): Added more general support for type expressions (required for C11 generic macro support.
      TypeExpression.editSubstitute         ( "PRECEDENCE_VALUE", "16" );
@@ -1051,7 +972,6 @@ Grammar::setUpExpressions ()
      LshiftOp.editSubstitute        ( "PRECEDENCE_VALUE", "11" );
      RshiftOp.editSubstitute        ( "PRECEDENCE_VALUE", "11" );
 
-     JavaUnsignedRshiftOp.editSubstitute        ( "PRECEDENCE_VALUE", "11" );
      MinusOp.editSubstitute         ( "PRECEDENCE_VALUE", "15" );
 
      UnaryAddOp.editSubstitute      ( "PRECEDENCE_VALUE", "15" );
@@ -1078,7 +998,6 @@ Grammar::setUpExpressions ()
      XorAssignOp.editSubstitute     ( "PRECEDENCE_VALUE", " 2" );
      LshiftAssignOp.editSubstitute  ( "PRECEDENCE_VALUE", " 2" );
      RshiftAssignOp.editSubstitute  ( "PRECEDENCE_VALUE", " 2" );
-     JavaUnsignedRshiftAssignOp.editSubstitute  ( "PRECEDENCE_VALUE", " 2" );
      PointerAssignOp.editSubstitute ( "PRECEDENCE_VALUE", " 2" );
      IntegerDivideAssignOp.editSubstitute  ( "PRECEDENCE_VALUE", " 2" );
      ExponentiationAssignOp.editSubstitute ( "PRECEDENCE_VALUE", " 2" );
@@ -1091,10 +1010,6 @@ Grammar::setUpExpressions ()
      NaryBooleanOp.editSubstitute    ( "PRECEDENCE_VALUE", "13" );
 
      ConcatenationOp.editSubstitute ( "PRECEDENCE_VALUE", " 3" );
-     ReplicationOp.editSubstitute   ( "PRECEDENCE_VALUE", "13" );
-     RemOp.editSubstitute           ( "PRECEDENCE_VALUE", "13" );
-     AbsOp.editSubstitute           ( "PRECEDENCE_VALUE", "15" );
-     AtOp.editSubstitute            ( "PRECEDENCE_VALUE", "15" );
 
   // DQ (2/5/2004): Adding support for varargs in AST
      VarArgStartOp.editSubstitute   ( "PRECEDENCE_VALUE", "16" );
@@ -1104,7 +1019,6 @@ Grammar::setUpExpressions ()
      VarArgCopyOp.editSubstitute    ( "PRECEDENCE_VALUE", "16" );
 
      NullExpression.editSubstitute    ( "PRECEDENCE_VALUE", "16" );
-     AdaOthersExp.editSubstitute      ( "PRECEDENCE_VALUE", "16" );
      VariantExpression.editSubstitute ( "PRECEDENCE_VALUE", "16" );
 
   // DQ (7/21/2006): Added support for GNU statement expression extension.
@@ -1119,6 +1033,19 @@ Grammar::setUpExpressions ()
 
   // DQ (7/25/2020): Adding C++20 support (need to lookup the correct operator precedence, made it the same as AddOp for now).
      SpaceshipOp.editSubstitute           ( "PRECEDENCE_VALUE", "12" );
+     
+  // SIMD operators
+     SIMDBinaryOp.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDAddOp.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDSubOp.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDMulOp.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDDivOp.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDFmaOp.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDLoad.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDBroadcast.editSubstitute ("PRECEDENCE_VALUE", "16" );
+     SIMDStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDPartialStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDScalarStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
 
 #if USE_FORTRAN_IR_NODES
   // DQ (3/19/2007): Support for Fortran IR nodes (not sure if these are correct values)
@@ -1322,25 +1249,6 @@ Grammar::setUpExpressions ()
                                   NO_CONSTRUCTOR_PARAMETER, NO_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      NonrealRefExp.setDataPrototype ("bool","global_qualification_required","= false",
                                   NO_CONSTRUCTOR_PARAMETER, NO_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaTaskRefExp.setFunctionPrototype ( "HEADER_ADA_TASK_REF_EXPRESSION", "../Grammar/Expression.code" );
-     AdaTaskRefExp.setDataPrototype ( "SgAdaTaskSpecDecl*", "decl", "= NULL",
-                                      CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaRenamingRefExp.setFunctionPrototype ( "HEADER_ADA_RENAMING_REF_EXPRESSION", "../Grammar/Expression.code" );
-     AdaRenamingRefExp.setDataPrototype ( "SgAdaRenamingDecl*", "decl", "= NULL",
-                                      CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaAttributeExp.setFunctionPrototype ( "HEADER_ADA_ATTRIBUTE_EXPRESSION", "../Grammar/Expression.code" );
-     AdaAttributeExp.editSubstitute       ( "HEADER_LIST_DECLARATIONS", "HEADER_LIST_FUNCTIONS", "../Grammar/Expression.code" );
-     AdaAttributeExp.editSubstitute       ( "LIST_NAME", "arg" );
-     AdaAttributeExp.setDataPrototype ( "SgName", "attribute", "",
-                                        CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaAttributeExp.setDataPrototype ( "SgExpression*", "object", "= NULL",
-                                        CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaAttributeExp.setDataPrototype ( "SgExprListExp*", "args", "= NULL",
-                                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
 
 
      LabelRefExp.setFunctionPrototype ( "HEADER_LABEL_REF_EXPRESSION", "../Grammar/Expression.code" );
@@ -1805,14 +1713,6 @@ Grammar::setUpExpressions ()
      Float128Val.setDataPrototype ( "std::string", "valueString", "= \"\"",
                                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-     AdaFloatVal.setFunctionPrototype ( "HEADER_ADA_FLOAT_VALUE_EXPRESSION", "../Grammar/Expression.code" );
-     AdaFloatVal.setDataPrototype ( "std::string", "valueString", "= \"\"",
-                                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     JovialBitVal.setFunctionPrototype ( "HEADER_JOVIAL_BIT_VALUE_EXPRESSION", "../Grammar/Expression.code" );
-     JovialBitVal.setDataPrototype ( "std::string", "valueString", "= \"\"",
-                                    CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
   // DQ (11/28/2011): Adding template declaration support in the AST (see test2011_164.C).
      TemplateParameterVal.setFunctionPrototype ( "HEADER_TEMPLATE_PARAMETER_VALUE_EXPRESSION", "../Grammar/Expression.code" );
      TemplateParameterVal.setDataPrototype ( "int", "template_parameter_position", "= -1",
@@ -1950,7 +1850,6 @@ Grammar::setUpExpressions ()
      CommaOpExp.setFunctionPrototype ( "HEADER_COMMA_OPERATOR_EXPRESSION", "../Grammar/Expression.code" );
      LshiftOp.setFunctionPrototype ( "HEADER_LEFT_SHIFT_OPERATOR", "../Grammar/Expression.code" );
      RshiftOp.setFunctionPrototype ( "HEADER_RIGHT_SHIFT_OPERATOR", "../Grammar/Expression.code" );
-     JavaUnsignedRshiftOp.setFunctionPrototype ( "HEADER_JAVA_UNSIGNED_RIGHT_SHIFT_OPERATOR", "../Grammar/Expression.code" );
 
      NaryComparisonOp.setFunctionPrototype ( "HEADER_NARY_COMPARISON_OP", "../Grammar/Expression.code" );
      NaryBooleanOp.setFunctionPrototype ( "HEADER_NARY_BOOLEAN_OP", "../Grammar/Expression.code" );
@@ -2059,31 +1958,6 @@ Grammar::setUpExpressions ()
      NoexceptOp.setDataPrototype ( "SgExpression*", "operand_expr", "= NULL",
                                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
-  // DQ (7/18/2011): This is structurally similar to the SizeOfOp in that it takes a type operand
-  // and we have to save the expression type explicitly (I think).
-     JavaInstanceOfOp.setFunctionPrototype ( "HEADER_JAVA_INSTANCEOF_OPERATOR", "../Grammar/Expression.code" );
-     JavaInstanceOfOp.setDataPrototype ( "SgExpression*", "operand_expr", "= NULL",
-                                 CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     JavaInstanceOfOp.setDataPrototype ( "SgType*", "operand_type", "= NULL",
-                                 CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JavaInstanceOfOp.setDataPrototype ( "SgType*", "expression_type", "= NULL",
-            CONSTRUCTOR_PARAMETER, NO_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // DQ (1/13/2014): Added Java support for Java annotations.
-     JavaAnnotation.setFunctionPrototype ( "HEADER_JAVA_ANNOTATION", "../Grammar/Expression.code" );
-  // DQ (3/7/2014): Added support to build access functions for type to be reset in snippet support.
-     JavaAnnotation.setDataPrototype ( "SgType*", "expression_type", "= NULL",
-            CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     JavaTypeExpression.setFunctionPrototype ( "HEADER_JAVA_TYPE_EXPRESSION", "../Grammar/Expression.code" );
-  // DQ (3/23/2017): We need to change the name to simplify the support for the virtual get_type()
-  // function elsewhere in ROSE (and to support the "override" keyword).
-  // DQ (3/7/2014): Added support to build access functions for type to be reset in snippet support.
-     JavaTypeExpression.setDataPrototype ( "SgType*", "type", "= NULL",
-            CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-  // JavaTypeExpression.setDataPrototype ( "SgType*", "internal_type", "= NULL",
-  //        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
   // DQ (7/24/2014): Added more general support for type expressions (required for C11 generic macro support.
      TypeExpression.setFunctionPrototype ( "HEADER_TYPE_EXPRESSION", "../Grammar/Expression.code" );
   // DQ (3/23/2017): We need to change the name to simplify the support for the virtual get_type()
@@ -2092,23 +1966,6 @@ Grammar::setUpExpressions ()
             CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
   // TypeExpression.setDataPrototype ( "SgType*", "internal_type", "= NULL",
   //        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // DQ (1/13/2014): Added Java support for Java annotations.
-     JavaMarkerAnnotation.setFunctionPrototype ( "HEADER_JAVA_MARKER_ANNOTATION", "../Grammar/Expression.code" );
-
-  // DQ (1/13/2014): Added Java support for Java annotations.
-     JavaSingleMemberAnnotation.setFunctionPrototype ( "HEADER_JAVA_SINGLE_MEMBER_ANNOTATION", "../Grammar/Expression.code" );
-     JavaSingleMemberAnnotation.setDataPrototype ( "SgExpression*", "value", "= NULL",
-                                 CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-  // DQ (1/13/2014): Added Java support for Java annotations.
-     JavaNormalAnnotation.setFunctionPrototype ( "HEADER_JAVA_NORMAL_ANNOTATION", "../Grammar/Expression.code" );
-     JavaNormalAnnotation.setDataPrototype ( "SgJavaMemberValuePairPtrList", "value_pair_list", "",
-                                 NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     JavaNormalAnnotation.editSubstitute   ( "HEADER_LIST_DECLARATIONS", "HEADER_LIST_FUNCTIONS", "../Grammar/Expression.code" );
-     JavaNormalAnnotation.editSubstitute   ( "LIST_NAME", "value_pair" );
-
-
 
      TypeIdOp.setFunctionPrototype ( "HEADER_TYPE_ID_OPERATOR", "../Grammar/Expression.code" );
      TypeIdOp.setDataPrototype ( "SgExpression*", "operand_expr"   , "= NULL",
@@ -2425,11 +2282,6 @@ Grammar::setUpExpressions ()
                                     CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
      ConcatenationOp.setFunctionPrototype ( "HEADER_CONCATENATION_OPERATOR", "../Grammar/Expression.code" );
-     ReplicationOp.setFunctionPrototype   ( "HEADER_REPLICATION_OPERATOR",   "../Grammar/Expression.code" );
-
-     RemOp.setFunctionPrototype ( "HEADER_REM_OPERATOR", "../Grammar/Expression.code" );
-     AbsOp.setFunctionPrototype ( "HEADER_ABS_OPERATOR", "../Grammar/Expression.code" );
-     AtOp.setFunctionPrototype  ( "HEADER_AT_OPERATOR",  "../Grammar/Expression.code" );
 
 
   // DQ (9/4/2013): Adding support for compound literals.  These are not the same as initializers and define
@@ -2675,8 +2527,6 @@ Grammar::setUpExpressions ()
   // NullExpression.setDataPrototype        ( "SgType*", "expression_type", "= NULL",
   //                 CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-     AdaOthersExp.setFunctionPrototype    ( "HEADER_ADA_OTHERS_EXPRESSION", "../Grammar/Expression.code" );
-
      VariantExpression.setFunctionPrototype ( "HEADER_VARIANT_EXPRESSION", "../Grammar/Expression.code" );
   // VariantExpression.setDataPrototype        ( "SgType*", "expression_type", "= NULL",
   //                 CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
@@ -2895,15 +2745,6 @@ Grammar::setUpExpressions ()
   // DesignatedInitializer.setDataPrototype("SgExpression*" , "designator", "= NULL", CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
      DesignatedInitializer.setDataPrototype("SgInitializer*", "memberInit", "= NULL", CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
-  // Rasmussen (6/24/2020): An initializer for Jovial tables
-     JovialTablePresetExp.setFunctionPrototype ( "HEADER_JOVIAL_TABLE_PRESET_EXP", "../Grammar/Expression.code" );
-     JovialTablePresetExp.setDataPrototype("SgExprListExp*", "preset_list", "= NULL",   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-  // Rasmussen (4/9/2021): Used in Jovial table initialization.
-     JovialPresetPositionExp.setFunctionPrototype ("HEADER_JOVIAL_PRESET_POSITION_EXP", "../Grammar/Expression.code");
-     JovialPresetPositionExp.setDataPrototype("SgExprListExp*", "indices", "= NULL", CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     JovialPresetPositionExp.setDataPrototype("SgExpression*", "value", "= NULL", CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
  // TV (04/22/2010): CUDA support
      CudaKernelExecConfig.setFunctionPrototype ( "HEADER_CUDA_KERNEL_EXEC_CONFIG", "../Grammar/Expression.code" );
 
@@ -3060,11 +2901,6 @@ Grammar::setUpExpressions ()
      LongDoubleVal.setFunctionSource ( "SOURCE_LONG_DOUBLE_VALUE_EXPRESSION","../Grammar/Expression.code" );
      Float80Val.setFunctionSource ( "SOURCE_FLOAT_80_VALUE_EXPRESSION","../Grammar/Expression.code" );
      Float128Val.setFunctionSource ( "SOURCE_FLOAT_128_VALUE_EXPRESSION","../Grammar/Expression.code" );
-     AdaFloatVal.setFunctionSource ( "SOURCE_ADA_FLOAT_VALUE_EXPRESSION","../Grammar/Expression.code" );
-     JovialBitVal.setFunctionSource ( "SOURCE_JOVIAL_BIT_VALUE_EXPRESSION","../Grammar/Expression.code" );
-     AdaTaskRefExp.setFunctionSource ( "SOURCE_ADA_TASK_REF_EXPRESSION","../Grammar/Expression.code" );
-     AdaRenamingRefExp.setFunctionSource ( "SOURCE_ADA_RENAMING_REF_EXPRESSION","../Grammar/Expression.code" );
-     AdaAttributeExp.setFunctionSource ( "SOURCE_ADA_ATTRIBUTE_EXPRESSION","../Grammar/Expression.code" );
 
      VoidVal.setFunctionSource ( "SOURCE_VOID_VALUE_EXPRESSION","../Grammar/Expression.code" );
 
@@ -3134,7 +2970,6 @@ Grammar::setUpExpressions ()
      CommaOpExp.setFunctionSource ( "SOURCE_COMMA_OPERATOR_EXPRESSION","../Grammar/Expression.code" );
      LshiftOp.setFunctionSource ( "SOURCE_LEFT_SHIFT_OPERATOR_EXPRESSION","../Grammar/Expression.code" );
      RshiftOp.setFunctionSource ( "SOURCE_RIGHT_SHIFT_OPERATOR_EXPRESSION","../Grammar/Expression.code" );
-     JavaUnsignedRshiftOp.setFunctionSource ( "SOURCE_JAVA_UNSIGNED_RIGHT_SHIFT_OPERATOR_EXPRESSION","../Grammar/Expression.code" );
 
      NaryComparisonOp.setFunctionSource ( "SOURCE_NARY_COMPARISON_OP","../Grammar/Expression.code" );
      NaryBooleanOp.setFunctionSource ( "SOURCE_NARY_BOOLEAN_OP","../Grammar/Expression.code" );
@@ -3150,16 +2985,6 @@ Grammar::setUpExpressions ()
      SizeOfOp.setFunctionSource ( "SOURCE_SIZE_OF_OPERATOR_EXPRESSION","../Grammar/Expression.code" );
      AlignOfOp.setFunctionSource ( "SOURCE_ALIGN_OF_OPERATOR_EXPRESSION","../Grammar/Expression.code" );
      NoexceptOp.setFunctionSource ( "SOURCE_NOEXCEPT_OPERATOR_EXPRESSION","../Grammar/Expression.code" );
-
-     JavaInstanceOfOp.setFunctionSource ( "SOURCE_JAVA_INSTANCEOF_OPERATOR_EXPRESSION","../Grammar/Expression.code" );
-
-  // DQ (1/13/2014): Added Java support for Java annotations.
-     JavaAnnotation.setFunctionSource             ( "SOURCE_JAVA_ANNOTATION","../Grammar/Expression.code" );
-     JavaMarkerAnnotation.setFunctionSource       ( "SOURCE_JAVA_MARKER_ANNOTATION","../Grammar/Expression.code" );
-     JavaSingleMemberAnnotation.setFunctionSource ( "SOURCE_JAVA_SINGLE_MEMBER_ANNOTATION","../Grammar/Expression.code" );
-     JavaNormalAnnotation.setFunctionSource       ( "SOURCE_JAVA_NORMAL_ANNOTATION","../Grammar/Expression.code" );
-
-     JavaTypeExpression.setFunctionSource         ( "SOURCE_JAVA_TYPE_EXPRESSION","../Grammar/Expression.code" );
 
   // DQ (7/24/2014): Added more general support for type expressions (required for C11 generic macro support.
      TypeExpression.setFunctionSource             ( "SOURCE_TYPE_EXPRESSION","../Grammar/Expression.code" );
@@ -3204,11 +3029,6 @@ Grammar::setUpExpressions ()
      BracedInitializer.setFunctionSource ( "SOURCE_BRACED_INITIALIZER_EXPRESSION","../Grammar/Expression.code" );
 
      ConcatenationOp.setFunctionSource  ( "SOURCE_CONCATENATION_OPERATOR_EXPRESSION","../Grammar/Expression.code" );
-     ReplicationOp.setFunctionSource    ( "SOURCE_REPLICATION_OPERATOR_EXPRESSION",  "../Grammar/Expression.code" );
-
-     RemOp.setFunctionSource            ( "SOURCE_REM_OPERATOR_EXPRESSION","../Grammar/Expression.code" );
-     AbsOp.setFunctionSource            ( "SOURCE_ABS_OPERATOR_EXPRESSION","../Grammar/Expression.code" );
-     AtOp.setFunctionSource             ( "SOURCE_AT_OPERATOR_EXPRESSION", "../Grammar/Expression.code" );
 
   // DQ (7/25/2020): Adding C++20 support (need to lookup the correct operator precedence, made it the same as AddOp for now).
      SpaceshipOp.setFunctionSource ( "SOURCE_SPACESHIP_OPERATOR","../Grammar/Expression.code" );
@@ -3275,9 +3095,6 @@ Grammar::setUpExpressions ()
 
      ActualArgumentExpression.setFunctionSource ( "SOURCE_ACTUAL_ARGUMENT_EXPRESSION", "../Grammar/Expression.code" );
      DesignatedInitializer.setFunctionSource ( "SOURCE_DESIGNATED_INITIALIZER", "../Grammar/Expression.code" );
-
-     JovialTablePresetExp.setFunctionSource ( "SOURCE_JOVIAL_TABLE_PRESET_EXP", "../Grammar/Expression.code" );
-     JovialPresetPositionExp.setFunctionSource ( "SOURCE_JOVIAL_PRESET_POSITION_EXP", "../Grammar/Expression.code" );
 
      //FMZ (2/6/2009): Added for CoArray Reference
      CAFCoExpression.setFunctionSource ( "SOURCE_CO_EXPRESSION", "../Grammar/Expression.code" );
@@ -3352,8 +3169,6 @@ Grammar::setUpExpressions ()
      Float80Val.setFunctionSource             ( "SOURCE_GET_TYPE_GENERIC","../Grammar/Expression.code" );
      Float128Val.setFunctionSource            ( "SOURCE_GET_TYPE_GENERIC","../Grammar/Expression.code" );
      ComplexVal.setFunctionSource             ( "SOURCE_GET_TYPE_COMPLEX","../Grammar/Expression.code" );
-     AdaFloatVal.setFunctionSource            ( "SOURCE_GET_TYPE_GENERIC","../Grammar/Expression.code" );
-     JovialBitVal.setFunctionSource           ( "SOURCE_GET_TYPE_GENERIC","../Grammar/Expression.code" );
 
      VoidVal.setFunctionSource                ( "SOURCE_GET_TYPE_GENERIC","../Grammar/Expression.code" );
 
@@ -3407,12 +3222,6 @@ Grammar::setUpExpressions ()
      LongDoubleVal.editSubstitute          ( "GENERIC_TYPE", "SgTypeLongDouble" );
      Float80Val.editSubstitute             ( "GENERIC_TYPE", "SgTypeFloat80" );
      Float128Val.editSubstitute            ( "GENERIC_TYPE", "SgTypeFloat128" );
-
-     // \todo set type according to Asis frontend
-     AdaFloatVal.editSubstitute            ( "GENERIC_TYPE", "SgTypeFloat" );
-
-     JovialBitVal.editSubstitute           ( "GENERIC_TYPE", "SgJovialBitType" );
-
      ComplexVal.editSubstitute             ( "GENERIC_TYPE", "SgTypeComplex" );
 
      VoidVal.editSubstitute                ( "GENERIC_TYPE", "SgTypeVoid" );
@@ -3481,10 +3290,6 @@ Grammar::setUpExpressions ()
      NullExpression.setFunctionSource    ( "SOURCE_GET_TYPE_GENERIC", "../Grammar/Expression.code" );
      NullExpression.editSubstitute       ( "GENERIC_TYPE", "SgTypeDefault" );
 
-     AdaOthersExp.setFunctionSource      ( "SOURCE_ADA_OTHERS_EXPRESSION", "../Grammar/Expression.code" );
-     AdaOthersExp.setFunctionSource      ( "SOURCE_GET_TYPE_GENERIC", "../Grammar/Expression.code" );
-     AdaOthersExp.editSubstitute         ( "GENERIC_TYPE", "SgTypeDefault" );
-
      VariantExpression.setFunctionSource ( "SOURCE_VARIANT_EXPRESSION", "../Grammar/Expression.code" );
   // VariantExpression.setFunctionSource ( "SOURCE_DEFAULT_GET_TYPE", "../Grammar/Expression.code" );
   // VariantExpression.setFunctionSource ( "SOURCE_EMPTY_SET_TYPE_FUNCTION", "../Grammar/Expression.code" );
@@ -3542,4 +3347,46 @@ Grammar::setUpExpressions ()
      RangeExp.setFunctionSource     ( "SOURCE_DEFAULT_GET_TYPE","../Grammar/Expression.code" );
      RangeExp.setFunctionSource    ( "SOURCE_RANGE_EXP", "../Grammar/Expression.code" );
 
+    // SIMD operators
+     SIMDBinaryOp.setFunctionPrototype            ( "HEADER_EXTRA_FUNCTIONS", "../Grammar/Expression.code" );
+     SIMDBinaryOp.excludeFunctionPrototype        ( "HEADER_GET_TYPE", "../Grammar/Expression.code" );
+     SIMDBinaryOp.excludeSubTreeFunctionPrototype ( "HEADER_GET_TYPE", "../Grammar/Expression.code" );
+     SIMDBinaryOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", 
+                                  "../Grammar/Expression.code" );
+     
+     SIMDAddOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", 
+                                  "../Grammar/Expression.code" );
+     SIMDAddOp.setFunctionPrototype ( "HEADER_SIMD_ADD_OP", "../Grammar/Expression.code" );
+     
+     SIMDSubOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", 
+                                  "../Grammar/Expression.code" );
+     SIMDSubOp.setFunctionPrototype ( "HEADER_SIMD_SUB_OP", "../Grammar/Expression.code" );
+     
+     SIMDMulOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", 
+                                  "../Grammar/Expression.code" );
+     SIMDMulOp.setFunctionPrototype ( "HEADER_SIMD_MUL_OP", "../Grammar/Expression.code" );
+     
+     SIMDDivOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", 
+                                  "../Grammar/Expression.code" );
+     SIMDDivOp.setFunctionPrototype ( "HEADER_SIMD_DIV_OP", "../Grammar/Expression.code" );
+     
+     SIMDFmaOp.setFunctionSource ( "SOURCE_EMPTY_POST_CONSTRUCTION_INITIALIZATION", 
+                                  "../Grammar/Expression.code" );
+     SIMDFmaOp.setFunctionPrototype ( "HEADER_SIMD_FMA_OP", "../Grammar/Expression.code" );
+     
+     SIMDLoad.setFunctionPrototype ( "HEADER_SIMD_LOAD", "../Grammar/Expression.code" );
+     SIMDLoad.setFunctionSource ( "SOURCE_SIMD_LOAD", "../Grammar/Expression.code" );
+     
+     SIMDBroadcast.setFunctionPrototype ( "HEADER_SIMD_BROADCAST", "../Grammar/Expression.code" );
+     SIMDBroadcast.setFunctionSource ( "SOURCE_SIMD_BROADCAST", "../Grammar/Expression.code" );
+     
+     SIMDStore.setFunctionPrototype ( "HEADER_SIMD_STORE", "../Grammar/Expression.code" );
+     SIMDStore.setFunctionSource ( "SOURCE_SIMD_STORE", "../Grammar/Expression.code" );
+     
+     SIMDPartialStore.setFunctionPrototype ( "HEADER_SIMD_PARTIAL_STORE", "../Grammar/Expression.code" );
+     SIMDPartialStore.setFunctionSource ( "SOURCE_SIMD_PARTIAL_STORE", "../Grammar/Expression.code" );
+     
+     SIMDScalarStore.setFunctionPrototype ( "HEADER_SIMD_SCALAR_STORE", "../Grammar/Expression.code" );
+     SIMDScalarStore.setFunctionSource ( "SOURCE_SIMD_SCALAR_STORE", "../Grammar/Expression.code" );
+     
    }

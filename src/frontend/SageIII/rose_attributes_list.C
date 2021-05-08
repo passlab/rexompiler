@@ -835,9 +835,6 @@ PreprocessingInfo::directiveTypeName ( const DirectiveType & directive )
           case FortranStyleComment:
              returnString = "FortranStyleComment";
              break;
-          case AdaStyleComment:
-             returnString = "AdaStyleComment";
-             break;
           case F90StyleComment:
              returnString = "F90StyleComment";
              break;
@@ -2391,9 +2388,7 @@ ROSEAttributesList::collectPreprocessorDirectivesAndCommentsForAST( const string
      ROSE_ASSERT (filename.empty() == false);
 
   // Open file for reading line by line!
-     const PreprocessingInfo::DirectiveType commentKind = languageType == e_Ada_language
-                                                              ? PreprocessingInfo::AdaStyleComment
-                                                              : PreprocessingInfo::FortranStyleComment;
+     const PreprocessingInfo::DirectiveType commentKind = PreprocessingInfo::FortranStyleComment;
      string line;
      size_t colNumber = 0; // PP (04/13/21) column information, currently only used by Ada
 
@@ -2485,8 +2480,6 @@ ROSEAttributesList::collectPreprocessorDirectivesAndCommentsForAST( const string
                          case e_Fortran77_language: isComment = isFortran77Comment(line); break;
 
                          case e_Fortran9x_language: isComment = isFortran90Comment(line); break;
-                         case e_Ada_language:
-                           std::tie(isComment, line, colNumber) = extractAdaComment(line); break;
 
                          default:
                             {
@@ -3118,80 +3111,6 @@ ROSEAttributesListContainer::clean(void)
 
   // Nothing to do?
    }
-
-
-#if ALTERNATIVE_ADA_COMMENT_FRAGMENT
-
-//
-// auxiliary Ada functions
-namespace
-{
-  ROSEAttributesList*
-  void appendAdaComments(ROSEAttributesList* attrlst, std::string srcfile)
-  {
-    ROSE_ASSERT(attrlst);
-
-    std::ifstream ifile(srcfile);
-
-    if (!ifile.is_open())
-    {
-      mprintf("Unable to open input file %s; unable too collect comments\n", srcfile.c_str());
-      return;
-    }
-
-    int lineCounter = 1;
-
-    while (!ifile.eof())
-    {
-      std::string line;
-
-      std::getline(ifile, line);
-
-
-
-      ++lineCounter;
-    }
-  }
-}
-
-
-ROSEAttributesList*
-collectAdaCommentsForAST(SgSourceFile* srcfile)
-{
-  ROSE_ASSERT(srcfile);
-
-  std::string         lastFile;
-  ROSEAttributesList* attrlst  = new ROSEAttributesList;
-  SG_Global*          global   = srcfile->get_globalScope();
-  ROSE_ASSERT(global);
-
-
-  /*
-  The comments could be collected for all specification and the main
-  source file. I am not sure how all of this is connected inside of
-  AttachPreprocessingInfoTreeTrav ..
-  ==> try the mechanism for the main file only.
-
-  for (SgDeclarationStatement* dcl : global->get_declarations());
-  {
-    std::string thisFile = dcl...
-
-    if (thisFile != lastFile)
-    {
-      attrlst->collectPreprocessorDirectivesAndCommentsForAST
-
-      lastFile = std::move(thisFile);
-    }
-  }
-  */
-
-  appendAdaComments(attrlst, srcfile->getFileName());
-}
-#endif /* ALTERNATIVE_ADA_COMMENT_FRAGMENT */
-
-
-
-
 
 
 // EOF

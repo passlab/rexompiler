@@ -33,150 +33,6 @@ class AstRegExAttribute;
 class AstAttribute;
 class AstAttributeMechanism;
 
-// DQ (4/21/2009): This is not handled uniformally in sage3.h.
-// DQ (8/8/2008): This is required to process the "stat64 struct in SgAsmGenericFile
-// JJW (8/26/2008): Changed to struct stat with _FILE_OFFSET_BITS == 64 (see
-// http://www.gnu.org/software/libc/manual/html_node/Reading-Attributes.html)
-// #define _FILE_OFFSET_BITS 64 // Use 64-bit offsets on 32-bit machines when available
-// #include <sys/stat.h>
-
-// DQ (6/14/2008): Include the Exec format support.
-// #include "ExecGeneric.h"
-
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-#include <Sawyer/Set.h>
-namespace Rose {
-  namespace BinaryAnalysis {
-    typedef Sawyer::Container::Set<rose_addr_t> AddressSet;
-  }
-}
-
-// This is all documented in Rva.C since doxygen can't pick of documentation from this file.
-class ROSE_DLL_API rose_rva_t {
-        public:
-                rose_rva_t();
-                rose_rva_t(const rose_rva_t&);
-                rose_rva_t operator=(const rose_rva_t&);
-                rose_rva_t(rose_addr_t rva, SgAsmGenericSection *section=NULL); //implicit
-                static rose_rva_t section_relative(SgAsmGenericSection *section, rose_addr_t offset);
-                bool is_bound() const;
-                rose_addr_t get_rva() const;
-                rose_rva_t& set_rva(rose_addr_t rva);
-                SgAsmGenericSection *get_section() const;
-                rose_rva_t& set_section(SgAsmGenericSection *section);
-                rose_rva_t& bind(SgAsmGenericHeader*);
-                rose_addr_t get_va() const;
-                rose_addr_t get_rel() const;
-                rose_addr_t get_rel(SgAsmGenericSection*);
-                void increment(rose_addr_t amount);
-                std::string to_string() const;
-        private:
-                rose_addr_t addr;             /* virtual address (relative to section if section is not null) */
-                SgAsmGenericSection *section; /* rva is relative to header base_va if section is null */
-
-#ifdef ROSE_HAVE_BOOST_SERIALIZATION_LIB
-        private:
-                friend class boost::serialization::access;
-
-                template<class S>
-                void serialize(S &s, const unsigned /*version*/) {
-                    s & BOOST_SERIALIZATION_NVP(addr);
-                    s & BOOST_SERIALIZATION_NVP(section);
-                }
-#endif
-};
-#endif
-
-// #ifndef ROSE_USE_SWIG_SUPPORT
-#ifndef SWIG
-
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-std::ostream &operator<<(std::ostream&, const rose_rva_t&);
-
-rose_addr_t operator-(const rose_rva_t &a1, const rose_rva_t &a2);
-rose_addr_t operator+(const rose_rva_t &a1, const rose_rva_t &a2);
-
-bool operator< (const rose_rva_t &a1, const rose_rva_t &a2);
-bool operator<=(const rose_rva_t &a1, const rose_rva_t &a2);
-bool operator> (const rose_rva_t &a1, const rose_rva_t &a2);
-bool operator>=(const rose_rva_t &a1, const rose_rva_t &a2);
-bool operator==(const rose_rva_t &a1, const rose_rva_t &a2);
-bool operator!=(const rose_rva_t &a1, const rose_rva_t &a2);
-#endif
-
-#endif
-
-/** An interval of virtual addresses. */
-typedef Sawyer::Container::Interval<rose_addr_t> AddressInterval;
-std::ostream& operator<<(std::ostream&, const AddressInterval&);
-
-/** A set of virtual addresses. This is optimized for cases when many addresses are contiguous. */
-typedef Sawyer::Container::IntervalSet<AddressInterval> AddressIntervalSet;
-std::ostream& operator<<(std::ostream&, const AddressIntervalSet&);
-
-// deprecated. Use AddressInterval instead for all new code.
-typedef Range<rose_addr_t> Extent;
-
-/** Specialized printing for ROSE addresses. */
-template<>
-void Range<rose_addr_t>::print(std::ostream &o) const;
-
-// deprecated. Use AddressSet instead for all new code.
-class ExtentMap: public RangeMap<Extent> {
-public:
-        ExtentMap(): RangeMap<Extent>() {}
-        template<class Other> ExtentMap(const Other &other): RangeMap<Extent>(other) {}
-        static char category(const Extent &a, const Extent &b);
-        ExtentMap subtract_from(const Extent &e) const {
-                return invert_within<ExtentMap>(e);
-        }
-        void allocate_at(const Extent &request);
-        Extent allocate_best_fit(const rose_addr_t size);
-        Extent allocate_first_fit(const rose_addr_t size);
-        void dump_extents(std::ostream&, const std::string &prefix="", const std::string &label="") const;
-        void dump_extents(FILE *f, const char *prefix, const char *label, bool pad=true) const;
-};
-
-// deprecated. Conversion functions, to be deleted when the old types are no longer needed.
-Extent toExtent(const AddressInterval&);
-AddressInterval toAddressInterval(const Extent&);
-ExtentMap toExtentMap(const AddressIntervalSet&);
-AddressIntervalSet toAddressIntervalSet(const ExtentMap&);
-
-// #ifndef ROSE_USE_SWIG_SUPPORT
-
-/** Settings that control how the lowest-level SgAsmExecutableFileFormat::hexdump function behaves. */
-struct HexdumpFormat {
-    HexdumpFormat()
-        : width(16), colsize(8), multiline(false), show_numeric(true), pad_numeric(true),
-          show_chars(true), pad_chars(false) {}
-
-    /* General settings */
-    std::string prefix;         /**< Characters to emit after internal linefeeds. */
-    size_t width;               /**< Bytes per line of output (default 16). */
-    size_t colsize;             /**< Bytes per column group (default 8). */
-    std::string addr_fmt;       /**< Printf format for addresses (default "0x%08llx: "). */
-    bool multiline;             /**< Emit prefix at beginning and line feed at end of output. */
-
-    /* Settings for numeric output of bytes */
-    bool show_numeric;          /**< Show numeric format of bytes (default true). */
-    std::string numeric_fmt;    /**< Printf format for bytes (default "%02x"). */
-    std::map<unsigned char,std::string> numeric_fmt_special; /**< Special formatting for certain values. */
-    std::string numeric_sep;    /**< String to print between numeric values (default " "). */
-    bool pad_numeric;           /**< Pad numeric part of output with spaces for partial final line (default true). */
-
-    /* Settings for ASCII output of bytes */
-    bool show_chars;            /**< Show ASCII characters after bytes (default true). */
-    bool pad_chars;             /**< Pad character part of output with spaces for partial final line (default true). */
-};
-
-#include <Rose/BinaryAnalysis/RegisterDescriptor.h>
-
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-/** Mapping from instruction virtual address to instruction. */
-typedef Map<rose_addr_t, SgAsmInstruction*> InstructionMap;
-#endif
-
 // DQ (8/21/2008): these are from the GenericExec.h (from before we used Robb's work in the new IR nodes).
 #define NELMTS(X)       (sizeof(X)/sizeof((X)[0]))      /* number of elements in a static-sized array */
 #define DUMP_FIELD_WIDTH        64                      /* min columns to use for member names in dump() functions */
@@ -262,56 +118,6 @@ typedef Rose_STL_Container<SgDeclarationStatement*> SgDeclarationStatementPtrLis
     \brief This is socumentation for the following typedef
  */
 typedef SgDeclarationStatementPtrList*              SgDeclarationStatementPtrListPtr;
-
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-// tps (8/20/2007): Added support for binaries.
-/** \typedef SgAsmBlockPtrList
-    This is socumentation for the following typedef
- */
-typedef Rose_STL_Container<SgAsmBlock*>     SgAsmBlockPtrList;
-
-/** This is socumentation for the following typedef */
-typedef SgAsmBlockPtrList*                  SgAsmBlockPtrListPtr;
-
-// JJW (8/28/2008): Added SgAsmInterpretation
-typedef Rose_STL_Container<SgAsmInterpretation*> SgAsmInterpretationPtrList;
-
-// DQ (6/14/2008): Added to support new exec format IR nodes
-typedef Rose_STL_Container<SgAsmGenericSection*> SgAsmGenericSectionPtrList;
-typedef SgAsmGenericSectionPtrList*              SgAsmGenericSectionPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmGenericFile*> SgAsmGenericFilePtrList;
-typedef SgAsmGenericSectionPtrList*           SgAsmGenericFilePtrListPtr;
-
-// DQ (6/14/2008): Added to support new exec format IR nodes
-// typedef Rose_STL_Container<SgAsmGenericSegment*> SgAsmGenericSegmentPtrList;
-// typedef SgAsmGenericSegmentPtrList*              SgAsmGenericSegmentPtrListPtr;
-
-// DQ (6/14/2008): Added to support new exec format IR nodes
-// typedef Rose_STL_Container<SgAsmElfSegmentEntry*> SgAsmElfSegmentEntryPtrList;
-// typedef SgAsmElfSegmentEntryPtrList*              SgAsmElfSegmentEntryPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmPEImportItem*> SgAsmPEImportItemPtrList;
-typedef SgAsmPEImportItemPtrList*              SgAsmPEImportItemPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmPEImportDirectory*> SgAsmPEImportDirectoryPtrList;
-typedef SgAsmPEImportDirectoryPtrList*              SgAsmPEImportDirectoryPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmPEImportItem*> SgAsmPEImportItemPtrList;
-typedef SgAsmPEImportItemPtrList*              SgAsmPEImportItemPtrListPtr;
-
-// DQ (6/14/2008): Added to support new exec format IR nodes
-typedef Rose_STL_Container<SgAsmElfSymbol*> SgAsmElfSymbolPtrList;
-typedef SgAsmElfSymbolPtrList*              SgAsmElfSymbolPtrListPtr;
-
-// DQ (8/4/2008): Added to support new exec format IR nodes
-typedef Rose_STL_Container<SgAsmCoffSymbol*> SgAsmCoffSymbolPtrList;
-typedef SgAsmCoffSymbolPtrList*              SgAsmCoffSymbolPtrListPtr;
-
-// DQ (8/8/2008): Added to support new exec format IR nodes
-typedef Rose_STL_Container<SgAsmGenericSymbol*> SgAsmGenericSymbolPtrList;
-typedef SgAsmGenericSymbolPtrList*              SgAsmGenericSymbolPtrListPtr;
-#endif
 
 class SgStatement;
 typedef Rose_STL_Container<SgStatement*>    SgStatementPtrList;
@@ -447,28 +253,6 @@ typedef SgBasicBlock*                       SgBasicBlockPtr;
 typedef std::vector<SgBasicBlockPtr>        SgBasicBlockPtrList;
 typedef SgBasicBlockPtrList*                SgBasicBlockPtrListPtr;
 
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-// DQ (3/15/2007): Added support for binaries.
-typedef Rose_STL_Container<SgAsmStatement*> SgAsmStatementPtrList;
-typedef SgAsmStatementPtrList*              SgAsmStatementPtrListPtr;
-
-// DQ (3/15/2007): Added support for binaries.
-typedef Rose_STL_Container<SgAsmExpression*> SgAsmExpressionPtrList;
-typedef SgAsmExpressionPtrList*              SgAsmExpressionPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmIntegerValueExpression*> SgAsmIntegerValuePtrList;
-typedef SgAsmIntegerValuePtrList*                SgAsmIntegerValuePtrListPtr;
-
-// DQ (3/15/2007): Added support for binaries.
-typedef Rose_STL_Container<SgAsmSynthesizedDeclaration*> SgAsmSynthesizedDeclarationPtrList;
-typedef SgAsmSynthesizedDeclarationPtrList*              SgAsmSynthesizedDeclarationPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmX86Instruction*> SgAsmX86InstructionPtrList;
-#ifdef ROSE_ENABLE_ASM_AARCH64
-typedef Rose_STL_Container<SgAsmAarch64Instruction*> SgAsmAarch64InstructionPtrList;
-#endif
-#endif
-
 // DQ (11/19/2007): Added support for Fortran namelist statement.
 typedef Rose_STL_Container<SgNameGroup*>           SgNameGroupPtrList;
 typedef SgNameGroupPtrList*                        SgNameGroupPtrListPtr;
@@ -501,20 +285,8 @@ typedef SgLabelSymbolPtrList*                  SgLabelSymbolPtrListPtr;
 typedef Rose_STL_Container<SgFormatItem*>      SgFormatItemPtrList;
 typedef SgFormatItemPtrList*                   SgFormatItemPtrListPtr;
 
-// DQ (8/21/2008): Use the reference built for rose_addr_t instead.
-// DQ (8/21/2008): Moved this from Node.code to make it local since
-// we can't reference the nested addr_t directly from glogal scope.
-// typedef uint64_t addr_t; // address and size (file and memory)
 typedef Rose_STL_Container<rose_addr_t>  SgAddressList;
 typedef SgAddressList*                   SgAddressListPtr;
-
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-typedef Rose_STL_Container<rose_rva_t>         SgRVAList;
-typedef SgRVAList*                             SgRVAListPtr;
-
-typedef Rose_STL_Container<SgAsmPEExportEntry*> SgAsmPEExportEntryPtrList;
-typedef SgAsmPEExportEntryPtrList*              SgAsmPEExportEntryPtrListPtr;
-#endif
 
 typedef Rose_STL_Container<unsigned>           SgUnsignedList;
 typedef SgUnsignedList*                        SgUnsignedListPtr;
@@ -522,31 +294,6 @@ typedef SgUnsignedList*                        SgUnsignedListPtr;
 // DQ (8/7/2008): Added list of size_t types for binary format support.
 typedef Rose_STL_Container<size_t>             SgSizeTList;
 typedef SgSizeTList*                           SgSizeTListPtr;
-
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-typedef Rose_STL_Container<SgAsmNEEntryPoint*> SgAsmNEEntryPointPtrList;
-typedef SgAsmNEEntryPointPtrList*              SgAsmNEEntryPointPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmNERelocEntry*> SgAsmNERelocEntryPtrList;
-typedef SgAsmNERelocEntryPtrList*              SgAsmNERelocEntryPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmLEPageTableEntry*> SgAsmLEPageTableEntryPtrList;
-typedef SgAsmLEPageTableEntryPtrList*              SgAsmLEPageTableEntryPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmLEEntryPoint*> SgAsmLEEntryPointPtrList;
-typedef SgAsmLEEntryPointPtrList*              SgAsmLEEntryPointPtrListPtr;
-
-// The OS/2 SgAsmLERelocEntry reused the Windows SgAsmNERelocEntry
-typedef SgAsmNERelocEntry SgAsmLERelocEntry;
-typedef Rose_STL_Container<SgAsmLERelocEntry*> SgAsmLERelocEntryPtrList;
-typedef SgAsmLERelocEntryPtrList*              SgAsmLERelocEntryPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmGenericHeader*> SgAsmGenericHeaderPtrList;
-typedef SgAsmGenericHeaderPtrList*              SgAsmGenericHeaderPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmGenericDLL*> SgAsmGenericDLLPtrList;
-typedef SgAsmGenericDLLPtrList*              SgAsmGenericDLLPtrListPtr;
-#endif
 
 typedef Rose_STL_Container<unsigned char>    SgUnsignedCharList;
 typedef SgUnsignedCharList*                  SgUnsignedCharListPtr;
@@ -557,15 +304,6 @@ typedef SgUnsignedCharList*                  SgUnsignedCharListPtr;
 typedef Rose_STL_Container<SgModuleStatement*> SgModuleStatementPtrList;
 typedef SgModuleStatementPtrList*              SgModuleStatementPtrListPtr;
 
-// TOO1 (5/16/2013)
-typedef Rose_STL_Container<SgJavaPackageDeclaration*> SgJavaPackageDeclarationPtrList;
-
-// DQ (6/12/2013): Added to support use in Java support (in SgSourceFile).
-typedef Rose_STL_Container<SgJavaImportStatement*> SgJavaImportStatementPtrList;
-
-// DQ (6/12/2013): Added to support use in Java support (in SgSourceFile).
-typedef Rose_STL_Container<SgClassDeclaration*> SgClassDeclarationPtrList;
-
 // DQ (10/4/2008): Support for list of names or rename entries for the SgUseStatement (Fortran 90 support)
 typedef Rose_STL_Container<SgRenamePair*> SgRenamePairPtrList;
 typedef SgRenamePairPtrList*              SgRenamePairPtrListPtr;
@@ -573,21 +311,6 @@ typedef SgRenamePairPtrList*              SgRenamePairPtrListPtr;
 // DQ (10/6/2008): Added improved support for F90 interfaces using interface bodies.
 typedef Rose_STL_Container<SgInterfaceBody*> SgInterfaceBodyPtrList;
 typedef SgInterfaceBodyPtrList*              SgInterfaceBodyPtrListPtr;
-
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-// DQ (11/5/2008): Addes as part of general Dwarf support in the AST for binary executables.
-typedef Rose_STL_Container<SgAsmDwarfLine*> SgAsmDwarfLinePtrList;
-typedef SgAsmDwarfLinePtrList*              SgAsmDwarfLinePtrListPtr;
-
-typedef Rose_STL_Container<SgAsmDwarfMacro*> SgAsmDwarfMacroPtrList;
-typedef SgAsmDwarfMacroPtrList*              SgAsmDwarfMacroPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmDwarfConstruct*> SgAsmDwarfConstructPtrList;
-typedef SgAsmDwarfConstructPtrList*              SgAsmDwarfConstructPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmDwarfCompilationUnit*> SgAsmDwarfCompilationUnitPtrList;
-typedef SgAsmDwarfCompilationUnitPtrList*              SgAsmDwarfCompilationUnitPtrListPtr;
-#endif
 
 // DQ (11/28/2008): Added support for list of integers (used for flag list in SgLinemarkerDirectiveStatement).
 // typedef std::vector<int>                     SgIntegerList;
@@ -597,10 +320,6 @@ typedef SgOmpClausePtrList*                SgOmpClausePtrListPtr;
 
 typedef Rose_STL_Container<SgOmpSectionStatement*>   SgOmpSectionStatementPtrList;
 typedef SgOmpSectionStatementPtrList*                SgOmpSectionStatementPtrListPtr;
-
-// DQ (1/13/2014): Added support for Java annotations.
-typedef Rose_STL_Container<SgJavaMemberValuePair*> SgJavaMemberValuePairPtrList;
-typedef SgJavaMemberValuePairPtrList* SgJavaMemberValuePairPtrListPtr;
 
 // DQ (3/6/2014): Added support for Untyped IR nodes.
 class SgUntypedInitializedName;
@@ -636,12 +355,6 @@ class SgUntypedFunctionDeclaration;
 typedef Rose_STL_Container<SgUntypedFunctionDeclaration*> SgUntypedFunctionDeclarationPtrList;
 typedef SgUntypedFunctionDeclarationPtrList*              SgUntypedFunctionDeclarationPtrListPtr;
 
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-class SgAsmRegisterReferenceExpression;
-typedef Rose_STL_Container<SgAsmRegisterReferenceExpression*> SgAsmRegisterReferenceExpressionPtrList;
-typedef SgAsmRegisterReferenceExpressionPtrList* SgAsmRegisterReferenceExpressionPtrListPtr;
-#endif
-
 // DQ (9/3/2014): Added support for C++11 Lambda expressions.
 typedef Rose_STL_Container<SgLambdaCapture*>     SgLambdaCapturePtrList;
 typedef SgLambdaCapturePtrList*                  SgLambdaCapturePtrListPtr;
@@ -656,11 +369,6 @@ class SgIncludeFile;
 typedef Rose_STL_Container<SgIncludeFile*>        SgIncludeFilePtrList;
 typedef SgIncludeFilePtrList*                     SgIncludeFilePtrListPtr;
 
-// PP (11/24/2020) Add support for Ada representation clauses
-class SgAdaComponentClause;
-typedef Rose_STL_Container<SgAdaComponentClause*> SgAdaComponentClausePtrList;
-typedef SgAdaComponentClausePtrList*              SgAdaComponentClausePtrListPtr;
-
 // DQ (10/28/2013): Forward declaration for new token unparsing support.
 class TokenStreamSequenceToNodeMapping;
 class FrontierNode;
@@ -668,49 +376,6 @@ class PreviousAndNextNodeData;
 
 // DQ (11/30/2015): Added support for mapping of the AST to macro expansions.
 class MacroExpansion;
-
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-#include <SgSharedVector.h>
-
-typedef SgSharedVector<unsigned char>             SgFileContentList;
-typedef SgFileContentList*                        SgFileContentListPtr;
-
-typedef Rose_STL_Container<SgAsmElfRelocEntry*>   SgAsmElfRelocEntryPtrList;
-typedef SgAsmElfRelocEntryPtrList*                SgAsmElfRelocEntryPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmElfNoteEntry*>    SgAsmElfNoteEntryPtrList;
-typedef SgAsmElfNoteEntryPtrList*                 SgAsmElfNoteEntryPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmElfDynamicEntry*> SgAsmElfDynamicEntryPtrList;
-typedef SgAsmElfDynamicEntryPtrList*              SgAsmElfDynamicEntryPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmElfEHFrameEntryCI*> SgAsmElfEHFrameEntryCIPtrList;
-typedef SgAsmElfEHFrameEntryCIPtrList*              SgAsmElfEHFrameEntryCIPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmElfEHFrameEntryFD*> SgAsmElfEHFrameEntryFDPtrList;
-typedef SgAsmElfEHFrameEntryFDPtrList*              SgAsmElfEHFrameEntryFDPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmElfSegmentTableEntry*> SgAsmElfSegmentTableEntryPtrList;
-typedef SgAsmElfSegmentTableEntryPtrList* SgAsmElfSegmentTableEntryPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmElfSymverEntry*> SgAsmElfSymverEntryPtrList;
-typedef SgAsmElfSymverEntryPtrList*              SgAsmElfSymverEntryPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmElfSymverDefinedEntry*> SgAsmElfSymverDefinedEntryPtrList;
-typedef SgAsmElfSymverDefinedEntryPtrList*              SgAsmElfSymverDefinedEntryPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmElfSymverDefinedAux*> SgAsmElfSymverDefinedAuxPtrList;
-typedef SgAsmElfSymverDefinedAuxPtrList*              SgAsmElfSymverDefinedAuxPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmElfSymverNeededEntry*> SgAsmElfSymverNeededEntryPtrList;
-typedef SgAsmElfSymverNeededEntryPtrList*              SgAsmElfSymverNeededEntryPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmElfSymverNeededAux*> SgAsmElfSymverNeededAuxPtrList;
-typedef SgAsmElfSymverNeededAuxPtrList*              SgAsmElfSymverNeededAuxPtrListPtr;
-
-typedef Rose_STL_Container<SgAsmPERVASizePair*> SgAsmPERVASizePairPtrList;
-typedef SgAsmPERVASizePairPtrList* SgAsmPERVASizePairPtrListPtr;
-#endif
 
 // DQ (11/20/2010): Added type for SgToken list
 // Build a type for the SgToken list.
@@ -1222,31 +887,6 @@ class rose_graph_string_integer_hash_multimap : public rose_graph_string_integer
 
 std::ostream & operator<< ( std::ostream & os, const rose_graph_string_integer_hash_multimap::iterator & rhm_it );
 
-
-
-
-
-
-
-// DQ (11/6/2008): This is the support for mapping instructions to source code and back.
-// When it is further along it will be moved to the SgAsmDwarfCompilationUnit as a member
-// function which will built it if it has not previously been built.
-// This is how a triplet would be built (in the future), instead of a pair, but for now use a pair.
-// std::tr1::tuple<int, int, int> tp;
-typedef std::pair<int,int> LineColumnFilePosition;
-typedef std::pair<int,LineColumnFilePosition> FileIdLineColumnFilePosition;
-
-typedef std::pair<uint64_t,FileIdLineColumnFilePosition> AddressFileIdLineColumnFilePositionPair;
-typedef std::pair<FileIdLineColumnFilePosition,uint64_t> FileIdLineColumnFilePositionAddressPair;
-
-// typedef std::multimap<uint64_t,FileIdLineColumnFilePosition> SgInstructionAddressSourcePositionMapPtrList;
-// typedef std::multimap<FileIdLineColumnFilePosition,uint64_t> SgSourcePositionInstructionAddressMapPtrList;
-typedef std::multimap<uint64_t,FileIdLineColumnFilePosition> SgInstructionAddressSourcePositionMapPtrList;
-typedef std::multimap<FileIdLineColumnFilePosition,uint64_t> SgSourcePositionInstructionAddressMapPtrList;
-
-typedef std::pair<SgInstructionAddressSourcePositionMapPtrList*,SgSourcePositionInstructionAddressMapPtrList*> DwarfInstructionSourceMapReturnType;
-
-
 // DQ (11/26/2005): Support for visitor pattern.
 class ROSE_VisitTraversal;
 class ROSE_VisitorPattern;
@@ -1543,18 +1183,12 @@ class AstSpecificDataManagingClassStorageClass;
 // DQ (4/23/2006): The friend declaration the SgProject class is not enough this must be defined outside of the class (for g++ 4.1.0).
 std::ostream & operator<< ( std::ostream & os, const Rose_STL_Container<std::string> & l );
 
-// #ifndef ROSE_USE_SWIG_SUPPORT
-#ifndef SWIG
-
 // DQ (8/8/2008): Added support for std::multimap<rose_addr_t, rose_addr_t> used in binary file format.
 std::ostream & operator<< ( std::ostream & os, const std::multimap<rose_addr_t, rose_addr_t> & m );
 std::ostream & operator<< ( std::ostream & os, const std::vector<std::pair<rose_addr_t, rose_addr_t> > & l );
 // struct SgAsmGenericFormat::fileDetails;
 // std::ostream & operator<< ( std::ostream & os, const SgAsmGenericFormat::fileDetails & sb );
 std::ostream & operator<< ( std::ostream & os, const struct stat & sb );
-
-// endif for ifndef ROSE_USE_SWIG_SUPPORT
-#endif
 
 #if 0
 // DQ (8/28/2006): This fixes a bug in ROSE where the namespace scope is not defined
@@ -1566,11 +1200,6 @@ namespace VirtualCFG
    }
 #endif
 
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-// DQ (3/15/2007): Added support for binaries
-std::ostream & operator<< ( std::ostream & os, const Rose_STL_Container<SgAsmStatement*> & l );
-#endif
-
 // DQ (5/8/2007): Added support for type elaboration lists, hidden type lists, and hidden declaration lists.
 std::ostream & operator<< ( std::ostream & os, const std::set<SgSymbol*> & l );
 
@@ -1580,13 +1209,7 @@ std::ostream & operator<< ( std::ostream & os, const std::set<SgSymbol*> & l );
 // tps (8/13/2007): working on binary cfg mechanism.
 //#include "virtualBinCFG.h"
 
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-// Version numbers for SgAsm* nodes. Used for backward compatibility. */
-BOOST_CLASS_VERSION(SgAsmInstruction, 1);
-#endif
-
 HEADER_NODE_PREDECLARATION_END
-
 
 HEADER_START
      public:

@@ -19,7 +19,7 @@ CompilerOutputParser::CompilerOutputParser(SgProject* projectNode) {
 //The only two changes are adding an additional option to the compiler arguments, 
 //and replacing stdout with stderr in the connector pipe (since both -v and -H options output goes to stderr).
 
-FILE* CompilerOutputParser::getCompilerOutput(const vector<string>& argv, bool isVerbose) 
+FILE* CompilerOutputParser::getCompilerOutput(const vector<string>& argv, bool isVerbose)
    {
     ROSE_ASSERT(!argv.empty());
     int pipeDescriptors[2];
@@ -171,9 +171,9 @@ void CompilerOutputParser::parseIncludedFilesSearchPathsFromCompilerOutput() {
     }
 }
 
-void CompilerOutputParser::processFile(SgFile* inputFile, bool isVerbose) 
+void CompilerOutputParser::processFile(SgFile* inputFile, bool isVerbose)
    {
-  // This code duplicates parts of methods int SgFile::compileOutput ( int fileNameIndex ) from file Cxx_Grammar.C and 
+  // This code duplicates parts of methods int SgFile::compileOutput ( int fileNameIndex ) from file Cxx_Grammar.C and
   // int SgFile::compileOutput ( vector<string>& argv, int fileNameIndex ) from file sageSupport.C
 
   // This part is from int SgFile::compileOutput ( int fileNameIndex )
@@ -181,36 +181,30 @@ void CompilerOutputParser::processFile(SgFile* inputFile, bool isVerbose)
      assert(!argv.empty());
      assert(argv.size() > 1);
      inputFile -> stripRoseCommandLineOptions(argv);
-     if (inputFile -> get_C_only() == true || inputFile -> get_C99_only() == true || inputFile -> get_Cxx_only() == true) 
+     if (inputFile -> get_C_only() == true || inputFile -> get_C99_only() == true || inputFile -> get_Cxx_only() == true)
         {
           inputFile -> stripEdgCommandLineOptions(argv);
-        } 
+        }
        else
         {
-          if (inputFile -> get_Fortran_only() == true) 
+          if (inputFile -> get_Fortran_only() == true)
              {
             // DQ (4/2/2011): some Fortran tests pass in tests/nonsmoke/functional/roseTests/astInterfaceTests pass in EDG options, we
             // might want to correct this (for now we will clean up the command line as part of command line handling).
                inputFile -> stripEdgCommandLineOptions(argv);
                inputFile -> stripFortranCommandLineOptions(argv);
-             } 
+             }
             else
              {
             // This is the case of binary analysis...(nothing to do there)
              }
         }
 
-  // This part is from int SgFile::compileOutput ( vector<string>& argv, int fileNameIndex )
-     string compilerNameOrig = BACKEND_CXX_COMPILER_NAME_WITH_PATH;
-     if (inputFile -> get_Java_only() == true) 
-        {
-       // TODO: We do not handle this, stop gracefully.
-          compilerNameOrig = BACKEND_JAVA_COMPILER_NAME_WITH_PATH;
-        }
-     if (inputFile -> get_Fortran_only() == true) 
-        {
-          compilerNameOrig = BACKEND_FORTRAN_COMPILER_NAME_WITH_PATH;
-        }
+    //This part is from int SgFile::compileOutput ( vector<string>& argv, int fileNameIndex )
+    string compilerNameOrig = BACKEND_CXX_COMPILER_NAME_WITH_PATH;
+    if (inputFile -> get_Fortran_only() == true) {
+        compilerNameOrig = BACKEND_FORTRAN_COMPILER_NAME_WITH_PATH;
+    }
     
      string compilerName = compilerNameOrig + " ";
 
@@ -234,10 +228,10 @@ void CompilerOutputParser::processFile(SgFile* inputFile, bool isVerbose)
      vector<string> compilerNameString = inputFile -> buildCompilerCommandLineOptions(argv, 0, compilerName);
      compilerOutputReader = new CompilerOutputReader(getCompilerOutput(compilerNameString, isVerbose));
      workingDirectory = inputFile -> getWorkingDirectory();
-     if (isVerbose) 
+     if (isVerbose)
         {
           parseIncludedFilesSearchPathsFromCompilerOutput();
-        } 
+        }
        else
         {
           parseIncludedFilesFromCompilerOutput(FileHelper::normalizePath(inputFile -> getFileName()), topLevelParsePrefix);
@@ -264,12 +258,12 @@ void CompilerOutputParser::processFile(SgFile* inputFile, bool isVerbose)
    }
 
 
-map<string, set<string> > 
-CompilerOutputParser::collectIncludedFilesMap() 
+map<string, set<string> >
+CompilerOutputParser::collectIncludedFilesMap()
    {
      SgFilePtrList inputFileList = projectNode -> get_fileList();
 
-     for (SgFilePtrList::const_iterator it = inputFileList.begin(); it != inputFileList.end(); it++) 
+     for (SgFilePtrList::const_iterator it = inputFileList.begin(); it != inputFileList.end(); it++)
         {
           processFile(*it, false);
         }
@@ -277,8 +271,8 @@ CompilerOutputParser::collectIncludedFilesMap()
    }
 
 
-pair<list<string>, list<string> > 
-CompilerOutputParser::collectIncludedFilesSearchPaths() 
+pair<list<string>, list<string> >
+CompilerOutputParser::collectIncludedFilesSearchPaths()
    {
      processFile(*(projectNode -> get_fileList().begin()), true); //it is sufficient to get verbose output for a single input file
      return pair<list<string>, list<string> >(quotedIncludesSearchPaths, bracketedIncludesSearchPaths);

@@ -118,6 +118,8 @@ ROSE_SUPPORT_JAVA # This macro uses JAVA_HOME
 
 ROSE_CONFIGURE_SECTION([Checking GNU Fortran])
 # DQ (10/18/2010): Check for gfortran (required for syntax checking and semantic analysis of input Fortran codes)
+AC_REQUIRE([AC_PROG_F77])
+AC_REQUIRE([AC_PROG_FC])
 AX_WITH_PROG(GFORTRAN_PATH, [gfortran], [])
 AC_SUBST(GFORTRAN_PATH)
 
@@ -131,12 +133,8 @@ fi
 
 AC_MSG_NOTICE([GFORTRAN_PATH = "$GFORTRAN_PATH"])
 
-# Call supporting macro for X10 language compiler path
-
 #########################################################################################
 ##
-
-  ROSE_SUPPORT_X10()
 
   ROSE_SUPPORT_LANGUAGE_CONFIG_OPTIONS
 
@@ -144,41 +142,9 @@ AC_MSG_NOTICE([GFORTRAN_PATH = "$GFORTRAN_PATH"])
   AC_CHECK_LIB([curl], [Curl_connect], [HAVE_CURL=yes], [HAVE_CURL=no])
   AM_CONDITIONAL([HAS_LIBRARY_CURL], [test "x$HAVE_CURL" = "xyes"])
 
-  ROSE_SUPPORT_UPC
-  ROSE_SUPPORT_COMPASS2
   ROSE_SUPPORT_GMP
   ROSE_SUPPORT_ISL
-  ROSE_SUPPORT_MPI
   ROSE_SUPPORT_SPOT
-
-##
-#########################################################################################
-
-
-## Rasmussen (10/24/2017): Support for linking with the GnuCOBOL parse-tree library.
-#
-ROSE_SUPPORT_COBOL
-#########################################################################################
-
-## Rasmussen (11/19/2017): Support for using the modified GNU Octave parser.
-#
-ROSE_SUPPORT_OCTAVE
-#########################################################################################
-
-
-# *******************************************************
-# ROSE/projects directory compilation & testing
-# *******************************************************
-ROSE_ARG_ENABLE(
-  [projects-directory],
-  [if we should enable the ROSE/projects directory],
-  [Toggle compilation and testing of the the ROSE/projects directory (disabled by default)],
-  [no])
-
-if test "x$ROSE_ENABLE_PROJECTS_DIRECTORY" = "xyes"; then
-   AC_DEFINE([ROSE_BUILD_PROJECTS_DIRECTORY_SUPPORT], [], [Build ROSE projects directory])
-fi
-AM_CONDITIONAL(ROSE_BUILD_PROJECTS_DIRECTORY_SUPPORT, [test "x$ROSE_ENABLE_PROJECTS_DIRECTORY" = "xyes"])
 
 # ****************************************************
 # ROSE/tests directory compilation & testing
@@ -333,134 +299,6 @@ if test "x$enable_debug_output_for_experimental_fortran_frontend" = "xyes"; then
   AC_DEFINE([ROSE_DEBUG_EXPERIMENTAL_OFP_ROSE_CONNECTION], [], [Controls large volumes of output spew useful for debugging new OFP/ROSE connection code])
 fi
 
-# Added support for Fortran front-end development using the flang (F18) compiler [Rasmussen 8/12/2019]
-AC_ARG_ENABLE(experimental_flang_frontend,
-    AS_HELP_STRING([--enable-experimental_flang_frontend], [Enable experimental fortran frontend development using flang]))
-AM_CONDITIONAL(ROSE_EXPERIMENTAL_FLANG_ROSE_CONNECTION, [test "x$enable_experimental_flang_frontend" = xyes])
-if test "x$enable_experimental_flang_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode enables the experimental fortran flang front-end (internal development only)!])
-  AC_DEFINE([ROSE_EXPERIMENTAL_FLANG_ROSE_CONNECTION], [], [Enables development of experimental fortran flang frontend])
-fi
-
-# DQ (8/23/2017): Added support for new csharp front-end development.
-AC_ARG_ENABLE(experimental_csharp_frontend,
-    AS_HELP_STRING([--enable-experimental_csharp_frontend], [Enable experimental csharp frontend development]))
-AM_CONDITIONAL(ROSE_EXPERIMENTAL_CSHARP_ROSE_CONNECTION, [test "x$enable_experimental_csharp_frontend" = xyes])
-if test "x$enable_experimental_csharp_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode enables experimental csharp front-end (internal development only)!])
-  AC_DEFINE([ROSE_EXPERIMENTAL_CSHARP_ROSE_CONNECTION], [], [Enables development of experimental csharp frontend])
-
-# DQ (8/23/2017): Need to review now to get the MONO_HOME and ROSLYN_HOME environment variables.
-# mono_home=$MONO_HOME
-# rosyln_home=$ROSYLN_HOME
-
-  mono_home=`roslyn-config mono-home`
-  roslyn_home=`roslyn-config csharp-home`
-
-  AC_MSG_NOTICE([Mono home   = "$mono_home"])
-  AC_MSG_NOTICE([Roslyn home = "$rosyln_home"])
-
-  AC_DEFINE_UNQUOTED([ROSE_EXPERIMENTAL_CSHARP_ROSE_CONNECTION_MONO_HOME], ["$mono_home"], [Path to Mono Csharp compiler used in development of experimental csharp frontend])
-  AC_DEFINE_UNQUOTED([ROSE_EXPERIMENTAL_CSHARP_ROSE_CONNECTION_ROSLYN_HOME], ["$roslyn_home"], [Path to Roslyn Csharp library used in development of experimental csharp frontend])
-
-  AC_SUBST(mono_home)
-  AC_SUBST(rosyln_home)
-fi
-
-# DQ (6/7/2013): Added support for debugging new csharp front-end development.
-AC_ARG_ENABLE(debug_output_for_experimental_csharp_frontend,
-    AS_HELP_STRING([--enable-debug_output_for_experimental_csharp_frontend], [Enable debugging output (spew) of new CSHARP/ROSE connection]))
-AM_CONDITIONAL(ROSE_DEBUG_EXPERIMENTAL_CSHARP_ROSE_CONNECTION, [test "x$enable_debug_output_for_experimental_csharp_frontend" = xyes])
-if test "x$enable_debug_output_for_experimental_csharp_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode causes large volumes of output spew (internal debugging only)!])
-  AC_DEFINE([ROSE_DEBUG_EXPERIMENTAL_CSHARP_ROSE_CONNECTION], [], [Controls large volumes of output spew useful for debugging new CSHARP/ROSE connection code])
-fi
-
-# DQ (8/23/2017): Added support for new Ada front-end development.
-AC_ARG_ENABLE(experimental_ada_frontend,
-    AS_HELP_STRING([--enable-experimental_ada_frontend], [Enable experimental ada frontend development]))
-AM_CONDITIONAL(ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION, [test "x$enable_experimental_ada_frontend" = xyes])
-if test "x$enable_experimental_ada_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode enables experimental ada front-end (internal development only)!])
-  AC_DEFINE([ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION], [], [Enables development of experimental ada frontend])
-fi
-
-# DQ (6/7/2013): Added support for debugging new ada front-end development.
-AC_ARG_ENABLE(debug_output_for_experimental_ada_frontend,
-    AS_HELP_STRING([--enable-debug_output_for_experimental_ada_frontend], [Enable debugging output (spew) of new ADA/ROSE connection]))
-AM_CONDITIONAL(ROSE_DEBUG_EXPERIMENTAL_ADA_ROSE_CONNECTION, [test "x$enable_debug_output_for_experimental_ada_frontend" = xyes])
-if test "x$enable_debug_output_for_experimental_ada_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode causes large volumes of output spew (internal debugging only)!])
-  AC_DEFINE([ROSE_DEBUG_EXPERIMENTAL_ADA_ROSE_CONNECTION], [], [Controls large volumes of output spew useful for debugging new ADA/ROSE connection code])
-fi
-
-# DQ (6/8/2017): Adding ADA support using GNAT ASIS tool chain.
-ROSE_SUPPORT_GNAT
-
-# Setup Automake conditional.
-AM_CONDITIONAL(ROSE_USE_GNAT,test ! "$with_gnat" = no)
-
-if test "x$enable_experimental_ada_frontend" = "xyes"; then
-  gnat_home=$with_gnat
-  AC_MSG_NOTICE([GNAT home = "$gnat_home"])
-  AC_DEFINE_UNQUOTED([ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION_GNAT_HOME], ["$with_gnat"], [Path to GNAT Ada compiler used in development of experimental ada frontend])
-  AC_SUBST(gnat_home)
-fi
-
-# DQ (8/23/2017): Added support for new Jovial front-end development.
-AC_ARG_ENABLE(experimental_jovial_frontend,
-    AS_HELP_STRING([--enable-experimental_jovial_frontend], [Enable experimental jovial frontend development]))
-AM_CONDITIONAL(ROSE_EXPERIMENTAL_JOVIAL_ROSE_CONNECTION, [test "x$enable_experimental_jovial_frontend" = xyes])
-if test "x$enable_experimental_jovial_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode enables experimental jovial front-end (internal development only)!])
-  AC_DEFINE([ROSE_EXPERIMENTAL_JOVIAL_ROSE_CONNECTION], [], [Enables development of experimental jovial frontend])
-fi
-
-# DQ (8/23/2017): Added support for debugging new jovial front-end development.
-AC_ARG_ENABLE(debug_output_for_experimental_jovial_frontend,
-    AS_HELP_STRING([--enable-debug_output_for_experimental_jovial_frontend], [Enable debugging output (spew) of new JOVIAL/ROSE connection]))
-AM_CONDITIONAL(ROSE_DEBUG_EXPERIMENTAL_JOVIAL_ROSE_CONNECTION, [test "x$enable_debug_output_for_experimental_jovial_frontend" = xyes])
-if test "x$enable_debug_output_for_experimental_jovial_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode causes large volumes of output spew (internal debugging only)!])
-  AC_DEFINE([ROSE_DEBUG_EXPERIMENTAL_JOVIAL_ROSE_CONNECTION], [], [Controls large volumes of output spew useful for debugging new JOVIAL/ROSE connection code])
-fi
-
-# DQ (8/23/2017): Added support for new Cobol front-end development.
-AC_ARG_ENABLE(experimental_cobol_frontend,
-    AS_HELP_STRING([--enable-experimental_cobol_frontend], [Enable experimental cobol frontend development]))
-AM_CONDITIONAL(ROSE_EXPERIMENTAL_COBOL_ROSE_CONNECTION, [test "x$enable_experimental_cobol_frontend" = xyes])
-if test "x$enable_experimental_cobol_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode enables experimental cobol front-end (internal development only)!])
-  AC_DEFINE([ROSE_EXPERIMENTAL_COBOL_ROSE_CONNECTION], [], [Enables development of experimental cobol frontend])
-fi
-
-# DQ (8/23/2017): Added support for debugging new Cobol front-end development.
-AC_ARG_ENABLE(debug_output_for_experimental_cobol_frontend,
-    AS_HELP_STRING([--enable-debug_output_for_experimental_cobol_frontend], [Enable debugging output (spew) of new COBOL/ROSE connection]))
-AM_CONDITIONAL(ROSE_DEBUG_EXPERIMENTAL_COBOL_ROSE_CONNECTION, [test "x$enable_debug_output_for_experimental_cobol_frontend" = xyes])
-if test "x$enable_debug_output_for_experimental_cobol_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode causes large volumes of output spew (internal debugging only)!])
-  AC_DEFINE([ROSE_DEBUG_EXPERIMENTAL_COBOL_ROSE_CONNECTION], [], [Controls large volumes of output spew useful for debugging new COBOL/ROSE connection code])
-fi
-
-# Rasmussen (10/30/2017): Added support for new Octave/Matlab front-end development.
-AC_ARG_ENABLE([experimental_matlab_frontend],
-    AS_HELP_STRING([--enable-experimental_matlab_frontend], [Enable experimental Octave/Matlab frontend development (default=no)]))
-AM_CONDITIONAL(ROSE_EXPERIMENTAL_MATLAB_ROSE_CONNECTION, [test "x$enable_experimental_matlab_frontend" = xyes])
-if test "x$enable_experimental_matlab_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode enables experimental Octave/Matlab front-end (internal development only)!])
-  AC_DEFINE([ROSE_EXPERIMENTAL_MATLAB_ROSE_CONNECTION], [], [Enables development of experimental Octave/Matlab frontend])
-fi
-
-# Rasmussen (10/30/2017): Added support for debugging new Octave/Matlab front-end development.
-AC_ARG_ENABLE(debug_output_for_experimental_matlab_frontend,
-    AS_HELP_STRING([--enable-debug_output_for_experimental_matlab_frontend], [Enable debugging output (spew) of new Octave/Matlab ROSE connection]))
-AM_CONDITIONAL(ROSE_DEBUG_EXPERIMENTAL_MATLAB_ROSE_CONNECTION, [test "x$enable_debug_output_for_experimental_matlab_frontend" = xyes])
-if test "x$enable_debug_output_for_experimental_matlab_frontend" = "xyes"; then
-  AC_MSG_WARN([using this mode causes large volumes of output spew (internal debugging only)!])
-  AC_DEFINE([ROSE_DEBUG_EXPERIMENTAL_MATLAB_ROSE_CONNECTION], [], [Controls large volumes of output spew useful for debugging new Octave/Matlab ROSE connection code])
-fi
-
 # DQ (8/18/2009): Removed this conditional macro.
 # DQ (4/23/2009): Added support for commandline specification of using new graph IR nodes.
 # AC_ARG_ENABLE(newGraphNodes, AS_HELP_STRING([--enable-newGraphNodes], [Enable new (experimental) graph IR nodes]))
@@ -478,18 +316,6 @@ if test "x$enable_use_new_graph_node_backward_compatability" = "xyes"; then
   AC_MSG_WARN([using the new graph IR nodes in ROSE (experimental)!])
   AC_DEFINE([ROSE_USING_GRAPH_IR_NODES_FOR_BACKWARD_COMPATABILITY], [], [Whether to use the new graph IR nodes compatability option with older API])
 fi
-
-
-# Set up for use of bison to build dot2gml tool in directory
-# src/roseIndependentSupport/dot2gml.  This is made optional
-# because it seems that many don't have the correct version of bison
-# to support the compilation of this tool.  This is it is a configure
-# option to build it (or have the makefile system have it be built).
-AC_ARG_ENABLE(dot2gml_translator,
-[  --enable-dot2gml_translator   Configure option to have DOT to GML translator built (bison version specific tool).],
-[ AC_MSG_NOTICE([setting up optional DOT-to-GML translator in directory: src/roseIndependentSupport/dot2gml])
-])
-AM_CONDITIONAL(DOT_TO_GML_TRANSLATOR,test "$enable_dot2gml_translator" = yes)
 
 # Set the value of srcdir so that it will be an absolute path instead of a relative path
 # srcdir=`dirname "$0"`
@@ -642,15 +468,7 @@ ROSE_HOME=.
 AC_SUBST(ROSE_HOME)
 # echo "In ROSE/configure: ROSE_HOME = $ROSE_HOME"
 
-# This does not appear to exist any more (not distributed in ROSE)
-# Support for Gabriel's QRose GUI Library
-# ROSE_SUPPORT_QROSE
-#AM_CONDITIONAL(ROSE_USE_QROSE,test "$with_qrose" = true)
-
 AC_LANG(C++)
-
-# Python check must occur before boost check since -lboost_python depends on python
-ROSE_SUPPORT_PYTHON
 
 ROSE_SUPPORT_BOOST
 
@@ -912,29 +730,11 @@ ROSE_SUPPORT_LONG_MAKE_CHECK_RULE
 # Make the use of longer test optional where it is used in some ROSE/tests directories
 AM_CONDITIONAL(ROSE_USE_LONG_MAKE_CHECK_RULE,test "$with_ROSE_LONG_MAKE_CHECK_RULE" = yes)
 
-# The libxml2 library is availabe in /usr/lib on most Linux systems, however this is not
-# enough when using the Intel compilers.  So we need to turn it on explicitly when we
-# expect it to work with a specific platform/compiler combination.
-
-# JJW -- use standard version in /usr/share/aclocal, and configure XML only
-# once for roseHPCT and BinaryContextLookup
-with_xml="no"
-AM_PATH_XML2(2.0.0, [with_xml="yes"])
-
-# Make the use of libxml2 explicitly controlled.
-AM_CONDITIONAL(ROSE_USE_XML,test "$with_xml" != no)
-
 # DQ (10/17/2009): This is a bug introduced (again) into ROSE which disables the Java support.
 # See elsewhere in this file where this macro is commented out and the reason explained in
 # more details.
 # AS Check for ssl for the binary clone detection work
 # CHECK_SSL
-
-# Check for objdump for BinaryContextLookup since it doesn't normally exist on
-# Mac
-AC_CHECK_TOOL(ROSE_OBJDUMP_PATH, [objdump], [no])
-AM_CONDITIONAL(ROSE_USE_OBJDUMP, [test "$ROSE_OBJDUMP_PATH" != "no"])
-AM_CONDITIONAL(ROSE_USE_BINARYCONTEXTLOOKUP, [test "$with_xml" != "no" -a "$ROSE_OBJDUMP_PATH" != "no"])
 
 # Check for availability of wget (used for downloading the EDG binaries used in ROSE).
 AC_CHECK_TOOL(ROSE_WGET_PATH, [wget], [no])
@@ -962,27 +762,6 @@ AC_ARG_WITH(wave-default, [  --with-wave-default     Use Wave as the default pre
             [AC_DEFINE([ROSE_WAVE_DEFAULT], false, [Simple preprocessor as default in ROSE])]
             )
 
-AC_ARG_WITH(alloc-memset, [  --with-alloc-memset     Memory pool protection (memory is set on memory pool operation): 0 -> none, 1 -> command-line (NIY), 2 -> zeroed new/delete, 3 -> aggressive (diff. value for each mempool operation)],
-            [AC_DEFINE_UNQUOTED([ROSE_ALLOC_MEMSET], $with_alloc_memset, [With memset on mempool operations])],
-            [AC_DEFINE([ROSE_ALLOC_MEMSET], 0, [Without memset on mempool operations])]
-            )
-
-AC_ARG_WITH(pedantic-alloc, [  --with-pedantic-alloc   Enables pedantic assertions in Memory Pool: 0 -> none, 1 -> enabled ],
-            [AC_DEFINE_UNQUOTED([ROSE_PEDANTIC_ALLOC], $with_pedantic_alloc, [With pedantic allocation check])],
-            [AC_DEFINE([ROSE_PEDANTIC_ALLOC], 0, [Without pedantic allocation check])]
-            )
-
-AC_ARG_WITH(alloc-trace, [  --with-alloc-trace     Memory pool allocation tracing (tiny reproducers only): 0 -> none, 1 -> command-line (NIY), 2 -> enabled],
-            [AC_DEFINE_UNQUOTED([ROSE_ALLOC_TRACE], $with_alloc_trace, [With tracing of memory pool operation])],
-            [AC_DEFINE([ROSE_ALLOC_TRACE], 0, [Without tracing of memory pool operation])]
-            )
-
-# Add --disable-binary-analysis-tests flag to turn off tests that sometimes
-# sometimes break.
-# Pei-Hung (10/24/2016) use only ROSE_BUILD_BINARY_ANALYSIS_SUPPORT to control binary analysis tests
-# AC_ARG_ENABLE(binary-analysis-tests, AS_HELP_STRING([--disable-binary-analysis-tests], [Disable tests of ROSE binary analysis code]), binary_analysis_tests="$withval", binary_analysis_tests=yes)
-# AM_CONDITIONAL(USE_BINARY_ANALYSIS_TESTS, test "x$binary_analysis_tests" = "xyes")
-
 # Figure out what version of lex we have available
 # flex works better than lex (this gives a preference to flex (flex is gnu))
 AM_PROG_LEX
@@ -1002,116 +781,20 @@ AC_PROG_MAKE_SET
 AC_MSG_NOTICE([testing the value of CC: (CC = "$CC")])
 AC_MSG_NOTICE([testing the value of CPPFLAGS: (CPPFLAGS = "$CPPFLAGS")])
 
-# Call supporting macro for MAPLE
-ROSE_SUPPORT_MAPLE
+#ROSE_SUPPORT_LIBOMPPARSER
 
-# Setup Automake conditional in Projects/programModeling/Makefile.am
-AM_CONDITIONAL(ROSE_USE_MAPLE,test ! "$with_maple" = no)
-
-# DQ (5/21/2017): I don't think we use this anymore.
-#ROSE_SUPPORT_VXWORKS
-
-# Setup Automake conditional.
-AM_CONDITIONAL(ROSE_USE_VXWORKS,test ! "$with_vxworks" = no)
-
-# DQ (5/23/2017): I don't think we use this anymore.
-# DQ (4/10/2010): Added configure support for Backstroke project.
-# ROSE_SUPPORT_BACKSTROKE
-
-#Call supporting macro for IDA PRO
-ROSE_SUPPORT_IDA
-
-# Setup Automake conditional in projects/AstEquivalence/Makefile.am
-AM_CONDITIONAL(ROSE_USE_IDA,test ! "$with_ida" = no)
-
-# Call supporting macro for libffi (Foreign Function Interface library)
-# This library is used by Peter's work on the Interpreter in ROSE.
-ROSE_SUPPORT_LIBFFI
-
-# Setup Automake conditional in projects/interpreter/Makefile.am
-AM_CONDITIONAL(ROSE_USE_LIBFFI,test ! "$with_libffi" = no)
-
-
-# DQ (3/13/2009): Trying to get Intel Pin and ROSE to both use the same version of libdwarf.
-# DQ (3/10/2009): The Dwarf support in Intel Pin conflicts with the Dwarf support in ROSE.
-# Maybe there is a way to fix this later, for now we want to disallow it.
-# echo "with_dwarf    = $with_dwarf"
-# echo "with_IntelPin = $with_IntelPin"
-#if test "$with_dwarf" != no && test "$with_IntelPin" != no; then
-# # echo "Support for both DWARF and Intel Pin fails, these configure options are incompatable."
-#   AC_MSG_ERROR([Support for both DWARF and Intel Pin fails, these configure options are incompatable!])
-#fi
-
-# DQ (3/14/2013): Adding support for Aterm library use in ROSE.
-ROSE_SUPPORT_ATERM
-
-# DQ (1/22/2016): Added support for stratego (need to know the path to sglri executable for Experimental Fortran support).
-ROSE_SUPPORT_STRATEGO
-
-# RASMUSSEN (11/16/2017): Removed check for OFP Stratego tools binary installation (Experimental Fortran support).
-# Now assumes that the OFP Fortran parse table (Fortran.tbl) is stored in the source directory.
-# RASMUSSEN (2/22/2017): Added support for OFP Stratego tools binary installation (Experimental Fortran support).
-# This assumes that OFP is installed from an OFP release and not imported and built with ROSE directly.
-
-#ROSE_SUPPORT_OFP_STRATEGO
-
-if test "x$enable_experimental_fortran_frontend" = "xyes"; then
-   if test "x$ATERM_LIBRARY_PATH" = "x"; then
-      AC_MSG_ERROR([support for experimental_fortran_frontend requires Aterm library support, --with-aterm=PATH must be specified])
-   fi
-   if test "x$STRATEGO_LIBRARY_PATH" = "x"; then
-      AC_MSG_ERROR([support for experimental_fortran_frontend requires Stratego library support, --with-stratego=PATH must be specified])
-   fi
-fi
-
-# Rasmussen (10/24/2017): ATerm and Stratego/XT tools binary installation required for Jovial support.
-if test "x$enable_experimental_jovial_frontend" = "xyes"; then
-   if test "x$ATERM_LIBRARY_PATH" = "x"; then
-      AC_MSG_ERROR([support for experimental_jovial_frontend requires Aterm library support, --with-aterm=PATH must be specified!])
-   fi
-   if test "x$STRATEGO_LIBRARY_PATH" = "x"; then
-      AC_MSG_ERROR([support for experimental_jovial_frontend requires Stratego library support, --with-stratego=PATH must be specified!])
-   fi
-fi
-
-# Rasmussen (10/24/2017): GnuCobol parse-tree library installation required for Cobol support.
-if test "x$enable_experimental_cobol_frontend" = "xyes"; then
-   if test "x$COBPT_LIBRARY_PATH" = "x"; then
-      AC_MSG_ERROR([support for experimental_cobol_frontend requires GnuCobol parse-tree library support, --with-cobpt=PATH must be specified!])
-   fi
-fi
-
-# Rasmussen (11/19/2017): Octave/Matlab parser installation required for Matlab support.
-if test "x$enable_experimental_matlab_frontend" = "xyes"; then
-   if test "x$OCTAVE_PARSER_INSTALL_TARFILE" = "x"; then
-      AC_MSG_ERROR([support for experimental_matlab_frontend requires the modified GNU Octave parser, --with-octave-parser=PATH must be specified!])
-   fi
-fi
-
-
-ROSE_SUPPORT_MINT
+AX_BOOST_IOSTREAMS
+ROSE_SUPPORT_LIBGCRYPT
+ROSE_SUPPORT_YICES
+ROSE_SUPPORT_LIBPQXX
 
 ROSE_SUPPORT_VECTORIZATION
 
-# Pei-Hung (12/17/2014): Adding support for POCC.
-ROSE_SUPPORT_POCC
-
 ROSE_SUPPORT_LIBHARU
-
-ROSE_SUPPORT_PHP
-
-AM_CONDITIONAL(ROSE_USE_PHP,test ! "$with_php" = no)
-
 #ASR
 ROSE_SUPPORT_LLVM
 
 AM_CONDITIONAL(ROSE_USE_LLVM,test ! "$with_llvm" = no)
-
-# Call supporting macro for Windows Source Code Analysis
-ROSE_SUPPORT_WINDOWS_ANALYSIS
-
-# Setup Automake conditional in Projects/programModeling/Makefile.am
-AM_CONDITIONAL(ROSE_USE_WINDOWS_ANALYSIS_SUPPORT,test ! "$with_wine" = no)
 
 # Control use of debugging support to convert most unions in EDG to structs.
 ROSE_SUPPORT_EDG_DEBUGGING
@@ -1129,7 +812,6 @@ ROSE_SUPPORT_GCC_OMP
 
 # Configuration commandline support for OpenMP in ROSE
 AM_CONDITIONAL(ROSE_USE_GCC_OMP,test ! "$with_parallel_ast_traversal_omp" = no)
-
 
 # JJW and TP (3-17-2008) -- added MPI support
 AC_ARG_WITH(parallel_ast_traversal_mpi,
@@ -1158,76 +840,6 @@ else
   AC_MSG_NOTICE("PCH disabled: no Support for PCH")
 fi
 
-
-
-
-
-# TP (2-27-2009) -- support for RTED
-ROSE_SUPPORT_RTED
-
-AM_CONDITIONAL(ROSE_USE_RTED,test ! "$with_rted" = no)
-
-# TP SUPPORT FOR OPENGL
-#AC_DEFINE([openGL],1,[By default OpenGL is disabled.])
-AC_ARG_ENABLE([rose-openGL],
-  [  --enable-rose-openGL  enable openGL],
-  [  rose_openGL=${enableval}
-AC_PATH_X dnl We need to do this by hand for some reason
-
-# DQ (9/26/2015): Using more recent autoconf macro to avoid warnings.
-# MDL_HAVE_OPENGL
-AC_FIND_OPENGL
-
-AC_MSG_NOTICE([have_GL = "$have_GL" and have_glut = "$have_glut" and rose_openGL = "$rose_openGL"])
-#AM_CONDITIONAL(ROSE_USE_OPENGL, test ! "x$have_GL" = xno -a ! "x$openGL" = xno)
-if test ! "x$rose_openGL" = xno; then
-   AC_MSG_NOTICE([checking OpenGL dependencies..."])
-  if test "x$have_GL" = xyes; then
-    AC_MSG_NOTICE([OpenGL enabled: found OpenGL])
-  else
-    AC_MSG_ERROR([OpenGL not found])
-  fi
- if test "x$have_glut" = xyes; then
-    AC_MSG_NOTICE([OpenGL enabled: found GLUT])
- else
-   AC_MSG_NOTICE([OpenGL GLUT not found; please use --with-glut])
- fi
-fi
-], [ rose_openGL=no
-  AC_MSG_NOTICE([OpenGL disabled])
-])
-AM_CONDITIONAL(ROSE_USE_OPENGL, test ! "x$have_GL" = xno -a ! "x$rose_openGL" = xno)
-
-
-AM_CONDITIONAL(USE_ROSE_GLUT_SUPPORT, false)
-
-AC_ARG_WITH(glut,
-[  --with-glut=PATH     Configure option to have GLUT enabled.],
-,
-if test ! "$with_glut" ; then
-   with_glut=no
-fi
-)
-
-AC_MSG_NOTICE([in ROSE SUPPORT MACRO: with_glut = "$with_glut"])
-
-if test "$with_glut" = no; then
-   # If dwarf is not specified, then don't use it.
-   AC_MSG_NOTICE([skipping use of GLUT support])
-else
-   AM_CONDITIONAL(USE_ROSE_GLUT_SUPPORT, true)
-   glut_path=$with_glut
-   AC_MSG_NOTICE([setup GLUT support in ROSE. path = "$glut_path"])
-   AC_DEFINE([USE_ROSE_GLUT_SUPPORT],1,[Controls use of ROSE support for GLUT library.])
-fi
-
-
-AC_SUBST(glut_path)
-
-
-
-AC_CHECK_PROGS(PERL, [perl])
-
 # DQ (9/4/2009): Added checking for indent command (common in Linux, but not on some platforms).
 # This command is used in the tests/nonsmoke/functional/roseTests/astInterfaceTests/Makefile.am file.
 AC_CHECK_PROGS(INDENT, [indent])
@@ -1242,66 +854,7 @@ AC_MSG_NOTICE([TCLSH = "$TCLSH"])
 # Call supporting macro for OFP
 ROSE_SUPPORT_OFP
 
-# DQ (3/6/2013): The major version number must match or the ac_pkg_swig.m4 will report
-# we are using the wrong version of swig (likely we need a newer version of this m4 script).
-# AC_PROG_SWIG(1.3.31)
-AC_PROG_SWIG(2.0.0)
-SWIG_ENABLE_CXX
-#AS (10/23/07): introduced conditional use of javaport
-AC_ARG_WITH([javaport],
-   [  --with-javaport ... Enable generation of Java bindings for ROSE using Swig],
-   [with_javaport=$withval],
-   [with_javaport=no])
-AM_CONDITIONAL(ENABLE_JAVAPORT,test "$with_javaport" = yes)
-
-if test "x$with_javaport" = "xyes"; then
-  if test "x$USE_JAVA" = "x0"; then
-    AC_MSG_ERROR([trying to enable --with-javaport without --with-java also being set])
-  fi
-  if /bin/sh -c "$SWIG -version" >& /dev/null; then
-    :
-  else
-    AC_MSG_ERROR([trying to enable --with-javaport without SWIG installed])
-  fi
-  AC_MSG_WARN([enabling Java binding support -- SWIG produces invalid C++ code, so -fno-strict-aliasing is being added to CXXFLAGS to work around this issue.  If you are not using GCC as a compiler, this flag will need to be changed.])
-  CXXFLAGS="$CXXFLAGS -fno-strict-aliasing"
-
-# DQ (3/6/2013): Added support to permit conditional compilation for use of SWIG.
-# SWIG has restricted support for C++ and so we need to tailor ROSE to fix into
-# the subset of C++ that SWIG can support.  We only want to turn this ON when SWIG
-# is processing the ROSE source code.  So it need not generate an entry in rose_config.h.
-# AC_DEFINE([ROSE_USE_SWIG_SUPPORT], [], [Whether to use SWIG support or not within ROSE])
-fi
-
-# Call supporting macro for Haskell
-ROSE_SUPPORT_HASKELL
-
 ROSE_SUPPORT_CUDA
-
-# if swi-prolog is available
-ROSE_SUPPORT_SWIPL
-
-# Call support macro for Z3
-
-ROSE_SUPPORT_Z3
-
-# Call supporting macro for bddbddb
-ROSE_SUPPORT_BDDBDDB
-
-# Setup Automake conditional in Projects/DatalogAnalysis/Makefile.am
-AM_CONDITIONAL(ROSE_USE_BDDBDDB,test ! "$with_bddbddb" = no)
-
-# Call supporting macro for VISUALIZATION (FLTK and GraphViz)
-ROSE_SUPPORT_VISUALIZATION
-
-# if ((test ! "$with_FLTK_include" = no) || (test ! "$with_FLTK_libs" = no) || (test ! "$with_GraphViz_include" = no) || (test ! "$with_GraphViz_libs" = no)); then
-#   echo "Skipping visualization support!"
-# else
-#   echo "Setting up visualization support!"
-# fi
-
-# Setup Automake conditional in src/roseIndependentSupport/visualization/Makefile.am
-AM_CONDITIONAL(ROSE_USE_VISUALIZATION,(test ! "$with_FLTK_include" = no) || (test ! "$with_FLTK_libs" = no) || (test ! "$with_GraphViz_include" = no) || (test ! "$with_GraphViz_libs" = no))
 
 # *********************************************************************
 # Option to control internal support of PPL (Parma Polyhedron Library)
@@ -1674,22 +1227,6 @@ export with_PERFORMANCE_TESTS;
 #   AC_CONFIG_SUBDIRS(TESTS/PerformanceTests/BenchmarkBase)
 # fi
 
-dnl # PC (8/16/2006): Now we test for GCJ since MOPS uses it
-dnl AC_ARG_WITH([gcj],
-dnl [  --with-gcj .................. Specify use of Java (gcj must be in path, required for use with ROSE/projects/FiniteStateModelChecker which uses MOPS internally)], [
-dnl    AM_PROG_GCJ
-dnl    echo "GCJ = '$GCJ'"
-dnl    if test "x$GCJ" == "x" ; then
-dnl      echo "gcj not found in path; please add gcj to path or omit --with-gcj option"
-dnl      exit 1
-dnl    fi
-dnl    with_gcj=yes
-dnl ],[
-dnl    _AM_IF_OPTION([no-dependencies],, [_AM_DEPENDENCIES(GCJ)])
-dnl ])
-with_gcj=no ; # JJW 5-22-2008 The code that was here before broke if gcj was not present, even if the --with-gcj flag was absent
-AM_CONDITIONAL(USE_GCJ,test "$with_gcj" = yes)
-
 ROSE_CONFIGURE_SECTION([Checking system capabilities])
 
 AC_SEARCH_LIBS(clock_gettime, [rt], [
@@ -1801,6 +1338,8 @@ AC_CHECK_TYPE([hrtime_t],[AC_DEFINE(HAVE_HRTIME_T, 1, [Define to 1 if hrtime_t i
 #include <sys/time.h>
 #endif])
 
+AC_CHECK_HEADERS(pthread.h)
+
 AC_CHECK_FUNCS([gethrtime read_real_time time_base_to_time clock_gettime mach_absolute_time])
 
 dnl Cray UNICOS _rtc() (real-time clock) intrinsic
@@ -1830,17 +1369,6 @@ AC_DEFINE_UNQUOTED([ROSE_SOURCE_TREE_PATH],"$res_top_src",[Location of ROSE Sour
 #                      absolute paths.
 AC_SUBST(res_top_src)
 
-# This is silly, but it is done to hide an include command (in
-# projects/compass/Makefile.am, including compass-makefile.inc in the build
-# tree) from Automake because the needed include file does not exist when
-# automake is run
-INCLUDE_COMPASS_MAKEFILE_INC="include compass_makefile.inc"
-AC_SUBST(INCLUDE_COMPASS_MAKEFILE_INC)
-
-# ROSE-HPCT module -- note that this needs the XML check to have already
-# happened
-ACROSE_ENABLE_ROSEHPCT
-
 # PC (08/20/2009): Symbolic links need to be resolved for the callgraph analysis tests
 res_top_pwd=$(cd "$top_pwd" && pwd -P)
 
@@ -1854,79 +1382,6 @@ with_png=no
 export with_png
 with_zlib=no
 export with_zlib
-
-# DQ (4/11/2010): This seems to have to appear before the Qt macros
-# because the "AC PATH QT" are defined in config/qrose_indigo_1.m4.
-# *****************************************************
-#  Support for QRose Qt GUI (work at Imperial College)
-# *****************************************************
-
-# GMY (9/3/2008) QT4 & QROSE Optional Packages
-AC_ARG_WITH(QRose, [  --with-QRose=PATH     prefix of QRose installation],
-   [QROSE_PREFIX=$with_QRose
-    if test "x$with_QRose" = xyes; then
-       AC_MSG_FAILURE([--with-QRose=PATH must be specified to use option --with-QRose (a valid QRose intallation)])
-    fi
-    if test "x$with_QRose" = x; then
-       AC_MSG_FAILURE([empty path used in --with-QRose=PATH must be specified to use option --with-QRose (a valid Qt intallation)])
-    fi
-   ],
-        [with_QRose=no])
-
-AC_SUBST(QROSE_PREFIX)
-AM_CONDITIONAL(ROSE_USE_QROSE,test "x$with_QRose" != xno)
-
-AC_MSG_NOTICE([with_QRose = "$with_QRose"])
-
-#AM_CONDITIONAL(USE_QROSE, test "$with_QRose" != no)
-#QROSE_LDFLAGS="-L${QROSE_PREFIX}/lib -lqrose"
-#QROSE_CXXFLAGS="-I${QROSE_PREFIX}/include"
-#AC_SUBST(QROSE_LDFLAGS)
-#AC_SUBST(QROSE_CXXFLAGS)
-
-
-# DQ (4/11/2010): Organized the Qt configure support.
-# ****************************************************
-#         Support for Qt (General GUI support)
-# ****************************************************
-
-# These are defined in config/qrose_indigo_1.m4, they
-# are not standard AC macros.
-AC_PATH_QT
-AC_PATH_QT_MOC
-AC_PATH_QT_RCC
-AC_PATH_QT_UIC
-
-# The code to set ROSEQT is in this macro's definition.
-AC_PATH_QT_VERSION
-
-AC_MSG_NOTICE([with_qt     = "$with_qt"])
-AM_CONDITIONAL(ROSE_USE_QT,test x"$with_qt" != x"no")
-if test "x$with_qt" = xyes; then
-   AC_MSG_FAILURE([path to Qt not specified (usage: --with-qt=PATH)])
-fi
-
-# If QRose was specified then make sure that Qt was specified.
-if test "x$with_QRose" != xno; then
-   if test "x$with_qt" = xno; then
-      AC_MSG_FAILURE([QRose requires valid specification of Qt installation (requires option: --with-qt=PATH)])
-   fi
-fi
-
-# *****************************************************
-#   Support for RoseQt GUI (ROSE specific Qt widgets)
-# *****************************************************
-
-# ROSE_SUPPORT_ROSEQT
-# echo "with_roseQt = $with_roseQt"
-# AM_CONDITIONAL(ROSE_WITH_ROSEQT,test x"$with_roseQt" != x"no")
-
-# ****************************************************
-#   Support for Assembly Semantics (binary analysis)
-ROSE_SUPPORT_BINARY
-# ****************************************************
-
-ROSE_SUPPORT_PYTHON_API
 
 # Added support for detection of libnuma, a NUMA aware memory allocation mechanism for many-core optimizations.
 AC_CHECK_HEADERS(numa.h, [found_libnuma=yes])
@@ -2056,151 +1511,6 @@ exampleTranslators/documentedExamples/dataBaseExamples/Makefile
 exampleTranslators/documentedExamples/simpleTranslatorExamples/Makefile
 exampleTranslators/documentedExamples/simpleTranslatorExamples/exampleMakefile
 LicenseInformation/Makefile
-projects/ArithmeticMeasureTool/Makefile
-projects/BinaryCloneDetection/Makefile
-projects/BinaryCloneDetection/compression/Makefile
-projects/BinaryCloneDetection/semantic/Makefile
-projects/BinaryCloneDetection/syntactic/Makefile
-projects/BinaryCloneDetection/syntactic/gui/Makefile
-projects/CertSecureCodeProject/Makefile
-projects/CloneDetection/Makefile
-projects/RaaS/Makefile
-projects/RaaS/src/Makefile
-projects/RaaS/examples/demo/Makefile
-projects/RaaS/examples/demo/compile_commands.json
-projects/CompilationDB/Makefile
-projects/CompilationDB/scripts/Makefile
-projects/CompilationDB/examples/demo/Makefile
-projects/CompilationDB/examples/demo/compile_commands.json
-projects/CompilationDB/examples/kripke/Makefile
-projects/CompilationDB/examples/doxygen/Makefile
-projects/CompilationDB/static/js/Makefile
-projects/CompilationDB/static/css/Makefile
-projects/EditDistanceMetric/Makefile
-projects/Fortran_to_C/Makefile
-projects/Fortran_to_C/src/Makefile
-projects/Fortran_to_C/tests/Makefile
-projects/HeaderFilesInclusion/HeaderFilesGraphGenerator/Makefile
-projects/HeaderFilesInclusion/HeaderFilesNotIncludedList/Makefile
-projects/HeaderFilesInclusion/Makefile
-projects/MPI_Tools/MPICodeMotion/Makefile
-projects/MPI_Tools/MPIDeterminismAnalysis/Makefile
-projects/MPI_Tools/Makefile
-projects/Makefile
-projects/ManyCoreRuntime/Makefile
-projects/ManyCoreRuntime/docs/Makefile
-projects/MapleDSL/Makefile
-projects/QtDesignerPlugins/Makefile
-projects/RTED/CppRuntimeSystem/DebuggerQt/Makefile
-projects/RTED/CppRuntimeSystem/Makefile
-projects/RTED/Makefile
-projects/RoseBlockLevelTracing/Makefile
-projects/RoseBlockLevelTracing/src/Makefile
-projects/RoseQt/AstViewer/Makefile
-projects/RoseQt/Makefile
-projects/SMTPathFeasibility/Makefile
-projects/ShiftCalculus4/Makefile
-projects/TemplateAnalysis/Makefile
-projects/TemplateAnalysis/include/ROSE/Analysis/Template/Makefile
-projects/TemplateAnalysis/include/ROSE/proposed/Makefile
-projects/TemplateAnalysis/lib/ROSE/Analysis/Template/Makefile
-projects/TemplateAnalysis/lib/ROSE/proposed/Makefile
-projects/TemplateAnalysis/src/Makefile
-projects/TemplateAnalysis/examples/Makefile
-projects/TemplateAnalysis/examples/inspect-autovar/Makefile
-projects/TileK/Makefile
-projects/TileK/doc/Makefile
-projects/TileK/doc/dlx.doxy
-projects/TileK/doc/index.html
-projects/TileK/doc/klt-rtl.doxy
-projects/TileK/doc/klt.doxy
-projects/TileK/doc/mdcg.doxy
-projects/TileK/doc/mfb.doxy
-projects/TileK/doc/tilek-basic.doxy
-projects/TileK/doc/tilek-cuda.doxy
-projects/TileK/doc/tilek-opencl.doxy
-projects/TileK/doc/tilek-rtl-basic.doxy
-projects/TileK/doc/tilek-rtl-cuda.doxy
-projects/TileK/doc/tilek-rtl-opencl.doxy
-projects/TileK/doc/tilek-rtl-threads.doxy
-projects/TileK/doc/tilek-threads.doxy
-projects/TileK/include/DLX/TileK/Makefile
-projects/TileK/include/RTL/Host/Makefile
-projects/TileK/include/RTL/Kernel/CUDA/Makefile
-projects/TileK/include/RTL/Kernel/OpenCL/Makefile
-projects/TileK/lib/Makefile
-projects/TileK/src/Makefile
-projects/TileK/tests/accelerator/CUDA/Makefile
-projects/TileK/tests/accelerator/Makefile
-projects/TileK/tests/accelerator/OpenCL/Makefile
-projects/TileK/tests/basic/Makefile
-projects/TileK/tests/rtl/Makefile
-projects/TileK/tests/threads/Makefile
-projects/UpcTranslation/Makefile
-projects/UpcTranslation/tests/Makefile
-projects/Viz/Makefile
-projects/Viz/examples/Makefile
-projects/Viz/include/Makefile
-projects/Viz/include/Viz/Makefile
-projects/Viz/include/Viz/Traversals/Makefile
-projects/Viz/lib/Makefile
-projects/Viz/src/Makefile
-projects/Viz/tools/Makefile
-projects/amrShiftDSLcompiler/AMRShift/Makefile
-projects/amrShiftDSLcompiler/Makefile
-projects/arrayDSLcompiler/Makefile
-projects/POET_ROSE/Makefile
-projects/POET_ROSE/test/Makefile
-projects/POET_ROSE/manycore-stencil/Makefile
-projects/POET_ROSE/manycore-stencil/include/Makefile
-projects/POET_ROSE/manycore-stencil/benchmarks/Makefile
-projects/arrayOptimization/Makefile
-projects/arrayOptimization/test/Makefile
-projects/autoParallelization/Makefile
-projects/autoParallelization/tests/Makefile
-projects/autoParallelization/difftests/Makefile
-projects/autoTuning/Makefile
-projects/autoTuning/doc/Makefile
-projects/autoTuning/tests/Makefile
-projects/compass/Makefile
-projects/compass/src/Makefile
-projects/compass/src/compassSupport/Makefile
-projects/compass/src/util/C-API/Makefile
-projects/compass/src/util/MPIAbstraction/Makefile
-projects/compass/src/util/MPIAbstraction/alt-mpi-headers/Makefile
-projects/compass/src/util/MPIAbstraction/alt-mpi-headers/mpich-1.2.7p1/Makefile
-projects/compass/src/util/MPIAbstraction/alt-mpi-headers/mpich-1.2.7p1/include/Makefile
-projects/compass/src/util/MPIAbstraction/alt-mpi-headers/mpich-1.2.7p1/include/mpi2c++/Makefile
-projects/compass/src/util/Makefile
-projects/compass/tools/Makefile
-projects/compass/tools/compass/Makefile
-projects/compass/tools/compass/buildInterpreter/Makefile
-projects/compass/tools/compass/doc/Makefile
-projects/compass/tools/compass/doc/compass.tex
-projects/compass/tools/compass/gui/Makefile
-projects/compass/tools/compass/gui2/Makefile
-projects/compass/tools/compass/tests/Compass_C_tests/Makefile
-projects/compass/tools/compass/tests/Compass_Cxx_tests/Makefile
-projects/compass/tools/compass/tests/Compass_OpenMP_tests/Makefile
-projects/compass/tools/compass/tests/Makefile
-projects/compass/tools/compassVerifier/Makefile
-projects/compass/tools/sampleCompassSubset/Makefile
-projects/dsl_infrastructure/Makefile
-projects/extractMPISkeleton/Makefile
-projects/extractMPISkeleton/src/Makefile
-projects/extractMPISkeleton/tests/Makefile
-projects/fuse/Makefile
-projects/fuse/src/Makefile
-projects/fuse/tests/Makefile
-projects/interpreter/Makefile
-projects/palette/Makefile
-projects/pragmaParsing/Makefile
-projects/xgenTranslator/Makefile
-python/Makefile
-python/Rose/Makefile
-python/Rose/BinaryAnalysis/Makefile
-python/Rose/BinaryAnalysis/Partitioner2/Makefile
-python/Rose/BinaryAnalysis/Unparser/Makefile
 scripts/Makefile
 src/3rdPartyLibraries/json/Makefile
 src/3rdPartyLibraries/json/nlohmann/Makefile
@@ -2209,52 +1519,15 @@ src/3rdPartyLibraries/Makefile
 src/3rdPartyLibraries/antlr-jars/Makefile
 src/3rdPartyLibraries/flang-parser/Makefile
 src/3rdPartyLibraries/fortran-parser/Makefile
-src/3rdPartyLibraries/java-parser/Makefile
-src/3rdPartyLibraries/qrose/Components/Common/Makefile
-src/3rdPartyLibraries/qrose/Components/Common/icons/Makefile
-src/3rdPartyLibraries/qrose/Components/Makefile
-src/3rdPartyLibraries/qrose/Components/QueryBox/Makefile
-src/3rdPartyLibraries/qrose/Components/SourceBox/Makefile
-src/3rdPartyLibraries/qrose/Components/TreeBox/Makefile
-src/3rdPartyLibraries/qrose/Framework/Makefile
-src/3rdPartyLibraries/qrose/Makefile
-src/3rdPartyLibraries/qrose/QRoseLib/Makefile
-src/3rdPartyLibraries/qrose/Widgets/Makefile
 src/Makefile
-src/Rose/Makefile
-src/Rose/BinaryAnalysis/Makefile
-src/Rose/BinaryAnalysis/Concolic/Makefile
-src/Rose/BinaryAnalysis/InstructionSemantics2/Makefile
-src/Rose/BinaryAnalysis/ModelChecker/Makefile
-src/Rose/BinaryAnalysis/Partitioner2/Makefile
-src/Rose/BinaryAnalysis/Unparser/Makefile
 src/ROSETTA/Makefile
 src/ROSETTA/src/Makefile
 src/backend/Makefile
-src/frontend/BinaryFormats/Makefile
 src/frontend/CxxFrontend/Clang/Makefile
 src/frontend/CxxFrontend/Makefile
-src/frontend/DLX/Makefile
-src/frontend/DLX/include/DLX/Core/Makefile
-src/frontend/DLX/lib/core/Makefile
-src/frontend/Disassemblers/Makefile
-src/frontend/ECJ_ROSE_Connection/Makefile
 src/frontend/Experimental_General_Language_Support/Makefile
-src/frontend/Experimental_General_Language_Support/ATerm/Makefile
-src/frontend/Experimental_OpenFortranParser_ROSE_Connection/Makefile
-src/frontend/Experimental_Flang_ROSE_Connection/Makefile
-src/frontend/Experimental_Csharp_ROSE_Connection/Makefile
-src/frontend/Experimental_Ada_ROSE_Connection/Makefile
-src/frontend/Experimental_Ada_ROSE_Connection/dot_asis/Makefile
-src/frontend/Experimental_Ada_ROSE_Connection/dot_asis/dot_asis_library/Makefile
-src/frontend/Experimental_Ada_ROSE_Connection/dot_asis/ada_main/Makefile
-src/frontend/Experimental_Jovial_ROSE_Connection/Makefile
-src/frontend/Experimental_Cobol_ROSE_Connection/Makefile
-src/frontend/Experimental_Matlab_ROSE_Connection/Makefile
 src/frontend/Makefile
 src/frontend/OpenFortranParser_SAGE_Connection/Makefile
-src/frontend/PHPFrontend/Makefile
-src/frontend/PythonFrontend/Makefile
 src/frontend/SageIII/GENERATED_CODE_DIRECTORY_Cxx_Grammar/Makefile
 src/frontend/SageIII/Makefile
 src/frontend/SageIII/astFileIO/Makefile
@@ -2268,30 +1541,9 @@ src/frontend/SageIII/astVisualization/Makefile
 src/frontend/SageIII/includeDirectivesProcessing/Makefile
 src/frontend/SageIII/sage.docs
 src/frontend/SageIII/sageInterface/Makefile
+src/frontend/SageIII/ompparser/Makefile
 src/frontend/SageIII/virtualCFG/Makefile
-src/frontend/X10_ROSE_Connection/Makefile
-src/midend/KLT/Makefile
-src/midend/KLT/include/KLT/Core/Makefile
-src/midend/KLT/include/KLT/DLX/Makefile
-src/midend/KLT/include/KLT/MDCG/Makefile
-src/midend/KLT/include/KLT/RTL/Makefile
-src/midend/KLT/lib/core/Makefile
-src/midend/KLT/lib/mdcg/Makefile
-src/midend/KLT/lib/rtl/Makefile
-src/midend/MDCG/Makefile
-src/midend/MDCG/include/MDCG/Model/Makefile
-src/midend/MDCG/include/MDCG/Tools/Makefile
-src/midend/MDCG/lib/model/Makefile
-src/midend/MDCG/lib/tools/Makefile
-src/midend/MFB/Makefile
-src/midend/MFB/include/MFB/KLT/Makefile
-src/midend/MFB/include/MFB/Makefile
-src/midend/MFB/include/MFB/Sage/Makefile
-src/midend/MFB/lib/klt/Makefile
-src/midend/MFB/lib/sage/Makefile
-src/midend/MFB/lib/utils/Makefile
 src/midend/Makefile
-src/midend/BinaryAnalysis/Makefile
 src/midend/programAnalysis/Makefile
 src/midend/programAnalysis/ssaUnfilteredCfg/Makefile
 src/midend/programAnalysis/staticSingleAssignment/Makefile
@@ -2300,62 +1552,7 @@ src/midend/programTransformation/extractFunctionArgumentsNormalization/Makefile
 src/midend/programTransformation/loopProcessing/Makefile
 src/midend/programTransformation/singleStatementToBlockNormalization/Makefile
 src/roseExtensions/Makefile
-src/roseExtensions/dataStructureTraversal/Makefile
-src/roseExtensions/failSafe/Makefile
-src/roseExtensions/highLevelGrammar/Makefile
-src/roseExtensions/qtWidgets/AsmInstructionBar/Makefile
-src/roseExtensions/qtWidgets/AsmView/Makefile
-src/roseExtensions/qtWidgets/AstBrowserWidget/Makefile
-src/roseExtensions/qtWidgets/AstGraphWidget/Makefile
-src/roseExtensions/qtWidgets/AstProcessing/Makefile
-src/roseExtensions/qtWidgets/BeautifiedAst/Makefile
-src/roseExtensions/qtWidgets/FlopCounter/Makefile
-src/roseExtensions/qtWidgets/InstructionCountAnnotator/Makefile
-src/roseExtensions/qtWidgets/KiviatView/Makefile
-src/roseExtensions/qtWidgets/Makefile
-src/roseExtensions/qtWidgets/MetricFilter/Makefile
-src/roseExtensions/qtWidgets/MetricsConfig/Makefile
-src/roseExtensions/qtWidgets/MetricsKiviat/Makefile
-src/roseExtensions/qtWidgets/NodeInfoWidget/Makefile
-src/roseExtensions/qtWidgets/ProjectManager/Makefile
-src/roseExtensions/qtWidgets/PropertyTreeWidget/Makefile
-src/roseExtensions/qtWidgets/QCodeEditWidget/Makefile
-src/roseExtensions/qtWidgets/QCodeEditWidget/QCodeEdit/Makefile
-src/roseExtensions/qtWidgets/QCodeEditWidget/QCodeEdit/document/Makefile
-src/roseExtensions/qtWidgets/QCodeEditWidget/QCodeEdit/qnfa/Makefile
-src/roseExtensions/qtWidgets/QCodeEditWidget/QCodeEdit/widgets/Makefile
-src/roseExtensions/qtWidgets/QtGradientEditor/Makefile
-src/roseExtensions/qtWidgets/RoseCodeEdit/Makefile
-src/roseExtensions/qtWidgets/RoseFileSelector/Makefile
-src/roseExtensions/qtWidgets/SrcBinView/Makefile
-src/roseExtensions/qtWidgets/TaskSystem/Makefile
-src/roseExtensions/qtWidgets/TreeModel/Makefile
-src/roseExtensions/qtWidgets/WidgetCreator/Makefile
-src/roseExtensions/qtWidgets/util/Makefile
-src/roseExtensions/roseHPCToolkit/Makefile
-src/roseExtensions/roseHPCToolkit/docs/Makefile
-src/roseExtensions/roseHPCToolkit/include/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/gprof/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/profir/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/profir2sage/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/sage/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/util/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/xml-xercesc/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/xml/Makefile
-src/roseExtensions/roseHPCToolkit/include/rosehpct/xml2profir/Makefile
-src/roseExtensions/roseHPCToolkit/src/Makefile
-src/roseExtensions/roseHPCToolkit/src/gprof/Makefile
-src/roseExtensions/roseHPCToolkit/src/profir/Makefile
-src/roseExtensions/roseHPCToolkit/src/profir2sage/Makefile
-src/roseExtensions/roseHPCToolkit/src/sage/Makefile
-src/roseExtensions/roseHPCToolkit/src/util/Makefile
-src/roseExtensions/roseHPCToolkit/src/xml-xercesc/Makefile
-src/roseExtensions/roseHPCToolkit/src/xml/Makefile
-src/roseExtensions/roseHPCToolkit/src/xml2profir/Makefile
 src/roseExtensions/sqlite3x/Makefile
-src/roseIndependentSupport/Makefile
-src/roseIndependentSupport/dot2gml/Makefile
 src/roseSupport/Makefile
 src/util/Makefile
 src/util/commandlineProcessing/Makefile
@@ -2368,11 +1565,6 @@ tests/Makefile
 tests/nonsmoke/ExamplesForTestWriters/Makefile
 tests/nonsmoke/Makefile
 tests/nonsmoke/acceptance/Makefile
-tests/nonsmoke/functional/BinaryAnalysis/Dwarf_tests/Makefile
-tests/nonsmoke/functional/BinaryAnalysis/Makefile
-tests/nonsmoke/functional/BinaryAnalysis/Pin_tests/Makefile
-tests/nonsmoke/functional/BinaryAnalysis/libraryIdentification_tests/Makefile
-tests/nonsmoke/functional/BinaryAnalysis/Concolic/Makefile
 tests/nonsmoke/functional/CompileTests/A++Code/Makefile
 tests/nonsmoke/functional/CompileTests/A++Tests/Makefile
 tests/nonsmoke/functional/CompileTests/C_tests/Makefile
@@ -2393,43 +1585,21 @@ tests/nonsmoke/functional/CompileTests/ElsaTestCases/gnu/Makefile
 tests/nonsmoke/functional/CompileTests/ElsaTestCases/kandr/Makefile
 tests/nonsmoke/functional/CompileTests/ElsaTestCases/std/Makefile
 tests/nonsmoke/functional/CompileTests/ExpressionTemplateExample_tests/Makefile
-tests/nonsmoke/functional/CompileTests/FailSafe_tests/Makefile
 tests/nonsmoke/functional/CompileTests/Fortran_tests/LANL_POP/Makefile
 tests/nonsmoke/functional/CompileTests/Fortran_tests/Makefile
 tests/nonsmoke/functional/CompileTests/Fortran_tests/experimental_frontend_tests/Makefile
 tests/nonsmoke/functional/CompileTests/Fortran_tests/gfortranTestSuite/Makefile
 tests/nonsmoke/functional/CompileTests/Fortran_tests/gfortranTestSuite/gfortran.dg/Makefile
 tests/nonsmoke/functional/CompileTests/Fortran_tests/gfortranTestSuite/gfortran.fortran-torture/Makefile
-tests/nonsmoke/functional/CompileTests/Java_tests/Makefile
-tests/nonsmoke/functional/CompileTests/Java_tests/unit_tests/Makefile
-tests/nonsmoke/functional/CompileTests/experimental_csharp_tests/Makefile
-tests/nonsmoke/functional/CompileTests/experimental_ada_tests/Makefile
-tests/nonsmoke/functional/CompileTests/experimental_ada_tests/dot_asis_tests/Makefile
-tests/nonsmoke/functional/CompileTests/experimental_ada_tests/compile_tests/Makefile
-tests/nonsmoke/functional/CompileTests/experimental_ada_tests/sageInterfaceAda_tests/Makefile
-tests/nonsmoke/functional/CompileTests/experimental_ada_tests/literalParser_tests/Makefile
-tests/nonsmoke/functional/CompileTests/experimental_fortran_tests/Makefile
-tests/nonsmoke/functional/CompileTests/experimental_jovial_tests/Makefile
-tests/nonsmoke/functional/CompileTests/experimental_cobol_tests/Makefile
-tests/nonsmoke/functional/CompileTests/experimental_matlab_tests/Makefile
 tests/nonsmoke/functional/CompileTests/Makefile
-tests/nonsmoke/functional/CompileTests/MicrosoftWindows_C_tests/Makefile
-tests/nonsmoke/functional/CompileTests/MicrosoftWindows_Cxx_tests/Makefile
-tests/nonsmoke/functional/CompileTests/MicrosoftWindows_Java_tests/Makefile
-tests/nonsmoke/functional/CompileTests/MicrosoftWindows_tests/Makefile
 tests/nonsmoke/functional/CompileTests/OpenClTests/Makefile
-tests/nonsmoke/functional/CompileTests/OpenACC_tests/Makefile
-tests/nonsmoke/functional/CompileTests/OpenACC_tests/fortran/Makefile
 tests/nonsmoke/functional/CompileTests/OpenMP_tests/Makefile
 tests/nonsmoke/functional/CompileTests/OpenMP_tests/cvalidation/Makefile
 tests/nonsmoke/functional/CompileTests/OpenMP_tests/fortran/Makefile
 tests/nonsmoke/functional/CompileTests/OvertureCode/Makefile
 tests/nonsmoke/functional/CompileTests/P++Tests/Makefile
-tests/nonsmoke/functional/CompileTests/PythonExample_tests/Makefile
-tests/nonsmoke/functional/CompileTests/Python_tests/Makefile
 tests/nonsmoke/functional/CompileTests/RoseExample_tests/Makefile
 tests/nonsmoke/functional/CompileTests/STL_tests/Makefile
-tests/nonsmoke/functional/CompileTests/UPC_tests/Makefile
 tests/nonsmoke/functional/CompileTests/UnparseHeadersTests/Makefile
 tests/nonsmoke/functional/CompileTests/UnparseHeadersUsingTokenStream_tests/Makefile
 tests/nonsmoke/functional/CompileTests/boost_tests/Makefile
@@ -2444,11 +1614,9 @@ tests/nonsmoke/functional/CompileTests/sizeofOperation_tests/Makefile
 tests/nonsmoke/functional/CompileTests/sourcePosition_tests/Makefile
 tests/nonsmoke/functional/CompileTests/staticCFG_tests/Makefile
 tests/nonsmoke/functional/CompileTests/systemc_tests/Makefile
-tests/nonsmoke/functional/CompileTests/vxworks_tests/Makefile
 tests/nonsmoke/functional/CompileTests/uninitializedField_tests/Makefile
 tests/nonsmoke/functional/CompileTests/unparseToString_tests/Makefile
 tests/nonsmoke/functional/CompileTests/virtualCFG_tests/Makefile
-tests/nonsmoke/functional/CompileTests/x10_tests/Makefile
 tests/nonsmoke/functional/CompileTests/unparse_template_from_ast/Makefile
 tests/nonsmoke/functional/CompilerOptionsTests/Makefile
 tests/nonsmoke/functional/CompilerOptionsTests/collectAllCommentsAndDirectives_tests/Makefile
@@ -2473,13 +1641,11 @@ tests/nonsmoke/functional/RunTests/AstDeleteTests/Makefile
 tests/nonsmoke/functional/RunTests/FortranTests/LANL_POP/Makefile
 tests/nonsmoke/functional/RunTests/FortranTests/Makefile
 tests/nonsmoke/functional/RunTests/Makefile
-tests/nonsmoke/functional/RunTests/PythonTests/Makefile
 tests/nonsmoke/functional/UnitTests/Makefile
 tests/nonsmoke/functional/UnitTests/Rose/Makefile
 tests/nonsmoke/functional/UnitTests/Rose/SageBuilder/Makefile
 tests/nonsmoke/functional/Utility/Makefile
 tests/nonsmoke/functional/roseTests/Makefile
-tests/nonsmoke/functional/roseTests/PHPTests/Makefile
 tests/nonsmoke/functional/roseTests/ROSETTA/Makefile
 tests/nonsmoke/functional/roseTests/abstractMemoryObjectTests/Makefile
 tests/nonsmoke/functional/roseTests/astFileIOTests/Makefile
@@ -2517,28 +1683,14 @@ tests/nonsmoke/functional/roseTests/programAnalysisTests/variableRenamingTests/M
 tests/nonsmoke/functional/roseTests/programTransformationTests/Makefile
 tests/nonsmoke/functional/roseTests/programTransformationTests/extractFunctionArgumentsTest/Makefile
 tests/nonsmoke/functional/roseTests/programTransformationTests/singleStatementToBlockNormalization/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/01/ANALYSIS/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/01/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/01/PROFILE/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/01/PROGRAM/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/02/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/02/PROFILE/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/02/struct_ls/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/03/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/03/PROFILE/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/03/struct_ls/Makefile
-tests/nonsmoke/functional/roseTests/roseHPCToolkitTests/data/Makefile
 tests/nonsmoke/functional/roseTests/varDeclNorm/Makefile
 tests/nonsmoke/functional/testSupport/Makefile
 tests/nonsmoke/functional/testSupport/gtest/Makefile
 tests/nonsmoke/functional/translatorTests/Makefile
 tests/nonsmoke/specimens/Makefile
-tests/nonsmoke/specimens/binary/Makefile
 tests/nonsmoke/specimens/c++/Makefile
 tests/nonsmoke/specimens/c/Makefile
 tests/nonsmoke/specimens/fortran/Makefile
-tests/nonsmoke/specimens/java/Makefile
 tests/nonsmoke/unit/Makefile
 tests/nonsmoke/unit/SageInterface/Makefile
 tests/roseTests/Makefile
@@ -2547,46 +1699,29 @@ tests/roseTests/programAnalysisTests/Makefile
 tests/roseTests/programAnalysisTests/typeTraitTests/Makefile
 tests/smoke/ExamplesForTestWriters/Makefile
 tests/smoke/Makefile
-tests/smoke/functional/BinaryAnalysis/Makefile
 tests/smoke/functional/Fortran/Makefile
 tests/smoke/functional/Makefile
 tests/smoke/specimens/Makefile
-tests/smoke/specimens/binary/Makefile
 tests/smoke/specimens/c++/Makefile
 tests/smoke/specimens/c/Makefile
 tests/smoke/specimens/fortran/Makefile
-tests/smoke/specimens/java/Makefile
-tests/smoke/unit/BinaryAnalysis/Makefile
 tests/smoke/unit/Boost/Makefile
 tests/smoke/unit/Makefile
 tests/smoke/unit/Sawyer/Makefile
 tests/smoke/unit/Utility/Makefile
 tools/Makefile
-tools/BinaryAnalysis/Makefile
 tools/globalVariablesInLambdas/Makefile
 tools/classMemberVariablesInLambdas/Makefile
 tools/checkFortranInterfaces/Makefile
 tools/featureVector/Makefile
 tutorial/Makefile
-tutorial/binaryAnalysis/Makefile
 tutorial/exampleMakefile
-tutorial/intelPin/Makefile
 tutorial/outliner/Makefile
-tutorial/roseHPCT/Makefile
 ])
 
 # DQ (3/8/2017): Removed these directories from testing (pre-smoke and pre-nonsmoke test directories.
 # tests/CompileTests/Makefile
 # tests/CompileTests/OpenMP_tests/Makefile
-# tests/CompileTests/x10_tests/Makefile
-
-# DQ (11/14/2017): Removed GNAT test directory since it is redundant with the ADA test directory.
-# tests/nonsmoke/functional/CompileTests/gnat_tests/Makefile
-
-# Liao, 1/16/2014, comment out a few directories which are turned off for EDG 4.x upgrade
-#projects/BinaryDataStructureRecognition/Makefile
-#tests/nonsmoke/functional/CompileTests/CAF2_tests/Makefile
-
 
 # DQ (10/27/2010): New Fortran tests (from gfortan test suite).
 # tests/nonsmoke/functional/CompileTests/Fortran_tests/gfortranTestSuite/Makefile
@@ -2595,13 +1730,6 @@ tutorial/roseHPCT/Makefile
 
 # DQ (8/12/2010): We want to get permission to distribute these files as test codes.
 # tests/nonsmoke/functional/CompileTests/Fortran_tests/LANL_POP/Makefile
-
-# DQ (10/24/2009): We don't need to support EDG 3.10 anymore.
-# src/frontend/CxxFrontend/EDG_3.10/Makefile
-# src/frontend/CxxFrontend/EDG_3.10/misc/Makefile
-# src/frontend/CxxFrontend/EDG_3.10/src/Makefile
-# src/frontend/CxxFrontend/EDG_3.10/src/disp/Makefile
-# src/frontend/CxxFrontend/EDG_3.10/lib/Makefile
 
 # DQ (12/31/2008): Skip these, since we don't have SPEC and NAS benchmarks setup yet.
 # developersScratchSpace/Dan/Fortran_tests/NPB3.2-SER/Makefile

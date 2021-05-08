@@ -52,21 +52,6 @@ if ROSE_USE_SQLITE_DATABASE
    ROSE_SIDEEFFECT_INCLUDE						 = -I$(top_srcdir)/src/midend/programAnalysis/sideEffectAnalysis
 endif
 
-if ROSE_HAVE_LIBZ3
-  Z3_LIB_NAME = z3
-  Z3_LIB_FILE = lib$(Z3_LIB_NAME).so
-  Z3_LIBS = -l$(Z3_LIB_NAME)
-
-  Z3_INCLUDES = -I$(Z3_PREFIX)/include
-  Z3_LIB_INCLUDES = -L$(Z3_PREFIX)/lib
-
-  # The previous "Z3_*" variables should have been named "ROSE_Z3_*" following the pattern in the rest of this
-  # makefile. I don't want to break code that uses the wrong names, so I'll just add the correct ones. [Matzke 2017-10-17]
-  ROSE_Z3_INCLUDES = -I@ROSE_Z3_PREFIX@/include
-  ROSE_Z3_LIBS = -lz3
-  ROSE_Z3_LIBS_WITH_PATH = -L@ROSE_Z3_PREFIX@/lib -lz3
-endif
-
 # This is properly handled by automake even when specified in an include file
 EDG_LIBS = @EDG_LIBS@
 
@@ -74,60 +59,11 @@ RT_LIBS = @RT_LIBS@
 
 VALGRIND_BINARY = @VALGRIND_BINARY@
 
-# Conditional support for Gabriel's QRose GUI Library
-if ROSE_USE_QT
-#  ROSE_GUI_INCLUDE =   -I${QROSE_PREFIX}/include
-  ROSE_GUI_INCLUDE =  -I$(top_srcdir)/src/3rdPartyLibraries/qrose/Framework -I$(top_srcdir)/src/3rdPartyLibraries/qrose/Widgets -I$(top_srcdir)/src/3rdPartyLibraries/qrose/Components/Common -I$(top_srcdir)/src/3rdPartyLibraries/qrose/Components/QueryBox -I$(top_srcdir)/src/3rdPartyLibraries/qrose/Components/TreeBox -I$(top_srcdir)/src/3rdPartyLibraries/qrose/Components/QueryBox -I$(top_srcdir)/src/3rdPartyLibraries/qrose/Components/SourceBox
-
-# ROSE_GUI_LIBS = -lqrose
-#  ROSE_GUI_LIBS_WITH_PATH = -L${QROSE_PREFIX}/lib -lqrose
-#  ROSE_GUI_LIBS_WITH_PATH =  -L${top_builddir}/src/3rdPartyLibraries/qrose/QRoseLib/  -lqrose
-   ROSE_GUI_LIBS_WITH_PATH = ${top_builddir}/src/3rdPartyLibraries/qrose/QRoseLib/libqrose.la
-
-# ROSE_GUI_LIB_FILE = libqrose.a
-endif
-
-if ROSE_USE_QT
-  ROSE_QT_INCLUDE = $(QT_INCLUDES)
-# ROSE_QT_LIBS = -lqt
-  ROSE_QT_LIBS_WITH_PATH = ${QT_LDFLAGS}
-# ROSE_QT_LIB_FILE = libqt.a
-endif
-
-# ROSE-HPCToolkit module
-if ROSE_BUILD_ROSEHPCT
-  ROSE_ROSEHPCT_INCLUDES = -I$(top_srcdir)/src/roseExtensions/roseHPCToolkit/include
-  ROSE_ROSEHPCT_LIBS = -lrosehpct
-  ROSE_ROSEHPCT_LIBS_WITH_PATH = $(top_builddir)/src/roseExtensions/roseHPCToolkit/src/librosehpct.la
-# ROSE_ROSEHPCT_LIB_FILE = librosehpct.so
-endif
-
 # ROSE-YICES Package (destributed by SRI as a static library)
 if ROSE_HAVE_LIBYICES
   ROSE_YICES_INCLUDES = -I@ROSE_YICES_PREFIX@/include
   ROSE_YICES_LIBS = -lyices
   ROSE_YICES_LIBS_WITH_PATH = @ROSE_YICES_PREFIX@/lib/libyices.a
-endif
-
-# YAML-CPP package for parsing YAML/JSON files
-if ROSE_HAVE_LIBYAML
-  ROSE_YAML_INCLUDES = -I@ROSE_YAML_PREFIX@/include
-  ROSE_YAML_LIBS = -lyaml-cpp
-  ROSE_YAML_LIBS_WITH_PATH = -L@ROSE_YAML_PREFIX@/lib -lyaml-cpp
-endif
-
-# GNU readline
-if ROSE_WITH_LIBREADLINE
-  ROSE_READLINE_INCLUDES = -I@LIBREADLINE_INCLUDE_PATH@
-  ROSE_READLINE_LIBS = @LIBREADLINE_LIBS@
-  ROSE_READLINE_LIBS_WITH_PATH = -L@LIBREADLINE_LIBRARY_PATH@ $(ROSE_READLINE_LIBS)
-endif
-
-# libmagic for identifying file types based on magic numbers
-if ROSE_HAVE_LIBMAGIC
-  ROSE_LIBMAGIC_INCLUDES = -I@ROSE_LIBMAGIC_PREFIX@/include
-  ROSE_LIBMAGIC_LIBS = -lmagic
-  ROSE_LIBMAGIC_LIBS_WITH_PATH = -L@ROSE_LIBMAGIC_PREFIX@/lib -lmagic
 endif
 
 # PostgreSQL C++ API
@@ -137,20 +73,6 @@ if ROSE_HAVE_LIBPQXX
   ROSE_LIBPQXX_LIBS_WITH_PATH = -L@ROSE_LIBPQXX_PREFIX@/lib -lpqxx -lpq
 endif
 
-# Capstone disassembler
-if ROSE_HAVE_CAPSTONE
-  ROSE_CAPSTONE_INCLUDES = -I@ROSE_CAPSTONE_PREFIX@/include
-  ROSE_CAPSTONE_LIBS = -lcapstone
-  ROSE_CAPSTONE_LIBS_WITH_PATH = -L@ROSE_CAPSTONE_PREFIX@/lib -lcapstone
-endif
-
-# Math algorithms from http://dlib.net. This is a headers-only library neede by some binary analyses.
-if ROSE_HAVE_DLIB
-  ROSE_DLIB_INCLUDES = -I@DLIB_PREFIX@/include
-  ROSE_DLIB_LIBS =
-  ROSE_DLIB_LIBS_WITH_PATH =
-endif
-
 # DQ (11/4/2016): Adding support for use of Address Sanitizer (for where the ROSE Test Handler (RTH) is used.
 # Note the quotes and escapes that are required:
 ADDRESS_SANITIZER_OPTIONS = "ASAN_OPTIONS=halt_on_error=0:symbolize=1:detect_leaks=0 ASAN_SYMBOLIZER_PATH=\`which llvm-symbolizer\`"
@@ -158,50 +80,10 @@ ADDRESS_SANITIZER_OPTIONS = "ASAN_OPTIONS=halt_on_error=0:symbolize=1:detect_lea
 # DQ(11/4/2016): Need a version when not using the ROSE Test Handler (RTH):
 NON_RTH_ADDRESS_SANITIZER_OPTIONS = ASAN_OPTIONS=halt_on_error=1:symbolize=1:detect_leaks=0 ASAN_SYMBOLIZER_PATH=`which llvm-symbolizer`
 
-GLUT_LIBS = ${glut_path}
-
-if ROSE_HAVE_LIBELF
-  ROSE_ELF_INCLUDES = @LIBELF_CPPFLAGS@
-  ROSE_ELF_LIBS_WITH_PATH = @LIBELF_LDFLAGS@
-endif
-
 # ROSE gcrypt support (for things like md5, sha1, etc)
 if ROSE_HAVE_LIBGCRYPT
   ROSE_GCRYPT_INCLUDES = @LIBGCRYPT_CPPFLAGS@
   ROSE_GCRYPT_LIBS_WITH_PATH = @LIBGCRYPT_LDFLAGS@
-endif
-
-# ROSE-DWARF libdwarf support
-if ROSE_HAVE_LIBDWARF
-  ROSE_DWARF_INCLUDES = @LIBDWARF_CPPFLAGS@
-
-if ROSE_USE_INTEL_PIN
-# DQ (3/13/2009):
-# If Dwarf is used with Intel Pin then reference the same copy of libdwarf.a (in the same
-# directory).  However, it does NOT work to link both references to libdwarf into more
-# than one dynamic (shared) library, so we need to link libdwarf dynamically.
-# To avoid additional LD_LIBRARY_PATH requirements, we do so using rpath.
-# To support this the libdwarf.so should be placed into $(INTEL_PIN_PATH)/intel64/lib-ext
-# and the static libdwarf.a moved out (renamed) so that it will not be used.
-# Note that this will also cause librose.so to use the shared library for
-# dwarf when used with Intel Pin.
-  ROSE_DWARF_LIBS_WITH_PATH = -L$(INTEL_PIN_PATH)/intel64/lib-ext -ldwarf -lelf
-# DQ (3/14/2009): This factors the lib paths.
-  INTEL_PIN_WITH_DWARF_LIBS_PATH = $(INTEL_PIN_LIB_PATHS) -lpin -lxed -ldl $(ROSE_DWARF_LIBS_WITH_PATH)
-else
-  ROSE_DWARF_LIBS_WITH_PATH = @LIBDWARF_LDFLAGS@
-endif
-endif
-
-# ROSE-WINE Package (Wine is a package to permit execution of Windows binaries under Linux)
-if ROSE_USE_WINDOWS_ANALYSIS_SUPPORT
-  ROSE_WINE_INCLUDES = -I$(wine_path)/include
-endif
-
-if ROSE_USE_PHP
-  ROSE_PHP_INCLUDES = -I$(php_path)/include/phc -I$(php_path)/include/php
-  ROSE_PHP_LIBS = -lphp5 -lphc -lltdl
-  ROSE_PHP_LIBS_WITH_PATH = $(php_path)/lib/libphc.so $(php_path)/lib/libphp5.so $(LIBLTDL)
 endif
 
 # ASR (06/09/2010): adding llvm support variables
@@ -213,12 +95,6 @@ if ROSE_USE_LLVM
 
 endif
 
-# Python API support
-if ROSE_USE_PYTHON_DEV
-  ROSE_PYTHON_INCLUDES = @PYTHON_CPPFLAGS@
-  ROSE_PYTHON_LIBS_WITH_PATH = @PYTHON_LDFLAGS@
-endif
-
 # SSL support permits use of MD5 checksums internally for binary library identification.
 if ROSE_USE_SSL_SUPPORT
   ROSE_SSL_LIBS = -lssl -lcrypto
@@ -227,53 +103,6 @@ endif
 # support for precompiled headers
 if ROSE_PCH
   ROSE_PCH_INCLUDE = -Winvalid-pch -fPIC -DPIC
-endif
-
-if ROSE_USE_INTEL_PIN
-  INTEL_PIN_PATH          = @IntelPin_path@
-  INTEL_PIN_INCLUDE_PATHS = -I$(INTEL_PIN_PATH)/source/include -I$(INTEL_PIN_PATH)/source/include/gen -I$(INTEL_PIN_PATH)/extras/xed2-intel64/include -I$(INTEL_PIN_PATH)/source/tools/InstLib
-
-# DQ (3/8/2009): These cause rose/src/testSharedRoseLib to fail, I don't know why (fails in system call to map()).
-# INTEL_PIN_LIB_PATHS     = -L$(INTEL_PIN_PATH)/intel64/lib -L$(INTEL_PIN_PATH)/extras/xed2-intel64/lib -L$(INTEL_PIN_PATH)/intel64/lib-ext
-  INTEL_PIN_LIB_PATHS     = -L$(INTEL_PIN_PATH)/intel64/lib -L$(INTEL_PIN_PATH)/extras/xed2-intel64/lib
-
-# Do we want to handle this differently when Dwarf is used optionally with ROSE.
-  INTEL_PIN_LIBS          = -lpin -lxed -ldwarf -lelf -ldl
-#if ROSE_HAVE_LIBDWARF
-#  INTEL_PIN_LIBS          = -lpin -lxed -lelf -ldl
-#else
-#  INTEL_PIN_LIBS          = -lpin -lxed -ldwarf -lelf -ldl
-#endif
-endif
-
-if ROSE_USE_ETHER
-  ROSE_ETHER_INCLUDE = -I$(ETHER_PREFIX)/include
-  ROSE_ETHER_LIBS    = -L$(ETHER_PREFIX)/lib -lxenctrl
-endif
-
-if ROSE_WITH_ATERM
-  ROSE_ATERM_INCLUDE = -I$(ATERM_LIBRARY_PATH)/../include
-  ROSE_ATERM_LIBS    = -L$(ATERM_LIBRARY_PATH) -lATerm
-endif
-
-# Added support for Fortran front-end development using the flang (F18) compiler [Rasmussen 8/12/2019]
-if ROSE_EXPERIMENTAL_FLANG_ROSE_CONNECTION
-  ROSE_FLANG_INCLUDES = -I$(FLANG_INSTALL_PATH)/include
-  ROSE_FLANG_LIBS     = -L$(FLANG_INSTALL_PATH)/lib -lLLVMDemangle -lLLVMSupport -lLLVMFrontendOpenMP -lLLVMFrontendOpenACC -lFortranParser -lFortranSemantics -lFortranEvaluate -lFortranCommon -lFortranDecimal -lFortranLower -lncurses
-endif
-
-# DQ (5/9/2017): Adding Ada library support.
-if ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION
-# ROSE_ADA_INCLUDES = -I$(ada_path)/include_xxx
-  ROSE_ADA_INCLUDES = -I$(ada_path)/include_xxx
-  DOT_ASIS_LIB_DIR_ = $(abs_top_builddir)/src/frontend/Experimental_Ada_ROSE_Connection/dot_asis/dot_asis_library/lib
-#  ROSE_ADA_LIBS = -ldot_asis
-#  ROSE_ADA_LIBS_WITH_PATH = $(DOT_ASIS_LIB_DIR_)/libdot_asis.so
-endif
-
-# RASMUSSEN (10/24/2017): Adding the GnuCOBOL parse-tree library support.
-if ROSE_EXPERIMENTAL_COBOL_ROSE_CONNECTION
-  ROSE_COBOL_PT_LIBS_WITH_PATH = -L$(COBPT_LIBRARY_PATH) -lcob -lcobpt
 endif
 
 if ROSE_USE_EDG_QUAD_FLOAT
@@ -320,23 +149,10 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/frontend/SageIII/includeDirectivesProcessing \
      -I$(top_srcdir)/src/frontend/SageIII/sage_support \
      -I$(top_srcdir)/src/frontend/OpenFortranParser_SAGE_Connection \
-     -I$(top_srcdir)/src/frontend/ECJ_ROSE_Connection \
      -I"$(JAVA_HOME)/include" \
-     -I$(top_srcdir)/src/frontend/BinaryFormats \
-     -I$(top_srcdir)/src/frontend/BinaryLoader \
-     -I$(top_srcdir)/src/frontend/Disassemblers \
      -I$(top_srcdir)/src/backend/unparser \
      -I$(top_srcdir)/src/backend/unparser/formatSupport \
      -I$(top_srcdir)/src/backend/unparser/languageIndependenceSupport \
-     -I$(top_srcdir)/src/backend/unparser/CxxCodeGeneration \
-     -I$(top_srcdir)/src/backend/unparser/JavaCodeGeneration \
-     -I$(top_srcdir)/src/backend/unparser/FortranCodeGeneration \
-     -I$(top_srcdir)/src/backend/unparser/PHPCodeGeneration \
-     -I$(top_srcdir)/src/backend/unparser/PythonCodeGeneration \
-     -I$(top_srcdir)/src/backend/unparser/X10CodeGeneration \
-     -I$(top_srcdir)/src/backend/unparser/AdaCodeGeneration \
-     -I$(top_srcdir)/src/backend/unparser/JovialCodeGeneration \
-     -I$(top_srcdir)/src/backend/asmUnparser \
      -I$(top_srcdir)/src/util \
      -I$(top_srcdir)/src/util/support \
      -I$(top_srcdir)/src/util/graphs  \
@@ -347,13 +163,11 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/midend/astProcessing \
      -I$(top_srcdir)/src/midend/astMatching \
      -I$(top_srcdir)/src/midend/astQuery \
-     -I$(top_srcdir)/src/midend/BinaryAnalysis \
      -I$(top_srcdir)/src/midend/programAnalysis \
      -I$(top_srcdir)/src/roseSupport \
      -I$(top_srcdir)/src/3rdPartyLibraries/MSTL \
      -I$(top_srcdir)/src/3rdPartyLibraries/json \
      -I$(top_srcdir)/src/util/graphs \
-     -I$(top_srcdir)/src/roseExtensions/failSafe \
      $(ROSE_ATERM_INCLUDE) \
      $(ROSE_FLANG_INCLUDES) \
      $(ROSE_BOOST_NORMAL_INCLUDE_PATH)
@@ -380,27 +194,14 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/frontend/SageIII/includeDirectivesProcessing \
      -I$(top_srcdir)/src/frontend/SageIII/sage_support \
      -I$(top_srcdir)/src/frontend/OpenFortranParser_SAGE_Connection \
-     -I$(top_srcdir)/src/frontend/ECJ_ROSE_Connection \
      -I"$(JAVA_HOME)/include" \
-     -I$(top_srcdir)/src/frontend/PHPFrontend \
       $(ROSE_CLANG_FRONTEND_INCLUDE) \
-     -I$(top_srcdir)/src/frontend/PythonFrontend \
-     -I$(top_srcdir)/src/frontend/BinaryFormats \
-     -I$(top_srcdir)/src/frontend/BinaryLoader \
-     -I$(top_srcdir)/src/frontend/Disassemblers \
       $(ROSE_CLANG_INCLUDE) \
      -I$(top_srcdir)/src/backend/unparser \
      -I$(top_srcdir)/src/backend/unparser/formatSupport \
      -I$(top_srcdir)/src/backend/unparser/languageIndependenceSupport \
      -I$(top_srcdir)/src/backend/unparser/CxxCodeGeneration \
-     -I$(top_srcdir)/src/backend/unparser/JavaCodeGeneration \
      -I$(top_srcdir)/src/backend/unparser/FortranCodeGeneration \
-     -I$(top_srcdir)/src/backend/unparser/PHPCodeGeneration \
-     -I$(top_srcdir)/src/backend/unparser/PythonCodeGeneration \
-     -I$(top_srcdir)/src/backend/unparser/X10CodeGeneration \
-     -I$(top_srcdir)/src/backend/unparser/AdaCodeGeneration \
-     -I$(top_srcdir)/src/backend/unparser/JovialCodeGeneration \
-     -I$(top_srcdir)/src/backend/asmUnparser \
      -I$(top_srcdir)/src/util \
      -I$(top_srcdir)/src/util/support \
      -I$(top_srcdir)/src/util/graphs  \
@@ -422,9 +223,6 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/midend/astUtil/astInterface \
      -I$(top_srcdir)/src/midend/astUtil/astSupport \
      -I$(top_srcdir)/src/midend/astUtil/symbolicVal \
-     -I$(top_srcdir)/src/midend/BinaryAnalysis \
-     -I$(top_srcdir)/src/midend/BinaryAnalysis/dataflowanalyses \
-     -I$(top_srcdir)/src/midend/BinaryAnalysis/instructionSemantics \
      -I$(top_srcdir)/src/midend/programTransformation/loopProcessing/computation \
      -I$(top_srcdir)/src/midend/programTransformation/loopProcessing/depGraph \
      -I$(top_srcdir)/src/midend/programTransformation/loopProcessing/depInfo \
@@ -455,8 +253,6 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/midend/programAnalysis/variableRenaming \
       $(ROSE_SIDEEFFECTS_INCLUDE) \
       $(ROSE_DATABASE_INCLUDE) \
-      $(ROSE_GUI_INCLUDE) \
-      $(ROSE_QT_INCLUDE) \
       $(ROSE_SQLITE_DATABASE_INCLUDE) \
 			$(ROSE_SIDEEFFECT_INCLUDE) \
       $(SQLITE_DATABASE_INCLUDE) \
@@ -470,38 +266,16 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/3rdPartyLibraries/json \
      -I$(top_srcdir)/src/3rdPartyLibraries/libharu-2.1.0/include \
      -I$(top_builddir)/src/3rdPartyLibraries/libharu-2.1.0/include \
-     -I$(top_srcdir)/src/3rdPartyLibraries/qrose/Framework \
-     -I$(top_srcdir)/src/3rdPartyLibraries/qrose/Widgets  \
      -I$(top_srcdir)/src/util/graphs \
      -I$(top_srcdir)/src/midend/astUtil/astInterface \
      -I$(top_srcdir)/libltdl \
-     -I$(top_srcdir)/src/roseExtensions/failSafe \
-     $(ROSE_PHP_INCLUDES) \
-     $(ROSE_PYTHON_INCLUDES) \
      $(ROSE_YICES_INCLUDES) \
-     $(ROSE_Z3_INCLUDES) \
-     $(ROSE_YAML_INCLUDES) \
      $(ROSE_LIBPQXX_INCLUDES) \
-     $(ROSE_CAPSTONE_INCLUDES) \
-     $(ROSE_READLINE_INCLUDES) \
-     $(ROSE_LIBMAGIC_INCLUDES) \
-     $(ROSE_DLIB_INCLUDES) \
      $(ROSE_GCRYPT_INCLUDES) \
-     $(ROSE_ELF_INCLUDES) \
-     $(ROSE_DWARF_INCLUDES) \
-     $(ROSE_WINE_INCLUDES) \
      $(VALGRIND_CFLAGS) \
      $(SQLITE3_CFLAGS) \
      $(ROSE_BOOST_NORMAL_INCLUDE_PATH) \
      $(ROSE_PCH_INCLUDE) \
-     $(INTEL_PIN_INCLUDE_PATHS) \
-     $(ROSE_ETHER_INCLUDE) \
-     $(ROSE_ATERM_INCLUDE) \
-     $(ROSE_FLANG_INCLUDES) \
-     $(ROSE_CSHARP_INCLUDES) \
-     $(ROSE_ADA_INCLUDES) \
-     $(ROSE_JOVIAL_INCLUDES) \
-     $(ROSE_COBOL_INCLUDES) \
      $(BOOST_CPPFLAGS)
 endif
 
@@ -558,28 +332,12 @@ ROSE_BOOST_LIBS=$(BOOST_LDFLAGS) $(BOOST_DATE_TIME_LIB) $(BOOST_CHRONO_LIB) \
   $(BOOST_WAVE_LIB) $(BOOST_IOSTREAMS_LIB) $(BOOST_PYTHON_LIB)
 
 ROSE_LIBS = $(abspath $(top_builddir)/src/librose.la) -lm $(JAVA_JVM_LINK) \
-  $(SQLITE_DATABASE_LIBS) $(QT_LIBS) $(ROSE_BOOST_LIBS) \
-  $(SQLITE3_LDFLAGS)  $(RT_LIBS) $(ROSE_YICES_LIBS_WITH_PATH) $(ROSE_Z3_LIBS_WITH_PATH) $(ROSE_PHP_LIBS_WITH_PATH) \
-  $(ROSE_DWARF_LIBS_WITH_PATH) $(ROSE_ELF_LIBS_WITH_PATH) \
-  $(ROSE_GUI_LIBS_WITH_PATH) $(ROSE_QT_LIBS_WITH_PATH) $(ROSE_SSL_LIBS) $(ROSE_ETHER_LIBS) \
-  $(ROSE_INTEL_COMPILER_MATH_LIBS) $(ROSE_ATERM_LIBS) $(ROSE_FLANG_LIBS) \
-  $(ROSE_YAML_LIBS_WITH_PATH) $(ROSE_LIBMAGIC_LIBS_WITH_PATH) $(ROSE_READLINE_LIBS_WITH_PATH) \
-  $(ROSE_DLIB_LIBS_WITH_PATH) $(ROSE_GCRYPT_LIBS_WITH_PATH) $(ROSE_LIBPQXX_LIBS_WITH_PATH) \
-  $(ROSE_COBOL_PT_LIBS_WITH_PATH) $(ROSE_PYTHON_LIBS_WITH_PATH) \
-  $(ROSE_QUAD_FLOAT_MATH) $(ROSE_CAPSTONE_LIBS_WITH_PATH)
-
-if ROSE_USE_CLANG_FRONTEND
-# DQ (10/23/2020): Pei-Hung and I think this may not be required (not available on my system).
-# I get the error: 
-#    /bin/ld: skipping incompatible /lib/libtinfo.so when searching for -ltinfo
-#    clang-10: error: linker command failed with exit code 1 (use -v to see invocation)
-# ROSE_LIBS += $(CLANG_LDFLAGS) -ltinfo
-ROSE_LIBS += $(CLANG_LDFLAGS)
-endif
-
-#if ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION
-#ROSE_LIBS += $(libroseAdalibraries) 
-#endif
+  $(SQLITE_DATABASE_LIBS) $(ROSE_BOOST_LIBS) \
+  $(SQLITE3_LDFLAGS)  $(RT_LIBS) $(ROSE_YICES_LIBS_WITH_PATH) \
+  $(ROSE_SSL_LIBS) \
+  $(ROSE_INTEL_COMPILER_MATH_LIBS) \
+  $(ROSE_GCRYPT_LIBS_WITH_PATH) $(ROSE_LIBPQXX_LIBS_WITH_PATH) \
+  $(ROSE_QUAD_FLOAT_MATH)
 
 #========================================================================================================================
 # These are the "-R directory" switches that need to be passed to libtool running in link mode to make sure that ROSE
@@ -628,7 +386,6 @@ ROSE_RPATHS =                                                                   
                 $(subst :, , $(LIBLZMA_LIBDIRS))                                        \
                 $(subst :, , $(LIBPNG_LIBDIRS))                                         \
                 $(subst :, , $(LIBTIFF_LIBDIRS))                                        \
-                $(subst :, , $(PYTHON_LIBDIRS))                                         \
                 $(subst :, , $(SPOT_LIBDIRS))                                           \
                 $(subst :, , $(ZLIB_LIBDIRS))                                           \
                 $(subst :, , $(INTEL_COMPILER_RPATHS))                                  \
@@ -643,10 +400,6 @@ ROSE_LINK_RPATHS = $(addprefix -Xlinker -rpath -Xlinker , $(filter-out -R , $(RO
 else
 comma = ,
 ROSE_LINK_RPATHS = $(addprefix -Wl$(comma)-rpath , $(filter-out -R , $(ROSE_RPATHS)))
-endif
-
-if ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION
-ROSE_RPATHS += -R $(DOT_ASIS_LIB_DIR_) 
 endif
 
 show-rpaths:

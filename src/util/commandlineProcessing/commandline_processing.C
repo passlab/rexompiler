@@ -938,132 +938,6 @@ CommandlineProcessing::isUPCFileNameSuffix ( const std::string & suffix )
      return returnValue;
    }
 
-bool
-CommandlineProcessing::isPHPFileNameSuffix ( const std::string & suffix )
-   {
-     bool returnValue = false;
-
-  // For now define CASE_SENSITIVE_SYSTEM to be true, as we are currently a UNIXish project.
-
-#if(CASE_SENSITIVE_SYSTEM == 1)
-     if ( suffix == "php" )
-#else//It is a case insensitive system
-     if ( suffix == "php" )
-#endif
-        {
-          returnValue = true;
-        }
-
-     return returnValue;
-   }
-
-bool
-CommandlineProcessing::isPythonFileNameSuffix ( const std::string & suffix )
-   {
-     bool returnValue = false;
-
-  // For now define CASE_SENSITIVE_SYSTEM to be true, as we are currently a UNIXish project.
-
-#if(CASE_SENSITIVE_SYSTEM == 1)
-     if ( suffix == "py" )
-#else//It is a case insensitive system
-     if ( suffix == "py" )
-#endif
-        {
-          returnValue = true;
-        }
-
-     return returnValue;
-   }
-
-// DQ (28/8/2017): Adding language support.
-bool
-CommandlineProcessing::isCsharpFileNameSuffix ( const std::string & suffix )
-   {
-     bool returnValue = false;
-
-  // For now define CASE_SENSITIVE_SYSTEM to be true, as we are currently a UNIXish project.
-
-#if(CASE_SENSITIVE_SYSTEM == 1)
-     if ( suffix == "cs" )
-#else //It is a case insensitive system
-     if ( suffix == "cs" )
-#endif
-        {
-          returnValue = true;
-        }
-
-     return returnValue;
-   }
-
-// DQ (28/8/2017): Adding language support.
-bool
-CommandlineProcessing::isAdaFileNameSuffix ( const std::string & suffix )
-   {
-     bool returnValue = false;
-
-  // For now define CASE_SENSITIVE_SYSTEM to be true, as we are currently a UNIXish project.
-
-  // Note that the filename extension is not defined as part of the Ada standard,
-  // but GNAT (Gnu Ada) is using "ads" (for the spec) and "adb" (for the body).
-  // PP (02/12/21): Other naming schemes exist (GNAT can be customized)
-  //                RC-571 support Rational Apex .ada 
-
-#if(CASE_SENSITIVE_SYSTEM == 1)
-     if ( suffix == "ads" || suffix == "adb" || suffix == "ada")
-#else //It is a case insensitive system
-     if ( suffix == "ads" || suffix == "adb" || suffix == "ada")
-#endif
-        {
-          returnValue = true;
-        }
-
-     return returnValue;
-   }
-
-// DQ (28/8/2017): Adding language support.
-bool
-CommandlineProcessing::isJovialFileNameSuffix ( const std::string & suffix )
-   {
-     bool returnValue = false;
-
-  // For now define CASE_SENSITIVE_SYSTEM to be true, as we are currently a UNIXish project.
-
-  // Rasmussen (11/08/2017): Changed Jovial file extension to reflect usage found on web
-  // Rasmussen (11/11/2018): Added Jovial COMPOOL file extension "cpl"
-#if(CASE_SENSITIVE_SYSTEM == 1)
-     if ( suffix == "jov" || suffix == "cpl" || suffix == "j73" || suffix == "jovial" || suffix == "rcmp" )
-#else //It is a case insensitive system
-     if ( suffix == "jov" || suffix == "cpl" || suffix == "j73" || suffix == "jovial" || suffix == "rcmp" )
-#endif
-        {
-          returnValue = true;
-        }
-
-     return returnValue;
-   }
-
-// DQ (28/8/2017): Adding language support.
-bool
-CommandlineProcessing::isCobolFileNameSuffix ( const std::string & suffix )
-   {
-     bool returnValue = false;
-
-  // For now define CASE_SENSITIVE_SYSTEM to be true, as we are currently a UNIXish project.
-
-  // Rasmussen (11/08/2017): Changed Cobol file extension to reflect usage found on web
-#if(CASE_SENSITIVE_SYSTEM == 1)
-     if ( suffix == "cob"  || suffix == "cbl" || suffix == "cobol")
-#else //It is a case insensitive system
-     if ( suffix == "cob"  || suffix == "cbl" || suffix == "cobol")
-#endif
-        {
-          returnValue = true;
-        }
-
-     return returnValue;
-   }
-
 // TV (05/17/2010) Support for CUDA
 bool
 CommandlineProcessing::isCudaFileNameSuffix ( const std::string & suffix )
@@ -1103,39 +977,6 @@ CommandlineProcessing::isOpenCLFileNameSuffix ( const std::string & suffix )
 
      return returnValue;
    }
-
-bool
-CommandlineProcessing::isJavaFileNameSuffix ( const std::string & suffix )
-   {
-     bool returnValue = false;
-
-  // For now define CASE_SENSITIVE_SYSTEM to be true, as we are currently a UNIXish project.
-
-#if(CASE_SENSITIVE_SYSTEM == 1)
-     if ( suffix == "java" )
-#else//It is a case insensitive system
-     if ( suffix == "java" )
-#endif
-        {
-          returnValue = true;
-        }
-
-     return returnValue;
-   }
-
-bool
-CommandlineProcessing::isX10FileNameSuffix (const std::string & suffix)
-{
-  bool returnValue = false;
-
-  if (suffix == "x10" ||
-      suffix == "X10")
-  {
-      returnValue = true;
-  }
-
-  return returnValue;
-}
 
 void
 CommandlineProcessing::initSourceFileSuffixList ( )
@@ -1185,10 +1026,6 @@ CommandlineProcessing::initSourceFileSuffixList ( )
 
        // Liao (6/6/2008)  Support for UPC
           validSourceFileSuffixes.push_back(".upc");
-          validSourceFileSuffixes.push_back(".php");
-
-       // driscoll6 (06/02/2011): Adding support for Python
-          validSourceFileSuffixes.push_back(".py");
 
        // TV (05/17/2010) Support for CUDA
           validSourceFileSuffixes.push_back(".cu");
@@ -1197,8 +1034,6 @@ CommandlineProcessing::initSourceFileSuffixList ( )
           validSourceFileSuffixes.push_back(".ocl");
           validSourceFileSuffixes.push_back(".cl");
 
-       // DQ (10/11/2010): Adding support for java.
-          validSourceFileSuffixes.push_back(".java");
 #else
        // it is a case insensitive system
           validSourceFileSuffixes.push_back(".c");
@@ -1232,10 +1067,6 @@ CommandlineProcessing::initSourceFileSuffixList ( )
           validSourceFileSuffixes.push_back(".rmod");
 
           validSourceFileSuffixes.push_back(".upc");
-          validSourceFileSuffixes.push_back(".php");
-
-       // driscoll6 (06/02/2011): Adding support for Python
-          validSourceFileSuffixes.push_back(".py");
 
        // TV (05/17/2010) Support for CUDA
           validSourceFileSuffixes.push_back(".cu");
@@ -1244,11 +1075,7 @@ CommandlineProcessing::initSourceFileSuffixList ( )
           validSourceFileSuffixes.push_back(".ocl");
           validSourceFileSuffixes.push_back(".cl");
 
-       // DQ (10/11/2010): Adding support for java.
-          validSourceFileSuffixes.push_back(".java");
 #endif
-          validSourceFileSuffixes.push_back(".x10");
-          validSourceFileSuffixes.push_back(".X10");
           first_call = false;
         }
    }

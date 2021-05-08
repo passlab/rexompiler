@@ -2108,12 +2108,6 @@ Unparse_ExprStmt::unparseLanguageSpecificStatement(SgStatement* stmt, SgUnparse_
           case V_SgOmpForStatement:                      unparseOmpForStatement(stmt, info); break;
           case V_SgOmpForSimdStatement:                  unparseOmpForSimdStatement(stmt, info); break;
 
-       // DQ (4/16/2011): Added Java specific IR node until we support the Java specific unparsing.
-          case V_SgJavaImportStatement:
-               printf ("Unsupported Java specific unparsing for import statement \n");
-            // unparseForStmt(stmt, info);
-               break;
-
        // DQ (7/25/2014): Adding support for C11 static assertions.
           case V_SgStaticAssertionDeclaration:          unparseStaticAssertionDeclaration (stmt, info);    break;
 
@@ -9603,6 +9597,8 @@ Unparse_ExprStmt::unparseClassDefnStmt(SgStatement* stmt, SgUnparse_Info& info)
 
 #error "DEAD CODE!"
 
+#error "DEAD CODE!"
+
                  curprint(nameQualifier.str());
                  curprint(nr_decl->get_name().str());
                } else {
@@ -13025,9 +13021,18 @@ Unparse_ExprStmt::unparseOmpBeginDirectiveClauses (SgStatement* stmt,     SgUnpa
   // optional clauses
   SgOmpClauseBodyStatement* bodystmt= isSgOmpClauseBodyStatement(stmt);
   SgOmpDeclareSimdStatement* simdstmt= isSgOmpDeclareSimdStatement(stmt);
-  if (bodystmt||simdstmt)
+  //if (bodystmt||simdstmt)
+  SgOmpClauseStatement* clausestmt= isSgOmpClauseStatement(stmt);
+  if (bodystmt||simdstmt||clausestmt)
   {
-    const SgOmpClausePtrList& clause_ptr_list = bodystmt?bodystmt->get_clauses():simdstmt->get_clauses();
+    //const SgOmpClausePtrList& clause_ptr_list = bodystmt?bodystmt->get_clauses():simdstmt->get_clauses();
+    SgOmpClausePtrList clause_ptr_list; 
+    if(clausestmt){
+      clause_ptr_list = clausestmt->get_clauses();
+    }
+    else{
+      clause_ptr_list = bodystmt?bodystmt->get_clauses():simdstmt->get_clauses();
+    }
     SgOmpClausePtrList::const_iterator i;
     for (i= clause_ptr_list.begin(); i!= clause_ptr_list.end(); i++)
     {

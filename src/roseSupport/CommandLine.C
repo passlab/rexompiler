@@ -1,10 +1,6 @@
 #include <sage3basic.h>
 #include <CommandLine.h>
 #include <Diagnostics.h>
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-#include <Rose/BinaryAnalysis/SmtCommandLine.h>
-#endif
-
 #include <boost/algorithm/string/predicate.hpp>
 
 using namespace Sawyer::Message::Common;
@@ -184,17 +180,6 @@ genericSwitches() {
                     StringUtility::numberToString(genericSwitchArgs.threads) + ". A value of zero means use the "
                     "same number of threads as there is hardware concurrency (or one thread if the hardware "
                     "concurrency can't be determined)."));
-
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-    // Global SMT solver name. This is used by any analysis that needs a solver and for which the user hasn't told that
-    // specific analysis which solver to use. Specific analyses may override this global solver with other command-line
-    // switches. The value "list" means generate a list of available solvers. So far this is only impelemented for the SMT
-    // solvers used by binary analysis, but the intention is that it would be available for all parts of ROSE.
-    gen.insert(Switch("smt-solver")
-               .argument("name", anyParser(genericSwitchArgs.smtSolver))
-               .action(BinaryAnalysis::SmtSolverValidator::instance())
-               .doc(BinaryAnalysis::smtSolverDocumentationString(genericSwitchArgs.smtSolver)));
-#endif
 
     gen.insert(Switch("self-test")
                .action(SelfTests::instance())

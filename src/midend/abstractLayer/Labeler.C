@@ -325,11 +325,25 @@ int Labeler::numberOfAssociatedLabels(SgNode* node) {
   case V_SgOmpDoStatement:
   case V_SgOmpFlushStatement:
   case V_SgOmpMasterStatement:
+  case V_SgOmpTaskyieldStatement:
+  case V_SgOmpMetadirectiveStatement:
+  case V_SgOmpTeamsStatement:
+  case V_SgOmpCancellationPointStatement:
+  case V_SgOmpDeclareMapperStatement:
+  case V_SgOmpCancelStatement:
+  case V_SgOmpTaskgroupStatement:
+  case V_SgOmpDistributeStatement:
+  case V_SgOmpLoopStatement:
+  case V_SgOmpScanStatement:
+  case V_SgOmpTaskloopStatement:
+  case V_SgOmpTargetEnterDataStatement:
+  case V_SgOmpTargetExitDataStatement:
   case V_SgOmpOrderedStatement:
   case V_SgOmpSectionStatement:
   case V_SgOmpSingleStatement:
   case V_SgOmpTargetDataStatement:
   case V_SgOmpTargetStatement:
+  case V_SgOmpTargetParallelForStatement:
   case V_SgOmpTaskStatement:
   case V_SgOmpTaskwaitStatement:
   case V_SgOmpThreadprivateStatement:

@@ -59,46 +59,18 @@
 #include <numeric>   // for std::accumulate
 #include <map>
 
-#ifdef ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
-#   include "jni.h"
-
-namespace Rose {
-    namespace Frontend {
-        namespace Java {
-            namespace Ecj {
-
-                extern jclass currentJavaTraversalClass;
-                extern JNIEnv *currentEnvironment;
-                extern jmethodID mainMethod;
-                extern jmethodID hasConflictsMethod;
-                extern jmethodID getTempDirectoryMethod;
-                extern jmethodID createTempFileMethod;
-                extern jmethodID createTempNamedFileMethod;
-                extern jmethodID createTempNamedDirectoryMethod;
-
-            } // ::Rose::Frontend::Java::Ecj
-        }// ::Rose::frontend::java
-    }// ::Rose::frontend
-}// ::Rose
-
-using namespace Rose::Frontend::Java::Ecj;
-
-#endif
-
-
 // DQ (11/5/2019): Added to support SageInterface::statementCanBeTransformed().
 namespace EDG_ROSE_Translation
    {
   // DQ (9/18/2018): Declare this map so that we can use it for the unparse header files option.
 #if defined(ROSE_BUILD_CXX_LANGUAGE_SUPPORT) && !defined(ROSE_USE_CLANG_FRONTEND)
   // DQ (12/11/2018): Use the definition in the EDG edgRose.C file if C/C++ support IS defined.
-     extern std::map<std::string, SgIncludeFile*> edg_include_file_map;
+    extern std::map<std::string, SgIncludeFile*> edg_include_file_map;
 #else
   // DQ (12/11/2018): Allow this to be the definition if C/C++ support is NOT defined.
-     std::map<std::string, SgIncludeFile*> edg_include_file_map;
+    std::map<std::string, SgIncludeFile*> edg_include_file_map;
 #endif
-   }
-
+  }
 
 
 // DQ (12/1/2015): Added to support macro handling.
@@ -1494,17 +1466,7 @@ SageInterface::get_name ( const SgDeclarationStatement* declaration )
 
           case V_SgClassDeclaration:
           case V_SgDerivedTypeStatement:
-          case V_SgJovialTableStatement:
                name = isSgClassDeclaration(declaration)->get_name().str();
-               break;
-
-       // Rasmussen (8/2/2019): Added SgJovialDefineDeclaration and SgJovialDirectiveStatement
-       // I'm not sure class_name() is correct. Probably get_name() should be fixed.
-          case V_SgJovialDefineDeclaration:
-          case V_SgJovialDirectiveStatement:
-          case V_SgJovialCompoolStatement:
-               name = "__" + declaration->class_name() + "_";
-               name += StringUtility::numberToString(declaration);
                break;
 
           case V_SgEnumDeclaration:
@@ -1813,37 +1775,6 @@ SageInterface::get_name ( const SgDeclarationStatement* declaration )
                break;
              }
 
-        // DQ (4/16/2011): Added Java import statment support.
-           case V_SgJavaImportStatement:
-             {
-               name = "_java_import_stmt_";
-               const SgJavaImportStatement* statement = isSgJavaImportStatement(declaration);
-               ROSE_ASSERT(statement != NULL);
-               ROSE_ASSERT(statement->get_parent() != NULL);
-               name += StringUtility::numberToString(const_cast<SgJavaImportStatement*>(statement));
-               break;
-             }
-
-           case V_SgJavaPackageDeclaration:
-             {
-               name = "_java_package_declaration_";
-               const SgJavaPackageDeclaration* package_declaration = isSgJavaPackageDeclaration(declaration);
-               ROSE_ASSERT(package_declaration != NULL);
-               ROSE_ASSERT(package_declaration->get_parent() != NULL);
-               name += StringUtility::numberToString(const_cast<SgJavaPackageDeclaration*>(package_declaration));
-               break;
-             }
-
-           case V_SgJavaPackageStatement:
-             {
-               name = "_java_package_stmt_";
-               const SgJavaPackageStatement* statement = isSgJavaPackageStatement(declaration);
-               ROSE_ASSERT(statement != NULL);
-               ROSE_ASSERT(statement->get_parent() != NULL);
-               name += StringUtility::numberToString(const_cast<SgJavaPackageStatement*>(statement));
-               break;
-             }
-
        // DQ (1/21/2018): Added case for C++11 SgStaticAssertionDeclaration
           case V_SgStaticAssertionDeclaration:
              {
@@ -1871,26 +1802,6 @@ SageInterface::get_name ( const SgDeclarationStatement* declaration )
                name = string("emptyDeclaration") + StringUtility::numberToString(const_cast<SgDeclarationStatement*>(declaration));
                break;
              }
-
-          case V_SgAdaPackageSpecDecl:
-            {
-              name = "_ada_package_spec_decl_" + genericGetName(isSgAdaPackageSpecDecl(declaration));
-              break;
-            }
-
-          case V_SgAdaPackageBodyDecl:
-            {
-              name = "_ada_package_body_decl_" + genericGetName(isSgAdaPackageBodyDecl(declaration));
-              break;
-            }
-
-          case V_SgAdaComponentClause:
-            {
-              name = "_ada_component_clause_";
-              break;
-            }
-
-
        // Note that the case for SgVariableDeclaration is not implemented
           default:
             // name = "default name (default case reached: not handled)";
@@ -1934,22 +1845,12 @@ SageInterface::get_name ( const SgScopeStatement* scope )
           case V_SgNamespaceDefinitionStatement:
                name = get_name(isSgNamespaceDefinitionStatement(scope)->get_namespaceDeclaration());
                break;
-          case V_SgJavaLabelStatement:
-               name = (isSgJavaLabelStatement(scope)->get_label()).getString();
-               break;
 
        // DQ (7/18/2017): Added support for the new declaration scope.
           case V_SgDeclarationScope:
 
        // DQ (11/30/2007): Added more fortran support.
           case V_SgAssociateStatement:
-          case V_SgJavaForEachStatement:
-
-          case V_SgAdaPackageSpec:
-          case V_SgAdaPackageBody:
-          case V_SgAdaAcceptStmt:
-          case V_SgJovialForThenStatement: //Rasmussen: Jovial for statement
-          case V_SgMatlabForStatement: //SK: Matlab for statement
           case V_SgBasicBlock:
           case V_SgCatchOptionStmt:
           case V_SgDoWhileStmt:
@@ -2083,9 +1984,6 @@ SageInterface::get_name ( const SgSupport* node )
        // DQ (5/31/2007): Implemented case for SgFile
        // case V_SgFile:
           case V_SgSourceFile:
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-          case V_SgBinaryComposite:
-#endif
              {
                name = "_file_";
 
@@ -4085,14 +3983,6 @@ SageInterface::rebuildSymbolTable ( SgScopeStatement* scope )
                break;
              }
 
-        case V_SgJovialForThenStatement:
-        case V_SgMatlabForStatement:
-          {
-            return;
-            break;
-          }
-
-
        // DQ (12/23/2012): Added support for templates.
           case V_SgTemplateFunctionDefinition:
 
@@ -4220,23 +4110,6 @@ SageInterface::rebuildSymbolTable ( SgScopeStatement* scope )
           case V_SgFortranDo: // Liao 12/19/2008, My understanding is that Fortran do loop header does not introduce new symbols like  a C/C++ for loop does
              {
             // printf ("Used the list of statements/declarations that are held deirectly by this scope \n");
-               break;
-             }
-
-       // DQ (3/29/2014): Added support for SgJavaForEachStatement.
-          case V_SgJavaForEachStatement:
-             {
-               SgJavaForEachStatement* javaForEachStatement = isSgJavaForEachStatement(scope);
-               SgVariableDeclaration* variableDeclarationCondition = isSgVariableDeclaration(javaForEachStatement->get_element());
-               if (variableDeclarationCondition != NULL)
-                  {
-                 // There is a variable declaration in the conditional, it needs to be added to the symbol table.
-                 // printf ("There is a variable declaration in the while statement condition, it needs to be added to the symbol table \n");
-                 // ROSE_ASSERT(false);
-
-                    supportForVariableDeclarations ( scope, symbolTable, variableDeclarationCondition );
-                  }
-               return;
                break;
              }
 
@@ -4957,10 +4830,6 @@ SageInterface::generateFileList()
   // traverse just the SgFile nodes (both the SgSourceFile and SgBinaryComposite IR nodes)!
   // SgFile::visitRepresentativeNode(fileTraversal);
      SgSourceFile::traverseMemoryPoolNodes(fileTraversal);
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-     SgBinaryComposite::traverseMemoryPoolNodes(fileTraversal);
-#endif
-
   // This would alternatively traverse all IR nodes in thememory pool!
   // fileTraversal.traverseMemoryPool();
 
@@ -5072,33 +4941,9 @@ void SageInterface::addVarRefExpFromArrayDimInfo(SgNode * astNode, Rose_STL_Cont
   } // end for
 }
 
-
 // DQ (11/25/2020): This disables these non-inlined functions in favor of
 // inlined versions of the functions in the sageInterface.h (header file).
 #if (INLINE_OPTIMIZED_IS_LANGUAGE_KIND_FUNCTIONS == 0)
-// Rasmussen (4/8/2018): Added Ada
-bool
-SageInterface::is_Ada_language()
-   {
-#if OPTIMIZE_IS_LANGUAGE_KIND_FUNCTIONS
-  // DQ (11/25/2020): Add support to set this as a specific language kind file (there is at least one language kind file processed by ROSE).
-     return Rose::is_Ada_language;
-#else
-     bool returnValue = false;
-
-     vector<SgFile*> fileList = generateFileList();
-
-     int size = (int)fileList.size();
-     for (int i = 0; i < size; i++)
-        {
-          if (fileList[i]->get_Ada_only() == true)
-               returnValue = true;
-        }
-
-     return returnValue;
-#endif
-   }
-
 bool
 SageInterface::is_C_language()
    {
@@ -5114,29 +4959,6 @@ SageInterface::is_C_language()
      for (int i = 0; i < size; i++)
         {
           if (fileList[i]->get_C_only() == true)
-               returnValue = true;
-        }
-
-     return returnValue;
-#endif
-   }
-
-// Rasmussen (4/8/2018): Added Cobol
-bool
-SageInterface::is_Cobol_language()
-   {
-#if OPTIMIZE_IS_LANGUAGE_KIND_FUNCTIONS
-  // DQ (11/25/2020): Add support to set this as a specific language kind file (there is at least one language kind file processed by ROSE).
-     return Rose::is_Cobol_language;
-#else
-     bool returnValue = false;
-
-     vector<SgFile*> fileList = generateFileList();
-
-     int size = (int)fileList.size();
-     for (int i = 0; i < size; i++)
-        {
-          if (fileList[i]->get_Cobol_only() == true)
                returnValue = true;
         }
 
@@ -5279,7 +5101,7 @@ SageInterface::is_Cxx_language()
           if (fileList[i]->get_Cxx_only() == true)
              {
             // ROSE_ASSERT(fileList[i]->get_Cxx_only() == true);
-               ROSE_ASSERT(fileList[i]->get_Fortran_only() == false && fileList[i]->get_C99_only() == false && fileList[i]->get_C_only() == false && fileList[i]->get_binary_only() == false);
+               ROSE_ASSERT(fileList[i]->get_Fortran_only() == false && fileList[i]->get_C99_only() == false && fileList[i]->get_C_only() == false);
 
                returnValue = true;
              }
@@ -5288,52 +5110,6 @@ SageInterface::is_Cxx_language()
      return returnValue;
 #endif
    }
-
-bool
-SageInterface::is_Java_language()
-   {
-#if OPTIMIZE_IS_LANGUAGE_KIND_FUNCTIONS
-  // DQ (11/25/2020): Add support to set this as a specific language kind file (there is at least one language kind file processed by ROSE).
-     return Rose::is_Java_language;
-#else
-     bool returnValue = false;
-
-     vector<SgFile*> fileList = generateFileList();
-
-     int size = (int)fileList.size();
-     for (int i = 0; i < size; i++)
-        {
-          if (fileList[i]->get_Java_only() == true)
-               returnValue = true;
-        }
-
-     return returnValue;
-#endif
-   }
-
-// Rasmussen (4/4/2018): Added Jovial
-bool
-SageInterface::is_Jovial_language()
-   {
-#if OPTIMIZE_IS_LANGUAGE_KIND_FUNCTIONS
-  // DQ (11/25/2020): Add support to set this as a specific language kind file (there is at least one language kind file processed by ROSE).
-     return Rose::is_Jovial_language;
-#else
-     bool returnValue = false;
-
-     vector<SgFile*> fileList = generateFileList();
-
-     int size = (int)fileList.size();
-     for (int i = 0; i < size; i++)
-        {
-          if (fileList[i]->get_Jovial_only() == true)
-               returnValue = true;
-        }
-
-     return returnValue;
-#endif
-   }
-
 
 bool
 SageInterface::is_Fortran_language()
@@ -5350,73 +5126,6 @@ SageInterface::is_Fortran_language()
      for (int i = 0; i < size; i++)
         {
           if (fileList[i]->get_Fortran_only() == true)
-               returnValue = true;
-        }
-
-     return returnValue;
-#endif
-   }
-
-
-bool
-SageInterface::is_binary_executable()
-   {
-#if OPTIMIZE_IS_LANGUAGE_KIND_FUNCTIONS
-  // DQ (11/25/2020): Add support to set this as a specific language kind file (there is at least one language kind file processed by ROSE).
-     return Rose::is_binary_executable;
-#else
-     bool returnValue = false;
-
-     vector<SgFile*> fileList = generateFileList();
-
-     int size = (int)fileList.size();
-     for (int i = 0; i < size; i++)
-        {
-          if (fileList[i]->get_binary_only() == true)
-               returnValue = true;
-        }
-
-     return returnValue;
-#endif
-   }
-
-bool
-SageInterface::is_PHP_language()
-   {
-#if OPTIMIZE_IS_LANGUAGE_KIND_FUNCTIONS
-  // DQ (11/25/2020): Add support to set this as a specific language kind file (there is at least one language kind file processed by ROSE).
-     return Rose::is_PHP_language;
-#else
-     bool returnValue = false;
-
-     vector<SgFile*> fileList = generateFileList();
-
-     int size = (int)fileList.size();
-     for (int i = 0; i < size; i++)
-        {
-          if (fileList[i]->get_PHP_only() == true)
-               returnValue = true;
-        }
-
-     return returnValue;
-#endif
-   }
-
-bool
-SageInterface::is_Python_language()
-   {
-#if OPTIMIZE_IS_LANGUAGE_KIND_FUNCTIONS
-  // DQ (11/25/2020): Add support to set this as a specific language kind file (there is at least one language kind file processed by ROSE).
-     return Rose::is_Python_language;
-#else
-     bool returnValue = false;
-
-     vector<SgFile*> fileList = generateFileList();
-
-     int size = (int)fileList.size();
-     for (int i = 0; i < size; i++)
-        {
-          if (fileList[i]->get_Python_only() == true)
                returnValue = true;
         }
 
@@ -5468,27 +5177,6 @@ SageInterface::is_OpenCL_language()
 #endif
    }
 
-bool
-SageInterface::is_X10_language()
-   {
-#if OPTIMIZE_IS_LANGUAGE_KIND_FUNCTIONS
-  // DQ (11/25/2020): Add support to set this as a specific language kind file (there is at least one language kind file processed by ROSE).
-     return Rose::is_X10_language;
-#else
-     bool returnValue = false;
-
-     vector<SgFile*> fileList = generateFileList();
-
-     int size = (int)fileList.size();
-     for (int i = 0; i < size; i++)
-       {
-         if (fileList[i]->get_X10_only() == true)
-              returnValue = true;
-       }
-
-     return returnValue;
-#endif
-}
 // for if (INLINE_OPTIMIZED_IS_LANGUAGE_KIND_FUNCTIONS == 0)
 #endif
 
@@ -5526,7 +5214,7 @@ bool SageInterface::is_language_case_insensitive()
 // definitions may be declared at the end of other procedures.
 bool SageInterface::language_may_contain_nondeclarations_in_scope()
    {
-      return is_Fortran_language() || is_Python_language();
+      return is_Fortran_language();
    }
 
 // #endif
@@ -7675,15 +7363,10 @@ bool SageInterface::isMain(const SgNode* n)
    else {
       if (isSgFunctionDeclaration(n) != NULL) {
          bool either = false;
-         if (SageInterface::is_Java_language()) {
+         const SgStatement* stmnt = isSgStatement(n);
+         ROSE_ASSERT(stmnt != NULL);
+         if (isSgGlobal(stmnt->get_scope())) {
             either = true;
-         }
-         else {
-            const SgStatement* stmnt = isSgStatement(n);
-            ROSE_ASSERT(stmnt != NULL);
-            if (isSgGlobal(stmnt->get_scope())) {
-               either = true;
-            }
          }
          if (either) {
             const SgFunctionDeclaration* funcDefn = isSgFunctionDeclaration(n);
@@ -9342,7 +9025,7 @@ SgFile * SageInterface::getEnclosingFileNode(SgNode* astNode)
 
      SgNode* parent = astNode;
   // while ( (parent != NULL) && (isSgFile(parent) == NULL) )
-     while ( (parent != NULL) && (isSgFile(parent) == NULL) && isSgJavaPackageDeclaration(parent) == NULL)
+     while ( (parent != NULL) && (isSgFile(parent) == NULL) )
         {
 #if 0
           printf ("In getEnclosingFileNode(): parent = %p = %s \n",parent,parent->class_name().c_str());
@@ -9353,7 +9036,7 @@ SgFile * SageInterface::getEnclosingFileNode(SgNode* astNode)
           parent = parent->get_parent();
         }
 
-     if (previous_previous_parent != NULL && previous_parent != NULL && isSgJavaPackageDeclaration(parent) != NULL)
+     if (previous_previous_parent != NULL && previous_parent != NULL )
         {
        // This is for a Java program and is contained within a SgJavaPackageDeclaration
 #if 0
@@ -9424,26 +9107,6 @@ SgFile * SageInterface::getEnclosingFileNode(SgNode* astNode)
         }
        else
         {
-       // previous_parent was uninitialized to a non-null value or astNode is a SgJavaPackageDeclaration or SgFile.
-          if (previous_parent == NULL && isSgJavaPackageDeclaration(parent) != NULL)
-             {
-            // The input was a SgJavaPackageDeclaration (so there is no associated SgFile).
-               ROSE_ASSERT(isSgJavaPackageDeclaration(astNode) != NULL);
-               return NULL;
-             }
-            else
-             {
-               if (previous_previous_parent == NULL && isSgJavaPackageDeclaration(parent) != NULL)
-                  {
-                 // The input was a SgClassDefinition (so there is no associated SgFile).
-                    ROSE_ASSERT(isSgClassDefinition(astNode) != NULL);
-                    return NULL;
-                  }
-                 else
-                  {
-                 // This could be a C/C++ file (handled below).
-                  }
-             }
         }
 
   // This is where we handle the C/C++ files.
@@ -10879,23 +10542,8 @@ void SageInterface::replaceExpression(SgExpression* oldExp, SgExpression* newExp
     ROSE_ASSERT (isSgForStatement(parent)->get_increment() == oldExp);
     isSgForStatement(parent)->set_increment(newExp);
     // TODO: any other cases here??
-  } else if(SgMatlabForStatement *matlabFor = isSgMatlabForStatement(parent)) {
-    if(matlabFor->get_index() == oldExp)
-      matlabFor->set_index(newExp);
-    else if(matlabFor->get_range() == oldExp)
-      matlabFor->set_range(newExp);
-    else
-      ROSE_ASSERT(!"sub-expression not found");
-  } else if(SgJovialForThenStatement *jovFor = isSgJovialForThenStatement(parent)) {
-    if(jovFor->get_initialization() == oldExp)
-      jovFor->set_initialization(newExp);
-    else if(jovFor->get_while_expression() == oldExp)
-      jovFor->set_while_expression(newExp);
-    else if(jovFor->get_by_or_then_expression() == oldExp)
-      jovFor->set_by_or_then_expression(newExp);
-    else
-      ROSE_ASSERT(!"sub-expression not found");
-  } else if (SgRangeExp* rngexp = isSgRangeExp(parent)) {
+  }
+  else if (SgRangeExp* rngexp = isSgRangeExp(parent)) {
     if (rngexp->get_start() == oldExp)
       rngexp->set_start(newExp);
     else if (rngexp->get_end() == oldExp)
@@ -11021,12 +10669,12 @@ bool SageInterface::isEqualToIntConst(SgExpression* e, int value) {
      result = true;
    else
     {
-      if (is_C_language()||is_C99_language()||is_PHP_language()||is_Cuda_language()||is_OpenCL_language()||is_Python_language())
+      if (is_C_language()||is_C99_language()||is_Cuda_language()||is_OpenCL_language())
       {
         if (func1->get_name() == func2->get_name())
           result = true;
       }
-      else if (is_Cxx_language() || is_Java_language())
+      else if (is_Cxx_language())
       {
          if (func1->get_qualified_name().getString() +
             func1->get_mangled_name().getString() ==
@@ -11158,19 +10806,6 @@ SgScopeStatement* SageInterface::findEnclosingLoop(SgStatement* s, const std::st
       case V_SgSwitchStatement: {
         if (stopOnSwitches) return sc;
         break;
-      }
-      case V_SgJavaForEachStatement: {
-          if (label.empty()) {
-                  return sc;
-          }
-          break;
-      }
-      case V_SgJavaLabelStatement: {
-          if (label.empty() ||
-                          label == isSgJavaLabelStatement(sc)->get_label().getString()) {
-            return sc;
-          }
-          break;
       }
       default: continue;
     }
@@ -15779,25 +15414,15 @@ PreprocessingInfo* SageInterface::attachComment(
              // Comment = "/* "+ content + " */";
                 mytype = PreprocessingInfo::C_StyleComment;
              }
-          else if (is_Cxx_language() || is_Java_language())
+          else if (is_Cxx_language())
              {
              // Comment = "// "+ content;
                 mytype = PreprocessingInfo::CplusplusStyleComment;
              }
-          else if (is_Fortran_language() || is_CAF_language()) //FMZ:3/23/2009
+          else if (is_Fortran_language()) //FMZ:3/23/2009
              {
              // Comment = "! "+ content;
                 mytype = PreprocessingInfo::F90StyleComment;
-             }
-          else if (is_Ada_language())
-             {
-             // Comment = "-- " + content;
-                mytype = PreprocessingInfo::AdaStyleComment;
-             }
-          else if (is_Jovial_language())
-             {
-             // Comment = "% " + content + " %";
-                mytype = PreprocessingInfo::JovialStyleComment;
              }
           else
              {
@@ -15814,8 +15439,6 @@ PreprocessingInfo* SageInterface::attachComment(
           case PreprocessingInfo::CplusplusStyleComment: comment = "// " + content;         break;
           case PreprocessingInfo::FortranStyleComment:   comment = "      C " + content;    break;
           case PreprocessingInfo::F90StyleComment:       comment = "!"   + content;         break;
-          case PreprocessingInfo::AdaStyleComment:       comment = "-- " + content;         break;
-          case PreprocessingInfo::JovialStyleComment:    comment = "% "  + content + " %";  break;
           case PreprocessingInfo::CpreprocessorLineDeclaration:
                comment = "#myline " + content;
                mytype = PreprocessingInfo::CplusplusStyleComment;
@@ -18115,12 +17738,6 @@ void SageInterface::replaceSubexpressionWithStatement(SgExpression* from, Statem
     return name->get_storageModifier().isMutable();
   }
 
-  // True if a parameter name is a Jovial output parameter
-  bool SageInterface::isJovialOutParam(SgInitializedName* name)
-  {
-    return isMutable(name);
-  }
-
   // Get a vector of Jovial input parameters from the function parameter list
   // TODO: Look into making this work for Fortran
   std::vector<SgInitializedName*> SageInterface::getInParameters(const SgInitializedNamePtrList &params)
@@ -18128,7 +17745,7 @@ void SageInterface::replaceSubexpressionWithStatement(SgExpression* from, Statem
     std::vector<SgInitializedName*> in_params;
     BOOST_FOREACH (SgInitializedName* name, params)
       {
-        if (!isJovialOutParam(name)) in_params.push_back(name);
+        if (!isMutable(name)) in_params.push_back(name);
       }
     return in_params;
   }
@@ -18140,7 +17757,7 @@ void SageInterface::replaceSubexpressionWithStatement(SgExpression* from, Statem
     std::vector<SgInitializedName*> out_params;
     BOOST_FOREACH (SgInitializedName* name, params)
       {
-        if (isJovialOutParam(name)) out_params.push_back(name);
+        if (isMutable(name)) out_params.push_back(name);
       }
     return out_params;
   }
@@ -18172,48 +17789,6 @@ void SageInterface::replaceSubexpressionWithStatement(SgExpression* from, Statem
     ROSE_ASSERT (!"Bad kind return in getIntegerConstantValue");
         return 0;
   }
-
-
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-// tps : 28 Oct 2008 - support for finding the main interpretation
-// rpm : 18 Sep 2009 - rewritten to support multiple files per interpretation
-/** Returns the "main" interpretation. "Main" is defined as the first interpretation that points to a header of the supplied
- *  file. If the supplied file has more than one header then the interpretation must point to this file's PE header. */
-SgAsmInterpretation *
-SageInterface::getMainInterpretation(SgAsmGenericFile *file)
-{
-    SgBinaryComposite *binary = getEnclosingNode<SgBinaryComposite>(file);
-    ROSE_ASSERT(binary!=NULL);
-
-    /* Find the only header or the PE header of this file */
-    SgAsmGenericHeader *requisite_header = NULL; /*the returned interpretation must point to this header*/
-    const SgAsmGenericHeaderPtrList &headers = file->get_headers()->get_headers();
-    if (1==headers.size()) {
-        requisite_header = headers[0];
-    } else {
-        for (SgAsmGenericHeaderPtrList::const_iterator hi=headers.begin(); hi!=headers.end(); ++hi) {
-            if (isSgAsmPEFileHeader(*hi)) {
-                requisite_header = isSgAsmPEFileHeader(*hi);
-                break;
-            }
-        }
-    }
-    ROSE_ASSERT(requisite_header!=NULL);
-
-    /* Find an interpretation that points to this header */
-    const SgAsmInterpretationPtrList &interps = binary->get_interpretations()->get_interpretations();
-    for (SgAsmInterpretationPtrList::const_iterator ii=interps.begin(); ii!=interps.end(); ++ii) {
-        const SgAsmGenericHeaderPtrList &headers = (*ii)->get_headers()->get_headers();
-        for (SgAsmGenericHeaderPtrList::const_iterator hi=headers.begin(); hi!=headers.end(); ++hi) {
-            if ((*hi)==requisite_header)
-                return *ii;
-        }
-    }
-
-    ROSE_ASSERT(!"no appropriate interpretation");
-    return NULL;
-}
-#endif
 
 class CollectDependentDeclarationsCopyType : public SgCopyHelp
    {
@@ -21226,7 +20801,7 @@ static void moveOneStatement(SgScopeStatement* sourceBlock, SgScopeStatement* ta
               nondef_decl->set_scope(targetBlock);
           }
       }
-      else if (isSgJovialTableStatement(stmt) || isSgTypedefDeclaration(stmt) || isSgEnumDeclaration(stmt))
+      else if (isSgTypedefDeclaration(stmt) || isSgEnumDeclaration(stmt))
       {
         // Rasmussen 9/21/2020,10/27/2020,11/4/2020: Uncovered by issues RC-135 and RC-227.
         // The issues are fixed in the switch statement below but this test is needed
@@ -21295,20 +20870,6 @@ static void moveOneStatement(SgScopeStatement* sourceBlock, SgScopeStatement* ta
                 }
               }
             }
-            else if (isSgJovialTableType(var_type))
-            {
-              SgJovialTableType* table_type = isSgJovialTableType(var_type);
-              SgDeclarationStatement* decl = table_type->get_declaration();
-              if (decl->get_scope() == sourceBlock)
-              {
-                // Needs to be moved
-                SgDeclarationStatement* def_decl = decl->get_definingDeclaration();
-                SgDeclarationStatement* nondef_decl = decl->get_firstNondefiningDeclaration();
-                def_decl->set_scope(targetBlock);
-                nondef_decl->set_scope(targetBlock);
-                nondef_decl->set_parent(targetBlock);
-              }
-            }
 
             // Must also move the symbol into the source block, Liao 2019/8/14
             SgVariableSymbol* var_sym = isSgVariableSymbol(init_name -> search_for_symbol_from_symbol_table ()) ;
@@ -21370,19 +20931,6 @@ static void moveOneStatement(SgScopeStatement* sourceBlock, SgScopeStatement* ta
             }
           break;
         }
-      case V_SgJovialTableStatement:
-        {
-          // Rasmussen 9/21/2020: Needed for issue RC-135
-          SgJovialTableStatement* table = isSgJovialTableStatement(declaration);
-          ROSE_ASSERT (table);
-
-          SgDeclarationStatement* def_decl = table->get_definingDeclaration();
-          SgDeclarationStatement* nondef_decl = table->get_firstNondefiningDeclaration();
-          nondef_decl->set_parent(targetBlock);
-          nondef_decl->set_scope(targetBlock);
-          def_decl->set_scope(targetBlock);
-          break;
-        }
       case V_SgTypedefDeclaration: // Rasmussen (10/19/2020)
         {
           // Rasmussen 10/19/2020: Needed for issue RC-227
@@ -21395,8 +20943,6 @@ static void moveOneStatement(SgScopeStatement* sourceBlock, SgScopeStatement* ta
       case V_SgAttributeSpecificationStatement:
       case V_SgEmptyDeclaration:
       case V_SgFortranIncludeLine:
-      case V_SgJovialDefineDeclaration:
-      case V_SgJovialDirectiveStatement:
       case V_SgPragmaDeclaration:
         break;
       default:
@@ -21508,26 +21054,6 @@ static void createAliasSymbols (SgNamespaceDeclarationStatement* decl)
     SgAliasSymbol* asym = new SgAliasSymbol (orig_sym);
     global_def->get_symbol_table()->insert (asym->get_name(), asym);
   }
-}
-
-//TODO: now with more types, we need to use template functions
-void SageInterface::moveStatementsBetweenBlocks ( SgAdaPackageSpec * sourceBlock, SgNamespaceDefinitionStatement* targetBlock )
-{
-  moveDeclarationsBetweenScopes(sourceBlock, targetBlock);
-  //create alias symbols in its global definition
-  createAliasSymbols(isSgNamespaceDeclarationStatement(targetBlock->get_parent()));
-}
-
-void SageInterface::moveStatementsBetweenBlocks ( SgAdaPackageBody* sourceBlock, SgNamespaceDefinitionStatement* targetBlock )
-{
-  moveStatementsBetweenScopes(sourceBlock, targetBlock);
-  //create alias symbols in its global definition
-  createAliasSymbols(isSgNamespaceDeclarationStatement(targetBlock->get_parent()));
-}
-
-void SageInterface::moveStatementsBetweenBlocks ( SgNamespaceDefinitionStatement* sourceBlock, SgNamespaceDefinitionStatement* targetBlock )
-{
-  moveDeclarationsBetweenScopes(sourceBlock, targetBlock);
 }
 
 void
@@ -23519,295 +23045,6 @@ bool SageInterface::getForLoopInformations(
 
   return true;
 }
-
-//------------------------------------------------------------------------------
-#ifdef ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
-//------------------------------------------------------------------------------
-
-/**
- * Create a temporary directory if it does not yet exist and return its name.
- */
-string SageInterface::getTempDirectory(SgProject *project) {
-    jstring temp_directory = (jstring) Rose::Frontend::Java::Ecj::currentEnvironment -> CallObjectMethod(::currentJavaTraversalClass, Rose::Frontend::Java::Ecj::getTempDirectoryMethod);
-
-    const char *utf8 = Rose::Frontend::Java::Ecj::currentEnvironment -> GetStringUTFChars(temp_directory, NULL);
-    ROSE_ASSERT(utf8);
-    string directory_name = utf8;
-    Rose::Frontend::Java::Ecj::currentEnvironment -> ReleaseStringUTFChars(temp_directory, utf8);
-
-    list<string> sourcepath = project -> get_Java_sourcepath();
-    sourcepath.push_back(directory_name); // push it in the back because it should have lower priority
-    project -> set_Java_sourcepath(sourcepath);
-
-    return directory_name;
-}
-
-
-/**
- * Use the system command to remove a temporary directory and all its containing files.
- */
-void SageInterface::destroyTempDirectory(string directory_name) {
-    string command = string("rm -fr ") + directory_name;
-    int status = system(command.c_str());
-    ROSE_ASSERT(status == 0);
-}
-
-
-/**
- * Invoke JavaRose to translate a given file and put the resulting AST in the global space of the project.
- */
-SgFile* SageInterface::processFile(SgProject *project, string filename, bool unparse /* = false */) {
-    //
-    // Set up the new source file for processing "a la Rose".
-    //
-    project -> get_sourceFileNameList().push_back(filename);
-    Rose_STL_Container<std::string> arg_list = project -> get_originalCommandLineArgumentList();
-    arg_list.push_back(filename);
-    Rose_STL_Container<string> fileList = CommandlineProcessing::generateSourceFilenames(arg_list, false);
-    CommandlineProcessing::removeAllFileNamesExcept(arg_list, fileList, filename);
-    int error_code = 0; // need this because determineFileType takes a reference "error_code" argument.
-    SgFile *file = determineFileType(arg_list, error_code, project);
-    SgSourceFile *sourcefile = isSgSourceFile(file);
-    ROSE_ASSERT(sourcefile);
-    sourcefile -> set_parent(project);
-
-    //
-    // Insert the file into the list of files in the project.
-    //
-    project -> get_fileList_ptr() -> get_listOfFiles().push_back(sourcefile);
-    ROSE_ASSERT(sourcefile == isSgSourceFile((*project)[filename]));
-
-    sourcefile -> build_Java_AST(arg_list, project -> get_originalCommandLineArgumentList());
-
-    if (! unparse) { // if we are not supposed to unparse this file,
-        project -> get_fileList_ptr() -> get_listOfFiles().pop_back(); // remove it from the list of files in the project
-        ROSE_ASSERT(sourcefile != isSgSourceFile((*project)[filename]));
-    }
-
-  // DQ (7/2/2020): Added assertion (fails for snippet tests).
-     ROSE_ASSERT(file->get_preprocessorDirectivesAndCommentsList() != NULL);
-
-    return file;
-}
-
-
-/**
- * Using the package_name, create a file with a package statement, translate it in order to load the package
- * into the project.
- */
-string SageInterface::preprocessPackage(SgProject *project, string package_name) {
-    string command = "package " + package_name + ";";
-
-    //
-    // Call the Java side to create an input file with the relevant package statement; translate the file and return the file name.
-    //
-    jstring temp_file = (jstring) Rose::Frontend::Java::Ecj::currentEnvironment -> CallObjectMethod(Rose::Frontend::Java::Ecj::currentJavaTraversalClass,
-                                                                                                    Rose::Frontend::Java::Ecj::createTempFileMethod,
-                                                                                                    Rose::Frontend::Java::Ecj::currentEnvironment -> NewStringUTF(command.c_str()));
-
-    const char *utf8 = Rose::Frontend::Java::Ecj::currentEnvironment -> GetStringUTFChars(temp_file, NULL);
-    ROSE_ASSERT(utf8);
-    string filename = (string) utf8;
-    Rose::Frontend::Java::Ecj::currentEnvironment -> ReleaseStringUTFChars(temp_file, utf8);
-
-    processFile(project, filename); // translate the file
-
-    return package_name;
-}
-
-
-/**
- * Using the import_string parameter, create a file with the relevant import statement; translate the file and
- * add its AST to the project.
- */
-string SageInterface::preprocessImport(SgProject *project, string import_string) {
-    string command = "import " + import_string + ";";
-
-    //
-    // Call the Java side to create an input file with the relevant import statement.
-    //
-    jstring temp_file = (jstring) Rose::Frontend::Java::Ecj::currentEnvironment -> CallObjectMethod(Rose::Frontend::Java::Ecj::currentJavaTraversalClass,
-                                                                                                    Rose::Frontend::Java::Ecj::createTempFileMethod,
-                                                                                                    Rose::Frontend::Java::Ecj::currentEnvironment -> NewStringUTF(command.c_str()));
-
-    const char *utf8 = Rose::Frontend::Java::Ecj::currentEnvironment -> GetStringUTFChars(temp_file, NULL);
-    ROSE_ASSERT(utf8);
-    string filename = (string) utf8;
-    Rose::Frontend::Java::Ecj::currentEnvironment -> ReleaseStringUTFChars(temp_file, utf8);
-
-    processFile(project, filename); // translate the file
-
-    return import_string;
-}
-
-
-/**
- * Using the file_content string, create a file with the content in question; build its AST and
- * add it to the project.
- */
-SgFile* SageInterface::preprocessCompilationUnit(SgProject *project, string file_name, string file_content, bool unparse /* true */) {
-    //
-    // Call the Java side to create an input file with the relevant import statement.
-    //
-    jstring temp_file = (jstring) Rose::Frontend::Java::Ecj::currentEnvironment -> CallObjectMethod(Rose::Frontend::Java::Ecj::currentJavaTraversalClass,
-                                                                                                    Rose::Frontend::Java::Ecj::createTempNamedFileMethod,
-                                                                                                    Rose::Frontend::Java::Ecj::currentEnvironment -> NewStringUTF(file_name.c_str()),
-                                                                                                    Rose::Frontend::Java::Ecj::currentEnvironment -> NewStringUTF(file_content.c_str()));
-
-    const char *utf8 = Rose::Frontend::Java::Ecj::currentEnvironment -> GetStringUTFChars(temp_file, NULL);
-    ROSE_ASSERT(utf8);
-    string filename = (string) utf8;
-    Rose::Frontend::Java::Ecj::currentEnvironment -> ReleaseStringUTFChars(temp_file, utf8);
-
-    return processFile(project, filename, unparse); // translate the file and unparse it, if requested (unparse=true is the default).
-}
-
-
-/**
- * Look for a qualified package name in the given scope and return its package definition.
- */
-SgClassDefinition *SageInterface::findJavaPackage(SgScopeStatement *scope, string package_name) {
-    ROSE_ASSERT(scope);
-    SgClassDefinition *package_definition = NULL;
-    for (int index = 0, length = package_name.size(); index < length; index++) {
-        int n;
-        for (n = index; n < length; n++) {
-            if (package_name[n] == '.') {
-                break;
-            }
-        }
-        string name = package_name.substr(index, n - index);
-
-        SgClassSymbol *package_symbol = scope -> lookup_class_symbol(name);
-        if (package_symbol == NULL) { // package not found?
-            return NULL;
-        }
-
-        SgJavaPackageDeclaration *package_declaration = isSgJavaPackageDeclaration(package_symbol -> get_declaration() -> get_definingDeclaration());
-        ROSE_ASSERT(package_declaration);
-        package_definition = package_declaration -> get_definition();
-        ROSE_ASSERT(package_definition);
-        scope = package_definition;
-
-        index = n;
-    }
-
-    return package_definition;
-}
-
-
-/**
- * Process a qualified package name, if needed, and return its package definition.
- */
-SgClassDefinition *SageInterface::findOrInsertJavaPackage(SgProject *project, string package_name, bool create_directory /* = false */) {
-    SgGlobal *global_scope = project -> get_globalScopeAcrossFiles();
-    SgClassDefinition *package_definition = findJavaPackage(global_scope, package_name);
-    if (package_definition == NULL) { // try again after loading the package
-        preprocessPackage(project, package_name);
-
-        //
-        // If requested, Create the directory associated with this package_name.
-        //
-        if (create_directory) {
-            Rose::Frontend::Java::Ecj::currentEnvironment -> CallObjectMethod(Rose::Frontend::Java::Ecj::currentJavaTraversalClass,
-                                                                              Rose::Frontend::Java::Ecj::createTempNamedDirectoryMethod,
-                                                                              Rose::Frontend::Java::Ecj::currentEnvironment -> NewStringUTF(package_name.c_str()));
-        }
-
-        package_definition = findJavaPackage(global_scope, package_name);
-    }
-
-    return package_definition;
-}
-
-/**
- * If the class_name already exists in the scope, return it. Otherwise, import it.
- */
-SgClassDeclaration *SageInterface::findOrImportJavaClass(SgProject *project, SgClassDefinition *package_definition, string class_name) {
-    ROSE_ASSERT(package_definition);
-    SgClassSymbol *class_symbol = package_definition -> lookup_class_symbol(class_name);
-    SgClassDeclaration *class_declaration = (class_symbol == NULL
-                                                  ? NULL
-                                                  : isSgClassDeclaration(class_symbol -> get_declaration() -> get_definingDeclaration()));
-    if ((! class_declaration) || (! class_declaration -> attributeExists("complete"))) { // class not available in the scope
-        string qualified_name = package_definition -> get_qualified_name().getString() + "." + class_name;
-        preprocessImport(project, qualified_name);
-        class_symbol = package_definition -> lookup_class_symbol(class_name);
-    }
-
-    class_declaration = (class_symbol == NULL
-                                       ? NULL
-                                       : isSgClassDeclaration(class_symbol -> get_declaration() -> get_definingDeclaration()));
-
-    return class_declaration;
-}
-
-
-/**
- * If the class_name already exists in the scope, return it. Otherwise, import it.
- */
-SgClassDeclaration *SageInterface::findOrImportJavaClass(SgProject *project, string package_name, string class_name) {
-    return findOrImportJavaClass(project, findOrInsertJavaPackage(project, package_name, false), class_name);
-}
-
-
-/**
- * If the class_name already exists in the scope, return it. Otherwise, import it.
- */
-SgClassDeclaration *SageInterface::findOrImportJavaClass(SgProject *project, SgClassType *class_type) {
-    SgClassDeclaration *class_declaration = isSgClassDeclaration(class_type -> get_declaration() -> get_definingDeclaration());
-    ROSE_ASSERT(class_declaration);
-    SgClassDefinition *scope = isSgClassDefinition(class_declaration -> get_scope());
-    while (scope && (! isSgJavaPackageDeclaration(scope -> get_parent()))) {
-        class_declaration = isSgClassDeclaration(scope -> get_parent());
-        ROSE_ASSERT(class_declaration);
-        scope = isSgClassDefinition(class_declaration -> get_scope());
-    }
-
-    if (! scope) { // a local type !!!
-        return NULL;
-    }
-
-    string class_name = class_declaration -> get_name().getString();
-    return findOrImportJavaClass(project, scope, class_name);
-}
-
-
-/**
- * Find a main method in a Java class.
- */
-SgMemberFunctionDeclaration *SageInterface::findJavaMain(SgClassDefinition *class_definition) {
-    ROSE_ASSERT(class_definition);
-    SgFunctionParameterTypeList *type_list = SageBuilder::buildFunctionParameterTypeList();
-    ROSE_ASSERT(type_list);
-    SgArrayType *string_array_type = getUniqueJavaArrayType(Rose::Frontend::Java::StringClassType, 1);
-    ROSE_ASSERT(string_array_type);
-    type_list -> append_argument(string_array_type);
-
- // DQ (1/11/2020): Fixing support for C++11 l-value and r-value reference modifiers for member functions.
- // SgFunctionType *member_function_type = SageBuilder::buildMemberFunctionType(SgTypeVoid::createType(), type_list, class_definition, 0); // mfunc_specifier);
-    unsigned int ref_modifiers = 0;
-    SgFunctionType *member_function_type = SageBuilder::buildMemberFunctionType(SgTypeVoid::createType(), type_list, class_definition, /* mfunc_specifier */ 0 , ref_modifiers);
-
-    SgFunctionSymbol *method_symbol = class_definition -> lookup_function_symbol("main", member_function_type);
-    delete type_list;
-    return (method_symbol == NULL ? NULL : isSgMemberFunctionDeclaration(method_symbol -> get_declaration()));
-}
-
-
-/**
- * Find a main method in a Java class.
- */
-SgMemberFunctionDeclaration *SageInterface::findJavaMain(SgClassType *class_type) {
-    SgClassDeclaration *class_declaration = isSgClassDeclaration(class_type -> get_declaration() -> get_definingDeclaration());
-    ROSE_ASSERT(class_declaration);
-    SgClassDefinition *class_definition = class_declaration -> get_definition();
-    return findJavaMain(class_definition);
-}
-
-//------------------------------------------------------------------------------
-#endif // ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
-//------------------------------------------------------------------------------
 
 //! Replace all variable references to an old symbol in a scope to being references to a new symbol.
 // Essentially replace variable a with b.

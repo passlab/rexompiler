@@ -144,122 +144,6 @@ SgUntypedType* buildType(SgUntypedType::type_enum type_enum, std::string name)
           break;
         }
 
-      case SgFile::e_Jovial_language:
-        {
-          switch(type_enum)
-            {
-             case SgUntypedType::e_unknown:
-               {
-                 type = new SgUntypedType("UNKNOWN",type_kind,has_kind,is_literal,is_class,is_intrinsic,is_constant,
-                                          is_user_defined,char_length_expr,char_length,char_length_is_string,modifiers,type_enum);
-                 break;
-               }
-             case SgUntypedType::e_void:
-               {
-                 type = new SgUntypedType("void",type_kind,has_kind,is_literal,is_class,is_intrinsic,is_constant,
-                                          is_user_defined,char_length_expr,char_length,char_length_is_string,modifiers,type_enum);
-                 break;
-               }
-             case SgUntypedType::e_int:
-               {
-                 type = new SgUntypedType("S",type_kind,has_kind,is_literal,is_class,is_intrinsic,is_constant,
-                                          is_user_defined,char_length_expr,char_length,char_length_is_string,modifiers,type_enum);
-                 break;
-               }
-             case SgUntypedType::e_uint:
-               {
-                 type = new SgUntypedType("U",type_kind,has_kind,is_literal,is_class,is_intrinsic,is_constant,
-                                          is_user_defined,char_length_expr,char_length,char_length_is_string,modifiers,type_enum);
-                 break;
-               }
-             case SgUntypedType::e_float:
-               {
-                 type = new SgUntypedType("F",type_kind,has_kind,is_literal,is_class,is_intrinsic,is_constant,
-                                          is_user_defined,char_length_expr,char_length,char_length_is_string,modifiers,type_enum);
-                 break;
-               }
-             case SgUntypedType::e_bool:
-               {
-                 type = new SgUntypedType("boolean_literal",type_kind,has_kind,is_literal,is_class,is_intrinsic,is_constant,
-                                          is_user_defined,char_length_expr,char_length,char_length_is_string,modifiers,type_enum);
-                 break;
-               }
-             case SgUntypedType::e_bit:
-               {
-                 type = new SgUntypedType("B",type_kind,has_kind,is_literal,is_class,is_intrinsic,is_constant,
-                                          is_user_defined,char_length_expr,char_length,char_length_is_string,modifiers,type_enum);
-                 break;
-               }
-             case SgUntypedType::e_char:
-             case SgUntypedType::e_string:
-               {
-                 type = new SgUntypedType("C",type_kind,has_kind,is_literal,is_class,is_intrinsic,is_constant,
-                                          is_user_defined,char_length_expr,char_length,char_length_is_string,modifiers,type_enum);
-                 break;
-               }
-             case SgUntypedType::e_block:
-               {
-                 is_user_defined = true;
-                 is_class = true;
-                 is_intrinsic = false;
-                 type = new SgUntypedType(name,type_kind,has_kind,is_literal,is_class,is_intrinsic,is_constant,
-                                          is_user_defined,char_length_expr,char_length,char_length_is_string,modifiers,type_enum);
-                 break;
-               }
-             case SgUntypedType::e_table:
-               {
-                 is_user_defined = true;
-                 is_class = true;
-                 is_intrinsic = false;
-                 type = new SgUntypedType(name,type_kind,has_kind,is_literal,is_class,is_intrinsic,is_constant,
-                                          is_user_defined,char_length_expr,char_length,char_length_is_string,modifiers,type_enum);
-                 break;
-               }
-             case SgUntypedType::e_user_defined:
-               {
-                 std::cerr << "WARNING UNIMPLEMENTED: UntypedBuilder::buildType - e_user_defined\n";
-#if 1
-                 is_user_defined = true;
-                 is_intrinsic = false;
-                 type = new SgUntypedType(name,type_kind,has_kind,is_literal,is_class,is_intrinsic,is_constant,
-                                          is_user_defined,char_length_expr,char_length,char_length_is_string,modifiers,type_enum);
-#endif
-                 break;
-               }
-             default:
-               {
-                 fprintf(stderr, "UntypedBuilder::buildType: unimplemented for Jovial type_enum %d \n", type_enum);
-                 ROSE_ABORT();  // NOT IMPLEMENTED
-               }
-            }
-          break;
-        }
-
-      case SgFile::e_Cobol_language:
-        {
-          switch(type_enum)
-            {
-             case SgUntypedType::e_unknown:
-               {
-                 type = new SgUntypedType("UNKNOWN",type_kind,has_kind,is_literal,is_class,is_intrinsic,is_constant,
-                                          is_user_defined,char_length_expr,char_length,char_length_is_string,modifiers,type_enum);
-                 break;
-               }
-             case SgUntypedType::e_void:
-               {
-                 type = new SgUntypedType("void",type_kind,has_kind,is_literal,is_class,is_intrinsic,is_constant,
-                                          is_user_defined,char_length_expr,char_length,char_length_is_string,modifiers,type_enum);
-                 break;
-               }
-             default:
-               {
-                 fprintf(stderr, "UntypedBuilder::buildType: unimplemented for Cobol type_enum %d \n", type_enum);
-                 ROSE_ABORT();  // NOT IMPLEMENTED
-               }
-            }
-          break;
-        }
-
       default:
         {
           fprintf(stderr, "UntypedBuilder::buildType: unimplemented for language_enum %d \n", language_enum);
@@ -349,47 +233,6 @@ SgUntypedArrayType* buildArrayType(SgUntypedType::type_enum type_enum, SgUntyped
           break;
         }
 
-      case SgFile::e_Jovial_language:
-        {
-          switch(type_enum)
-            {
-             case SgUntypedType::e_int:
-               {
-                 type = new SgUntypedArrayType("S",type_kind,has_kind,is_literal,is_class,is_intrinsic,is_constant,
-                                          is_user_defined,char_length_expr,char_length,char_length_is_string,modifiers,type_enum,
-                                          shape, rank);
-                 break;
-               }
-             case SgUntypedType::e_uint:
-               {
-                 type = new SgUntypedArrayType("U",type_kind,has_kind,is_literal,is_class,is_intrinsic,is_constant,
-                                          is_user_defined,char_length_expr,char_length,char_length_is_string,modifiers,type_enum,
-                                          shape, rank);
-                 break;
-               }
-             case SgUntypedType::e_float:
-               {
-                 type = new SgUntypedArrayType("F",type_kind,has_kind,is_literal,is_class,is_intrinsic,is_constant,
-                                          is_user_defined,char_length_expr,char_length,char_length_is_string,modifiers,type_enum,
-                                          shape, rank);
-                 break;
-               }
-             case SgUntypedType::e_bit:
-               {
-                 type = new SgUntypedArrayType("B",type_kind,has_kind,is_literal,is_class,is_intrinsic,is_constant,
-                                          is_user_defined,char_length_expr,char_length,char_length_is_string,modifiers,type_enum,
-                                          shape, rank);
-                 break;
-               }
-             default:
-               {
-                 fprintf(stderr, "UntypedBuilder::buildArrayType: unimplemented for Jovial type_enum %d \n", type_enum);
-                 ROSE_ABORT();  // NOT IMPLEMENTED
-               }
-            }
-          break;
-        }
-
       default:
         {
           fprintf(stderr, "UntypedBuilder::buildArrayType: unimplemented for language_enum %d \n", language_enum);
@@ -397,44 +240,6 @@ SgUntypedArrayType* buildArrayType(SgUntypedType::type_enum type_enum, SgUntyped
         }
 
     } // switch(language_enum)
-
-   return type;
-}
-
-
-// Build an untyped Jovial table type from a base type.
-//
-SgUntypedTableType* buildJovialTableType (std::string name, SgUntypedType* base_type,
-                                          SgUntypedExprListExpression* shape, bool is_anonymous)
-{
-   ROSE_ASSERT(language_enum == SgFile::e_Jovial_language);
-
-   ROSE_ASSERT(base_type->get_is_intrinsic() == true);
-
-   SgUntypedTableType* type = NULL;
-   int rank = shape->get_expressions().size();
-
-   std::string table_type_name = name;
-
-   type = new SgUntypedTableType(table_type_name, base_type, shape, rank);
-   ROSE_ASSERT(type != NULL);
-
-   if (is_anonymous)
-      {
-      // This type is anonymous so create a unique name
-         char addr[64];
-         sprintf(addr, "%p", type);
-         table_type_name = "__anonymous_";
-         table_type_name.append(addr);
-         type->set_type_name(table_type_name);
-      }
-
-// This may not be needed: could set the default to this from e_unknown, could just use knowledge of the type itself
-// since we can't overload type_enum_id.  Actually should be have its own distnct from base type!
-   type->set_table_type_enum_id(SgUntypedType::e_table);
-   type->set_type_enum_id(SgUntypedType::e_table);
-
-   base_type->set_parent(type);
 
    return type;
 }
@@ -624,58 +429,6 @@ SgUntypedStructureDefinition* buildStructureDefinition(const std::string type_na
    SageInterface::setSourcePosition(struct_def);
 
    return struct_def;
-}
-
-
-// Build an untyped JovialTableDescription. This version has a body and thus a scope.
-// Source position for the initializer and modifier lists and table description should be set after construction.
-SgUntypedStructureDefinition* buildJovialTableDescription()
-{
-   return buildStructureDefinition();
-}
-
-
-// Build an untyped JovialTableDescription. This version has a type name and body/scope (default is NULL).
-// If the has_body flag is true and the scope is NULL, a scope will be created.
-// Source position for the initializer and table description should be set after construction.
-SgUntypedStructureDefinition* buildJovialTableDescription(std::string type_name, bool has_body, SgUntypedScope* scope)
-{
-   return buildStructureDefinition(type_name, has_body, scope);
-}
-
-
-// Build an untyped JovialTableDeclaration with associated JovialTableDescription. This version has a body and thus a scope.
-// Source position for the initializer and modifier lists and table description should be set after construction.
-SgUntypedStructureDeclaration* buildJovialTableDeclaration(std::string table_type_name)
-{
-   SgUntypedStructureDeclaration* table_decl = NULL;
-   SgUntypedStructureDefinition*  table_desc = NULL;
-   SgUntypedExprListExpression*    modifiers = NULL;
-   SgUntypedExprListExpression*        shape = NULL;
-
-// Create a default definition that can be filled in later as more information arrives.
-// For example, the table description/definition may not be a named type.
-   std::string table_desc_name = "";
-
-   table_desc = buildJovialTableDescription(table_desc_name);
-   ROSE_ASSERT(table_desc);
-   SageInterface::setSourcePosition(table_desc);
-
-   modifiers = new SgUntypedExprListExpression(LanguageTranslation::e_struct_modifier_list);
-   ROSE_ASSERT(modifiers);
-   SageInterface::setSourcePosition(modifiers);
-
-   shape = new SgUntypedExprListExpression(LanguageTranslation::e_array_shape);
-   ROSE_ASSERT(shape);
-   SageInterface::setSourcePosition(shape);
-
-   std::string label = "";
-   int stmt_enum = LanguageTranslation::e_unknown;
-   table_decl = new SgUntypedStructureDeclaration(label, stmt_enum, table_type_name, modifiers, shape, table_desc);
-   ROSE_ASSERT(table_decl);
-   SageInterface::setSourcePosition(table_decl);
-
-   return table_decl;
 }
 
 

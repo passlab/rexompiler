@@ -194,10 +194,6 @@ ROSE_DLL_API SgTypeFloat128* buildFloat128Type();
 //! Build a Jovial fixed type with a fraction specifier and a scale specifier
 ROSE_DLL_API SgTypeFixed* buildFixedType(SgExpression* fraction, SgExpression* scale);
 
-// CR (5/5/2020): Added builder for Jovial bit type
-//! Build a Jovial bit type of a given size
-ROSE_DLL_API SgJovialBitType* buildJovialBitType(SgExpression* size);
-
 //! DQ (8/21/2010): We want to move to the new buildStringType( SgExpression*,size_t) function over the older buildStringType() function.
 ROSE_DLL_API SgTypeString* buildStringType();
 // SgTypeString* buildStringType( SgExpression* stringLengthExpression, size_t stringLengthLiteral );
@@ -507,9 +503,6 @@ ROSE_DLL_API SgUnsignedLongLongIntVal* buildUnsignedLongLongIntVal(unsigned long
 ROSE_DLL_API SgUnsignedLongLongIntVal* buildUnsignedLongLongIntValHex(unsigned long long v = 0);
 ROSE_DLL_API SgUnsignedLongLongIntVal* buildUnsignedLongLongIntVal_nfi(unsigned long long v, const std::string& str);
 
-//! Build a Jovial bit value expression
-ROSE_DLL_API SgJovialBitVal* buildJovialBitVal_nfi(const std::string& str);
-
 //! Build an template parameter value expression
 ROSE_DLL_API SgTemplateParameterVal* buildTemplateParameterVal(int template_parameter_position = -1);
 ROSE_DLL_API SgTemplateParameterVal* buildTemplateParameterVal_nfi(int template_parameter_position, const std::string& str);
@@ -627,7 +620,6 @@ BUILD_BINARY_PROTO(AndOp)
 BUILD_BINARY_PROTO(ArrowExp)
 BUILD_BINARY_PROTO(ArrowStarOp)
 BUILD_BINARY_PROTO(AssignOp)
-BUILD_BINARY_PROTO(AtOp)
 BUILD_BINARY_PROTO(BitAndOp)
 BUILD_BINARY_PROTO(BitOrOp)
 BUILD_BINARY_PROTO(BitXorOp)
@@ -668,11 +660,8 @@ BUILD_BINARY_PROTO(OrOp)
 BUILD_BINARY_PROTO(PlusAssignOp)
 BUILD_BINARY_PROTO(PntrArrRefExp)
 BUILD_BINARY_PROTO(RshiftAssignOp)
-BUILD_BINARY_PROTO(JavaUnsignedRshiftAssignOp)
 
-BUILD_BINARY_PROTO(ReplicationOp)
 BUILD_BINARY_PROTO(RshiftOp)
-BUILD_BINARY_PROTO(JavaUnsignedRshiftOp)
 BUILD_BINARY_PROTO(ScopeOp)
 BUILD_BINARY_PROTO(SubtractOp)
 BUILD_BINARY_PROTO(XorAssignOp)
@@ -888,10 +877,6 @@ ROSE_DLL_API SgAlignOfOp* buildAlignOfOp_nfi(SgType* type);
 ROSE_DLL_API SgNoexceptOp* buildNoexceptOp(SgExpression* exp = NULL);
 ROSE_DLL_API SgNoexceptOp* buildNoexceptOp_nfi(SgExpression* exp);
 
-// DQ (7/18/2011): Added support for SgJavaInstanceOfOp
-//! This is part of Java specific operator support.
-ROSE_DLL_API SgJavaInstanceOfOp* buildJavaInstanceOfOp(SgExpression* exp = NULL, SgType* type = NULL);
-
 //! DQ (7/24/2014): Adding support for c11 generic operands.
 ROSE_DLL_API SgTypeExpression *buildTypeExpression(SgType* type);
 
@@ -942,8 +927,6 @@ ROSE_DLL_API SgChooseExpression * buildChooseExpression_nfi();
  //! Build a Matlab colon expression :
  ROSE_DLL_API SgMagicColonExp* buildMagicColonExp();
 
- //! Build a For-loop statement for matlab
- ROSE_DLL_API SgMatlabForStatement* buildMatlabForStatement(SgExpression* loop_index, SgExpression* loop_range, SgBasicBlock* loop_body);
 //@}
 
 
@@ -1435,27 +1418,12 @@ ROSE_DLL_API SgClassDeclaration* buildClassDeclaration_nfi(const SgName& name, S
 ROSE_DLL_API SgTemplateClassDeclaration* buildTemplateClassDeclaration_nfi(const SgName& name, SgClassDeclaration::class_types kind, SgScopeStatement* scope, SgTemplateClassDeclaration* nonDefiningDecl,
                                                                            SgTemplateParameterPtrList* templateParameterList, SgTemplateArgumentPtrList* templateSpecializationArgumentList );
 
-//! Build a Jovial define directive declaration statement
-ROSE_DLL_API SgJovialDefineDeclaration * buildJovialDefineDeclaration_nfi (const SgName& name, const std::string& params,
-                                                                           const std::string& def_string, SgScopeStatement* scope=NULL);
-
-//! Build a Jovial loop statement. Two variants are FOR and WHILE.
-ROSE_DLL_API SgJovialForThenStatement* buildJovialForThenStatement_nfi(SgExpression* init_expr, SgExpression* incr_expr,
-                                                                       SgExpression* test_expr);
-
 //! Build an SgDerivedTypeStatement Fortran derived type declaration with a
 //! class declaration and definition (creating both the defining and nondefining declarations as required).
 ROSE_DLL_API SgDerivedTypeStatement * buildDerivedTypeStatement (const SgName& name, SgScopeStatement* scope=NULL);
 
 //! Build a Fortran module declaration.
 ROSE_DLL_API SgModuleStatement * buildModuleStatement(const SgName& name, SgScopeStatement* scope /*=NULL*/);
-
-//! Build a Jovial table declaration statement
-ROSE_DLL_API SgJovialTableStatement * buildJovialTableStatement (const SgName& name,
-                                                                 SgClassDeclaration::class_types kind, SgScopeStatement* scope=NULL);
-
-//! Build a Jovial table type with required class definition and defining and nondefining declarations.
- ROSE_DLL_API SgJovialTableType * buildJovialTableType (const SgName& name, SgType* base_type, SgExprListExp* dim_info, SgScopeStatement* scope=NULL);
 
 //! Build a generic class declaration statement (SgClassDeclaration or subclass) with a
 //! class declaration and definition (creating both the defining and nondefining declarations as required.
@@ -1493,31 +1461,6 @@ ROSE_DLL_API SgCommonBlock* buildCommonBlock(SgCommonBlockObject* first_block=NU
 //! Build a catch statement.
 ROSE_DLL_API SgCatchOptionStmt* buildCatchOptionStmt(SgVariableDeclaration* condition=NULL, SgStatement* body=NULL);
 
-//! MH (6/10/2014): Added async support
-ROSE_DLL_API SgAsyncStmt* buildAsyncStmt(SgBasicBlock *body);
-
-//! MH (6/11/2014): Added finish support
-ROSE_DLL_API SgFinishStmt* buildFinishStmt(SgBasicBlock *body);
-
-//! MH (6/11/2014): Added at support
-ROSE_DLL_API SgAtStmt* buildAtStmt(SgExpression *expression, SgBasicBlock *body);
-
-// MH (11/12/2014): Added atomic support
-ROSE_DLL_API SgAtomicStmt* buildAtomicStmt(SgBasicBlock *body);
-
-ROSE_DLL_API SgWhenStmt* buildWhenStmt(SgExpression *expression, SgBasicBlock *body);
-
-// MH (9/16/2014): Added at support
-ROSE_DLL_API SgAtExp* buildAtExp(SgExpression *expression, SgBasicBlock *body);
-
-// MH (11/7/2014): Added finish expression support
-ROSE_DLL_API SgFinishExp* buildFinishExp(SgExpression *expression, SgBasicBlock *body);
-
-ROSE_DLL_API SgHereExp* buildHereExpression();
-
-ROSE_DLL_API SgDotDotExp* buildDotDotExp();
-
-
 // driscoll6 (6/9/2011): Adding support for try stmts.
 //! Build a try statement.
 ROSE_DLL_API SgTryStmt* buildTryStmt(SgStatement* body,
@@ -1539,34 +1482,9 @@ ROSE_DLL_API SgTryStmt* buildTryStmt(SgBasicBlock *try_body, SgBasicBlock *final
 //! Build an initial sequence of Catch blocks containing 0 or 1 element.
 ROSE_DLL_API SgCatchStatementSeq *buildCatchStatementSeq(SgCatchOptionStmt * = NULL);
 
-// charles4 (8/25/2011): Adding support for Java Synchronized stmts.
-//! Build a Java Synchronized statement.
-ROSE_DLL_API SgJavaSynchronizedStatement *buildJavaSynchronizedStatement(SgExpression *, SgBasicBlock *);
-
-// charles4 (8/25/2011): Adding support for Java Throw stmts.
-//! Build a Java Throw statement.
-ROSE_DLL_API SgJavaThrowStatement *buildJavaThrowStatement(SgThrowOp *);
-
-// charles4 (8/25/2011): Adding support for Java Foreach stmts.
-//! Build a Java Foreach statement.
-// SgJavaForEachStatement *buildJavaForEachStatement(SgInitializedName * = NULL, SgExpression * = NULL, SgStatement * = NULL);
-ROSE_DLL_API SgJavaForEachStatement *buildJavaForEachStatement(SgVariableDeclaration * = NULL, SgExpression * = NULL, SgStatement * = NULL);
-
-// charles4 (8/25/2011): Adding support for Java Label stmts.
-//! Build a Java Label statement.
-ROSE_DLL_API SgJavaLabelStatement *buildJavaLabelStatement(const SgName &,  SgStatement * = NULL);
-
 //! Build an exec statement
 ROSE_DLL_API SgExecStatement* buildExecStatement(SgExpression* executable, SgExpression* globals = NULL, SgExpression* locals = NULL);
 SgExecStatement* buildExecStatement_nfi(SgExpression* executable, SgExpression* globals = NULL, SgExpression* locals = NULL);
-
-//! Build a python print statement
-ROSE_DLL_API SgPythonPrintStmt* buildPythonPrintStmt(SgExpression* dest = NULL, SgExprListExp* values = NULL);
-SgPythonPrintStmt* buildPythonPrintStmt_nfi(SgExpression* dest = NULL, SgExprListExp* values = NULL);
-
-//! Build a python global statement
-ROSE_DLL_API SgPythonGlobalStmt* buildPythonGlobalStmt(SgInitializedNamePtrList& names);
-SgPythonGlobalStmt* buildPythonGlobalStmt_nfi(SgInitializedNamePtrList& names);
 
 // DQ (4/30/2010): Added support for building asm statements.
 //! Build a NULL statement
@@ -1669,30 +1587,6 @@ ROSE_DLL_API SgDeclarationStatement* findAssociatedDeclarationInTargetAST(SgDecl
 
 //! Error checking the inserted snippet AST.
 ROSE_DLL_API void errorCheckingTargetAST (SgNode* node_copy, SgNode* node_original, SgFile* targetFile, bool failOnWarning);
-
-//-----------------------------------------------------------------------------
-//#ifdef ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
-//-----------------------------------------------------------------------------
-ROSE_DLL_API SgVarRefExp *buildJavaArrayLengthVarRefExp();
-ROSE_DLL_API SgScopeStatement *buildScopeStatement(SgClassDefinition * = NULL);
-ROSE_DLL_API SgJavaTypeExpression *buildJavaTypeExpression(SgType *);
-ROSE_DLL_API SgJavaMarkerAnnotation *buildJavaMarkerAnnotation(SgType *);
-ROSE_DLL_API SgJavaMemberValuePair *buildJavaMemberValuePair(const SgName &, SgExpression *);
-ROSE_DLL_API SgJavaSingleMemberAnnotation *buildJavaSingleMemberAnnotation(SgType *, SgExpression *);
-ROSE_DLL_API SgJavaNormalAnnotation *buildJavaNormalAnnotation(SgType *);
-ROSE_DLL_API SgJavaNormalAnnotation *buildJavaNormalAnnotation(SgType *, std::list<SgJavaMemberValuePair *>&);
-ROSE_DLL_API SgInitializedName *buildJavaFormalParameter(SgType *, const SgName &, bool is_var_args = false, bool is_final = false);
-
-ROSE_DLL_API SgJavaPackageStatement *buildJavaPackageStatement(std::string);
-ROSE_DLL_API SgJavaImportStatement *buildJavaImportStatement(std::string, bool);
-ROSE_DLL_API SgClassDeclaration *buildJavaDefiningClassDeclaration(SgScopeStatement *, std::string, SgClassDeclaration::class_types kind = SgClassDeclaration::e_class);
-ROSE_DLL_API SgSourceFile *buildJavaSourceFile(SgProject *, std::string, SgClassDefinition *, std::string);
-ROSE_DLL_API SgArrayType *getUniqueJavaArrayType(SgType *, int);
-ROSE_DLL_API SgJavaParameterizedType *getUniqueJavaParameterizedType(SgNamedType *, SgTemplateParameterPtrList *);
-ROSE_DLL_API SgJavaQualifiedType *getUniqueJavaQualifiedType(SgClassDeclaration *, SgNamedType *, SgNamedType *);
-ROSE_DLL_API SgJavaWildcardType *getUniqueJavaWildcardUnbound();
-ROSE_DLL_API SgJavaWildcardType *getUniqueJavaWildcardExtends(SgType *);
-ROSE_DLL_API SgJavaWildcardType *getUniqueJavaWildcardSuper(SgType *);
 
 //@}
 
@@ -1824,22 +1718,5 @@ T* buildUnaryExpression_nfi(SgExpression* operand) {
  }
 
 } // end of namespace
-
-namespace Rose {
-    namespace Frontend {
-        namespace Java {
-
-            extern ROSE_DLL_API SgClassDefinition *javaLangPackageDefinition;
-            extern ROSE_DLL_API SgClassType *ObjectClassType;
-            extern ROSE_DLL_API SgClassType *StringClassType;
-            extern ROSE_DLL_API SgClassType *ClassClassType;
-            extern ROSE_DLL_API SgVariableSymbol *lengthSymbol;
-
-        }// ::Rose::frontend::java
-    }// ::Rose::frontend
-}// ::Rose
-//-----------------------------------------------------------------------------
-//#endif // ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
-//-----------------------------------------------------------------------------
 
 #endif //ROSE_SAGE_BUILDER_INTERFACE

@@ -282,24 +282,16 @@ namespace Rose
 
   // Note: the semantics is that there is at least one of the language kind files processed by ROSE, across all 
   // SgFile objects across all SgProject objects.
-     extern bool is_Ada_language;
      extern bool is_C_language;
-     extern bool is_Cobol_language;
      extern bool is_OpenMP_language;
      extern bool is_UPC_language;
      extern bool is_UPC_dynamic_threads;
      extern bool is_C99_language;
      extern bool is_Cxx_language;
-     extern bool is_Java_language;
-     extern bool is_Jovial_language;
      extern bool is_Fortran_language;
      extern bool is_CAF_language;
-     extern bool is_PHP_language;
-     extern bool is_Python_language;
      extern bool is_Cuda_language;
      extern bool is_OpenCL_language;
-     extern bool is_X10_language;
-     extern bool is_binary_executable;
    };
 
 

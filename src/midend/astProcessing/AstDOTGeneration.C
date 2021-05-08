@@ -22,10 +22,6 @@
 #undef TEMPLATE_IMPLEMENTATIONS
 #include "AstConsistencyTests.h"
 
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-   #include "AsmUnparser_compat.h"
-#endif
-
 using namespace std;                                    // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace Rose;                                   // until this file is all moved into the rose namespace
 
@@ -616,132 +612,6 @@ AstDOTGeneration::evaluateSynthesizedAttribute(SgNode* node, DOTInheritedAttribu
         }
 #endif
 
-  // DQ (1/19/2009): Added support for output of what specific instrcution this is in the dot graph.
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-     SgAsmInstruction* genericInstruction = isSgAsmInstruction(node);
-     if (genericInstruction != NULL)
-        {
-       // At the moment the mnemonic name is stored, but it could be computed in the
-       // future from the kind and the tostring() function.
-#if 1
-          string unparsedInstruction = unparseInstruction(genericInstruction);
-          string addressString       = StringUtility::numberToString( (void*) genericInstruction->get_address() );
-       // string name = genericInstruction->get_mnemonic();
-          string name = unparsedInstruction + "\\n address: " + addressString;
-#else
-          string name = unparsedInstruction + "\\n" + addressString;
-#endif
-          ROSE_ASSERT(name.empty() == false);
-
-          nodelabel += string("\\n") + name;
-        }
-
-     SgAsmExpression* genericExpression = isSgAsmExpression(node);
-     if (genericExpression != NULL)
-        {
-          string name = unparseExpression(genericExpression, NULL, NULL);
-          if (!name.empty())
-              nodelabel += string("\\n") + name;
-        }
-
-     if (SgAsmRiscOperation *riscOp = isSgAsmRiscOperation(node)) {
-         string name = stringifySgAsmRiscOperationRiscOperator(riscOp->get_riscOperator(), "OP_");
-         if (!name.empty())
-             nodelabel += "\\n" + name;
-     }
-
-  // DQ (10/29/2008): Added some support for additional output of internal names for specific IR nodes.
-  // In generall there are long list of these IR nodes in the binary and this helps make some sense of
-  // the lists (sections, symbols, etc.).
-     SgAsmExecutableFileFormat* binaryFileFormatNode = isSgAsmExecutableFileFormat(node);
-     if (binaryFileFormatNode != NULL)
-        {
-       // The case of binary file format IR nodes can be especially confusing so we want the
-       // default to output some more specific information for some IR nodes (e.g. sections).
-          string name;
-
-          SgAsmGenericSection* genericSection = isSgAsmGenericSection(node);
-          if (genericSection != NULL)
-             {
-               SgAsmGenericString* genericString = genericSection->get_name();
-               ROSE_ASSERT(genericString != NULL);
-
-               name = genericString->get_string();
-             }
-
-          SgAsmGenericSymbol* genericSymbol = isSgAsmGenericSymbol(node);
-          if (genericSymbol != NULL)
-             {
-               SgAsmGenericString* genericString = genericSymbol->get_name();
-               ROSE_ASSERT(genericString != NULL);
-
-               name = genericString->get_string();
-
-               if (name.empty() == true)
-                    name = "no_name_for_symbol";
-             }
-
-          SgAsmGenericDLL* genericDLL = isSgAsmGenericDLL(node);
-          if (genericDLL != NULL)
-             {
-               SgAsmGenericString* genericString = genericDLL->get_name();
-               ROSE_ASSERT(genericString != NULL);
-
-               name = genericString->get_string();
-             }
-
-          SgAsmPEImportItem* peImportItem = isSgAsmPEImportItem(node);
-          if (peImportItem != NULL)
-             {
-               SgAsmGenericString* genericString = peImportItem->get_name();
-               ROSE_ASSERT(genericString != NULL);
-
-               name = genericString->get_string();
-             }
-
-          SgAsmDwarfLine* asmDwarfLine = isSgAsmDwarfLine(node);
-          if (asmDwarfLine != NULL)
-             {
-               char buffer[100];
-
-            // It does not work to embed the "\n" into the single sprintf parameter.
-            // sprintf(buffer," Addr: 0x%08"PRIx64" \n line: %d col: %d ",asmDwarfLine->get_address(),asmDwarfLine->get_line(),asmDwarfLine->get_column());
-
-               sprintf(buffer,"Addr: 0x%08" PRIx64,asmDwarfLine->get_address());
-               name = buffer;
-               sprintf(buffer,"line: %d col: %d",asmDwarfLine->get_line(),asmDwarfLine->get_column());
-               name += string("\\n") + buffer;
-             }
-
-          SgAsmDwarfConstruct* asmDwarfConstruct = isSgAsmDwarfConstruct(node);
-          if (asmDwarfConstruct != NULL)
-             {
-               name = asmDwarfConstruct->get_name();
-             }
-
-#if 0
-       // This might not be the best way to implement this, since we want to detect common base classes of IR nodes.
-          switch (node->variantT())
-             {
-               case V_SgAsmElfSection:
-                  {
-                    SgAsmElfSection* n = isSgAsmElfSection(node);
-                    name = n->get_name();
-                    break;
-                  }
-
-               default:
-                  {
-                 // No additional information is suggested for the default case!
-                  }
-             }
-#endif
-
-          if (name.empty() == false)
-               nodelabel += string("\\n") + name;
-        }
-#endif
-
   // DQ (11/29/2008): Output the directives in the label of the IR node.
      SgC_PreprocessorDirectiveStatement* preprocessorDirective = isSgC_PreprocessorDirectiveStatement(node);
      if (preprocessorDirective != NULL)
@@ -944,9 +814,6 @@ AstDOTGeneration::evaluateSynthesizedAttribute(SgNode* node, DOTInheritedAttribu
 
        // case V_SgFile:
           case V_SgSourceFile:
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-          case V_SgBinaryComposite:
-#endif
              {
                SgFile* file = dynamic_cast<SgFile*>(node);
                ROSE_ASSERT(file != NULL);

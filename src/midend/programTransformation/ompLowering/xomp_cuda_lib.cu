@@ -272,7 +272,7 @@ void* xomp_deviceMalloc(size_t size)
   }
   else
   {
-    fprintf(stderr, "Error: cudaMalloc() failed to allocate the requested %d bytes!\n",size );
+    fprintf(stderr, "Error: cudaMalloc() failed to allocate the requested %zu bytes!\n", size);
     assert (false);
     return NULL; // it is a bad idea to silently return a NULL pointer
   }
@@ -286,7 +286,7 @@ void* xomp_hostMalloc(size_t size)
   hostPtr = (char*) malloc (size);
   if (hostPtr == NULL)
   {
-    fprintf(stderr, "Error: malloc() failed to allocate the requested %d bytes!\n",size );
+    fprintf(stderr, "Error: malloc() failed to allocate the requested %zu bytes!\n", size);
     assert (hostPtr != NULL);
   }
   return hostPtr; 
@@ -298,13 +298,13 @@ void * xomp_memcpyHostToDevice (void *dest, const void * src, size_t n)
   assert (dest != NULL);
   assert (src != NULL);
   if (xomp_verbose)
-    printf("xomp_memcpyHostToDevice(): dest=%p src =%p size=%d\n",dest, src, n);
+    printf("xomp_memcpyHostToDevice(): dest = %p src = %p size = %zu\n", dest, src, n);
   cudaError_t rt = cudaMemcpy (dest, src, n, cudaMemcpyHostToDevice);    
   if (rt == cudaSuccess)
     return dest;
   else
   {
-    fprintf(stderr, "Error: cudaMemcpy() failed to copy memory from Host %p to Device %p, for %d bytes!\n",src, dest, n);
+    fprintf(stderr, "Error: cudaMemcpy() failed to copy memory from Host %p to Device %p, for %zu bytes!\n", src, dest, n);
     assert (false);
     return NULL; // it is a bad idea to silently return a NULL pointer
   }
@@ -315,13 +315,13 @@ void * xomp_memcpyDeviceToHost (void *dest, const void * src, size_t n)
   assert (dest != NULL);
   assert (src != NULL);
   if (xomp_verbose)
-    printf("xomp_memcpyDeviceToHost(): dest=%p src =%p size=%d\n",dest, src, n);
+    printf("xomp_memcpyDeviceToHost(): dest = %p src = %p size = %zu\n", dest, src, n);
   cudaError_t rt = cudaMemcpy (dest, src, n, cudaMemcpyDeviceToHost);    
   if (rt == cudaSuccess)
     return dest;
   else
   {
-    fprintf(stderr, "Error: cudaMemcpy() failed to copy memory from Device %p to Host %p, for %d bytes!\n",src, dest, n);
+    fprintf(stderr, "Error: cudaMemcpy() failed to copy memory from Device %p to Host %p, for %zu bytes!\n", src, dest, n);
     fprintf(stderr, "Error message is =%s\n",cudaGetErrorString(rt));
     assert (false);
     return NULL; // it is a bad idea to silently return a NULL pointer
@@ -424,7 +424,7 @@ void * xomp_memcpyDeviceToDevice (void *dest, const void * src, size_t n)
     return dest;
   else
   {
-    fprintf(stderr, "Error: cudaMemcpy() failed to copy from Device %p to Device %p for requested %d bytes!\n", src, dest, n );
+    fprintf(stderr, "Error: cudaMemcpy() failed to copy from Device %p to Device %p for requested %zu bytes!\n", src, dest, n);
     assert (false);
     return NULL; // it is a bad idea to silently return a NULL pointer
   }
@@ -437,7 +437,7 @@ void * xomp_memcpyHostToHost (void *dest, const void * src, size_t n) // same as
     return dest;
   else
   {
-    fprintf(stderr, "Error: cudaMemcpy() failed to copy from Host %p to Host %p for requested %d bytes!\n", src, dest, n );
+    fprintf(stderr, "Error: cudaMemcpy() failed to copy from Host %p to Host %p for requested %zu bytes!\n", src, dest, n);
     assert (false);
     return NULL; // it is a bad idea to silently return a NULL pointer
   }

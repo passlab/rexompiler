@@ -1,1 +1,0 @@
-SgMinus(SgPlus(SgPlus($LHS,$RHS),SgVar),_)

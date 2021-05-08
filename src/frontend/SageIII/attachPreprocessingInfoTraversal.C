@@ -963,9 +963,9 @@ AttachPreprocessingInfoTreeTrav::buildCommentAndCppDirectiveList ( bool use_Wave
   // if (filePreprocInfo != NULL)
 
      // PP (04/13/21) adding ada support
-     const bool isFortranOrAda = sourceFile->get_Fortran_only() || sourceFile->get_Ada_only();
+     const bool isFortran = sourceFile->get_Fortran_only();
 
-     if ((isFortranOrAda == false) && (filePreprocInfo != NULL) )
+     if ((isFortran == false) && (filePreprocInfo != NULL) )
         {
 #if DEBUG_BUILD_COMMENT_AND_CPP_DIRECTIVE_LIST
           printf ("filePreprocInfo->getList().find(sourceFile->get_file_info()->get_filename()) == filePreprocInfo->getList().end() = %s \n",
@@ -1293,7 +1293,6 @@ AttachPreprocessingInfoTreeTrav::buildCommentAndCppDirectiveList ( bool use_Wave
 #if 0
        // DQ (1/16/2021): Added debugging code.
           printf ("sourceFile->get_Fortran_only() = %s \n",sourceFile->get_Fortran_only() ? "true" : "false");
-          printf ("sourceFile->get_Ada_only() = %s \n",sourceFile->get_Ada_only() ? "true" : "false");
           printf ("filePreprocInfo = %p \n",filePreprocInfo);
 #endif
         }
@@ -1472,20 +1471,6 @@ AttachPreprocessingInfoTreeTrav::buildCommentAndCppDirectiveList ( bool use_Wave
 //               ROSE_ABORT();
 // #endif // USE_ROSE_OPEN_FORTRAN_PARSER_SUPPORT
 #endif // for #ifdef ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
-             }
-            else if (sourceFile->get_Ada_only() == true)
-             {
-               // PP (04/13/2021) adding Ada support for comments
-               //                 currently only comments are handled
-               //                 adding support for preprocessor macros will be added later
-               ROSE_ASSERT(returnListOfAttributes == nullptr);
-
-               returnListOfAttributes = new ROSEAttributesList;
-
-               // currently only Ada comments are supported; not yet preprocessor directives
-               returnListOfAttributes->collectPreprocessorDirectivesAndCommentsForAST( fileNameForDirectivesAndComments,
-                                                                                       ROSEAttributesList::e_Ada_language
-                                                                                     );
              }
             else
              {
@@ -2286,7 +2271,7 @@ AttachPreprocessingInfoTreeTrav::evaluateInheritedAttribute ( SgNode *n, AttachP
                        {
                       // DQ (12/4/2019): This fails for Fortran code so skip the test when using Fortran.
                       // ROSE_ASSERT(currentLocNode_physical_filename_from_id == currentListOfAttributes->getFileName());
-                         if ((sourceFile->get_Fortran_only() == false) && (sourceFile->get_Ada_only() == false))
+                         if ((sourceFile->get_Fortran_only() == false) )
                             {
                            // DQ (1/5/2021): Adding debugging code now that the filename of the token stream and the comments and CPP
                            // directives is computed based on the output filename for the source file. Relevant when a single source
@@ -2887,25 +2872,6 @@ AttachPreprocessingInfoTreeTrav::evaluateSynthesizedAttribute(
 #endif
                switch (n->variantT())
                   {
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-                 // SgBinaryComposite need not be in the switch since we don't attach CPP directives or comments to it.
-                    case V_SgBinaryComposite:
-                        {
-                          printf ("Error: SgBinaryComposite need not be in the switch since we don't attach CPP directives or comments to it ... \n");
-                          ROSE_ABORT();
-                        }
-#endif
-#if 0
-                 // DQ (4/28/2021): Adding a new case.
-                    case V_SgGlobal:
-                       {
-                         printf ("Found SgGlobal: set previousLocatedNode = n \n");
-                         previousLocatedNode = isSgGlobal(n);
-
-                         ROSE_ASSERT(previousLocatedNode != NULL);
-                         break;
-                       }
-#endif
                  // I wanted to leave the SgFile case in the switch statement rather 
                  // than separating it out in a conditional statement at the top of the file.
                  // case V_SgFile:

@@ -1,6 +1,6 @@
 [submodule "src/frontend/CxxFrontend/EDG"]
 	path = src/frontend/CxxFrontend/EDG
-        url = ssh://git@rosecompiler2.llnl.gov:10022/rose-compiler/edg.git
-[submodule "projects/vulnerabilitySeeding"]
-	path = projects/vulnerabilitySeeding
-        url = ssh://git@rosecompiler2.llnl.gov:10022/rose-compiler/vulnerability-seeding.git
+	url = https://github.com/passlab/EDG.git
+[submodule "src/frontend/SageIII/ompparser"]
+	path = src/frontend/SageIII/ompparser
+	url = https://github.com/passlab/ompparser.git

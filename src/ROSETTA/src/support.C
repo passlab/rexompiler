@@ -103,18 +103,10 @@ Grammar::setUpSupport ()
   // can be related to a source file (and many source files).  The mapping is left
   // to an analysis phase to define and not defined in the structure of the AST.
      NEW_TERMINAL_MACRO (SourceFile, "SourceFile", "SourceFileTag" );
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-     NEW_TERMINAL_MACRO (BinaryComposite, "BinaryComposite", "BinaryCompositeTag" );
-     BinaryComposite.isBoostSerializable(true);
-#endif
      NEW_TERMINAL_MACRO (UnknownFile, "UnknownFile", "UnknownFileTag" );
 
   // Mark this as being able to be an IR node for now and later make it false.
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-     NEW_NONTERMINAL_MACRO (File, SourceFile | BinaryComposite | UnknownFile , "File", "FileTag", false);
-#else
-     NEW_NONTERMINAL_MACRO (File, SourceFile |                   UnknownFile , "File", "FileTag", false);
-#endif
+     NEW_NONTERMINAL_MACRO (File, SourceFile | UnknownFile , "File", "FileTag", false);
 #endif
      NEW_TERMINAL_MACRO (FileList, "FileList", "FileListTag" );
      NEW_TERMINAL_MACRO (Directory, "Directory", "DirectoryTag" );
@@ -171,7 +163,11 @@ Grammar::setUpSupport ()
      NEW_TERMINAL_MACRO (DirectedGraphEdge,   "DirectedGraphEdge",   "DirectedGraphEdgeTag" );
 
   // Types of graph nodes and edges:
-     NEW_TERMINAL_MACRO (GraphNode,  "GraphNode", "GraphNodeTag");
+  // SgNode to represent OpenMP flow graph
+     NEW_TERMINAL_MACRO (OmpFlowGraphTaskNode, "OmpFlowGraphTaskNode", "OmpFlowGraphTaskNodeTag" );
+     NEW_NONTERMINAL_MACRO (OmpFlowGraphSerialNode, OmpFlowGraphTaskNode, "OmpFlowGraphSerialNode", "OmpFlowGraphSerialNodeTag", false);
+     NEW_NONTERMINAL_MACRO (OmpFlowGraphNode, OmpFlowGraphSerialNode, "OmpFlowGraphNode", "OmpFlowGraphNodeTag", false);
+     NEW_NONTERMINAL_MACRO (GraphNode,  OmpFlowGraphNode, "GraphNode", "GraphNodeTag", false);
      NEW_NONTERMINAL_MACRO (GraphEdge, DirectedGraphEdge | UndirectedGraphEdge, "GraphEdge", "GraphEdgeTag", false);
 
   // Types of Bi-directional graphs:
@@ -230,10 +226,6 @@ Grammar::setUpSupport ()
   // This is also where the FunctionTypeTable should be moved (to tidy up ROSE a bit).
      NEW_TERMINAL_MACRO (TypeTable,         "TypeTable",         "TYPE_TABLE" );
 
-  // DQ (6/12/2013): Added list IR nodes to support Java language requirements.
-     NEW_TERMINAL_MACRO (JavaImportStatementList,  "JavaImportStatementList", "JavaImportStatementListTag" );
-     NEW_TERMINAL_MACRO (JavaClassDeclarationList, "JavaClassDeclarationList", "JavaClassDeclarationListTag" );
-
   // DQ (9/15/2018): Adding support for header file usage report (for unparsing).
      NEW_TERMINAL_MACRO (HeaderFileReport, "HeaderFileReport", "HeaderFileReportTag" );
 
@@ -268,7 +260,7 @@ Grammar::setUpSupport ()
           GraphNodeList         | GraphEdgeList             | TypeTable                |
           NameGroup             | DimensionObject           | FormatItem               |
           FormatItemList        | DataStatementGroup        | DataStatementObject      | IncludeFile          |
-          DataStatementValue    | JavaImportStatementList   | JavaClassDeclarationList | HeaderFileReport,
+          DataStatementValue    | HeaderFileReport,
           "Support", "SupportTag", false);
 //#endif
 
@@ -413,10 +405,6 @@ Grammar::setUpSupport ()
      SourceFile.setFunctionPrototype          ( "HEADER_APPLICATION_SOURCE_FILE", "../Grammar/Support.code");
   // SourceFile.setAutomaticGenerationOfConstructor(false);
 
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-     BinaryComposite.setFunctionPrototype          ( "HEADER_APPLICATION_BINARY_FILE", "../Grammar/Support.code");
-#endif
-
      UnknownFile.setFunctionPrototype          ( "HEADER_APPLICATION_UNKNOWN_FILE", "../Grammar/Support.code");
 
 
@@ -430,10 +418,6 @@ Grammar::setUpSupport ()
      FileList.setFunctionPrototype             ( "HEADER_APPLICATION_FILE_LIST", "../Grammar/Support.code");
      Directory.setFunctionPrototype            ( "HEADER_APPLICATION_DIRECTORY", "../Grammar/Support.code");
      DirectoryList.setFunctionPrototype        ( "HEADER_APPLICATION_DIRECTORY_LIST", "../Grammar/Support.code");
-
-  // DQ (6/12/2013): Added to support Java requirements.
-     JavaImportStatementList.setFunctionPrototype  ( "HEADER_JAVA_IMPORT_STATEMENT_LIST", "../Grammar/Support.code");
-     JavaClassDeclarationList.setFunctionPrototype ( "HEADER_JAVA_CLASS_DECLARATION_LIST", "../Grammar/Support.code");
 
   // DQ (12/19/2005): Support for explicitly specified qualified names
      QualifiedName.setFunctionPrototype        ( "HEADER_QUALIFIED_NAME", "../Grammar/Support.code");
@@ -721,21 +705,6 @@ Grammar::setUpSupport ()
      Directory.setFunctionPrototype      ( "HEADER_ATTRIBUTE_SUPPORT", "../Grammar/Support.code");
      Directory.setFunctionSource         ( "SOURCE_ATTRIBUTE_SUPPORT", "../Grammar/Support.code");
 
-#if 0
-  // DQ (6/12/2013): Added support for Java requirements.
-     JavaImportStatementList.setDataPrototype ( "SgJavaImportStatementPtrList", "java_import_list", "",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JavaClassDeclarationList.setDataPrototype ( "SgClassDeclarationPtrList", "java_class_list", "",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-#else
-  // DQ (11/20/2013): Modified these data members to be traversed by the AST traversal mechanism.
-  // DQ (6/12/2013): Added support for Java requirements.
-     JavaImportStatementList.setDataPrototype ( "SgJavaImportStatementPtrList", "java_import_list", "",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     JavaClassDeclarationList.setDataPrototype ( "SgClassDeclarationPtrList", "java_class_list", "",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-#endif
-
      FileList.setDataPrototype          ( "SgFilePtrList", "listOfFiles", "",
   //             NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
   //             NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
@@ -831,32 +800,6 @@ Grammar::setUpSupport ()
   // This is part of support for a new implementation of name qualification.
      SourceFile.setDataPrototype   ( "SgStatementPtrList", "statementNumberContainer", "",
                                      NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-#endif
-
-#if 0
-  // DQ (6/12/2013): Added Java support for reference to Java package, imports and type declarations.
-     SourceFile.setDataPrototype   ( "SgJavaPackageStatement *", "package", "= NULL",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, DEF_DELETE, NO_COPY_DATA);
-     SourceFile.setDataPrototype   ( "SgJavaImportStatementList*", "import_list", "= NULL",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, DEF_DELETE, NO_COPY_DATA);
-     SourceFile.setDataPrototype   ( "SgJavaClassDeclarationList*", "class_list", "= NULL",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, DEF_DELETE, NO_COPY_DATA);
-#else
-  // DQ (11/19/2013): Modified these data members to be traversed by the AST traversal mechanism.
-  // DQ (6/12/2013): Added Java support for reference to Java package, imports and type declarations.
-     SourceFile.setDataPrototype   ( "SgJavaPackageStatement *", "package", "= NULL",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, DEF_DELETE, NO_COPY_DATA);
-     SourceFile.setDataPrototype   ( "SgJavaImportStatementList*", "import_list", "= NULL",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, DEF_DELETE, NO_COPY_DATA);
-     SourceFile.setDataPrototype   ( "SgJavaClassDeclarationList*", "class_list", "= NULL",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, DEF_DELETE, NO_COPY_DATA);
-#endif
-
-#if 0
-     SourceFile.setDataPrototype   ( "SgJavaImportStatementPtrList", "import_list", "",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE, NO_COPY_DATA);
-     SourceFile.setDataPrototype   ( "SgClassDeclarationPtrList", "class_list", "",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE, NO_COPY_DATA);
 #endif
 
   // DQ (8/7/2018): Mark files explicitly as header files (support for unparse headers and unparse tokens).
@@ -1092,26 +1035,6 @@ Grammar::setUpSupport ()
      File.setDataPrototype         ( "int", "upc_threads", "= 0",
                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-  // DQ (10/11/2010): Added initial Java support.
-     File.setDataPrototype         ( "bool", "Java_only", "= false",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // Rasmussen (4/16/2020): Jovial_only had been left out of initial Jovial support.
-     File.setDataPrototype         ( "bool", "Jovial_only", "= false",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // X10 support
-     File.setDataPrototype         ( "bool", "X10_only", "= false",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // PHP support
-     File.setDataPrototype         ( "bool", "PHP_only", "= false",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // Python support
-     File.setDataPrototype         ( "bool", "Python_only", "= false",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
   // TV (05/17/2010) Cuda support
      File.setDataPrototype         ( "bool", "Cuda_only", "= false",
                                      NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
@@ -1119,36 +1042,11 @@ Grammar::setUpSupport ()
      File.setDataPrototype         ( "bool", "OpenCL_only", "= false",
                                      NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-  // DQ (8/25/2017): Added more language support.
-  // Csharp support
-     File.setDataPrototype         ( "bool", "Csharp_only", "= false",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // DQ (8/25/2017): Added more language support.
-  // Ada support
-     File.setDataPrototype         ( "bool", "Ada_only", "= false",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // DQ (8/25/2017): Added more language support.
-  // Cobol support
-     File.setDataPrototype         ( "bool", "Cobol_only", "= false",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
   // DQ (9/7/2018): By default for C/C++ I now think this should be false (and it is set this way for source files.
   // DQ (5/18/2008): Added flag to specify that CPP preprocessing is required (default true for C and C++, and
   // Fortran with *.F?? extension an explicitly set to false for fortran with *.f?? extension and binaries).
      File.setDataPrototype         ( "bool", "requires_C_preprocessor", "= true",
                                      NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-#if 1
-  // DQ (2/5/2009): I think we need to make each file as binary or not and also record the setting on the command line.
-  // DQ (2/4/2009): Moved this to the SgProject since it applies to the command line and all files.
-  // DQ (1/9/2008): This permits a file to be marked explicitly as a binary file and avoids
-  // confusion when processing object files within linking (where no source file is present
-  // and the object file could be interpreted as being provided for binary analysis).
-     File.setDataPrototype         ( "bool", "binary_only", "= false",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-#endif
-
   // DQ (8/19/2007): Added more options specific to Fortran support
   // File.setDataPrototype         ( "bool", "fixedFormat", "= false",
   //             NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
@@ -1174,14 +1072,8 @@ Grammar::setUpSupport ()
   // Lowering OpenMP directives to code with explicit runtime calls
      File.setDataPrototype         ( "bool", "openmp_lowering", "= false",
                                      NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-  // Liao, 3/12/2020: options to support OpenACC
-     File.setDataPrototype         ( "bool", "openacc", "= false",
+     File.setDataPrototype         ( "bool", "openmp_analyzing", "= false",
                                      NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     File.setDataPrototype         ( "bool", "openacc_parse_only", "= false",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     File.setDataPrototype         ( "bool", "openacc_ast_only", "= false",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
      File.setDataPrototype         ( "bool", "cray_pointer_support", "= false",
                                      NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
@@ -1462,23 +1354,7 @@ Grammar::setUpSupport ()
                  NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      File.setDataPrototype         ( "bool", "sourceFileUsesPythonFileExtension", "= false",
                  NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     File.setDataPrototype         ( "bool", "sourceFileUsesJavaFileExtension", "= false",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     File.setDataPrototype         ( "bool", "sourceFileUsesBinaryFileExtension", "= false",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      File.setDataPrototype         ( "bool", "sourceFileTypeIsUnknown", "= false",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     File.setDataPrototype         ( "bool", "sourceFileUsesX10FileExtension", "= false",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // DQ (28/8/2017): Adding language support.
-     File.setDataPrototype         ( "bool", "sourceFileUsesCsharpFileExtension", "= false",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     File.setDataPrototype         ( "bool", "sourceFileUsesAdaFileExtension", "= false",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     File.setDataPrototype         ( "bool", "sourceFileUsesJovialFileExtension", "= false",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     File.setDataPrototype         ( "bool", "sourceFileUsesCobolFileExtension", "= false",
                  NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // DQ (9/26/2011): Added support to detect dangling pointers in ROSE translators.
@@ -1504,22 +1380,6 @@ Grammar::setUpSupport ()
   // (this is part of the internal testing of the new (experimental) Fortran support).
      File.setDataPrototype("bool", "experimental_fortran_frontend_OFP_test", "= false",
             NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-  // To be consistent with the use of binaryFile we will implement get_binaryFile() and set_binaryFile()
-  // functions so that we can support the more common (previous) interface where there was only a single
-  // SgAsmFile pointers called "binaryFile".
-     BinaryComposite.setDataPrototype("SgAsmGenericFileList*", "genericFileList", "= NULL",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     BinaryComposite.setDataPrototype("SgAsmInterpretationList*","interpretations","= NULL",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-#endif
-
-  // DQ (11/5/2008): This should maybe be added to the SgAsmGenericFile instead of the SgBinaryFile, if so
-  // we will move it.  For now we can't add it to SgAsmGenericFile becuase we could not traverse both a
-  // list and a data member in the definition of an AST traversal.
-  // BinaryFile.setDataPrototype("SgAsmDwarfCompilationUnit*","dwarf_info","= NULL",
-  //             NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
   // DQ (8/16/2008): parse binary executable file format only (some uses of ROSE may only do analysis of
   // the binary executable file format and not the instructions).  This is also useful for testing.
@@ -1739,6 +1599,22 @@ Grammar::setUpSupport ()
      GraphNode.setDataPrototype("std::map<int, std::string>","properties", "",
                            NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
+     OmpFlowGraphNode.setDataPrototype("std::list<SgNode* >", "parents", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpFlowGraphNode.setDataPrototype("std::list<SgNode* >", "children", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpFlowGraphNode.setDataPrototype("SgNode*", "node", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpFlowGraphNode.setDataPrototype("SgNode*", "begin_statement", "= NULL",
+                       NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpFlowGraphNode.setDataPrototype("SgNode*", "end_statement", "= NULL",
+                       NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpFlowGraphNode.setDataPrototype("int", "cost", "= 0",
+                       NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpFlowGraphSerialNode.setDataPrototype("std::list<SgExpression* >", "data", "",
+                       NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpFlowGraphTaskNode.setDataPrototype("int", "num_threads", "= 0",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // ******************************************************************************
   //                                SgGraphEdge
@@ -2194,19 +2070,6 @@ Grammar::setUpSupport ()
      Project.setDataPrototype ("std::list<std::string>", "Fortran_ofp_jvm_options", "",
             NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-  // DQ (10/11/2010): Added initial Java support.
-     Project.setDataPrototype ( "bool", "Java_only", "= false",
-            NO_CONSTRUCTOR_PARAMETER, NO_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // Rasmussen (4/16/2020): Jovial_only had been left out of initial Jovial support.
-     Project.setDataPrototype ( "bool", "Jovial_only", "= false",
-            NO_CONSTRUCTOR_PARAMETER, NO_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     Project.setDataPrototype ( "bool", "X10_only", "= false",
-            NO_CONSTRUCTOR_PARAMETER, NO_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     Project.setDataPrototype ( "bool", "Ada_only", "= false",
-            NO_CONSTRUCTOR_PARAMETER, NO_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // Liao 6/29/2012: support using rose translator to act like a linker wrapper if -rose:openmp:lowering is specified
   // Add a flag to indicate if this is a linking involved in the lowered OpenMP input program.
@@ -2232,25 +2095,6 @@ Grammar::setUpSupport ()
             NO_CONSTRUCTOR_PARAMETER, NO_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      Project.setDataPrototype("std::string", "Java_source_destdir", "= Rose::getWorkingDirectory()",
             NO_CONSTRUCTOR_PARAMETER, NO_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     Project.setDataPrototype ("std::string", "Java_s", "",
-            NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     Project.setDataPrototype ("std::string", "Java_source", "",
-            NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     Project.setDataPrototype ("std::string", "Java_target", "",
-            NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     Project.setDataPrototype ("std::string", "Java_encoding", "",
-            NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     Project.setDataPrototype ("std::string", "Java_g", "",
-            NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     Project.setDataPrototype ("bool", "Java_nowarn", "",
-            NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     Project.setDataPrototype ("bool", "Java_verbose", "",
-            NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     Project.setDataPrototype ("bool", "Java_deprecation", "",
-            NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     Project.setDataPrototype ("std::list<std::string>", "Java_bootclasspath", "",
-            NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
   // DQ (10/3/2010): Adding support for having CPP directives explicitly in the AST (as IR nodes instead of handled similar to comments).
      Project.setDataPrototype ( "bool", "addCppDirectivesToAST", "= false",
             NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
@@ -2980,17 +2824,11 @@ Specifiers that can have only one value (implemented with a protected enum varia
      DirectoryList.setFunctionSource   ( "SOURCE_APPLICATION_DIRECTORY_LIST", "../Grammar/Support.code");
      File.setFunctionSource            ( "SOURCE_APPLICATION_FILE", "../Grammar/Support.code");
      SourceFile.setFunctionSource      ( "SOURCE_APPLICATION_SOURCE_FILE", "../Grammar/Support.code");
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-     BinaryComposite.setFunctionSource ( "SOURCE_APPLICATION_BINARY_FILE", "../Grammar/Support.code");
-#endif
      FileList.setFunctionSource        ( "SOURCE_APPLICATION_FILE_LIST", "../Grammar/Support.code");
      UnknownFile.setFunctionSource     ( "SOURCE_APPLICATION_UNKNOWN_FILE", "../Grammar/Support.code");
 
   // DQ (9/18/2-18): Adding support for the include file tree into the SgSourceFile.
      IncludeFile.setFunctionSource      ( "SOURCE_INCLUDE_FILE", "../Grammar/Support.code");
-
-     JavaImportStatementList.setFunctionSource  ( "SOURCE_JAVA_IMPORT_STATEMENT_LIST", "../Grammar/Support.code");
-     JavaClassDeclarationList.setFunctionSource ( "SOURCE_JAVA_CLASS_DECLARATION_LIST", "../Grammar/Support.code");
 
      HeaderFileReport.setFunctionSource      ( "SOURCE_HEADER_FILE_REPORT", "../Grammar/Support.code");
 

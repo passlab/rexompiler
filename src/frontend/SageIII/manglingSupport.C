@@ -352,19 +352,10 @@ mangleQualifiersToString (const SgScopeStatement* scope)
                case V_SgTemplateFunctionDefinition:
                case V_SgFunctionDefinition:
                   {
-                    // Rasmussen (3/17/2021): Jovial doesn't need name mangling for functions as
-                    // they can cause infinite recursion because a typedef may be a function argument.
-                    if (SageInterface::is_Jovial_language())
-                      {
-                        mangled_name = "";
-                      }
-                    else
-                      {
-                     // 'scope' is part of scope for locally defined classes
-                        const SgFunctionDefinition* def = isSgFunctionDefinition (scope);
-                        ROSE_ASSERT(def != nullptr);
-                        mangled_name = def->get_mangled_name().getString();
-                      }
+                    // 'scope' is part of scope for locally defined classes
+                    const SgFunctionDefinition* def = isSgFunctionDefinition (scope);
+                    ROSE_ASSERT(def != nullptr);
+                    mangled_name = def->get_mangled_name().getString();
                     break;
                   }
 
@@ -373,7 +364,6 @@ mangleQualifiersToString (const SgScopeStatement* scope)
                case V_SgDoWhileStmt:
                case V_SgForStatement:
                case V_SgIfStmt:
-               case V_SgJovialForThenStatement:
                case V_SgSwitchStatement:
                case V_SgWhileStmt:
                case V_SgBasicBlock:
@@ -386,67 +376,6 @@ mangleQualifiersToString (const SgScopeStatement* scope)
                     mangled_name = joinMangledQualifiersToString (par_scope_name,stmt_name);
                     break;
                   }
-
-               case V_SgAdaPackageSpec:
-                  {
-                    const SgAdaPackageSpec*     spec   = isSgAdaPackageSpec(scope);
-                    const SgNode*               parent = spec->get_parent();
-                    ROSE_ASSERT(parent);
-
-                    const SgAdaPackageSpecDecl* dcl    = isSgAdaPackageSpecDecl(parent);
-                    // ROSE_ASSERT(dcl);
-
-                    // \todo \revise dcl may not exist for a special, hidden scope
-                    mangled_name = dcl ? dcl->get_name().getString() // or get_mangled_name ??
-                                       : spec->get_mangled_name().getString();
-                    break;
-                  }
-
-               case V_SgAdaPackageBody:
-                 {
-                   const SgAdaPackageBody*     spec   = isSgAdaPackageBody(scope);
-                   const SgNode*               parent = spec->get_parent();
-                   ROSE_ASSERT(parent);
-
-                   const SgAdaPackageBodyDecl* dcl    = isSgAdaPackageBodyDecl(parent);
-                   ROSE_ASSERT(dcl);
-
-                   mangled_name = dcl->get_name().getString();
-                   break;
-                 }
-
-               case V_SgAdaTaskSpec:
-                  {
-                    const SgAdaTaskSpec*     spec   = isSgAdaTaskSpec(scope);
-                    const SgNode*            parent = spec->get_parent();
-                    ROSE_ASSERT(parent);
-
-                    // or get_mangled_name ??
-                    if (const SgAdaTaskSpecDecl* taskspec = isSgAdaTaskSpecDecl(parent))
-                      mangled_name = taskspec->get_name().getString();
-                    else if (const SgAdaTaskTypeDecl* tasktype = isSgAdaTaskTypeDecl(parent))
-                      mangled_name = tasktype->get_name().getString();
-                    else
-                      ROSE_ABORT();
-
-                    break;
-                  }
-
-               case V_SgAdaTaskBody:
-                  {
-                    const SgAdaTaskBody*     body   = isSgAdaTaskBody(scope);
-                    const SgNode*            parent = body->get_parent();
-                    ROSE_ASSERT(parent);
-
-                    // or get_mangled_name ??
-                    const SgAdaTaskBodyDecl* bodydecl = isSgAdaTaskBodyDecl(parent);
-                    ROSE_ASSERT(bodydecl);
-
-                    mangled_name = bodydecl->get_name().getString();
-                    break;
-                  }
-
-
            // PP (06/01/20) - not sure how to handle function parameter scope;
            //                 for now, handle like SgGlobal
                case V_SgFunctionParameterScope:
@@ -1525,21 +1454,6 @@ mangleExpression (const SgExpression* expr)
         case V_SgFunctionParameterRefExp: {
           const SgFunctionParameterRefExp* e = isSgFunctionParameterRefExp (expr);
           mangled_name << "_bFunctionParameterRefExp_" << std::hex << e << "_eFunctionParameterRefExp_";
-          break;
-        }
-        case V_SgAdaAttributeExp: {
-          const SgAdaAttributeExp* e = isSgAdaAttributeExp (expr);
-          mangled_name << "_badaAttributeExp_" << std::hex << e << "_eadaAttributeExp_";
-          break;
-        }
-        case V_SgAdaOthersExp: {
-          const SgAdaOthersExp* e = isSgAdaOthersExp(expr);
-          mangled_name << "_badaOthersExp_" << std::hex << e << "_eadaOthersExp_";
-          break;
-        }
-        case V_SgAdaRenamingRefExp: {
-          const SgAdaRenamingRefExp* e = isSgAdaRenamingRefExp(expr);
-          mangled_name << "_badaRenamingRefExp_" << std::hex << e << "_eadaRenamingRefExp_";
           break;
         }
         default: {

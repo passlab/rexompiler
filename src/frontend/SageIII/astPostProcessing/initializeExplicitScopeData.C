@@ -204,12 +204,6 @@ InitializeExplicitScopes::visit ( SgNode *node)
                               break;
                             }
 
-                         case V_SgPythonGlobalStmt:
-                            {
-                                scope = SageInterface::getGlobalScope(parentNode);
-                                break;
-                            }
-
                          case V_SgEnumDeclaration:
                             {
                                 scope = SageInterface::getEnclosingScope(parentNode);

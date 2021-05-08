@@ -28,12 +28,10 @@ add_custom_target(
 include_directories(
   ${Boost_INCLUDE_DIRS}
   ${CMAKE_BINARY_DIR}/src/roseSupport
-  ${CMAKE_SOURCE_DIR}/src/roseExtensions/failSafe
   ${CMAKE_SOURCE_DIR}/src/midend/programTransformation/transformationTracking
   ${CMAKE_BINARY_DIR}/src/3rdPartyLibraries/fortran-parser
   ${JAVA_INCLUDE_PATH}
   ${JAVA_INCLUDE_PATH2}
-  ${CMAKE_SOURCE_DIR}/src/frontend/ECJ_ROSE_Connection
   ${CMAKE_SOURCE_DIR}/src/midend/astMatching
   ${CMAKE_SOURCE_DIR}/src/util
   ${CMAKE_SOURCE_DIR}/src/frontend
@@ -87,7 +85,6 @@ add_subdirectory(util)
 add_subdirectory(ROSETTA)
 add_subdirectory(roseSupport)
 add_subdirectory(3rdPartyLibraries)
-add_subdirectory(roseIndependentSupport)
 
 add_definitions(-DROSE_DLL_EXPORTS)
 
@@ -95,7 +92,6 @@ add_subdirectory(roseExtensions)
 add_subdirectory(frontend)
 add_subdirectory(midend)
 add_subdirectory(backend)
-add_subdirectory(Rose)
 
 ########################################################################################################################
 # The ROSE library
@@ -115,9 +111,6 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:virtualCFG>
   $<TARGET_OBJECTS:astFromString>
   $<TARGET_OBJECTS:roseSupport>
-  $<TARGET_OBJECTS:roseDisassemblers>
-  $<TARGET_OBJECTS:roseBinaryFormats>
-  $<TARGET_OBJECTS:roseAsmUnparser>
   $<TARGET_OBJECTS:astMerge>
   $<TARGET_OBJECTS:astFixup>
   $<TARGET_OBJECTS:midend>
@@ -127,7 +120,6 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:astProcessing>
   $<TARGET_OBJECTS:astMatching>
   $<TARGET_OBJECTS:midend_util>
-  $<TARGET_OBJECTS:midend_binary>
   $<TARGET_OBJECTS:midend_pt>
   $<TARGET_OBJECTS:sageInterface>
   $<TARGET_OBJECTS:astTokenStream>
@@ -135,33 +127,14 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:astVisualization>
   $<TARGET_OBJECTS:includeDirectivesProcessing>
   $<TARGET_OBJECTS:astPostProcessing>
-  $<TARGET_OBJECTS:failsafe>
   $<TARGET_OBJECTS:trans_tracking>
   $<TARGET_OBJECTS:astRewriteMechanism>
-  $<TARGET_OBJECTS:roseBinaryAnalysis>
-  $<TARGET_OBJECTS:roseBinaryAnalysisConcolic>
-  $<TARGET_OBJECTS:roseBinaryAnalysisInstructionSemantics2>
-  $<TARGET_OBJECTS:roseBinaryAnalysisModelChecker>
-  $<TARGET_OBJECTS:roseBinaryAnalysisPartitioner2>
-  $<TARGET_OBJECTS:roseBinaryAnalysisUnparser>
   $<TARGET_OBJECTS:mstl>)
-
-if(enable-java)
-  list(APPEND rose_LIB_SRCS $<TARGET_OBJECTS:roseJava>)
-endif()
-
-if (enable-php)
-  list(APPEND rose_LIB_SRCS $<TARGET_OBJECTS:phpFrontend>)
-endif()
 
 if(NOT enable-internalFrontendDevelopment)
   list(APPEND rose_LIB_SRCS
     $<TARGET_OBJECTS:midend_pa>
     $<TARGET_OBJECTS:midend_loopproc>)
-endif()
-
-if(enable-rosehpct)
-  list(APPEND rose_LIB_SRCS $<TARGET_OBJECTS:roseExtensions>)
 endif()
 
 ########################################################################################################################
@@ -174,7 +147,11 @@ add_dependencies(ROSE_DLL roseUtil)
 
 set_target_properties(ROSE_DLL PROPERTIES OUTPUT_NAME "rose")
 
-target_link_libraries(ROSE_DLL ${edg_lib} ${link_with_libraries})
+if (use_ompparser)
+    target_link_libraries(ROSE_DLL ${edg_lib} ${link_with_libraries} ompparser)
+else()
+    target_link_libraries(ROSE_DLL ${edg_lib} ${link_with_libraries})
+endif()
 
 set_target_properties(ROSE_DLL PROPERTIES
   VERSION 1.0.0
@@ -199,16 +176,6 @@ if(Z3_FOUND_LIB)
   target_link_libraries(ROSE_DLL ${Z3_LIBRARY})
 endif()
 
-# YAML-cpp is for parsing YAML and JSON files.
-if(YAMLCPP_FOUND)
-  target_link_libraries(ROSE_DLL ${YAMLCPP_LIBRARY})
-endif()
-
-# Dlib is a C++ support library. ROSE uses matrices and some graph algorithms currently.
-if(DLIB_FOUND)
-  target_link_libraries(ROSE_DLL ${DLIB_LIBRARY})
-endif()
-
 # The GNU GCrypt library is used for computing a wide variety of hashes. It needs the GPG-Error library.
 if(GCRYPT_FOUND AND GPGERROR_FOUND)
   target_link_libraries(ROSE_DLL ${GCRYPT_LIBRARY})
@@ -220,20 +187,9 @@ if(ZLIB_FOUND)
   target_link_libraries(ROSE_DLL ${ZLIB_LIBRARY})
 endif()
 
-# If POET is enabled in ROSE, we need to link in some additional dependencies.
-if(enable-poet)
-  set(LINK_FILES
-    poet
-    libhpdf
-    ${CMAKE_DL_LIBS}
-    libX10Traversal)
-  add_dependencies(ROSE_DLL poet)
-else()
-  set(LINK_FILES
-    libhpdf
-    ${CMAKE_DL_LIBS}
-    libX10Traversal)
-endif()
+set(LINK_FILES
+  libhpdf
+  ${CMAKE_DL_LIBS})
 
 # ???
 if(NOT BINARY_EDG)
@@ -247,14 +203,6 @@ endif()
 
 if (enable-java)
   list(APPEND LINK_FILES ${JAVA_JVM_LIBRARY})
-endif()
-
-if(enable-python)
-  list(APPEND LINK_FILES unparsePython rosePythonFrontend)
-endif()
-
-if(enable-rosehpct)
-  list(APPEND LINK_FILES ${LIBXML2_LIBRARIES})
 endif()
 
 # This was an experiment to generate smaller files from ROSETTA. (I'm not sure of the status [Matzke 2019-02-02].)

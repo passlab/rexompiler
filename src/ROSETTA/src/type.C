@@ -43,10 +43,10 @@ Grammar::setUpTypes ()
      NEW_TERMINAL_MACRO ( TypeFixed           , "TypeFixed",            "T_FIXED" );
 
      //SK(08/20/2015): TypeMatrix to represent a Matlab matrix type
-     NEW_TERMINAL_MACRO ( TypeMatrix          , "TypeMatrix",           "T_MATRIX" );
+     NEW_TERMINAL_MACRO ( TypeMatrix          , "TypeMatrix",            "T_MATRIX" );
 
      //SK(08/20/2015): TypeTuple to represent the return type of a Matlab function that can return multiple types
-     NEW_TERMINAL_MACRO ( TypeTuple           , "TypeTuple",            "T_TUPLE");
+     NEW_TERMINAL_MACRO ( TypeTuple           , "TypeTuple",             "T_TUPLE");
 
   // DQ (7/29/2014): Added nullptr type (I think we require this for C++11 support).
      NEW_TERMINAL_MACRO ( TypeNullptr         , "TypeNullptr",          "T_NULLPTR" );
@@ -80,19 +80,6 @@ Grammar::setUpTypes ()
   // with a TemplateInstantiationType derived from it.
   //   NEW_TERMINAL_MACRO ( ClassType           , "ClassType",            "T_CLASS" );
 
-  // DQ (8/18/2011): Java specific support for generics.
-     NEW_TERMINAL_MACRO ( JavaParameterizedType , "JavaParameterizedType", "T_JAVA_PARAM" );
-     NEW_TERMINAL_MACRO ( JavaQualifiedType , "JavaQualifiedType", "T_JAVA_QUALIFIED" );
-     NEW_TERMINAL_MACRO ( JavaWildcardType, "JavaWildcardType", "T_JAVA_WILD" );
-
-  // DQ (2/10/2014): Added SgNamedType IR nodes for Philippe.
-     NEW_TERMINAL_MACRO ( JavaUnionType     , "JavaUnionType", "T_JAVA_UNION" );
-     NEW_TERMINAL_MACRO ( JavaParameterType , "JavaParameterType", "T_JAVA_PARAMETER" );
-
-  // Rasmussen (5/10/2019): Added a Table type for Jovial (tables are structs with array dimensions)
-     NEW_TERMINAL_MACRO ( JovialTableType , "JovialTableType", "T_JOVIAL_TABLE" );
-
-     //
      // [DT] 5/11/2000 -- Added TemplateType.  Should it be called TemplateInstantiationType
      //      to maintain symmetry with TemplateInstantiationDecl and TemplateInstantiationSymbol?
      //
@@ -121,15 +108,6 @@ Grammar::setUpTypes ()
      NEW_TERMINAL_MACRO ( PartialFunctionModifierType, "PartialFunctionModifierType", "T_PARTIAL_FUNCTION_MODIFIER" );
      NEW_TERMINAL_MACRO ( ArrayType           , "ArrayType",            "T_ARRAY" );
      NEW_TERMINAL_MACRO ( TypeEllipse         , "TypeEllipse",          "T_ELLIPSE" );
-     NEW_TERMINAL_MACRO ( AdaAccessType       , "AdaAccessType",        "T_ADA_ACCESS" );
-     NEW_TERMINAL_MACRO ( AdaSubtype          , "AdaSubtype",           "T_ADA_SUBTYPE" );
-     NEW_TERMINAL_MACRO ( AdaDerivedType      , "AdaDerivedType",       "T_ADA_DERIVEDTYPE" );
-     NEW_TERMINAL_MACRO ( AdaModularType      , "AdaModularType",       "T_ADA_MODULAR_TYPE" );
-     NEW_TERMINAL_MACRO ( AdaFloatType        , "AdaFloatType",         "T_ADA_FLOAT" );
-
-  // Rasmussen (4/4/2020): Added SgJovialBitType for Jovial. This type participates in logical operations
-  //                       with literals TRUE and FALSE.
-     NEW_TERMINAL_MACRO ( JovialBitType       , "JovialBitType",        "T_JOVIAL_BIT" );
 
   // FMZ (4/8/2009): Added for Cray Pointer
      NEW_TERMINAL_MACRO ( TypeCrayPointer           , "TypeCrayPointer",            "T_CRAY_POINTER" );
@@ -169,29 +147,14 @@ Grammar::setUpTypes ()
   // For the moment it seems that ROSETTA is by default ignoring this connection!
   // printf ("WARNING: TemplateInstantiationType specificed as a child of both NamedType and ClassType! \n");
 
-  // PP 05/07/20
-     NEW_TERMINAL_MACRO ( AdaTaskType , "AdaTaskType", "T_ADA_TASK_TYPE" );
-
   // NEW_NONTERMINAL_MACRO (NamedType,
   //                        ClassType | TemplateInstantiationType | EnumType | TypedefType,
   //                        "NamedType","T_NAME");
-#if 0
   // DQ (2/10/2014): Original code
+     NEW_TERMINAL_MACRO ( ClassType           , "ClassType",            "T_CLASS" );
      NEW_NONTERMINAL_MACRO (NamedType,
-                            ClassType | JavaParameterizedType | JavaQualifiedType | EnumType | TypedefType,
+                           ClassType | EnumType | TypedefType | NonrealType,
                             "NamedType","T_NAME", false);
-#else
-  // DQ (2/10/2014): Added SgNamedType IR nodes for Philippe.
-  // Rasmussen (5/10/2019): Added a Table type for Jovial (tables are structs with array dimensions)
-     NEW_NONTERMINAL_MACRO (ClassType,
-                            JavaParameterType | JovialTableType,
-                            "ClassType","T_CLASS", true);
-     NEW_NONTERMINAL_MACRO (NamedType,
-                            ClassType             | EnumType          | TypedefType      | NonrealType |
-                            JavaParameterizedType | JavaQualifiedType | JavaWildcardType | AdaTaskType,
-                            "NamedType","T_NAME", false);
-#endif
-
   // DQ (5/11/2011): This is no longer used, and has not be used since the 3rd rewite of the name qualification
   // support in 2007.  We are now working on the 4rh rewrite of this horrible subject and it is not clear if it
   // should be revived.  I would rather place the name qualification information into the constructs the reference
@@ -220,11 +183,10 @@ Grammar::setUpTypes ()
           ReferenceType        | NamedType               | ModifierType              | FunctionType         |
           ArrayType            | TypeEllipse             | TemplateType              | QualifiedNameType    |
           TypeComplex          | TypeImaginary           | TypeDefault               | TypeCAFTeam          |
-          TypeCrayPointer      | TypeLabel               | JavaUnionType             | RvalueReferenceType  |
+          TypeCrayPointer      | TypeLabel               | RvalueReferenceType       |
           TypeNullptr          | DeclType                | TypeOfType                | TypeMatrix           |
           TypeTuple            | TypeChar16              | TypeChar32                | TypeFloat128         |
-          TypeFixed            | AutoType                | AdaAccessType             | AdaSubtype           |
-          AdaFloatType         | AdaModularType          | AdaDerivedType            | JovialBitType,
+          TypeFixed            | AutoType,
         "Type","TypeTag", false);
 
      //SK(08/20/2015): TypeMatrix and TypeTuple for Matlab
@@ -398,30 +360,6 @@ Grammar::setUpTypes ()
      PointerType.excludeFunctionSource      ( "SOURCE_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
      ArrayType.excludeFunctionPrototype     ( "HEADER_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
      ArrayType.excludeFunctionSource        ( "SOURCE_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
-
-
-  // PP (5/7/20): Adding ADA types
-     AdaTaskType.excludeFunctionSource    ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-     AdaTaskType.setFunctionSource        ( "SOURCE_ADA_TASK_TYPE", "../Grammar/Type.code");
-
-  // PP (3/24/20): Adding ADA types
-     AdaAccessType.excludeFunctionPrototype ( "HEADER_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
-     AdaAccessType.excludeFunctionSource    ( "SOURCE_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
-
-     AdaSubtype.excludeFunctionPrototype    ( "HEADER_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
-     AdaSubtype.excludeFunctionSource       ( "SOURCE_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
-
-     AdaDerivedType.excludeFunctionPrototype    ( "HEADER_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
-     AdaDerivedType.excludeFunctionSource       ( "SOURCE_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
-
-     AdaModularType.excludeFunctionPrototype ( "HEADER_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
-     AdaModularType.excludeFunctionSource    ( "SOURCE_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
-
-     AdaFloatType.excludeFunctionPrototype ( "HEADER_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
-     AdaFloatType.excludeFunctionSource    ( "SOURCE_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
-
-     JovialBitType.excludeFunctionPrototype ( "HEADER_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
-     JovialBitType.excludeFunctionSource    ( "SOURCE_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
 
   // Rasmussen (2/18/2020): Added TypeFixed for Jovial
      TypeFixed.excludeFunctionPrototype     ( "HEADER_BUILTIN_TYPE_SUPPORT", "../Grammar/Type.code" );
@@ -630,25 +568,6 @@ Grammar::setUpTypes ()
   // DQ (12/4/2011): Adding support for template declarations into the AST.
   // CUSTOM_CREATE_TYPE_MACRO(ClassType,"SOURCE_CREATE_TYPE_FOR_CLASS_TYPE","SgClassDeclaration* decl = NULL");
      CUSTOM_CREATE_TYPE_MACRO(ClassType,"SOURCE_CREATE_TYPE_FOR_CLASS_TYPE","SgDeclarationStatement* decl = NULL");
-     CUSTOM_CREATE_TYPE_MACRO(JavaParameterizedType,
-            "SOURCE_CREATE_TYPE_FOR_JAVA_PARAMETERIZED_TYPE",
-            "SgClassDeclaration* decl = NULL");
-     CUSTOM_CREATE_TYPE_MACRO(JavaQualifiedType,
-            "SOURCE_CREATE_TYPE_FOR_JAVA_QUALIFIED_TYPE",
-            "SgClassDeclaration* decl = NULL");
-
-  // DQ (2/10/2014): Added SgNamedType IR nodes for Philippe.
-     CUSTOM_CREATE_TYPE_MACRO(JavaUnionType,
-            "SOURCE_CREATE_TYPE_FOR_JAVA_UNION_TYPE",
-            "SgClassDeclaration* decl = NULL");
-
-     CUSTOM_CREATE_TYPE_MACRO(JavaParameterType,
-            "SOURCE_CREATE_TYPE_FOR_JAVA_PARAMETER_TYPE",
-            "SgClassDeclaration* decl = NULL");
-
-     CUSTOM_CREATE_TYPE_MACRO(JovialTableType,
-            "SOURCE_CREATE_TYPE_FOR_JOVIAL_TABLE_TYPE",
-            "SgClassDeclaration* decl = NULL");
 
    // DQ (11/28/2011): Make this more like the NamedType internal support.
   // CUSTOM_CREATE_TYPE_MACRO(TemplateType,"SOURCE_CREATE_TYPE_FOR_TEMPLATE_TYPE","SgTemplateInstantiationDecl* decl = NULL");
@@ -657,9 +576,6 @@ Grammar::setUpTypes ()
      CUSTOM_CREATE_TYPE_MACRO(NonrealType,"SOURCE_CREATE_TYPE_FOR_NONREAL_TYPE","SgNonrealDecl* decl = NULL");
      CUSTOM_CREATE_TYPE_MACRO(AutoType,"SOURCE_CREATE_TYPE_FOR_AUTO_TYPE","SgNode* node = NULL");
 
-     CUSTOM_CREATE_TYPE_MACRO(JavaWildcardType,
-            "SOURCE_CREATE_TYPE_FOR_JAVA_WILDCARD_TYPE",
-            "SgClassDeclaration *decl = NULL");
      CUSTOM_CREATE_TYPE_MACRO(TemplateType,
             "SOURCE_CREATE_TYPE_FOR_TEMPLATE_TYPE",
             "SgTemplateInstantiationDecl* decl = NULL");
@@ -687,38 +603,6 @@ Grammar::setUpTypes ()
      CUSTOM_CREATE_TYPE_MACRO(ArrayType,
             "SOURCE_CREATE_TYPE_FOR_ARRAY_TYPE",
             "SgType* type = NULL, SgExpression* expr = NULL");
-
-  // PP (5/07/20): Adding ADA types
-     CUSTOM_CREATE_TYPE_MACRO(AdaTaskType,
-            "SOURCE_CREATE_TYPE_FOR_ADA_TASK_TYPE",
-            "SgDeclarationStatement* decl = NULL");
-            //~ "SgAdaTaskTypeDecl* decl = NULL");
-
-  // PP (3/24/20): Adding ADA types
-     CUSTOM_CREATE_TYPE_MACRO(AdaAccessType,
-            "SOURCE_CREATE_TYPE_FOR_ADA_ACCESS_TYPE",
-            "SgType* type = NULL");
-
-  // PP (3/31/20): Adding ADA types
-     CUSTOM_CREATE_TYPE_MACRO(AdaSubtype,
-            "SOURCE_CREATE_TYPE_FOR_ADA_SUBTYPE",
-            "SgType* type = NULL, SgAdaTypeConstraint* constraint = NULL");
-
-     CUSTOM_CREATE_TYPE_MACRO(AdaDerivedType,
-            "SOURCE_CREATE_TYPE_FOR_ADA_DERIVEDTYPE",
-            "SgType* type = NULL");
-
-     CUSTOM_CREATE_TYPE_MACRO(AdaModularType,
-            "SOURCE_CREATE_TYPE_FOR_ADA_MODULAR_TYPE",
-            "SgExpression* modexpr = NULL");
-
-     CUSTOM_CREATE_TYPE_MACRO(AdaFloatType,
-            "SOURCE_CREATE_TYPE_FOR_ADA_FLOAT_TYPE",
-            "SgExpression* digits = NULL, SgAdaRangeConstraint* range = NULL");
-
-     CUSTOM_CREATE_TYPE_MACRO(JovialBitType,
-            "SOURCE_CREATE_TYPE_FOR_JOVIAL_BIT_TYPE",
-            "SgExpression* size = NULL");
 
   // Rasmussen (2/18/2020): Added support for the create function for Jovial TypeFixed
      CUSTOM_CREATE_TYPE_MACRO(TypeFixed,
@@ -866,64 +750,6 @@ Grammar::setUpTypes ()
      AutoType.setFunctionPrototype        ( "HEADER_AUTO_TYPE",   "../Grammar/Type.code" );
 //   AutoType.excludeFunctionPrototype    ( "HEADER_GET_NAME",    "../Grammar/Type.code" );
 //   AutoType.excludeFunctionPrototype    ( "HEADER_GET_MANGLED", "../Grammar/Type.code" );
-
-     JavaParameterizedType.setFunctionPrototype ("HEADER_JAVA_PARAMETERIZED_TYPE", "../Grammar/Type.code" );
-     JavaParameterizedType.setFunctionPrototype ("HEADER_GET_NAME", "../Grammar/Type.code" );
-     JavaParameterizedType.setFunctionPrototype ("HEADER_GET_QUALIFIED_NAME", "../Grammar/Type.code" );
-     JavaParameterizedType.setDataPrototype     ("SgNamedType*","raw_type","= NULL",
-                                                CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JavaParameterizedType.setDataPrototype     ("SgTemplateParameterList*","type_list","= NULL",
-                                                CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     JavaQualifiedType.setFunctionPrototype ("HEADER_JAVA_QUALIFIED_TYPE", "../Grammar/Type.code" );
-     JavaQualifiedType.setFunctionPrototype ("HEADER_GET_NAME", "../Grammar/Type.code" );
-     JavaQualifiedType.setFunctionPrototype ("HEADER_GET_QUALIFIED_NAME", "../Grammar/Type.code" );
-     JavaQualifiedType.setDataPrototype     ("SgNamedType *","parent_type","= NULL",
-                                            CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JavaQualifiedType.setDataPrototype     ("SgNamedType *","type","= NULL",
-                                            CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     JavaWildcardType.setFunctionPrototype ("HEADER_JAVA_WILDCARD_TYPE", "../Grammar/Type.code" );
-     JavaWildcardType.setFunctionPrototype ("HEADER_GET_NAME", "../Grammar/Type.code" );
-     JavaWildcardType.setFunctionPrototype ("HEADER_GET_QUALIFIED_NAME", "../Grammar/Type.code" );
-     JavaWildcardType.setDataPrototype     ("SgType*","bound_type","= NULL",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     // JavaWildcardType.setDataPrototype     ("SgType*","extends_type","= NULL",
-     //                                    CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     // JavaWildcardType.setDataPrototype     ("SgType*","super_type","= NULL",
-     //                                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JavaWildcardType.setDataPrototype     ("bool","is_unbound","= true",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JavaWildcardType.setDataPrototype     ("bool","has_extends","= false",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JavaWildcardType.setDataPrototype     ("bool","has_super","= false",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // DQ (2/10/2014): Added SgNamedType IR nodes for Philippe.
-     JavaUnionType.setFunctionPrototype ("HEADER_JAVA_UNION_TYPE", "../Grammar/Type.code" );
-     JavaUnionType.setDataPrototype     ("SgTypePtrList","type_list","",
-                                            NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-  // DQ (3/22/2017): This is reserved for virtual function specification.
-  // JavaUnionType.setFunctionPrototype ("HEADER_GET_NAME", "../Grammar/Type.code" );
-
-     JavaParameterType.setFunctionPrototype ("HEADER_JAVA_PARAMETER_TYPE", "../Grammar/Type.code" );
-     JavaParameterType.setFunctionPrototype ("HEADER_GET_QUALIFIED_NAME", "../Grammar/Type.code" );
-     JavaParameterType.setFunctionPrototype ("HEADER_GET_NAME", "../Grammar/Type.code" );
-
-     JovialTableType.setFunctionPrototype   ("HEADER_JOVIAL_TABLE_TYPE", "../Grammar/Type.code" );
-     JovialTableType.setFunctionPrototype   ("HEADER_GET_QUALIFIED_NAME", "../Grammar/Type.code" );
-     JovialTableType.setFunctionPrototype   ("HEADER_GET_NAME", "../Grammar/Type.code" );
-
-     JovialTableType.setDataPrototype ("SgType*"       , "base_type", "= NULL",
-                                 NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS,  NO_TRAVERSAL,  NO_DELETE);
-     JovialTableType.setDataPrototype ("SgExprListExp*", "dim_info" , "= NULL",
-                                 NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, DEF_DELETE);
-     JovialTableType.setDataPrototype ("int", "rank" , "= 0",
-                                 NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS,  NO_TRAVERSAL,  NO_DELETE);
-     JovialTableType.setDataPrototype ("unsigned int", "structure_specifier", "= 0",
-                                 NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS,  NO_TRAVERSAL,  NO_DELETE);
-     JovialTableType.setDataPrototype ("unsigned int", "bits_per_entry" , "= 0",
-                                 NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS,  NO_TRAVERSAL,  NO_DELETE);
 
    // TemplateInstantiationType.setFunctionPrototype ("HEADER_TEMPLATE_INSTANTIATION_TYPE", "../Grammar/Type.code" );
      TemplateType.setFunctionPrototype ("HEADER_TEMPLATE_TYPE", "../Grammar/Type.code" );
@@ -1109,90 +935,6 @@ Grammar::setUpTypes ()
      ArrayType.setDataPrototype ("bool", "is_variable_length_array" , "= false",
                                  NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-  // PP (5/7/20): Adding ADA types
-     AdaTaskType.setFunctionPrototype ("HEADER_ADA_TASK_TYPE", "../Grammar/Type.code" );
-
-     AdaTaskType.setFunctionPrototype ("HEADER_GET_QUALIFIED_NAME", "../Grammar/Type.code" );
-
-     AdaTaskType.setDataPrototype ("SgAdaTaskTypeDecl*", "decl", "= NULL",
-                                     CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // PP (3/24/20): Adding ADA types
-     AdaAccessType.setFunctionPrototype ("HEADER_ADA_ACCESS_TYPE", "../Grammar/Type.code" );
-
-     AdaAccessType.setFunctionPrototype ("HEADER_GET_QUALIFIED_NAME", "../Grammar/Type.code" );
-
-     AdaAccessType.setDataPrototype ("SgType*"      , "base_type", "= NULL",
-                                     CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     // MS: is it object or subprogram access type?
-     AdaAccessType.setDataPrototype ("bool", "is_object_type", "= true",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     // MS: is it general access ("all") or not?
-     AdaAccessType.setDataPrototype ("bool", "is_general_access", "= false",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     // MS: is it constant?
-     AdaAccessType.setDataPrototype ("bool", "is_constant", "= false",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     // MS: for subprogram access types, retain profile of parameters at access type
-     //     definition site
-     AdaAccessType.setDataPrototype ("SgFunctionParameterList*", "subprogram_profile", "= NULL",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     // for function access types, retain the return type
-     AdaAccessType.setDataPrototype ("SgType*", "return_type", "= NULL",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     // MS: is subprogram access type protected?
-     AdaAccessType.setDataPrototype ("bool", "is_protected", "= false",
-                                     NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaSubtype.setFunctionPrototype ("HEADER_ADA_SUBTYPE", "../Grammar/Type.code" );
-
-     AdaSubtype.setFunctionPrototype ("HEADER_GET_QUALIFIED_NAME", "../Grammar/Type.code" );
-
-     AdaSubtype.setDataPrototype ("SgType*"      , "base_type", "= NULL",
-                                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaSubtype.setDataPrototype ("SgAdaTypeConstraint*", "constraint", "= NULL",
-                                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaSubtype.setDataPrototype ("bool", "fromRootType", "= false",
-                                  NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaDerivedType.setFunctionPrototype ("HEADER_ADA_DERIVEDTYPE", "../Grammar/Type.code" );
-
-     AdaDerivedType.setFunctionPrototype ("HEADER_GET_QUALIFIED_NAME", "../Grammar/Type.code" );
-
-     AdaDerivedType.setDataPrototype ("SgType*"      , "base_type", "= NULL",
-                                      CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaModularType.setFunctionPrototype ("HEADER_ADA_MODULAR_TYPE", "../Grammar/Type.code" );
-
-     AdaModularType.setFunctionPrototype ("HEADER_GET_QUALIFIED_NAME", "../Grammar/Type.code" );
-
-     AdaModularType.setDataPrototype ("SgExpression*", "modexpr", "= NULL",
-                                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-
-     AdaFloatType.setFunctionPrototype ("HEADER_ADA_FLOAT_TYPE", "../Grammar/Type.code" );
-
-     AdaFloatType.setFunctionPrototype ("HEADER_GET_QUALIFIED_NAME", "../Grammar/Type.code" );
-
-     AdaFloatType.setDataPrototype ("SgExpression*", "digits", "= NULL",
-                                     CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaFloatType.setDataPrototype ("SgAdaRangeConstraint*", "constraint", "= NULL",
-                                     CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     JovialBitType.setFunctionPrototype ("HEADER_JOVIAL_BIT_TYPE", "../Grammar/Type.code" );
-     JovialBitType.setFunctionPrototype ("HEADER_GET_QUALIFIED_NAME", "../Grammar/Type.code" );
-     JovialBitType.setDataPrototype ("SgExpression*", "size", "= NULL",
-                                     CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
   // Rasmussen (2/18/2020): Added TypeFixed for Jovial
      TypeFixed.setFunctionPrototype ("HEADER_TYPE_FIXED_TYPE", "../Grammar/Type.code" );
      TypeFixed.setDataPrototype ("SgExpression*", "scale", "= NULL",
@@ -1285,14 +1027,6 @@ Grammar::setUpTypes ()
      ArrayType.excludeFunctionSource ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
   // ArrayType.setFunctionSource ( "SOURCE_GET_MANGLED_BASE_TYPE", "../Grammar/Type.code");
 
-     AdaAccessType.excludeFunctionSource ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-     AdaSubtype.excludeFunctionSource    ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-     AdaDerivedType.excludeFunctionSource( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-     AdaModularType.excludeFunctionSource( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-     AdaFloatType.excludeFunctionSource  ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-
-     JovialBitType.excludeFunctionSource  ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-
   // We require a special function here which is included directly
      FunctionType.excludeFunctionSource ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
 
@@ -1314,18 +1048,6 @@ Grammar::setUpTypes ()
 //   AutoType.excludeFunctionSource    ( "SOURCE_GET_NAME",    "../Grammar/Type.code");
      AutoType.excludeFunctionSource    ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
      AutoType.setFunctionSource        ( "SOURCE_AUTO_TYPE", "../Grammar/Type.code");
-
-     JavaParameterizedType.excludeFunctionSource    ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-
-     JavaQualifiedType.excludeFunctionSource    ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-
-     JavaWildcardType.excludeFunctionSource    ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-
-  // DQ (2/10/2014): Added SgNamedType IR nodes for Philippe.
-     JavaUnionType.excludeFunctionSource     ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-     JavaParameterType.excludeFunctionSource ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
-
-     JovialTableType.excludeFunctionSource   ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
 
   // TemplateInstantiationType.excludeFunctionSource ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
      EnumType.excludeFunctionSource     ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
@@ -1400,7 +1122,6 @@ Grammar::setUpTypes ()
 
   // ArrayType.editSubstitute( "MANGLED_ID_STRING", "A_" );
      TypeEllipse.editSubstitute( "MANGLED_ID_STRING", "e" );
-  // JavaWildcardType.editSubstitute( "MANGLED_ID_STRING", "?" );
 
   // DQ (8/25/2012): Avoid the default generated get_mangled_name() function for this IR node.
   // DQ (5/11/2012): We need to define this.
@@ -1420,14 +1141,6 @@ Grammar::setUpTypes ()
      FunctionType.setFunctionSource        ( "SOURCE_FUNCTION_TYPE", "../Grammar/Type.code");
 
      ClassType.setFunctionSource             ( "SOURCE_CLASS_TYPE", "../Grammar/Type.code");
-     JavaParameterizedType.setFunctionSource ( "SOURCE_JAVA_PARAMETERIZED_TYPE", "../Grammar/Type.code");
-     JavaQualifiedType.setFunctionSource     ( "SOURCE_JAVA_QUALIFIED_TYPE", "../Grammar/Type.code");
-     JavaWildcardType.setFunctionSource      ( "SOURCE_JAVA_WILDCARD_TYPE", "../Grammar/Type.code");
-
-     JavaUnionType.setFunctionSource     ( "SOURCE_JAVA_UNION_TYPE", "../Grammar/Type.code");
-     JavaParameterType.setFunctionSource ( "SOURCE_JAVA_PARAMETER_TYPE", "../Grammar/Type.code");
-
-     JovialTableType.setFunctionSource   ( "SOURCE_JOVIAL_TABLE_TYPE", "../Grammar/Type.code");
 
      TemplateType.setFunctionSource        ( "SOURCE_TEMPLATE_TYPE", "../Grammar/Type.code");
 
@@ -1462,12 +1175,5 @@ Grammar::setUpTypes ()
      TypeLabel.excludeFunctionSource     ( "SOURCE_GET_MANGLED", "../Grammar/Type.code");
      TypeLabel.setFunctionSource         ( "SOURCE_TYPE_LABEL_TYPE", "../Grammar/Type.code");
 
-     AdaAccessType.setFunctionSource     ( "SOURCE_ADA_ACCESS_TYPE", "../Grammar/Type.code");
-     AdaSubtype.setFunctionSource        ( "SOURCE_ADA_SUBTYPE", "../Grammar/Type.code");
-     AdaDerivedType.setFunctionSource    ( "SOURCE_ADA_DERIVEDTYPE", "../Grammar/Type.code");
-     AdaModularType.setFunctionSource    ( "SOURCE_ADA_MODULAR_TYPE", "../Grammar/Type.code");
-     AdaFloatType.setFunctionSource      ( "SOURCE_ADA_FLOAT_TYPE", "../Grammar/Type.code");
-
-     JovialBitType.setFunctionSource     ( "SOURCE_JOVIAL_BIT_TYPE", "../Grammar/Type.code");
 #endif
    }

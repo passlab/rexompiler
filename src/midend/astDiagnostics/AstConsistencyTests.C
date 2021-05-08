@@ -499,16 +499,9 @@ AstTests::runAllTests(SgProject* sageProject)
      if ( SgProject::get_verbose() >= DIAGNOSTICS_VERBOSE_LEVEL )
           cout << "Test return value of get_type() member functions started." << endl;
         {
-            // driscoll6 (7/25/11) Python support uses expressions that don't define get_type() (such as
-            // SgClassNameRefExp), so skip this test for python-only projects.
-            // TODO (python) define get_type for the remaining expressions ?
-            if (! sageProject->get_Python_only()) {
-                TimingPerformance timer ("AST expression type test:");
-                TestExpressionTypes expressionTypeTest;
-                expressionTypeTest.traverse(sageProject, preorder);
-            } else {
-                //cout << "warning: python. Skipping TestExpressionTypes in AstConsistencyTests.C" << endl;
-            }
+          TimingPerformance timer ("AST expression type test:");
+          TestExpressionTypes expressionTypeTest;
+          expressionTypeTest.traverse(sageProject, preorder);
         }
      if ( SgProject::get_verbose() >= DIAGNOSTICS_VERBOSE_LEVEL )
           cout << "Test return value of get_type() member functions finished." << endl;
@@ -966,11 +959,8 @@ TestAstProperties::evaluateSynthesizedAttribute(SgNode* node, SynthesizedAttribu
   // DQ (11/20/2013): Added SgJavaImportStatementList and SgJavaClassDeclarationList to the exception list since they don't have a source position field.
   // if ( !isSgFile(node) && !isSgProject(node) )
   // if ( !isSgFile(node) && !isSgProject(node) && !isSgAsmNode(node))
-  // if ( !isSgFile(node) && !isSgProject(node) && !isSgAsmNode(node) && !isSgFileList(node) && !isSgDirectory(node))
-     bool isFileNode = isSgFile(node) || isSgProject(node) || isSgFileList(node) || isSgDirectory(node) || isSgJavaImportStatementList(node) || isSgJavaClassDeclarationList(node);
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-     isFileNode = isFileNode || isSgAsmNode(node);
-#endif
+  // if ( !isSgFile(node) && !isSgProject(node) && !isSgFileList(node) && !isSgDirectory(node) ) //&& !isSgJavaImportStatementList(node) && !isSgJavaClassDeclarationList(node) )
+     bool isFileNode = isSgFile(node) || isSgProject(node) || isSgFileList(node) || isSgDirectory(node);
      if (!isFileNode)
         {
           Sg_File_Info* fileInfo = node->get_file_info();
@@ -1160,11 +1150,6 @@ TestAstProperties::evaluateSynthesizedAttribute(SgNode* node, SynthesizedAttribu
                          break;
                        }
 
-                    case V_SgAdaAttributeExp: // PP (01/22/21) as used by Ada Attributes
-                       {
-                         break;
-                       }
-
                     default:
                        {
                          printf ("Error case default in switch (functionExpression = %s) \n",functionExpression->class_name().c_str());
@@ -1247,7 +1232,7 @@ TestAstProperties::evaluateSynthesizedAttribute(SgNode* node, SynthesizedAttribu
 
                     case V_SgTypeBool: // PP (01/22/21) used in Ada
                        {
-                         ROSE_ASSERT(SageInterface::is_Ada_language());
+                         //ROSE_ASSERT(SageInterface::is_Ada_language());
                          break;
                        }
 
@@ -1371,12 +1356,6 @@ TestAstProperties::evaluateSynthesizedAttribute(SgNode* node, SynthesizedAttribu
                   {
                     SgFunctionDeclaration* functionDeclaration = isSgFunctionDeclaration(parentParameterList->get_parent());
 
-                    if (SageInterface::is_Python_language() && isSgLambdaRefExp(parentParameterList->get_parent()))
-                       {
-                         std::cerr << "warning: python. Allowing inconsistent scope for InitializedNames in SgLambdaRefExp's parameter lists." << std::endl;
-                         break;
-                       }
-
                  // ROSE_ASSERT(functionDeclaration != NULL);
                     if (functionDeclaration != NULL)
                        {
@@ -1404,7 +1383,8 @@ TestAstProperties::evaluateSynthesizedAttribute(SgNode* node, SynthesizedAttribu
                        }
                        else
                        {
-                         ROSE_ASSERT(isSgAdaAcceptStmt(parentParameterList->get_parent()));
+                         //ROSE_ASSERT(isSgAdaAcceptStmt(parentParameterList->get_parent()));
+                         ROSE_ASSERT(NULL);
                        }
                   }
                  else
@@ -2128,12 +2108,6 @@ TestAstForProperlyMangledNames::visit ( SgNode* node )
   // These are the most common cases that fail
      ROSE_ASSERT(mangledName.find('<') == string::npos);
      ROSE_ASSERT(mangledName.find('>') == string::npos);
-
-  // Jovial can have names like a'variable'name so don't disallow '\'' for Jovial [Rasmussen 2/10/2019]
-     if (!SageInterface::is_Jovial_language())
-        {
-           ROSE_ASSERT(mangledName.find('\'') == string::npos);
-        }
    }
 
 TestAstForProperlyMangledNames::TestAstForProperlyMangledNames()
@@ -2143,7 +2117,7 @@ TestAstForProperlyMangledNames::TestAstForProperlyMangledNames()
    }
 
 bool
-TestAstForProperlyMangledNames::isValidMangledName (string name, bool java_lang /* = false */ )
+TestAstForProperlyMangledNames::isValidMangledName (string name)
    {
   // DQ (4/3/2011): This function has been modified to permit Java specific weakened restrictions
   // on names. The default for java_lang is false.  If a test fails the current language is
@@ -2156,19 +2130,6 @@ TestAstForProperlyMangledNames::isValidMangledName (string name, bool java_lang 
           result = false;
         }
 
-     if (java_lang == true)
-        {
-       // The case for Java has to allow a few more characters into names (e.g. '$')
-          for (string::size_type i = 0; i < name.size (); ++i)
-             {
-            // printf ("java_lang == true: isalnum (name = %s name[i] = %c) = %s \n",name.c_str(),name[i],isalnum (name[i]) ? "true" : "false");
-               if (!isalnum (name[i]) && !(name[i] == '_' || name[i] == '$'))
-                  {
-                    result = false;
-                  }
-             }
-        }
-       else
         {
           for (string::size_type i = 0; i < name.size (); ++i)
              {
@@ -3262,19 +3223,6 @@ TestAstSymbolTables::visit ( SgNode* node )
                                  }
                               ROSE_ASSERT(local_symbol != NULL);
                             }
-                         else if (isSgJavaLabelStatement(declarationNode)) // charles4: 09/12/2011 added for Java
-                            {
-                              SgJavaLabelStatement* javaLabelStatement = (SgJavaLabelStatement *) declarationNode;
-                              SgSymbol *local_symbol = javaLabelStatement->get_symbol_from_symbol_table();
-                              if (local_symbol == NULL)
-                                 {
-                                   printf ("Error: javaLabelStatement->get_symbol_from_symbol_table() == NULL javaLabelStatement = %p = %s \n",javaLabelStatement,javaLabelStatement->get_label().str());
-                                   ROSE_ASSERT(javaLabelStatement->get_scope() != NULL);
-                                   ROSE_ASSERT(javaLabelStatement->get_scope()->get_symbol_table() != NULL);
-                                   javaLabelStatement->get_scope()->get_symbol_table()->print("debug javaLabelStatement scope");
-                                 }
-                              ROSE_ASSERT(local_symbol != NULL);
-                            }
                            else
                             {
                            // DQ (12/9/2007): Added support for fortran in SgLabelSymbol.
@@ -3407,17 +3355,6 @@ TestAstSymbolTables::visit ( SgNode* node )
                          break;
                        }
 
-                    case V_SgJavaLabelSymbol:
-                       {
-                         SgJavaLabelSymbol* labelSymbol = isSgJavaLabelSymbol(symbol);
-                         ROSE_ASSERT(labelSymbol != NULL);
-
-                      // charles4 (9/12/2011): copied from case of SgLabelSymbol for Java
-                         ROSE_ASSERT(labelSymbol->get_declaration() != NULL);
-
-                         break;
-                       }
-
                     case V_SgNamespaceSymbol:
                        {
                          SgNamespaceSymbol* namespaceSymbol = isSgNamespaceSymbol(symbol);
@@ -3466,31 +3403,6 @@ TestAstSymbolTables::visit ( SgNode* node )
                          ROSE_ASSERT(aliasSymbol->get_alias() != NULL);
                          break;
                        }
-
-                    case V_SgAdaPackageSymbol:
-                       {
-                         SgAdaPackageSymbol* sy = isSgAdaPackageSymbol(symbol);
-
-                         ROSE_ASSERT(sy && sy->get_declaration());
-                         break;
-                       }
-
-                    case V_SgAdaTaskSymbol:
-                       {
-                         SgAdaTaskSymbol* sy = isSgAdaTaskSymbol(symbol);
-
-                         ROSE_ASSERT(sy && sy->get_declaration());
-                         break;
-                       }
-
-                    case V_SgAdaRenamingSymbol:
-                       {
-                         SgAdaRenamingSymbol* sy = isSgAdaRenamingSymbol(symbol);
-
-                         ROSE_ASSERT(sy && sy->get_declaration());
-                         break;
-                       }
-
 
                     case V_SgNonrealSymbol:
                        {
@@ -4074,7 +3986,6 @@ TestExpressionTypes::visit ( SgNode* node )
                     case V_SgClassDeclaration:
                     case V_SgDerivedTypeStatement:
                     case V_SgTemplateInstantiationDecl:
-                    case V_SgJovialTableStatement:
                        {
                          SgClassDeclaration* definingClassDeclaration = isSgClassDeclaration(definingDeclaration);
                          ROSE_ASSERT(definingClassDeclaration->get_definition() != NULL);
@@ -4453,8 +4364,6 @@ TestLValues::visit ( SgNode* node )
                         case V_SgBoolValExp:
                         case V_SgExponentiationOp:
                         case V_SgConcatenationOp:
-                        case V_SgAtOp:
-                        case V_SgReplicationOp:
                         case V_SgLshiftOp:
                         case V_SgRshiftOp:
                         case V_SgEqualityOp:
@@ -4905,9 +4814,6 @@ TestParentPointersInMemoryPool::visit(SgNode* node)
                case V_SgSymbolTable:
             // case V_SgFile:
                case V_SgSourceFile:
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-               case V_SgBinaryComposite:
-#endif
                case V_SgUnknownFile:
                case V_SgTypedefSeq:
                case V_SgFunctionParameterTypeList:
@@ -5118,14 +5024,6 @@ TestParentPointersInMemoryPool::visit(SgNode* node)
                           ROSE_ABORT();
                       }
                       break;
-                  }
-
-            // DQ (11/20/2013): Added support for checking that these are non-null (also just added code to set them to be non-null).
-               case V_SgJavaImportStatementList:
-               case V_SgJavaClassDeclarationList:
-                  {
-                    ROSE_ASSERT(support->get_parent() != NULL);
-                    break;
                   }
 
             // DQ (6/3/2019): Added support for SgIncludeFile (parent is a SgIncludeDirectiveStatement).
@@ -6309,8 +6207,6 @@ namespace
   bool isCaseInsensitive(SgSourceFile* sourceFile)
   {
     return (  sourceFile->get_Fortran_only()
-           || sourceFile->get_Jovial_only()
-           || sourceFile->get_Ada_only()
            );
   }
 }
@@ -6347,10 +6243,9 @@ TestForProperLanguageAndSymbolTableCaseSensitivity::evaluateInheritedAttribute(S
                scope->get_startOfConstruct()->display("scope->isCaseInsensitive() incorrectly set");
                ROSE_ASSERT(return_inheritedAttribute.sourceFile != NULL);
                SgSourceFile* sourceFile = inheritedAttribute.sourceFile;
-
                if (isCaseInsensitive(sourceFile))
                   {
-                    printf ("Fortran, Jovial, or Ada file %s should have an AST with scopes marked as case insensitive \n",sourceFile->getFileName().c_str());
+                    printf ("Fortran file %s should have an AST with scopes marked as case insensitive \n",sourceFile->getFileName().c_str());
                   }
                  else
                   {

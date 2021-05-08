@@ -44,29 +44,111 @@ HEADER_OMP_CLAUSE_START
        */
 
        // Liao (5/30/2009): Added support for reduction clauses within an OpenMP directive
-  enum omp_default_option_enum{
-    e_omp_default_unknown =0,
-    //4 values for default clause
-    //C/C++ default values
-    e_omp_default_none,
-    e_omp_default_shared,
-    //Fortran default values
-    e_omp_default_private,
-    e_omp_default_firstprivate,
-    e_omp_default_last
-  };
+	enum omp_default_option_enum{
+	  e_omp_default_unknown =0,
+	  e_omp_default_variant,
+	  //4 values for default clause
+	  //C/C++ default values
+	  e_omp_default_none,
+	  e_omp_default_shared,
+	  //Fortran default values
+	  e_omp_default_private,
+	  e_omp_default_firstprivate,
+	  e_omp_default_last
+	};
 
         enum omp_schedule_kind_enum{
-          e_omp_schedule_unknown = 0,
-          e_omp_schedule_static,
-          e_omp_schedule_dynamic,
-          e_omp_schedule_guided,
-          e_omp_schedule_auto,
-          e_omp_schedule_runtime,
-          e_omp_schedule_last
+          e_omp_schedule_kind_unspecified,
+          e_omp_schedule_kind_static,
+          e_omp_schedule_kind_dynamic,
+          e_omp_schedule_kind_guided,
+          e_omp_schedule_kind_auto,
+          e_omp_schedule_kind_runtime
         };
 
-        enum omp_reduction_operator_enum
+        enum omp_schedule_modifier_enum{
+          e_omp_schedule_modifier_unspecified,
+          e_omp_schedule_modifier_monotonic,
+          e_omp_schedule_modifier_nonmonotonic,
+          e_omp_schedule_modifier_simd
+        };
+
+        enum omp_in_reduction_identifier_enum
+        {
+            e_omp_in_reduction_identifier_unspecified,
+            e_omp_in_reduction_identifier_plus, //+
+            e_omp_in_reduction_identifier_mul,  //*
+            e_omp_in_reduction_identifier_minus, // -
+
+            e_omp_in_reduction_identifier_bitand, // &
+            e_omp_in_reduction_identifier_bitor,  // |
+            e_omp_in_reduction_identifier_bitxor,  // ^
+            e_omp_in_reduction_identifier_logand,  // &&
+            e_omp_in_reduction_identifier_logor,   // ||
+
+            e_omp_in_reduction_identifier_and, // .and.
+            e_omp_in_reduction_identifier_or, // .or.
+            e_omp_in_reduction_identifier_eqv,   // fortran .eqv.
+            e_omp_in_reduction_identifier_neqv,   // fortran .neqv.
+            e_omp_in_reduction_identifier_max,
+            e_omp_in_reduction_identifier_min,
+            e_omp_in_reduction_identifier_iand,
+            e_omp_in_reduction_identifier_ior,
+            e_omp_in_reduction_identifier_ieor,
+            e_omp_in_reduction_user_defined_identifier,
+            e_omp_in_reduction_identifier_last
+
+        };
+
+        enum omp_task_reduction_identifier_enum
+        {
+            e_omp_task_reduction_identifier_unspecified,
+            e_omp_task_reduction_identifier_plus, //+
+            e_omp_task_reduction_identifier_mul,  //*
+            e_omp_task_reduction_identifier_minus, // -
+
+            e_omp_task_reduction_identifier_bitand, // &
+            e_omp_task_reduction_identifier_bitor,  // |
+            e_omp_task_reduction_identifier_bitxor,  // ^
+            e_omp_task_reduction_identifier_logand,  // &&
+            e_omp_task_reduction_identifier_logor,   // ||
+
+            e_omp_task_reduction_identifier_and, // .and.
+            e_omp_task_reduction_identifier_or, // .or.
+            e_omp_task_reduction_identifier_eqv,   // fortran .eqv.
+            e_omp_task_reduction_identifier_neqv,   // fortran .neqv.
+            e_omp_task_reduction_identifier_max,
+            e_omp_task_reduction_identifier_min,
+            e_omp_task_reduction_identifier_iand,
+            e_omp_task_reduction_identifier_ior,
+            e_omp_task_reduction_identifier_ieor,
+            e_omp_task_reduction_user_defined_identifier,
+            e_omp_task_reduction_identifier_last
+
+        };
+
+        enum omp_defaultmap_behavior_enum
+        {
+            e_omp_defaultmap_behavior_unspecified,
+            e_omp_defaultmap_behavior_alloc,
+            e_omp_defaultmap_behavior_to,
+            e_omp_defaultmap_behavior_from,
+            e_omp_defaultmap_behavior_tofrom,
+            e_omp_defaultmap_behavior_firstprivate,
+            e_omp_defaultmap_behavior_none,
+            e_omp_defaultmap_behavior_default
+        };
+
+        enum omp_defaultmap_category_enum
+        {
+            e_omp_defaultmap_category_unspecified,
+            e_omp_defaultmap_category_scalar,
+            e_omp_defaultmap_category_aggregate,
+            e_omp_defaultmap_category_pointer,
+            e_omp_defaultmap_category_allocatable
+        };
+
+        enum omp_reduction_identifier_enum
         {
             e_omp_reduction_unknown,
             // reduction operations
@@ -91,16 +173,98 @@ HEADER_OMP_CLAUSE_START
             e_omp_reduction_iand,
             e_omp_reduction_ior,
             e_omp_reduction_ieor,
+            e_omp_reduction_user_defined_identifier,
             e_omp_reduction_last
+
+        };
+
+        enum omp_reduction_modifier_enum
+        {
+            e_omp_reduction_modifier_unknown,
+            e_omp_reduction_inscan,
+            e_omp_reduction_task,
+            e_omp_reduction_default
+        };
+
+        enum omp_linear_modifier_enum
+        {
+            e_omp_linear_modifier_unspecified,
+            e_omp_linear_modifier_ref,
+            e_omp_linear_modifier_val,
+            e_omp_linear_modifier_uval
+        };
+
+        enum omp_device_modifier_enum
+        {
+            e_omp_device_modifier_unspecified,
+            e_omp_device_modifier_ancestor,
+            e_omp_device_modifier_device_num
+        };
+
+        enum omp_lastprivate_modifier_enum
+        {
+            e_omp_lastprivate_modifier_unspecified,
+            e_omp_lastprivate_conditional
+        };
+
+        enum omp_when_context_kind_enum
+        {
+            e_omp_when_context_kind_unknown = 0,
+            e_omp_when_context_kind_host,
+            e_omp_when_context_kind_nohost,
+            e_omp_when_context_kind_any,
+            e_omp_when_context_kind_cpu,
+            e_omp_when_context_kind_gpu,
+            e_omp_when_context_kind_fpga
+        };
+
+        enum omp_when_context_vendor_enum
+        {
+            e_omp_when_context_vendor_unspecified = 0,
+            e_omp_when_context_vendor_amd,
+            e_omp_when_context_vendor_arm,
+            e_omp_when_context_vendor_bsc,
+            e_omp_when_context_vendor_cray,
+            e_omp_when_context_vendor_fujitsu,
+            e_omp_when_context_vendor_gnu,
+            e_omp_when_context_vendor_ibm,
+            e_omp_when_context_vendor_intel,
+            e_omp_when_context_vendor_llvm,
+            e_omp_when_context_vendor_pgi,
+            e_omp_when_context_vendor_ti,
+            e_omp_when_context_vendor_unknown
+        };
+
+        enum omp_allocate_modifier_enum
+        {
+            e_omp_allocate_modifier_unknown,
+
+            e_omp_allocate_default_mem_alloc,
+            e_omp_allocate_large_cap_mem_alloc,
+            e_omp_allocate_const_mem_alloc,
+            e_omp_allocate_high_bw_mem_alloc,
+            e_omp_allocate_low_lat_mem_alloc,
+            e_omp_allocate_cgroup_mem_alloc,
+            e_omp_allocate_pteam_mem_alloc,
+            e_omp_allocate_thread_mem_alloc,
+
+            e_omp_allocate_user_defined_modifier
         };
 
         enum omp_dependence_type_enum
         {
-            e_omp_depend_unknown,
+            e_omp_depend_unspecified,
             e_omp_depend_in,
             e_omp_depend_out,
             e_omp_depend_inout,
-            e_omp_depend_last
+            e_omp_depend_mutexinoutset,
+            e_omp_depend_depobj
+        };
+
+        enum omp_depend_modifier_enum
+        {
+            e_omp_depend_modifier_unspecified,
+            e_omp_depend_modifier_iterator
         };
 
         // Liao 1/22/2012: experimental support for OpenMP Accelerator model
@@ -134,6 +298,34 @@ HEADER_OMP_CLAUSE_START
           e_omp_proc_bind_policy_last
         };
 
+        enum omp_bind_binding_enum
+        {
+            e_omp_bind_binding_unspecified,
+            e_omp_bind_binding_teams,
+            e_omp_bind_binding_parallel,
+            e_omp_bind_binding_thread
+        };
+
+        enum omp_atomic_default_mem_order_kind_enum
+        {
+            e_omp_atomic_default_mem_order_kind_unspecified,
+            e_omp_atomic_default_mem_order_kind_seq_cst,
+            e_omp_atomic_default_mem_order_kind_acq_rel,
+            e_omp_atomic_default_mem_order_kind_relaxed
+        };
+
+        enum omp_order_kind_enum
+        {
+          e_omp_order_kind_unspecified,
+          e_omp_order_kind_concurrent,
+        };
+
+        enum omp_dist_schedule_kind_enum
+        {
+          e_omp_dist_schedule_kind_unspecified,
+          e_omp_dist_schedule_kind_static,
+        };
+
         enum omp_atomic_clause_enum
         {
           e_omp_atomic_clause_unknown,
@@ -143,6 +335,31 @@ HEADER_OMP_CLAUSE_START
           e_omp_atomic_clause_capture
         };
 
+        enum omp_if_modifier_enum
+        {
+            e_omp_if_modifier_unknown,
+            e_omp_if_parallel,
+            e_omp_if_simd,
+            e_omp_if_target,
+            e_omp_if_cancel,
+            e_omp_if_taskloop,
+            e_omp_if_target_data,
+            e_omp_if_target_enter_data,
+            e_omp_if_target_exit_data,
+            e_omp_if_task
+        };
+        
+        enum omp_depobj_modifier_enum
+        {
+            e_omp_depobj_modifier_unknown,
+            e_omp_depobj_modifier_in,
+            e_omp_depobj_modifier_out,
+            e_omp_depobj_modifier_inout,
+            e_omp_depobj_modifier_mutexinoutset,
+            e_omp_depobj_modifier_depobj,
+            e_omp_depobj_modifier_sink,
+            e_omp_depobj_modifier_source
+        };
 
 
 HEADER_OMP_CLAUSE_END
@@ -497,9 +714,6 @@ HEADER_CV_TYPE_MODIFIER_START
                e_volatile,       /*!< Volatile qualifier */
                e_const_volatile, /*!< Const and Volatile qualifier */
 
-            // DQ (8/11/2011): Added support for Java "transient" modifier.
-               e_java_transient, /*!< Java transient qualifier (specifies no serialization of declaration) */
-
                e_last_modifier /*!< last value (unused, serves as upper bound on values) */
              };
 
@@ -530,11 +744,6 @@ HEADER_CV_TYPE_MODIFIER_START
           void setVolatile();
        // DQ (3/21/2005): See comment for unsetConst() above
           void unsetVolatile();
-
-       // DQ (8/11/2011): Java support.
-          bool isJavaTransient() const;
-          void setJavaTransient();
-          void unsetJavaTransient();
 
           std::string displayString() const;
           void display ( std::string label ) const;
@@ -597,11 +806,6 @@ HEADER_STORAGE_MODIFIER_START
                e_cuda_managed        = 21, /*!< CUDA, memory managed between host and device */
                e_cuda_pinned         = 22, /*!< CUDA, in device's texture memory (read only)  */
                e_cuda_texture        = 23, /*!< CUDA, in host's page-locked memory */
-
-            // Rasmussen (04/02/2020): Jovial packing specifiers
-               e_packing_none  = 24, /*!< None indicates items are not packed */
-               e_packing_mixed = 25, /*!< Mixed indicates a density of packing that can be between N and D */
-               e_packing_dense = 26, /*!< Dense indicates dense packing */
 
                e_last_modifier  /*!< last value (upper bound on range of values, used in error checking) */
              };
@@ -670,16 +874,6 @@ HEADER_STORAGE_MODIFIER_START
        // Rasmussen (02/06/2018): Fortran contiguous array storage attribute
           bool isContiguous() const;
           void setContiguous();
-
-       // Rasmussen (04/02/2020): Jovial packing specifiers
-          bool isPackingNone() const;
-          void setPackingNone();
-
-          bool isPackingMixed() const;
-          void setPackingMixed();
-
-          bool isPackingDense() const;
-          void setPackingDense();
 
        // TV (04/08/2010): Support for CUDA storage modifiers
 
@@ -839,12 +1033,6 @@ HEADER_FUNCTION_MODIFIER_START
                e_opencl_vec_type_hint        = 31, /*!< OpenCL */
                e_opencl_work_group_size_hint = 32, /*!< OpenCL */
                e_opencl_work_group_size_req  = 33, /*!< OpenCL */
-
-            // DQ (8/11/2011): Added support for Java specific function modifiers.
-               e_java_native                 = 34, /*!< Java native keyword used for JNI function specification */
-               e_java_synchronized           = 35, /*!< Java synchronized keyword used to only allow one thread at a time into a particular section of code */
-               e_java_strictfp               = 36, /*!< Java strictfp keyword used to specify strict floating point evaluation by JVM */
-               e_java_initializer            = 37, /*!< Java initializer keyword used to specify that this "synthetic" function is, in fact, an initializer block */
 
             // DQ (4/13/2019): Added C++11 options for function modifiers.
                e_marked_default            = 38, /*!< marked using "= default" syntax (different from default enum value) */
@@ -1021,25 +1209,6 @@ HEADER_FUNCTION_MODIFIER_START
           bool hasOpenclWorkGroupSizeReq() const;
           void setOpenclWorkGroupSizeReq();
           void unsetOpenclWorkGroupSizeReq();
-
-
-       // DQ (8/11/2011): Added support for Java specific function modifiers.
-          bool isJavaNative() const;
-          void setJavaNative();
-          void unsetJavaNative();
-
-          bool isJavaSynchronized() const;
-          void setJavaSynchronized();
-          void unsetJavaSynchronized();
-
-          bool isJavaStrictfp() const;
-          void setJavaStrictfp();
-          void unsetJavaStrictfp();
-
-          bool isJavaInitializer() const;
-          void setJavaInitializer();
-          void unsetJavaInitializer();
-
 
        // DQ (4/13/2019): Added C++11 options for function modifiers.
           bool isMarkedDefault() const;
@@ -1270,40 +1439,27 @@ HEADER_DECLARATION_MODIFIER_START
                e_final         = 7,  /*!< PHP, Java, and C++11 support for specification to not be extended */
                e_override      = 8,  /*!< C++11 support for specification to not be extended */
 
-            // DQ (8/11/2011): Added support for Java "abstract" declaration modifier.
-               e_java_abstract = 9,  /*!< abstract keyword for Java functions, classes and interfaces */
-
-            // Rasmussen (2/26/2020): Added support for Jovial modifiers
-               e_jovial_def = 10,         /*!< Definition specification for Jovial declarations */
-               e_jovial_ref = 11,         /*!< Reference specification for Jovial declarations */
-               e_jovial_static = 12,      /*!< Explicitly marked as STATIC in Jovial */
-
-               e_ms_declspec_align        = 13, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_allocate     = 14, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_appdomain    = 15, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_code_seg     = 16, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_deprecated   = 17, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_dllimport    = 18, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_dllexport    = 19, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_jitintrinsic = 20, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_naked        = 21, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_noalias      = 22, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_noinline     = 23, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_noreturn     = 24, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_nothrow      = 25, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_novtable     = 26, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_process      = 27, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_property     = 28, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_restrict     = 29, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_safebuffers  = 30, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_selectany    = 31, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_thread       = 32, /*!< Microsoft declspec() attributes */
-               e_ms_declspec_uuid         = 33, /*!< Microsoft declspec() attributes */
-
-            // PP (6/15/2020): Added support for Ada modifiers
-               e_ada_abstract = 34,         /*!< Ada abstract declaration */
-               e_ada_limited  = 35,         /*!< Ada limited declaration */
-               e_ada_tagged   = 36,         /*!< Ada tagged declaration */
+               e_ms_declspec_align        = 10, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_allocate     = 11, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_appdomain    = 12, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_code_seg     = 13, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_deprecated   = 14, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_dllimport    = 15, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_dllexport    = 16, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_jitintrinsic = 17, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_naked        = 18, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_noalias      = 19, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_noinline     = 20, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_noreturn     = 21, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_nothrow      = 22, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_novtable     = 23, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_process      = 24, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_property     = 25, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_restrict     = 26, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_safebuffers  = 27, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_selectany    = 28, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_thread       = 29, /*!< Microsoft declspec() attributes */
+               e_ms_declspec_uuid         = 30, /*!< Microsoft declspec() attributes */
 
                e_last_modifier       /*!< last modifier value (upper bound on range of values, used in error checking) */
              };
@@ -1380,24 +1536,6 @@ HEADER_DECLARATION_MODIFIER_START
           bool isOverride() const;
           void setOverride();
           void unsetOverride();
-
-       // DQ (8/11/2011): Added Java specific "abstract" attribute.
-          bool isJavaAbstract() const;
-          void setJavaAbstract();
-          void unsetJavaAbstract();
-
-       // Rasmussen (2/26/2020): Added Jovial Def and Ref specifications plus an explicitly static attribute
-          bool isJovialDef() const;
-          void setJovialDef();
-          void unsetJovialDef();
-
-          bool isJovialRef() const;
-          void setJovialRef();
-          void unsetJovialRef();
-
-          bool isJovialStatic() const;
-          void setJovialStatic();
-          void unsetJovialStatic();
 
        // DQ (8/16/2014): Adding non-C++ standard Microsoft specific attributes.
           bool is_ms_declspec_align() const;
@@ -1503,19 +1641,6 @@ HEADER_DECLARATION_MODIFIER_START
           bool is_ms_declspec_uuid() const;
           void set_ms_declspec_uuid();
           void unset_ms_declspec_uuid();
-
-       // PP (06/15/2020): Adding Ada declaration modifiers
-          bool isAdaAbstract() const;
-          void setAdaAbstract();
-          void unsetAdaAbstract();
-
-          bool isAdaLimited() const;
-          void setAdaLimited();
-          void unsetAdaLimited();
-
-          bool isAdaTagged() const;
-          void setAdaTagged();
-          void unsetAdaTagged();
 
           std::string displayString() const;
           void display ( std::string label ) const;
@@ -2062,8 +2187,6 @@ HEADER_BASECLASS_MODIFIER_START
 
 HEADER_BASECLASS_MODIFIER_END
 
-
-
 HEADER_ATTRIBUTE_SUPPORT_START
 
      /* name Persistant Attribute Mechanism
@@ -2433,11 +2556,6 @@ bool $CLASSNAME::isVolatile() const { return p_modifier == e_volatile || p_modif
 void $CLASSNAME::setVolatile()      { p_modifier = (p_modifier == e_const) ? e_const_volatile : e_volatile; }
 void $CLASSNAME::unsetVolatile()    { p_modifier = (p_modifier == e_const_volatile) ? e_const : e_default; }
 
-// DQ (8/11/2011): Added support for Java "transient" keyword to disable serialization.
-bool $CLASSNAME::isJavaTransient() const { return p_modifier == e_java_transient; }
-void $CLASSNAME::setJavaTransient()      { p_modifier = e_java_transient; }
-void $CLASSNAME::unsetJavaTransient()    { setDefault(); }
-
 string
 $CLASSNAME::displayString() const
    {
@@ -2447,7 +2565,6 @@ $CLASSNAME::displayString() const
      s += std::string("isConst() = ")         + std::string(isConst()    ? "true " : "false ");
      s += std::string("isVolatile() = ")      + std::string(isVolatile() ? "true " : "false ");
 
-     s += std::string("isJavaTransient() = ") + std::string(isJavaTransient() ? "true " : "false ");
      s += ")";
      return s;
    }
@@ -2565,16 +2682,6 @@ void $CLASSNAME::setPointerBased()      { p_modifier = e_pointer_based; }
 // Rasmussen (02/04/2018): Fortran contiguous array storage attribute
 bool SgStorageModifier::isContiguous() const { return p_modifier == e_contiguous; }
 void SgStorageModifier::setContiguous()      {        p_modifier  = e_contiguous; }
-
-// Rasmussen (04/02/2020): Jovial packing specifiers
-bool SgStorageModifier::isPackingNone() const  { return p_modifier == e_packing_none; }
-void SgStorageModifier::setPackingNone()       {        p_modifier  = e_packing_none; }
-
-bool SgStorageModifier::isPackingMixed() const { return p_modifier == e_packing_mixed; }
-void SgStorageModifier::setPackingMixed()      {        p_modifier  = e_packing_mixed; }
-
-bool SgStorageModifier::isPackingDense() const { return p_modifier == e_packing_dense; }
-void SgStorageModifier::setPackingDense()      {        p_modifier  = e_packing_dense; }
 
 // TV (08/04/2010): Support for CUDA storage modifiers
 
@@ -2945,27 +3052,6 @@ bool SgFunctionModifier::hasOpenclWorkGroupSizeReq() const { return checkBit(e_o
 void SgFunctionModifier::setOpenclWorkGroupSizeReq()       { setBit(e_opencl_work_group_size_req,p_modifierVector);}
 void SgFunctionModifier::unsetOpenclWorkGroupSizeReq()     { unsetBit(e_opencl_work_group_size_req, p_modifierVector); }
 
-// DQ (8/11/2011): Added support for Java specific function modifiers.
-bool SgFunctionModifier::isJavaNative() const { return checkBit(e_java_native, p_modifierVector); }
-void SgFunctionModifier::setJavaNative()      { setBit(e_java_native, p_modifierVector); }
-void SgFunctionModifier::unsetJavaNative()    { unsetBit(e_java_native, p_modifierVector); }
-
-// DQ (8/11/2011): Added support for Java specific function modifiers.
-bool SgFunctionModifier::isJavaSynchronized() const { return checkBit(e_java_synchronized, p_modifierVector); }
-void SgFunctionModifier::setJavaSynchronized()      { setBit(e_java_synchronized, p_modifierVector); }
-void SgFunctionModifier::unsetJavaSynchronized()    { unsetBit(e_java_synchronized, p_modifierVector); }
-
-// DQ (8/11/2011): Added support for Java specific function modifiers.
-bool SgFunctionModifier::isJavaStrictfp() const { return checkBit(e_java_strictfp, p_modifierVector); }
-void SgFunctionModifier::setJavaStrictfp()      { setBit(e_java_strictfp, p_modifierVector); }
-void SgFunctionModifier::unsetJavaStrictfp()    { unsetBit(e_java_strictfp, p_modifierVector); }
-
-// PC (07/24/2012): Added support for Java specific feature: Initializer blocks.
-bool SgFunctionModifier::isJavaInitializer() const { return checkBit(e_java_initializer, p_modifierVector); }
-void SgFunctionModifier::setJavaInitializer()      { setBit(e_java_initializer, p_modifierVector); }
-void SgFunctionModifier::unsetJavaInitializer()    { unsetBit(e_java_initializer, p_modifierVector); }
-
-
 // DQ (4/13/2019): Added C++11 options for function modifiers.
 bool SgFunctionModifier::isMarkedDefault() const { return checkBit(e_marked_default, p_modifierVector); }
 void SgFunctionModifier::setMarkedDefault()      { setBit(e_marked_default, p_modifierVector); }
@@ -3012,10 +3098,6 @@ SgFunctionModifier::displayString() const
      s += std::string("isGnuAttributeNoThrow() = ")              + std::string(isGnuAttributeNoThrow() ? "true " : "false ");
      s += std::string("isGnuAttributeWeakReference() = ")        + std::string(isGnuAttributeWeakReference() ? "true " : "false ");
 
-     s += std::string("isJavaNative() = ")       + std::string(isJavaNative()       ? "true " : "false ");
-     s += std::string("isJavaSynchronized() = ") + std::string(isJavaSynchronized() ? "true " : "false ");
-     s += std::string("isJavaStrictfp() = ")     + std::string(isJavaStrictfp()     ? "true " : "false ");
-     s += std::string("isJavaInitializer() = ")  + std::string(isJavaInitializer()  ? "true " : "false ");
      s += ")";
      return s;
    }
@@ -3047,50 +3129,46 @@ std::ostream & operator<< ( std::ostream & os, const std::vector<bool> & bv )
 bool operator== (const $CLASSNAME& lhs, const $CLASSNAME& rhs)
    {
      return
-         (lhs.isUnknown() == rhs.isUnknown() ) &&
-         (lhs.isDefault() == rhs.isDefault() ) &&
-         (lhs.isInline()  == rhs.isInline()  ) &&
-         // C++ specific
-         (lhs.isVirtual()     == rhs.isVirtual()    ) &&
-         (lhs.isPureVirtual() == rhs.isPureVirtual()) &&
-         // Fortran specific
-         (lhs.isExplicit()  == rhs.isExplicit() ) &&
-         (lhs.isPure()      == rhs.isPure()     ) &&
-         (lhs.isElemental() == rhs.isElemental()) &&
-         (lhs.isRecursive() == rhs.isRecursive()) &&
-         (lhs.isReentrant() == rhs.isReentrant()) &&
-         // GNU specific
-         (lhs.isGnuAttributeConstructor() == rhs.isGnuAttributeConstructor()) &&
-         (lhs.isGnuAttributeDestructor()  == rhs.isGnuAttributeDestructor() ) &&
-         (lhs.isGnuAttributePure()        == rhs.isGnuAttributePure()       ) &&
-         (lhs.isGnuAttributeWeak()        == rhs.isGnuAttributeWeak()       ) &&
-         (lhs.isGnuAttributeUnused()      == rhs.isGnuAttributeUnused()     ) &&
-         (lhs.isGnuAttributeUsed()        == rhs.isGnuAttributeUsed()       ) &&
-         (lhs.isGnuAttributeDeprecated()  == rhs.isGnuAttributeDeprecated() ) &&
-         (lhs.isGnuAttributeMalloc()      == rhs.isGnuAttributeMalloc()     ) &&
-         (lhs.isGnuAttributeNaked()       == rhs.isGnuAttributeNaked()      ) &&
-         (lhs.isGnuAttributeNoInstrumentFunction() == rhs.isGnuAttributeNoInstrumentFunction()) &&
-         (lhs.isGnuAttributeNoCheckMemoryUsage() == rhs.isGnuAttributeNoCheckMemoryUsage()) &&
-         (lhs.isGnuAttributeNoInline()           == rhs.isGnuAttributeNoInline()          ) &&
-         (lhs.isGnuAttributeAlwaysInline()       == rhs.isGnuAttributeAlwaysInline()      ) &&
-         (lhs.isGnuAttributeNoThrow()            == rhs.isGnuAttributeNoThrow()           ) &&
-         (lhs.isGnuAttributeWeakReference()      == rhs.isGnuAttributeWeakReference()     ) &&
-         // Cuda specific
-         (lhs.isCudaDevice()         == rhs.isCudaDevice()) &&
-         (lhs.isCudaKernel()         == rhs.isCudaKernel()) &&
-         (lhs.isCudaHost()           == rhs.isCudaHost()  ) &&
-         (lhs.isCudaGlobalFunction() == rhs.isCudaGlobalFunction()) &&
-         (lhs.isCudaGridGlobal()     == rhs.isCudaGridGlobal()) &&
-         // OpenCL specific
-         (lhs.isOpenclKernel()             == rhs.isOpenclKernel()            ) &&
-         (lhs.hasOpenclVecTypeHint()       == rhs.hasOpenclVecTypeHint()      ) &&
-         (lhs.hasOpenclWorkGroupSizeHint() == rhs.hasOpenclWorkGroupSizeHint()) &&
-         (lhs.hasOpenclWorkGroupSizeReq()  == rhs.hasOpenclWorkGroupSizeReq() ) &&
-         (lhs.isJavaNative()               == rhs.isJavaNative()              ) &&
-         (lhs.isJavaSynchronized()         == rhs.isJavaSynchronized()        ) &&
-         (lhs.isJavaStrictfp()             == rhs.isJavaStrictfp()            ) &&
-         (lhs.isJavaInitializer()          == rhs.isJavaInitializer()         ) &&
-       true;
+	       (lhs.isUnknown() == rhs.isUnknown() ) &&
+	       (lhs.isDefault() == rhs.isDefault() ) &&
+	       (lhs.isInline()  == rhs.isInline()  ) &&
+	       // C++ specific
+	       (lhs.isVirtual()     == rhs.isVirtual()    ) &&
+	       (lhs.isPureVirtual() == rhs.isPureVirtual()) &&
+	       // Fortran specific
+	       (lhs.isExplicit()  == rhs.isExplicit() ) &&
+	       (lhs.isPure()      == rhs.isPure()     ) &&
+	       (lhs.isElemental() == rhs.isElemental()) &&
+	       (lhs.isRecursive() == rhs.isRecursive()) &&
+	       (lhs.isReentrant() == rhs.isReentrant()) &&
+	       // GNU specific
+	       (lhs.isGnuAttributeConstructor() == rhs.isGnuAttributeConstructor()) &&
+	       (lhs.isGnuAttributeDestructor()  == rhs.isGnuAttributeDestructor() ) &&
+	       (lhs.isGnuAttributePure()        == rhs.isGnuAttributePure()       ) &&
+	       (lhs.isGnuAttributeWeak()        == rhs.isGnuAttributeWeak()       ) &&
+	       (lhs.isGnuAttributeUnused()      == rhs.isGnuAttributeUnused()     ) &&
+	       (lhs.isGnuAttributeUsed()        == rhs.isGnuAttributeUsed()       ) &&
+	       (lhs.isGnuAttributeDeprecated()  == rhs.isGnuAttributeDeprecated() ) &&
+	       (lhs.isGnuAttributeMalloc()      == rhs.isGnuAttributeMalloc()     ) &&
+	       (lhs.isGnuAttributeNaked()       == rhs.isGnuAttributeNaked()      ) &&
+	       (lhs.isGnuAttributeNoInstrumentFunction() == rhs.isGnuAttributeNoInstrumentFunction()) &&
+	       (lhs.isGnuAttributeNoCheckMemoryUsage() == rhs.isGnuAttributeNoCheckMemoryUsage()) &&
+	       (lhs.isGnuAttributeNoInline()           == rhs.isGnuAttributeNoInline()          ) &&
+	       (lhs.isGnuAttributeAlwaysInline()       == rhs.isGnuAttributeAlwaysInline()      ) &&
+	       (lhs.isGnuAttributeNoThrow()            == rhs.isGnuAttributeNoThrow()           ) &&
+	       (lhs.isGnuAttributeWeakReference()      == rhs.isGnuAttributeWeakReference()     ) &&
+	       // Cuda specific
+	       (lhs.isCudaDevice()         == rhs.isCudaDevice()) &&
+	       (lhs.isCudaKernel()         == rhs.isCudaKernel()) &&
+	       (lhs.isCudaHost()           == rhs.isCudaHost()  ) &&
+	       (lhs.isCudaGlobalFunction() == rhs.isCudaGlobalFunction()) &&
+	       (lhs.isCudaGridGlobal()     == rhs.isCudaGridGlobal()) &&
+	       // OpenCL specific
+	       (lhs.isOpenclKernel()             == rhs.isOpenclKernel()            ) &&
+	       (lhs.hasOpenclVecTypeHint()       == rhs.hasOpenclVecTypeHint()      ) &&
+	       (lhs.hasOpenclWorkGroupSizeHint() == rhs.hasOpenclWorkGroupSizeHint()) &&
+	       (lhs.hasOpenclWorkGroupSizeReq()  == rhs.hasOpenclWorkGroupSizeReq() ) &&
+		   true;
    }
 
 // DQ (2/4/2006): Added mechamism to clear all bits
@@ -3105,18 +3183,11 @@ void SgFunctionModifier::reset()
   // unsetBind();
      unsetPure();
 
-     unsetJavaNative();
-     unsetJavaSynchronized();
-     unsetJavaStrictfp();
-     unsetJavaInitializer();
-
   // Set this bit to indicate the default value (we want a value of all zero bits to be an error)
      setDefault();
    }
 
 SOURCE_FUNCTION_MODIFIER_END
-
-
 
 SOURCE_UPC_ACCESS_MODIFIER_START
 // Copy constructor
@@ -3462,38 +3533,6 @@ bool SgDeclarationModifier::isOverride() const { return checkBit(e_override,p_mo
 void SgDeclarationModifier::setOverride()      { setBit(e_override,p_modifierVector); }
 void SgDeclarationModifier::unsetOverride()    { unsetBit(e_override,p_modifierVector); }
 
-// DQ (8/11/2011): Added support for Java "abstract" declaration modifier.
-bool SgDeclarationModifier::isJavaAbstract() const { return checkBit(e_java_abstract,p_modifierVector); }
-void SgDeclarationModifier::setJavaAbstract()      { setBit(e_java_abstract,p_modifierVector); }
-void SgDeclarationModifier::unsetJavaAbstract()    { unsetBit(e_java_abstract,p_modifierVector); }
-
-// Rasmussen (2/26/2020): Added support for Jovial modifiers
-bool SgDeclarationModifier::isJovialDef() const { return checkBit(e_jovial_def,p_modifierVector); }
-void SgDeclarationModifier::setJovialDef()      { setBit(e_jovial_def,p_modifierVector); }
-void SgDeclarationModifier::unsetJovialDef()    { unsetBit(e_jovial_def,p_modifierVector); }
-
-bool SgDeclarationModifier::isJovialRef() const { return checkBit(e_jovial_ref,p_modifierVector); }
-void SgDeclarationModifier::setJovialRef()      { setBit(e_jovial_ref,p_modifierVector); }
-void SgDeclarationModifier::unsetJovialRef()    { unsetBit(e_jovial_ref,p_modifierVector); }
-
-bool SgDeclarationModifier::isJovialStatic() const { return checkBit(e_jovial_static,p_modifierVector); }
-void SgDeclarationModifier::setJovialStatic()      { setBit(e_jovial_static,p_modifierVector); }
-void SgDeclarationModifier::unsetJovialStatic()    { unsetBit(e_jovial_static,p_modifierVector); }
-
-// PP (6/15/2020): Added support for Ada modifiers
-bool SgDeclarationModifier::isAdaAbstract() const { return checkBit(e_ada_abstract,p_modifierVector); }
-void SgDeclarationModifier::setAdaAbstract()      { setBit(e_ada_abstract,p_modifierVector); }
-void SgDeclarationModifier::unsetAdaAbstract()    { unsetBit(e_ada_abstract,p_modifierVector); }
-
-bool SgDeclarationModifier::isAdaLimited() const  { return checkBit(e_ada_limited,p_modifierVector); }
-void SgDeclarationModifier::setAdaLimited()       { setBit(e_ada_limited,p_modifierVector); }
-void SgDeclarationModifier::unsetAdaLimited()     { unsetBit(e_ada_limited,p_modifierVector); }
-
-bool SgDeclarationModifier::isAdaTagged() const   { return checkBit(e_ada_tagged,p_modifierVector); }
-void SgDeclarationModifier::setAdaTagged()        { setBit(e_ada_tagged,p_modifierVector); }
-void SgDeclarationModifier::unsetAdaTagged()      { unsetBit(e_ada_tagged,p_modifierVector); }
-
-
 // DQ (8/16/2014): Adding non-C++ standard Microsoft specific attributes.
 bool SgDeclarationModifier::is_ms_declspec_align() const { return checkBit(e_ms_declspec_align,p_modifierVector); }
 void SgDeclarationModifier::set_ms_declspec_align()      { setBit(e_ms_declspec_align,p_modifierVector); }
@@ -3616,13 +3655,6 @@ SgDeclarationModifier::displayString() const
      s += std::string("isThrow() = ")        + std::string(isThrow()        ? "true " : "false ");
      s += std::string("isBind() = ")         + std::string(isBind()         ? "true " : "false ");
      s += std::string("isFinal() = ")        + std::string(isFinal()        ? "true " : "false ");
-     s += std::string("isJavaAbstract() = ") + std::string(isJavaAbstract() ? "true " : "false ");
-     s += std::string("isJovialDef() = ")    + std::string(isJovialDef()    ? "true " : "false ");
-     s += std::string("isJovialRef() = ")    + std::string(isJovialRef()    ? "true " : "false ");
-     s += std::string("isJovialStatic() = ") + std::string(isJovialStatic() ? "true " : "false ");
-     s += std::string("isAdaAbstract() = ")  + std::string(isAdaAbstract()  ? "true " : "false ");
-     s += std::string("isAdaLimited() = ")   + std::string(isAdaLimited()   ? "true " : "false ");
-     s += std::string("isAdaTagged() = ")    + std::string(isAdaTagged()    ? "true " : "false ");
      s += std::string("\n     ") + get_typeModifier().displayString()   + " ";
      s += std::string("\n     ") + get_accessModifier().displayString() + " ";
      s += std::string("\n     ") + get_storageModifier().displayString();
@@ -3647,24 +3679,17 @@ std::ostream & operator<< ( std::ostream & os, const SgDeclarationModifier & m)
 bool operator== (const $CLASSNAME& lhs, const $CLASSNAME& rhs)
    {
      return
-         (lhs.get_typeModifier()    == rhs.get_typeModifier()   ) &&
-         (lhs.get_accessModifier()  == rhs.get_accessModifier() ) &&
-         (lhs.get_storageModifier() == rhs.get_storageModifier()) &&
-         (lhs.isUnknown()           == rhs.isUnknown()) &&
-         (lhs.isDefault()           == rhs.isDefault()) &&
-         (lhs.isFriend()            == rhs.isFriend() ) &&
-         (lhs.isTypedef()           == rhs.isTypedef()) &&
-         (lhs.isExport()            == rhs.isExport() ) &&
-         (lhs.isThrow()             == rhs.isThrow()  ) &&
-         (lhs.isBind()              == rhs.isBind()   ) &&
-         (lhs.isFinal()             == rhs.isFinal()  ) &&
-         (lhs.isJavaAbstract()      == rhs.isJavaAbstract() ) &&
-         (lhs.isJovialDef()         == rhs.isJovialDef() ) &&
-         (lhs.isJovialRef()         == rhs.isJovialRef() ) &&
-         (lhs.isJovialStatic()      == rhs.isJovialStatic() ) &&
-         (lhs.isAdaAbstract()       == rhs.isAdaAbstract() )  &&
-         (lhs.isAdaLimited()        == rhs.isAdaLimited() )   &&
-         (lhs.isAdaTagged()         == rhs.isAdaTagged() )    &&
+          (lhs.get_typeModifier()    == rhs.get_typeModifier()   ) &&
+          (lhs.get_accessModifier()  == rhs.get_accessModifier() ) &&
+          (lhs.get_storageModifier() == rhs.get_storageModifier()) &&
+	       (lhs.isUnknown()           == rhs.isUnknown()) &&
+	       (lhs.isDefault()           == rhs.isDefault()) &&
+	       (lhs.isFriend()            == rhs.isFriend() ) &&
+	       (lhs.isTypedef()           == rhs.isTypedef()) &&
+	       (lhs.isExport()            == rhs.isExport() ) &&
+	       (lhs.isThrow()             == rhs.isThrow()  ) &&
+	       (lhs.isBind()              == rhs.isBind()   ) &&
+	       (lhs.isFinal()             == rhs.isFinal()  ) &&
           true;
    }
 
@@ -4733,8 +4758,6 @@ HEADER_SYMBOL_TABLE_START
           SgEnumSymbol*      find_enum(const SgName & name);       //! Complexity O(log n) for first match against name, then O(n)
           SgEnumFieldSymbol* find_enum_field(const SgName & name); //! Complexity O(log n) for first match against name, then O(n)
           SgLabelSymbol*     find_label(const SgName & name);      //! Complexity O(log n) for first match against name, then O(n)
-          SgJavaLabelSymbol* find_java_label(const SgName & name); //! Complexity O(log n) for first match against name, then O(n)
-                                                                   // charles4: added 09/12/2011 for Java
           SgNamespaceSymbol* find_namespace(const SgName & name);  //! Complexity O(log n) for first match against name, then O(n)
 
 #if 0
@@ -5995,17 +6018,7 @@ public:
                e_default_language, /*!< default value (uses filename extension to determine the output format, f77: fixed, F90 and later: free) */
                e_C_language,       /*!< value used to specify output of C (for testing C unparser) */
                e_Cxx_language,     /*!< value used to specify output of C++ (for testing C++ unparser) */
-               e_Binary_language,  /*!< value used to specify output of Binary ISA */
                e_Fortran_language, /*!< value used to specify output of Fortran (for testing the Fortran unparser) */
-               e_Java_language,    /*!< value used to specify output of Java (for testing Java unparser) */
-               e_X10_language,     /*!< value used to specify output of X10 (for testing X10 unparser) */
-               e_Promela_language, /*!< value used to specify output of Promela for uses with SPIN (unsupported option) */
-               e_PHP_language,     /*!< value used to specify output of PHP    */
-               e_Python_language,  /*!< value used to specify output of Python */
-               e_Csharp_language,  /*!< value used to specify output of Csharp */
-               e_Ada_language,     /*!< value used to specify output of Ada    */
-               e_Jovial_language,  /*!< value used to specify output of Jovial */
-               e_Cobol_language,   /*!< value used to specify output of Cobol  */
                e_last_language     /*!< upper bound on the range of values supported for the outputLanguageOption_enum */
              };
 
@@ -6385,19 +6398,8 @@ HEADER_APPLICATION_SOURCE_FILE_START
       //! Divide up the handling of different languages
           int build_Fortran_AST( std::vector<std::string> argv, std::vector<std::string> inputCommandLine );
 
-      //! Support for processing Java source files.
-          int build_Java_AST( std::vector<std::string> argv, std::vector<std::string> inputCommandLine );
 // #endif
           int build_C_and_Cxx_AST( std::vector<std::string> argv, std::vector<std::string> inputCommandLine );
-          int build_PHP_AST();
-          int build_Python_AST();
-          int build_X10_AST(const std::vector<std::string>& p_argv);
-
-       // DQ (8/25/2017): Adding multiple langauge support (function definitions in src/frontend/SageIII/sage_support/sage_support.cpp).
-          int build_Csharp_AST( std::vector<std::string> argv, std::vector<std::string> inputCommandLine );
-          int build_Ada_AST( std::vector<std::string> argv, std::vector<std::string> inputCommandLine );
-          int build_Jovial_AST( std::vector<std::string> argv, std::vector<std::string> inputCommandLine );
-          int build_Cobol_AST( std::vector<std::string> argv, std::vector<std::string> inputCommandLine );
 
           virtual void doSetupForConstructor(const std::vector<std::string>& argv, SgProject* project) $ROSE_OVERRIDE;
 
@@ -6491,41 +6493,6 @@ HEADER_HEADER_FILE_REPORT_START
 
 HEADER_HEADER_FILE_REPORT_END
 
-
-HEADER_APPLICATION_BINARY_FILE_START
-        private:
-                friend class boost::serialization::access;
-
-                template<class S>
-                void serialize(S &s, const unsigned /*version*/) {
-                     s & BOOST_SERIALIZATION_BASE_OBJECT_NVP(SgFile);
-                     s & BOOST_SERIALIZATION_NVP(p_genericFileList);
-                     s & BOOST_SERIALIZATION_NVP(p_interpretations);
-                }
-
-     public:
-       // SgBinaryComposite ( int & argc, char** & argv, int & errorCode, int fileNameIndex = 0, SgProject* project = NULL );
-          SgBinaryComposite(std::vector<std::string>& argv,  SgProject* project = NULL);
-       // SgBinaryComposite ( const SgBinaryFile & X );
-
-          virtual int callFrontEnd() $ROSE_OVERRIDE;
-      //  Default constructor (not meant to be used)
-      //  JJW (9/5/2008): the normal constructor has defaults for all of its arguments, so this is ambiguous
-      //  SgBinaryComposite() ROSE_DEPRECATED_FUNCTION;
-
-          virtual void doSetupForConstructor(const std::vector<std::string>& argv, SgProject* project) $ROSE_OVERRIDE;
-
-          virtual int buildAST( std::vector<std::string> argv, std::vector<std::string> inputCommandLine ) $ROSE_OVERRIDE;
-
-      //! However, now we have a list of them to support library archives which contain multiple object files (*.o's).
-          const SgAsmGenericFile* get_binaryFile() const;
-          SgAsmGenericFile* get_binaryFile();
-          void set_binaryFile( SgAsmGenericFile* file );
-
-       //! This is refactored code, called once for a binary executable, and called on each object file for a library archive.
-          void buildAsmAST( std::string executableFileName );
-HEADER_APPLICATION_BINARY_FILE_END
-
 HEADER_APPLICATION_UNKNOWN_FILE_START
      public:
           SgUnknownFile(std::vector<std::string>& argv, SgProject* project = NULL);
@@ -6560,19 +6527,6 @@ HEADER_APPLICATION_DIRECTORY_LIST_START
      public:
 
 HEADER_APPLICATION_DIRECTORY_LIST_END
-
-
-HEADER_JAVA_IMPORT_STATEMENT_LIST_START
-     public:
-
-HEADER_JAVA_IMPORT_STATEMENT_LIST_END
-
-
-HEADER_JAVA_CLASS_DECLARATION_LIST_START
-     public:
-
-HEADER_JAVA_CLASS_DECLARATION_LIST_END
-
 
 HEADER_APPLICATION_PROJECT_START
 
@@ -6776,12 +6730,6 @@ HEADER_APPLICATION_PROJECT_START
           bool get_CoArrayFortran_only (void) const;
 
 
-          bool get_PHP_only(void) const;
-
-          bool get_Python_only(void) const;
-
-          bool get_Java_only (void) const;
-          void set_Java_only (bool value);
           std::list<std::string> get_Java_classpath (void) const;
           void set_Java_classpath (std::list<std::string> param);
           std::list<std::string> get_Java_sourcepath (void) const;
@@ -6790,28 +6738,6 @@ HEADER_APPLICATION_PROJECT_START
           void set_Java_destdir (std::string param);
           std::string get_Java_source_destdir (void) const;
           void set_Java_source_destdir (std::string param);
-
-          bool get_X10_only (void) const;
-          void set_X10_only (bool value);
-
-       // DQ (8/25/2017): Added more language support.
-          bool get_Csharp_only (void) const;
-       // void set_Csharp_only (bool value);
-
-       // DQ (8/25/2017): Added more language support.
-          bool get_Ada_only (void) const;
-          void set_Ada_only (bool value);
-
-       // DQ (8/25/2017): Added more language support.
-          bool get_Jovial_only (void) const;
-          void set_Jovial_only (bool value);
-
-       // DQ (8/25/2017): Added more language support.
-          bool get_Cobol_only (void) const;
-       // void set_Cobol_only (bool value);
-
-       // DQ (2/4/2009): This is now a data member at the SgProject and so is automatically generated asa member function.
-       // bool get_binary_only (void) const;
 
           void display ( const std::string & label ) const;
 
@@ -7946,19 +7872,9 @@ SgSymbolTable::get_name( const SgNode* node) const
                break;
              }
 
-          case V_SgJavaLabelStatement: // charles4: 09/13/2011 added for Java support
-             {
-               const SgJavaLabelStatement* labelStatement = isSgJavaLabelStatement(node);
-               ROSE_ASSERT (labelStatement->get_label() != NULL);
-               name = labelStatement->get_label();
-               break;
-             }
-
           case V_SgClassDeclaration:
           case V_SgDerivedTypeStatement:
           case V_SgModuleStatement:
-          case V_SgJavaPackageDeclaration:
-          case V_SgJovialTableStatement:
              {
                const SgClassDeclaration* classDeclaration = isSgClassDeclaration(node);
                name = classDeclaration->get_name();
@@ -7988,7 +7904,6 @@ SgSymbolTable::get_name( const SgNode* node) const
           case V_SgProgramHeaderStatement:
           case V_SgProcedureHeaderStatement:
           case V_SgMemberFunctionDeclaration:
-          case V_SgAdaEntryDecl:
              {
                const SgFunctionDeclaration* functionDeclaration = isSgFunctionDeclaration(node);
             // mprintf ("functionDeclaration                                    = %p \n",functionDeclaration);
@@ -8131,55 +8046,6 @@ SgSymbolTable::get_name( const SgNode* node) const
              {
                const SgInitializedName* initializedName = isSgInitializedName(node);
                name = initializedName->get_name();
-               break;
-             }
-
-          case V_SgAdaPackageSpecDecl:
-             {
-               const SgAdaPackageSpecDecl* dcl = isSgAdaPackageSpecDecl(node);
-               name = dcl->get_name();
-               break;
-             }
-
-          case V_SgAdaPackageBodyDecl:
-             {
-               const SgAdaPackageBodyDecl* dcl = isSgAdaPackageBodyDecl(node);
-               name = dcl->get_name();
-               break;
-             }
-
-          case V_SgAdaTaskSpecDecl:
-             {
-               const SgAdaTaskSpecDecl* dcl = isSgAdaTaskSpecDecl(node);
-               name = dcl->get_name();
-               break;
-             }
-
-          case V_SgAdaTaskTypeDecl:
-             {
-               const SgAdaTaskTypeDecl* dcl = isSgAdaTaskTypeDecl(node);
-               name = dcl->get_name();
-               break;
-             }
-
-          case V_SgAdaTaskBodyDecl:
-             {
-               const SgAdaTaskBodyDecl* dcl = isSgAdaTaskBodyDecl(node);
-               name = dcl->get_name();
-               break;
-             }
-
-          case V_SgAdaRenamingDecl:
-             {
-               const SgAdaRenamingDecl* dcl = isSgAdaRenamingDecl(node);
-               name = dcl->get_name();
-               break;
-             }
-
-          case V_SgAdaFunctionRenamingDecl:
-             {
-               const SgAdaFunctionRenamingDecl* dcl = isSgAdaFunctionRenamingDecl(node);
-               name = dcl->get_name();
                break;
              }
 
@@ -9065,7 +8931,6 @@ SgSymbolTable::exists ( const SgName & nm, SgSymbol *sp ) const
       SgEnumSymbol*      find_enum(const SgName &);
       SgEnumFieldSymbol* find_enum_field(const SgName &);
       SgLabelSymbol*     find_label(const SgName &) const;
-      SgJavaLabelSymbol* find_label(const SgName &) const; // charles4: added 9/12/2011 for Java
       SgNamespaceSymbol* find_namespace(const SgName &);
 */
 
@@ -10092,17 +9957,6 @@ SgSymbolTable::find_label(const SgName & nm)
   // return find_symbol_support<SgLabelSymbol>(nm);
      bool filterTemplateSymbols = false;
      return find_symbol_with_type_support<SgLabelSymbol>(nm,NULL,NULL,NULL,filterTemplateSymbols);
-   }
-
-//
-// charles4: added this function for the Java case...
-//
-SgJavaLabelSymbol*
-SgSymbolTable::find_java_label(const SgName & nm)
-   {
-  // return find_symbol_support<SgJavaLabelSymbol>(nm);
-     bool filterTemplateSymbols = false;
-     return find_symbol_with_type_support<SgJavaLabelSymbol>(nm,NULL,NULL,NULL,filterTemplateSymbols);
    }
 
 // DQ (1/30/2007): Added these back into ROSE.
@@ -13566,10 +13420,7 @@ SgName::assembleQualifiedName(const SgName & scopeQualifiedName, const SgName & 
        else
         {
           std::string scopeDelimiter;
-          if (SageInterface::is_Java_language())
-              scopeDelimiter = ".";
-          else
-              scopeDelimiter = "::";
+          scopeDelimiter = "::";
 
        // Trap out the case of global scope to avoid building "::::"
           if ( scopeQualifiedName == scopeDelimiter )
@@ -15836,18 +15687,7 @@ SgFile::get_outputLanguageOptionName ( SgFile::languageOption_enum lang )
           case SgFile::e_default_language: s = "default"; break;
           case SgFile::e_C_language:       s = "C";       break;
           case SgFile::e_Cxx_language:     s = "C++";     break;
-          case SgFile::e_Binary_language:  s = "Binary";  break;
           case SgFile::e_Fortran_language: s = "Fortran"; break;
-          case SgFile::e_Java_language:    s = "Java";    break;
-          case SgFile::e_X10_language:     s = "X10";     break;
-          case SgFile::e_PHP_language:     s = "PHP";     break;
-          case SgFile::e_Python_language:  s = "Python";  break;
-          case SgFile::e_Csharp_language:  s = "Csharp";  break;
-          case SgFile::e_Ada_language:     s = "Ada";     break;
-          case SgFile::e_Jovial_language:  s = "Jovial";  break;
-          case SgFile::e_Cobol_language:   s = "Cobol";   break;
-          case SgFile::e_Promela_language: s = "Promela"; break;
-
           default:
              {
                mprintf ("In SgFile::outputLanguageOption(): lang = %" PRIuPTR " \n",(size_t)lang);
@@ -15963,8 +15803,6 @@ SgFile::SgFile ( const SgFile & X )
      ROSE_ASSERT(false);
    }
 
-#include <Rose/BinaryAnalysis/Disassembler.h>
-
 void
 SgFile::initialization()
    {
@@ -15992,24 +15830,7 @@ SgFile::initialization()
   // DQ (1/23/2009): Added CoArray Fortran support.
      p_CoArrayFortran_only     = false;
 
-     p_PHP_only                = false;
-
-     p_Python_only             = false;
-
-  // DQ (8/25/2017): Added more language support.
-     p_Csharp_only             = false;
-     p_Ada_only                = false;
-     p_Jovial_only             = false;
-     p_Cobol_only              = false;
-
      p_requires_C_preprocessor = false;
-
-  // DQ (2/5/2009): Putting this back now, so we have one at the SgProject and one at the SgFile.
-  // DQ (2/4/2009): This was moved to the SgProject
-     p_binary_only             = false;
-
-  // DQ (2/5/2009): Support binary analysis of object files.
-     p_isObjectFile            = false;
 
      p_inputFormat             = SgFile::e_unknown_output_format;
      p_outputFormat            = SgFile::e_unknown_output_format;
@@ -16019,6 +15840,7 @@ SgFile::initialization()
      p_openmp_parse_only       = true;
      p_openmp_ast_only         = false;
      p_openmp_lowering         = false;
+     p_openmp_analyzing        = false;
 
   // DQ (12/8/2007): Added commandline support for cray pointers.
      p_cray_pointer_support = false;
@@ -16162,27 +15984,7 @@ SgFile::initialization()
 
      File.setDataPrototype         ( "bool", "sourceFileUsesCoArrayFortranFileExtension", "= false",
                  NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     File.setDataPrototype         ( "bool", "sourceFileUsesPHPFileExtension", "= false",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     File.setDataPrototype         ( "bool", "sourceFileUsesPythonFileExtension", "= false",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     File.setDataPrototype         ( "bool", "sourceFileUsesJavaFileExtension", "= false",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     File.setDataPrototype         ( "bool", "sourceFileUsesBinaryFileExtension", "= false",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      File.setDataPrototype         ( "bool", "sourceFileTypeIsUnknown", "= false",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     File.setDataPrototype         ( "bool", "sourceFileUsesX10FileExtension", "= false",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // DQ (28/8/2017): Adding language support.
-     File.setDataPrototype         ( "bool", "sourceFileUsesCsharpFileExtension", "= false",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     File.setDataPrototype         ( "bool", "sourceFileUsesAdaFileExtension", "= false",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     File.setDataPrototype         ( "bool", "sourceFileUsesJovialFileExtension", "= false",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     File.setDataPrototype         ( "bool", "sourceFileUsesCobolFileExtension", "= false",
                  NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 #endif
   // DQ (9/17/2020): Adding missing data member initialization.
@@ -16191,25 +15993,8 @@ SgFile::initialization()
   // DQ (1/23/2009): Added support for Co-Array Fortran (file extensions)
      p_sourceFileUsesCoArrayFortranFileExtension = false;
 
-     p_sourceFileUsesPHPFileExtension = false;
-
-  // DQ (9/17/2020): Adding missing data member initialization.
-     p_sourceFileUsesPythonFileExtension = false;
-
-  // DQ (10/11/2010): Adding Java support.
-     p_sourceFileUsesJavaFileExtension = false;
-
-     p_sourceFileUsesBinaryFileExtension = false;
-
   // DQ (9/26/2011): This was not initialized previosuly so I have added it.
      p_sourceFileTypeIsUnknown = false;
-
-  // DQ (9/17/2020): Adding missing data member initialization.
-     p_sourceFileUsesX10FileExtension    = false;
-     p_sourceFileUsesCsharpFileExtension = false;
-     p_sourceFileUsesAdaFileExtension    = false;
-     p_sourceFileUsesJovialFileExtension = false;
-     p_sourceFileUsesCobolFileExtension  = false;
 
 #if 0
      File.setDataPrototype         ( "int", "detect_dangling_pointers", "= false",
@@ -16258,15 +16043,13 @@ SgFile::initialization()
   // tutorial examples/presentations.
      p_visualize_executable_file_format_skip_symbols = false;
 
-     p_visualize_dwarf_only      = false;
-
-     p_read_instructions_only    = false;
-
   // DQ (5/23/2015): This has been modified to be a static data member (for details see comments in ROSETTA/src/support.C).
   // I am not clear if static variables should be set in this function (but it appears that other static variables are
   // set there and if not here then where should they be set, unless we build a static initialization phase for code
   // generated by ROSETTA (which does not presently exist).
      p_skip_unparse_asm_commands = false;
+
+     p_read_instructions_only    = false;
 
   // DQ (11/20/2010): Support for token handling.
      p_unparse_tokens = false;
@@ -16749,13 +16532,6 @@ SgFile::generateOutputFileName() const
 
 #endif
 
-  // DQ (4/2/2011): Added support for Java.
-     if (get_Java_only() == true)
-        {
-       // Java output files are *.class files.
-          objectFileName = baseFileNameWithoutSuffix + ".class";
-        }
-       else
         {
        // DQ (8/12/2007): Newer simpler code, made possible because of better internal support.
        // This version is also now language independent and so supports the Fortran work.
@@ -16850,24 +16626,12 @@ SgFile::display ( const std::string & label ) const
 
   // DQ (3/28/2013): Added support to specify C89 support, so that default can be C99 support (same as EDG3x branch).
      printf ("     p_Cxx_only()                                = %s \n",(p_Cxx_only == true) ? "true" : "false");
-     printf ("     p_Java_only()                               = %s \n",(p_Java_only == true) ? "true" : "false");
      printf ("     p_Fortran_only()                            = %s \n",(p_Fortran_only == true) ? "true" : "false");
      printf ("     p_CoArrayFortran_only()                     = %s \n",(p_CoArrayFortran_only == true) ? "true" : "false");
-     printf ("     p_PHP_only()                                = %s \n",(p_PHP_only == true) ? "true" : "false");
-     printf ("     p_Python_only()                             = %s \n",(p_Python_only == true) ? "true" : "false");
-
-  // DQ (8/25/2017): Added more language support.
-     printf ("     p_Csharp_only()                             = %s \n",(p_Csharp_only == true) ? "true" : "false");
-     printf ("     p_Ada_only()                                = %s \n",(p_Ada_only == true) ? "true" : "false");
-     printf ("     p_Jovial_only()                             = %s \n",(p_Jovial_only == true) ? "true" : "false");
-     printf ("     p_Cobol_only()                              = %s \n",(p_Cobol_only == true) ? "true" : "false");
 
      printf ("     p_requires_C_preprocessor                   = %s \n",(p_requires_C_preprocessor == true) ? "true" : "false");
 
   // DQ (2/5/2009): Putting this back now, so we have one at the SgProject and one at the SgFile.
-     printf ("     p_binary_only()                             = %s \n",(p_binary_only == true) ? "true" : "false");
-     printf ("     p_isObjectFile()                            = %s \n",(p_isObjectFile == true) ? "true" : "false");
-
      string inputFormatName;
      switch(p_inputFormat)
         {
@@ -16987,9 +16751,6 @@ SgFile::display ( const std::string & label ) const
      printf ("     p_sourceFileUsesFortran77FileExtension      = %s \n",(p_sourceFileUsesFortran77FileExtension == true) ? "true" : "false");
      printf ("     p_sourceFileUsesFortran90FileExtension      = %s \n",(p_sourceFileUsesFortran90FileExtension == true) ? "true" : "false");
      printf ("     p_sourceFileUsesFortran95FileExtension      = %s \n",(p_sourceFileUsesFortran95FileExtension == true) ? "true" : "false");
-     printf ("     p_sourceFileUsesPHPFileExtension            = %s \n",(p_sourceFileUsesPHPFileExtension == true) ? "true" : "false");
-     printf ("     p_sourceFileUsesJavaFileExtension           = %s \n",(p_sourceFileUsesJavaFileExtension == true) ? "true" : "false");
-     printf ("     p_sourceFileUsesBinaryFileExtension         = %s \n",(p_sourceFileUsesBinaryFileExtension == true) ? "true" : "false");
      printf ("     p_read_executable_file_format_only          = %s \n",(p_read_executable_file_format_only == true) ? "true" : "false");
      printf ("     p_read_instructions_only                    = %s \n",(p_read_instructions_only == true) ? "true" : "false");
 
@@ -17037,10 +16798,7 @@ X F77_only
 X F90_only
 X F95_only
 X F2003_only
-X PHP_only
-X Python_only
 X requires_C_preprocessor
-X binary_only
 X inputFormat
 X outputFormat
 X backendCompileFormat
@@ -18198,31 +17956,6 @@ SgHeaderFileReport::display( const string & label) const
 SOURCE_HEADER_FILE_REPORT_END
 
 
-SOURCE_APPLICATION_BINARY_FILE_START
-
-const SgAsmGenericFile*
-SgBinaryComposite::get_binaryFile() const
-   {
-     assert(p_genericFileList->get_files().size() == 1);
-     return p_genericFileList->get_files()[0];
-   }
-
-SgAsmGenericFile*
-SgBinaryComposite::get_binaryFile()
-   {
-     assert(p_genericFileList->get_files().size() == 1);
-     return p_genericFileList->get_files()[0];
-   }
-
-void
-SgBinaryComposite::set_binaryFile( SgAsmGenericFile* file )
-   {
-     assert(p_genericFileList->get_files().empty() == true);
-     p_genericFileList->get_files().push_back(file);
-   }
-
-SOURCE_APPLICATION_BINARY_FILE_END
-
 SOURCE_APPLICATION_UNKNOWN_FILE_START
 SgUnknownFile::SgUnknownFile ( vector<string> & argv ,  SgProject* project )
    : SgFile(argv, project)
@@ -18295,15 +18028,6 @@ SOURCE_APPLICATION_DIRECTORY_END
 
 SOURCE_APPLICATION_DIRECTORY_LIST_START
 SOURCE_APPLICATION_DIRECTORY_LIST_END
-
-
-SOURCE_JAVA_IMPORT_STATEMENT_LIST_START
-SOURCE_JAVA_IMPORT_STATEMENT_LIST_END
-
-
-SOURCE_JAVA_CLASS_DECLARATION_LIST_START
-SOURCE_JAVA_CLASS_DECLARATION_LIST_END
-
 
 
 SOURCE_APPLICATION_PROJECT_START
@@ -18485,17 +18209,7 @@ SgProject::initialization()
 
      p_Fortran_only          = false;
      p_addCppDirectivesToAST = false;
-     p_Java_only             = false;
-     p_Jovial_only           = false;
-  // PP (10/13/2020) plus Ada
-     p_Ada_only              = false;
 
-  // DQ (11/10/2016): Added initialization for data member that appeared to be missing.
-     p_X10_only              = false;
-     p_Java_batch_mode       = false;
-     p_Java_nowarn             = false;
-     p_Java_verbose            = false;
-     p_Java_deprecation        = false;
      p_addCppDirectivesToAST   = false;
 
   // DQ (9/18/2011): Added support for using more constant AST to select to use or not use frontend specific constant folding.
@@ -19343,52 +19057,6 @@ SgProject::get_CoArrayFortran_only (void) const
      return result;
    }
 
-bool
-SgProject::get_PHP_only (void) const
-   {
-  // look at how the files are set
-     bool result = false;
-     for (int i = 0; i < numberOfFiles(); i++)
-        {
-          SgFile & file = get_file(i);
-          result = result || (bool) file.get_PHP_only();
-        }
-     return result;
-   }
-
-bool
-SgProject::get_Python_only (void) const
-   {
-  // look at how the files are set
-     bool result = false;
-     for (int i = 0; i < numberOfFiles(); i++)
-        {
-          SgFile & file = get_file(i);
-          result = result || (bool) file.get_Python_only();
-        }
-     return result;
-   }
-
-void
-SgProject::set_Java_only (bool value)
-   {
-     ROSE_ASSERT(this != NULL);
-     p_Java_only = value;
-   }
-
-bool
-SgProject::get_Java_only (void) const
-   {
-  // look at how the files are set.
-     bool result = p_Java_only;
-     for (int i = 0; i < numberOfFiles(); i++)
-        {
-          SgFile & file = get_file(i);
-          result = result || (bool) file.get_Java_only();
-        }
-     return result;
-   }
-
 void
 SgProject::set_Java_classpath (std::list<std::string> param)
    {
@@ -19429,28 +19097,6 @@ SgProject::get_Java_destdir (void) const
    }
 
 void
-SgProject::set_X10_only (bool value)
-{
-  ROSE_ASSERT(this != NULL);
-  p_X10_only = value;
-}
-
-
-bool
-SgProject::get_X10_only (void) const
-{
-  // look at how the files are set.
-  bool result = p_X10_only;
-  for (int i = 0; i < numberOfFiles(); i++)
-  {
-      SgFile & file = get_file(i);
-      result = result || (bool) file.get_X10_only();
-  }
-  return result;
-}
-
-
-void
 SgProject::set_Java_source_destdir (std::string param)
    {
      p_Java_source_destdir = param;
@@ -19465,92 +19111,6 @@ SgProject::get_Java_source_destdir (void) const
     return p_Java_source_destdir;
   }
 
-bool
-SgProject::get_Csharp_only (void) const
-   {
-  // DQ (8/25/2017): Added more language support.
-
-  // look at how the files are set
-     bool result = false;
-     for (int i = 0; i < numberOfFiles(); i++)
-        {
-          SgFile & file = get_file(i);
-          result = result || (bool) file.get_Csharp_only();
-        }
-     return result;
-   }
-
-bool
-SgProject::get_Ada_only (void) const
-   {
-  // DQ (8/25/2017): Added more language support.
-
-  // look at how the files are set
-     bool result = p_Ada_only;
-     for (int i = 0; i < numberOfFiles(); i++)
-        {
-          SgFile & file = get_file(i);
-          result = result || (bool) file.get_Ada_only();
-        }
-     return result;
-   }
-
-void
-SgProject::set_Ada_only (bool value)
-   {
-     ROSE_ASSERT(this != NULL);
-     p_Ada_only = value;
-   }
-
-void
-SgProject::set_Jovial_only (bool value)
-   {
-     ROSE_ASSERT(this != NULL);
-     p_Jovial_only = value;
-   }
-
-bool
-SgProject::get_Jovial_only (void) const
-   {
-     bool result = p_Jovial_only;
-     for (int i = 0; i < numberOfFiles(); i++)
-        {
-          SgFile & file = get_file(i);
-          result = result || (bool) file.get_Jovial_only();
-        }
-     return result;
-   }
-
-bool
-SgProject::get_Cobol_only (void) const
-   {
-  // DQ (8/25/2017): Added more language support.
-
-  // look at how the files are set
-     bool result = false;
-     for (int i = 0; i < numberOfFiles(); i++)
-        {
-          SgFile & file = get_file(i);
-          result = result || (bool) file.get_Cobol_only();
-        }
-     return result;
-   }
-
-#if 0
-// DQ (2/4/2009): This is now a data member at the SgProject and so is automatically generated asa member function.
-bool
-SgProject::get_binary_only (void) const
-   {
-  // look at how the files are set
-     bool result = false;
-     for (int i = 0; i < numberOfFiles(); i++)
-        {
-          SgFile & file = get_file(i);
-          result = result || (bool) file.get_binary_only();
-        }
-     return result;
-   }
-#endif
 
 void
 SgProject::skipfinalCompileStep(bool value)
