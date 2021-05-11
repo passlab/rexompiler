@@ -180,9 +180,6 @@ SgGraphEdge
 SgGraphEdgeList
 SgGraphNode
 SgGraphNodeList
-SgOmpFlowGraphNode
-SgOmpFlowGraphSerialNode
-SgOmpFlowGraphTaskNode
 SgGreaterOrEqualOp
 SgGreaterThanOp
 SgIOItemExpression
