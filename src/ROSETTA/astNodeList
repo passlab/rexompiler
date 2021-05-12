@@ -457,6 +457,8 @@ SgSIMDBroadcast
 SgSIMDStore
 SgSIMDPartialStore
 SgSIMDScalarStore
+SgSIMDGather
+SgSIMDScatter
 SgSizeOfOp
 SgAlignOfOp
 SgSourceFile
