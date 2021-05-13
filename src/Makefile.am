@@ -131,6 +131,8 @@ pkginclude_HEADERS = \
      frontend/SageIII/sage3basic.hhh \
      midend/astDiagnostics/AstConsistencyTests.h
 
+nobase_pkginclude_HEADERS=
+
 ########################################################################################################################
 
 # DQ (9/22/2006): Because we now use libtool, the shared library is a reference to the separate

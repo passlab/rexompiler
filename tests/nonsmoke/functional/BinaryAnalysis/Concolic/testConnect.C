@@ -1,5 +1,5 @@
 #include <rose.h>
-#include <BinaryConcolic.h>
+#include <Rose/BinaryAnalysis/Concolic.h>
 #if defined(ROSE_ENABLE_CONCOLIC_TESTING) && defined(ROSE_HAVE_SQLITE3)
 
 #include <boost/process/search_path.hpp>
@@ -18,9 +18,6 @@ int main() {
         db->save(l01);
     }
 
-#if ROSE_CONCOLIC_DB_VERSION == 1
-    std::cerr <<"Concolic database version 1 does not support setting a default test suite\n";
-#else
     // Test passes if there's only a single test suite named "ls-family" and it's current
     auto db = Database::instance(DB_URL);
     ASSERT_always_not_null(db);
@@ -29,7 +26,6 @@ int main() {
 
     for (auto testSuiteId: db->testSuites())
         ASSERT_always_require(db->testSuite() == db->object(testSuiteId));
-#endif
 }
 
 #else

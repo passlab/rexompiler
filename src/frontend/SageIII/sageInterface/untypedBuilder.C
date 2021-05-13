@@ -138,7 +138,7 @@ SgUntypedType* buildType(SgUntypedType::type_enum type_enum, std::string name)
              default:
                {
                  fprintf(stderr, "UntypedBuilder::buildType: unimplemented for Fortran type_enum %d \n", type_enum);
-                 ROSE_ASSERT(0);  // NOT IMPLEMENTED
+                 ROSE_ABORT();  // NOT IMPLEMENTED
                }
             }
           break;
@@ -147,7 +147,7 @@ SgUntypedType* buildType(SgUntypedType::type_enum type_enum, std::string name)
       default:
         {
           fprintf(stderr, "UntypedBuilder::buildType: unimplemented for language_enum %d \n", language_enum);
-          ROSE_ASSERT(0);  // NOT IMPLEMENTED
+          ROSE_ABORT();  // NOT IMPLEMENTED
         }
 
     } // switch(language_enum)
@@ -227,7 +227,7 @@ SgUntypedArrayType* buildArrayType(SgUntypedType::type_enum type_enum, SgUntyped
              default:
                {
                  fprintf(stderr, "UntypedBuilder::buildArrayType: unimplemented for Fortran type_enum %d \n", type_enum);
-                 ROSE_ASSERT(0);  // NOT IMPLEMENTED
+                 ROSE_ABORT();  // NOT IMPLEMENTED
                }
             }
           break;
@@ -236,7 +236,7 @@ SgUntypedArrayType* buildArrayType(SgUntypedType::type_enum type_enum, SgUntyped
       default:
         {
           fprintf(stderr, "UntypedBuilder::buildArrayType: unimplemented for language_enum %d \n", language_enum);
-          ROSE_ASSERT(0);  // NOT IMPLEMENTED
+          ROSE_ABORT();  // NOT IMPLEMENTED
         }
 
     } // switch(language_enum)
@@ -429,58 +429,6 @@ SgUntypedStructureDefinition* buildStructureDefinition(const std::string type_na
    SageInterface::setSourcePosition(struct_def);
 
    return struct_def;
-}
-
-
-// Build an untyped JovialTableDescription. This version has a body and thus a scope.
-// Source position for the initializer and modifier lists and table description should be set after construction.
-SgUntypedStructureDefinition* buildJovialTableDescription()
-{
-   return buildStructureDefinition();
-}
-
-
-// Build an untyped JovialTableDescription. This version has a type name and body/scope (default is NULL).
-// If the has_body flag is true and the scope is NULL, a scope will be created.
-// Source position for the initializer and table description should be set after construction.
-SgUntypedStructureDefinition* buildJovialTableDescription(std::string type_name, bool has_body, SgUntypedScope* scope)
-{
-   return buildStructureDefinition(type_name, has_body, scope);
-}
-
-
-// Build an untyped JovialTableDeclaration with associated JovialTableDescription. This version has a body and thus a scope.
-// Source position for the initializer and modifier lists and table description should be set after construction.
-SgUntypedStructureDeclaration* buildJovialTableDeclaration(std::string table_type_name)
-{
-   SgUntypedStructureDeclaration* table_decl = NULL;
-   SgUntypedStructureDefinition*  table_desc = NULL;
-   SgUntypedExprListExpression*    modifiers = NULL;
-   SgUntypedExprListExpression*        shape = NULL;
-
-// Create a default definition that can be filled in later as more information arrives.
-// For example, the table description/definition may not be a named type.
-   std::string table_desc_name = "";
-
-   table_desc = buildJovialTableDescription(table_desc_name);
-   ROSE_ASSERT(table_desc);
-   SageInterface::setSourcePosition(table_desc);
-
-   modifiers = new SgUntypedExprListExpression(LanguageTranslation::e_struct_modifier_list);
-   ROSE_ASSERT(modifiers);
-   SageInterface::setSourcePosition(modifiers);
-
-   shape = new SgUntypedExprListExpression(LanguageTranslation::e_array_shape);
-   ROSE_ASSERT(shape);
-   SageInterface::setSourcePosition(shape);
-
-   std::string label = "";
-   int stmt_enum = LanguageTranslation::e_unknown;
-   table_decl = new SgUntypedStructureDeclaration(label, stmt_enum, table_type_name, modifiers, shape, table_desc);
-   ROSE_ASSERT(table_decl);
-   SageInterface::setSourcePosition(table_decl);
-
-   return table_decl;
 }
 
 

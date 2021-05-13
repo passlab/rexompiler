@@ -1397,7 +1397,7 @@ HEADER_FORALL_STATEMENT_START
   //! This class represents forall statements and the Fortran do concurrent construct.
   //
      public:
-       // CR (11/08/2018): Needed because of addition of do-concurrent-stmt
+       // Rasmussen (11/08/2018): Needed because of addition of do-concurrent-stmt
           enum forall_statement_kind_enum
              {
                e_unknown,
@@ -1501,7 +1501,7 @@ SgName get_mangled_name() const $ROSE_OVERRIDE;
 
 HEADER_LIST_DECLARATIONS
 
-// CR (09/24/2020): Finishing implementation of SgFunctionParameterScope for Jovial
+// Rasmussen (09/24/2020): Finishing implementation of SgFunctionParameterScope for Jovial
   protected:
     virtual bool replace_child(SgStatement *,SgStatement *, bool extractListFromBasicBlock = false) $ROSE_OVERRIDE;
     virtual bool insert_child(SgStatement*, SgStatement*, bool inFront = true, bool extractListFromBasicBlock = false) $ROSE_OVERRIDE;
@@ -1598,7 +1598,7 @@ HEADER_LIST_DECLARATIONS
           SgName get_qualified_name_prefix_for_return_type() const;
 
        // DQ (10/11/2014): Adding support for aterm translation to ROSE AST.
-       // CR (04/17/2019): Support for ATerms has been deprecated.
+       // Rasmussen (04/17/2019): Support for ATerms has been deprecated.
        // static SgFunctionDeclaration* build_node_from_nonlist_children(SgType* return_type, SgFunctionParameterList* parameterList, SgScopeStatement* scope, Sg_File_Info* startOfConstruct, SgName name, SgFunctionType* type, SgFunctionDefinition* definition);
 
        // DQ (12/22/2014): Adding support for EDG normalized template member and non-member functions.
@@ -2063,6 +2063,7 @@ HEADER_CLASS_DECLARATION_STATEMENT_START
                e_struct,             /*!< struct declaration */
                e_union,              /*!< union declaration */
                e_template_parameter, /*!< type parameter in a template declaration */
+               e_fortran_module,     /*!< A Fortran module declaration */
              };
 
           virtual SgName get_qualified_name() const;
@@ -2882,7 +2883,7 @@ HEADER_TEMPLATE_INSTANTIATION_DECLARATION_STATEMENT_START
           void set_definition( SgTemplateInstantiationDefn* definition );
 
        // DQ (10/10/2014): Implemented to support Aterm constructor functions.
-       // CR (04/17/2019): Support for ATerms has been deprecated. But this may be used elsewhere.
+       // Rasmussen (04/17/2019): Support for ATerms has been deprecated. But this may be used elsewhere.
           void set_definition( SgClassDefinition* definition );
 
        // DQ (2/11/2007): Add this to the derived class so that the SgSymbolTable::find() function will work properly
@@ -3044,6 +3045,9 @@ HEADER_EMPTY_DECLARATION_START
           virtual std::vector<VirtualCFG::CFGEdge> cfgOutEdges(unsigned int index) $ROSE_OVERRIDE;
           virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
 #endif
+
+       // DQ (11/24/2020): Adding support for explicit scope to be false.
+          virtual bool hasExplicitScope() const $ROSE_OVERRIDE;
 
 HEADER_EMPTY_DECLARATION_END
 
@@ -3397,9 +3401,9 @@ HEADER_USE_STATEMENT_END
 
 HEADER_PROCESS_CONTROL_STATEMENT_START
      public:
-       // CR (4/26/2018): Added e_exit for Jovial (exit similar to Fortran stop)
-       // CR (5/21/2018): Added e_abort for Jovial
-       // CR (7/11/2020): Renamed SgStopOrPauseStatement to SgProcessControlStatement
+       // Rasmussen (4/26/2018): Added e_exit for Jovial (exit similar to Fortran stop)
+       // Rasmussen (5/21/2018): Added e_abort for Jovial
+       // Rasmussen (7/11/2020): Renamed SgStopOrPauseStatement to SgProcessControlStatement
           enum control_enum
              {
                e_unknown,
@@ -3418,7 +3422,7 @@ HEADER_PROCESS_CONTROL_STATEMENT_START
 
 HEADER_PROCESS_CONTROL_STATEMENT_END
 
-// CR (9/20/2018): Added image control statements
+// Rasmussen (9/20/2018): Added image control statements
 //
 HEADER_IMAGE_CONTROL_STATEMENT_START
   // This is a base class for all the image control statements.
@@ -4339,6 +4343,8 @@ SgStatement::get_scope(void) const
 
                     if (stmt->get_parent() == NULL)
                        {
+                         if (isSgEmptyDeclaration(stmt)) return NULL; // TODO dangling SgJovialCompoolStatement without parent AND SgEmptyDeclaration generate in "collect" phase of the translator but files are created later leading to pool traversal in post-processing.
+
                          printf ("Error: NULL parent pointer not allowed for statement = %p = %s = %s \n",stmt,stmt->class_name().c_str(),SageInterface::get_name(stmt).c_str());
                          ROSE_ASSERT(stmt->get_file_info() != NULL);
                          stmt->get_file_info()->display("Error: NULL parent pointer not allowed for statement");
@@ -5950,7 +5956,7 @@ SgScopeStatement::containsOnlyDeclarations() const
           case V_SgTemplateInstantiationDefn:
           case V_SgNamespaceDefinitionStatement:
           case V_SgGlobal:
-          case V_SgFunctionParameterScope: // CR (09/24/2020): finishing implementation for Jovial
+          case V_SgFunctionParameterScope: // Rasmussen (09/24/2020): finishing implementation for Jovial
           case V_SgModuleStatement:
           case V_SgDeclarationScope:
                returnValue = true;
@@ -6180,8 +6186,43 @@ SgScopeStatement::insertStatementInScope ( SgStatement* newTransformationStateme
                  else
                   {
                     ROSE_ASSERT ( *statement != NULL );
-                    insert_statement (*statement,newTransformationStatement,inFront);
+#if 0
+                    printf ("In SgScopeStatement::insertStatementInScope(): calling insert_statement(): this = %p = %s \n",this,this->class_name().c_str());
+                    SgFunctionDefinition* functionDefinition = isSgFunctionDefinition(this);
+                    if (functionDefinition != NULL)
+                       {
+                         printf (" --- functionDefinition->get_body() = %p \n",functionDefinition->get_body());
+                       }
 
+                    printf (" --- *statement                 = %p = %s \n",*statement,(*statement)->class_name().c_str());
+                    printf (" --- newTransformationStatement = %p = %s \n",newTransformationStatement,newTransformationStatement->class_name().c_str());
+                    printf (" --- inFront                    = %s \n",inFront ? "true" : "false");
+#endif
+#if 1
+                 // DQ (3/27/2021): The base class implementation of insert_statement is being called by mistake, use the this poitner explicitly.
+                    insert_statement (*statement,newTransformationStatement,inFront);
+#else
+                 // this->insert_statement (*statement,newTransformationStatement,inFront);
+                    if (functionDefinition != NULL)
+                       {
+#if 1
+                         printf ("Found functionDefinition, so insert new statement into the function body \n");
+#endif
+                         SgBasicBlock* body = functionDefinition->get_body();
+                         ROSE_ASSERT(body != NULL);
+#if 1
+                         printf ("Skipping call to body->insert_statement \n");
+#endif
+                      // body->insert_statement (*statement,newTransformationStatement,inFront);
+
+                      // DQ (3/28/2021): Set the parent to pass the assertion below.
+                         newTransformationStatement->set_parent(body);
+                       }
+                      else
+                       {
+                         this->insert_statement (*statement,newTransformationStatement,inFront);
+                       }
+#endif
                  // DQ (6/24/2006): This should be set by the lower level insert_statement member function, verify this!
                     ROSE_ASSERT(newTransformationStatement->get_parent() != NULL);
                   }
@@ -8564,7 +8605,7 @@ SgDeclarationStatement::resetTemplateNameSupport ( bool & nameResetFromMangledFo
                                      // default being reached (missed including this type previously).
                                         case V_SgArrayType:
 
-                                     // CR (2/18/2020): Added SgTypeFixed (primitive type in Jovial)
+                                     // Rasmussen (2/18/2020): Added SgTypeFixed (primitive type in Jovial)
                                         case V_SgTypeFixed:
 
                                      // DQ (2/28/2005): List of types used in compiling Kull
@@ -10630,7 +10671,7 @@ SgFunctionParameterScope::post_construction_initialization()
   // Nothing to do here, but we need this function to be defined.
    }
 
-// CR (09/24/2020): Finishing implementation of SgParameterScope for Jovial
+// Rasmussen (09/24/2020): Finishing implementation of SgParameterScope for Jovial
 SgName
 SgFunctionParameterScope::get_mangled_name(void) const
    {
@@ -17277,6 +17318,14 @@ SgEmptyDeclaration::get_mangled_name(void) const
      returnName = "empty_declaration";
 
      return returnName;
+   }
+
+// DQ (11/24/2020): Adding support for explicit scope to be false.
+bool
+SgEmptyDeclaration::hasExplicitScope() const
+   {
+  // This function reports that this IR node does NOT store its scope explicitly.
+     return false;
    }
 
 SOURCE_EMPTY_DECLARATION_END

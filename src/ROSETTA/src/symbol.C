@@ -1,4 +1,4 @@
-
+#include <featureTests.h>
 #include "grammar.h"
 #include "ROSETTA_macros.h"
 #include "AstNodeClass.h"
@@ -37,8 +37,8 @@ Grammar::setUpSymbols ()
      //
      // [DT] 5/11/2000 -- Added TemplateInstantiationSymbol.
      //
-     NEW_TERMINAL_MACRO ( TemplateInstantiationSymbol, 
-                         "TemplateInstantiationSymbol", 
+     NEW_TERMINAL_MACRO ( TemplateInstantiationSymbol,
+                         "TemplateInstantiationSymbol",
                          "TEMPLATE_INSTANTIATION_NAME" );
 #endif
 
@@ -72,7 +72,7 @@ Grammar::setUpSymbols ()
   // DQ (10/11/2008): Move SgRenameSymbol to be derived from SgFunctionSymbol
   // DQ (10/10/2008): Added to support renamed representations of constructs that have non-SgAliasSymbols.
   // This is used in fortran interfaces where functions are renamed to interface names, this was
-  // where we used to use the SgAliasSymbol, but we needed a different symbol so that chains of 
+  // where we used to use the SgAliasSymbol, but we needed a different symbol so that chains of
   // SgAliasSymbol IR nodes could be properly evaluated.
      NEW_TERMINAL_MACRO ( RenameSymbol,         "RenameSymbol",        "RENAME_SYMBOL");
 
@@ -87,8 +87,8 @@ Grammar::setUpSymbols ()
      NEW_TERMINAL_MACRO ( NonrealSymbol, "NonrealSymbol", "NONREAL_SYMBOL" );
 
      NEW_NONTERMINAL_MACRO (Symbol,
-          VariableSymbol   | NonrealSymbol          | FunctionSymbol         | FunctionTypeSymbol | 
-          ClassSymbol      | TemplateSymbol         | EnumSymbol             | EnumFieldSymbol    | 
+          VariableSymbol   | NonrealSymbol          | FunctionSymbol         | FunctionTypeSymbol |
+          ClassSymbol      | TemplateSymbol         | EnumSymbol             | EnumFieldSymbol    |
           TypedefSymbol    | LabelSymbol            | DefaultSymbol          | NamespaceSymbol    |
           IntrinsicSymbol  | ModuleSymbol           | InterfaceSymbol        | CommonSymbol       | 
           AliasSymbol      /* | RenameSymbol*/,
@@ -131,7 +131,7 @@ Grammar::setUpSymbols ()
           Symbol.excludeFunctionPrototype ( "HEADER_PARSER", "../Grammar/Node.code" );
           Symbol.excludeFunctionSource   ( "SOURCE_PARSER", "../Grammar/parserSourceCode.macro" );
         }
-     
+
   // VariableSymbol.excludeFunctionPrototype ( "HEADER_VARIABLE_SYMBOL",      "../Grammar/Symbol.code" );
   // VariableSymbol.excludeFunctionPrototype ( "HEADER_GET_NAME",             "../Grammar/Symbol.code" );
   // VariableSymbol.setFunctionPrototype     ( "HEADER_GET_NAME_DECLARATION", "../Grammar/Symbol.code" );
@@ -150,8 +150,8 @@ Grammar::setUpSymbols ()
      FunctionTypeSymbol.setDataPrototype   ( "SgType*", "type", "= NULL",
                                              CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-  // DQ (9/25/2004): This function should be modified (customized) to return p_declaration->firstNondefiningDeclaration() 
-  // instead of p_declaration!  This way only nondefining declarations are shared (though all declarations share a 
+  // DQ (9/25/2004): This function should be modified (customized) to return p_declaration->firstNondefiningDeclaration()
+  // instead of p_declaration!  This way only nondefining declarations are shared (though all declarations share a
   // single definition).  The symbol can contain either the defining or nondefining declaration, since
   // the logic to return the correct declaration is in the SgClassSymbol.  Actually is we made sure that
   // only the first non-defining declaration were stored in the SgClass Symbol then we would not have to modifiy
@@ -218,8 +218,8 @@ Grammar::setUpSymbols ()
                                             CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // DQ (8/30/2009): Added support for namespace alias to the NamespaceSymbol.
-  // DQ (12/23/2005): This has been here for a long time, but in trying to remove unused SgName 
-  // objects I have realized that we need the SgName here to support symbols for namespace 
+  // DQ (12/23/2005): This has been here for a long time, but in trying to remove unused SgName
+  // objects I have realized that we need the SgName here to support symbols for namespace
   // aliases (SgNamespaceAliasDeclaration).
      NamespaceSymbol.setFunctionPrototype  ( "HEADER_NAMESPACE_SYMBOL", "../Grammar/Symbol.code" );
      NamespaceSymbol.setDataPrototype   ( "SgName" , "name", "= \"\"",
@@ -265,9 +265,9 @@ Grammar::setUpSymbols ()
      AliasSymbol.setDataPrototype       ( "SgName", "new_name", "= \"\"",
                    CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-  // DQ (7/11/2014): Added to support references to the associated using declarations and using directives 
+  // DQ (7/11/2014): Added to support references to the associated using declarations and using directives
   // that caused the sgAliasSymbol symbol to be built.  This is critical to support for name qualification
-  // that is different before and after a using declaration; but which forces the sgAliasSymbol to be 
+  // that is different before and after a using declaration; but which forces the sgAliasSymbol to be
   // generated only once within the AST (before uparsing the associated using declaration of using directive
   // that caused the generation of the SgAliasSymbol in the symbol tabel for the associated scope).
   // Note that test2014_90.C is a simple example of why this is important.
@@ -340,8 +340,8 @@ Grammar::setUpSymbols ()
      TemplateClassSymbol.setFunctionSource  ( "SOURCE_SHORT_GET_NAME", "../Grammar/Symbol.code" );
      NonrealSymbol.setFunctionSource        ( "SOURCE_SHORT_GET_NAME", "../Grammar/Symbol.code" );
 
-  // DQ (3/11/2004): Force name of templateSymbol to be the template string (at least until we can get 
-  // to the point in the processing were we have access to the realy template name within EDG (then it 
+  // DQ (3/11/2004): Force name of templateSymbol to be the template string (at least until we can get
+  // to the point in the processing were we have access to the realy template name within EDG (then it
   // might be good to reset the name from the whole template text string.
   // TemplateSymbol.setFunctionSource       ( "SOURCE_SHORT_EMPTY_GET_NAME", "../Grammar/Symbol.code" );
      TemplateSymbol.setFunctionSource       ( "SOURCE_SHORT_GET_NAME", "../Grammar/Symbol.code" );

@@ -88,7 +88,7 @@ Grammar::setUpStatements ()
   // test2017_47.C).  the purpose of this scope is similar to the unused FunctionParameterScope (above),
   // which was developed to support the case of "void foobar (int n, int array[n]);" type declarations
   // which are allowed in C99, but not in C++.  This nondefining (prototype) declaration works in ROSE,
-  // but is still assign the scope of the function parametes to gloval scope (but not assigning symbols
+  // but is still assigned the scope of the function parameters to global scope (but not assigning symbols
   // for them, so working OK, but is still not ideal).  The case of templates generating class declarations
   // (which in EDG are listed as proxy and nonreal classes) requires a better fix to support getting the
   // name qualification correct.  This is part of fixing a bug in the "backstroke" project (the last one
@@ -248,7 +248,7 @@ Grammar::setUpStatements ()
           WaitStatement,
           "IOStatement", "IO_STATEMENT", false);
 
-  // CR (9/25/2018): Fortran 2018 nodes related to synchronization
+  // Rasmussen (9/25/2018): Fortran 2018 nodes related to synchronization
      NEW_TERMINAL_MACRO (SyncAllStatement,     "SyncAllStatement",            "SYNC_ALL_STATEMENT" );
      NEW_TERMINAL_MACRO (SyncImagesStatement,  "SyncImagesStatement",         "SYNC_IMAGES_STATEMENT" );
      NEW_TERMINAL_MACRO (SyncMemoryStatement,  "SyncMemoryStatement",         "SYNC_MEMORY_STATEMENT" );
@@ -418,7 +418,7 @@ Grammar::setUpStatements ()
 
   // Note that the associate statement is really a scope, with its own declarations of variables declared by reference to 
   // other variables or expressions.  They are only l-values if and only if the rhs is a l-value (I think).
-  // CR (10/22/2018): Added JovialForThenStatement
+  // Rasmussen (10/22/2018): Added JovialForThenStatement
      NEW_NONTERMINAL_MACRO (ScopeStatement,
           Global                       | BasicBlock           | IfStmt                    | ForStatement       | FunctionDefinition |
           ClassDefinition              | WhileStmt            | DoWhileStmt               | SwitchStatement    | CatchOptionStmt    |
@@ -524,8 +524,8 @@ Grammar::setUpStatements ()
           "DeclarationStatement", "DECL_STMT", false);
 
 
-  // CR (9/20/2018): Added ImageControlStatement
-  // CR (7/11/2020): Changed StopOrPauseStatement to ProcessControlStatement to allow more variants
+  // Rasmussen (9/20/2018): Added ImageControlStatement
+  //           (7/11/2020): Changed StopOrPauseStatement to ProcessControlStatement to allow more variants
      NEW_NONTERMINAL_MACRO (Statement,
              ScopeStatement            | FunctionTypeTable      | DeclarationStatement            | ExprStatement         |
              LabelStatement            | CaseOptionStmt         | TryStmt                         | DefaultOptionStmt     |
@@ -760,6 +760,10 @@ Grammar::setUpStatements ()
      DeclarationStatement.setDataPrototype ( "SgDeclarationScope*", "declarationScope", "= NULL",
                                         NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
+  // DQ (10/26/2020): Adding support to unparse the templates from the AST on a declaration by declaration basis.
+     DeclarationStatement.setDataPrototype ("bool", "unparse_template_ast", "= false",
+                                        NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
 
      BasicBlock.setFunctionPrototype ( "HEADER_BASIC_BLOCK", "../Grammar/Statement.code" );
 
@@ -950,7 +954,7 @@ Grammar::setUpStatements ()
                    CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
 
-// CR (09/24/2020): Finishing implementation of SgFunctionParameterScope for Jovial
+// Rasmussen (09/24/2020): Finishing implementation of SgFunctionParameterScope for Jovial
      FunctionParameterScope.setFunctionPrototype( "HEADER_FUNCTION_PARAMETER_SCOPE", "../Grammar/Statement.code" );
      FunctionParameterScope.editSubstitute      ( "HEADER_LIST_DECLARATIONS", "HEADER_LIST_DECLARATIONS", "../Grammar/Statement.code" );
      FunctionParameterScope.editSubstitute      ( "LIST_DATA_TYPE", "SgDeclarationStatementPtrList" );
@@ -1713,6 +1717,14 @@ Grammar::setUpStatements ()
   // template argument lists inside of template declarations.  Related to concept of is_non_real setting.
      ClassDeclaration.setDataPrototype("bool","isRepresentingTemplateParameterInTemplateDeclaration","= false",
                                 NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+  // PP (2/22/2021): To support declarations of Ada private types (aka forward declarations).
+  //                 In Ada, programmers can specify the base record as part of the public portion of
+  //                 a private type.
+  //                 e.g., type Manager is new Employee with private;
+     ClassDeclaration.setDataPrototype("SgBaseClass*","adaParentType","= NULL",
+                                NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
 #if 0
   // DQ (11/18/2013): Adding Java specific support
      ClassDeclaration.setDataPrototype("bool","java_annonomous","= false",
@@ -3131,6 +3143,8 @@ Grammar::setUpStatements ()
                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      UseStatement.setDataPrototype ( "bool", "only_option", "= false",
                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UseStatement.setDataPrototype ( "std::string", "module_nature", "= \"\"",
+                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
   // UseStatement.setDataPrototype ( "SgExprListExp*", "rename_list", "= NULL",
   //              CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
      UseStatement.setDataPrototype ( "SgRenamePairPtrList", "rename_list", "",
@@ -3194,7 +3208,7 @@ Grammar::setUpStatements ()
                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // Fortran 95 specific construct (different from C/C++ for loop).
-  // CR (10/25/2018): Added forall_statement_kind_enum to allow specifying as a DO CONCURRENT statement
+  // Rasmussen (10/25/2018): Added forall_statement_kind_enum to allow specifying as a DO CONCURRENT statement
      ForAllStatement.setFunctionPrototype ( "HEADER_FORALL_STATEMENT", "../Grammar/Statement.code" );
      ForAllStatement.setDataPrototype ( "SgExprListExp*", "forall_header", "= NULL",
                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
@@ -3217,15 +3231,15 @@ Grammar::setUpStatements ()
                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // DQ (8/14/2007): Added new data members to Fortran IR nodes.
-  // CR (7/11/2020): Added F2018 addition, quiet
+  // Rasmussen (7/11/2020): Added F2018 addition, quiet
      ProcessControlStatement.setFunctionPrototype ( "HEADER_PROCESS_CONTROL_STATEMENT", "../Grammar/Statement.code" );
      ProcessControlStatement.setDataPrototype     ( "SgProcessControlStatement::control_enum",
                                                     "control_kind", "= SgProcessControlStatement::e_unknown",
                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      ProcessControlStatement.setDataPrototype     ( "SgExpression*", "code", "= NULL",
-                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
      ProcessControlStatement.setDataPrototype     ( "SgExpression*", "quiet", "= NULL",
-               NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+               NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
   // DQ (8/14/2007): Added new data members to Fortran IR nodes.
      IOStatement.setFunctionPrototype ( "HEADER_IO_STATEMENT", "../Grammar/Statement.code" );
@@ -3242,7 +3256,7 @@ Grammar::setUpStatements ()
      IOStatement.setDataPrototype ( "SgExpression*", "iomsg", "= NULL",
                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
-  // CR (9/20/2018): Added F2018 image control statements
+  // Rasmussen (9/20/2018): Added F2018 image control statements
      ImageControlStatement.setFunctionPrototype ( "HEADER_IMAGE_CONTROL_STATEMENT", "../Grammar/Statement.code" );
      ImageControlStatement.setDataPrototype     ( "SgImageControlStatement::image_control_statement_enum", "image_control_statement", "= SgImageControlStatement::e_unknown",
                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
@@ -3504,7 +3518,7 @@ Grammar::setUpStatements ()
      BlockDataStatement.setDataPrototype    ( "SgBasicBlock*", "body", "= NULL",
                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-  // CR (8/3/2020): Added implicit_type enum for F2018 syntax (implicit_none becomes redundant)
+  // Rasmussen (8/3/2020): Added implicit_type enum for F2018 syntax (implicit_none becomes redundant)
      ImplicitStatement.setDataPrototype("bool", "implicit_none", "= false",
                      CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      ImplicitStatement.setDataPrototype("SgImplicitStatement::implicit_spec_enum",
@@ -4083,7 +4097,7 @@ Grammar::setUpStatements ()
 
      IOStatement.setFunctionSource              ("SOURCE_IO_STATEMENT", "../Grammar/Statement.code" );
 
-  // CR (9/20/2018): Added F2018 image control statements
+  // Rasmussen (9/20/2018): Added F2018 image control statements
      ImageControlStatement.setFunctionSource    ("SOURCE_IMAGE_CONTROL_STATEMENT", "../Grammar/Statement.code" );
 
   // Derived from ImageControlStatement

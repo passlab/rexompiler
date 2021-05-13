@@ -13,7 +13,7 @@ if(enable-fortran)
   endif()
 
 install(
-  FILES OpenFortranParser-20190922.jar
+  FILES OpenFortranParser-20200819-JDK8.jar
         ${jar_file}
   DESTINATION ${ROSE_LIB_DIR_NAME})
 

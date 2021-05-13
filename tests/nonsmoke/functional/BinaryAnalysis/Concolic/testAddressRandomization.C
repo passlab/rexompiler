@@ -1,5 +1,5 @@
 #include <rose.h>
-#include <BinaryConcolic.h>
+#include <Rose/BinaryAnalysis/Concolic.h>
 #if defined(ROSE_ENABLE_CONCOLIC_TESTING) && defined(ROSE_HAVE_SQLITE3)
 
 #ifndef DB_URL
@@ -20,7 +20,7 @@ int main() {
 
         auto executor = LinuxExecutor::instance(db);
         executor->useAddressRandomization(true);
-        auto result = executor->execute(e01);
+        auto result = dynamic_cast<LinuxExecutor::Result*>(executor->execute(e01));
         int status = result->exitStatus();
         ASSERT_always_require(WIFEXITED(status) && WEXITSTATUS(status) == 0);
     }
@@ -32,7 +32,7 @@ int main() {
 
         auto executor = LinuxExecutor::instance(db);
         executor->useAddressRandomization(false);
-        auto result = executor->execute(e02);
+        auto result = dynamic_cast<LinuxExecutor::Result*>(executor->execute(e02));
         int status = result->exitStatus();
         ASSERT_always_require(WIFEXITED(status) && WEXITSTATUS(status) == 0);
     }

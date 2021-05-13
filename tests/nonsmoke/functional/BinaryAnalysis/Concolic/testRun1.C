@@ -1,5 +1,5 @@
 #include <rose.h>
-#include <BinaryConcolic.h>
+#include <Rose/BinaryAnalysis/Concolic.h>
 #if defined(ROSE_ENABLE_CONCOLIC_TESTING) && defined(ROSE_HAVE_SQLITE3)
 
 #include <boost/process/search_path.hpp>
@@ -28,7 +28,7 @@ int main() {
     for (auto testCaseId: db->needConcreteTesting(1)) {
         auto testCase = db->object(testCaseId);
         auto executor = LinuxExecutor::instance(db);
-        auto result = executor->execute(testCase);      // leaked?
+        auto result = dynamic_cast<LinuxExecutor::Result*>(executor->execute(testCase)); // leaked?
         int status = result->exitStatus();
         ASSERT_always_require(WIFEXITED(status));
         db->saveConcreteResult(testCase, result);

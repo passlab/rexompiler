@@ -340,7 +340,7 @@ static bool ofs_match_clause_schedule()
     if (!ofs_match_char('('))
     {
       printf("error in schedule(xx) match: no starting '(' is found for %s.\n",old_char);
-      assert(false);
+      ROSE_ABORT();
     }
     // match kind first
     if  (ofs_match_substr("static",false))// no space is required after the match 
@@ -366,7 +366,7 @@ static bool ofs_match_clause_schedule()
     else
     { 
       printf("error in schedule clause match: no legal kind is found for %s\n",old_char);
-      assert(false);
+      ROSE_ABORT();
     }
     //  set schedule kind matched
     current_clause->first_parameter = matched_kind;
@@ -392,7 +392,7 @@ static bool ofs_match_clause_schedule()
        if (!ofs_match_char(')'))
     {
       printf("error in schedule() match: no end ')' is found for %s.\n",old_char);
-      assert(false);
+      ROSE_ABORT();
     }
 
     // it is successful now
@@ -412,13 +412,13 @@ static bool ofs_match_common_block(char* buffer)
     if (!ofs_match_anyname(buffer))
     {
       printf("error in matching a named common block: cannot find block name for %s\n", old_char);
-      assert (false);
+      ROSE_ABORT ();
     } 
 
     if  (!ofs_match_char('/'))
     {
       printf("error in matching a named common block: cannot the end '/' for %s\n", old_char);
-      assert (false);
+      ROSE_ABORT ();
 
     } 
     return true;
@@ -460,7 +460,7 @@ static void ofs_add_block_variables (char* block_name)
   if (found_block_object == NULL)
   {
     printf("error: cannot find a common block with a name of %s\n",block_name);
-    assert(false);
+    ROSE_ABORT();
   }
 
   // add each variable within the block into ompattribute
@@ -527,12 +527,12 @@ static bool ofs_match_varlist()
       if (ofs_match_char(')'))
         break;
       printf("error: cannot find either , or ) after a variable match for %s\n!",old_char);
-      assert(false);
+      ROSE_ABORT();
     }
     else
     {
       printf("error: empty variable list not allowed for %s\n!",old_char);
-      assert(false);
+      ROSE_ABORT();
     }
   } // end while()
   return true;
@@ -568,7 +568,7 @@ static bool ofs_match_clause_varlist(omp_construct_enum clausetype)
     default:
       {
         printf("Unaccepted clause type :%s for clause(varlist) match!\n",OmpSupport::toString(clausetype).c_str());
-        assert(false);
+        ROSE_ABORT();
       }
   } //end switch
 
@@ -590,7 +590,7 @@ static bool ofs_match_clause_varlist(omp_construct_enum clausetype)
     else
     {
       printf("error in clause(varlist) match: no starting '(' is found for %s.\n",old_char);
-      assert(false);
+      ROSE_ABORT();
     }
     is_complex_clause = false;
     return true;
@@ -614,7 +614,7 @@ static bool ofs_match_name_in_parenthesis(char name[])
       if (!ofs_match_char(')'))
       {
         printf("error in (name) match: no end ')' is found for %s.\n",old_char);
-        assert(false);
+        ROSE_ABORT();
       }
       // successful if reach to this point
       return true;
@@ -622,7 +622,7 @@ static bool ofs_match_name_in_parenthesis(char name[])
     else
     {
       printf("error in (name) match: no name is found for %s.\n",old_char);
-      assert(false);
+      ROSE_ABORT();
     }
   }
   c_char= old_char;
@@ -650,7 +650,7 @@ static bool ofs_match_clause_expression (omp_construct_enum clausetype)
     default:
       {
         printf("Unaccepted clause type :%s for clause(expr) match!\n",OmpSupport::toString(clausetype).c_str());
-        assert(false);
+        ROSE_ABORT();
       }
   } //end switch
 
@@ -688,20 +688,20 @@ static bool ofs_match_clause_expression (omp_construct_enum clausetype)
       else
       {
         printf("error in clause(expression) match:no expression is found for %s.\n",old_char);
-        assert(false);
+        ROSE_ABORT();
       }
     } // end if '(expression'
     else
     {
       printf("error in clause(expression) match: no starting '(' is found for %s.\n",old_char);
-      assert(false);
+      ROSE_ABORT();
     }
 
     // match end ')'
     if (!ofs_match_char(')'))
     {
       printf("error in clause(expression) match: no end ')' is found for %s.\n",old_char);
-      assert(false);
+      ROSE_ABORT();
     }
 
     is_complex_clause = false;
@@ -748,7 +748,7 @@ static bool ofs_match_clause_naked (omp_construct_enum clausetype)
     default:
       {
         printf("Unaccepted clause type :%s for a naked clause match!\n",OmpSupport::toString(clausetype).c_str());
-        assert(false);
+        ROSE_ABORT();
       }
   } //end switch
 
@@ -785,7 +785,7 @@ static bool ofs_match_clause_default()
     if (!ofs_match_char('('))
     {
       printf("error in default(xx) match: no starting '(' is found for %s.\n",old_char);
-      assert(false);
+      ROSE_ABORT();
     }
     // match values
     if (ofs_match_substr("private",false))
@@ -805,7 +805,7 @@ static bool ofs_match_clause_default()
     if (!ofs_match_char(')'))
     {
       printf("error in default() match: no end ')' is found for %s.\n",old_char);  
-      assert(false); 
+      ROSE_ABORT();
     }
     return true;
   }
@@ -980,32 +980,6 @@ static bool ofs_match_clause_reduction() {
             printf("error: cannot find a legal reduction identifier for %s\n",old_char);
             assert(false);
         }
-
-        // Create clause with collected modifier and identifier.
-        current_clause = setupComplexClause();
-        if (second_parameter == e_user_defined_parameter) {
-            addUserDefinedParameter("");
-        };
-
-    // match ':' in between
-    if (!ofs_match_char(':'))
-    {
-      printf("error in reduction(op:varlist) match: no ':' is found for %s\n",old_char);
-      assert(false);
-    }   
-    // match the rest "varlist)"
-    if (!ofs_match_varlist())
-    {
-      printf("error in reduction(op:valist) match during varlist for %s \n",old_char);
-      assert(false);
-    }
-    else
-    {
-      omptype = e_unknown; // restore it to unknown
-      is_complex_clause = false;
-      return true; // all pass! return here!
-    }
-
   } // end if (reduction)
 
   c_char = old_char;
@@ -1189,7 +1163,7 @@ static bool ofs_match_omp_clauses(int bitvector)
   if (!ofs_match_omp_directive_end())
   {
     printf("ERROR: OpenMP directive text ends abnormally for \n%s\n",old_char);
-    assert(false);
+    ROSE_ABORT();
   }
   return true;
 }
@@ -1442,7 +1416,7 @@ OmpSupport::OmpAttribute* omp_fortran_parse(SgNode* locNode, const char* str)
       else
       {
         printf("error: !$omp end must be followed by some other keywords! orig is:\n%s\n",str);
-        assert(false);
+        ROSE_ABORT();
       }
     } // finished handling of "!$omp end ...."
     // !$omp flush 
@@ -1554,7 +1528,7 @@ OmpSupport::OmpAttribute* omp_fortran_parse(SgNode* locNode, const char* str)
       else
       {
         printf("error: found an OpenMP sentinel without any legal OpenMP directive followed for \n%s\n",str);
-        assert(false);
+        ROSE_ABORT();
       }
   }
   else
@@ -1614,7 +1588,7 @@ void parse_fortran_openmp(SgSourceFile *sageFilePtr)
             if (previter!= comments->end())
             {
               printf("error: Found a none-OpenMP comment after a pending OpenMP comment with a line continuation\n");
-              assert(false);
+              ROSE_ABORT();
             }
             continue;
           } 

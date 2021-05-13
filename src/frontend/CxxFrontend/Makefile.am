@@ -160,7 +160,7 @@ EDG.tar.gz: $(EDGBIN_SIGNATURE_FILE)
 	    echo "$(CONTACT_INFO)" >&2;									\
 	    exit 1;											\
 	fi
-	
+
 	@if [ -r "$(EDGBIN_NAME).tar.gz" ]; then								\
 	    echo "EDG binary tarball appears to have been downloaded already: $(EDGBIN_NAME).tar.gz";		\
 	else													\
