@@ -1,5 +1,0 @@
-START
-!COMPOOL ('tabletypes');
-DEF PROC many'trials() ;
-  STOP 1;
-TERM

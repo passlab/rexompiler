@@ -1,8 +1,0 @@
-START
-!COMPOOL ('SIMPLECOMPOOL') ;
-
-COMPOOL compooldirective ;
-
-   DEF ITEM gg F ;
-
-TERM
