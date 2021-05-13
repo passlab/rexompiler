@@ -14,6 +14,16 @@ using namespace SageBuilder;
 
 // Global variables to for naming control
 int pg_pos = 0;
+int arm_buf_pos = 0;
+
+std::string arm_gen_buf() {
+    char str[5];
+    sprintf(str, "%d", arm_buf_pos);
+    
+    std::string name = "__buf" + std::string(str);
+    ++arm_buf_pos;
+    return name;
+}
 
 // Returns the corresponding function based on a given type
 std::string arm_get_func(SgType *input, OpType type) {
@@ -98,6 +108,12 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
     if (first->get_type()->variantT() == V_SgTypeDouble) {
         pred_func_name = "svwhilelt_b64";
         pred_count_name = "svcntd";
+    } else if (first->get_type()->variantT() == V_SgPointerType) {
+        SgPointerType *pt = static_cast<SgPointerType *>(first->get_type());
+        if (pt->get_base_type()->variantT() == V_SgTypeDouble) {
+            pred_func_name = "svwhilelt_b64";
+            pred_count_name = "svcntd";
+        }
     }
 
     // Get for loop information
@@ -167,12 +183,104 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 appendStatement(str, new_block);
             } break;
             
+            // Partial store (save partial sums to a register)
+            // Basically, all we do is create a zero'ed register outside the for-loop
             case V_SgSIMDPartialStore: {
-                init = NULL;
+                SgVarRefExp *dest = static_cast<SgVarRefExp *>(lval);
+                
+                SgType *vector_type = arm_get_type(dest->get_type(), new_block);
+                SgName dest_name = dest->get_symbol()->get_name();
+                
+                SgExpression *val;
+                switch (dest->get_type()->variantT()) {
+                    case V_SgTypeFloat: val = buildFloatVal(0); break;
+                    case V_SgTypeDouble: val = buildDoubleVal(0); break; 
+                    default: val = buildIntVal(0);
+                }
+                
+                SgExprListExp *parameters = buildExprListExp(val);
+                std::string func_name = arm_get_func(dest->get_type(), Broadcast);
+                
+                SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
+                SgAssignInitializer *local_init = buildAssignInitializer(ld);
+                
+                SgVariableDeclaration *vd = buildVariableDeclaration(dest_name, vector_type, local_init, new_block);
+                insertStatementBefore(target, vd);
             } break;
             
+            // Scalar store:
+            //
+            // float __buf0[svcntw()];
+            // __pg0 = svwhilelt_b32((uint64_t)0,svcntw());
+            // svst1(__pg0, &__buf0, __vec6);
+            // for (int __i = 0; __i < svcntw(); __i++) {
+            //     Y[i] += __buf0[__i];
+            // }
+            //
             case V_SgSIMDScalarStore: {
-                init = NULL;
+                SgVarRefExp *scalar = static_cast<SgVarRefExp *>(lval);
+                SgVarRefExp *vec = static_cast<SgVarRefExp *>(rval);
+                std::vector<SgStatement *> to_insert;
+                
+                // Create the buffer
+                std::string name = arm_gen_buf();
+                std::string len_name = "svcntw";
+                
+                SgExpression *len_fc = buildFunctionCallExp(len_name, buildIntType(), NULL, new_block);
+                SgType *buf_type = buildArrayType(scalar->get_type(), len_fc);
+                
+                SgVariableDeclaration *vd = buildVariableDeclaration(name, buf_type, NULL, new_block);
+                insertStatementAfter(target, vd);
+                
+                SgVarRefExp *buf_ref = buildVarRefExp(name, new_block);
+                
+                // Reset the predicate
+                SgType *int64_type = buildOpaqueType("uint64_t", new_block);
+                SgIntVal *start_val = buildIntVal(0);
+                SgCastExp *start = buildCastExp(start_val, int64_type);
+                
+                parameters = buildExprListExp(start, len_fc);
+                predicate = buildFunctionCallExp(pred_func_name, pred_type, parameters, new_block);
+                
+                SgVarRefExp *pred_var = buildVarRefExp(pg_name, new_block);
+                SgExprStatement *pred_update = buildAssignStatement(pred_var, predicate);
+                insertStatementAfter(vd, pred_update);
+                
+                // Store
+                SgAddressOfOp *addr = buildAddressOfOp(buf_ref);
+                SgExprListExp *parameters = buildExprListExp(pred_ref, addr, vec);
+                
+                SgExprStatement *str = buildFunctionCallStmt("svst1", buildVoidType(), parameters, new_block);
+                insertStatementAfter(pred_update, str);
+                
+                // Now the for-loop
+                // int __i = 0;
+                SgIntVal *init_val = buildIntVal(0);
+                SgAssignInitializer *local_init = buildAssignInitializer(init_val);
+                SgVariableDeclaration *i_vd = buildVariableDeclaration("__i", buildIntType(), local_init, new_block);
+                
+                // __i < scntw()
+                std::string max_name = "svcntw";
+                if (scalar->get_type()->variantT() == V_SgTypeDouble) {
+                    max_name = "svcntd";
+                }
+                
+                SgVarRefExp *i_ref = buildVarRefExp("__i", new_block);
+                SgExpression *i_fc = buildFunctionCallExp(max_name, buildIntType(), NULL, new_block);
+                SgLessThanOp *lt_op = buildLessThanOp(i_ref, i_fc);
+                SgExprStatement *lt = buildExprStatement(lt_op);
+                
+                // __i++
+                SgPlusPlusOp *i_inc = buildPlusPlusOp(i_ref);
+                
+                // result += __buf0[__i]
+                SgPntrArrRefExp *buf_pntr = buildPntrArrRefExp(buf_ref, i_ref);
+                SgPlusAssignOp *scalar_add = buildPlusAssignOp(scalar, buf_pntr);
+                SgExprStatement *empty = buildExprStatement(scalar_add);
+                
+                // The loop
+                SgForStatement *for_stmt = buildForStatement(i_vd, lt, i_inc, empty);
+                insertStatementAfter(str, for_stmt);
             } break;
             
             case V_SgSIMDAddOp:
@@ -198,14 +306,15 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 SgExpression *fc = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
                 
                 if (name.rfind("__part", 0) == 0) {
-                
+                    SgExprStatement *assign = buildAssignStatement(dest, fc);
+                    appendStatement(assign, new_block);
                 } else {
                     init = buildAssignInitializer(fc);
                 }
             } break;
             
             default: {
-                std::cout << "Invalid or unknown IR" << std::endl;
+                init = buildAssignInitializer(rval);
             }
         }
         
@@ -241,10 +350,8 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
     appendStatement(pred_update, new_block);
     
     // Update the loop increment
-    SgVarRefExp *inc = buildVarRefExp("i", for_loop);
     SgExpression *inc_fc = buildFunctionCallExp(pred_count_name, buildIntType(), NULL, for_loop);
-    
-    SgPlusAssignOp *assign = buildPlusAssignOp(inc, inc_fc);
+    SgPlusAssignOp *assign = buildPlusAssignOp(loop_var, inc_fc);
     for_loop->set_increment(assign);
 }
 

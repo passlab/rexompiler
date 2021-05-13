@@ -180,9 +180,6 @@ SgGraphEdge
 SgGraphEdgeList
 SgGraphNode
 SgGraphNodeList
-SgOmpFlowGraphNode
-SgOmpFlowGraphSerialNode
-SgOmpFlowGraphTaskNode
 SgGreaterOrEqualOp
 SgGreaterThanOp
 SgIOItemExpression
@@ -457,6 +454,8 @@ SgSIMDBroadcast
 SgSIMDStore
 SgSIMDPartialStore
 SgSIMDScalarStore
+SgSIMDGather
+SgSIMDScatter
 SgSizeOfOp
 SgAlignOfOp
 SgSourceFile
