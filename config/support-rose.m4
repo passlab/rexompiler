@@ -222,9 +222,6 @@ ROSE_SUPPORT_EDG
 # This is the support for using Clang as a frontend in ROSE not the support for Clang as a compiler to compile ROSE source code.
 ROSE_SUPPORT_CLANG
 
-# Support for using F18/Flang as a Fortran frontend in ROSE
-ROSE_SUPPORT_FLANG
-
 # DQ (1/4/2009) Added support for optional GNU language extensions in new EDG/ROSE interface.
 # This value will be substituted into EDG/4.0/src/rose_lang_feat.h in the future (not used at present!)
 AC_ARG_ENABLE(gnu-extensions, AS_HELP_STRING([--enable-gnu-extensions], [Enable internal support in ROSE for GNU language extensions]))
@@ -1517,7 +1514,6 @@ src/3rdPartyLibraries/json/nlohmann/Makefile
 src/3rdPartyLibraries/MSTL/Makefile
 src/3rdPartyLibraries/Makefile
 src/3rdPartyLibraries/antlr-jars/Makefile
-src/3rdPartyLibraries/flang-parser/Makefile
 src/3rdPartyLibraries/fortran-parser/Makefile
 src/Makefile
 src/ROSETTA/Makefile
