@@ -6,6 +6,7 @@ add_subdirectory(astPostProcessing)
 add_subdirectory(sageInterface)
 add_subdirectory(virtualCFG)
 add_subdirectory(astVisualization)
+add_subdirectory(ompparser)
 
 if(NOT enable-internalFrontendDevelopment)
   ##AS Commented out for simpler build
@@ -45,26 +46,26 @@ add_custom_target( ROSE_PREPROCESSOR ALL DEPENDS
 
 #GENERATING the OpenMP parser
 add_custom_command(
-  OUTPUT ${CMAKE_BINARY_DIR}/src/frontend/SageIII/omp-lex.yy.C
+  OUTPUT ${CMAKE_BINARY_DIR}/src/frontend/SageIII/omp_exprparser_lexer.cc
   COMMAND ${FLEX_EXECUTABLE} -t
-    ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/expression_lexer.ll > ${CMAKE_BINARY_DIR}/src/frontend/SageIII/omp-lex.yy.C
-  DEPENDS  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/expression_lexer.ll)
+    ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/omp_exprparser_lexer.ll > ${CMAKE_BINARY_DIR}/src/frontend/SageIII/omp_exprparser_lexer.cc
+  DEPENDS  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/omp_exprparser_lexer.ll)
 
 add_custom_command(
-  OUTPUT ${CMAKE_BINARY_DIR}/src/frontend/SageIII/expression_parser.C
+  OUTPUT ${CMAKE_BINARY_DIR}/src/frontend/SageIII/omp_exprparser_parser.cc
   COMMAND ${BISON_EXECUTABLE}
-    ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/expression_parser.yy -o
-    ${CMAKE_BINARY_DIR}/src/frontend/SageIII/expression_parser.C
-    && mv expression_parser.H expression_parser.hh
-  DEPENDS  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/expression_parser.yy)
+    ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/omp_exprparser_parser.yy -o
+    ${CMAKE_BINARY_DIR}/src/frontend/SageIII/omp_exprparser_parser.cc
+    #    && mv omp_exprparser_parser.H omp_exprparser_parser.hh
+  DEPENDS  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/omp_exprparser_parser.yy)
 
 set(SAGE3_SOURCES ${SAGE3_SOURCES}
   OmpAttribute.C
   ompAstConstruction.cpp ompFortranParser.C
         omp_exprparser_lexer.ll omp_exprparser_parser.yy
   ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.C
-  ${CMAKE_CURRENT_BINARY_DIR}/expression_parser.C
-  ${CMAKE_CURRENT_BINARY_DIR}/omp-lex.yy.C)
+  ${CMAKE_CURRENT_BINARY_DIR}/omp_exprparser_parser.cc
+  ${CMAKE_CURRENT_BINARY_DIR}/omp_exprparser_lexer.cc)
 
 ########### next target ###############
 add_library(sage3 OBJECT ${SAGE3_SOURCES})

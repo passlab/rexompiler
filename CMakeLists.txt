@@ -653,15 +653,6 @@ if(NOT WIN32)
   endif()
 endif()
 
-# TODO: We shoud move this elsewhere
-set(OMPPARSER_PATH "" CACHE STRING "Path to external OMP parser")
-if (OMPPARSER_PATH STREQUAL "")
-else()
-    include_directories(${OMPPARSER_PATH}/include)
-    link_directories(${OMPPARSER_PATH}/lib)
-    set(use_ompparser TRUE)
-endif()
-
 # This is essential to find the right include path from either build or installation tree for a translator
 if(HAVE_DLFCN_H)
   if(HAVE_DLADDR)
@@ -886,9 +877,6 @@ if(VERBOSE)
   # the tools for creating libraries
   message(STATUS "CMAKE_AR:                           ${CMAKE_AR}")
   message(STATUS "CMAKE_RANLIB:                       ${CMAKE_RANLIB}")
-  
-  # ompparser
-  message(STATUS "OMPPARSER:                          ${OMPPARSER_PATH}")
 endif()
 
 
@@ -915,6 +903,7 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/includeDirectivesProcessing
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astFileIO
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/sageInterface
+  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/ompparser/src
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/virtualCFG
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astTokenStream
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astHiddenTypeAndDeclarationLists
