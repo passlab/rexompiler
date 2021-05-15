@@ -980,6 +980,32 @@ static bool ofs_match_clause_reduction() {
             printf("error: cannot find a legal reduction identifier for %s\n",old_char);
             assert(false);
         }
+
+        // Create clause with collected modifier and identifier.
+        current_clause = setupComplexClause();
+        if (second_parameter == e_user_defined_parameter) {
+            addUserDefinedParameter("");
+        };
+
+    // match ':' in between
+    if (!ofs_match_char(':'))
+    {
+      printf("error in reduction(op:varlist) match: no ':' is found for %s\n",old_char);
+      assert(false);
+    }
+    // match the rest "varlist)"
+    if (!ofs_match_varlist())
+    {
+      printf("error in reduction(op:valist) match during varlist for %s \n",old_char);
+      assert(false);
+    }
+    else
+    {
+      omptype = e_unknown; // restore it to unknown
+      is_complex_clause = false;
+      return true; // all pass! return here!
+    }
+
   } // end if (reduction)
 
   c_char = old_char;

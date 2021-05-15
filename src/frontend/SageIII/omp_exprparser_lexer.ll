@@ -19,7 +19,7 @@
 /* lex requires me to use extern "C" here */
 extern "C" int omp_exprparser_wrap() { return 1; }
 
-extern int omp_lex();
+extern int omp_exprparser_lex();
 
 #include <stdio.h>
 #include <string>
