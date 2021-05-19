@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: Auto Testing
 
 on:
   push:
@@ -17,7 +17,6 @@ jobs:
         config:
           - {os: ubuntu-20.04, gnu: 9}
           - {os: ubuntu-18.04, gnu: 7}
-          - {os: ubuntu-16.04, gnu: 5}
 
     runs-on: ${{ matrix.config.os }}
     env:
@@ -85,7 +84,7 @@ jobs:
         ./build
         mkdir ../rex_build
         cd ../rex_build
-        $GITHUB_WORKSPACE/configure --prefix=$GITHUB_WORKSPACE/../rex_install --with-boost=/usr --with-boost-libdir=/usr/lib/x86_64-linux-gnu/ --enable-languages=c,c++,fortran --disable-tests-directory --disable-tutorial-directory CXXFLAGS=-std=c++14
+        $GITHUB_WORKSPACE/configure --prefix=$GITHUB_WORKSPACE/../rex_install --with-boost=/usr --with-boost-libdir=/usr/lib/x86_64-linux-gnu/ --enable-languages=c,c++,fortran --disable-tests-directory --disable-tutorial-directory
 
     - name: Build
       run: |
