@@ -27,11 +27,11 @@ F77_TESTCODES_TO_PASS = \
     section1.f \
     #shared-array.f \
     shared.f \
-    single.f \
-    task_largenumber.f \
-    task_largenumber2.f \
-    task_scalar.f \
-    task_simplest.f
+    single.f
+    #task_largenumber.f \
+    #task_largenumber2.f \
+    #task_scalar.f \
+    #task_simplest.f
 
 REX_F77_TESTCODES_TO_PASS = \
 	allocate_predefined_modifiers.f \
@@ -49,29 +49,23 @@ REX_F77_TESTCODES_TO_PASS = \
     private.f \
     section1.f \
     shared.f \
-    single.f \
-    task_largenumber.f \
-    task_largenumber2.f \
-    task_scalar.f \
-    task_simplest.f
+    single.f
 
 # DQ (3/4/2010): Added simple test code to debug fortran OFP usage.
 F77_TESTCODES_TO_PASS += testNewOFP.f
 
 F90_TESTCODES_TO_PASS = \
   paralleldo.f90 \
-  paralleldo-1.f90 \
+  #paralleldo-1.f90 \
   #collapse.f90 \
   critical.f90 \
-  single-copyprivate.f90 \
+  #single-copyprivate.f90 \
   continuation.f90
 
 REX_F90_TESTCODES_TO_PASS = \
   paralleldo.f90 \
   critical.f90 \
-  continuation.f90 \
-  collapse.f90 \
-  single-copyprivate.f90 
+  continuation.f90
 
 
 #if !OS_VENDOR_DEBIAN
