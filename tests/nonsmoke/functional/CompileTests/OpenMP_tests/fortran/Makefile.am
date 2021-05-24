@@ -1,18 +1,18 @@
 include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 
 F77_TESTCODES_TO_PASS = \
-	allocate_predefined_modifiers.f \
-	allocate_user_defined_modifiers.f \
+    allocate_predefined_modifiers.f \
+    allocate_user_defined_modifiers.f \
     #array-one.f \
     #array_initialize.f \
     default.f \
-    exampleA251f.f \
-    flush.f \
+    #exampleA251f.f \
+    #flush.f \
     helloworld.f \
     helloworld0.f \
     helloworld2.f \
     #jacobi.f \
-    master.f \
+    #master.f \
     #ompdo-decremental.f \
     #ompdo-default.f \
     #ompdo-multiple.f \
@@ -24,48 +24,46 @@ F77_TESTCODES_TO_PASS = \
     private.f \
     #reduction.f \
     #schedule.f \
-    section1.f \
+    #section1.f \
     #shared-array.f \
     shared.f \
-    single.f
-    #task_largenumber.f \
-    #task_largenumber2.f \
-    #task_scalar.f \
-    #task_simplest.f
+    single.f \
+    task_largenumber.f \
+    task_largenumber2.f \
+    task_scalar.f \
+    task_simplest.f
 
 REX_F77_TESTCODES_TO_PASS = \
-	allocate_predefined_modifiers.f \
-	allocate_user_defined_modifiers.f \
+    allocate_predefined_modifiers.f \
+    allocate_user_defined_modifiers.f \
     default.f \
-    exampleA251f.f \
-    flush.f \
     helloworld.f \
     helloworld0.f \
     helloworld2.f \
-    master.f \
     parallel-1.f \
     parallel-2.f \
     parallel.f \
     private.f \
-    section1.f \
     shared.f \
-    single.f
+    single.f \
+    task_largenumber.f \
+    task_largenumber2.f \
+    task_scalar.f \
+    task_simplest.f
 
 # DQ (3/4/2010): Added simple test code to debug fortran OFP usage.
 F77_TESTCODES_TO_PASS += testNewOFP.f
 
 F90_TESTCODES_TO_PASS = \
-  paralleldo.f90 \
+  #paralleldo.f90 \
   #paralleldo-1.f90 \
   #collapse.f90 \
   critical.f90 \
   #single-copyprivate.f90 \
-  continuation.f90
+  #continuation.f90
 
 REX_F90_TESTCODES_TO_PASS = \
-  paralleldo.f90 \
-  critical.f90 \
-  continuation.f90
+  critical.f90
 
 
 #if !OS_VENDOR_DEBIAN
