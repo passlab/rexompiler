@@ -12,7 +12,7 @@ F77_TESTCODES_TO_PASS = \
     helloworld0.f \
     helloworld2.f \
     #jacobi.f \
-    #master.f \
+    master.f \
     #ompdo-decremental.f \
     #ompdo-default.f \
     #ompdo-multiple.f \
@@ -40,6 +40,7 @@ REX_F77_TESTCODES_TO_PASS = \
     helloworld.f \
     helloworld0.f \
     helloworld2.f \
+    master.f \
     parallel-1.f \
     parallel-2.f \
     parallel.f \
