@@ -120,7 +120,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	parallel_pragma.c \
 	parallelfor.c \
 	parallelfor2.c \
-	#parallelsections.c \
+	parallelsections.c \
 	pi.c \
 	preprocessingInfo.c \
 	prettyfunc.c \
@@ -275,6 +275,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	parallel_pragma.c \
 	parallelfor.c \
 	parallelfor2.c \
+	parallelsections.c \
 	pi.c \
 	preprocessingInfo.c \
 	prettyfunc.c \

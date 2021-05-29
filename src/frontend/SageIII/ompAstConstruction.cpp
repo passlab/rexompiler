@@ -2450,6 +2450,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
             break;
         }
         case OMPD_parallel_for:
+        case OMPD_parallel_sections:        
         case OMPD_parallel_for_simd: {
             result = convertCombinedBodyDirective(current_OpenMPIR_to_SageIII);
             break;
@@ -2516,6 +2517,7 @@ SgOmpBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*,
 
     switch (directive_kind) {
         case OMPD_parallel_for:
+        case OMPD_parallel_sections:
         case OMPD_parallel_for_simd: {
             result = convertOmpParallelStatementFromCombinedDirectives(current_OpenMPIR_to_SageIII);
             break;
@@ -3925,6 +3927,11 @@ SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::p
             second_stmt = new SgOmpForSimdStatement(NULL, body);
             break;
         }
+      case OMPD_parallel_sections:
+        {
+            second_stmt = new SgOmpSectionsStatement(NULL, body);
+            break;
+        }
       default:
         {
           cerr<<"error: unacceptable directive type in convertOmpParallelStatementFromCombinedDirectives() "<<endl;
@@ -4046,6 +4053,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_metadirective:
         case OMPD_parallel:
         case OMPD_parallel_for:
+        case OMPD_parallel_sections:
         case OMPD_parallel_for_simd:
         case OMPD_scan:
         case OMPD_section:
