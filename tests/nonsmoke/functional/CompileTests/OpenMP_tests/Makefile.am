@@ -276,6 +276,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	parallelfor.c \
 	parallelfor2.c \
 	parallelsections.c \
+	parallelloop.c \
 	pi.c \
 	preprocessingInfo.c \
 	prettyfunc.c \
