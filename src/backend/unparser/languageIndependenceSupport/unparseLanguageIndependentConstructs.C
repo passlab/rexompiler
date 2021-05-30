@@ -3800,6 +3800,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpTargetStatement:
                     case V_SgOmpTargetDataStatement:
                     case V_SgOmpTargetParallelForStatement:
+                    case V_SgOmpParallelLoopStatement:
                     case V_SgOmpWorkshareStatement:
                     case V_SgOmpSingleStatement:
                     case V_SgOmpTaskStatement:
@@ -11124,6 +11125,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpTargetParallelForStatement:
       {
         curprint(string ("target parallel for "));
+        break;
+      }
+    case V_SgOmpParallelLoopStatement:
+      {
+        curprint(string ("parallel loop "));
         break;
       }
      case V_SgOmpCriticalStatement:

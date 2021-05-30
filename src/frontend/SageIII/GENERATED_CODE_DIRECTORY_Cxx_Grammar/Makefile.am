@@ -85,6 +85,7 @@ SgOmpNumParallelClause.C                 SgOmpNumSectionsClause.C               
 SgCommonBlockObject.C                 SgIdentDirectiveStatement.C             SgOmpOrderedClause.C                         SgTypedefSymbol.C \
 SgCommonSymbol.C                      SgIfdefDirectiveStatement.C             SgOmpOrderedStatement.C                      SgTypedefType.C \
 SgIfDirectiveStatement.C      SgOmpMetadirectiveStatement.C          SgOmpParallelStatement.C      SgOmpTeamsStatement.C    SgOmpLoopStatement.C          SgOmpTaskloopStatement.C       SgTypeDouble.C                       SgOmpScanStatement.C         SgOmpDistributeStatement.C   SgOmpTaskgroupStatement.C             SgOmpCancellationPointStatement.C       SgOmpCancelStatement.C                       SgOmpDeclareMapperStatement.C         SgOmpTargetEnterDataStatement.C           SgOmpTargetExitDataStatement.C SgOmpTargetParallelForStatement.C \
+SgOmpParallelLoopStatement.C \
 SgComputedGotoStatement.C             SgIfndefDirectiveStatement.C            SgOmpPrivateClause.C                         SgTypeEllipse.C \
 SgConcatenationOp.C                   SgIfStmt.C                              SgOmpReductionClause.C                       SgOmpAllocateClause.C \
 SgOmpWhenClause.C                   SgTypeFloat.C                             SgOmpDistScheduleClause.C                    SgOmpInReductionClause.C \

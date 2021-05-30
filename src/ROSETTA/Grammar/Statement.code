@@ -19193,6 +19193,12 @@ SgOmpTargetParallelForStatement::post_construction_initialization()
    {}
 SOURCE_OMP_TARGET_PARALLEL_FOR_STATEMENT_END
 
+SOURCE_OMP_PARALLEL_LOOP_STATEMENT_START
+void
+SgOmpParallelLoopStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_PARALLEL_LOOP_STATEMENT_END
+
 SOURCE_OMP_TARGET_DATA_STATEMENT_START
 void
 SgOmpTargetDataStatement::post_construction_initialization()
