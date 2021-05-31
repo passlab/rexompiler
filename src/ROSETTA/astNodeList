@@ -326,6 +326,8 @@ SgOmpTargetStatement
 SgOmpTargetDataStatement
 SgOmpTargetParallelForStatement
 SgOmpParallelLoopStatement
+SgOmpParallelMasterStatement
+SgOmpMasterTaskloopStatement
 SgOmpSimdStatement
 SgOmpClause
 SgOmpAllocateClause

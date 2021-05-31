@@ -303,6 +303,8 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpTargetStatement,  "OmpTargetStatement",   "OMP_TARGET_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetDataStatement,  "OmpTargetDataStatement",   "OMP_TARGET_DATA_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetParallelForStatement,  "OmpTargetParallelForStatement",   "OMP_TARGET_PARALLEL_FOR_STMT" );
+    NEW_TERMINAL_MACRO (OmpParallelMasterStatement,  "OmpParallelMasterStatement",   "OMP_PARALLEL_MASTER_STMT" );
+    NEW_TERMINAL_MACRO (OmpMasterTaskloopStatement,  "OmpMasterTaskloopStatement",   "OMP_MASTER_TASKLOOP_STMT" );
     NEW_TERMINAL_MACRO (OmpParallelLoopStatement,  "OmpParallelLoopStatement",   "OMP_PARALLEL_LOOP_STMT" );
     
     NEW_TERMINAL_MACRO (OmpSimdStatement,    "OmpSimdStatement",     "OMP_SIMD_STMT" );
@@ -311,7 +313,7 @@ Grammar::setUpStatements ()
     // A base class for the most commonly formed directives with both clauses and a structured body
     // We treat OmpSectionsStatement separatedly by move the body to a list of SgOmpSectionStatement
     // sensitive to 
-    NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement | OmpTaskgroupStatement | OmpTaskloopStatement | OmpDepobjStatement | OmpTargetEnterDataStatement | OmpTargetExitDataStatement |
+    NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement | OmpTaskgroupStatement | OmpTaskloopStatement | OmpDepobjStatement | OmpTargetEnterDataStatement | OmpTargetExitDataStatement | OmpParallelMasterStatement | OmpMasterTaskloopStatement |
               OmpTaskStatement | OmpForStatement | OmpDoStatement | OmpSectionsStatement | OmpTargetStatement | OmpTargetDataStatement | OmpTargetParallelForStatement | OmpParallelLoopStatement |
               OmpSimdStatement | OmpForSimdStatement | OmpCriticalStatement | OmpDistributeStatement | OmpTaskwaitStatement,
         "OmpClauseBodyStatement",   "OMP_CLAUSEBODY_STMT", false );
@@ -4265,6 +4267,8 @@ Grammar::setUpStatements ()
     OmpTargetStatement.setFunctionSource            ("SOURCE_OMP_TARGET_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetDataStatement.setFunctionSource            ("SOURCE_OMP_TARGET_DATA_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetParallelForStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_FOR_STATEMENT", "../Grammar/Statement.code" );
+    OmpParallelMasterStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_MASTER_STATEMENT", "../Grammar/Statement.code" );
+    OmpMasterTaskloopStatement.setFunctionSource            ("SOURCE_OMP_MASTER_TASKLOOP_STATEMENT", "../Grammar/Statement.code" );
     OmpParallelLoopStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_LOOP_STATEMENT", "../Grammar/Statement.code" );
     OmpSimdStatement.setFunctionSource            ("SOURCE_OMP_SIMD_STATEMENT", "../Grammar/Statement.code" );
 

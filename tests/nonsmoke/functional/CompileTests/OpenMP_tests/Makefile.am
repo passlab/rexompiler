@@ -121,6 +121,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	parallelfor.c \
 	parallelfor2.c \
 	parallelsections.c \
+	parallelmaster.c \
 	pi.c \
 	preprocessingInfo.c \
 	prettyfunc.c \
@@ -240,6 +241,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	lu_factorization.c \
 	master.c \
 	masterSingle.c \
+	mastertaskloop.c \
 	matrix_vector.c \
 	matrixmultiply.c \
 	md_open_mp.c \
@@ -277,6 +279,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	parallelfor2.c \
 	parallelsections.c \
 	parallelloop.c \
+	parallelmaster.c \
 	pi.c \
 	preprocessingInfo.c \
 	prettyfunc.c \
