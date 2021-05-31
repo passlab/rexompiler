@@ -351,6 +351,8 @@ namespace sg
     GEN_VISIT(SgOmpTargetEnterDataStatement)
     GEN_VISIT(SgOmpTargetExitDataStatement)
     GEN_VISIT(SgOmpTargetParallelForStatement)
+    GEN_VISIT(SgOmpParallelMasterStatement)
+    GEN_VISIT(SgOmpMasterTaskloopStatement)
     GEN_VISIT(SgOmpParallelLoopStatement)
     GEN_VISIT(SgOmpSingleStatement)
     GEN_VISIT(SgOmpSimdStatement)
