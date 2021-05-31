@@ -2433,6 +2433,16 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_target_enter_data:
         case OMPD_target_exit_data:
         case OMPD_target_parallel_for:
+        case OMPD_target_parallel:
+        case OMPD_target_parallel_for_simd:
+        case OMPD_target_parallel_loop:
+        case OMPD_target_simd:
+        case OMPD_target_teams:
+        case OMPD_target_teams_distribute:
+        case OMPD_target_teams_distribute_simd:
+        case OMPD_target_teams_loop:
+        case OMPD_target_teams_distribute_parallel_for:
+        case OMPD_target_teams_distribute_parallel_for_simd:
         case OMPD_master_taskloop_simd:
         case OMPD_parallel_master_taskloop:
         case OMPD_parallel_master_taskloop_simd:
@@ -2782,6 +2792,46 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         }
         case OMPD_target_parallel_for: {
             result = new SgOmpTargetParallelForStatement(NULL, body);
+            break;
+        }
+        case OMPD_target_parallel: {
+            result = new SgOmpTargetParallelStatement(NULL, body);
+            break;
+        }
+        case OMPD_target_parallel_for_simd: {
+            result = new SgOmpTargetParallelForSimdStatement(NULL, body);
+            break;
+        }
+        case OMPD_target_parallel_loop: {
+            result = new SgOmpTargetParallelLoopStatement(NULL, body);
+            break;
+        }
+        case OMPD_target_simd: {
+            result = new SgOmpTargetSimdStatement(NULL, body);
+            break;
+        }
+        case OMPD_target_teams: {
+            result = new SgOmpTargetTeamsStatement(NULL, body);
+            break;
+        }
+        case OMPD_target_teams_distribute: {
+            result = new SgOmpTargetTeamsDistributeStatement(NULL, body);
+            break;
+        }
+        case OMPD_target_teams_distribute_simd: {
+            result = new SgOmpTargetTeamsDistributeSimdStatement(NULL, body);
+            break;
+        }
+        case OMPD_target_teams_loop: {
+            result = new SgOmpTargetTeamsLoopStatement(NULL, body);
+            break;
+        }
+        case OMPD_target_teams_distribute_parallel_for: {
+            result = new SgOmpTargetTeamsDistributeParallelForStatement(NULL, body);
+            break;
+        }
+        case OMPD_target_teams_distribute_parallel_for_simd: {
+            result = new SgOmpTargetTeamsDistributeParallelForSimdStatement(NULL, body);
             break;
         }
         case OMPD_master_taskloop_simd: {
@@ -3178,6 +3228,46 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         }
         case OMPD_target_parallel_for: {
             result = new SgOmpTargetParallelForStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_target_parallel: {
+            result = new SgOmpTargetParallelStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_target_parallel_for_simd: {
+            result = new SgOmpTargetParallelForSimdStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_target_parallel_loop: {
+            result = new SgOmpTargetParallelLoopStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_target_simd: {
+            result = new SgOmpTargetSimdStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_target_teams: {
+            result = new SgOmpTargetTeamsStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_target_teams_distribute: {
+            result = new SgOmpTargetTeamsDistributeStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_target_teams_distribute_simd: {
+            result = new SgOmpTargetTeamsDistributeSimdStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_target_teams_loop: {
+            result = new SgOmpTargetTeamsLoopStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_target_teams_distribute_parallel_for: {
+            result = new SgOmpTargetTeamsDistributeParallelForStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_target_teams_distribute_parallel_for_simd: {
+            result = new SgOmpTargetTeamsDistributeParallelForSimdStatement(NULL, NULL);
             break;
         }
         case OMPD_master_taskloop_simd: {
@@ -4164,6 +4254,16 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_target_enter_data:
         case OMPD_target_exit_data:
         case OMPD_target_parallel_for:
+        case OMPD_target_parallel:
+        case OMPD_target_parallel_for_simd:
+        case OMPD_target_parallel_loop:
+        case OMPD_target_simd:
+        case OMPD_target_teams:
+        case OMPD_target_teams_distribute:
+        case OMPD_target_teams_distribute_simd:
+        case OMPD_target_teams_loop:
+        case OMPD_target_teams_distribute_parallel_for:
+        case OMPD_target_teams_distribute_parallel_for_simd:
         case OMPD_master_taskloop_simd:
         case OMPD_parallel_master_taskloop:
         case OMPD_parallel_master_taskloop_simd:
