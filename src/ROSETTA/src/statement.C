@@ -303,6 +303,16 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpTargetStatement,  "OmpTargetStatement",   "OMP_TARGET_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetDataStatement,  "OmpTargetDataStatement",   "OMP_TARGET_DATA_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetParallelForStatement,  "OmpTargetParallelForStatement",   "OMP_TARGET_PARALLEL_FOR_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetParallelStatement,  "OmpTargetParallelStatement",   "OMP_TARGET_PARALLEL_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetParallelForSimdStatement,  "OmpTargetParallelForSimdStatement",   "OMP_TARGET_PARALLEL_FOR_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetParallelLoopStatement,  "OmpTargetParallelLoopStatement",   "OMP_TARGET_PARALLEL_LOOP_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetSimdStatement,  "OmpTargetSimdStatement",   "OMP_TARGET_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsStatement,  "OmpTargetTeamsStatement",   "OMP_TARGET_TEAMS_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsDistributeStatement,  "OmpTargetTeamsDistributeStatement",   "OMP_TARGET_TEAMS_DISTRIBUTE_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsDistributeSimdStatement,  "OmpTargetTeamsDistributeSimdStatement",   "OMP_TARGET_TEAMS_DISTRIBUTE_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsLoopStatement,  "OmpTargetTeamsLoopStatement",   "OMP_TARGET_TEAMS_LOOP_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsDistributeParallelForStatement,  "OmpTargetTeamsDistributeParallelForStatement",   "OMP_TARGET_TEAMS_DISTRIBUTE_PARALLEL_FOR_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsDistributeParallelForSimdStatement,  "OmpTargetTeamsDistributeParallelForSimdStatement",   "OMP_TARGET_TEAMS_DISTRIBUTE_PARALLEL_FOR_SIMD_STMT" );   
     NEW_TERMINAL_MACRO (OmpMasterTaskloopSimdStatement,  "OmpMasterTaskloopSimdStatement",   "OMP_MASTER_TASKLOOP_SIMD_STMT" );
     NEW_TERMINAL_MACRO (OmpParallelMasterTaskloopStatement,  "OmpParallelMasterTaskloopStatement",   "OMP_PARALLEL_MASTER_TASKLOOP_STMT" );
     NEW_TERMINAL_MACRO (OmpParallelMasterTaskloopSimdStatement,  "OmpParallelMasterTaskloopSimdStatement",   "OMP_PARALLEL_MASTER_TASKLOOP_SIMD_STMT" );
@@ -322,7 +332,8 @@ Grammar::setUpStatements ()
     // We treat OmpSectionsStatement separatedly by move the body to a list of SgOmpSectionStatement
     // sensitive to 
     NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement | OmpTaskgroupStatement | OmpTaskloopStatement | OmpDepobjStatement | OmpTargetEnterDataStatement | OmpTargetExitDataStatement | OmpParallelMasterStatement | OmpMasterTaskloopStatement |
-              OmpTaskStatement | OmpForStatement | OmpDoStatement | OmpSectionsStatement | OmpTargetStatement | OmpTargetDataStatement | OmpTargetParallelForStatement | OmpParallelLoopStatement |
+              OmpTaskStatement | OmpForStatement | OmpDoStatement | OmpSectionsStatement | OmpTargetStatement | OmpTargetDataStatement | OmpTargetParallelForStatement | OmpParallelLoopStatement |              
+              OmpTargetParallelStatement | OmpTargetParallelForSimdStatement | OmpTargetParallelLoopStatement | OmpTargetSimdStatement | OmpTargetTeamsStatement | OmpTargetTeamsDistributeStatement | OmpTargetTeamsDistributeSimdStatement | OmpTargetTeamsLoopStatement | OmpTargetTeamsDistributeParallelForStatement | OmpTargetTeamsDistributeParallelForSimdStatement |              
               OmpMasterTaskloopSimdStatement | OmpParallelMasterTaskloopStatement | OmpParallelMasterTaskloopSimdStatement | OmpTeamsDistributeStatement | OmpTeamsDistributeSimdStatement | OmpTeamsDistributeParallelForStatement | OmpTeamsDistributeParallelForSimdStatement | OmpTeamsLoopStatement |
               OmpSimdStatement | OmpForSimdStatement | OmpCriticalStatement | OmpDistributeStatement | OmpTaskwaitStatement,
         "OmpClauseBodyStatement",   "OMP_CLAUSEBODY_STMT", false );
@@ -4276,6 +4287,16 @@ Grammar::setUpStatements ()
     OmpTargetStatement.setFunctionSource            ("SOURCE_OMP_TARGET_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetDataStatement.setFunctionSource            ("SOURCE_OMP_TARGET_DATA_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetParallelForStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_FOR_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetParallelStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetParallelForSimdStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_FOR_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetParallelLoopStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_LOOP_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetSimdStatement.setFunctionSource            ("SOURCE_OMP_TARGET_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsDistributeStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_DISTRIBUTE_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsDistributeSimdStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_DISTRIBUTE_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsLoopStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_LOOP_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsDistributeParallelForStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_DISTRIBUTE_PARALLEL_FOR_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsDistributeParallelForSimdStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_DISTRIBUTE_PARALLEL_FOR_SIMD_STATEMENT", "../Grammar/Statement.code" );
     OmpMasterTaskloopSimdStatement.setFunctionSource            ("SOURCE_OMP_MASTER_TASKLOOP_SIMD_STATEMENT", "../Grammar/Statement.code" );
     OmpParallelMasterTaskloopStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_MASTER_TASKLOOP_STATEMENT", "../Grammar/Statement.code" );
     OmpParallelMasterTaskloopSimdStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_MASTER_TASKLOOP_SIMD_STATEMENT", "../Grammar/Statement.code" );

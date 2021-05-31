@@ -1,0 +1,1 @@
+#pragma omp target teams distribute parallel for simd 
