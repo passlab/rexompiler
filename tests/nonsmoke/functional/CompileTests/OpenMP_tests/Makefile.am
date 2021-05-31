@@ -242,6 +242,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	master.c \
 	masterSingle.c \
 	mastertaskloop.c \
+	mastertaskloopsimd.c \
 	matrix_vector.c \
 	matrixmultiply.c \
 	md_open_mp.c \
@@ -280,6 +281,8 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	parallelsections.c \
 	parallelloop.c \
 	parallelmaster.c \
+	parallelmastertaskloop.c \
+	parallelmastertaskloopsimd.c \
 	pi.c \
 	preprocessingInfo.c \
 	prettyfunc.c \
@@ -328,6 +331,11 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	threadprivate2.c \
 	threadprivate3.c \
 	teams.c \
+	teamsdistribute.c \
+	teamsdistributesimd.c \
+	teamsdistributeparallelfor.c \
+	teamsdistributeparallelforsimd.c \
+	teamsloop.c \
 	twoRegions.c \
 	threadProcessor.c \
 	upperCase.c \

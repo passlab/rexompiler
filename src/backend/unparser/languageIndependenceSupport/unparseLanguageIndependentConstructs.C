@@ -3800,6 +3800,14 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpTargetStatement:
                     case V_SgOmpTargetDataStatement:
                     case V_SgOmpTargetParallelForStatement:
+                    case V_SgOmpMasterTaskloopSimdStatement:
+                    case V_SgOmpParallelMasterTaskloopStatement:
+                    case V_SgOmpParallelMasterTaskloopSimdStatement:
+                    case V_SgOmpTeamsDistributeStatement:
+                    case V_SgOmpTeamsDistributeSimdStatement:
+                    case V_SgOmpTeamsDistributeParallelForStatement:
+                    case V_SgOmpTeamsDistributeParallelForSimdStatement:
+                    case V_SgOmpTeamsLoopStatement:                
                     case V_SgOmpParallelMasterStatement:
                     case V_SgOmpMasterTaskloopStatement:
                     case V_SgOmpParallelLoopStatement:
@@ -11129,12 +11137,52 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         curprint(string ("target parallel for "));
         break;
       }
-      case V_SgOmpParallelMasterStatement:
+    case V_SgOmpMasterTaskloopSimdStatement:
+      {
+        curprint(string ("master taskloop simd "));
+        break;
+      }
+    case V_SgOmpParallelMasterTaskloopStatement:
+      {
+        curprint(string ("parallel master taskloop "));
+        break;
+      }
+    case V_SgOmpParallelMasterTaskloopSimdStatement:
+      {
+        curprint(string ("parallel master taskloop simd "));
+        break;
+      }
+    case V_SgOmpTeamsDistributeStatement:
+      {
+        curprint(string ("teams distribute "));
+        break;
+      }
+    case V_SgOmpTeamsDistributeSimdStatement:
+      {
+        curprint(string ("teams distribute simd "));
+        break;
+      }
+    case V_SgOmpTeamsDistributeParallelForStatement:
+      {
+        curprint(string ("teams distribute parallel for "));
+        break;
+      }
+    case V_SgOmpTeamsDistributeParallelForSimdStatement:
+      {
+        curprint(string ("teams distribute parallel for simd "));
+        break;
+      }
+    case V_SgOmpTeamsLoopStatement:
+      {
+        curprint(string ("teams loop "));
+        break;
+      }  
+    case V_SgOmpParallelMasterStatement:
       {
         curprint(string ("parallel master "));
         break;
       }
-      case V_SgOmpMasterTaskloopStatement:
+    case V_SgOmpMasterTaskloopStatement:
       {
         curprint(string ("master taskloop "));
         break;
