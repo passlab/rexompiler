@@ -7,17 +7,17 @@ F77_TESTCODES_TO_PASS = \
     #array_initialize.f \
     default.f \
     exampleA251f.f \
-    #flush.f \
+    flush.f \
     helloworld.f \
     helloworld0.f \
     helloworld2.f \
     #jacobi.f \
     master.f \
-    #ompdo-decremental.f \
-    #ompdo-default.f \
+    ompdo-decremental.f \
+    ompdo-default.f \
     #ompdo-multiple.f \
-    #ompdo-orphaned.f \
-    #ompdo-static.f \
+    ompdo-orphaned.f \
+    ompdo-static.f \
     parallel-1.f \
     parallel-2.f \
     parallel.f \
@@ -38,10 +38,15 @@ REX_F77_TESTCODES_TO_PASS = \
     allocate_user_defined_modifiers.f \
     default.f \
     exampleA251f.f \
+    flush.f \
     helloworld.f \
     helloworld0.f \
     helloworld2.f \
     master.f \
+    ompdo-decremental.f \
+    ompdo-default.f \
+    ompdo-orphaned.f \
+    ompdo-static.f \
     parallel-1.f \
     parallel-2.f \
     parallel.f \
@@ -62,15 +67,16 @@ F77_TESTCODES_TO_PASS += testNewOFP.f
 F90_TESTCODES_TO_PASS = \
   paralleldo.f90 \
   paralleldo-1.f90 \
-  #collapse.f90 \
   critical.f90 \
-  single-copyprivate.f90 \
-  #continuation.f90
+  continuation.f90 \
+  #collapse.f90 \
+  single-copyprivate.f90
 
 REX_F90_TESTCODES_TO_PASS = \
   paralleldo.f90 \
   paralleldo-1.f90 \
   critical.f90 \
+  continuation.f90 \
   single-copyprivate.f90
 
 

@@ -31,7 +31,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	affinity.c \
 	jacobi.c \
 	jacobi-collapse.c \
-	#alignment.c \
+	alignment.c \
 	array_init.c \
 	array_init_2.c \
 	atomic.c \
@@ -39,37 +39,37 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	atomic-3.c \
 	barrier.c \
 	#collapse.c \
-	#copyin.c \
+	copyin.c \
 	copyprivate2.c \
-	#copyprivate3.c \
-	#copyprivate.c \
+	copyprivate3.c \
+	copyprivate.c \
 	critical.c \
 	critical1.c \
 	critical_dead.c \
 	critical_orphaned.c \
 	distribute.c \
 	distribute2.c \
-	#dijkstra_open_mp.c \
+	dijkstra_open_mp.c \
 	dynamicChunk.c \
 	empty.c \
-	#endif.c \
+	endif.c \
 	endif2.c \
 	endif3.c \
 	nowait.c \
-	#expressions.c \
+	expressions.c \
 	falsesharing.c \
 	firstprivate.c \
 	firstPrivateArray.c \
 	firstPrivateArray_2.c \
 	firstlastprivate.c \
-	#flush.c \
-	#flush_exampleA_21_1c.c \
+	flush.c \
+	flush_exampleA_21_1c.c \
 	full_verify.c \
 	get_max_threads.c \
 	hello.c \
 	hello-1.c \
 	hello-2.c \
-	#hello-ordered.c \
+	hello-ordered.c \
 	include_header_only.c \
 	lastprivate0.c \
 	lastprivate.c \
@@ -167,12 +167,12 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	#task_dep2.c \
 	task_dep3.c \
 	#task_dep.load.compute.c \
-	#task_final.c \
-	#task_largenumber.c \
-	#task_mergeable.c \
-	#task_orphaned.c \
-	#task_outlining.c \
-	#task_priority.c \
+	task_final.c \
+	task_largenumber.c \
+	task_mergeable.c \
+	task_orphaned.c \
+	task_outlining.c \
+	task_priority.c \
 	task_untied.c \
 	task_untied2.c \
 	task_untied3.c \
@@ -185,15 +185,16 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	threadprivate2.c \
 	threadprivate3.c \
 	threadprivate.c \
+	threadProcessor.c \
 	upperCase.c \
-	#variables.c
-	threadProcessor.c
+	variables.c
 
 REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	3loops.c \
 	affinity.c \
 	jacobi.c \
 	jacobi-collapse.c \
+	alignment.c \
 	array_init.c \
 	array_init_2.c \
 	atoms-2.c \
@@ -202,7 +203,10 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	barrier.c \
 	cancel.c \
 	cancellation_point.c \
+	copyin.c \
 	copyprivate2.c \
+	copyprivate3.c \
+	copyprivate.c \
 	critical.c \
 	critical1.c \
 	critical_dead.c \
@@ -214,21 +218,27 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	task_dep_iterator2.c \
 	distribute.c \
 	distribute2.c \
+	dijkstra_open_mp.c \
 	dynamicChunk.c \
 	empty.c \
+	endif.c \
 	endif2.c \
 	endif3.c \
 	nowait.c \
+	expressions.c \
 	falsesharing.c \
 	firstprivate.c \
 	firstPrivateArray.c \
 	firstPrivateArray_2.c \
 	firstlastprivate.c \
+	flush.c \
+	flush_exampleA_21_1c.c \
 	full_verify.c \
 	get_max_threads.c \
 	hello.c \
 	hello-1.c \
 	hello-2.c \
+	hello-ordered.c \
 	include_header_only.c \
 	lastprivate0.c \
 	lastprivate.c \
@@ -311,7 +321,10 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	simd3.c \
 	simd4.c \
 	simd5.c \
+	single.c \
+	single2.c \
 	single3.c \
+	single_copyprivate.c \
 	sizeof.c \
 	spmd1.c \
 	staticChunk.c \
@@ -331,6 +344,14 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	targetteamsdistributeparallelforsimd.c \
 	task_array.c \
 	task_array2.c \
+	task_dep1.c \
+	task_dep3.c \
+	task_final.c \
+	task_largenumber.c \
+	task_mergeable.c \
+	task_orphaned.c \
+	task_outlining.c \
+	task_priority.c \
 	task_untied.c \
 	task_untied2.c \
 	task_untied3.c \

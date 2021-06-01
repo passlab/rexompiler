@@ -34,6 +34,7 @@ static SgStatement* convertVariantDirective(std::pair<SgPragmaDeclaration*, Open
 static SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgOmpBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
+static SgStatement* convertOmpFlushDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertOmpThreadprivateStatement(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII);
 static SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgOmpVariablesClause* convertClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
@@ -1552,27 +1553,6 @@ namespace OmpSupport
   // Directive statement builders
   //----------------------------------------------------------
 
-  SgOmpFlushStatement* buildOmpFlushStatement(OmpAttribute* att)
-  {
-    ROSE_ASSERT(att != NULL);
-    SgOmpFlushStatement* result = new SgOmpFlushStatement();
-    ROSE_ASSERT(result !=NULL);
-    setOneSourcePositionForTransformation(result);
-    // build variable list
-    std::vector<std::pair<std::string,SgNode* > > varlist = att->getVariableList(e_flush);
-    // ROSE_ASSERT(varlist.size()!=0); // can have empty variable list
-    std::vector<std::pair<std::string,SgNode* > >::iterator iter;
-    for (iter = varlist.begin(); iter!= varlist.end(); iter ++)
-    {
-      SgInitializedName* iname = isSgInitializedName((*iter).second);
-      ROSE_ASSERT(iname !=NULL);
-      SgVarRefExp* varref = buildVarRefExp(iname);
-      result->get_variables().push_back(varref);
-      varref->set_parent(result);
-    }
-    return result;
-  }
-
   SgOmpDeclareSimdStatement* buildOmpDeclareSimdStatement(OmpAttribute* att)
   {
     ROSE_ASSERT(att != NULL);
@@ -1677,11 +1657,6 @@ namespace OmpSupport
         switch (omp_type)
         {
             // with variable list
-          case e_flush:
-            {
-              omp_stmt = buildOmpFlushStatement(oa);
-              break;
-            }
           case e_declare_simd:
             {
               omp_stmt = buildOmpDeclareSimdStatement(oa);
@@ -2294,6 +2269,10 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
             result = new SgOmpBarrierStatement();
             break;
         }
+        case OMPD_flush: {
+            result = convertOmpFlushDirective(current_OpenMPIR_to_SageIII);
+            break;
+        }
         case OMPD_taskyield: {
             result = new SgOmpTaskyieldStatement();
             break;
@@ -2797,6 +2776,33 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
     return result;
 }
 
+// Convert an OpenMPIR Flush Directive to a ROSE node
+SgStatement* convertOmpFlushDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
+    SgOmpFlushStatement *statement = new SgOmpFlushStatement();
+    OpenMPFlushDirective *current_ir = static_cast<OpenMPFlushDirective *>(current_OpenMPIR_to_SageIII.second);
+
+    std::vector<std::string>* current_expressions = current_ir->getFlushList();
+    if (current_expressions->size() != 0) {
+        std::vector<std::string>::iterator iter;
+        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
+            std::string expr_string = std::string() + "varlist " + *iter + "\n";
+            omp_exprparser_parser_init(current_OpenMPIR_to_SageIII.first, expr_string.c_str());
+            omp_exprparser_parse();
+        }
+    }
+
+    std::vector<std::pair<std::string, SgNode*> >::iterator iter;
+    for (iter = omp_variable_list.begin(); iter != omp_variable_list.end(); iter++) {
+        SgInitializedName* iname = isSgInitializedName((*iter).second);
+        ROSE_ASSERT(iname != NULL);
+        SgVarRefExp * var_ref = buildVarRefExp(iname);
+        statement->get_variables().push_back(var_ref);
+        var_ref->set_parent(statement);
+    }
+    omp_variable_list.clear();
+
+    return statement;
+}
 // Convert an OpenMPIR Threadprivate Directive to a ROSE node
 // Because we have to do some non-standard things, I'm putting this in a separate function
 SgStatement* convertOmpThreadprivateStatement(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
@@ -4069,6 +4075,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_depobj:
         case OMPD_distribute:
         case OMPD_do:
+        case OMPD_flush:
         case OMPD_for:
         case OMPD_for_simd:
         case OMPD_loop:
