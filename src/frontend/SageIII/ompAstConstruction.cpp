@@ -1665,14 +1665,6 @@ namespace OmpSupport
       case e_ordered_directive:
         result = new SgOmpOrderedStatement(NULL, body); 
         break;
- 
-       //Fortran  
-      case e_do:
-        result = new SgOmpDoStatement(NULL, body); 
-        break;
-      case e_workshare:
-        result = new SgOmpWorkshareStatement(NULL, body); 
-        break;
       default:
         {
           cerr<<"error: unacceptable omp construct for buildOmpBodyStatement():"<<OmpSupport::toString(att->getOmpDirectiveType())<<endl;
@@ -1834,18 +1826,8 @@ namespace OmpSupport
             }
             // with a structured block/statement followed
           case e_ordered_directive:
-            //fortran
-          case e_do:
-          case e_workshare:
             {
               omp_stmt = buildOmpBodyStatement(oa);
-              break;
-            }
-          case e_parallel_sections:
-          case e_parallel_workshare://fortran
-          case e_parallel_do:
-            {
-              //omp_stmt = buildOmpParallelStatementFromCombinedDirectives(oa);
               break;
             }
           default:
@@ -1975,35 +1957,6 @@ namespace OmpSupport
         end_decl = NULL; // MUST reset to NULL if not a match
       affected_stmts.push_back(next_stmt);
       next_stmt = getNextStatement (next_stmt);
-#if 0
-      // Liao 1/21/2011
-      // A workaround of wrong file info for Do loop body
-      // See bug 495 https://outreach.scidac.gov/tracker/?func=detail&atid=185&aid=495&group_id=24
-      // Comments will not be attached before ENDDO, but some parent located node instead.
-      // SageInterface::getNextStatement() will not climb out current scope and find a matching end directive attached to a parent node.
-      //
-      // For example 
-      //        do i = 1, 10
-      //     !$omp task 
-      //        call process(item(i))
-      //     !$omp end task
-      //          enddo
-      // The !$omp end task comments will not be attached before ENDDO , but inside SgBasicBlock, which is an ancestor node  
-     if (SageInterface::is_Fortran_language() )
-     {
-      // try to climb up one statement level, until reaching the function body
-       SgStatement* parent_stmt  = getEnclosingStatement(prev_stmt->get_parent());
-       // getNextStatement() cannot take SgFortranDo's body as input (the body is not a child of its scope's declaration list)
-       // So we climb up to the parent do loop
-       if (isSgFortranDo(parent_stmt->get_parent()))  
-         parent_stmt = isSgFortranDo(parent_stmt->get_parent());
-       else if (isSgWhileStmt(parent_stmt->get_parent()))  
-         parent_stmt = isSgWhileStmt(parent_stmt->get_parent());
-
-       if (parent_stmt != func_body) 
-         next_stmt = getNextStatement (parent_stmt);
-     }
-#endif     
     }  // end while
 
     // mandatory end directives for most begin directives, except for two cases:
@@ -2011,7 +1964,7 @@ namespace OmpSupport
     // !$omp end parallel do
     if (end_decl == NULL) 
     {
-      if ((begin_directive_kind != OMPD_parallel) && (begin_directive_kind != OMPD_do))
+      if ((begin_directive_kind != OMPD_parallel) && (begin_directive_kind != OMPD_do) && (begin_directive_kind != OMPD_parallel_do) && (begin_directive_kind != OMPD_parallel_loop))
       {
         cerr<<"merge_Matching_Fortran_Pragma_pairs(): cannot find required end directive for: "<< endl;
         cerr<<decl->get_pragma()->get_pragma()<<endl;
@@ -2417,6 +2370,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_metadirective:
         case OMPD_teams:
         case OMPD_atomic:
+        case OMPD_do:
         case OMPD_taskgroup:
         case OMPD_master:
         case OMPD_distribute:
@@ -2459,13 +2413,16 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_sections:
         case OMPD_section:
         case OMPD_simd:
-        case OMPD_parallel: {
+        case OMPD_parallel:
+        case OMPD_workshare: {
             result = convertBodyDirective(current_OpenMPIR_to_SageIII);
             break;
         }
+        case OMPD_parallel_do:
         case OMPD_parallel_for:
-        case OMPD_parallel_sections:        
-        case OMPD_parallel_for_simd: {
+        case OMPD_parallel_for_simd:
+        case OMPD_parallel_sections:
+        case OMPD_parallel_workshare: {
             result = convertCombinedBodyDirective(current_OpenMPIR_to_SageIII);
             break;
         }
@@ -2514,10 +2471,6 @@ SgStatement* convertVariantDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
         }
     }
     setOneSourcePositionForTransformation(result);
-    // handle the SgFilePtr
-    //copyStartFileInfo (current_OpenMPIR_to_SageIII.first, result, NULL);
-    //copyEndFileInfo (current_OpenMPIR_to_SageIII.first, result, NULL);
-    //replaceOmpPragmaWithOmpStatement(current_OpenMPIR_to_SageIII.first, result);
 
     return result;
 }
@@ -2529,9 +2482,11 @@ SgOmpBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*,
     SgOmpBodyStatement* result = NULL;
 
     switch (directive_kind) {
+        case OMPD_parallel_do:
         case OMPD_parallel_for:
+        case OMPD_parallel_for_simd:
         case OMPD_parallel_sections:
-        case OMPD_parallel_for_simd: {
+        case OMPD_parallel_workshare: {
             result = convertOmpParallelStatementFromCombinedDirectives(current_OpenMPIR_to_SageIII);
             break;
         }
@@ -2684,6 +2639,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
     OpenMPClauseKind clause_kind;
 
     switch (directive_kind) {
+        case OMPD_do: {
+            result = new SgOmpDoStatement(NULL, body);
+            break;
+        }
         case OMPD_parallel: {
             result = new SgOmpParallelStatement(NULL, body);
             break;
@@ -2872,6 +2831,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         }
         case OMPD_end: {
             return result;
+        }
+        case OMPD_workshare: {
+            result = new SgOmpWorkshareStatement(NULL, body);
+            break;
         }
         default: {
             printf("Unknown directive is found.\n");
@@ -3126,12 +3089,14 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
 
     OpenMPDirectiveKind directive_kind = current_OpenMPIR_to_SageIII.second->getKind();
     // directives like parallel and for have a following code block beside the pragma itself.
-    //SgStatement* body = getOpenMPBlockBody(current_OpenMPIR_to_SageIII);
-    //removeStatement(body,false);
     SgOmpBodyStatement* result = NULL;
     OpenMPClauseKind clause_kind;
 
     switch (directive_kind) {
+        case OMPD_do: {
+            result = new SgOmpDoStatement(NULL, NULL);
+            break;
+        }
         case OMPD_parallel: {
             result = new SgOmpParallelStatement(NULL, NULL);
             break;
@@ -3308,6 +3273,10 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         }
         case OMPD_end: {
             return result;
+        }
+        case OMPD_workshare: {
+            result = new SgOmpWorkshareStatement(NULL, NULL);
+            break;
         }
         default: {
             printf("Unknown directive is found.\n");
@@ -4098,6 +4067,11 @@ SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::p
     SgStatement * second_stmt = NULL; 
     switch (current_OpenMPIR_to_SageIII.second->getKind())  
     {
+      case OMPD_parallel_do:
+        {
+          second_stmt = new SgOmpDoStatement(NULL, body);
+          break;
+        }
       case OMPD_parallel_for:
         {
           second_stmt = new SgOmpForStatement(NULL, body);
@@ -4111,6 +4085,11 @@ SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::p
       case OMPD_parallel_sections:
         {
             second_stmt = new SgOmpSectionsStatement(NULL, body);
+            break;
+        }
+      case OMPD_parallel_workshare:
+        {
+            second_stmt = new SgOmpWorkshareStatement(NULL, body);
             break;
         }
       default:
@@ -4180,10 +4159,6 @@ SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::p
                 sgclause = convertScheduleClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
             break;
             }
-            case OMPC_nowait: {
-                sgclause = convertSimpleClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
-            break;
-            }
             case OMPC_parallel: {
                 sgclause = convertSimpleClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
             break;
@@ -4227,15 +4202,18 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_declare_mapper:
         case OMPD_depobj:
         case OMPD_distribute:
+        case OMPD_do:
         case OMPD_for:
         case OMPD_for_simd:
         case OMPD_loop:
         case OMPD_master:
         case OMPD_metadirective:
         case OMPD_parallel:
+        case OMPD_parallel_do:
         case OMPD_parallel_for:
-        case OMPD_parallel_sections:
         case OMPD_parallel_for_simd:
+        case OMPD_parallel_sections:
+        case OMPD_parallel_workshare:
         case OMPD_scan:
         case OMPD_section:
         case OMPD_sections:
@@ -4273,7 +4251,8 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_taskwait:
         case OMPD_taskyield:
         case OMPD_teams:
-        case OMPD_threadprivate: {
+        case OMPD_threadprivate:
+        case OMPD_workshare: {
             break;
         }
         default: {
@@ -4617,12 +4596,11 @@ void parseFortran(SgSourceFile *sageFilePtr) {
             if (ompparser_OpenMPIR->getKind() == OMPD_end) {
               OpenMPDirective *begin_directive =
                   ompparser_OpenMP_pairing_list.back();
-              assert(((OpenMPEndDirective *)ompparser_OpenMPIR)
-                         ->getPairedDirective()
-                         ->getKind() == begin_directive->getKind());
-              mergeEndClausesToBeginDirective(
-                  begin_directive, ((OpenMPEndDirective *)ompparser_OpenMPIR)
-                                       ->getPairedDirective());
+              OpenMPDirective *end_directive =
+                  ((OpenMPEndDirective *)ompparser_OpenMPIR)
+                      ->getPairedDirective();
+              assert(end_directive->getKind() == begin_directive->getKind());
+              mergeEndClausesToBeginDirective(begin_directive, end_directive);
               ((OpenMPEndDirective *)ompparser_OpenMPIR)
                   ->setPairedDirective(begin_directive);
               ompparser_OpenMP_pairing_list.pop_back();

@@ -22,8 +22,8 @@ F77_TESTCODES_TO_PASS = \
     parallel-2.f \
     parallel.f \
     private.f \
-    #reduction.f \
-    #schedule.f \
+    reduction.f \
+    schedule.f \
     section1.f \
     #shared-array.f \
     shared.f \
@@ -46,6 +46,8 @@ REX_F77_TESTCODES_TO_PASS = \
     parallel-2.f \
     parallel.f \
     private.f \
+    reduction.f \
+    schedule.f \
     section1.f \
     shared.f \
     single.f \
@@ -58,14 +60,16 @@ REX_F77_TESTCODES_TO_PASS = \
 F77_TESTCODES_TO_PASS += testNewOFP.f
 
 F90_TESTCODES_TO_PASS = \
-  #paralleldo.f90 \
-  #paralleldo-1.f90 \
+  paralleldo.f90 \
+  paralleldo-1.f90 \
   #collapse.f90 \
   critical.f90 \
   single-copyprivate.f90 \
   #continuation.f90
 
 REX_F90_TESTCODES_TO_PASS = \
+  paralleldo.f90 \
+  paralleldo-1.f90 \
   critical.f90 \
   single-copyprivate.f90
 
