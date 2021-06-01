@@ -1898,48 +1898,36 @@ namespace OmpSupport
   //! Merge clauses from end directives to the corresponding begin directives
   // dowait clause:  end do, end sections, end single, end workshare
   // copyprivate clause: end single
- void mergeEndClausesToBeginDirective (SgPragmaDeclaration* begin_decl, SgPragmaDeclaration* end_decl)
+ void mergeEndClausesToBeginDirective (OpenMPDirective* begin_decl, OpenMPDirective* end_decl)
  {
    ROSE_ASSERT (begin_decl!=NULL);
    ROSE_ASSERT (end_decl!=NULL);
 
    // Make sure they match
-   omp_construct_enum begin_type, end_type;
-   begin_type = getOmpConstructEnum (begin_decl);
-   end_type = getOmpConstructEnum (end_decl);
-   ROSE_ASSERT (begin_type == getBeginOmpConstructEnum(end_type));
+   OpenMPDirectiveKind begin_type = begin_decl->getKind();
+   OpenMPDirectiveKind end_type = end_decl->getKind();
+   ROSE_ASSERT (begin_type == end_type);
 
-#if 0
-   // Make sure they are at the same level ??
-   // Fortran do loop may have wrong file info, which cause comments to be attached to another scope
-   // Consequently, the end pragma will be in a higher/ different scope
-   // A workaround for bug 495: https://outreach.scidac.gov/tracker/?func=detail&atid=185&aid=495&group_id=24
-   if (SageInterface::is_Fortran_language() )
-   {
-     if (begin_decl->get_parent() != end_decl->get_parent())
-     {
-       ROSE_ASSERT (isAncestor (end_decl->get_parent(), begin_decl->get_parent()));
-     }
-   }
-   else  
-#endif     
-    ROSE_ASSERT (begin_decl->get_parent() == end_decl->get_parent()); 
+   map<OpenMPClauseKind, std::vector<OpenMPClause *> *> * begin_all_clauses = begin_decl->getAllClauses();
+   map<OpenMPClauseKind, std::vector<OpenMPClause *> *> * end_all_clauses = end_decl->getAllClauses();
+   map<OpenMPClauseKind, std::vector<OpenMPClause *> *>::iterator iter;
 
    // merge end directive's clause to the begin directive.
-   OmpAttribute* begin_att = getOmpAttribute (begin_decl); 
-   OmpAttribute* end_att = getOmpAttribute (end_decl); 
-
    // Merge possible nowait clause
    switch (end_type)
    {
-     case e_end_do:
-     case e_end_sections:
-     case e_end_single:
-     case e_end_workshare:
+     case OMPD_do:
+     case OMPD_sections:
+     case OMPD_single:
+     case OMPD_workshare:
        {
-         if (end_att->hasClause(e_nowait))
-         {
-           begin_att->addComplexClause(e_nowait);
+         iter = begin_all_clauses->find(OMPC_nowait);
+         if (iter != begin_all_clauses->end()) {
+             break;
+         }
+         iter = end_all_clauses->find(OMPC_nowait);
+         if (iter != end_all_clauses->end()) {
+             begin_decl->addOpenMPClause(OMPC_nowait);
          }
          break;
        }
@@ -1947,19 +1935,24 @@ namespace OmpSupport
        break; // there should be no clause for other cases
    }
    // Merge possible copyrpivate (list) from end single
-   if ((end_type == e_end_single) && end_att ->hasClause(e_copyprivate)) 
+   if (end_type == OMPD_single)
    {
-     ComplexClause* current_clause = begin_att->addComplexClause(e_copyprivate);
-     std::vector<std::pair<std::string,SgNode* > > varList = end_att->getComplexClauses(e_copyprivate)->front().variable_list;
-     std::vector<std::pair<std::string,SgNode* > >::iterator iter;
-     for (iter = varList.begin(); iter != varList.end(); iter++)
-     {
-       std::pair<std::string,SgNode* > element = *iter;
-       SgInitializedName* i_name = isSgInitializedName(element.second);
-       ROSE_ASSERT (i_name != NULL);
-       begin_att->addComplexClauseVariable(current_clause, element.first, i_name);
+     iter = end_all_clauses->find(OMPC_copyprivate);
+     if (iter != end_all_clauses->end()) {
+        OpenMPClause* end_copyprivate_clause = (*(end_decl->getClauses(OMPC_copyprivate)))[0];
+        iter = begin_all_clauses->find(OMPC_copyprivate);
+        OpenMPClause* begin_copyprivate_clause = NULL;
+        if (iter != begin_all_clauses->end()) {
+            begin_copyprivate_clause = (*(begin_decl->getClauses(OMPC_copyprivate)))[0];
+        } else {
+            begin_copyprivate_clause = begin_decl->addOpenMPClause(OMPC_copyprivate);
+        }
+        std::vector<const char *>* expressions = end_copyprivate_clause->getExpressions();
+        for (auto variable_expression : *expressions) {
+            begin_copyprivate_clause->addLangExpr(variable_expression);
+        }
      }
-   }  
+   }
  }
   //! This function will Find a (optional) end pragma for an input pragma (decl)
   //  and merge clauses from the end pragma to the beginning pragma
@@ -2031,7 +2024,6 @@ namespace OmpSupport
     // at this point, we have found a matching end directive/pragma
     ROSE_ASSERT (end_decl);
     ensureSingleStmtOrBasicBlock(decl, affected_stmts);
-    //mergeEndClausesToBeginDirective (decl,end_decl);
 
     // SgBasicBlock is not unparsed in Fortran 
     //
@@ -2535,7 +2527,6 @@ SgOmpBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*,
     OpenMPDirectiveKind directive_kind = current_OpenMPIR_to_SageIII.second->getKind();
     // directives like parallel and for have a following code block beside the pragma itself.
     SgOmpBodyStatement* result = NULL;
-    OpenMPClauseKind clause_kind;
 
     switch (directive_kind) {
         case OMPD_parallel_for:
@@ -4629,6 +4620,9 @@ void parseFortran(SgSourceFile *sageFilePtr) {
               assert(((OpenMPEndDirective *)ompparser_OpenMPIR)
                          ->getPairedDirective()
                          ->getKind() == begin_directive->getKind());
+              mergeEndClausesToBeginDirective(
+                  begin_directive, ((OpenMPEndDirective *)ompparser_OpenMPIR)
+                                       ->getPairedDirective());
               ((OpenMPEndDirective *)ompparser_OpenMPIR)
                   ->setPairedDirective(begin_directive);
               ompparser_OpenMP_pairing_list.pop_back();

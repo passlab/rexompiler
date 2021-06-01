@@ -24,7 +24,7 @@ F77_TESTCODES_TO_PASS = \
     private.f \
     #reduction.f \
     #schedule.f \
-    #section1.f \
+    section1.f \
     #shared-array.f \
     shared.f \
     single.f \
@@ -46,6 +46,7 @@ REX_F77_TESTCODES_TO_PASS = \
     parallel-2.f \
     parallel.f \
     private.f \
+    section1.f \
     shared.f \
     single.f \
     task_largenumber.f \
@@ -61,11 +62,12 @@ F90_TESTCODES_TO_PASS = \
   #paralleldo-1.f90 \
   #collapse.f90 \
   critical.f90 \
-  #single-copyprivate.f90 \
+  single-copyprivate.f90 \
   #continuation.f90
 
 REX_F90_TESTCODES_TO_PASS = \
-  critical.f90
+  critical.f90 \
+  single-copyprivate.f90
 
 
 #if !OS_VENDOR_DEBIAN
