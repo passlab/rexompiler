@@ -49,6 +49,7 @@ newline         [\n]
 digit           [0-9]
 
 id              [a-zA-Z_][a-zA-Z0-9_]*
+fortran_block_end [ ]*[^a-zA-Z0-9_]
 
 %%
 {digit}{digit}* { omp_exprparser_lval.itype = atoi(strdup(yytext)); return (ICONSTANT); }
@@ -62,6 +63,7 @@ id              [a-zA-Z_][a-zA-Z0-9_]*
 ":"             { return (':'); }
 "+"             { return ('+'); }
 "*"             { return ('*'); }
+"/"             { return ('/'); }
 "-"             { return ('-'); }
 "&"             { return ('&'); }
 "^"             { return ('^'); }
@@ -104,11 +106,11 @@ array_section   { return (ARRAY_SECTION); }
 {id}            { omp_exprparser_lval.stype = strdup(yytext);
                   return (ID_EXPRESSION); }
 
+"/"{id}"/"/{fortran_block_end}  { omp_exprparser_lval.stype = strdup(yytext); return (ID_EXPRESSION); }
 {blank}*        ;
 .               { return (LEXICALERROR);}
 
 %%
-
 
 /* entry point invoked by callers to start scanning for a string */
 extern void omp_exprparser_lexer_init(const char* str) {

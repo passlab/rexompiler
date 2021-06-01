@@ -2053,7 +2053,8 @@ static bool isFortranPairedDirective(OpenMPDirective* node) {
         case OMPD_barrier:
         case OMPD_end:
         case OMPD_flush:
-        case OMPD_section: {
+        case OMPD_section:
+        case OMPD_threadprivate: {
             break;
         }
         default: {

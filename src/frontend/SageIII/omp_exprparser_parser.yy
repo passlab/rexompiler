@@ -565,7 +565,73 @@ void omp_exprparser_parser_init(SgNode* directive, const char* str) {
     omp_directive_node = directive;
 }
 
+// Grab all explicit? variables declared within a common block and add them into the omp variable list
+static void ofs_add_block_variables (const char* block_name)
+{
+  std::vector<SgCommonBlock*> block_vec = SageInterface::getSgNodeListFromMemoryPool<SgCommonBlock>();
+  SgCommonBlockObject* found_block_object = NULL;
+  for (std::vector<SgCommonBlock*>::const_iterator i = block_vec.begin();
+       i!= block_vec.end();i++)
+  {
+    bool innerbreak = false;
+    SgCommonBlock* c_block = *i;
+    SgCommonBlockObjectPtrList & blockList = c_block->get_block_list();
+    SgCommonBlockObjectPtrList::iterator i2 = blockList.begin();
+    while (i2 != blockList.end())
+    {
+      std::string name = (*i2)->get_block_name();
+      if (strcmp(block_name, name.c_str())==0)
+      {
+        found_block_object = *i2;
+        innerbreak = true;
+        break;
+      }
+      i2++;
+    }// end while block objects
+
+    if (innerbreak)
+      break;
+  } // end for all blocks
+
+  if (found_block_object == NULL)
+  {
+    printf("error: cannot find a common block with a name of %s\n",block_name);
+    ROSE_ABORT();
+  }
+
+  // add each variable within the block into ompattribute
+  SgExprListExp * explistexp = found_block_object->get_variable_reference_list ();
+  assert(explistexp != NULL);
+  SgExpressionPtrList& explist = explistexp->get_expressions();
+
+  Rose_STL_Container<SgExpression*>::const_iterator exp_iter = explist.begin();
+  assert (explist.size()>0); // must have variable defined
+  while (exp_iter !=explist.end())
+  {
+    SgVarRefExp * var_exp = isSgVarRefExp(*exp_iter);
+    assert (var_exp!=NULL);
+    SgVariableSymbol * symbol = isSgVariableSymbol(var_exp->get_symbol());
+    assert (symbol!=NULL);
+    SgInitializedName* sgvar = symbol->get_declaration();
+    const char* var = sgvar->get_name().getString().c_str();
+    if (sgvar != NULL) {
+        symbol = isSgVariableSymbol(sgvar->get_symbol_from_symbol_table());
+    };
+    omp_variable_list.push_back(std::make_pair(var, sgvar));
+    exp_iter++;
+  }
+}
+
 static bool addOmpVariable(const char* var)  {
+
+    // if the leading symbol is '/', it is a block name in Fortran
+    if (var[0] == '/') {
+        std::string block_name = std::string(var);
+        block_name.pop_back();
+        ofs_add_block_variables(block_name.c_str()+1);
+        return true;
+    }
+
     SgInitializedName* sgvar = NULL;
     SgVariableSymbol* symbol = NULL;
     SgScopeStatement* scope = NULL;

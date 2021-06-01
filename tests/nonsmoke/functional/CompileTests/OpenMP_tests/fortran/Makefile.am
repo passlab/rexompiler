@@ -6,7 +6,7 @@ F77_TESTCODES_TO_PASS = \
     #array-one.f \
     #array_initialize.f \
     default.f \
-    #exampleA251f.f \
+    exampleA251f.f \
     #flush.f \
     helloworld.f \
     helloworld0.f \
@@ -37,6 +37,7 @@ REX_F77_TESTCODES_TO_PASS = \
     allocate_predefined_modifiers.f \
     allocate_user_defined_modifiers.f \
     default.f \
+    exampleA251f.f \
     helloworld.f \
     helloworld0.f \
     helloworld2.f \
