@@ -104,9 +104,9 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	ompfor-static.c \
 	ompGetNumThreads.c \
 	omp_sections.c \
-	#ordered3.c \
-	#ordered2.c \
-	#ordered.c \
+	ordered3.c \
+	ordered2.c \
+	ordered.c \
 	orphaned-directives.c \
 	parallel.c \
 	parallel_allocate_predefined_modifier.c \
@@ -265,6 +265,9 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	ompfor-static.c \
 	ompGetNumThreads.c \
 	omp_sections.c \
+	ordered3.c \
+	ordered2.c \
+	ordered.c \
 	orphaned-directives.c \
 	parallel.c \
 	parallel_allocate_predefined_modifier.c \

@@ -1483,60 +1483,6 @@ namespace OmpSupport
     return result;
   }
 
-  //! Get the affected structured block from an OmpAttribute
-  SgStatement* getOpenMPBlockFromOmpAttribute (OmpAttribute* att)
-  {
-    SgStatement* result = NULL;
-    ROSE_ASSERT(att != NULL);
-    omp_construct_enum c_clause_type = att->getOmpDirectiveType();
-
-    // Some directives have no followed statements/blocks 
-    if (!isDirectiveWithBody(c_clause_type))
-      return NULL;
-
-    SgNode* snode = att-> getNode ();
-    ROSE_ASSERT(snode != NULL); //? not sure for Fortran
-    // Liao 10/19/2010 We convert Fortran comments into SgPragmaDeclarations
-    // So we can reuse the same code to generate OpenMP AST from pragmas
-#if 0     
-    SgFile * file = getEnclosingFileNode (snode);
-    if (file->get_Fortran_only()||file->get_F77_only()||file->get_F90_only()||
-        file->get_F95_only() || file->get_F2003_only())
-    { //Fortran check setNode()
-      //printf("buildOmpParallelStatement() Fortran is not handled yet\n");
-      //ROSE_ASSERT(false);
-    }
-    else // C/C++ must be pragma declaration statement
-    {
-      SgPragmaDeclaration* pragmadecl = att->getPragmaDeclaration();
-      result = getNextStatement(pragmadecl);
-    }
-#endif
-    SgPragmaDeclaration* pragmadecl = att->getPragmaDeclaration();
-    result = getNextStatement(pragmadecl);
-    // Not all pragma decl has a structured body. We check those which do have one
-    // TODO: more types to be checked
-    if (c_clause_type == e_task || 
-        c_clause_type == e_parallel||
-        c_clause_type == e_for||
-        c_clause_type == e_do||
-        c_clause_type == e_workshare||
-        c_clause_type == e_sections||
-        c_clause_type == e_section||
-        c_clause_type == e_single||
-        c_clause_type == e_master||
-        c_clause_type == e_critical||
-        c_clause_type == e_parallel_for||
-        c_clause_type == e_parallel_for_simd||
-        c_clause_type == e_parallel_do||
-        c_clause_type == e_simd||
-        c_clause_type == e_atomic
-       )
-    {
-      ROSE_ASSERT(result!=NULL);
-    }
-    return result;
-  }
 
   // a bit hack since declare simd is an outlier statement with clauses. 
   /*
@@ -1603,91 +1549,8 @@ namespace OmpSupport
   }
 
 
-  //add clauses to target based on OmpAttribute
-  static void appendOmpClauses(SgOmpClauseBodyStatement* target, OmpAttribute* att)
-  {
-    ROSE_ASSERT(target && att);
-    // for Omp statements with clauses
-    // must copy those clauses here, since they will be deallocated later on
-    vector<omp_construct_enum> clause_vector = att->getClauses();
-    std::vector<omp_construct_enum>::iterator citer;
-    for (citer = clause_vector.begin(); citer != clause_vector.end(); citer++) {
-        omp_construct_enum c_clause = *citer;
-        if (!isClause(c_clause)) {
-            ROSE_ASSERT(isClause(c_clause));
-            continue;
-        }
-        // later on if loop should be rewritten to switch case for efficiency.
-        // special handling for reduction
-        switch (c_clause) {
-            /*case e_map: {
-                std::vector<omp_construct_enum> rops  = att->getMapVariants();
-                ROSE_ASSERT(rops.size()!=0);
-                std::vector<omp_construct_enum>::iterator iter;
-                for (iter=rops.begin(); iter!=rops.end();iter++) {
-                    omp_construct_enum rop = *iter;
-                    SgOmpClause* sgclause = buildOmpMapClause(att, rop);
-                    target->get_clauses().push_back(sgclause);
-                    sgclause->set_parent(target);
-                };
-                break;
-            }*/
-            default: {
-                SgOmpClause* sgclause = buildOmpNonReductionClause(att, c_clause);
-                target->get_clauses().push_back(sgclause);
-                sgclause->set_parent(target); // is This right?
-            }
-        }
-    }
-  }
-
   // Directive statement builders
   //----------------------------------------------------------
-  //! Build a SgOmpBodyStatement
-  // handle body and optional clauses for it
-  SgOmpBodyStatement * buildOmpBodyStatement(OmpAttribute* att)
-  {
-    SgStatement* body = getOpenMPBlockFromOmpAttribute(att);
-    //Must remove the body from its previous parent first before attaching it 
-    //to the new parent statement.
-    // We want to keep its preprocessing information during this relocation
-    // so we don't auto keep preprocessing information in its original places.
-    removeStatement(body,false);
-
-    if (body==NULL)
-    {
-      cerr<<"error: buildOmpBodyStatement() found empty body for "<<att->toOpenMPString()<<endl;
-      ROSE_ASSERT(body != NULL);
-    }
-    SgOmpBodyStatement* result = NULL;
-    switch (att->getOmpDirectiveType())
-    {
-      case e_ordered_directive:
-        result = new SgOmpOrderedStatement(NULL, body); 
-        break;
-      default:
-        {
-          cerr<<"error: unacceptable omp construct for buildOmpBodyStatement():"<<OmpSupport::toString(att->getOmpDirectiveType())<<endl;
-          ROSE_ASSERT(false);
-        }
-    }
-    ROSE_ASSERT(result != NULL);
-    //setOneSourcePositionForTransformation(result);
-    // copyStartFileInfo (att->getNode(), result); // No need here since its caller will set file info again
-//    body->get_startOfConstruct()->display();
-//    body->get_endOfConstruct()->display();
-    //set the current parent
-    body->set_parent(result);
-    // add clauses for those SgOmpClauseBodyStatement
-    if (isSgOmpClauseBodyStatement(result))
-      appendOmpClauses(isSgOmpClauseBodyStatement(result), att);
-      
-   // Liao 1/9/2013, ensure the body is a basic block for some OpenMP constructs
-   if (isSgOmpSingleStatement(result)) 
-    ensureBasicBlockAsBodyOfOmpBodyStmt (result); 
-//    result->get_file_info()->display("debug after building ..");
-    return result;
-  }
 
   SgOmpFlushStatement* buildOmpFlushStatement(OmpAttribute* att)
   {
@@ -1822,12 +1685,6 @@ namespace OmpSupport
           case e_declare_simd:
             {
               omp_stmt = buildOmpDeclareSimdStatement(oa);
-              break;
-            }
-            // with a structured block/statement followed
-          case e_ordered_directive:
-            {
-              omp_stmt = buildOmpBodyStatement(oa);
               break;
             }
           default:
@@ -2414,6 +2271,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_section:
         case OMPD_simd:
         case OMPD_parallel:
+        case OMPD_ordered:
         case OMPD_workshare: {
             result = convertBodyDirective(current_OpenMPIR_to_SageIII);
             break;
@@ -2641,6 +2499,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
     switch (directive_kind) {
         case OMPD_do: {
             result = new SgOmpDoStatement(NULL, body);
+            break;
+        }
+        case OMPD_ordered: {
+            result = new SgOmpOrderedStatement(NULL, body);
             break;
         }
         case OMPD_parallel: {
@@ -3095,6 +2957,10 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
     switch (directive_kind) {
         case OMPD_do: {
             result = new SgOmpDoStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_ordered: {
+            result = new SgOmpOrderedStatement(NULL, NULL);
             break;
         }
         case OMPD_parallel: {
@@ -4208,6 +4074,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_loop:
         case OMPD_master:
         case OMPD_metadirective:
+        case OMPD_ordered:
         case OMPD_parallel:
         case OMPD_parallel_do:
         case OMPD_parallel_for:
