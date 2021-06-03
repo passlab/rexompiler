@@ -647,7 +647,7 @@ static bool addOmpVariable(const char* var)  {
         SgStatement* nstmt = getNextStatement(cur_stmt);
         ROSE_ASSERT (nstmt); // must have next statement followed.
         // skip possible multiple pragma declarations
-        while (isSgPragmaDeclaration(nstmt)) {
+        while (!isSgFunctionDeclaration(nstmt)) {
             nstmt = getNextStatement (nstmt);
             ROSE_ASSERT (nstmt);
         };
@@ -686,7 +686,6 @@ SgExpression* parseExpression(SgNode* directive, bool look_forward, const char* 
     omp_directive_node = directive;
     omp_exprparser_look_forward = look_forward;
     omp_exprparser_parse();
-    assert (current_exp != NULL);
     SgExpression* sg_expression = current_exp;
 
     return sg_expression;
