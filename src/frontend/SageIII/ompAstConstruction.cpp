@@ -450,31 +450,6 @@ namespace OmpSupport
       return (returnNewExpression ? newExp : clause_expression);
   }
 
-  //TODO: move this builder functions to SageBuilder namespace
-  SgOmpEndClause * buildOmpEndClause(OmpAttribute* att)
-  {
-    ROSE_ASSERT(att != NULL);
-    // check if input attribute has e_end clause
-    if (!att->hasClause(e_end))
-      return NULL;
-    SgOmpEndClause* result = new SgOmpEndClause();
-    ROSE_ASSERT(result);
-    setOneSourcePositionForTransformation(result);
-    return result;
-  }
-
-  SgOmpBeginClause * buildOmpBeginClause(OmpAttribute* att)
-  {
-    ROSE_ASSERT(att != NULL);
-    // check if input attribute has e_end clause
-    if (!att->hasClause(e_begin))
-      return NULL;
-    SgOmpBeginClause* result = new SgOmpBeginClause();
-    ROSE_ASSERT(result);
-    setOneSourcePositionForTransformation(result);
-    return result;
-  }
-
   //! A helper function to convert OpenMPIfClause modifier to SgClause if modifier
   static SgOmpClause::omp_if_modifier_enum toSgOmpClauseIfModifier(OpenMPIfClauseModifier modifier)
   {
@@ -1388,40 +1363,6 @@ namespace OmpSupport
     result->set_dist_data_policies(convertedDistMap);
     return result;
   }*/
-
-  // Build a single SgOmpClause from OmpAttribute for type c_clause_type, excluding reduction clauses
-  // Later on this function will be modified to cover all the clauses other than regular expression and variable list clauses.
-  SgOmpClause* buildOmpNonReductionClause(OmpAttribute* att, omp_construct_enum c_clause_type)
-  {
-    SgOmpClause* result = NULL;
-    ROSE_ASSERT(att != NULL);
-    ROSE_ASSERT(isClause(c_clause_type));
-    if (!att->hasClause(c_clause_type))
-      return NULL;
-    switch (c_clause_type) 
-    {
-      case e_begin:
-        {
-          result = buildOmpBeginClause(att);
-          break;
-        }
-      case e_end:
-        {
-          result = buildOmpEndClause(att);
-          break;
-        }
-      default:
-        {
-          printf("Warning: buildOmpNoReductionClause(): unhandled clause type: %s\n", OmpSupport::toString(c_clause_type).c_str());
-          ROSE_ASSERT(false);
-          break;
-        }
-
-    }
-    ROSE_ASSERT(result != NULL);
-    setOneSourcePositionForTransformation(result);
-    return result;
-  }
 
 
   // Directive statement builders
