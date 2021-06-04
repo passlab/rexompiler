@@ -7,11 +7,9 @@
 
 #include "astPostProcessing.h"
 #include "sageBuilder.h"
-#include "OmpAttribute.h"
 #include "ompAstConstruction.h"
 
 #include "OpenMPIR.h"
-#include <deque>
 #include <tuple>
 
 extern OpenMPDirective* parseOpenMP(const char*, void * _exprParse(const char*));
@@ -75,7 +73,7 @@ using namespace SageBuilder;
 using namespace OmpSupport;
 
 // Liao 4/23/2011, special function to copy file info of the original SgPragma or Fortran comments
-static bool copyStartFileInfo (SgNode* src, SgNode* dest, OmpAttribute* oa)
+static bool copyStartFileInfo (SgNode* src, SgNode* dest)
 {
   bool result = false;
   ROSE_ASSERT (src && dest);
@@ -124,7 +122,7 @@ static bool copyStartFileInfo (SgNode* src, SgNode* dest, OmpAttribute* oa)
 }
 // Liao 3/11/2013, special function to copy end file info of the original SgPragma or Fortran comments (src) to OpenMP node (dest)
 // If the OpenMP node is a body statement, we have to use the body's end file info as the node's end file info.
-static bool copyEndFileInfo (SgNode* src, SgNode* dest, OmpAttribute* oa)
+static bool copyEndFileInfo (SgNode* src, SgNode* dest)
 {
   bool result = false;
   ROSE_ASSERT (src && dest);
@@ -186,14 +184,6 @@ namespace OmpSupport
 
     // the vector of pairs of OpenMP pragma and Ompparser IR.
     static std::vector<std::pair<SgPragmaDeclaration*, OpenMPDirective*> > OpenMPIR_list;
-    //static OpenMPDirective* ompparser_OpenMPIR;
-
-  // a similar list to save encountered Fortran comments which are OpenMP directives
-  std::list<OmpAttribute* > omp_comment_list; 
-  // A pragma list to store the dangling pragmas for Fortran end directives. 
-  // There are stored to ensure correct unparsing after converting Fortran comments into pragmas
-  // But they should be immediately removed during the OpenMP lowering phase
- //  static std::list<SgPragmaDeclaration* > omp_end_pragma_list; 
 
   // find all SgPragmaDeclaration nodes within a file and parse OpenMP pragmas into OmpAttribute info.
   void attachOmpAttributeInfo(SgSourceFile *sageFilePtr)
@@ -217,23 +207,6 @@ namespace OmpSupport
       {
         SgPragmaDeclaration* pragmaDeclaration = isSgPragmaDeclaration(*iter);
         ROSE_ASSERT(pragmaDeclaration != NULL);
-#if 0 // We should not enforce this since the pragma may come from transformation-generated node
-        if ((pragmaDeclaration->get_file_info()->isTransformation()
-            && pragmaDeclaration->get_file_info()->get_filename()==string("transformation")))
-        {
-          cout<<"Found a pragma which is transformation generated. @"<< pragmaDeclaration;
-          cout<<pragmaDeclaration->unparseToString()<<endl;
-          pragmaDeclaration->get_file_info()->display("debug transformation generated pragma declaration.");
-          // Liao 4/23/2011
-          // #pragma omp task can shown up before a single statement body of a for loop, 
-          // In this case, the frontend will insert a basic block under the loop
-          // and put both the pragma and the single statement into the block.
-
-          // AstPostProcessing() will reset the transformation flag for the pragma
-          // since its parent(the block) is transformation generated, not in the original code
-          ROSE_ASSERT(pragmaDeclaration->get_file_info()->isTransformation() ==false  || pragmaDeclaration->get_file_info()->get_filename()!=string("transformation"));
-        }
-#endif  
         SageInterface::replaceMacroCallsWithExpandedStrings(pragmaDeclaration);
         string pragmaString = pragmaDeclaration->get_pragma()->get_pragma();
         istringstream istr(pragmaString);
@@ -253,38 +226,13 @@ namespace OmpSupport
           {
             // Call parser
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-
             // parse expression
             // Get the object that ompparser IR.
             ompparser_OpenMPIR = parseOpenMP(pragmaString.c_str(), NULL);
             use_ompparser = checkOpenMPIR(ompparser_OpenMPIR);
-            if (use_ompparser) {
-                OpenMPIR_list.push_back(std::make_pair(pragmaDeclaration, ompparser_OpenMPIR));
-            } else {
-                omp_exprparser_parser_init(pragmaDeclaration, pragmaString.c_str());
-                omp_exprparser_parse();
-            };
+            assert(use_ompparser);
+            OpenMPIR_list.push_back(std::make_pair(pragmaDeclaration, ompparser_OpenMPIR));
 #endif
-            if (!use_ompparser) {
-                //OmpAttribute* attribute = getParsedDirective();
-                OmpAttribute* attribute = NULL;
-            //cout<<"sage_gen_be.C:23758 debug:\n"<<pragmaString<<endl;
-            //attribute->print();//debug only for now
-                addOmpAttribute(attribute,pragmaDeclaration);
-            //cout<<"debug: attachOmpAttributeInfo() for a pragma:"<<pragmaString<<"at address:"<<pragmaDeclaration<<endl;
-            //cout<<"file info for it is:"<<pragmaDeclaration->get_file_info()->get_filename()<<endl;
-#if 1 // Liao, 2/12/2010, this could be a bad idea. It causes trouble in comparing 
-            //user-defined and compiler-generated OmpAttribute.
-            // We attach the attribute redundantly on affected loops also
-            // for easier loop handling later on in autoTuning's outlining step (reproducing lost pragmas)
-                if (attribute->getOmpDirectiveType() ==e_for ||attribute->getOmpDirectiveType() ==e_parallel_for) {
-                    SgForStatement* forstmt = isSgForStatement(getNextStatement(pragmaDeclaration));
-                    ROSE_ASSERT(forstmt != NULL);
-              //forstmt->addNewAttribute("OmpAttribute",attribute);
-                    addOmpAttribute(attribute,forstmt);
-                };
-#endif
-            };
           }
         }
       }// end for
@@ -1410,69 +1358,9 @@ namespace OmpSupport
           && !(decl->get_file_info()->isTransformation()))
         continue;
 
-      // OmpAttibute* could be empty due to ompparser.
-      if (getOmpAttribute(decl) == NULL) {
-          convertDirective(OpenMPIR_list[OpenMPIR_index]);
-          OpenMPIR_index--;
-          continue;
-      };
+      convertDirective(OpenMPIR_list[OpenMPIR_index]);
+      OpenMPIR_index--;
 
-       // Liao 10/19/2010
-       // We now support OpenMP AST construction for both C/C++ and Fortran
-       // But we allow Fortran End directives to exist after -rose:openmp:ast_only
-       // Otherwise the code unparsed will be illegal Fortran code (No {} blocks in Fortran)
-       if (isFortranEndDirective(getOmpAttribute(decl)->getOmpDirectiveType()))
-          continue; 
-      ROSE_ASSERT (decl->get_scope() !=NULL);    
-      ROSE_ASSERT (decl->get_parent() !=NULL);    
-      //cout<<"debug: convert_OpenMP_pragma_to_AST() handling pragma at "<<decl<<endl;  
-      //ROSE_ASSERT (decl->get_file_info()->get_filename() != string("transformation"));
-      OmpAttributeList* oattlist= getOmpAttributeList(decl);
-
-      ROSE_ASSERT (oattlist != NULL) ;
-      vector <OmpAttribute* > ompattlist = oattlist->ompAttriList;
-      ROSE_ASSERT (ompattlist.size() != 0) ;
-      ROSE_ASSERT (ompattlist.size() == 1) ; // when do we have multiple directives associated with one pragma?
-
-      // Liao 12/21/2015 special handling to support target begin and target end aimed for MPI code generation
-      // In this case, we already use postParsingProcessing () to wrap the statements in between into a basic block after "target begin" 
-      // The "target end" attribute should be ignored.
-      // Skip "target end" here. 
-      OmpAttribute* oa = ompattlist[0];
-      ROSE_ASSERT (oa!=NULL);
-      if (oa->hasClause(e_end))
-      {
-      // This assertion does not hold. The pragma is removed. But it is still accessible from omp_pragma_list  
-      //  cerr<<"Error. unexpected target end directive is encountered in convert_OpenMP_pragma_to_AST(). It should have been removed by postParsingProcessing()."<<endl;
-       // ROSE_ASSERT (false);
-        //removeStatement(decl);
-         continue;
-      }
-
-      vector <OmpAttribute* >::iterator i = ompattlist.begin();
-      for (; i!=ompattlist.end(); i++)
-      {
-        // reset complex clause index for each OmpAttribute object.
-        OmpAttribute* oa = *i;
-        omp_construct_enum omp_type = oa->getOmpDirectiveType();
-        ROSE_ASSERT(isDirective(omp_type));
-        SgStatement* omp_stmt = NULL;
-        switch (omp_type)
-        {
-          default:
-            { 
-               cerr<<"Error: convert_OpenMP_pragma_to_AST(): unhandled OpenMP directive type:"<<OmpSupport::toString(omp_type)<<endl;
-                assert (false);
-               break;
-            }
-        }
-        setOneSourcePositionForTransformation(omp_stmt);
-        copyStartFileInfo (oa->getNode(), omp_stmt, oa);
-        copyEndFileInfo (oa->getNode(), omp_stmt, oa);
-        //ROSE_ASSERT (omp_stmt->get_file_info()->isTransformation() != true);
-        replaceOmpPragmaWithOmpStatement(decl, omp_stmt);
-
-      } // end for (OmpAttribute)
     }// end for (omp_pragma_list)
   }
 
@@ -1717,7 +1605,7 @@ static bool isFortranPairedDirective(OpenMPDirective* node) {
       std::string pragma_string = ompparser_directive_ir->generatePragmaString("omp ", "", "");
       SgPragmaDeclaration* p_decl = buildPragmaDeclaration(pragma_string, scope);
       //preserve the original source file info ,TODO complex cases , use real preprocessing info's line information !!
-      copyStartFileInfo (loc_node, p_decl, NULL);
+      copyStartFileInfo (loc_node, p_decl);
 
       if (ompparser_directive_ir->getKind() != OMPD_end) {
           OpenMPIR_list.push_back(std::make_pair(p_decl, ompparser_directive_ir));
@@ -2087,8 +1975,8 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         }
     }
     setOneSourcePositionForTransformation(result);
-    copyStartFileInfo (current_OpenMPIR_to_SageIII.first, result, NULL);
-    copyEndFileInfo (current_OpenMPIR_to_SageIII.first, result, NULL);
+    copyStartFileInfo (current_OpenMPIR_to_SageIII.first, result);
+    copyEndFileInfo (current_OpenMPIR_to_SageIII.first, result);
     replaceOmpPragmaWithOmpStatement(current_OpenMPIR_to_SageIII.first, result);
 
     return result;
@@ -2215,7 +2103,6 @@ SgOmpClause* convertSimpleClause(SgStatement* directive, std::pair<SgPragmaDecla
     } else {
         ((SgOmpClauseBodyStatement*)directive)->get_clauses().push_back(sg_clause);
     }
-    //clause_body->get_clauses().push_back(sg_clause);
     sg_clause->set_parent(directive);
     return sg_clause;
 }
@@ -3383,9 +3270,6 @@ SgOmpVariablesClause* convertClause(SgStatement* directive, std::pair<SgPragmaDe
     if (current_expressions->size() != 0) {
         std::vector<const char*>::iterator iter;
         for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
-            //std::string expr_string = std::string() + "varlist " + *iter + "\n";
-            //omp_exprparser_parser_init(current_OpenMPIR_to_SageIII.first, expr_string.c_str());
-            //omp_exprparser_parse();
             parseOmpVariable(current_OpenMPIR_to_SageIII, current_omp_clause->getKind(), *iter);
         }
     }
@@ -3868,12 +3752,12 @@ SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::p
     ROSE_ASSERT(second_stmt);
     body->set_parent(second_stmt);
 
-    copyStartFileInfo (current_OpenMPIR_to_SageIII.first, second_stmt, NULL);
-    copyEndFileInfo (current_OpenMPIR_to_SageIII.first, second_stmt, NULL);
+    copyStartFileInfo (current_OpenMPIR_to_SageIII.first, second_stmt);
+    copyEndFileInfo (current_OpenMPIR_to_SageIII.first, second_stmt);
     SgOmpParallelStatement* first_stmt = new SgOmpParallelStatement(NULL, second_stmt); 
     setOneSourcePositionForTransformation(first_stmt);
-    copyStartFileInfo (current_OpenMPIR_to_SageIII.first, first_stmt, NULL);
-    copyEndFileInfo (current_OpenMPIR_to_SageIII.first, first_stmt, NULL);
+    copyStartFileInfo (current_OpenMPIR_to_SageIII.first, first_stmt);
+    copyEndFileInfo (current_OpenMPIR_to_SageIII.first, first_stmt);
     second_stmt->set_parent(first_stmt);
 
     OpenMPClauseKind clause_kind;
