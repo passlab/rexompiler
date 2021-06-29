@@ -60,7 +60,7 @@ static SgExpression* parseOmpArraySection(SgPragmaDeclaration*, OpenMPClauseKind
 static SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgOmpMapClause* convertMapClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
-static SgOmpDependClause* convertDependClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpDependClause* convertDependClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 
 using namespace std;
 using namespace SageInterface;
@@ -442,6 +442,11 @@ namespace OmpSupport
       case OMPC_IF_MODIFIER_target:
         {
           result = SgOmpClause::e_omp_if_target;
+          break;
+        }
+      case OMPC_IF_MODIFIER_target_update:
+        {
+          result = SgOmpClause::e_omp_if_target_update;
           break;
         }
       case OMPC_IF_MODIFIER_unspecified:
@@ -1711,6 +1716,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         }
         case OMPD_declare_mapper:
         case OMPD_cancellation_point:
+        case OMPD_target_update:
         case OMPD_cancel: {
             result = convertNonBodyDirective(current_OpenMPIR_to_SageIII);
             break;
@@ -1857,6 +1863,22 @@ SgOmpClause* convertSimpleClause(SgStatement* directive, std::pair<SgPragmaDecla
             sg_clause = new SgOmpNotinbranchClause();
             break;
         }
+        case OMPC_parallel: {
+            sg_clause = new SgOmpParallelClause();
+            break;
+        }
+        case OMPC_sections: {
+            sg_clause = new SgOmpSectionsClause();
+            break;
+        }
+        case OMPC_for: {
+            sg_clause = new SgOmpForClause();
+            break;
+        }
+        case OMPC_taskgroup: {
+            sg_clause = new SgOmpTaskgroupClause();
+            break;
+        }   
         default: {
             cerr<<"error: unknown clause "<<endl;
             ROSE_ASSERT(false);
@@ -1865,6 +1887,8 @@ SgOmpClause* convertSimpleClause(SgStatement* directive, std::pair<SgPragmaDecla
     setOneSourcePositionForTransformation(sg_clause);
     if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_declare_simd) {
         ((SgOmpDeclareSimdStatement*)directive)->get_clauses().push_back(sg_clause);
+    } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_target_update || current_OpenMPIR_to_SageIII.second->getKind() == OMPD_cancel || current_OpenMPIR_to_SageIII.second->getKind() == OMPD_cancellation_point) {
+        ((SgOmpTargetUpdateStatement*)directive)->get_clauses().push_back(sg_clause);
     } else {
         ((SgOmpClauseBodyStatement*)directive)->get_clauses().push_back(sg_clause);
     }
@@ -1891,6 +1915,10 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
             result = new SgOmpCancelStatement();
             break;
         }
+        case OMPD_target_update: {
+            result = new SgOmpTargetUpdateStatement();
+            break;
+        }
         default: {
             printf("Unknown directive is found.\n");
         }
@@ -1902,31 +1930,27 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
     for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end(); clause_iter++) {
         clause_kind = (*clause_iter)->getKind();
         switch (clause_kind) {
-            case OMPC_parallel: {
-                sg_clause = new SgOmpParallelClause();
+            case OMPC_device:
+            case OMPC_if: {
+                sg_clause = convertExpressionClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
-            case OMPC_sections: {
-                sg_clause = new SgOmpSectionsClause();
-                break;
-            }
-            case OMPC_for: {
-                sg_clause = new SgOmpForClause();
-                break;
-            }
+            case OMPC_parallel:
+            case OMPC_sections:
+            case OMPC_for:
+            case OMPC_nowait:
             case OMPC_taskgroup: {
-                sg_clause = new SgOmpTaskgroupClause();
+                sg_clause = convertSimpleClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
+            }
+            case OMPC_depend: {
+                sg_clause = convertDependClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
             }
             default: {
                 cerr<<"error: unknown clause "<<endl;
                 ROSE_ASSERT(false);
             }
         };
-        ROSE_ASSERT(result);
-        setOneSourcePositionForTransformation(sg_clause);
-        ((SgOmpClauseStatement*)result)->get_clauses().push_back(sg_clause);
-        sg_clause->set_parent(((SgOmpClauseStatement*)result));
     };
 
     return result;
@@ -3197,7 +3221,7 @@ SgOmpVariablesClause* convertClause(SgStatement* directive, std::pair<SgPragmaDe
 
 }
 
-SgOmpDependClause* convertDependClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+SgOmpDependClause* convertDependClause(SgStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     printf("ompparser depend clause is ready.\n");
     SgOmpDependClause* result = NULL;
     SgExpression* clause_expression = NULL;
@@ -3259,9 +3283,14 @@ SgOmpDependClause* convertDependClause(SgOmpClauseBodyStatement* clause_body, st
     explist->set_parent(result);
     result->set_array_dimensions(array_dimensions);
     result->set_iterator(depend_iterators_definition_class);
+
     setOneSourcePositionForTransformation(result);
     SgOmpClause* sg_clause = result;
-    clause_body->get_clauses().push_back(sg_clause);
+    if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_target_update) {
+        ((SgOmpTargetUpdateStatement*)clause_body)->get_clauses().push_back(sg_clause);
+    } else {
+        ((SgOmpClauseBodyStatement*)clause_body)->get_clauses().push_back(sg_clause);
+    }
     sg_clause->set_parent(clause_body);
     array_dimensions.clear();
     omp_variable_list.clear();
@@ -3390,6 +3419,8 @@ SgOmpExpressionClause* convertExpressionClause(SgStatement* directive, std::pair
     SgOmpClause* sg_clause = result;
     if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_declare_simd) {
         ((SgOmpDeclareSimdStatement*)directive)->get_clauses().push_back(sg_clause);
+    } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_target_update) {
+        ((SgOmpTargetUpdateStatement*)directive)->get_clauses().push_back(sg_clause);
     } else {
         ((SgOmpClauseBodyStatement*)directive)->get_clauses().push_back(sg_clause);
     }
@@ -3641,6 +3672,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_target_exit_data:
         case OMPD_target_parallel_for:
         case OMPD_target_parallel:
+        case OMPD_target_update:
         case OMPD_target_parallel_for_simd:
         case OMPD_target_parallel_loop:
         case OMPD_target_simd:

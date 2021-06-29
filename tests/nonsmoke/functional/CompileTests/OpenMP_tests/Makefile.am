@@ -343,6 +343,9 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	targetteamsloop.c \
 	targetteamsdistributeparallelfor.c \
 	targetteamsdistributeparallelforsimd.c \
+	targetupdate.c \
+	targetupdate_nowait.c \
+	targetupdate_device.c \
 	task_array.c \
 	task_array2.c \
 	task_dep1.c \
