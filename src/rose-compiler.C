@@ -7,7 +7,7 @@ int main( int argc, char * argv[] ) {
   std::vector<std::string> args(argv, argv+argc);
   std::string simd = "";
   
-  for (int i = 0; i<args.size(); i++) {
+  for (unsigned int i = 0; i < args.size(); i++) {
     std::string arg = args.at(i);
     if (arg.find("--simd-target=") == 0) {
         int pos = arg.find("=") + 1;
