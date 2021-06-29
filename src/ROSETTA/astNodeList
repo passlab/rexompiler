@@ -325,6 +325,7 @@ SgOmpWorkshareStatement
 SgOmpTargetStatement
 SgOmpTargetDataStatement
 SgOmpTargetParallelForStatement
+SgOmpTargetUpdateStatement
 SgOmpTargetParallelStatement
 SgOmpTargetParallelForSimdStatement
 SgOmpTargetParallelLoopStatement

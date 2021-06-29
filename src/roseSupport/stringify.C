@@ -45614,6 +45614,7 @@ namespace stringify { namespace SgOmpClause {
             case 7L: return "e_omp_if_target_enter_data";
             case 8L: return "e_omp_if_target_exit_data";
             case 9L: return "e_omp_if_task";
+            case 10L: return "e_omp_if_target_update";
             default: return "";
         }
     }

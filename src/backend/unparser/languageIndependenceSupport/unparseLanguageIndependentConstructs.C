@@ -3801,6 +3801,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpTargetDataStatement:
                     case V_SgOmpTargetParallelForStatement:
                     case V_SgOmpTargetParallelStatement:
+                    case V_SgOmpTargetUpdateStatement:
                     case V_SgOmpTargetParallelForSimdStatement:
                     case V_SgOmpTargetParallelLoopStatement:
                     case V_SgOmpTargetSimdStatement:
@@ -10569,6 +10570,9 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_target_data) {
         curprint(string("target data : "));
     }
+    if (isSgOmpIfClause(c)->get_modifier() == SgOmpClause::e_omp_if_target_update) {
+        curprint(string("target update : "));
+    }
   }
   else if (isSgOmpDeviceClause(c)) {
     curprint(string(" device("));
@@ -11150,6 +11154,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpTargetParallelStatement:
       {
         curprint(string ("target parallel "));
+        break;
+      }
+    case V_SgOmpTargetUpdateStatement:
+      {
+        curprint(string ("target update "));
         break;
       }
     case V_SgOmpTargetParallelForSimdStatement:

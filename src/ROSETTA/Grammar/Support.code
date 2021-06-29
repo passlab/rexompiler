@@ -346,7 +346,8 @@ HEADER_OMP_CLAUSE_START
             e_omp_if_target_data,
             e_omp_if_target_enter_data,
             e_omp_if_target_exit_data,
-            e_omp_if_task
+            e_omp_if_task,
+            e_omp_if_target_update
         };
         
         enum omp_depobj_modifier_enum
