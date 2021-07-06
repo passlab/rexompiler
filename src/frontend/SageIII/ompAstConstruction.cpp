@@ -1718,6 +1718,7 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_declare_mapper:
         case OMPD_cancellation_point:
         case OMPD_target_update:
+        case OMPD_requires:
         case OMPD_cancel: {
             result = convertNonBodyDirective(current_OpenMPIR_to_SageIII);
             break;
@@ -1888,7 +1889,7 @@ SgOmpClause* convertSimpleClause(SgStatement* directive, std::pair<SgPragmaDecla
     setOneSourcePositionForTransformation(sg_clause);
     if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_declare_simd) {
         ((SgOmpDeclareSimdStatement*)directive)->get_clauses().push_back(sg_clause);
-    } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_target_update || current_OpenMPIR_to_SageIII.second->getKind() == OMPD_cancel || current_OpenMPIR_to_SageIII.second->getKind() == OMPD_cancellation_point) {
+    } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_target_update || current_OpenMPIR_to_SageIII.second->getKind() == OMPD_cancel || current_OpenMPIR_to_SageIII.second->getKind() == OMPD_cancellation_point || current_OpenMPIR_to_SageIII.second->getKind() == OMPD_requires) {
         ((SgOmpTargetUpdateStatement*)directive)->get_clauses().push_back(sg_clause);
     } else {
         ((SgOmpClauseBodyStatement*)directive)->get_clauses().push_back(sg_clause);
@@ -1918,6 +1919,10 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
         }
         case OMPD_target_update: {
             result = new SgOmpTargetUpdateStatement();
+            break;
+        }
+        case OMPD_requires: {
+            result = new SgOmpRequiresStatement();
             break;
         }
         default: {
@@ -3670,6 +3675,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_target_parallel_for:
         case OMPD_target_parallel:
         case OMPD_target_update:
+        case OMPD_requires:
         case OMPD_target_parallel_for_simd:
         case OMPD_target_parallel_loop:
         case OMPD_target_simd:
