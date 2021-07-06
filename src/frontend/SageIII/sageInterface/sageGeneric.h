@@ -353,6 +353,7 @@ namespace sg
     GEN_VISIT(SgOmpTargetParallelForStatement)
     GEN_VISIT(SgOmpTargetParallelStatement)
     GEN_VISIT(SgOmpTargetUpdateStatement)
+    GEN_VISIT(SgOmpRequiresStatement)
     GEN_VISIT(SgOmpTargetParallelForSimdStatement)
     GEN_VISIT(SgOmpTargetParallelLoopStatement)
     GEN_VISIT(SgOmpTargetSimdStatement)

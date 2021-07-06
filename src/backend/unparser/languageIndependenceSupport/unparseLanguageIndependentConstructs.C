@@ -3802,6 +3802,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpTargetParallelForStatement:
                     case V_SgOmpTargetParallelStatement:
                     case V_SgOmpTargetUpdateStatement:
+                    case V_SgOmpRequiresStatement:
                     case V_SgOmpTargetParallelForSimdStatement:
                     case V_SgOmpTargetParallelLoopStatement:
                     case V_SgOmpTargetSimdStatement:
@@ -11159,6 +11160,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpTargetUpdateStatement:
       {
         curprint(string ("target update "));
+        break;
+      }
+    case V_SgOmpRequiresStatement:
+      {
+        curprint(string ("requires "));
         break;
       }
     case V_SgOmpTargetParallelForSimdStatement:
