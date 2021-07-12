@@ -1821,6 +1821,22 @@ SgOmpClause* convertSimpleClause(SgStatement* directive, std::pair<SgPragmaDecla
             sg_clause = new SgOmpReadClause();
             break;
         }
+        case OMPC_reverse_offload: {
+            sg_clause = new SgOmpReverseOffloadClause();
+            break;
+        }
+        case OMPC_unified_address: {
+            sg_clause = new SgOmpUnifiedAddressClause();
+            break;
+        }
+        case OMPC_unified_shared_memory: {
+            sg_clause = new SgOmpUnifiedSharedMemoryClause();
+            break;
+        }
+        case OMPC_dynamic_allocators: {
+            sg_clause = new SgOmpDynamicAllocatorsClause();
+            break;
+        }
         case OMPC_write: {
             sg_clause = new SgOmpWriteClause();
             break;
@@ -1889,8 +1905,10 @@ SgOmpClause* convertSimpleClause(SgStatement* directive, std::pair<SgPragmaDecla
     setOneSourcePositionForTransformation(sg_clause);
     if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_declare_simd) {
         ((SgOmpDeclareSimdStatement*)directive)->get_clauses().push_back(sg_clause);
-    } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_target_update || current_OpenMPIR_to_SageIII.second->getKind() == OMPD_cancel || current_OpenMPIR_to_SageIII.second->getKind() == OMPD_cancellation_point || current_OpenMPIR_to_SageIII.second->getKind() == OMPD_requires) {
+    } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_target_update || current_OpenMPIR_to_SageIII.second->getKind() == OMPD_cancel || current_OpenMPIR_to_SageIII.second->getKind() == OMPD_cancellation_point) {
         ((SgOmpTargetUpdateStatement*)directive)->get_clauses().push_back(sg_clause);
+    } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_requires) {
+        ((SgOmpRequiresStatement*)directive)->get_clauses().push_back(sg_clause);
     } else {
         ((SgOmpClauseBodyStatement*)directive)->get_clauses().push_back(sg_clause);
     }
@@ -1944,6 +1962,10 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
             case OMPC_sections:
             case OMPC_for:
             case OMPC_nowait:
+            case OMPC_reverse_offload:
+            case OMPC_unified_address:
+            case OMPC_unified_shared_memory:
+            case OMPC_dynamic_allocators:
             case OMPC_taskgroup: {
                 convertSimpleClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
@@ -1957,7 +1979,6 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
             }
         };
     };
-
     return result;
 }
 
@@ -3761,6 +3782,10 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_private:
                 case OMPC_proc_bind:
                 case OMPC_read:
+                case OMPC_reverse_offload:
+                case OMPC_unified_address:
+                case OMPC_unified_shared_memory:
+                case OMPC_dynamic_allocators:
                 case OMPC_reduction:
                 case OMPC_relaxed:
                 case OMPC_release:

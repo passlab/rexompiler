@@ -3985,7 +3985,6 @@ SgStatement::replace_statement(SgStatement* target, SgStatement* newstmt)
   // ROSE_ASSERT(target->get_parent() != newstmt);
      if (newstmt->get_parent() == NULL)
           newstmt->set_parent(target->get_parent());
-
      bool r = replace_child(target, newstmt, false);
      assert(r);
    }
@@ -19029,12 +19028,6 @@ void
 SgOmpDistributeStatement::post_construction_initialization()
    {}
 SOURCE_OMP_DISTRIBUTE_STATEMENT_END
-
-SOURCE_OMP_REQUIRES_STATEMENT_START
-void
-SgOmpRequiresStatement::post_construction_initialization()
-   {}
-SOURCE_OMP_REQUIRES_STATEMENT_END
 
 SOURCE_OMP_LOOP_STATEMENT_START
 void

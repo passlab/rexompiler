@@ -305,7 +305,6 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpTargetParallelForStatement,  "OmpTargetParallelForStatement",   "OMP_TARGET_PARALLEL_FOR_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetParallelStatement,  "OmpTargetParallelStatement",   "OMP_TARGET_PARALLEL_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetUpdateStatement,  "OmpTargetUpdateStatement",   "OMP_TARGET_UPDATE_STMT" );
-    NEW_TERMINAL_MACRO (OmpRequiresStatement,  "OmpRequiresStatement",   "OMP_REQUIRES_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetParallelForSimdStatement,  "OmpTargetParallelForSimdStatement",   "OMP_TARGET_PARALLEL_FOR_SIMD_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetParallelLoopStatement,  "OmpTargetParallelLoopStatement",   "OMP_TARGET_PARALLEL_LOOP_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetSimdStatement,  "OmpTargetSimdStatement",   "OMP_TARGET_SIMD_STMT" );
@@ -353,7 +352,7 @@ Grammar::setUpStatements ()
         | OmpSectionStatement | OmpWorkshareStatement  | OmpClauseBodyStatement ,
         "OmpBodyStatement",      "OMP_BODY_STMT", false );
 
-    NEW_NONTERMINAL_MACRO (OmpClauseStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpRequiresStatement | OmpTargetUpdateStatement,
+    NEW_NONTERMINAL_MACRO (OmpClauseStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement,
         "OmpClauseStatement",      "OMP_CLAUSE_STMT", false );
 
 
@@ -518,7 +517,7 @@ Grammar::setUpStatements ()
   // simplest directives, just one line
      NEW_TERMINAL_MACRO (OmpBarrierStatement,   "OmpBarrierStatement",   "OMP_BARRIER_STMT" );
      NEW_TERMINAL_MACRO (OmpTaskyieldStatement,   "OmpTaskyieldStatement",   "OMP_TASKYIELD_STMT" );
-
+     NEW_TERMINAL_MACRO (OmpRequiresStatement,  "OmpRequiresStatement",   "OMP_REQUIRES_STMT" );
   // + variable list
      NEW_TERMINAL_MACRO (OmpThreadprivateStatement, "OmpThreadprivateStatement",    "OMP_THREADPRIVATE_STMT" );
 
@@ -541,7 +540,8 @@ Grammar::setUpStatements ()
           UsingDirectiveStatement                 | ClassDeclaration          | ImplicitStatement            |
           UsingDeclarationStatement               | NamelistStatement         | ImportStatement              |
           FunctionDeclaration                  /* | ModuleStatement */        | ContainsStatement            |
-          C_PreprocessorDirectiveStatement        | OmpThreadprivateStatement | FortranIncludeLine           | 
+          C_PreprocessorDirectiveStatement        | OmpThreadprivateStatement | OmpRequiresStatement         |
+          FortranIncludeLine           | 
           StmtDeclarationStatement     |
           StaticAssertionDeclaration              | OmpDeclareSimdStatement   | MicrosoftAttributeDeclaration|
           NonrealDecl               | EmptyDeclaration
@@ -4255,7 +4255,9 @@ Grammar::setUpStatements ()
     OmpFlushStatement.setFunctionSource            ("SOURCE_OMP_FLUSH_STATEMENT", "../Grammar/Statement.code" );
     OmpDeclareSimdStatement.setFunctionPrototype   ("HEADER_OMP_DECLARE_SIMD_STATEMENT", "../Grammar/Statement.code");
     OmpDeclareSimdStatement.setFunctionSource      ("SOURCE_OMP_DECLARE_SIMD_STATEMENT", "../Grammar/Statement.code");
-
+    
+    //OmpRequiresStatement.setFunctionPrototype   ("HEADER_OMP_REQUIRES_STATEMENT", "../Grammar/Statement.code");
+    OmpRequiresStatement.setFunctionSource            ("SOURCE_OMP_REQUIRES_STATEMENT", "../Grammar/Statement.code" );
     OmpParallelStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
     OmpTeamsStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_STATEMENT", "../Grammar/Statement.code" );
     OmpCancellationPointStatement.setFunctionSource            ("SOURCE_OMP_CANCELLATION_POINT_STATEMENT", "../Grammar/Statement.code" );
@@ -4291,7 +4293,6 @@ Grammar::setUpStatements ()
     OmpTargetParallelForStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_FOR_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetParallelStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetUpdateStatement.setFunctionSource            ("SOURCE_OMP_TARGET_UPDATE_STATEMENT", "../Grammar/Statement.code" );
-    OmpRequiresStatement.setFunctionSource            ("SOURCE_OMP_REQUIRES_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetParallelForSimdStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_FOR_SIMD_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetParallelLoopStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_LOOP_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetSimdStatement.setFunctionSource            ("SOURCE_OMP_TARGET_SIMD_STATEMENT", "../Grammar/Statement.code" );
@@ -4328,6 +4329,8 @@ Grammar::setUpStatements ()
                                                 NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
     OmpDeclareSimdStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+    OmpRequiresStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
    // omp threadprivate [(var-list)]
