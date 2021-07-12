@@ -61,6 +61,7 @@ static SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives
 static SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgOmpMapClause* convertMapClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDependClause* convertDependClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgStatement* convertOmpRequiresDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII);
 
 using namespace std;
 using namespace SageInterface;
@@ -1718,9 +1719,12 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_declare_mapper:
         case OMPD_cancellation_point:
         case OMPD_target_update:
-        case OMPD_requires:
         case OMPD_cancel: {
             result = convertNonBodyDirective(current_OpenMPIR_to_SageIII);
+            break;
+        }
+        case OMPD_requires: {
+            result = convertOmpRequiresDirective(current_OpenMPIR_to_SageIII);
             break;
         }
         case OMPD_barrier: {
@@ -1937,10 +1941,6 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
         }
         case OMPD_target_update: {
             result = new SgOmpTargetUpdateStatement();
-            break;
-        }
-        case OMPD_requires: {
-            result = new SgOmpRequiresStatement();
             break;
         }
         default: {
@@ -2327,6 +2327,30 @@ SgStatement* convertOmpDeclareSimdDirective(std::pair<SgPragmaDeclaration*, Open
             case OMPC_linear:
             case OMPC_uniform: {
                 convertClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            default: {
+                convertClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+            }
+        };
+    };
+    return result;
+}
+
+SgStatement* convertOmpRequiresDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
+    SgOmpRequiresStatement *result = new SgOmpRequiresStatement();
+    result->set_firstNondefiningDeclaration(result);
+    std::vector<OpenMPClause*>* all_clauses = current_OpenMPIR_to_SageIII.second->getClausesInOriginalOrder();
+    OpenMPClauseKind clause_kind;
+    std::vector<OpenMPClause*>::iterator clause_iter;
+    for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end(); clause_iter++) {
+        clause_kind = (*clause_iter)->getKind();
+        switch (clause_kind) {
+            case OMPC_reverse_offload:
+            case OMPC_unified_address:
+            case OMPC_unified_shared_memory:
+            case OMPC_dynamic_allocators: {
+                convertSimpleClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             default: {

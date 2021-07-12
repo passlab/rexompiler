@@ -4256,7 +4256,7 @@ Grammar::setUpStatements ()
     OmpDeclareSimdStatement.setFunctionPrototype   ("HEADER_OMP_DECLARE_SIMD_STATEMENT", "../Grammar/Statement.code");
     OmpDeclareSimdStatement.setFunctionSource      ("SOURCE_OMP_DECLARE_SIMD_STATEMENT", "../Grammar/Statement.code");
     
-    //OmpRequiresStatement.setFunctionPrototype   ("HEADER_OMP_REQUIRES_STATEMENT", "../Grammar/Statement.code");
+    OmpRequiresStatement.setFunctionPrototype   ("HEADER_OMP_REQUIRES_STATEMENT", "../Grammar/Statement.code");
     OmpRequiresStatement.setFunctionSource            ("SOURCE_OMP_REQUIRES_STATEMENT", "../Grammar/Statement.code" );
     OmpParallelStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
     OmpTeamsStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_STATEMENT", "../Grammar/Statement.code" );
