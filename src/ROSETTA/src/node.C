@@ -68,6 +68,10 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpNowaitClause, "OmpNowaitClause", "OmpNowaitClauseTag" );
      NEW_TERMINAL_MACRO (OmpNogroupClause, "OmpNogroupClause", "OmpNogroupClauseTag" );
      NEW_TERMINAL_MACRO (OmpReadClause, "OmpReadClause", "OmpReadClauseTag" );
+     NEW_TERMINAL_MACRO (OmpReverseOffloadClause, "OmpReverseOffloadClause", "OmpReverseOffloadClauseTag" );
+     NEW_TERMINAL_MACRO (OmpUnifiedAddressClause, "OmpUnifiedAddressClause", "OmpUnifiedAddressClauseTag" );
+     NEW_TERMINAL_MACRO (OmpUnifiedSharedMemoryClause, "OmpUnifiedSharedMemoryClause", "OmpUnifiedSharedMemoryClauseTag" );
+     NEW_TERMINAL_MACRO (OmpDynamicAllocatorsClause, "OmpDynamicAllocatorsClause", "OmpDynamicAllocatorsClauseTag" );
      NEW_TERMINAL_MACRO (OmpWriteClause, "OmpWriteClause", "OmpWriteClauseTag" );
      NEW_TERMINAL_MACRO (OmpUpdateClause, "OmpUpdateClause", "OmpUpdateClauseTag" );
      NEW_TERMINAL_MACRO (OmpDepobjUpdateClause, "OmpDepobjUpdateClause", "OmpDepobjUpdateClauseTag" );
@@ -146,7 +150,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpWhenClause, "OmpWhenClause", "OmpWhenClauseTag" );
      NEW_TERMINAL_MACRO (OmpDistScheduleClause, "OmpDistScheduleClause", "OmpDistScheduleClauseTag" );
      NEW_TERMINAL_MACRO (OmpDefaultmapClause, "OmpDefaultmapClause", "OmpDefaultmapClauseTag" );
-     NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpReadClause | OmpWriteClause | OmpUpdateClause | OmpDepobjUpdateClause | OmpDestroyClause | OmpCaptureClause | OmpBeginClause |OmpEndClause | OmpUntiedClause | OmpSeqCstClause | OmpAcqRelClause | OmpReleaseClause | OmpAcquireClause | OmpRelaxedClause |
+     NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpReadClause | OmpWriteClause | OmpUpdateClause | OmpDepobjUpdateClause | OmpDestroyClause | OmpCaptureClause | OmpBeginClause |OmpEndClause | OmpUntiedClause | OmpSeqCstClause | OmpAcqRelClause | OmpReleaseClause | OmpAcquireClause | OmpRelaxedClause | OmpReverseOffloadClause | OmpUnifiedAddressClause | OmpUnifiedSharedMemoryClause | OmpDynamicAllocatorsClause |
          OmpParallelClause | OmpSectionsClause | OmpForClause | OmpTaskgroupClause | OmpNogroupClause |
          OmpDefaultClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpDistScheduleClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpDefaultmapClause |
          OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause ,

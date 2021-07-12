@@ -375,6 +375,10 @@ SgOmpSeqCstClause
 SgOmpAcqRelClause
 SgOmpReleaseClause
 SgOmpAcquireClause
+SgOmpReverseOffloadClause
+SgOmpUnifiedAddressClause
+SgOmpUnifiedSharedMemoryClause
+SgOmpDynamicAllocatorsClause
 SgOmpRelaxedClause
 SgOmpParallelClause
 SgOmpSectionsClause

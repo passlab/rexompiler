@@ -3774,7 +3774,6 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpThreadprivateStatement:     unparseOmpThreadprivateStatement (stmt, info);break;
                     case V_SgOmpFlushStatement:             unparseOmpFlushStatement         (stmt, info);break;
                     case V_SgOmpDeclareSimdStatement:       unparseOmpDeclareSimdStatement   (stmt, info);break;
-
                  // Generic OpenMP directives with a format of : begin-directive, begin-clauses, body, end-directive , end-clauses
                     case V_SgOmpCriticalStatement:
                     case V_SgOmpDepobjStatement:
@@ -10737,6 +10736,26 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpReadClause:
       {
         curprint(string(" read"));
+        break;
+      }
+    case V_SgOmpReverseOffloadClause:
+      {
+        curprint(string(" reverse_offload"));
+        break;
+      }
+    case V_SgOmpUnifiedAddressClause:
+      {
+        curprint(string(" unified_address"));
+        break;
+      }
+    case V_SgOmpUnifiedSharedMemoryClause:
+      {
+        curprint(string(" unified_shared_memory"));
+        break;
+      }
+    case V_SgOmpDynamicAllocatorsClause:
+      {
+        curprint(string(" dynamic_allocators"));
         break;
       }
     case V_SgOmpWriteClause:

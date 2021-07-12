@@ -135,7 +135,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	reduction_min_max.c \
 	reduction_modifier.c \
 	reduction_user_identifier.c \
-	#requires.c \
+	requires.c \
 	#requires1.c \
 	rice1.c \
 	scan.c \
@@ -309,6 +309,11 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	reduction_min_max.c \
 	reduction_modifier.c \
 	reduction_user_identifier.c \
+	requires.c \
+	requires_reverse_offload.c \
+	requires_unified_address.c \
+	requires_dynamic_allocators.c \
+	requires_unified_shared_memory.c \
 	rice1.c \
 	scan.c \
 	section.c \
