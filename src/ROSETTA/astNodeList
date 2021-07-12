@@ -379,6 +379,8 @@ SgOmpReverseOffloadClause
 SgOmpUnifiedAddressClause
 SgOmpUnifiedSharedMemoryClause
 SgOmpDynamicAllocatorsClause
+SgOmpAtomicDefaultMemOrderClause
+SgOmpExtImplementationDefinedRequirementClause
 SgOmpRelaxedClause
 SgOmpParallelClause
 SgOmpSectionsClause
