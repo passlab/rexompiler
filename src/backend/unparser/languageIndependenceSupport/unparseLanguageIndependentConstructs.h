@@ -390,7 +390,7 @@ class UnparseLanguageIndependentConstructs
           virtual void unparseOmpExpressionClause           (SgOmpClause* clause, SgUnparse_Info& info);
           virtual void unparseOmpDepobjUpdateClause         (SgOmpClause* clause, SgUnparse_Info& info);
           virtual void unparseOmpClause                     (SgOmpClause* clause, SgUnparse_Info& info);
-
+          virtual void unparseOmpAtomicDefaultMemOrderClause (SgOmpClause* clause, SgUnparse_Info& info);
           virtual void unparseOmpSimpleStatement             (SgStatement* stmt,     SgUnparse_Info& info);
           virtual void unparseOmpThreadprivateStatement      (SgStatement* stmt,     SgUnparse_Info& info);
           virtual void unparseOmpFlushStatement              (SgStatement* stmt,     SgUnparse_Info& info);

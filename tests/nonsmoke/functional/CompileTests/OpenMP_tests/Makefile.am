@@ -310,6 +310,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	reduction_modifier.c \
 	reduction_user_identifier.c \
 	requires.c \
+	requires_atomic_default_mem_order.c \
 	requires_reverse_offload.c \
 	requires_unified_address.c \
 	requires_dynamic_allocators.c \

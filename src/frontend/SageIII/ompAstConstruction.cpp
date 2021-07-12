@@ -62,6 +62,7 @@ static SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, Open
 static SgOmpMapClause* convertMapClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDependClause* convertDependClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgStatement* convertOmpRequiresDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII);
+static SgOmpAtomicDefaultMemOrderClause* convertAtomicDefaultMemOrderClause(SgStatement* directive, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause);
 
 using namespace std;
 using namespace SageInterface;
@@ -2353,6 +2354,10 @@ SgStatement* convertOmpRequiresDirective(std::pair<SgPragmaDeclaration*, OpenMPD
                 convertSimpleClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
+            case OMPC_atomic_default_mem_order: {
+                convertAtomicDefaultMemOrderClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
             default: {
                 convertClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
             }
@@ -2439,6 +2444,35 @@ SgOmpDepobjUpdateClause *convertDepobjUpdateClause(SgOmpClauseBodyStatement* cla
     sg_clause->set_parent(clause_body);
     
     printf("ompparser depobj update clause added!\n");
+    return result;
+}
+
+SgOmpAtomicDefaultMemOrderClause* convertAtomicDefaultMemOrderClause(SgStatement* directive, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser atomic_default_mem_order clause is ready.\n");
+    OpenMPAtomicDefaultMemOrderClauseKind atomic_default_mem_order_kind = ((OpenMPAtomicDefaultMemOrderClause*)current_omp_clause)->getKind();
+    SgOmpClause::omp_atomic_default_mem_order_kind_enum sg_dv = SgOmpClause::e_omp_atomic_default_mem_order_kind_unspecified;
+    switch (atomic_default_mem_order_kind) {
+      case OMPC_ATOMIC_DEFAULT_MEM_ORDER_seq_cst: {
+        sg_dv = SgOmpClause::e_omp_atomic_default_mem_order_kind_seq_cst;
+        break;
+      }
+      case OMPC_ATOMIC_DEFAULT_MEM_ORDER_acq_rel: {
+        sg_dv = SgOmpClause::e_omp_atomic_default_mem_order_kind_acq_rel;
+        break;
+      }
+      case OMPC_ATOMIC_DEFAULT_MEM_ORDER_relaxed: {
+        sg_dv = SgOmpClause::e_omp_atomic_default_mem_order_kind_relaxed;
+        break;
+      }
+      default: {
+        cerr << "error: buildOmpAtomicDefaultMemOrderClause () Unacceptable default option from OpenMPIR:" << atomic_default_mem_order_kind;
+      }
+    }; //end switch
+    SgOmpAtomicDefaultMemOrderClause* result = new SgOmpAtomicDefaultMemOrderClause(sg_dv);
+    setOneSourcePositionForTransformation(result);
+    ((SgOmpRequiresStatement*)directive)->get_clauses().push_back(result);
+    result->set_parent(directive);
+    printf("ompparser atomic_default_mem_order clause is added.\n");
     return result;
 }
 
@@ -3810,6 +3844,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_unified_address:
                 case OMPC_unified_shared_memory:
                 case OMPC_dynamic_allocators:
+                case OMPC_atomic_default_mem_order:
                 case OMPC_reduction:
                 case OMPC_relaxed:
                 case OMPC_release:
