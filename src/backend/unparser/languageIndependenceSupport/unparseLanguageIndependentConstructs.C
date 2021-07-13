@@ -10755,6 +10755,12 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         unparseOmpAtomicDefaultMemOrderClause(isSgOmpAtomicDefaultMemOrderClause(clause),info);
         break;
       }
+    case V_SgOmpExtImplementationDefinedRequirementClause:
+      {
+        curprint(string(" ext_"));
+        unparseExpression(isSgOmpExtImplementationDefinedRequirementClause(clause)->get_implementation_defined_requirement(), info);
+        break;
+      }
     case V_SgOmpAtomicClause:
       {
         unparseOmpAtomicClause(isSgOmpAtomicClause(clause),info);

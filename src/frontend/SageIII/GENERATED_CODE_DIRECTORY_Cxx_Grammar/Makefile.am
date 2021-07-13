@@ -76,7 +76,6 @@ SgArrowStarOp.C                        SgCloseStatement.C                    SgG
 SgColonShapeExp.C                     SgGraphNodeList.C                       SgOmpTaskyieldStatement.C                       SgTypeDefault.C \
 SgCommaOpExp.C                        SgGreaterOrEqualOp.C                    SgOmpNowaitClause.C               SgOmpReadClause.C                         SgTypedefDeclaration.C                SgOmpWriteClause.C                     SgOmpUpdateClause.C                            SgOmpCaptureClause.C \
 SgOmpSeqCstClause.C              SgOmpAcqRelClause.C                SgOmpReleaseClause.C                     SgOmpAcquireClause.C \
-SgOmpReverseOffloadClause.C                 SgOmpUnifiedAddressClause.C              SgOmpUnifiedSharedMemoryClause.C              SgOmpDynamicAllocatorsClause.C             SgOmpAtomicDefaultMemOrderClause.C \
 SgOmpRelaxedClause.C \
 SgOmpReverseOffloadClause.C          SgOmpUnifiedAddressClause.C           SgOmpUnifiedSharedMemoryClause.C \
 SgOmpDynamicAllocatorsClause.C        SgOmpAtomicDefaultMemOrderClause.C     SgOmpExtImplementationDefinedRequirementClause.C \

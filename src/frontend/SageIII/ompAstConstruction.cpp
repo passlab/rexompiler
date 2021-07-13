@@ -63,6 +63,7 @@ static SgOmpMapClause* convertMapClause(SgOmpClauseBodyStatement*, std::pair<SgP
 static SgOmpDependClause* convertDependClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgStatement* convertOmpRequiresDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII);
 static SgOmpAtomicDefaultMemOrderClause* convertAtomicDefaultMemOrderClause(SgStatement* directive, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause);
+static SgOmpExtImplementationDefinedRequirementClause* convertExtImplementationDefinedRequirementClause(SgStatement* directive, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause);
 
 using namespace std;
 using namespace SageInterface;
@@ -2358,6 +2359,10 @@ SgStatement* convertOmpRequiresDirective(std::pair<SgPragmaDeclaration*, OpenMPD
                 convertAtomicDefaultMemOrderClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
+            case OMPC_ext_implementation_defined_requirement: {
+                convertExtImplementationDefinedRequirementClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
             default: {
                 convertClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
             }
@@ -2469,6 +2474,18 @@ SgOmpAtomicDefaultMemOrderClause* convertAtomicDefaultMemOrderClause(SgStatement
       }
     }; //end switch
     SgOmpAtomicDefaultMemOrderClause* result = new SgOmpAtomicDefaultMemOrderClause(sg_dv);
+    setOneSourcePositionForTransformation(result);
+    ((SgOmpRequiresStatement*)directive)->get_clauses().push_back(result);
+    result->set_parent(directive);
+    printf("ompparser atomic_default_mem_order clause is added.\n");
+    return result;
+}
+
+SgOmpExtImplementationDefinedRequirementClause* convertExtImplementationDefinedRequirementClause(SgStatement* directive, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser atomic_default_mem_order clause is ready.\n");
+    SgExpression* ext_implementation_defined_requirement = NULL;
+    ext_implementation_defined_requirement = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), ((OpenMPExtImplementationDefinedRequirementClause*)current_omp_clause)->getImplementationDefinedRequirement());
+    SgOmpExtImplementationDefinedRequirementClause* result = new SgOmpExtImplementationDefinedRequirementClause(ext_implementation_defined_requirement);
     setOneSourcePositionForTransformation(result);
     ((SgOmpRequiresStatement*)directive)->get_clauses().push_back(result);
     result->set_parent(directive);
@@ -3845,6 +3862,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_unified_shared_memory:
                 case OMPC_dynamic_allocators:
                 case OMPC_atomic_default_mem_order:
+                case OMPC_ext_implementation_defined_requirement:
                 case OMPC_reduction:
                 case OMPC_relaxed:
                 case OMPC_release:

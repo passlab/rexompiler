@@ -69,6 +69,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpNogroupClause, "OmpNogroupClause", "OmpNogroupClauseTag" );
      NEW_TERMINAL_MACRO (OmpReadClause, "OmpReadClause", "OmpReadClauseTag" );
      NEW_TERMINAL_MACRO (OmpReverseOffloadClause, "OmpReverseOffloadClause", "OmpReverseOffloadClauseTag" );
+     NEW_TERMINAL_MACRO (OmpExtImplementationDefinedRequirementClause, "OmpExtImplementationDefinedRequirementClause", "OmpExtImplementationDefinedRequirementClauseTag" );
      NEW_TERMINAL_MACRO (OmpUnifiedAddressClause, "OmpUnifiedAddressClause", "OmpUnifiedAddressClauseTag" );
      NEW_TERMINAL_MACRO (OmpUnifiedSharedMemoryClause, "OmpUnifiedSharedMemoryClause", "OmpUnifiedSharedMemoryClauseTag" );
      NEW_TERMINAL_MACRO (OmpDynamicAllocatorsClause, "OmpDynamicAllocatorsClause", "OmpDynamicAllocatorsClauseTag" );
@@ -153,7 +154,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpDefaultmapClause, "OmpDefaultmapClause", "OmpDefaultmapClauseTag" );
      NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpReadClause | OmpWriteClause | OmpUpdateClause | OmpDepobjUpdateClause | OmpDestroyClause | OmpCaptureClause | OmpBeginClause |OmpEndClause | OmpUntiedClause | OmpSeqCstClause | OmpAcqRelClause | OmpReleaseClause | OmpAcquireClause | OmpRelaxedClause | OmpReverseOffloadClause | OmpUnifiedAddressClause | OmpUnifiedSharedMemoryClause | OmpDynamicAllocatorsClause |
          OmpParallelClause | OmpSectionsClause | OmpForClause | OmpTaskgroupClause | OmpNogroupClause |
-         OmpDefaultClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpDistScheduleClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpDefaultmapClause | OmpAtomicDefaultMemOrderClause |
+         OmpDefaultClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpDistScheduleClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpDefaultmapClause | OmpAtomicDefaultMemOrderClause | OmpExtImplementationDefinedRequirementClause |
          OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause ,
          "OmpClause", "OmpClauseTag", false);
 #endif
@@ -1889,8 +1890,8 @@ Grammar::setUpNodes ()
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
      // ext_implementation_defined_requirement
-     //OmpExtImplementationDefinedRequirementClause.setDataPrototype ( "SgExpression*", "implementation_defined_requirement", "= NULL",
-     //                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpExtImplementationDefinedRequirementClause.setDataPrototype ( "SgExpression*", "implementation_defined_requirement", "= NULL",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
 
      // bind(binding)
      OmpBindClause.setDataPrototype("SgOmpClause::omp_bind_binding_enum", "binding", "=e_omp_bind_binding_unspecified",
