@@ -528,6 +528,7 @@ namespace sg
     GEN_VISIT(SgOmpUnifiedSharedMemoryClause)
     GEN_VISIT(SgOmpDynamicAllocatorsClause)
     GEN_VISIT(SgOmpAtomicDefaultMemOrderClause)
+    GEN_VISIT(SgOmpExtImplementationDefinedRequirementClause)
     GEN_VISIT(SgOmpWriteClause)
     GEN_VISIT(SgOmpUpdateClause)
     GEN_VISIT(SgOmpCaptureClause)
