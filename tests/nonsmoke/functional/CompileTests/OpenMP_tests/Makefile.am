@@ -216,6 +216,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	task_dep3.c \
 	task_dep_iterator1.c \
 	task_dep_iterator2.c \
+	declare_simd.c \
 	distribute.c \
 	distribute2.c \
 	dijkstra_open_mp.c \

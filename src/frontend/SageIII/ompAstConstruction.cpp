@@ -2310,15 +2310,8 @@ SgStatement* convertOmpDeclareSimdDirective(std::pair<SgPragmaDeclaration*, Open
     for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end(); clause_iter++) {
         clause_kind = (*clause_iter)->getKind();
         switch (clause_kind) {
-            case OMPC_if:
-            case OMPC_collapse:
-            case OMPC_safelen:
             case OMPC_simdlen: {
                 convertExpressionClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
-                break;
-            }
-            case OMPC_order: {
-                convertOrderClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_inbranch:
@@ -2326,6 +2319,7 @@ SgStatement* convertOmpDeclareSimdDirective(std::pair<SgPragmaDeclaration*, Open
                 convertSimpleClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
+            case OMPC_aligned:
             case OMPC_linear:
             case OMPC_uniform: {
                 convertClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
