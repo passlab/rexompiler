@@ -1,0 +1,2 @@
+#pragma omp target teams  map(to : B[0:N],C[0:N]) defaultmap(tofrom : scalar) reduction(+ : sum)
+#pragma omp distribute parallel for  reduction(+ : sum)

@@ -217,6 +217,9 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	task_dep_iterator1.c \
 	task_dep_iterator2.c \
 	declare_simd.c \
+	distribute_parallel_for.c \
+	distribute_parallel_for_simd.c \
+	distribute_simd.c \
 	distribute.c \
 	distribute2.c \
 	dijkstra_open_mp.c \
@@ -354,6 +357,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	targetupdate.c \
 	targetupdate_nowait.c \
 	targetupdate_device.c \
+	taskloop_simd_reduction.1.c \
 	task_array.c \
 	task_array2.c \
 	task_dep1.c \
