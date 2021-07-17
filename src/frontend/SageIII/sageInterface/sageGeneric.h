@@ -585,6 +585,7 @@ namespace sg
     GEN_VISIT(SgOmpDistScheduleClause)
     GEN_VISIT(SgOmpDefaultmapClause)
     GEN_VISIT(SgOmpDependClause)
+    GEN_VISIT(SgOmpAffinityClause)
     GEN_VISIT(SgOmpClause)
 
     GEN_VISIT(SgOpenclAccessModeModifier)

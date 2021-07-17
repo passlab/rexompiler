@@ -429,6 +429,7 @@ SgOmpAtomicClause
 SgOmpInbranchClause
 SgOmpNotinbranchClause
 SgOmpDependClause
+SgOmpAffinityClause
 SgOmpWhenClause
 SgOpenclAccessModeModifier
 SgOpenStatement

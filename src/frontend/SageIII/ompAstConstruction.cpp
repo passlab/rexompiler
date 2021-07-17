@@ -61,6 +61,7 @@ static SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives
 static SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgOmpMapClause* convertMapClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDependClause* convertDependClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpAffinityClause* convertAffinityClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgStatement* convertOmpRequiresDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII);
 static SgOmpAtomicDefaultMemOrderClause* convertAtomicDefaultMemOrderClause(SgStatement* directive, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause);
 static SgOmpExtImplementationDefinedRequirementClause* convertExtImplementationDefinedRequirementClause(SgStatement* directive, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause);
@@ -1187,7 +1188,7 @@ namespace OmpSupport
     return result;
   }
   
-    static SgOmpClause::omp_depend_modifier_enum toSgOmpClauseDependModifier(OpenMPDependClauseModifier modifier)
+  static SgOmpClause::omp_depend_modifier_enum toSgOmpClauseDependModifier(OpenMPDependClauseModifier modifier)
   {
     SgOmpClause::omp_depend_modifier_enum result = SgOmpClause::e_omp_depend_modifier_unspecified;
     switch (modifier)
@@ -1205,6 +1206,31 @@ namespace OmpSupport
       default:
         {
           printf("error: unacceptable omp construct enum for depend modifier conversion:%d\n", modifier);
+          ROSE_ASSERT(false);
+          break;
+        }
+    }
+    return result;
+  }
+  
+  static SgOmpClause::omp_affinity_modifier_enum toSgOmpClauseAffinityModifier(OpenMPAffinityClauseModifier modifier)
+  {
+    SgOmpClause::omp_affinity_modifier_enum result = SgOmpClause::e_omp_affinity_modifier_unspecified;
+    switch (modifier)
+    {
+      case OMPC_AFFINITY_MODIFIER_unspecified:
+        {
+          result = SgOmpClause::e_omp_affinity_modifier_unspecified;
+          break;
+        }
+      case OMPC_AFFINITY_MODIFIER_iterator:
+        {
+          result = SgOmpClause::e_omp_affinity_modifier_iterator;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for affinity modifier conversion:%d\n", modifier);
           ROSE_ASSERT(false);
           break;
         }
@@ -2304,6 +2330,10 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             }
             case OMPC_depend: {
                 convertDependClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            case OMPC_affinity: {
+                convertAffinityClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_depobj_update: {
@@ -3427,6 +3457,82 @@ SgOmpDependClause* convertDependClause(SgStatement* clause_body, std::pair<SgPra
     return result;
 }
 
+SgOmpAffinityClause* convertAffinityClause(SgStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser affinity clause is ready.\n");
+    SgOmpAffinityClause* result = NULL;
+    
+    SgExpression* iterator_type = NULL;
+    SgExpression* identifier = NULL;
+    SgExpression* begin = NULL;
+    SgExpression* end = NULL;
+    SgExpression* step = NULL;
+    
+    OpenMPAffinityClauseModifier modifier = ((OpenMPAffinityClause*)current_omp_clause)->getModifier();
+    std::vector<vector<const char*>* > *omp_affinity_iterators_definition_class = NULL;
+    std::list<std::list<SgExpression*> > affinity_iterators_definition_class;
+    if(modifier == OMPC_AFFINITY_MODIFIER_iterator) {
+        omp_affinity_iterators_definition_class = ((OpenMPAffinityClause*)current_omp_clause)->getIteratorsDefinitionClass();
+        for (unsigned int i = 0; i < omp_affinity_iterators_definition_class->size(); i++) {
+            std::list<SgExpression*> iterator_expressions;
+            if ((string)(omp_affinity_iterators_definition_class->at(i)->at(0)) != "") {
+                iterator_type = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), std::string(omp_affinity_iterators_definition_class->at(i)->at(0)));
+                iterator_expressions.push_back(iterator_type); 
+            }
+            else {
+                iterator_type = NULL;
+                iterator_expressions.push_back(iterator_type);   
+            }
+            identifier = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), std::string(omp_affinity_iterators_definition_class->at(i)->at(1)));
+            iterator_expressions.push_back(identifier);
+            begin = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), std::string(omp_affinity_iterators_definition_class->at(i)->at(2)));
+            iterator_expressions.push_back(begin);
+            end = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), std::string(omp_affinity_iterators_definition_class->at(i)->at(3)));
+            iterator_expressions.push_back(end);
+            
+            if((string)(omp_affinity_iterators_definition_class->at(i)->at(4)) != "") {
+                step = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), std::string(omp_affinity_iterators_definition_class->at(i)->at(4)));
+                iterator_expressions.push_back(step);
+            } else {
+                step = NULL;
+                iterator_expressions.push_back(step);
+            }
+            affinity_iterators_definition_class.push_back(iterator_expressions);
+        }
+    }  
+    SgOmpClause::omp_affinity_modifier_enum sg_modifier = toSgOmpClauseAffinityModifier(modifier);
+    //OpenMPDependClauseType type = ((OpenMPDependClause*)current_omp_clause)->getType();
+    //SgOmpClause::omp_dependence_type_enum sg_type = toSgOmpClauseDependenceType(type);
+
+    std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
+    if (current_expressions->size() != 0) {
+        std::vector<const char*>::iterator iter;
+        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
+            parseOmpArraySection(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), *iter);
+        }
+    }
+    SgExprListExp* explist = buildExprListExp();
+
+    result = new SgOmpAffinityClause(explist, sg_modifier);
+    ROSE_ASSERT(result != NULL);
+    buildVariableList(result);
+    explist->set_parent(result);
+    result->set_array_dimensions(array_dimensions);
+    result->set_iterator(affinity_iterators_definition_class);
+
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    //if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_target_update) {
+    //    ((SgOmpTargetUpdateStatement*)clause_body)->get_clauses().push_back(sg_clause);
+    //} else {
+        ((SgOmpClauseBodyStatement*)clause_body)->get_clauses().push_back(sg_clause);
+    //}
+    sg_clause->set_parent(clause_body);
+    array_dimensions.clear();
+    omp_variable_list.clear();
+    printf("ompparser affinity clause is added.\n");
+    return result;
+}
+
 SgOmpExpressionClause* convertExpressionClause(SgStatement* directive, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     printf("ompparser expression clause is ready.\n");
     SgOmpExpressionClause* result = NULL;
@@ -3857,6 +3963,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_default:
                 case OMPC_defaultmap:
                 case OMPC_depend:
+                case OMPC_affinity:
                 case OMPC_depobj_update:
                 case OMPC_destroy:
                 case OMPC_detach:
