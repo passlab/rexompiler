@@ -358,6 +358,8 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	targetupdate_nowait.c \
 	targetupdate_device.c \
 	taskloop_simd_reduction.1.c \
+	task_affinity.c \
+	task_affinity1.c \
 	task_array.c \
 	task_array2.c \
 	task_dep1.c \
