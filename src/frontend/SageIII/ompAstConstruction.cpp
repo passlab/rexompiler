@@ -1672,6 +1672,10 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_target_exit_data:
         case OMPD_target_parallel_for:
         case OMPD_target_parallel:
+        case OMPD_distribute_simd:
+        case OMPD_distribute_parallel_for:
+        case OMPD_distribute_parallel_for_simd:
+        case OMPD_taskloop_simd:
         case OMPD_target_parallel_for_simd:
         case OMPD_target_parallel_loop:
         case OMPD_target_simd:
@@ -2106,6 +2110,22 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         }
         case OMPD_target_parallel: {
             result = new SgOmpTargetParallelStatement(NULL, body);
+            break;
+        }
+        case OMPD_distribute_simd: {
+            result = new SgOmpDistributeSimdStatement(NULL, body);
+            break;
+        }
+        case OMPD_distribute_parallel_for: {
+            result = new SgOmpDistributeParallelForStatement(NULL, body);
+            break;
+        }
+        case OMPD_distribute_parallel_for_simd: {
+            result = new SgOmpDistributeParallelForSimdStatement(NULL, body);
+            break;
+        }
+        case OMPD_taskloop_simd: {
+            result = new SgOmpTaskloopSimdStatement(NULL, body);
             break;
         }
         case OMPD_target_parallel_for_simd: {
@@ -2691,6 +2711,22 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         }
         case OMPD_target_parallel: {
             result = new SgOmpTargetParallelStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_distribute_simd: {
+            result = new SgOmpDistributeSimdStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_distribute_parallel_for: {
+            result = new SgOmpDistributeParallelForStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_distribute_parallel_for_simd: {
+            result = new SgOmpDistributeParallelForSimdStatement(NULL, NULL);
+            break;
+        }
+        case OMPD_taskloop_simd: {
+            result = new SgOmpTaskloopSimdStatement(NULL, NULL);
             break;
         }
         case OMPD_target_parallel_for_simd: {
@@ -3764,6 +3800,10 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_target_exit_data:
         case OMPD_target_parallel_for:
         case OMPD_target_parallel:
+        case OMPD_distribute_simd:
+        case OMPD_distribute_parallel_for:
+        case OMPD_distribute_parallel_for_simd:
+        case OMPD_taskloop_simd:
         case OMPD_target_update:
         case OMPD_requires:
         case OMPD_target_parallel_for_simd:

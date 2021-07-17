@@ -345,6 +345,10 @@ int Labeler::numberOfAssociatedLabels(SgNode* node) {
   case V_SgOmpTargetStatement:
   case V_SgOmpTargetParallelForStatement:
   case V_SgOmpTargetParallelStatement:
+  case V_SgOmpDistributeSimdStatement:
+  case V_SgOmpDistributeParallelForStatement:
+  case V_SgOmpDistributeParallelForSimdStatement:
+  case V_SgOmpTaskloopSimdStatement:
   case V_SgOmpTargetUpdateStatement:
   case V_SgOmpRequiresStatement:
   case V_SgOmpTargetParallelForSimdStatement:

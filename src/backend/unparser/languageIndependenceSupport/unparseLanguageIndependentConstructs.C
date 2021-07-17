@@ -3800,6 +3800,10 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpTargetDataStatement:
                     case V_SgOmpTargetParallelForStatement:
                     case V_SgOmpTargetParallelStatement:
+                    case V_SgOmpDistributeSimdStatement:
+                    case V_SgOmpDistributeParallelForStatement:
+                    case V_SgOmpDistributeParallelForSimdStatement:
+                    case V_SgOmpTaskloopSimdStatement:                
                     case V_SgOmpTargetUpdateStatement:
                     case V_SgOmpRequiresStatement:
                     case V_SgOmpTargetParallelForSimdStatement:
@@ -11224,6 +11228,26 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpTargetParallelStatement:
       {
         curprint(string ("target parallel "));
+        break;
+      }
+    case V_SgOmpDistributeSimdStatement:
+      {
+        curprint(string ("distribute simd "));
+        break;
+      }
+    case V_SgOmpDistributeParallelForStatement:
+      {
+        curprint(string ("distribute parallel for "));
+        break;
+      }      
+    case V_SgOmpDistributeParallelForSimdStatement:
+      {
+        curprint(string ("distribute parallel for simd "));
+        break;
+      }
+    case V_SgOmpTaskloopSimdStatement:
+      {
+        curprint(string ("taskloop simd "));
         break;
       }
     case V_SgOmpTargetUpdateStatement:
