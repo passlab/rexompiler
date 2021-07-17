@@ -9944,6 +9944,30 @@ static std::string dependModifierToString(SgOmpClause::omp_depend_modifier_enum 
   return result;
 }
 
+static std::string affinityModifierToString(SgOmpClause::omp_affinity_modifier_enum ro)
+{
+  string result;
+  switch (ro)
+  {
+    case SgOmpClause::e_omp_affinity_modifier_unspecified: 
+      {
+        result = "";
+        break;
+      }
+    case SgOmpClause::e_omp_affinity_modifier_iterator: 
+      {
+        result = "iterator";
+        break;
+      }
+    default:
+      {
+        cerr<<"Error: unhandled operator modifier"<<__func__<< "():"<< ro <<endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
+
 static std::string mapOperatorToString(SgOmpClause::omp_map_operator_enum ro)
 {
   string result;
@@ -10107,6 +10131,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
   ASSERT_not_null(c);
   bool is_map = false;
   bool is_depend= false;
+  bool is_affinity= false;
   // unparse the  clause name first
   switch (c->variantT())
   {
@@ -10255,6 +10280,56 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
           is_depend = true;
           break;
       }
+    case V_SgOmpAffinityClause:
+      {
+        curprint(string(" affinity("));
+        if(isSgOmpAffinityClause(c)->get_affinity_modifier())
+        {
+            curprint(affinityModifierToString(isSgOmpAffinityClause(c)->get_affinity_modifier()));
+            curprint(string(" ( "));
+            SgOmpAffinityClause * d_clause = isSgOmpAffinityClause (clause);
+            std::list<std::list<SgExpression*> > affinity_iterators_definition_class = d_clause -> get_iterator();
+            std::list<std::list<SgExpression*> >::iterator iter;
+            SgUnparse_Info ninfo(info);
+            for (iter = affinity_iterators_definition_class.begin(); iter != affinity_iterators_definition_class.end(); iter ++)
+            {
+              std::list<SgExpression*> affinity_iterators_definition  = (*iter);
+              std::list<SgExpression*>::iterator iter1;
+              int count = 0;
+              if(iter != affinity_iterators_definition_class.begin()) curprint(string(" , "));
+              for (iter1 = affinity_iterators_definition.begin(); iter1 != affinity_iterators_definition.end(); iter1 ++)
+              {
+                SgExpression* tmp = (*iter1);
+                if (count == 0 && tmp != NULL) {
+                  unparseExpression(tmp, ninfo); 
+                  curprint(string(" "));
+                }
+                else if (count == 1) {
+                  unparseExpression(tmp, ninfo); 
+                  curprint(string("="));
+                }
+                else if (count == 2) {
+                  unparseExpression(tmp, ninfo); 
+                  curprint(string(":"));
+                }
+                else if (count == 3) {
+                  unparseExpression(tmp, ninfo); 
+                }
+                else if (count == 4 && tmp != NULL) {
+                  curprint(string(":"));
+                  unparseExpression(tmp, ninfo); 
+                }
+                count++;
+              }
+            }
+            curprint(string(" ) "));
+            curprint(string(" : "));
+          }
+          //curprint(dependenceTypeToString(isSgOmpDependClause(c)->get_dependence_type()));
+          //curprint(string(" : "));
+          is_affinity = true;
+          break;
+      }
     case V_SgOmpLinearClause:
       {
           curprint(string(" linear("));
@@ -10297,6 +10372,13 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
    // TODO: long term, we need a dedicated array section AST node
   {
     SgOmpDependClause* m_clause = isSgOmpDependClause (clause);
+    ROSE_ASSERT (m_clause != NULL);
+    dims = m_clause->get_array_dimensions();
+  }
+  else if (is_affinity) // task depend(A[i:BS][j:BS]) , is also stored as array section.
+   // TODO: long term, we need a dedicated array section AST node
+  {
+    SgOmpAffinityClause* m_clause = isSgOmpAffinityClause (clause);
     ROSE_ASSERT (m_clause != NULL);
     dims = m_clause->get_array_dimensions();
   }
@@ -10417,6 +10499,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesComplexClause(SgOm
   ROSE_ASSERT(c!= NULL);
   bool is_map = false;
   bool is_depend= false;
+  bool is_affinity= false;
   // unparse the  clause name first
   switch (c->variantT())
   {
@@ -10455,6 +10538,13 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesComplexClause(SgOm
    // TODO: long term, we need a dedicated array section AST node
   {
     SgOmpDependClause* m_clause = isSgOmpDependClause (clause);
+    ASSERT_not_null(m_clause);
+    dims = m_clause->get_array_dimensions();
+  }
+  else if (is_affinity) // task depend(A[i:BS][j:BS]) , is also stored as array section.
+   // TODO: long term, we need a dedicated array section AST node
+  {
+    SgOmpAffinityClause* m_clause = isSgOmpAffinityClause (clause);
     ASSERT_not_null(m_clause);
     dims = m_clause->get_array_dimensions();
   }
@@ -10968,6 +11058,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpInReductionClause:
     case V_SgOmpTaskReductionClause:
     case V_SgOmpDependClause:
+    case V_SgOmpAffinityClause:
     case V_SgOmpMapClause:
     case V_SgOmpSharedClause:
     case V_SgOmpUniformClause:

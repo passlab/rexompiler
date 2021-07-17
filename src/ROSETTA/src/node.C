@@ -137,7 +137,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpTaskReductionClause, "OmpTaskReductionClause", "OmpTaskReductionClauseTag" );
      NEW_TERMINAL_MACRO (OmpAllocateClause, "OmpAllocateClause", "OmpAllocateClauseTag" );
      NEW_TERMINAL_MACRO (OmpDependClause,    "OmpDependClause", "OmpDependClauseTag" );
-
+     NEW_TERMINAL_MACRO (OmpAffinityClause,    "OmpAffinityClause", "OmpAffinityClauseTag" );
      NEW_TERMINAL_MACRO (OmpMapClause, "OmpMapClause", "OmpMapClauseTag" );
      NEW_TERMINAL_MACRO (OmpLinearClause, "OmpLinearClause", "OmpLinearClauseTag" );
      NEW_TERMINAL_MACRO (OmpUniformClause, "OmpUniformClause", "OmpUniformClauseTag" );
@@ -145,7 +145,7 @@ Grammar::setUpNodes ()
 
      NEW_NONTERMINAL_MACRO (OmpVariablesClause, OmpCopyprivateClause| OmpPrivateClause | OmpFirstprivateClause | OmpNontemporalClause | OmpInclusiveClause | OmpExclusiveClause | OmpIsDevicePtrClause | OmpUseDevicePtrClause | OmpUseDeviceAddrClause |
          OmpSharedClause |OmpCopyinClause| OmpLastprivateClause| OmpReductionClause | OmpInReductionClause | OmpTaskReductionClause | OmpMapClause | OmpAllocateClause |
-         OmpUniformClause | OmpAlignedClause | OmpLinearClause | OmpDependClause ,
+         OmpUniformClause | OmpAlignedClause | OmpLinearClause | OmpDependClause | OmpAffinityClause,
          "OmpVariablesClause", "OmpVariablesClauseTag", false);
 
      NEW_TERMINAL_MACRO (OmpScheduleClause, "OmpScheduleClause", "OmpScheduleClauseTag" );
@@ -1957,6 +1957,14 @@ Grammar::setUpNodes ()
      OmpDependClause.setDataPrototype("std::list<std::list<SgExpression*> >", "iterator", "",
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      OmpDependClause.setDataPrototype("std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >", "array_dimensions", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+                          
+     // affinity([aff-modifier :] locator-list)
+     OmpAffinityClause.setDataPrototype("SgOmpClause::omp_affinity_modifier_enum", "affinity_modifier", "=e_omp_affinity_modifier_unspecified",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpAffinityClause.setDataPrototype("std::list<std::list<SgExpression*> >", "iterator", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpAffinityClause.setDataPrototype("std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >", "array_dimensions", "",
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
      // map (inout|alloc|in|out:variable_list) , a variable could be array type with additional dimension info, such as a[0:n][0:m]

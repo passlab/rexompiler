@@ -266,6 +266,12 @@ HEADER_OMP_CLAUSE_START
             e_omp_depend_modifier_unspecified,
             e_omp_depend_modifier_iterator
         };
+        
+        enum omp_affinity_modifier_enum
+        {
+            e_omp_affinity_modifier_unspecified,
+            e_omp_affinity_modifier_iterator
+        };
 
         // Liao 1/22/2012: experimental support for OpenMP Accelerator model
         enum omp_map_operator_enum
