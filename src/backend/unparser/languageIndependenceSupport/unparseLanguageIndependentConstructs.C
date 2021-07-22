@@ -10325,8 +10325,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
             curprint(string(" ) "));
             curprint(string(" : "));
           }
-          //curprint(dependenceTypeToString(isSgOmpDependClause(c)->get_dependence_type()));
-          //curprint(string(" : "));
           is_affinity = true;
           break;
       }
@@ -10375,8 +10373,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
     ROSE_ASSERT (m_clause != NULL);
     dims = m_clause->get_array_dimensions();
   }
-  else if (is_affinity) // task depend(A[i:BS][j:BS]) , is also stored as array section.
-   // TODO: long term, we need a dedicated array section AST node
+  else if (is_affinity)
   {
     SgOmpAffinityClause* m_clause = isSgOmpAffinityClause (clause);
     ROSE_ASSERT (m_clause != NULL);
@@ -10541,8 +10538,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesComplexClause(SgOm
     ASSERT_not_null(m_clause);
     dims = m_clause->get_array_dimensions();
   }
-  else if (is_affinity) // task depend(A[i:BS][j:BS]) , is also stored as array section.
-   // TODO: long term, we need a dedicated array section AST node
+  else if (is_affinity)
   {
     SgOmpAffinityClause* m_clause = isSgOmpAffinityClause (clause);
     ASSERT_not_null(m_clause);

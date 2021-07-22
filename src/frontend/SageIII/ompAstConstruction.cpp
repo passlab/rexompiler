@@ -3500,8 +3500,6 @@ SgOmpAffinityClause* convertAffinityClause(SgStatement* clause_body, std::pair<S
         }
     }  
     SgOmpClause::omp_affinity_modifier_enum sg_modifier = toSgOmpClauseAffinityModifier(modifier);
-    //OpenMPDependClauseType type = ((OpenMPDependClause*)current_omp_clause)->getType();
-    //SgOmpClause::omp_dependence_type_enum sg_type = toSgOmpClauseDependenceType(type);
 
     std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
     if (current_expressions->size() != 0) {
@@ -3521,11 +3519,7 @@ SgOmpAffinityClause* convertAffinityClause(SgStatement* clause_body, std::pair<S
 
     setOneSourcePositionForTransformation(result);
     SgOmpClause* sg_clause = result;
-    //if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_target_update) {
-    //    ((SgOmpTargetUpdateStatement*)clause_body)->get_clauses().push_back(sg_clause);
-    //} else {
-        ((SgOmpClauseBodyStatement*)clause_body)->get_clauses().push_back(sg_clause);
-    //}
+    ((SgOmpClauseBodyStatement*)clause_body)->get_clauses().push_back(sg_clause);
     sg_clause->set_parent(clause_body);
     array_dimensions.clear();
     omp_variable_list.clear();
