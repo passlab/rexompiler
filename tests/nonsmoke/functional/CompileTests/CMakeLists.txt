@@ -56,7 +56,7 @@ else()
   endif()
 
   if(NOT "${EDG_VERSION}" EQUAL "4.3")
-    if(NOT enable-java)
+    if(enable-c OR enable-fortran)
       add_subdirectory(OpenMP_tests)
     endif()
 
