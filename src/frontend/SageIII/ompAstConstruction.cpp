@@ -1346,6 +1346,9 @@ namespace OmpSupport
           && !(decl->get_file_info()->isTransformation()))
         continue;
 
+      if (getEnclosingSourceFile(decl)!=sageFilePtr)
+        continue;
+
       convertDirective(OpenMPIR_list[OpenMPIR_index]);
       OpenMPIR_index--;
 

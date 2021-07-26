@@ -17029,7 +17029,8 @@ SgSourceFile* SageBuilder::buildSourceFile(const std::string& inputFileName,cons
      attachPreprocessingInfo (sourceFile,outputFileName);
 #else
   // DQ (1/11/2021): Call the secondaryPassOverSourceFile() instead of attachPreprocessingInfo() because we need to support the token-based unparsing.
-     file->secondaryPassOverSourceFile();
+     //file->secondaryPassOverSourceFile();
+     attachPreprocessingInfo (sourceFile);
 #endif
 
 #if 0
