@@ -904,6 +904,7 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astFileIO
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/sageInterface
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/ompparser/src
+  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/accparser/src
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/virtualCFG
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astTokenStream
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astHiddenTypeAndDeclarationLists

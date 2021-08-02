@@ -11,6 +11,7 @@
 #include <tuple>
 
 extern OpenMPDirective* parseOpenMP(const char*, void * _exprParse(const char*));
+extern OpenMPDirective* parseOpenACCtoOpenMP(std::string);
 
 //Liao, 10/27/2008: parsing OpenMP pragma here
 //Handle OpenMP pragmas. This should be called after preprocessing information is attached since macro calls may exist within pragmas, Liao, 3/31/2009
@@ -234,6 +235,20 @@ namespace OmpSupport
             OpenMPIR_list.push_back(std::make_pair(pragmaDeclaration, ompparser_OpenMPIR));
 #endif
           }
+        }
+        else if (key == "acc")
+        {
+          // store them into a buffer, reused by build_OpenMP_AST()
+          omp_pragma_list.push_back(pragmaDeclaration);
+          // Call parser
+#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
+          // Get the OpenMP IR converted from the OpenACC IR.
+          ompparser_OpenMPIR = parseOpenACCtoOpenMP(pragmaString);
+          assert(ompparser_OpenMPIR != NULL);
+          use_ompparser = checkOpenMPIR(ompparser_OpenMPIR);
+          assert(use_ompparser == true);
+          OpenMPIR_list.push_back(std::make_pair(pragmaDeclaration, ompparser_OpenMPIR));
+#endif
         }
       }// end for
     }

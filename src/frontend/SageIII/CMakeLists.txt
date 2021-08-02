@@ -7,6 +7,9 @@ add_subdirectory(sageInterface)
 add_subdirectory(virtualCFG)
 add_subdirectory(astVisualization)
 add_subdirectory(ompparser)
+set(USE_REX true)
+set(USE_OMPPARSER true)
+add_subdirectory(accparser)
 
 if(NOT enable-internalFrontendDevelopment)
   ##AS Commented out for simpler build
