@@ -311,8 +311,9 @@ bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasi
             // Make sure we have a valid reduction clause
             reduction_mod = omp_simd_get_reduction_mod(target, var);
             if (reduction_mod == 0) {
-                std::cout << "Invalid reduction. We cannot continue." << std::endl;
-                return false;
+                //std::cout << "Invalid reduction. We cannot continue." << std::endl;
+                //return false;
+                continue;
             }
             
             need_partial = true;
