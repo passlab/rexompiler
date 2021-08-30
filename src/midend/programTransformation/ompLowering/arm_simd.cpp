@@ -235,7 +235,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 SgVarRefExp *buf_ref = buildVarRefExp(name, new_block);
                 
                 // Reset the predicate
-                SgType *int64_type = buildOpaqueType("uint64_t", new_block);
+                /*SgType *int64_type = buildOpaqueType("uint64_t", new_block);
                 SgIntVal *start_val = buildIntVal(0);
                 SgCastExp *start = buildCastExp(start_val, int64_type);
                 
@@ -244,14 +244,15 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 
                 SgVarRefExp *pred_var = buildVarRefExp(pg_name, new_block);
                 SgExprStatement *pred_update = buildAssignStatement(pred_var, predicate);
-                insertStatementAfter(vd, pred_update);
+                insertStatementAfter(vd, pred_update);*/
                 
                 // Store
                 SgAddressOfOp *addr = buildAddressOfOp(buf_ref);
                 SgExprListExp *parameters = buildExprListExp(pred_ref, addr, vec);
                 
                 SgExprStatement *str = buildFunctionCallStmt("svst1", buildVoidType(), parameters, new_block);
-                insertStatementAfter(pred_update, str);
+                //insertStatementAfter(pred_update, str);
+                insertStatementAfter(vd, str);
                 
                 // Now the for-loop
                 // int __i = 0;
