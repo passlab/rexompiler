@@ -171,6 +171,35 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 init = buildAssignInitializer(ld);
             } break;
             
+            // Gather load
+            case V_SgSIMDGather: {
+                SgVarRefExp *dest = static_cast<SgVarRefExp *>(lval);
+                SgPntrArrRefExp *element = static_cast<SgPntrArrRefExp *>(rval);
+                SgPntrArrRefExp *mask_pntr = static_cast<SgPntrArrRefExp *>(element->get_rhs_operand());
+                
+                std::string vindex_name = "__vindex0";
+                SgType *mask_type = arm_get_type(mask_pntr->get_type(), new_block);
+                SgType *vector_type = arm_get_type(dest->get_type(), new_block);
+                
+                // Load the array indicies
+                SgAddressOfOp *addr = buildAddressOfOp(mask_pntr);
+                SgExprListExp *parameters = buildExprListExp(pred_ref, addr);
+                
+                SgExpression *ld = buildFunctionCallExp("svld1", mask_type, parameters, new_block);
+                SgAssignInitializer *local_init = buildAssignInitializer(ld);
+                
+                SgVariableDeclaration *mask_vd = buildVariableDeclaration(vindex_name, mask_type, local_init, new_block);
+                appendStatement(mask_vd, new_block);
+                
+                // The actual gather instruction
+                SgVarRefExp *mask_ref = buildVarRefExp(vindex_name, new_block);
+                SgVarRefExp *base_ref = static_cast<SgVarRefExp *>(element->get_lhs_operand());
+                
+                parameters = buildExprListExp(pred_ref, base_ref, mask_ref);
+                ld = buildFunctionCallExp("svld1_gather_index", vector_type, parameters, new_block);
+                init = buildAssignInitializer(ld);
+            } break;
+            
             // The regular vector store
             case V_SgSIMDStore: {
                 SgPntrArrRefExp *array = static_cast<SgPntrArrRefExp *>(lval);
@@ -245,14 +274,19 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 SgVarRefExp *pred_var = buildVarRefExp(pg_name, new_block);
                 SgExprStatement *pred_update = buildAssignStatement(pred_var, predicate);
                 insertStatementAfter(vd, pred_update);*/
+                predicate = buildFunctionCallExp("svptrue_b32", pred_type, NULL, new_block);
+                
+                SgVarRefExp *pred_var = buildVarRefExp(pg_name, new_block);
+                SgExprStatement *pred_update = buildAssignStatement(pred_var, predicate);
+                insertStatementAfter(vd, pred_update);
                 
                 // Store
                 SgAddressOfOp *addr = buildAddressOfOp(buf_ref);
                 SgExprListExp *parameters = buildExprListExp(pred_ref, addr, vec);
                 
                 SgExprStatement *str = buildFunctionCallStmt("svst1", buildVoidType(), parameters, new_block);
-                //insertStatementAfter(pred_update, str);
-                insertStatementAfter(vd, str);
+                insertStatementAfter(pred_update, str);
+                //insertStatementAfter(vd, str);
                 
                 // Now the for-loop
                 // int __i = 0;
