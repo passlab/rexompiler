@@ -313,11 +313,13 @@ bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasi
             if (reduction_mod == 0) {
                 //std::cout << "Invalid reduction. We cannot continue." << std::endl;
                 //return false;
-                continue;
-            }
+                //continue;
+                dest = var;
+            } else {
             
             need_partial = true;
             dest = var;
+            }
             
         // Otherwise, we just have a conventional store
         } else {
