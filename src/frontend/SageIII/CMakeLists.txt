@@ -81,7 +81,7 @@ install(
     sage3.h sage3basic.h rose_attributes_list.h attachPreprocessingInfo.h
     attachPreprocessingInfoTraversal.h attach_all_info.h manglingSupport.h
     C++_include_files.h fixupCopy.h general_token_defs.h rtiHelpers.h
-    ompAstConstruction.h omp.h
+    ompAstConstruction.h omp.h OmpAttribute.h
     omp_lib_kinds.h omp_lib.h rosedll.h fileoffsetbits.h rosedefs.h
     sage3basic.hhh sage_support/cmdline.h sage_support/sage_support.h
     ${CMAKE_CURRENT_BINARY_DIR}/Cxx_GrammarSerialization.h

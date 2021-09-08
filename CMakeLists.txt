@@ -1022,6 +1022,13 @@ add_subdirectory(scripts)
 # considers compilation errors.
 configure_file(cmake/CTestCustom.cmake.in ${CMAKE_BINARY_DIR}/CTestCustom.cmake @ONLY)
 
+if(enable-cuda)
+    execute_process(
+      COMMAND mkdir -p "./include-staging/cuda_HEADERS")
+    execute_process(
+      COMMAND cp ${ROSE_TOP_SRC_DIR}/config/preinclude-cuda.h ./include-staging/cuda_HEADERS)
+endif()
+
 #TODO: better support for other compilers & operating systems
 if(enable-c)
   set(C_INCLUDE_STRING "{\"${BACKEND_C_COMPILER_NAME_WITHOUT_PATH}_HEADERS\"")
