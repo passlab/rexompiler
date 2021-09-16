@@ -108,6 +108,16 @@ void omp_simd_build_ptr_assign(SgExpression *pntr_exp, SgBasicBlock *new_block, 
 }
 
 void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, std::stack<std::string> *nameStack, SgType *type) {
+    if (node->variantT() == V_SgVarRefExp) {
+        SgVarRefExp *ref = static_cast<SgVarRefExp *>(node);
+        std::string name = ref->get_symbol()->get_name().getString();
+        
+        if (name.rfind("__part", 0) == 0) {
+            nameStack->push(name);
+            return;
+        }
+    }
+
     std::string name = simdGenName();
     nameStack->push(name);
 
@@ -335,28 +345,39 @@ bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasi
             default: {}
         }
         
+        std::string partial_vec = "";
+        if (need_partial) {
+            partial_vec = simdGenName(2);
+            SgVariableDeclaration *vd = buildVariableDeclaration(partial_vec, type, NULL, new_block);
+            appendStatement(vd, new_block);
+        }
+        
         // Expand +=
         if (isSgPlusAssignOp(op)) {
+            SgVarRefExp *partial_ref = buildVarRefExp(partial_vec, new_block);
             SgExpression *expr = static_cast<SgExpression *>(op->get_rhs_operand());
-            SgAddOp *add = buildAddOp(copyExpression(op->get_lhs_operand()), expr);
+            SgAddOp *add = buildAddOp(partial_ref, expr);
             op->set_rhs_operand(add);
             
         // -=
         } else if (isSgMinusAssignOp(op)) {
+            SgVarRefExp *partial_ref = buildVarRefExp(partial_vec, new_block);
             SgExpression *expr = static_cast<SgExpression *>(op->get_rhs_operand());
-            SgSubtractOp *add = buildSubtractOp(copyExpression(op->get_lhs_operand()), expr);
+            SgSubtractOp *add = buildSubtractOp(partial_ref, expr);
             op->set_rhs_operand(add);
             
         // *=
         } else if (isSgMultAssignOp(op)) {
+            SgVarRefExp *partial_ref = buildVarRefExp(partial_vec, new_block);
             SgExpression *expr = static_cast<SgExpression *>(op->get_rhs_operand());
-            SgMultiplyOp *add = buildMultiplyOp(copyExpression(op->get_lhs_operand()), expr);
+            SgMultiplyOp *add = buildMultiplyOp(partial_ref, expr);
             op->set_rhs_operand(add);
             
         // /=
         } else if (isSgDivAssignOp(op)) {
+            SgVarRefExp *partial_ref = buildVarRefExp(partial_vec, new_block);
             SgExpression *expr = static_cast<SgExpression *>(op->get_rhs_operand());
-            SgDivideOp *add = buildDivideOp(copyExpression(op->get_lhs_operand()), expr);
+            SgDivideOp *add = buildDivideOp(partial_ref, expr);
             op->set_rhs_operand(add);
         }
         
@@ -369,23 +390,13 @@ bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasi
         // If application, build the reduction assignment
         if (need_partial) {
             std::string dest_vec = name;
-            name = simdGenName(2);
-            SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
-            appendStatement(vd, new_block);
+            name = partial_vec;
             
-            SgVarRefExp *va = buildVarRefExp(name, new_block);
+            SgVarRefExp *va = buildVarRefExp(partial_vec, new_block);
             SgVarRefExp *vec = buildVarRefExp(dest_vec, new_block);
             
-            SgBinaryOp *op = NULL;
-            switch (reduction_mod) {
-                case '+': op = buildAddOp(va, vec); break;
-                case '-': op = buildSubtractOp(va, vec); break;
-                case '*': op = buildMultiplyOp(va, vec); break;
-                default: {}
-            }
-            
-            SgExprListExp *exprList = buildExprListExp(op);
-            SgExprStatement *assign = buildAssignStatement(va, exprList);
+            SgExprListExp *exprList = buildExprListExp(vec);
+            SgExprStatement *assign = buildAssignStatement(va, vec);
             appendStatement(assign, new_block);
         }
 
@@ -496,6 +507,9 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
             SgExprListExp *expr_list = static_cast<SgExprListExp *>(rval);
             SgExpression *first = expr_list->get_expressions().front();
             if (!isSgBinaryOp(first)) {
+                //SgSIMDPartialStore *str = buildBinaryExpression<SgSIMDPartialStore>(deepCopy(lval), deepCopy(rval));
+                //ir_block->push_back(str);
+                //ir_block->push_back(deepCopy(*i));
                 continue;
             }
             
@@ -529,6 +543,8 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
             }
             
             if (math != NULL) ir_block->push_back(math);
+        } else {
+            std::cout << "??" << std::endl;
         }
     }
 }
