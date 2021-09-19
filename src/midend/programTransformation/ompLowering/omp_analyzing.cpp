@@ -468,7 +468,7 @@ int patchUpImplicitMappingVariables(SgFile *file) {
       SgNode *parent = target->get_parent();
       if (isSgBasicBlock(parent)) // skip the padding block in between.
         parent = parent->get_parent();
-      if (isSgOmpTargetStatement(parent) ||
+      if (isSgUpirTaskStatement(parent) ||
           isSgOmpTargetParallelForStatement(target)) {
         SgVariableSymbol *sym = var_ref->get_symbol();
         ROSE_ASSERT(sym != NULL);
@@ -478,7 +478,7 @@ int patchUpImplicitMappingVariables(SgFile *file) {
         if (isSgOmpTargetParallelForStatement(target)) {
           target_parent = isSgOmpTargetParallelForStatement(target);
         } else {
-          target_parent = isSgOmpTargetStatement(parent);
+          target_parent = isSgUpirTaskStatement(parent);
         }
         if (a_type != NULL) {
           std::vector<SgExpression *> dims = get_C_array_dimensions(a_type);

@@ -3796,7 +3796,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpTargetEnterDataStatement:
                     case V_SgOmpTargetExitDataStatement:
                     case V_SgOmpSimdStatement:
-                    case V_SgOmpTargetStatement:
+                    case V_SgUpirTaskStatement:
                     case V_SgOmpTargetDataStatement:
                     case V_SgOmpTargetParallelForStatement:
                     case V_SgOmpTargetParallelStatement:
@@ -11297,7 +11297,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         curprint(string ("simd "));
         break;
       }
-    case V_SgOmpTargetStatement:
+    case V_SgUpirTaskStatement:
       {
         curprint(string ("target "));
         break;
