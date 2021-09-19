@@ -548,7 +548,7 @@ namespace sg
     GEN_VISIT(SgOmpIfClause)
     GEN_VISIT(SgOmpFinalClause)
     GEN_VISIT(SgOmpPriorityClause)
-    GEN_VISIT(SgOmpNumThreadsClause)
+    GEN_VISIT(SgUpirNumUnitsField)
     GEN_VISIT(SgOmpParallelClause)
     GEN_VISIT(SgOmpSectionsClause)
     GEN_VISIT(SgOmpForClause)

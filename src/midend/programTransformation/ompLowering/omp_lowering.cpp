@@ -2428,10 +2428,10 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
     // therefore, the head will be the function call of setting up num_threads.
     SgExprStatement* set_num_threads_statement = NULL;
     SgExpression* omp_num_threads = NULL;
-    if (hasClause(target, V_SgOmpNumThreadsClause)) {
-      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgOmpNumThreadsClause);
+    if (hasClause(target, V_SgUpirNumUnitsField)) {
+      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgUpirNumUnitsField);
       ROSE_ASSERT (num_threads_clauses.size() == 1); // should only have one num_threads()
-      SgOmpNumThreadsClause * num_threads_clause = isSgOmpNumThreadsClause(num_threads_clauses[0]);
+      SgUpirNumUnitsField * num_threads_clause = isSgUpirNumUnitsField(num_threads_clauses[0]);
       ROSE_ASSERT (num_threads_clause->get_expression() != NULL);
       omp_num_threads = copyExpression(num_threads_clause->get_expression());
     }
@@ -4355,10 +4355,10 @@ void transOmpTargetLoopBlock(SgNode* node)
     SgExpression* omp_num_teams = buildIntVal(1);
 
     SgExpression* omp_num_threads = NULL;
-    if (hasClause(target, V_SgOmpNumThreadsClause)) {
-      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgOmpNumThreadsClause);
+    if (hasClause(target, V_SgUpirNumUnitsField)) {
+      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgUpirNumUnitsField);
       ROSE_ASSERT (num_threads_clauses.size() == 1); // should only have one num_threads()
-      SgOmpNumThreadsClause * num_threads_clause = isSgOmpNumThreadsClause(num_threads_clauses[0]);
+      SgUpirNumUnitsField * num_threads_clause = isSgUpirNumUnitsField(num_threads_clauses[0]);
       ROSE_ASSERT (num_threads_clause->get_expression() != NULL);
       omp_num_threads = copyExpression(num_threads_clause->get_expression());
     }
@@ -4390,10 +4390,10 @@ void transOmpTargetLoopBlock(SgNode* node)
     }
 
     SgExpression* omp_num_threads = NULL;
-    if (hasClause(target, V_SgOmpNumThreadsClause)) {
-      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgOmpNumThreadsClause);
+    if (hasClause(target, V_SgUpirNumUnitsField)) {
+      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgUpirNumUnitsField);
       ROSE_ASSERT (num_threads_clauses.size() == 1); // should only have one num_threads()
-      SgOmpNumThreadsClause * num_threads_clause = isSgOmpNumThreadsClause(num_threads_clauses[0]);
+      SgUpirNumUnitsField * num_threads_clause = isSgUpirNumUnitsField(num_threads_clauses[0]);
       ROSE_ASSERT (num_threads_clause->get_expression() != NULL);
       omp_num_threads = copyExpression(num_threads_clause->get_expression());
     }

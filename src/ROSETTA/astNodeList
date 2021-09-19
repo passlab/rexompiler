@@ -390,7 +390,7 @@ SgOmpParallelClause
 SgOmpSectionsClause
 SgOmpForClause
 SgOmpTaskgroupClause
-SgOmpNumThreadsClause
+SgUpirNumUnitsField
 SgOmpNumTeamsClause
 SgOmpGrainsizeClause
 SgOmpDetachClause

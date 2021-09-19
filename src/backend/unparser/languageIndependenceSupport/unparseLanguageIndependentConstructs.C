@@ -10721,7 +10721,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     curprint(string(" final("));
   else if (isSgOmpPriorityClause(c))
     curprint(string(" priority("));
-  else if (isSgOmpNumThreadsClause(c))
+  else if (isSgUpirNumUnitsField(c))
     curprint(string(" num_threads("));
   else if (isSgOmpNumTeamsClause(c))
     curprint(string(" num_teams("));
@@ -11020,7 +11020,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpIfClause:  
     case V_SgOmpFinalClause:  
     case V_SgOmpPriorityClause:  
-    case V_SgOmpNumThreadsClause:
+    case V_SgUpirNumUnitsField:
     case V_SgOmpGrainsizeClause:
     case V_SgOmpDetachClause:
     case V_SgOmpNumTasksClause:
