@@ -2116,7 +2116,7 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             break;
         }
         case OMPD_for: {
-            result = new SgOmpForStatement(NULL, body);
+            result = new SgUpirLoopParallelStatement(NULL, body);
             break;
         }
         case OMPD_for_simd: {
@@ -2733,7 +2733,7 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
             break;
         }
         case OMPD_for: {
-            result = new SgOmpForStatement(NULL, NULL);
+            result = new SgUpirLoopParallelStatement(NULL, NULL);
             break;
         }
         case OMPD_target: {
@@ -3765,7 +3765,7 @@ SgUpirSpmdStatement* convertUpirSpmdStatementFromCombinedDirectives(std::pair<Sg
         }
       case OMPD_parallel_for:
         {
-          second_stmt = new SgOmpForStatement(NULL, body);
+          second_stmt = new SgUpirLoopParallelStatement(NULL, body);
           break;
         }
       case OMPD_parallel_for_simd:

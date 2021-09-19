@@ -508,7 +508,7 @@ class Unparse_ExprStmt : public UnparseLanguageIndependentConstructs
 //       virtual void unparseOmpBarrierStatement(SgOmpBarrierStatement* stmt, SgUnparse_Info& info);
 //       virtual void unparseOmpTaskwaitStatement(SgOmpTaskwaitStatement* stmt, SgUnparse_Info& info);
 
-         virtual void unparseOmpForStatement          (SgStatement* stmt, SgUnparse_Info& info);
+         virtual void unparseUpirLoopParallelStatement          (SgStatement* stmt, SgUnparse_Info& info);
          virtual void unparseOmpForSimdStatement      (SgStatement* stmt, SgUnparse_Info& info);
          virtual void unparseOmpBeginDirectiveClauses (SgStatement* stmt, SgUnparse_Info& info);
        // DQ (8/13/2007): This should go into the Unparser class

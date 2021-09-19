@@ -380,7 +380,7 @@ namespace sg
     GEN_VISIT(SgOmpSingleStatement)
     GEN_VISIT(SgOmpSimdStatement)
     GEN_VISIT(SgOmpTaskStatement)
-    GEN_VISIT(SgOmpForStatement)
+    GEN_VISIT(SgUpirLoopParallelStatement)
     GEN_VISIT(SgOmpForSimdStatement)
     GEN_VISIT(SgOmpDoStatement)
     GEN_VISIT(SgOmpSectionsStatement)

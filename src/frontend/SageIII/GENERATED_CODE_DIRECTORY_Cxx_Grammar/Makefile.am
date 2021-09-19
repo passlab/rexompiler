@@ -70,7 +70,7 @@ SgAndAssignOp.C                        SgClassSymbol.C                       SgG
 SgAndOp.C                              SgClassType.C                         SgGotoStatement.C                       SgOmpFirstprivateClause.C              SgOmpNontemporalClause.C       SgTryStmt.C \
 SgOmpInclusiveClause.C               SgOmpExclusiveClause.C                  SgOmpIsDevicePtrClause.C        SgOmpUseDevicePtrClause.C     SgOmpUseDevicePtrClause.C \
 SgArithmeticIfStatement.C              SgClinkageDeclarationStatement.C      SgGraph.C                               SgOmpFlushStatement.C                        SgTypeBool.C \
-SgArrayType.C                          SgClinkageEndStatement.C              SgGraphEdge.C                           SgOmpForStatement.C                          SgType.C \
+SgArrayType.C                          SgClinkageEndStatement.C              SgGraphEdge.C                           SgUpirLoopParallelStatement.C                          SgType.C \
 SgArrowExp.C                           SgClinkageStartStatement.C            SgGraphEdgeList.C                       SgOmpIfClause.C                              SgTypeChar.C \
 SgArrowStarOp.C                        SgCloseStatement.C                    SgGraphNode.C                           SgOmpLastprivateClause.C                     SgTypeComplex.C                  SgOmpMasterStatement.C\
 SgColonShapeExp.C                     SgGraphNodeList.C                       SgOmpTaskyieldStatement.C                       SgTypeDefault.C \

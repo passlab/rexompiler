@@ -314,7 +314,7 @@ int Labeler::numberOfAssociatedLabels(SgNode* node) {
   // for and sections (and currently also SIMD) results in workshare/barrier nodes
   case V_SgOmpForSimdStatement:
   case V_SgOmpSimdStatement:
-  case V_SgOmpForStatement:
+  case V_SgUpirLoopParallelStatement:
   case V_SgOmpSectionsStatement:
   case V_SgUpirSpmdStatement:
     return 2;
@@ -426,7 +426,7 @@ void Labeler::createLabels(SgNode* root) {
         assert(num == 2);
         registerLabel(LabelProperty(*i, LabelProperty::LABEL_FORK));
         registerLabel(LabelProperty(*i, LabelProperty::LABEL_JOIN));
-      } else if(isSgOmpForStatement(*i) || isSgOmpSectionsStatement(*i)
+      } else if(isSgUpirLoopParallelStatement(*i) || isSgOmpSectionsStatement(*i)
                 || isSgOmpSimdStatement(*i) || isSgOmpForSimdStatement(*i)) {
         assert(num == 2);
         registerLabel(LabelProperty(*i, LabelProperty::LABEL_WORKSHARE));
@@ -619,7 +619,7 @@ Label Labeler::joinLabel(SgNode *node) {
 }
 
 Label Labeler::workshareLabel(SgNode *node) {
-  ROSE_ASSERT(isSgOmpForStatement(node) || isSgOmpSectionsStatement(node)
+  ROSE_ASSERT(isSgUpirLoopParallelStatement(node) || isSgOmpSectionsStatement(node)
                 || isSgOmpSimdStatement(node) || isSgOmpForSimdStatement(node));
   Label lab = getLabel(node);
   return lab;
@@ -630,7 +630,7 @@ Label Labeler::barrierLabel(SgNode *node) {
     Label lab = getLabel(node);
     return lab;
   }
-  ROSE_ASSERT(isSgOmpForStatement(node) || isSgOmpSectionsStatement(node)
+  ROSE_ASSERT(isSgUpirLoopParallelStatement(node) || isSgOmpSectionsStatement(node)
                 || isSgOmpSimdStatement(node) || isSgOmpForSimdStatement(node));
   Label lab = getLabel(node);
   return lab+1;

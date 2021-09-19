@@ -328,7 +328,7 @@ namespace OmpSupport
     SgInitializedName* iname = isSgInitializedName( var_sym->get_declaration() );
     //TODO: what to do with SgOmpWorkshareStatement ?  it is a region/SgOmpBodyStatement, but it does not belong to OmpClauseBodyStatement
 
-    // obtain the enclosing OpenMP clause body statement: SgOmpForStatement, parallel, sections, single, target, target data, task, etc.
+    // obtain the enclosing OpenMP clause body statement: SgUpirLoopParallelStatement, parallel, sections, single, target, target data, task, etc.
     // TODO: this may not be reliable:  region {stmtlist ;  loop; stmtlist; }
     SgOmpClauseBodyStatement* omp_clause_body_stmt = findEnclosingOmpClauseBodyStatement (anchor_stmt);
 
@@ -388,7 +388,7 @@ namespace OmpSupport
             lastprivate: The loop iteration variables in the associated for-loops of a simd construct with multiple
             associated for-loops are lastprivate.
           */
-          if (isSgOmpForStatement(omp_clause_body_stmt))
+          if (isSgUpirLoopParallelStatement(omp_clause_body_stmt))
           // TODO: check other types of constructs here: taskloop, distribute construct
           {
             rt_val = e_private;
@@ -431,10 +431,10 @@ namespace OmpSupport
         // If implicit rules do not apply at this level (worksharing regions like single), Go to find higher level: most omp parallel
         if  (SgOmpClauseBodyStatement * parent_clause_body_stmt = findEnclosingOmpClauseBodyStatement (getEnclosingStatement(omp_clause_body_stmt->get_parent())))
         {
-          //if (isSgUpirSpmdStatement (parent_clause_body_stmt) && ( isSgOmpForStatement(omp_clause_body_stmt)|| isSgOmpSingleStatement(omp_clause_body_stmt)  ) )
+          //if (isSgUpirSpmdStatement (parent_clause_body_stmt) && ( isSgUpirLoopParallelStatement(omp_clause_body_stmt)|| isSgOmpSingleStatement(omp_clause_body_stmt)  ) )
           //if (isSgUpirSpmdStatement (parent_clause_body_stmt) &&  isSgOmpSingleStatement(omp_clause_body_stmt))
           // TODO: add other directives which may be nested within others
-          if (isSgOmpForStatement (omp_clause_body_stmt) ||
+          if (isSgUpirLoopParallelStatement (omp_clause_body_stmt) ||
               isSgOmpSimdStatement (omp_clause_body_stmt) ||
               isSgOmpSingleStatement(omp_clause_body_stmt))
           {
@@ -1370,7 +1370,7 @@ namespace OmpSupport
   }
 
   // Expected AST
-  // * SgOmpForStatement
+  // * SgUpirLoopParallelStatement
   // ** SgForStatement
   // Algorithm:
   // Loop normalization first  for stop condition expressions
@@ -1423,7 +1423,7 @@ namespace OmpSupport
     //void transOmpFor(SgNode* node)
   {
     ROSE_ASSERT(node != NULL);
-    SgOmpForStatement* target1 = isSgOmpForStatement(node);
+    SgUpirLoopParallelStatement* target1 = isSgUpirLoopParallelStatement(node);
     SgOmpDoStatement* target2 = isSgOmpDoStatement(node);
 
     SgOmpClauseBodyStatement* target = (target1!=NULL?(SgOmpClauseBodyStatement*)target1:(SgOmpClauseBodyStatement*)target2);
@@ -1470,7 +1470,7 @@ namespace OmpSupport
       is_canonical = isCanonicalDoLoop (do_loop, &orig_index, & orig_lower, &orig_upper, &orig_stride, NULL, &isIncremental, NULL);
     ROSE_ASSERT(is_canonical == true);
 
-    // step 2. Insert a basic block to replace SgOmpForStatement
+    // step 2. Insert a basic block to replace SgUpirLoopParallelStatement
     // This newly introduced scope is used to hold loop variables, private variables ,etc
     SgBasicBlock * bb1 = SageBuilder::buildBasicBlock();
 
@@ -1639,7 +1639,7 @@ Example:
 Algorithm:
    * check if it is a OmpTargetLoop
    * loop normalization
-   * replace OmpForStatement with a block: bb1
+   * replace UpirLoopParallelStatement with a block: bb1
    * declare int _dev_i within bb1;  replace for loop body’s loop index with _dev_i;
    * build if stmt with correct condition
    * move loop body to if-stmt’s true body
@@ -1649,7 +1649,7 @@ Algorithm:
   {
     //step 0: Sanity check
     ROSE_ASSERT(node != NULL);
-    SgOmpForStatement* target1 = isSgOmpForStatement(node);
+    SgUpirLoopParallelStatement* target1 = isSgUpirLoopParallelStatement(node);
     SgOmpDoStatement* target2 = isSgOmpDoStatement(node);
 
     SgOmpClauseBodyStatement* target = (target1!=NULL?(SgOmpClauseBodyStatement*)target1:(SgOmpClauseBodyStatement*)target2);
@@ -1719,7 +1719,7 @@ Algorithm:
     SgBasicBlock* loop_body = ensureBasicBlockAsBodyOfFor (for_loop);
 
 
-    //Step 2. Insert a basic block to replace SgOmpForStatement
+    //Step 2. Insert a basic block to replace SgUpirLoopParallelStatement
     // This newly introduced scope is used to hold loop variables ,etc
     SgBasicBlock * bb1 = SageBuilder::buildBasicBlock();
     replaceStatement(target, bb1, true);
@@ -1823,10 +1823,10 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
 {
   //step 0: Sanity check
   ROSE_ASSERT(node != NULL);
-  SgOmpForStatement* target1 = isSgOmpForStatement(node);
+  SgUpirLoopParallelStatement* target1 = isSgUpirLoopParallelStatement(node);
   SgOmpDoStatement* target2 = isSgOmpDoStatement(node);
 
-  // the target of the translation is a SgOmpForStatement
+  // the target of the translation is a SgUpirLoopParallelStatement
   SgOmpClauseBodyStatement* target = (target1!=NULL?(SgOmpClauseBodyStatement*)target1:(SgOmpClauseBodyStatement*)target2);
   ROSE_ASSERT (target != NULL);
 
@@ -1891,7 +1891,7 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
   ROSE_ASSERT (for_loop != NULL);
   //SgBasicBlock* loop_body = ensureBasicBlockAsBodyOfFor (for_loop);
 
-  //Step 2. Insert a basic block to replace SgOmpForStatement
+  //Step 2. Insert a basic block to replace SgUpirLoopParallelStatement
   // This newly introduced scope is used to hold loop variables ,etc
   SgBasicBlock * bb1 = SageBuilder::buildBasicBlock();
   replaceStatement(target, bb1, true);
@@ -3996,7 +3996,7 @@ void transOmpTargetLoopBlock(SgNode* node)
   ROSE_ASSERT (for_loop != NULL);
   //SgBasicBlock* loop_body = ensureBasicBlockAsBodyOfFor (for_loop);
 
-  //Step 2. Insert a basic block to replace SgOmpForStatement
+  //Step 2. Insert a basic block to replace SgUpirLoopParallelStatement
   // This newly introduced scope is used to hold loop variables ,etc
   SgBasicBlock * bb1 = SageBuilder::buildBasicBlock();
   SgStatement* new_loop = deepCopy (for_loop);
@@ -5214,7 +5214,7 @@ void transOmpTargetLoopBlock(SgNode* node)
    * Decremental loops
    *      > upper:   last iteration ==> i <= upper
    *      >=     :                      i < upper
-   * AST: Orphaned worksharing OmpStatement is SgOmpForStatement->get_body() is SgForStatement
+   * AST: Orphaned worksharing OmpStatement is SgUpirLoopParallelStatement->get_body() is SgForStatement
    *
    *  We use bottom up traversal, the inner omp for loop has already been translated, so we have to get the original upper bound via parameter
    *
@@ -5239,11 +5239,11 @@ static void insertOmpLastprivateCopyBackStmts(SgStatement* ompStmt, vector <SgSt
                               SgInitializedName* orig_var, SgVariableDeclaration* local_decl, SgExpression* orig_loop_upper)
 {
   SgStatement* save_stmt = NULL;
-  if (isSgOmpForStatement(ompStmt))
+  if (isSgUpirLoopParallelStatement(ompStmt))
   {
     ROSE_ASSERT (orig_loop_upper != NULL);
     Rose_STL_Container <SgNode*> loops = NodeQuery::querySubTree (bb1, V_SgForStatement);
-    ROSE_ASSERT (loops.size() != 0); // there must be 1 for loop under SgOmpForStatement
+    ROSE_ASSERT (loops.size() != 0); // there must be 1 for loop under SgUpirLoopParallelStatement
     SgForStatement* top_loop = isSgForStatement(loops[0]);
     ROSE_ASSERT (top_loop != NULL);
     //Get essential loop information
@@ -6025,7 +6025,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
           transOmpParallel(node);
           break;
         }
-      case V_SgOmpForStatement:
+      case V_SgUpirLoopParallelStatement:
         {
           transOmpFor(node);
           break;
@@ -6152,7 +6152,7 @@ int patchUpPrivateVariables(SgStatement* omp_loop)
 {
   int result = 0;
   ROSE_ASSERT ( omp_loop != NULL);
-  SgOmpForStatement* for_node = isSgOmpForStatement(omp_loop);
+  SgUpirLoopParallelStatement* for_node = isSgUpirLoopParallelStatement(omp_loop);
   SgOmpDoStatement* do_node = isSgOmpDoStatement(omp_loop);
   SgOmpTargetParallelForStatement *target_parallel_for_node = isSgOmpTargetParallelForStatement(omp_loop);
   if (for_node)
@@ -6395,7 +6395,7 @@ void lower_omp(SgSourceFile* file)
           transOmpTask(node);
           break;
         }
-      case V_SgOmpForStatement:
+      case V_SgUpirLoopParallelStatement:
       case V_SgOmpDoStatement:
         {
           // check if the loop is part of the combined "omp parallel for" under the "omp target" directive
