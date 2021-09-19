@@ -479,7 +479,7 @@ if(enable-smaller-generated-files)
     SgOmpNumThreadsClause.C
     SgOmpOrderedClause.C
     SgOmpOrderedStatement.C
-    SgOmpParallelStatement.C
+    SgUpirSpmdStatement.C
     SgOmpPrivateClause.C
     SgOmpReductionClause.C
     SgOmpScheduleClause.C

@@ -501,7 +501,7 @@ class Unparse_ExprStmt : public UnparseLanguageIndependentConstructs
 //       virtual void unparseOmpVariablesClause(SgOmpVariablesClause* clause, SgUnparse_Info& info);
 //       virtual void unparseOmpExpressionClause(SgOmpExpressionClause* clause, SgUnparse_Info& info);
 //       virtual void unparseOmpClause(SgOmpClause* clause, SgUnparse_Info& info);
-//       virtual void unparseOmpParallelStatement (SgStatement* stmt, SgUnparse_Info& info);
+//       virtual void unparseUpirSpmdStatement (SgStatement* stmt, SgUnparse_Info& info);
 //       virtual void unparseOmpBodyStatement(SgOmpBodyStatement* stmt, SgUnparse_Info& info);
 //       virtual void unparseOmpThreadprivateStatement(SgOmpThreadprivateStatement* stmt, SgUnparse_Info& info);
 //       virtual void unparseOmpFlushStatement(SgOmpFlushStatement* stmt, SgUnparse_Info& info);

@@ -166,8 +166,8 @@ static bool isSharedInEnclosingConstructs(SgInitializedName *init_var,
 
   //   cout<<"Debug omp_lowering.cpp isSharedInEnclosingConstructs()
   //   SgInitializedName name = "<<init_var->get_name().getString()<<endl;
-  SgOmpParallelStatement *enclosing_par_stmt =
-      getEnclosingNode<SgOmpParallelStatement>(start_stmt, false);
+  SgUpirSpmdStatement *enclosing_par_stmt =
+      getEnclosingNode<SgUpirSpmdStatement>(start_stmt, false);
   // Lexically nested within a parallel region
   if (enclosing_par_stmt) {
     // locally declared variables are private to enclosing_par_stmt
@@ -408,7 +408,7 @@ int patchUpImplicitMappingVariables(SgFile *file) {
   int result = 0;
   ROSE_ASSERT(file != NULL);
   Rose_STL_Container<SgNode *> node_list1 =
-      NodeQuery::querySubTree(file, V_SgOmpParallelStatement);
+      NodeQuery::querySubTree(file, V_SgUpirSpmdStatement);
 
   // TODO: implement a helper function to collect all the nodes into one list
   Rose_STL_Container<SgNode *> node_list2 =
