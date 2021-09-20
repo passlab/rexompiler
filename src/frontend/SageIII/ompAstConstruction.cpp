@@ -63,6 +63,7 @@ static SgOmpMapClause* convertMapClause(SgOmpClauseBodyStatement*, std::pair<SgP
 static SgOmpDependClause* convertDependClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpAffinityClause* convertAffinityClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgStatement* convertOmpRequiresDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII);
+static SgStatement* convertOmpTaskwaitDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII);
 static SgOmpAtomicDefaultMemOrderClause* convertAtomicDefaultMemOrderClause(SgStatement* directive, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause);
 static SgOmpExtImplementationDefinedRequirementClause* convertExtImplementationDefinedRequirementClause(SgStatement* directive, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause);
 
@@ -1726,7 +1727,6 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_master_taskloop:
         case OMPD_parallel_loop:
         case OMPD_task:
-        case OMPD_taskwait:
         case OMPD_target_data:
         case OMPD_single:
         case OMPD_for:
@@ -1760,6 +1760,10 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         }
         case OMPD_requires: {
             result = convertOmpRequiresDirective(current_OpenMPIR_to_SageIII);
+            break;
+        }
+        case OMPD_taskwait: {
+            result = convertOmpTaskwaitDirective(current_OpenMPIR_to_SageIII);
             break;
         }
         case OMPD_barrier: {
@@ -2037,10 +2041,6 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         }
         case OMPD_parallel: {
             result = new SgOmpParallelStatement(NULL, body);
-            break;
-        }
-        case OMPD_taskwait: {
-            result = new SgOmpTaskwaitStatement(NULL, body);
             break;
         }
         case OMPD_teams: {
@@ -2418,6 +2418,27 @@ SgStatement* convertOmpRequiresDirective(std::pair<SgPragmaDeclaration*, OpenMPD
     return result;
 }
 
+SgStatement* convertOmpTaskwaitDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
+    SgOmpTaskwaitStatement *result = new SgOmpTaskwaitStatement();
+    result->set_firstNondefiningDeclaration(result);
+    std::vector<OpenMPClause*>* all_clauses = current_OpenMPIR_to_SageIII.second->getClausesInOriginalOrder();
+    OpenMPClauseKind clause_kind;
+    std::vector<OpenMPClause*>::iterator clause_iter;
+    for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end(); clause_iter++) {
+        clause_kind = (*clause_iter)->getKind();
+        switch (clause_kind) {
+            case OMPC_depend:
+            {
+                convertDependClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            default: {
+            }
+        };
+    };
+    return result;
+}
+
 // Convert an OpenMPIR Flush Directive to a ROSE node
 SgStatement* convertOmpFlushDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
     SgOmpFlushStatement *statement = new SgOmpFlushStatement();
@@ -2690,10 +2711,6 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
         }
         case OMPD_taskloop: {
             result = new SgOmpTaskloopStatement(NULL, NULL);
-            break;
-        }
-        case OMPD_taskwait: {
-            result = new SgOmpTaskwaitStatement(NULL, NULL);
             break;
         }
         case OMPD_target_enter_data: {
@@ -3450,6 +3467,8 @@ SgOmpDependClause* convertDependClause(SgStatement* clause_body, std::pair<SgPra
     SgOmpClause* sg_clause = result;
     if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_target_update) {
         ((SgOmpTargetUpdateStatement*)clause_body)->get_clauses().push_back(sg_clause);
+    } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_taskwait) {
+        ((SgOmpTaskwaitStatement*)clause_body)->get_clauses().push_back(sg_clause);
     } else {
         ((SgOmpClauseBodyStatement*)clause_body)->get_clauses().push_back(sg_clause);
     }
