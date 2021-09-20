@@ -119,6 +119,9 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
     }
 
     std::string name = simdGenName();
+    std::cout << "GEN_NAME: " << name << std::endl;
+    std::cout << "NODE: " << node->class_name() << std::endl;
+    std::cout << node->variantT() << std::endl;
     nameStack->push(name);
 
     // Build the assignment
@@ -126,6 +129,7 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
     
     switch (node->variantT()) {
         case V_SgIntVal: {
+         std::cout << "IN1" << std::endl;
             SgIntVal *val = static_cast<SgIntVal *>(node);
             
             if (type->variantT() == V_SgTypeInt) expr = buildIntVal(val->get_value());
@@ -134,6 +138,7 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
         } break;
         
         case V_SgFloatVal: {
+         std::cout << "IN2" << std::endl;
             SgFloatVal *val = static_cast<SgFloatVal *>(node);
             
             if (type->variantT() == V_SgTypeInt) expr = buildIntVal(val->get_value());
@@ -142,6 +147,7 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
         } break;
         
         case V_SgDoubleVal: {
+         std::cout << "IN3" << std::endl;
             SgDoubleVal *val = static_cast<SgDoubleVal *>(node);
             
             if (type->variantT() == V_SgTypeInt) expr = buildIntVal(val->get_value());
@@ -150,11 +156,16 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
         } break;
         
         case V_SgVarRefExp: {
+        std::cout << "IN4" << std::endl;
             expr = copyExpression(node);
         } break;
         
-        default: expr = copyExpression(node);
+        default: {//expr = copyExpression(node);
+         std::cout << "IN5" << std::endl;
+            expr = buildIntVal(0);}
     }
+    
+    std::cout << std::endl;
     
     // Build the variable declaration
     SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
@@ -322,9 +333,9 @@ bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasi
             reduction_mod = omp_simd_get_reduction_mod(target, var);
             if (reduction_mod == 0) {
                 //std::cout << "Invalid reduction. We cannot continue." << std::endl;
-                //return false;
+                return false;
                 //continue;
-                dest = var;
+                //dest = var;
             } else {
             
             need_partial = true;
@@ -352,32 +363,31 @@ bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasi
             appendStatement(vd, new_block);
         }
         
+        SgExpression *lhs = copyExpression(op->get_lhs_operand());
+        if (partial_vec != "") lhs = buildVarRefExp(partial_vec, new_block);
+        
         // Expand +=
         if (isSgPlusAssignOp(op)) {
-            SgVarRefExp *partial_ref = buildVarRefExp(partial_vec, new_block);
             SgExpression *expr = static_cast<SgExpression *>(op->get_rhs_operand());
-            SgAddOp *add = buildAddOp(partial_ref, expr);
+            SgAddOp *add = buildAddOp(lhs, expr);
             op->set_rhs_operand(add);
             
         // -=
         } else if (isSgMinusAssignOp(op)) {
-            SgVarRefExp *partial_ref = buildVarRefExp(partial_vec, new_block);
             SgExpression *expr = static_cast<SgExpression *>(op->get_rhs_operand());
-            SgSubtractOp *add = buildSubtractOp(partial_ref, expr);
+            SgSubtractOp *add = buildSubtractOp(lhs, expr);
             op->set_rhs_operand(add);
             
         // *=
         } else if (isSgMultAssignOp(op)) {
-            SgVarRefExp *partial_ref = buildVarRefExp(partial_vec, new_block);
             SgExpression *expr = static_cast<SgExpression *>(op->get_rhs_operand());
-            SgMultiplyOp *add = buildMultiplyOp(partial_ref, expr);
+            SgMultiplyOp *add = buildMultiplyOp(lhs, expr);
             op->set_rhs_operand(add);
             
         // /=
         } else if (isSgDivAssignOp(op)) {
-            SgVarRefExp *partial_ref = buildVarRefExp(partial_vec, new_block);
             SgExpression *expr = static_cast<SgExpression *>(op->get_rhs_operand());
-            SgDivideOp *add = buildDivideOp(partial_ref, expr);
+            SgDivideOp *add = buildDivideOp(lhs, expr);
             op->set_rhs_operand(add);
         }
         
