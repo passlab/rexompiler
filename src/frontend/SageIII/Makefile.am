@@ -79,7 +79,7 @@ CXX_TEMPLATE_REPOSITORY_PATH = .
 EXTRA_DIST = CMakeLists.txt preproc-c.ll docs rtiHelpers.h attributeListMap.h \
              advanced_preprocessing_hooks.h rose_attributes_list.h \
              sage3basic.hhh fileoffsetbits.h rosedll.h PolicyControl.txt Utf8.h  \
-             ompAstConstruction.h \
+             ompAstConstruction.h accAstConstruction.h \
              omp_exprparser_lexer.cc omp_exprparser_parser.cc omp_exprparser_parser.hh
 CLEANFILES = haveRosettaGeneratedSource
 
@@ -182,7 +182,8 @@ libsage3Sources = \
    $(fSageSupport_la_sources) \
    OmpAttribute.C \
    ompFortranParser.C \
-   ompAstConstruction.cpp
+   ompAstConstruction.cpp \
+   accAstConstruction.cpp
 endif
 
 # DQ (2/15/2010): This fails in Hudson tests of ROSE compiling ROSE for code generation, but I can't 

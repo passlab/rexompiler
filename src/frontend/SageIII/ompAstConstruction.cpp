@@ -14,6 +14,13 @@
 extern OpenMPDirective* parseOpenMP(const char*, void * _exprParse(const char*));
 extern OpenACCDirective* parseOpenACC(std::string);
 
+// the vector of pairs of OpenACC pragma and accparser IR.
+static std::vector<std::pair<SgPragmaDeclaration*, OpenACCDirective*> > OpenACCIR_list;
+OpenACCDirective* accparser_OpenACCIR;
+static bool use_accparser = false;
+extern bool checkOpenACCIR(OpenACCDirective*);
+extern SgStatement* convertOpenACCDirective(std::pair<SgPragmaDeclaration*, OpenACCDirective*>);
+
 //Liao, 10/27/2008: parsing OpenMP pragma here
 //Handle OpenMP pragmas. This should be called after preprocessing information is attached since macro calls may exist within pragmas, Liao, 3/31/2009
 extern int omp_exprparser_parse();
@@ -74,7 +81,7 @@ using namespace SageBuilder;
 using namespace OmpSupport;
 
 // Liao 4/23/2011, special function to copy file info of the original SgPragma or Fortran comments
-static bool copyStartFileInfo (SgNode* src, SgNode* dest)
+bool copyStartFileInfo (SgNode* src, SgNode* dest)
 {
   bool result = false;
   ROSE_ASSERT (src && dest);
@@ -123,7 +130,7 @@ static bool copyStartFileInfo (SgNode* src, SgNode* dest)
 }
 // Liao 3/11/2013, special function to copy end file info of the original SgPragma or Fortran comments (src) to OpenMP node (dest)
 // If the OpenMP node is a body statement, we have to use the body's end file info as the node's end file info.
-static bool copyEndFileInfo (SgNode* src, SgNode* dest)
+bool copyEndFileInfo (SgNode* src, SgNode* dest)
 {
   bool result = false;
   ROSE_ASSERT (src && dest);
@@ -244,11 +251,12 @@ namespace OmpSupport
           // Call parser
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
           // Get the OpenMP IR converted from the OpenACC IR.
-          ompparser_OpenMPIR = (OpenMPDirective*)parseOpenACC(pragmaString);
-          assert(ompparser_OpenMPIR != NULL);
-          use_ompparser = checkOpenMPIR(ompparser_OpenMPIR);
-          assert(use_ompparser == true);
-          OpenMPIR_list.push_back(std::make_pair(pragmaDeclaration, ompparser_OpenMPIR));
+          pragmaString = "#pragma " + pragmaString;
+          accparser_OpenACCIR = parseOpenACC(pragmaString);
+          assert(accparser_OpenACCIR != NULL);
+          use_accparser = checkOpenACCIR(accparser_OpenACCIR);
+          assert(use_accparser == true);
+          OpenACCIR_list.push_back(std::make_pair(pragmaDeclaration, accparser_OpenACCIR));
 #endif
         }
       }// end for
@@ -1339,6 +1347,7 @@ namespace OmpSupport
     list<SgPragmaDeclaration* >::reverse_iterator iter; // bottom up handling for nested cases
     ROSE_ASSERT (sageFilePtr != NULL);
     int OpenMPIR_index = OpenMPIR_list.size()-1;
+    int OpenACCIR_index = OpenACCIR_list.size()-1;
     for (iter = omp_pragma_list.rbegin(); iter != omp_pragma_list.rend(); iter ++)
     {
       // Liao, 11/18/2009
@@ -1365,8 +1374,13 @@ namespace OmpSupport
       if (getEnclosingSourceFile(decl)!=sageFilePtr)
         continue;
 
-      convertDirective(OpenMPIR_list[OpenMPIR_index]);
-      OpenMPIR_index--;
+      if (OpenMPIR_list.size() != 0) {
+        convertDirective(OpenMPIR_list[OpenMPIR_index]);
+        OpenMPIR_index--;
+      } else {
+        convertOpenACCDirective(OpenACCIR_list[OpenACCIR_index]);
+        OpenACCIR_index--;
+      };
 
     }// end for (omp_pragma_list)
   }
