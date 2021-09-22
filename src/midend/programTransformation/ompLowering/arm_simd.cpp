@@ -216,6 +216,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
             // Basically, all we do is create a zero'ed register outside the for-loop
             case V_SgSIMDPartialStore: {
                 SgVarRefExp *dest = static_cast<SgVarRefExp *>(lval);
+                SgVarRefExp *srcVar = static_cast<SgVarRefExp *>(rval);
                 
                 SgType *vector_type = arm_get_type(dest->get_type(), new_block);
                 SgName dest_name = dest->get_symbol()->get_name();
@@ -235,87 +236,45 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 
                 SgVariableDeclaration *vd = buildVariableDeclaration(dest_name, vector_type, local_init, new_block);
                 insertStatementBefore(target, vd);
+                
+                init = buildAssignInitializer(srcVar);
             } break;
             
             // Scalar store:
             //
-            // float __buf0[svcntw()];
-            // __pg0 = svwhilelt_b32((uint64_t)0,svcntw());
-            // svst1(__pg0, &__buf0, __vec6);
-            // for (int __i = 0; __i < svcntw(); __i++) {
-            //     Y[i] += __buf0[__i];
-            // }
+            // __pg0 = svptrue_b64();
+            // result = svaddv_f64(__pg0, __part0);
             //
             case V_SgSIMDScalarStore: {
                 SgVarRefExp *scalar = static_cast<SgVarRefExp *>(lval);
                 SgVarRefExp *vec = static_cast<SgVarRefExp *>(rval);
-                std::vector<SgStatement *> to_insert;
-                
-                // Create the buffer
-                std::string name = arm_gen_buf();
-                std::string len_name = "svcntw";
-                
-                SgExpression *len_fc = buildFunctionCallExp(len_name, buildIntType(), NULL, new_block);
-                SgType *buf_type = buildArrayType(scalar->get_type(), len_fc);
-                
-                SgVariableDeclaration *vd = buildVariableDeclaration(name, buf_type, NULL, new_block);
-                insertStatementAfter(target, vd);
-                
-                SgVarRefExp *buf_ref = buildVarRefExp(name, new_block);
                 
                 // Reset the predicate
-                /*SgType *int64_type = buildOpaqueType("uint64_t", new_block);
-                SgIntVal *start_val = buildIntVal(0);
-                SgCastExp *start = buildCastExp(start_val, int64_type);
-                
-                parameters = buildExprListExp(start, len_fc);
-                predicate = buildFunctionCallExp(pred_func_name, pred_type, parameters, new_block);
-                
-                SgVarRefExp *pred_var = buildVarRefExp(pg_name, new_block);
-                SgExprStatement *pred_update = buildAssignStatement(pred_var, predicate);
-                insertStatementAfter(vd, pred_update);*/
-                predicate = buildFunctionCallExp("svptrue_b32", pred_type, NULL, new_block);
-                
-                SgVarRefExp *pred_var = buildVarRefExp(pg_name, new_block);
-                SgExprStatement *pred_update = buildAssignStatement(pred_var, predicate);
-                insertStatementAfter(vd, pred_update);
-                
-                // Store
-                SgAddressOfOp *addr = buildAddressOfOp(buf_ref);
-                SgExprListExp *parameters = buildExprListExp(pred_ref, addr, vec);
-                
-                SgExprStatement *str = buildFunctionCallStmt("svst1", buildVoidType(), parameters, new_block);
-                insertStatementAfter(pred_update, str);
-                //insertStatementAfter(vd, str);
-                
-                // Now the for-loop
-                // int __i = 0;
-                SgIntVal *init_val = buildIntVal(0);
-                SgAssignInitializer *local_init = buildAssignInitializer(init_val);
-                SgVariableDeclaration *i_vd = buildVariableDeclaration("__i", buildIntType(), local_init, new_block);
-                
-                // __i < scntw()
-                std::string max_name = "svcntw";
-                if (scalar->get_type()->variantT() == V_SgTypeDouble) {
-                    max_name = "svcntd";
+                //predicate = buildFunctionCallExp("svptrue_b32", pred_type, NULL, new_block);
+                switch (scalar->get_type()->variantT()) {
+                    case V_SgTypeInt:
+                    case V_SgTypeFloat: {
+                        predicate = buildFunctionCallExp("svptrue_b32", pred_type, NULL, new_block);
+                    } break;
+                    
+                    case V_SgTypeDouble: {
+                        predicate = buildFunctionCallExp("svptrue_b64", pred_type, NULL, new_block);
+                    } break;
+                    
+                    default: {}
                 }
                 
-                SgVarRefExp *i_ref = buildVarRefExp("__i", new_block);
-                SgExpression *i_fc = buildFunctionCallExp(max_name, buildIntType(), NULL, new_block);
-                SgLessThanOp *lt_op = buildLessThanOp(i_ref, i_fc);
-                SgExprStatement *lt = buildExprStatement(lt_op);
+                SgVarRefExp *pred_var = buildVarRefExp(pg_name, new_block);
+                SgExprStatement *pred_update = buildAssignStatement(pred_var, predicate);
+                insertStatementAfter(target, pred_update);
                 
-                // __i++
-                SgPlusPlusOp *i_inc = buildPlusPlusOp(i_ref);
-                
-                // result += __buf0[__i]
-                SgPntrArrRefExp *buf_pntr = buildPntrArrRefExp(buf_ref, i_ref);
-                SgPlusAssignOp *scalar_add = buildPlusAssignOp(scalar, buf_pntr);
+                // result = svaddv(__pg0, __part0);
+                SgExprListExp *parameters = buildExprListExp(pred_var, vec);
+                SgFunctionCallExp *reductionCall = buildFunctionCallExp("svaddv",
+                                                    scalar->get_type(), parameters, new_block);
+                SgAssignOp *scalar_add = buildAssignOp(scalar, reductionCall);
                 SgExprStatement *empty = buildExprStatement(scalar_add);
-                
-                // The loop
-                SgForStatement *for_stmt = buildForStatement(i_vd, lt, i_inc, empty);
-                insertStatementAfter(str, for_stmt);
+                insertStatementAfter(pred_update, empty);
             } break;
             
             case V_SgSIMDAddOp:
@@ -354,7 +313,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
         }
         
         // Add the statement
-        if ((*i)->variantT() != V_SgSIMDScalarStore && (*i)->variantT() != V_SgSIMDPartialStore) {
+        if ((*i)->variantT() != V_SgSIMDScalarStore /*&& (*i)->variantT() != V_SgSIMDPartialStore*/) {
             if (isSgVarRefExp(lval)) {
                 SgVarRefExp *var = static_cast<SgVarRefExp *>(lval);
                 
@@ -369,6 +328,9 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                     } else {
                         appendStatement(vd, new_block);
                     }
+                } else {
+                    SgExprStatement *expr = buildAssignStatement(var, init);
+                    appendStatement(expr, new_block);
                 }
             }
         }
