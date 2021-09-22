@@ -378,6 +378,9 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	taskloop.c \
 	taskwait.c \
 	taskwait2.c \
+	taskwait3.c \
+	taskwait4.c \
+	taskwait5.c \
 	taskyield.c \
 	threadprivate.c \
 	threadprivate2.c \
