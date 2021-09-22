@@ -3782,7 +3782,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpMetadirectiveStatement:
                     case V_SgOmpOrderedStatement:
                     case V_SgOmpSectionsStatement:
-                    case V_SgOmpParallelStatement:
+                    case V_SgUpirSpmdStatement:
                     case V_SgOmpTaskwaitStatement:
                     case V_SgOmpTeamsStatement:
                     case V_SgOmpCancellationPointStatement:
@@ -3796,7 +3796,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpTargetEnterDataStatement:
                     case V_SgOmpTargetExitDataStatement:
                     case V_SgOmpSimdStatement:
-                    case V_SgOmpTargetStatement:
+                    case V_SgUpirTaskStatement:
                     case V_SgOmpTargetDataStatement:
                     case V_SgOmpTargetParallelForStatement:
                     case V_SgOmpTargetParallelStatement:
@@ -10721,7 +10721,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     curprint(string(" final("));
   else if (isSgOmpPriorityClause(c))
     curprint(string(" priority("));
-  else if (isSgOmpNumThreadsClause(c))
+  else if (isSgUpirNumUnitsField(c))
     curprint(string(" num_threads("));
   else if (isSgOmpNumTeamsClause(c))
     curprint(string(" num_teams("));
@@ -11020,7 +11020,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpIfClause:  
     case V_SgOmpFinalClause:  
     case V_SgOmpPriorityClause:  
-    case V_SgOmpNumThreadsClause:
+    case V_SgUpirNumUnitsField:
     case V_SgOmpGrainsizeClause:
     case V_SgOmpDetachClause:
     case V_SgOmpNumTasksClause:
@@ -11232,7 +11232,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         curprint(string ("metadirective "));
         break;
       }
-    case V_SgOmpParallelStatement:
+    case V_SgUpirSpmdStatement:
       {
         curprint(string ("parallel "));
         break;
@@ -11297,7 +11297,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         curprint(string ("simd "));
         break;
       }
-    case V_SgOmpTargetStatement:
+    case V_SgUpirTaskStatement:
       {
         curprint(string ("target "));
         break;
@@ -11469,7 +11469,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         }
         break;
       }
-         case V_SgOmpForStatement:
+         case V_SgUpirLoopParallelStatement:
       {
         curprint(string ("for "));
         break;

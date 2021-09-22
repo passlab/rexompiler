@@ -328,7 +328,7 @@ namespace OmpSupport
     SgInitializedName* iname = isSgInitializedName( var_sym->get_declaration() );
     //TODO: what to do with SgOmpWorkshareStatement ?  it is a region/SgOmpBodyStatement, but it does not belong to OmpClauseBodyStatement
 
-    // obtain the enclosing OpenMP clause body statement: SgOmpForStatement, parallel, sections, single, target, target data, task, etc.
+    // obtain the enclosing OpenMP clause body statement: SgUpirLoopParallelStatement, parallel, sections, single, target, target data, task, etc.
     // TODO: this may not be reliable:  region {stmtlist ;  loop; stmtlist; }
     SgOmpClauseBodyStatement* omp_clause_body_stmt = findEnclosingOmpClauseBodyStatement (anchor_stmt);
 
@@ -388,7 +388,7 @@ namespace OmpSupport
             lastprivate: The loop iteration variables in the associated for-loops of a simd construct with multiple
             associated for-loops are lastprivate.
           */
-          if (isSgOmpForStatement(omp_clause_body_stmt))
+          if (isSgUpirLoopParallelStatement(omp_clause_body_stmt))
           // TODO: check other types of constructs here: taskloop, distribute construct
           {
             rt_val = e_private;
@@ -431,10 +431,10 @@ namespace OmpSupport
         // If implicit rules do not apply at this level (worksharing regions like single), Go to find higher level: most omp parallel
         if  (SgOmpClauseBodyStatement * parent_clause_body_stmt = findEnclosingOmpClauseBodyStatement (getEnclosingStatement(omp_clause_body_stmt->get_parent())))
         {
-          //if (isSgOmpParallelStatement (parent_clause_body_stmt) && ( isSgOmpForStatement(omp_clause_body_stmt)|| isSgOmpSingleStatement(omp_clause_body_stmt)  ) )
-          //if (isSgOmpParallelStatement (parent_clause_body_stmt) &&  isSgOmpSingleStatement(omp_clause_body_stmt))
+          //if (isSgUpirSpmdStatement (parent_clause_body_stmt) && ( isSgUpirLoopParallelStatement(omp_clause_body_stmt)|| isSgOmpSingleStatement(omp_clause_body_stmt)  ) )
+          //if (isSgUpirSpmdStatement (parent_clause_body_stmt) &&  isSgOmpSingleStatement(omp_clause_body_stmt))
           // TODO: add other directives which may be nested within others
-          if (isSgOmpForStatement (omp_clause_body_stmt) ||
+          if (isSgUpirLoopParallelStatement (omp_clause_body_stmt) ||
               isSgOmpSimdStatement (omp_clause_body_stmt) ||
               isSgOmpSingleStatement(omp_clause_body_stmt))
           {
@@ -525,7 +525,7 @@ namespace OmpSupport
     int result = 0; // record for the number of shared variables added
 
     ROSE_ASSERT( file != NULL );
-    Rose_STL_Container< SgNode* > allParallelRegion = NodeQuery::querySubTree( file, V_SgOmpParallelStatement );
+    Rose_STL_Container< SgNode* > allParallelRegion = NodeQuery::querySubTree( file, V_SgUpirSpmdStatement );
     Rose_STL_Container< SgNode* >::iterator  allParallelRegionItr = allParallelRegion.begin();
 
     for( ; allParallelRegionItr != allParallelRegion.end(); allParallelRegionItr++ )
@@ -1020,7 +1020,7 @@ namespace OmpSupport
 #if 0
     //find enclosing parallel region's body
     SgBasicBlock * omp_body = NULL;
-    SgOmpParallelStatement * omp_stmt = isSgOmpParallelStatement(getEnclosingNode<SgOmpParallelStatement>(startNode));
+    SgUpirSpmdStatement * omp_stmt = isSgUpirSpmdStatement(getEnclosingNode<SgUpirSpmdStatement>(startNode));
     if (omp_stmt)
     {
       omp_body= isSgBasicBlock(omp_stmt->get_body());
@@ -1370,7 +1370,7 @@ namespace OmpSupport
   }
 
   // Expected AST
-  // * SgOmpForStatement
+  // * SgUpirLoopParallelStatement
   // ** SgForStatement
   // Algorithm:
   // Loop normalization first  for stop condition expressions
@@ -1423,7 +1423,7 @@ namespace OmpSupport
     //void transOmpFor(SgNode* node)
   {
     ROSE_ASSERT(node != NULL);
-    SgOmpForStatement* target1 = isSgOmpForStatement(node);
+    SgUpirLoopParallelStatement* target1 = isSgUpirLoopParallelStatement(node);
     SgOmpDoStatement* target2 = isSgOmpDoStatement(node);
 
     SgOmpClauseBodyStatement* target = (target1!=NULL?(SgOmpClauseBodyStatement*)target1:(SgOmpClauseBodyStatement*)target2);
@@ -1470,7 +1470,7 @@ namespace OmpSupport
       is_canonical = isCanonicalDoLoop (do_loop, &orig_index, & orig_lower, &orig_upper, &orig_stride, NULL, &isIncremental, NULL);
     ROSE_ASSERT(is_canonical == true);
 
-    // step 2. Insert a basic block to replace SgOmpForStatement
+    // step 2. Insert a basic block to replace SgUpirLoopParallelStatement
     // This newly introduced scope is used to hold loop variables, private variables ,etc
     SgBasicBlock * bb1 = SageBuilder::buildBasicBlock();
 
@@ -1639,7 +1639,7 @@ Example:
 Algorithm:
    * check if it is a OmpTargetLoop
    * loop normalization
-   * replace OmpForStatement with a block: bb1
+   * replace UpirLoopParallelStatement with a block: bb1
    * declare int _dev_i within bb1;  replace for loop body’s loop index with _dev_i;
    * build if stmt with correct condition
    * move loop body to if-stmt’s true body
@@ -1649,7 +1649,7 @@ Algorithm:
   {
     //step 0: Sanity check
     ROSE_ASSERT(node != NULL);
-    SgOmpForStatement* target1 = isSgOmpForStatement(node);
+    SgUpirLoopParallelStatement* target1 = isSgUpirLoopParallelStatement(node);
     SgOmpDoStatement* target2 = isSgOmpDoStatement(node);
 
     SgOmpClauseBodyStatement* target = (target1!=NULL?(SgOmpClauseBodyStatement*)target1:(SgOmpClauseBodyStatement*)target2);
@@ -1675,8 +1675,8 @@ Algorithm:
       parent = parent->get_parent();
     SgNode* grand_parent = parent->get_parent();
     ROSE_ASSERT (grand_parent != NULL);
-    SgOmpParallelStatement* parent_parallel = isSgOmpParallelStatement (parent) ;
-    SgOmpTargetStatement* grand_target = isSgOmpTargetStatement(grand_parent);
+    SgUpirSpmdStatement* parent_parallel = isSgUpirSpmdStatement (parent) ;
+    SgUpirTaskStatement* grand_target = isSgUpirTaskStatement(grand_parent);
     ROSE_ASSERT (parent_parallel !=NULL);
     ROSE_ASSERT (grand_target !=NULL);
 
@@ -1719,7 +1719,7 @@ Algorithm:
     SgBasicBlock* loop_body = ensureBasicBlockAsBodyOfFor (for_loop);
 
 
-    //Step 2. Insert a basic block to replace SgOmpForStatement
+    //Step 2. Insert a basic block to replace SgUpirLoopParallelStatement
     // This newly introduced scope is used to hold loop variables ,etc
     SgBasicBlock * bb1 = SageBuilder::buildBasicBlock();
     replaceStatement(target, bb1, true);
@@ -1823,10 +1823,10 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
 {
   //step 0: Sanity check
   ROSE_ASSERT(node != NULL);
-  SgOmpForStatement* target1 = isSgOmpForStatement(node);
+  SgUpirLoopParallelStatement* target1 = isSgUpirLoopParallelStatement(node);
   SgOmpDoStatement* target2 = isSgOmpDoStatement(node);
 
-  // the target of the translation is a SgOmpForStatement
+  // the target of the translation is a SgUpirLoopParallelStatement
   SgOmpClauseBodyStatement* target = (target1!=NULL?(SgOmpClauseBodyStatement*)target1:(SgOmpClauseBodyStatement*)target2);
   ROSE_ASSERT (target != NULL);
 
@@ -1850,8 +1850,8 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
     parent = parent->get_parent();
   SgNode* grand_parent = parent->get_parent();
   ROSE_ASSERT (grand_parent != NULL);
-  SgOmpParallelStatement* parent_parallel = isSgOmpParallelStatement (parent) ;
-  SgOmpTargetStatement* grand_target = isSgOmpTargetStatement(grand_parent);
+  SgUpirSpmdStatement* parent_parallel = isSgUpirSpmdStatement (parent) ;
+  SgUpirTaskStatement* grand_target = isSgUpirTaskStatement(grand_parent);
   ROSE_ASSERT (parent_parallel !=NULL);
   ROSE_ASSERT (grand_target !=NULL);
 
@@ -1891,7 +1891,7 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
   ROSE_ASSERT (for_loop != NULL);
   //SgBasicBlock* loop_body = ensureBasicBlockAsBodyOfFor (for_loop);
 
-  //Step 2. Insert a basic block to replace SgOmpForStatement
+  //Step 2. Insert a basic block to replace SgUpirLoopParallelStatement
   // This newly introduced scope is used to hold loop variables ,etc
   SgBasicBlock * bb1 = SageBuilder::buildBasicBlock();
   replaceStatement(target, bb1, true);
@@ -2022,7 +2022,7 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
 
   // must be either omp task or omp parallel
   SgOmpTaskStatement* target1 = isSgOmpTaskStatement(node);
-  SgOmpParallelStatement* target2 = isSgOmpParallelStatement(node);
+  SgUpirSpmdStatement* target2 = isSgUpirSpmdStatement(node);
   ROSE_ASSERT (target1 != NULL || target2 != NULL);
 
   SgStatement * body =  target->get_body();
@@ -2320,10 +2320,10 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
   void transOmpParallel (SgNode* node)
   {
     ROSE_ASSERT(node != NULL);
-    SgOmpParallelStatement* target = isSgOmpParallelStatement(node);
+    SgUpirSpmdStatement* target = isSgUpirSpmdStatement(node);
     ROSE_ASSERT (target != NULL);
 
-// Test if the file info has been corrected transferred to SgOmpParallelStatement
+// Test if the file info has been corrected transferred to SgUpirSpmdStatement
 //    target->get_startOfConstruct()->display();
 //    target->get_endOfConstruct()->display();
 
@@ -2428,10 +2428,10 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
     // therefore, the head will be the function call of setting up num_threads.
     SgExprStatement* set_num_threads_statement = NULL;
     SgExpression* omp_num_threads = NULL;
-    if (hasClause(target, V_SgOmpNumThreadsClause)) {
-      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgOmpNumThreadsClause);
+    if (hasClause(target, V_SgUpirNumUnitsField)) {
+      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgUpirNumUnitsField);
       ROSE_ASSERT (num_threads_clauses.size() == 1); // should only have one num_threads()
-      SgOmpNumThreadsClause * num_threads_clause = isSgOmpNumThreadsClause(num_threads_clauses[0]);
+      SgUpirNumUnitsField * num_threads_clause = isSgUpirNumUnitsField(num_threads_clauses[0]);
       ROSE_ASSERT (num_threads_clause->get_expression() != NULL);
       omp_num_threads = copyExpression(num_threads_clause->get_expression());
     }
@@ -2562,17 +2562,17 @@ void transOmpMetadirective(SgNode* node)
           variant_body->set_parent(variant_directive);
             switch (variant_directive->variantT())
             {
-              case V_SgOmpParallelStatement:
+              case V_SgUpirSpmdStatement:
               {
                 std::cout << "Lowering Variant Parallel Statement.\n";
-                ((SgOmpParallelStatement*)variant_directive)->set_body(variant_body);
+                ((SgUpirSpmdStatement*)variant_directive)->set_body(variant_body);
                 break;
                 // check if this parallel region is under "omp target"
                 SgNode* parent = variant_directive->get_parent();
                 ROSE_ASSERT (parent != NULL);
                 if (isSgBasicBlock(parent)) // skip the padding block in between.
                   parent = parent->get_parent();
-                if (isSgOmpTargetStatement(parent))
+                if (isSgUpirTaskStatement(parent))
                   transOmpTargetParallel(node);
                 else
                   transOmpParallel(variant_directive);
@@ -2603,21 +2603,21 @@ void transOmpMetadirective(SgNode* node)
           variant_body->set_parent(variant_directive);
             switch (variant_directive->variantT())
             {
-              case V_SgOmpParallelStatement:
+              case V_SgUpirSpmdStatement:
               {
                 // check if this parallel region is under "omp target"
                 std::cout << "Lowering Variant Parallel Statement 2.\n";
-                ((SgOmpParallelStatement*)variant_directive)->set_body(variant_body);
+                ((SgUpirSpmdStatement*)variant_directive)->set_body(variant_body);
                 break;
                 SgNode* parent = variant_directive->get_parent();
                 ROSE_ASSERT (parent != NULL);
                 if (isSgBasicBlock(parent)) // skip the padding block in between.
                   parent= parent->get_parent();
-                if (isSgOmpTargetStatement(parent))
+                if (isSgUpirTaskStatement(parent))
                   transOmpTargetParallel(variant_directive);
                 else
                 {
-                  ((SgOmpParallelStatement*)variant_directive)->set_body(variant_body);
+                  ((SgUpirSpmdStatement*)variant_directive)->set_body(variant_body);
                   transOmpParallel(variant_directive);
                 }
                 break;
@@ -3015,8 +3015,8 @@ static int generate_mapping_variable_type (
   //    6. copy GPU_copy back to CPU variables
   //    7. de-allocate the GPU variables
   //
-  //   Step 1,2,3 and 6, 7 should generate statements before or after the SgOmpTargetStatement
-  //   Step 4 and 5 should change the body of the affected SgOmpParallelStatement
+  //   Step 1,2,3 and 6, 7 should generate statements before or after the SgUpirTaskStatement
+  //   Step 4 and 5 should change the body of the affected SgUpirSpmdStatement
   // Revised Algorithm (version 3)    1/23/2015, optionally use device data environment (DDE) functions to manage data automatically.
   // Instead of generate explicit data allocation, copy, free functions, using the following three DDE functions:
   //   1. xomp_deviceDataEnvironmentEnter()
@@ -3337,8 +3337,8 @@ static void generateMappedArrayMemoryHandling(
   //    6. copy GPU_copy back to CPU variables
   //    7. de-allocate the GPU variables
   //
-  //   Step 1,2,3 and 6, 7 should generate statements before or after the SgOmpTargetStatement
-  //   Step 4 and 5 should change the body of the affected SgOmpParallelStatement
+  //   Step 1,2,3 and 6, 7 should generate statements before or after the SgUpirTaskStatement
+  //   Step 4 and 5 should change the body of the affected SgUpirSpmdStatement
   //
   //  Algorithm 1:
   //   collect all variables in map clauses: they should be either scalar or arrays with bound info.
@@ -3373,12 +3373,12 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
   ROSE_ASSERT  (target_data_or_target_parallel_stmt !=NULL);
   ROSE_ASSERT  (all_syms.size() == 0); // it should be empty
 
-  SgOmpParallelStatement* target_parallel_stmt = NULL;
-  SgOmpTargetStatement* target_directive_stmt = NULL;
+  SgUpirSpmdStatement* target_parallel_stmt = NULL;
+  SgUpirTaskStatement* target_directive_stmt = NULL;
   SgOmpTargetDataStatement * target_data_stmt = NULL;
   SgOmpTargetParallelForStatement* target_parallel_for_stmt = NULL;
 
-  target_parallel_stmt = isSgOmpParallelStatement(target_data_or_target_parallel_stmt);
+  target_parallel_stmt = isSgUpirSpmdStatement(target_data_or_target_parallel_stmt);
   target_data_stmt = isSgOmpTargetDataStatement(target_data_or_target_parallel_stmt);
   target_parallel_for_stmt = isSgOmpTargetParallelForStatement(target_data_or_target_parallel_stmt);
 
@@ -3390,7 +3390,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     ROSE_ASSERT (parent != NULL);
    if (isSgBasicBlock(parent)) //skip the possible block in between
       parent = parent->get_parent();
-    target_directive_stmt = isSgOmpTargetStatement(parent);
+    target_directive_stmt = isSgUpirTaskStatement(parent);
     ROSE_ASSERT (target_directive_stmt != NULL);
   }
 
@@ -3668,7 +3668,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
   {
     // Sanity check first
     ROSE_ASSERT(node != NULL);
-    SgOmpParallelStatement* target = isSgOmpParallelStatement(node);
+    SgUpirSpmdStatement* target = isSgUpirSpmdStatement(node);
     ROSE_ASSERT (target != NULL);
 
     // must be a parallel region directly under "omp target"
@@ -3676,7 +3676,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     ROSE_ASSERT (parent != NULL);
    if (isSgBasicBlock(parent)) //skip the possible block in between
       parent = parent->get_parent();
-    SgOmpTargetStatement* target_directive_stmt = isSgOmpTargetStatement(parent);
+    SgUpirTaskStatement* target_directive_stmt = isSgUpirTaskStatement(parent);
     ROSE_ASSERT (target_directive_stmt != NULL);
 
     // device expression
@@ -3996,7 +3996,7 @@ void transOmpTargetLoopBlock(SgNode* node)
   ROSE_ASSERT (for_loop != NULL);
   //SgBasicBlock* loop_body = ensureBasicBlockAsBodyOfFor (for_loop);
 
-  //Step 2. Insert a basic block to replace SgOmpForStatement
+  //Step 2. Insert a basic block to replace SgUpirLoopParallelStatement
   // This newly introduced scope is used to hold loop variables ,etc
   SgBasicBlock * bb1 = SageBuilder::buildBasicBlock();
   SgStatement* new_loop = deepCopy (for_loop);
@@ -4355,10 +4355,10 @@ void transOmpTargetLoopBlock(SgNode* node)
     SgExpression* omp_num_teams = buildIntVal(1);
 
     SgExpression* omp_num_threads = NULL;
-    if (hasClause(target, V_SgOmpNumThreadsClause)) {
-      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgOmpNumThreadsClause);
+    if (hasClause(target, V_SgUpirNumUnitsField)) {
+      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgUpirNumUnitsField);
       ROSE_ASSERT (num_threads_clauses.size() == 1); // should only have one num_threads()
-      SgOmpNumThreadsClause * num_threads_clause = isSgOmpNumThreadsClause(num_threads_clauses[0]);
+      SgUpirNumUnitsField * num_threads_clause = isSgUpirNumUnitsField(num_threads_clauses[0]);
       ROSE_ASSERT (num_threads_clause->get_expression() != NULL);
       omp_num_threads = copyExpression(num_threads_clause->get_expression());
     }
@@ -4390,10 +4390,10 @@ void transOmpTargetLoopBlock(SgNode* node)
     }
 
     SgExpression* omp_num_threads = NULL;
-    if (hasClause(target, V_SgOmpNumThreadsClause)) {
-      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgOmpNumThreadsClause);
+    if (hasClause(target, V_SgUpirNumUnitsField)) {
+      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgUpirNumUnitsField);
       ROSE_ASSERT (num_threads_clauses.size() == 1); // should only have one num_threads()
-      SgOmpNumThreadsClause * num_threads_clause = isSgOmpNumThreadsClause(num_threads_clauses[0]);
+      SgUpirNumUnitsField * num_threads_clause = isSgUpirNumUnitsField(num_threads_clauses[0]);
       ROSE_ASSERT (num_threads_clause->get_expression() != NULL);
       omp_num_threads = copyExpression(num_threads_clause->get_expression());
     }
@@ -4975,7 +4975,7 @@ void transOmpTargetLoopBlock(SgNode* node)
   void transOmpTarget(SgNode * node)
   {
     ROSE_ASSERT(node != NULL );
-    SgOmpTargetStatement* target = isSgOmpTargetStatement(node);
+    SgUpirTaskStatement* target = isSgUpirTaskStatement(node);
     ROSE_ASSERT(target != NULL );
 
     SgScopeStatement * scope = target->get_scope();
@@ -5214,7 +5214,7 @@ void transOmpTargetLoopBlock(SgNode* node)
    * Decremental loops
    *      > upper:   last iteration ==> i <= upper
    *      >=     :                      i < upper
-   * AST: Orphaned worksharing OmpStatement is SgOmpForStatement->get_body() is SgForStatement
+   * AST: Orphaned worksharing OmpStatement is SgUpirLoopParallelStatement->get_body() is SgForStatement
    *
    *  We use bottom up traversal, the inner omp for loop has already been translated, so we have to get the original upper bound via parameter
    *
@@ -5239,11 +5239,11 @@ static void insertOmpLastprivateCopyBackStmts(SgStatement* ompStmt, vector <SgSt
                               SgInitializedName* orig_var, SgVariableDeclaration* local_decl, SgExpression* orig_loop_upper)
 {
   SgStatement* save_stmt = NULL;
-  if (isSgOmpForStatement(ompStmt))
+  if (isSgUpirLoopParallelStatement(ompStmt))
   {
     ROSE_ASSERT (orig_loop_upper != NULL);
     Rose_STL_Container <SgNode*> loops = NodeQuery::querySubTree (bb1, V_SgForStatement);
-    ROSE_ASSERT (loops.size() != 0); // there must be 1 for loop under SgOmpForStatement
+    ROSE_ASSERT (loops.size() != 0); // there must be 1 for loop under SgUpirLoopParallelStatement
     SgForStatement* top_loop = isSgForStatement(loops[0]);
     ROSE_ASSERT (top_loop != NULL);
     //Get essential loop information
@@ -5537,7 +5537,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
     SgBasicBlock* t_body = NULL;
 
     //find enclosing parallel region's body
-    SgOmpParallelStatement * omp_stmt = isSgOmpParallelStatement(getEnclosingNode<SgOmpParallelStatement>(orig_scope));
+    SgUpirSpmdStatement * omp_stmt = isSgUpirSpmdStatement(getEnclosingNode<SgUpirSpmdStatement>(orig_scope));
     if (omp_stmt)
     {
       SgBasicBlock * omp_body = isSgBasicBlock(omp_stmt->get_body());
@@ -5617,7 +5617,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
 
 #if 0
   //find enclosing parallel region's body
-  SgOmpParallelStatement * omp_stmt = isSgOmpParallelStatement(getEnclosingNode<SgOmpParallelStatement>(orig_scope));
+  SgUpirSpmdStatement * omp_stmt = isSgUpirSpmdStatement(getEnclosingNode<SgUpirSpmdStatement>(orig_scope));
   if (omp_stmt)
   {
     SgBasicBlock * omp_body = isSgBasicBlock(omp_stmt->get_body());
@@ -5815,7 +5815,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
        SgVariableDeclaration* per_block_decl = NULL;
       if (isReductionVar && isAcceleratorModel)
       {
-        SgOmpParallelStatement* enclosing_omp_parallel = getEnclosingNode<SgOmpParallelStatement> (ompStmt);
+        SgUpirSpmdStatement* enclosing_omp_parallel = getEnclosingNode<SgUpirSpmdStatement> (ompStmt);
         ROSE_ASSERT (enclosing_omp_parallel!= NULL);
         //SgScopeStatement* scope_for_insertion = enclosing_omp_target->get_scope();
         SgScopeStatement* scope_for_insertion = isSgScopeStatement(enclosing_omp_parallel->get_scope());
@@ -6020,12 +6020,12 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
 #if 0 // not in use
     switch (node->variantT())
     {
-      case V_SgOmpParallelStatement:
+      case V_SgUpirSpmdStatement:
         {
           transOmpParallel(node);
           break;
         }
-      case V_SgOmpForStatement:
+      case V_SgUpirLoopParallelStatement:
         {
           transOmpFor(node);
           break;
@@ -6152,7 +6152,7 @@ int patchUpPrivateVariables(SgStatement* omp_loop)
 {
   int result = 0;
   ROSE_ASSERT ( omp_loop != NULL);
-  SgOmpForStatement* for_node = isSgOmpForStatement(omp_loop);
+  SgUpirLoopParallelStatement* for_node = isSgUpirLoopParallelStatement(omp_loop);
   SgOmpDoStatement* do_node = isSgOmpDoStatement(omp_loop);
   SgOmpTargetParallelForStatement *target_parallel_for_node = isSgOmpTargetParallelForStatement(omp_loop);
   if (for_node)
@@ -6190,7 +6190,7 @@ int patchUpPrivateVariables(SgStatement* omp_loop)
       // Grab possible enclosing parallel region
       bool isPrivateInRegion = false;
       SgOmpClauseBodyStatement *omp_stmt = NULL;
-      omp_stmt = isSgOmpParallelStatement(getEnclosingNode<SgOmpParallelStatement>(omp_loop));
+      omp_stmt = isSgUpirSpmdStatement(getEnclosingNode<SgUpirSpmdStatement>(omp_loop));
       if (omp_stmt == NULL) {
         omp_stmt = isSgOmpTargetParallelForStatement(omp_loop);
       }
@@ -6245,7 +6245,7 @@ void transOmpCollapse(SgOmpClauseBodyStatement * node)
   patchUpPrivateVariables (node);
 
   /*
-   *Winnie, we need to add the new variables into the map in list, if there is a SgOmpTargetStatement
+   *Winnie, we need to add the new variables into the map in list, if there is a SgUpirTaskStatement
    */
   /*For OmpTarget, we need to create SgOmpMapClause if there is no such clause in the original code.
    *   target_stmt, #pragma omp target
@@ -6256,7 +6256,7 @@ void transOmpCollapse(SgOmpClauseBodyStatement * node)
    *         we have to move the corresponding variable declarations to be in front of the directive containing map().
    */
   SgStatement * target_stmt = isSgStatement(node->get_parent()->get_parent());
-  if(isSgOmpTargetStatement(target_stmt))
+  if(isSgUpirTaskStatement(target_stmt))
   {
     Rose_STL_Container<SgOmpClause*> map_clauses;
     SgOmpMapClause * map_to = NULL;
@@ -6318,13 +6318,13 @@ void transOmpCollapse(SgOmpClauseBodyStatement * node)
 //    SgBasicBlock
 //      /                   #
 //     /                    #
-// SgOmpParallelStatement   #
+// SgUpirSpmdStatement   #
 //          \               #
 //           \              #
 //           SgBasicBlock   #
 //               \          #
 //                \         #
-//                SgOmpParallelStatement
+//                SgUpirSpmdStatement
 void lower_omp(SgSourceFile* file)
 {
   ROSE_ASSERT(file != NULL);
@@ -6371,14 +6371,14 @@ void lower_omp(SgSourceFile* file)
     if (!isVariant)
     switch (node->variantT())
     {
-      case V_SgOmpParallelStatement:
+      case V_SgUpirSpmdStatement:
         {
           // check if this parallel region is under "omp target"
           SgNode* parent = node->get_parent();
           ROSE_ASSERT (parent != NULL);
           if (isSgBasicBlock(parent)) // skip the padding block in between.
             parent= parent->get_parent();
-          if (isSgOmpTargetStatement(parent))
+          if (isSgUpirTaskStatement(parent))
             transOmpTargetParallel(node);
           else
             transOmpParallel(node);
@@ -6395,7 +6395,7 @@ void lower_omp(SgSourceFile* file)
           transOmpTask(node);
           break;
         }
-      case V_SgOmpForStatement:
+      case V_SgUpirLoopParallelStatement:
       case V_SgOmpDoStatement:
         {
           // check if the loop is part of the combined "omp parallel for" under the "omp target" directive
@@ -6409,7 +6409,7 @@ void lower_omp(SgSourceFile* file)
           SgNode* grand_parent = parent->get_parent();
           ROSE_ASSERT (grand_parent != NULL);
 
-          if (isSgOmpParallelStatement (parent) && isSgOmpTargetStatement(grand_parent) )
+          if (isSgUpirSpmdStatement (parent) && isSgUpirTaskStatement(grand_parent) )
             is_target_loop = true;
 
           if (is_target_loop)
@@ -6474,7 +6474,7 @@ void lower_omp(SgSourceFile* file)
           transOmpCritical(node);
           break;
         }
-      case V_SgOmpTargetStatement:
+      case V_SgUpirTaskStatement:
         {
           transOmpTarget(node);
           break;

@@ -296,13 +296,13 @@ SgOmpClauseStatement
 SgOmpDoStatement
 SgOmpFlushStatement
 SgOmpDeclareSimdStatement
-SgOmpForStatement
+SgUpirLoopParallelStatement
 SgOmpForSimdStatement
 SgOmpMasterStatement
 SgOmpTaskyieldStatement
 SgOmpMetadirectiveStatement
 SgOmpOrderedStatement
-SgOmpParallelStatement
+SgUpirSpmdStatement
 SgOmpTeamsStatement
 SgOmpCancellationPointStatement
 SgOmpDeclareMapperStatement
@@ -322,7 +322,7 @@ SgOmpTaskStatement
 SgOmpTaskwaitStatement
 SgOmpThreadprivateStatement
 SgOmpWorkshareStatement
-SgOmpTargetStatement
+SgUpirTaskStatement
 SgOmpTargetDataStatement
 SgOmpTargetParallelForStatement
 SgOmpTargetUpdateStatement
@@ -390,7 +390,7 @@ SgOmpParallelClause
 SgOmpSectionsClause
 SgOmpForClause
 SgOmpTaskgroupClause
-SgOmpNumThreadsClause
+SgUpirNumUnitsField
 SgOmpNumTeamsClause
 SgOmpGrainsizeClause
 SgOmpDetachClause

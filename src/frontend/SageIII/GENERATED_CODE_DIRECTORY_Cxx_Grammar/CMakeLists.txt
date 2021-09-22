@@ -471,15 +471,15 @@ if(enable-smaller-generated-files)
     SgOmpExpressionClause.C
     SgOmpFirstprivateClause.C
     SgOmpFlushStatement.C
-    SgOmpForStatement.C
+    SgUpirLoopParallelStatement.C
     SgOmpIfClause.C
     SgOmpLastprivateClause.C
     SgOmpMasterStatement.C
     SgOmpNowaitClause.C
-    SgOmpNumThreadsClause.C
+    SgUpirNumUnitsField.C
     SgOmpOrderedClause.C
     SgOmpOrderedStatement.C
-    SgOmpParallelStatement.C
+    SgUpirSpmdStatement.C
     SgOmpPrivateClause.C
     SgOmpReductionClause.C
     SgOmpScheduleClause.C

@@ -7,7 +7,7 @@ using namespace SageInterface;
 namespace OmpSupport {
 void analyzeOmpFor(SgNode *node) {
   ROSE_ASSERT(node != NULL);
-  SgOmpForStatement *target1 = isSgOmpForStatement(node);
+  SgUpirLoopParallelStatement *target1 = isSgUpirLoopParallelStatement(node);
   SgOmpDoStatement *target2 = isSgOmpDoStatement(node);
 
   SgOmpClauseBodyStatement *target =
@@ -78,7 +78,7 @@ int patchUpPrivateVariables(SgFile *file) {
   int result = 0;
   ROSE_ASSERT(file != NULL);
   Rose_STL_Container<SgNode *> nodeList =
-      NodeQuery::querySubTree(file, V_SgOmpForStatement);
+      NodeQuery::querySubTree(file, V_SgUpirLoopParallelStatement);
   Rose_STL_Container<SgNode *> nodeList2 =
       NodeQuery::querySubTree(file, V_SgOmpDoStatement);
 
@@ -105,7 +105,7 @@ int patchUpPrivateVariables(SgFile *file) {
   // For each omp for/do statement
   for (; nodeListIterator != nodeList_merged.end(); ++nodeListIterator) {
     SgStatement *omp_loop = NULL;
-    SgOmpForStatement *for_node = isSgOmpForStatement(*nodeListIterator);
+    SgUpirLoopParallelStatement *for_node = isSgUpirLoopParallelStatement(*nodeListIterator);
     SgOmpDoStatement *do_node = isSgOmpDoStatement(*nodeListIterator);
     SgOmpTargetParallelForStatement *target_parallel_for_node =
         isSgOmpTargetParallelForStatement(*nodeListIterator);
@@ -166,8 +166,8 @@ static bool isSharedInEnclosingConstructs(SgInitializedName *init_var,
 
   //   cout<<"Debug omp_lowering.cpp isSharedInEnclosingConstructs()
   //   SgInitializedName name = "<<init_var->get_name().getString()<<endl;
-  SgOmpParallelStatement *enclosing_par_stmt =
-      getEnclosingNode<SgOmpParallelStatement>(start_stmt, false);
+  SgUpirSpmdStatement *enclosing_par_stmt =
+      getEnclosingNode<SgUpirSpmdStatement>(start_stmt, false);
   // Lexically nested within a parallel region
   if (enclosing_par_stmt) {
     // locally declared variables are private to enclosing_par_stmt
@@ -408,7 +408,7 @@ int patchUpImplicitMappingVariables(SgFile *file) {
   int result = 0;
   ROSE_ASSERT(file != NULL);
   Rose_STL_Container<SgNode *> node_list1 =
-      NodeQuery::querySubTree(file, V_SgOmpParallelStatement);
+      NodeQuery::querySubTree(file, V_SgUpirSpmdStatement);
 
   // TODO: implement a helper function to collect all the nodes into one list
   Rose_STL_Container<SgNode *> node_list2 =
@@ -468,7 +468,7 @@ int patchUpImplicitMappingVariables(SgFile *file) {
       SgNode *parent = target->get_parent();
       if (isSgBasicBlock(parent)) // skip the padding block in between.
         parent = parent->get_parent();
-      if (isSgOmpTargetStatement(parent) ||
+      if (isSgUpirTaskStatement(parent) ||
           isSgOmpTargetParallelForStatement(target)) {
         SgVariableSymbol *sym = var_ref->get_symbol();
         ROSE_ASSERT(sym != NULL);
@@ -478,7 +478,7 @@ int patchUpImplicitMappingVariables(SgFile *file) {
         if (isSgOmpTargetParallelForStatement(target)) {
           target_parent = isSgOmpTargetParallelForStatement(target);
         } else {
-          target_parent = isSgOmpTargetStatement(parent);
+          target_parent = isSgUpirTaskStatement(parent);
         }
         if (a_type != NULL) {
           std::vector<SgExpression *> dims = get_C_array_dimensions(a_type);
@@ -573,7 +573,7 @@ void analyze_omp(SgSourceFile *file) {
     SgStatement *node = isSgStatement(*node_list_iterator);
     ROSE_ASSERT(node != NULL);
     switch (node->variantT()) {
-    case V_SgOmpForStatement: {
+    case V_SgUpirLoopParallelStatement: {
       analyzeOmpFor(node);
       break;
     }

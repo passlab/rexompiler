@@ -107,6 +107,8 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:util_support>
   $<TARGET_OBJECTS:util_graphs>
   $<TARGET_OBJECTS:unparser>
+  $<TARGET_OBJECTS:EDG>
+  $<TARGET_OBJECTS:edg_internal>
   $<TARGET_OBJECTS:sage3>
   $<TARGET_OBJECTS:virtualCFG>
   $<TARGET_OBJECTS:astFromString>
@@ -122,6 +124,7 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:midend_util>
   $<TARGET_OBJECTS:midend_pt>
   $<TARGET_OBJECTS:ompparser>
+  $<TARGET_OBJECTS:accparser>
   $<TARGET_OBJECTS:sageInterface>
   $<TARGET_OBJECTS:astTokenStream>
   $<TARGET_OBJECTS:astHiddenTypeAndDeclarationLists>
@@ -201,6 +204,10 @@ endif()
 if (enable-java)
   list(APPEND LINK_FILES ${JAVA_JVM_LIBRARY})
 endif()
+
+# link ANTLR 4 C++ runtime
+# On Ubuntu 20.04, it is installed to /usr/lib
+list(APPEND LINK_FILES antlr4-runtime)
 
 # This was an experiment to generate smaller files from ROSETTA. (I'm not sure of the status [Matzke 2019-02-02].)
 if(enable-smaller-generated-files )

@@ -17,7 +17,7 @@ fSageSupportPath=sage_support#
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
    SUBDIRS = astFixup astPostProcessing sageInterface astVisualization virtualCFG includeDirectivesProcessing
 else
-   SUBDIRS = astFileIO astMerge astFixup astPostProcessing sageInterface virtualCFG astTokenStream astHiddenTypeAndDeclarationLists astVisualization astFromString includeDirectivesProcessing ompparser
+   SUBDIRS = astFileIO astMerge astFixup astPostProcessing sageInterface virtualCFG astTokenStream astHiddenTypeAndDeclarationLists astVisualization astFromString includeDirectivesProcessing ompparser accparser
 endif
 
 # DQ (12/29/2009): This is only used to handle generated code as smaller files.
@@ -50,6 +50,7 @@ all-local: roseh sage.docs
 # JJW 6-2-2008: We shouldn't be using anything from EDG outside these two directories
 # AM_CPPFLAGS = $(ROSE_INCLUDES) # -I$(top_srcdir)/src/frontend/EDG_SAGE_Connection -I$(top_srcdir)/src/frontend/EDG/EDG_3.3/src
 AM_CPPFLAGS = $(ROSE_INCLUDES) -I$(top_srcdir)/src/frontend/SageIII/ompparser/src
+AM_CPPFLAGS += -I$(top_srcdir)/src/frontend/SageIII/accparser/src
 
 # DQ (3/13/2010): sage_support.cpp requires the OFP fortran source files to be made available.
 # if ROSE_USE_OPEN_FORTRAN_PARSER
@@ -78,7 +79,7 @@ CXX_TEMPLATE_REPOSITORY_PATH = .
 EXTRA_DIST = CMakeLists.txt preproc-c.ll docs rtiHelpers.h attributeListMap.h \
              advanced_preprocessing_hooks.h rose_attributes_list.h \
              sage3basic.hhh fileoffsetbits.h rosedll.h PolicyControl.txt Utf8.h  \
-             ompAstConstruction.h \
+             ompAstConstruction.h accAstConstruction.h \
              omp_exprparser_lexer.cc omp_exprparser_parser.cc omp_exprparser_parser.hh
 CLEANFILES = haveRosettaGeneratedSource
 
@@ -181,7 +182,8 @@ libsage3Sources = \
    $(fSageSupport_la_sources) \
    OmpAttribute.C \
    ompFortranParser.C \
-   ompAstConstruction.cpp
+   ompAstConstruction.cpp \
+   accAstConstruction.cpp
 endif
 
 # DQ (2/15/2010): This fails in Hudson tests of ROSE compiling ROSE for code generation, but I can't 
@@ -223,6 +225,7 @@ libsage3_la_LIBADD= \
   astMerge/libastMerge.la \
   astFileIO/libastFileIO.la \
   astFixup/libastFixup.la \
+  accparser/libaccparser.la \
   ompparser/libompparser.la \
   astPostProcessing/libastPostProcessing.la \
   sageInterface/libsageInterface.la \
@@ -237,6 +240,7 @@ libsage3_la_LIBADD= \
   astMerge/libastMerge.la \
   astFileIO/libastFileIO.la \
   astFixup/libastFixup.la \
+  accparser/libaccparser.la \
   ompparser/libompparser.la \
   astPostProcessing/libastPostProcessing.la \
   sageInterface/libsageInterface.la \
