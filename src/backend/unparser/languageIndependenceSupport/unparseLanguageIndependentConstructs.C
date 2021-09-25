@@ -11108,6 +11108,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpFlushStatement(SgStatement*
   ASSERT_not_null(s);
 
   unparseOmpDirectivePrefixAndName(stmt, info);
+  unparseOmpBeginDirectiveClauses(stmt, info);
   if (s->get_variables().size()>0)
     curprint(string ("("));
   //unparse variable list then
