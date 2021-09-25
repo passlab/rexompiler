@@ -1982,6 +1982,8 @@ SgOmpClause* convertSimpleClause(SgStatement* directive, std::pair<SgPragmaDecla
         ((SgOmpTargetUpdateStatement*)directive)->get_clauses().push_back(sg_clause);
     } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_requires) {
         ((SgOmpRequiresStatement*)directive)->get_clauses().push_back(sg_clause);
+    } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_flush) {
+        ((SgOmpFlushStatement*)directive)->get_clauses().push_back(sg_clause);
     } else {
         ((SgOmpClauseBodyStatement*)directive)->get_clauses().push_back(sg_clause);
     }
@@ -2473,7 +2475,24 @@ SgStatement* convertOmpTaskwaitDirective(std::pair<SgPragmaDeclaration*, OpenMPD
 SgStatement* convertOmpFlushDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
     SgOmpFlushStatement *statement = new SgOmpFlushStatement();
     OpenMPFlushDirective *current_ir = static_cast<OpenMPFlushDirective *>(current_OpenMPIR_to_SageIII.second);
-
+    std::vector<OpenMPClause*>* all_clauses = current_OpenMPIR_to_SageIII.second->getClausesInOriginalOrder();
+    OpenMPClauseKind clause_kind;
+    std::vector<OpenMPClause*>::iterator clause_iter;
+    for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end(); clause_iter++) {
+        clause_kind = (*clause_iter)->getKind();
+        switch (clause_kind) {
+            case OMPC_seq_cst:
+            case OMPC_acq_rel:
+            case OMPC_release:
+            case OMPC_acquire: {
+                convertSimpleClause(isSgStatement(statement), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            default: {
+                convertClause(isSgStatement(statement), current_OpenMPIR_to_SageIII, *clause_iter);
+            }
+        };
+    };
     std::vector<std::string>* current_expressions = current_ir->getFlushList();
     if (current_expressions->size() != 0) {
         std::vector<std::string>::iterator iter;
@@ -2486,14 +2505,21 @@ SgStatement* convertOmpFlushDirective(std::pair<SgPragmaDeclaration*, OpenMPDire
 
     std::vector<std::pair<std::string, SgNode*> >::iterator iter;
     for (iter = omp_variable_list.begin(); iter != omp_variable_list.end(); iter++) {
-        SgInitializedName* iname = isSgInitializedName((*iter).second);
-        ROSE_ASSERT(iname != NULL);
-        SgVarRefExp * var_ref = buildVarRefExp(iname);
-        statement->get_variables().push_back(var_ref);
-        var_ref->set_parent(statement);
+        if (SgInitializedName* iname = isSgInitializedName((*iter).second)) {
+            SgVarRefExp * var_ref = buildVarRefExp(iname);
+            statement->get_variables().push_back(var_ref);
+            var_ref->set_parent(statement);
+        }
+        else if (SgVarRefExp* vref = isSgVarRefExp((*iter).second)) {
+            statement->get_variables().push_back(vref);
+            vref->set_parent(statement);
+        }
+        else {
+            cerr << "error: unhandled type of variable within a list:" << ((*iter).second)->class_name();
+        }
     }
+    current_expressions->clear();
     omp_variable_list.clear();
-
     return statement;
 }
 

@@ -238,6 +238,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	flush.c \
 	flush_exampleA_21_1c.c \
 	full_verify.c \
+	flush_with_clauses.c \
 	get_max_threads.c \
 	hello.c \
 	hello-1.c \
