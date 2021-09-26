@@ -192,6 +192,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	3loops.c \
 	affinity.c \
+	allocate.c \
 	jacobi.c \
 	jacobi-collapse.c \
 	alignment.c \

@@ -8824,6 +8824,72 @@ void UnparseLanguageIndependentConstructs::unparseOmpDefaultClause(SgOmpClause* 
   curprint(string(")"));
 }
 
+void UnparseLanguageIndependentConstructs::unparseOmpAllocatorClause(SgOmpClause* clause, SgUnparse_Info& info)
+{
+  ASSERT_not_null(clause);
+  SgOmpAllocatorClause * c = isSgOmpAllocatorClause(clause);
+  ASSERT_not_null(c);
+  std::string result  = "";
+  curprint(string(" allocator("));
+  SgOmpClause::omp_allocator_modifier_enum modifier = c->get_modifier();
+    if (modifier != SgOmpClause::e_omp_allocator_modifier_unknown) {
+      if (modifier == SgOmpClause::e_omp_allocator_user_defined_modifier) {
+        SgUnparse_Info new_info(info);
+        unparseExpression(isSgOmpAllocatorClause(c)->get_user_defined_modifier(), new_info);
+      } else {
+        switch (modifier) {
+          case SgOmpClause::e_omp_allocator_default_mem_alloc:
+          {
+            result = "omp_default_mem_alloc";
+            break;
+          }
+          case SgOmpClause::e_omp_allocator_large_cap_mem_alloc:
+          {
+            result = "omp_large_cap_mem_alloc";
+            break;
+          }
+          case SgOmpClause::e_omp_allocator_const_mem_alloc:
+          {
+            result = "omp_const_mem_alloc";
+            break;
+          }
+          case SgOmpClause::e_omp_allocator_high_bw_mem_alloc:
+          {
+            result = "omp_high_bw_mem_alloc";
+            break;
+          }
+          case SgOmpClause::e_omp_allocator_low_lat_mem_alloc:
+          {
+            result = "omp_low_lat_mem_alloc";
+            break;
+          }
+          case SgOmpClause::e_omp_allocator_cgroup_mem_alloc:
+          {
+            result = "omp_cgroup_mem_alloc";
+            break;
+          }
+          case SgOmpClause::e_omp_allocator_pteam_mem_alloc:
+          {
+            result = "omp_pteam_mem_alloc";
+            break;
+          }
+          case SgOmpClause::e_omp_allocator_thread_mem_alloc:
+          {
+            result = "omp_thread_mem_alloc";
+            break;
+          }
+          default:
+          {
+            cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpDefaultClause() meets unacceptable default option value:"<<endl;
+            ROSE_ABORT ();
+          }
+        }
+      }
+    }
+  curprint(result);
+  curprint(string(")"));
+}
+
 void UnparseLanguageIndependentConstructs::unparseOmpWhenClause(SgOmpClause* clause, SgUnparse_Info& info) {
     ROSE_ASSERT(clause != NULL);
     SgOmpWhenClause * c = isSgOmpWhenClause(clause);
@@ -10826,6 +10892,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         unparseOmpDefaultClause(isSgOmpDefaultClause(clause),info);
         break;
       }
+    case V_SgOmpAllocatorClause:
+      {
+        unparseOmpAllocatorClause(isSgOmpAllocatorClause(clause),info);
+        break;
+      }
     case V_SgOmpProcBindClause:
       {
         unparseOmpProcBindClause(isSgOmpProcBindClause(clause),info);
@@ -11143,7 +11214,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpAllocateStatement(SgStateme
   ASSERT_not_null(s);
 
   unparseOmpDirectivePrefixAndName(stmt, info);
-  unparseOmpBeginDirectiveClauses(stmt, info);
   if (s->get_variables().size()>0)
     curprint(string ("("));
   //unparse variable list then
@@ -11167,6 +11237,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpAllocateStatement(SgStateme
   }
   if (s->get_variables().size()>0)
     curprint (string (")"));
+  if (s->get_clauses().size()!=0) { unparseOmpBeginDirectiveClauses(stmt, info); }
   unp->u_sage->curprint_newline();
 }
 

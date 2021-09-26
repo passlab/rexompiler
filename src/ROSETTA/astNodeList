@@ -356,6 +356,7 @@ SgOmpMasterTaskloopStatement
 SgOmpSimdStatement
 SgOmpClause
 SgOmpAllocateClause
+SgOmpAllocatorClause
 SgOmpBeginClause
 SgOmpCollapseClause
 SgOmpCopyinClause

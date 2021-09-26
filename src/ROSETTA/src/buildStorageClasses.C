@@ -880,6 +880,7 @@ AstNodeClass::evaluateType(std::string& varTypeString)
                  ( varTypeString == "SgOmpClause::omp_device_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_linear_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_allocate_modifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_allocator_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_dependence_type_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_depend_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_affinity_modifier_enum" ) ||

@@ -56,6 +56,7 @@ static SgOmpScheduleClause* convertScheduleClause(SgOmpClauseBodyStatement*, std
 static SgOmpDistScheduleClause* convertDistScheduleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDefaultmapClause* convertDefaultmapClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpAllocatorClause* convertAllocatorClause(SgOmpClauseStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpProcBindClause* convertProcBindClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpOrderClause* convertOrderClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpBindClause* convertBindClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
@@ -1115,6 +1116,73 @@ namespace OmpSupport
       default:
         {
           printf("error: unacceptable omp construct enum for allocate modifier conversion:%d\n", allocator);
+          ROSE_ASSERT(false);
+          break;
+        }
+    }
+
+    return result;
+  }
+  
+  //! A helper function to convert OpenMPIR ALLOCATOR allocator to SgClause ALLOCATOR modifier
+  static SgOmpClause::omp_allocator_modifier_enum toSgOmpClauseAllocatorAllocator(OpenMPAllocatorClauseAllocator allocator)
+  {
+    SgOmpClause::omp_allocator_modifier_enum result;
+    switch (allocator)
+    {
+      case OMPC_ALLOCATOR_ALLOCATOR_default:
+        {
+          result = SgOmpClause::e_omp_allocator_default_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_large_cap:
+        {
+          result = SgOmpClause::e_omp_allocator_large_cap_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_cons_mem:
+        {
+          result = SgOmpClause::e_omp_allocator_const_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_high_bw:
+        {
+          result = SgOmpClause::e_omp_allocator_high_bw_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_low_lat:
+        {
+          result = SgOmpClause::e_omp_allocator_low_lat_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_cgroup:
+        {
+          result = SgOmpClause::e_omp_allocator_cgroup_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_pteam:
+        {
+          result = SgOmpClause::e_omp_allocator_pteam_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_thread:
+        {
+          result = SgOmpClause::e_omp_allocator_thread_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_user:
+        {
+          result = SgOmpClause::e_omp_allocator_user_defined_modifier;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_unknown:
+        {
+          result = SgOmpClause::e_omp_allocator_modifier_unknown;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for allocator modifier conversion:%d\n", allocator);
           ROSE_ASSERT(false);
           break;
         }
@@ -2538,9 +2606,13 @@ SgStatement* convertOmpAllocateDirective(std::pair<SgPragmaDeclaration*, OpenMPD
     for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end(); clause_iter++) {
         clause_kind = (*clause_iter)->getKind();
         switch (clause_kind) {
-            default: {
-                convertClause(isSgStatement(statement), current_OpenMPIR_to_SageIII, *clause_iter);
-            }
+          case OMPC_allocator: {
+            convertAllocatorClause(isSgOmpClauseStatement(statement), current_OpenMPIR_to_SageIII, *clause_iter);
+            break;
+          }
+          default: {
+            convertClause(isSgStatement(statement), current_OpenMPIR_to_SageIII, *clause_iter);
+          }
         };
     };
     std::vector<const char*>* current_expressions = current_ir->getAllocateList();
@@ -3078,6 +3150,26 @@ SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement* clause_body, 
         variant_directive->set_parent(result);
     };
 
+    // reconsider the location of following code to attach clause
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+
+    return result;
+}
+
+//! Build SgOmpAllocatorClause from OpenMPIR
+SgOmpAllocatorClause* convertAllocatorClause(SgOmpClauseStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    OpenMPAllocatorClauseAllocator allocator = ((OpenMPAllocatorClause*)current_omp_clause)->getAllocator();
+    SgOmpClause::omp_allocator_modifier_enum sg_modifier = toSgOmpClauseAllocatorAllocator(allocator);
+    SgExpression* user_defined_parameter = NULL;
+    SgGlobal* global = SageInterface::getGlobalScope(current_OpenMPIR_to_SageIII.first);
+    if (sg_modifier == SgOmpClause::e_omp_allocator_user_defined_modifier) {
+      SgExpression* clause_expression = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), ((OpenMPAllocatorClause*)current_omp_clause)->getUserDefinedAllocator());
+      user_defined_parameter = checkOmpExpressionClause(clause_expression, global, e_allocate);
+    }
+    SgOmpAllocatorClause* result = new SgOmpAllocatorClause(sg_modifier, user_defined_parameter);
+    setOneSourcePositionForTransformation(result);
     // reconsider the location of following code to attach clause
     SgOmpClause* sg_clause = result;
     clause_body->get_clauses().push_back(sg_clause);
@@ -4078,6 +4170,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_acquire:
                 case OMPC_aligned:
                 case OMPC_allocate:
+                case OMPC_allocator:
                 case OMPC_bind:
                 case OMPC_capture:
                 case OMPC_collapse:
