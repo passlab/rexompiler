@@ -3773,6 +3773,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpBarrierStatement:           unparseOmpSimpleStatement        (stmt, info);break;
                     case V_SgOmpThreadprivateStatement:     unparseOmpThreadprivateStatement (stmt, info);break;
                     case V_SgOmpFlushStatement:             unparseOmpFlushStatement         (stmt, info);break;
+                    case V_SgOmpAllocateStatement:             unparseOmpAllocateStatement   (stmt, info);break;
                     case V_SgOmpDeclareSimdStatement:       unparseOmpDeclareSimdStatement   (stmt, info);break;
                  // Generic OpenMP directives with a format of : begin-directive, begin-clauses, body, end-directive , end-clauses
                     case V_SgOmpCriticalStatement:
@@ -11101,10 +11102,44 @@ void UnparseLanguageIndependentConstructs::unparseOmpSimpleStatement(SgStatement
 }
 
 //----- refactor unparsing for threadprivate and flush ???
-void UnparseLanguageIndependentConstructs::unparseOmpFlushStatement(SgStatement* stmt,     SgUnparse_Info& info)
+void UnparseLanguageIndependentConstructs::unparseOmpFlushStatement(SgStatement* stmt, SgUnparse_Info& info)
 {
   ASSERT_not_null(stmt);
   SgOmpFlushStatement * s = isSgOmpFlushStatement(stmt);
+  ASSERT_not_null(s);
+
+  unparseOmpDirectivePrefixAndName(stmt, info);
+  if (s->get_clauses().size()!=0) { unparseOmpBeginDirectiveClauses(stmt, info); }
+  if (s->get_variables().size()>0)
+    curprint(string ("("));
+  //unparse variable list then
+  SgVarRefExpPtrList::iterator p = s->get_variables().begin();
+  while ( p != s->get_variables().end() )
+  {
+    ASSERT_not_null((*p)->get_symbol());
+    SgInitializedName* init_name = (*p)->get_symbol()->get_declaration();
+    ASSERT_not_null(init_name);
+    SgName tmp_name  = init_name->get_name();
+    curprint( tmp_name.str());
+
+    // Move to the next argument
+    p++;
+
+    // Check if this is the last argument (output a "," separator if not)
+    if (p != s->get_variables().end())
+    {
+      curprint( ",");
+    }
+  }
+  if (s->get_variables().size()>0)
+    curprint (string (")"));
+  unp->u_sage->curprint_newline();
+}
+
+void UnparseLanguageIndependentConstructs::unparseOmpAllocateStatement(SgStatement* stmt,     SgUnparse_Info& info)
+{
+  ASSERT_not_null(stmt);
+  SgOmpAllocateStatement * s = isSgOmpAllocateStatement(stmt);
   ASSERT_not_null(s);
 
   unparseOmpDirectivePrefixAndName(stmt, info);
@@ -11216,6 +11251,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
      case V_SgOmpFlushStatement:
       {
         curprint(string ("flush "));
+        break;
+      }
+      case V_SgOmpAllocateStatement:
+      {
+        curprint(string ("allocate "));
         break;
       }
       case V_SgOmpThreadprivateStatement:

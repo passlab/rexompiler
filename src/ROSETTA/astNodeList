@@ -295,6 +295,7 @@ SgOmpBodyStatement
 SgOmpClauseStatement
 SgOmpDoStatement
 SgOmpFlushStatement
+SgOmpAllocateStatement
 SgOmpDeclareSimdStatement
 SgUpirLoopParallelStatement
 SgOmpForSimdStatement
