@@ -534,6 +534,8 @@ namespace sg
     GEN_VISIT(SgOmpAtomicDefaultMemOrderClause)
     GEN_VISIT(SgOmpExtImplementationDefinedRequirementClause)
     GEN_VISIT(SgOmpWriteClause)
+    GEN_VISIT(SgOmpThreadsClause)
+    GEN_VISIT(SgOmpSimdClause)
     GEN_VISIT(SgOmpUpdateClause)
     GEN_VISIT(SgOmpCaptureClause)
     GEN_VISIT(SgOmpSeqCstClause)
