@@ -1272,6 +1272,16 @@ namespace OmpSupport
           result = SgOmpClause::e_omp_depend_depobj;
           break;
         }
+      case OMPC_DEPENDENCE_TYPE_source:
+        {
+          result = SgOmpClause::e_omp_depend_source;
+          break;
+        }
+      case OMPC_DEPENDENCE_TYPE_sink:
+        {
+          result = SgOmpClause::e_omp_depend_sink;
+          break;
+        }
       default:
         {
           printf("error: unacceptable omp construct enum for dependence type conversion:%d\n", type);
@@ -1987,6 +1997,14 @@ SgOmpClause* convertSimpleClause(SgStatement* directive, std::pair<SgPragmaDecla
             sg_clause = new SgOmpWriteClause();
             break;
         }
+        case OMPC_threads: {
+            sg_clause = new SgOmpThreadsClause();
+            break;
+        }
+        case OMPC_simd: {
+            sg_clause = new SgOmpSimdClause();
+            break;
+        }
         case OMPC_update: {
             sg_clause = new SgOmpUpdateClause();
             break;
@@ -2405,6 +2423,8 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             }
             case OMPC_read:
             case OMPC_write:
+            case OMPC_threads:
+            case OMPC_simd:
             case OMPC_update:
             case OMPC_capture:
             case OMPC_seq_cst:
@@ -4238,6 +4258,8 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_use_device_addr:
                 case OMPC_use_device_ptr:
                 case OMPC_when:
+                case OMPC_threads:
+                case OMPC_simd:
                 case OMPC_write: {
                     break;
                 }

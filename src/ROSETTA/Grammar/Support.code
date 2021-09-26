@@ -274,7 +274,9 @@ HEADER_OMP_CLAUSE_START
             e_omp_depend_out,
             e_omp_depend_inout,
             e_omp_depend_mutexinoutset,
-            e_omp_depend_depobj
+            e_omp_depend_depobj,
+            e_omp_depend_source,
+            e_omp_depend_sink
         };
 
         enum omp_depend_modifier_enum

@@ -284,6 +284,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	ordered3.c \
 	ordered2.c \
 	ordered.c \
+	ordered_depend.c \
 	orphaned-directives.c \
 	parallel.c \
 	parallel_allocate_predefined_modifier.c \

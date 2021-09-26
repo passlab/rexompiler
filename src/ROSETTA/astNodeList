@@ -357,6 +357,8 @@ SgOmpSimdStatement
 SgOmpClause
 SgOmpAllocateClause
 SgOmpAllocatorClause
+SgOmpThreadsClause
+SgOmpSimdClause
 SgOmpBeginClause
 SgOmpCollapseClause
 SgOmpCopyinClause

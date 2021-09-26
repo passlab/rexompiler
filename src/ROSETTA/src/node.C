@@ -68,6 +68,8 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpNowaitClause, "OmpNowaitClause", "OmpNowaitClauseTag" );
      NEW_TERMINAL_MACRO (OmpNogroupClause, "OmpNogroupClause", "OmpNogroupClauseTag" );
      NEW_TERMINAL_MACRO (OmpReadClause, "OmpReadClause", "OmpReadClauseTag" );
+     NEW_TERMINAL_MACRO (OmpThreadsClause, "OmpThreadsClause", "OmpThreadsClauseTag" );
+     NEW_TERMINAL_MACRO (OmpSimdClause, "OmpSimdClause", "OmpSimdClauseTag" );
      NEW_TERMINAL_MACRO (OmpReverseOffloadClause, "OmpReverseOffloadClause", "OmpReverseOffloadClauseTag" );
      NEW_TERMINAL_MACRO (OmpExtImplementationDefinedRequirementClause, "OmpExtImplementationDefinedRequirementClause", "OmpExtImplementationDefinedRequirementClauseTag" );
      NEW_TERMINAL_MACRO (OmpUnifiedAddressClause, "OmpUnifiedAddressClause", "OmpUnifiedAddressClauseTag" );
@@ -153,7 +155,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpDistScheduleClause, "OmpDistScheduleClause", "OmpDistScheduleClauseTag" );
      NEW_TERMINAL_MACRO (OmpDefaultmapClause, "OmpDefaultmapClause", "OmpDefaultmapClauseTag" );
      NEW_TERMINAL_MACRO (OmpAllocatorClause, "OmpAllocatorClause", "OmpAllocatorClauseTag" );
-     NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpReadClause | OmpWriteClause | OmpUpdateClause | OmpDepobjUpdateClause | OmpDestroyClause | OmpCaptureClause | OmpBeginClause |OmpEndClause | OmpUntiedClause | OmpSeqCstClause | OmpAcqRelClause | OmpReleaseClause | OmpAcquireClause | OmpRelaxedClause | OmpReverseOffloadClause | OmpUnifiedAddressClause | OmpUnifiedSharedMemoryClause | OmpDynamicAllocatorsClause |
+     NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpReadClause | OmpThreadsClause | OmpSimdClause | OmpWriteClause | OmpUpdateClause | OmpDepobjUpdateClause | OmpDestroyClause | OmpCaptureClause | OmpBeginClause |OmpEndClause | OmpUntiedClause | OmpSeqCstClause | OmpAcqRelClause | OmpReleaseClause | OmpAcquireClause | OmpRelaxedClause | OmpReverseOffloadClause | OmpUnifiedAddressClause | OmpUnifiedSharedMemoryClause | OmpDynamicAllocatorsClause |
          OmpParallelClause | OmpSectionsClause | OmpForClause | OmpTaskgroupClause | OmpNogroupClause |
          OmpDefaultClause | OmpAllocatorClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpDistScheduleClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpDefaultmapClause | OmpAtomicDefaultMemOrderClause | OmpExtImplementationDefinedRequirementClause |
          OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause ,

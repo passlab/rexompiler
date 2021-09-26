@@ -332,10 +332,11 @@ Grammar::setUpStatements ()
     
     NEW_TERMINAL_MACRO (OmpSimdStatement,    "OmpSimdStatement",     "OMP_SIMD_STMT" );
     NEW_TERMINAL_MACRO (OmpCriticalStatement,  "OmpCriticalStatement",   "OMP_CRITICAL_STMT" );
+    NEW_TERMINAL_MACRO (OmpOrderedStatement,   "OmpOrderedStatement",   "OMP_ORDERED_STMT" );
     // A base class for the most commonly formed directives with both clauses and a structured body
     // We treat OmpSectionsStatement separatedly by move the body to a list of SgOmpSectionStatement
     // sensitive to 
-    NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  UpirSpmdStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement | OmpTaskgroupStatement | OmpTaskloopStatement | OmpDepobjStatement | OmpTargetEnterDataStatement | OmpTargetExitDataStatement | OmpParallelMasterStatement | OmpMasterTaskloopStatement |
+    NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  UpirSpmdStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement | OmpOrderedStatement | OmpTaskgroupStatement | OmpTaskloopStatement | OmpDepobjStatement | OmpTargetEnterDataStatement | OmpTargetExitDataStatement | OmpParallelMasterStatement | OmpMasterTaskloopStatement |
               OmpTaskStatement | UpirLoopParallelStatement | OmpDoStatement | OmpSectionsStatement | UpirTaskStatement | OmpTargetDataStatement | OmpTargetParallelForStatement | OmpParallelLoopStatement |
               OmpTargetParallelStatement | OmpTargetParallelForSimdStatement | OmpTargetParallelLoopStatement | OmpTargetSimdStatement | OmpTargetTeamsStatement | OmpTargetTeamsDistributeStatement | OmpTargetTeamsDistributeSimdStatement | OmpTargetTeamsLoopStatement | OmpTargetTeamsDistributeParallelForStatement | OmpTargetTeamsDistributeParallelForSimdStatement | OmpDistributeSimdStatement | OmpDistributeParallelForStatement | OmpDistributeParallelForSimdStatement | OmpTaskloopSimdStatement |            
               OmpMasterTaskloopSimdStatement | OmpParallelMasterTaskloopStatement | OmpParallelMasterTaskloopSimdStatement | OmpTeamsDistributeStatement | OmpTeamsDistributeSimdStatement | OmpTeamsDistributeParallelForStatement | OmpTeamsDistributeParallelForSimdStatement | OmpTeamsLoopStatement |
@@ -345,7 +346,6 @@ Grammar::setUpStatements ()
     // + a statement / block
     NEW_TERMINAL_MACRO (OmpMasterStatement,    "OmpMasterStatement",    "OMP_MASTER_STMT" );
     NEW_TERMINAL_MACRO (OmpSectionStatement,   "OmpSectionStatement",    "OMP_SECTION_STMT" ); // need this?
-    NEW_TERMINAL_MACRO (OmpOrderedStatement,   "OmpOrderedStatement",   "OMP_ORDERED_STMT" );
     NEW_TERMINAL_MACRO (OmpWorkshareStatement,    "OmpWorkshareStatement",    "OMP_WORKSHARE_STMT" );
     NEW_TERMINAL_MACRO (OmpFlushStatement,     "OmpFlushStatement",      "OMP_FLUSH_STMT" );
     NEW_TERMINAL_MACRO (OmpAllocateStatement,     "OmpAllocateStatement",      "OMP_ALLOCATE_STMT" );
@@ -353,7 +353,7 @@ Grammar::setUpStatements ()
 
     //NEW_TERMINAL_MACRO (OmpCriticalStatement,  "OmpCriticalStatement",   "OMP_CRITICAL_STMT" );
     // A base class for all directives with a body/statement
-    NEW_NONTERMINAL_MACRO (OmpBodyStatement,  OmpMasterStatement  | OmpOrderedStatement
+    NEW_NONTERMINAL_MACRO (OmpBodyStatement,  OmpMasterStatement
         | OmpSectionStatement | OmpWorkshareStatement  | OmpClauseBodyStatement ,
         "OmpBodyStatement",      "OMP_BODY_STMT", false );
 

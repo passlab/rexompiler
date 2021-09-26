@@ -9978,6 +9978,16 @@ static std::string dependenceTypeToString(SgOmpClause::omp_dependence_type_enum 
         result = "depobj";
         break;
       }
+    case SgOmpClause::e_omp_depend_source:   
+      {
+        result = "source";
+        break;
+      }
+    case SgOmpClause::e_omp_depend_sink:   
+      {
+        result = "sink";
+        break;
+      }
     default:
       {
         cerr<<"Error: unhandled operator type"<<__func__<< "():"<< ro <<endl;
@@ -10343,7 +10353,8 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
             curprint(string(" , "));
           }
           curprint(dependenceTypeToString(isSgOmpDependClause(c)->get_dependence_type()));
-          curprint(string(" : "));
+          if((isSgOmpDependClause(c)->get_dependence_type()) != SgOmpClause::e_omp_depend_source)
+            curprint(string(" : "));
           is_depend = true;
           break;
       }
@@ -10948,6 +10959,16 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpReadClause:
       {
         curprint(string(" read"));
+        break;
+      }
+    case V_SgOmpThreadsClause:
+      {
+        curprint(string(" threads"));
+        break;
+      }
+    case V_SgOmpSimdClause:
+      {
+        curprint(string(" simd"));
         break;
       }
     case V_SgOmpReverseOffloadClause:
