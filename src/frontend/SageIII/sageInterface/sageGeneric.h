@@ -579,6 +579,7 @@ namespace sg
     GEN_VISIT(SgOmpInReductionClause)
     GEN_VISIT(SgOmpTaskReductionClause)
     GEN_VISIT(SgOmpAllocateClause)
+    GEN_VISIT(SgOmpAllocatorClause)
     GEN_VISIT(SgOmpWhenClause)
     GEN_VISIT(SgOmpVariablesClause)
     GEN_VISIT(SgOmpScheduleClause)

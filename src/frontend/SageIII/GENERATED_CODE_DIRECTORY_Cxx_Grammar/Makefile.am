@@ -64,7 +64,7 @@ SgActualArgumentExpression.C           SgCatchStatementSeq.C                 SgF
 SgAddOp.C                              SgCharVal.C                           SgFunctionRefExp.C                      SgOmpCopyinClause.C                          SgTemplateParameterList.C \
 SgAddressOfOp.C                        SgClassDeclaration.C                  SgFunctionSymbol.C                      SgOmpCopyprivateClause.C                     SgTemplateSymbol.C \
 SgAggregateInitializer.C               SgClassDecl_attr.C                    SgFunctionType.C                        SgOmpCriticalStatement.C                     SgTemplateType.C \
-SgAliasSymbol.C                        SgClassDefinition.C                   SgFunctionTypeSymbol.C                  SgOmpDefaultClause.C                         SgThisExp.C \
+SgAliasSymbol.C                        SgClassDefinition.C                   SgFunctionTypeSymbol.C                  SgOmpDefaultClause.C                   SgOmpAllocatorClause.C                  SgThisExp.C \
 SgAllocateStatement.C                  SgClassNameRefExp.C                   SgFunctionTypeTable.C                   SgOmpDoStatement.C                           SgThrowOp.C \
 SgAndAssignOp.C                        SgClassSymbol.C                       SgGlobal.C                              SgOmpExpressionClause.C                      SgToken.C \
 SgAndOp.C                              SgClassType.C                         SgGotoStatement.C                       SgOmpFirstprivateClause.C              SgOmpNontemporalClause.C       SgTryStmt.C \

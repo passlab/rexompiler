@@ -250,6 +250,22 @@ HEADER_OMP_CLAUSE_START
 
             e_omp_allocate_user_defined_modifier
         };
+        
+        enum omp_allocator_modifier_enum
+        {
+            e_omp_allocator_modifier_unknown,
+
+            e_omp_allocator_default_mem_alloc,
+            e_omp_allocator_large_cap_mem_alloc,
+            e_omp_allocator_const_mem_alloc,
+            e_omp_allocator_high_bw_mem_alloc,
+            e_omp_allocator_low_lat_mem_alloc,
+            e_omp_allocator_cgroup_mem_alloc,
+            e_omp_allocator_pteam_mem_alloc,
+            e_omp_allocator_thread_mem_alloc,
+
+            e_omp_allocator_user_defined_modifier
+        };
 
         enum omp_dependence_type_enum
         {

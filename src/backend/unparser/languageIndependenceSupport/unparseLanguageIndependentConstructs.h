@@ -377,6 +377,7 @@ class UnparseLanguageIndependentConstructs
          // Liao 10/20/2010 common unparsing support for OpenMP AST 
           virtual void unparseOmpPrefix                     (SgUnparse_Info& info); // = 0;
           virtual void unparseOmpDefaultClause              (SgOmpClause* clause, SgUnparse_Info& info); 
+          virtual void unparseOmpAllocatorClause            (SgOmpClause* clause, SgUnparse_Info& info); 
           virtual void unparseOmpProcBindClause             (SgOmpClause* clause, SgUnparse_Info& info); 
           virtual void unparseOmpOrderClause                (SgOmpClause* clause, SgUnparse_Info& info); 
           virtual void unparseOmpBindClause                 (SgOmpClause* clause, SgUnparse_Info& info); 
