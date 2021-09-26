@@ -13024,9 +13024,10 @@ Unparse_ExprStmt::unparseOmpBeginDirectiveClauses (SgStatement* stmt,     SgUnpa
   SgOmpRequiresStatement* requires_stmt= isSgOmpRequiresStatement(stmt);
   SgOmpTaskwaitStatement* taskwait_stmt= isSgOmpTaskwaitStatement(stmt);
   SgOmpFlushStatement* flush_stmt= isSgOmpFlushStatement(stmt);
+  SgOmpAllocateStatement* allocate_stmt= isSgOmpAllocateStatement(stmt);
   //if (bodystmt||simdstmt)
   SgOmpClauseStatement* clausestmt= isSgOmpClauseStatement(stmt);
-  if (bodystmt||simdstmt||clausestmt||requires_stmt||taskwait_stmt||flush_stmt)
+  if (bodystmt||simdstmt||clausestmt||requires_stmt||taskwait_stmt||allocate_stmt)
   {
     //const SgOmpClausePtrList& clause_ptr_list = bodystmt?bodystmt->get_clauses():simdstmt->get_clauses();
     SgOmpClausePtrList clause_ptr_list; 
@@ -13039,8 +13040,9 @@ Unparse_ExprStmt::unparseOmpBeginDirectiveClauses (SgStatement* stmt,     SgUnpa
     else if (taskwait_stmt) {
       clause_ptr_list = taskwait_stmt->get_clauses();
     }
-    else if (flush_stmt) {
-      clause_ptr_list = flush_stmt->get_clauses();
+    
+    else if (allocate_stmt) {
+      clause_ptr_list = allocate_stmt->get_clauses();
     }
     else{
       clause_ptr_list = bodystmt?bodystmt->get_clauses():simdstmt->get_clauses();

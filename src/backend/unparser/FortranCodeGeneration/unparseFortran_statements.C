@@ -6001,7 +6001,7 @@ FortranCodeGeneration_locatedNode::unparseOmpBeginDirectiveClauses (SgStatement*
 {
   ASSERT_not_null(stmt);
   // optional clauses
-  if (isSgOmpClauseBodyStatement(stmt))
+  if (isSgOmpClauseBodyStatement(stmt) || isSgDeclarationStatement(stmt))
   {
     const SgOmpClausePtrList& clause_ptr_list = isSgOmpClauseBodyStatement(stmt)->get_clauses();
     SgOmpClausePtrList::const_iterator i;
@@ -6012,8 +6012,18 @@ FortranCodeGeneration_locatedNode::unparseOmpBeginDirectiveClauses (SgStatement*
          continue;
       unparseOmpClause(c_clause, info);
     }
+    unp->u_sage->curprint_newline();
   }
-  unp->u_sage->curprint_newline();
+  else if (isSgOmpClauseStatement(stmt))
+  { 
+    const SgOmpClausePtrList& clause_ptr_list = isSgOmpFlushStatement(stmt)->get_clauses();
+    SgOmpClausePtrList::const_iterator i;
+    for (i= clause_ptr_list.begin(); i!= clause_ptr_list.end(); i++)
+    {
+      SgOmpClause* c_clause = *i;
+      unparseOmpClause(c_clause, info);
+    }
+  }
 }
 
 // Only unparse nowait or copyprivate clauses here

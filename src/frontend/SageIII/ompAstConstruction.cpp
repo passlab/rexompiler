@@ -44,6 +44,7 @@ static SgOmpBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclar
 static SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertOmpDeclareSimdDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertOmpFlushDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
+static SgStatement* convertOmpAllocateDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertOmpThreadprivateStatement(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII);
 static SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgOmpVariablesClause* convertClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
@@ -1808,6 +1809,10 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
             result = convertOmpFlushDirective(current_OpenMPIR_to_SageIII);
             break;
         }
+        case OMPD_allocate: {
+            result = convertOmpAllocateDirective(current_OpenMPIR_to_SageIII);
+            break;
+        }
         case OMPD_taskyield: {
             result = new SgOmpTaskyieldStatement();
             break;
@@ -2496,6 +2501,51 @@ SgStatement* convertOmpFlushDirective(std::pair<SgPragmaDeclaration*, OpenMPDire
     std::vector<std::string>* current_expressions = current_ir->getFlushList();
     if (current_expressions->size() != 0) {
         std::vector<std::string>::iterator iter;
+        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
+            std::string expr_string = std::string() + "varlist " + *iter + "\n";
+            omp_exprparser_parser_init(current_OpenMPIR_to_SageIII.first, expr_string.c_str());
+            omp_exprparser_parse();
+        }
+    }
+
+    std::vector<std::pair<std::string, SgNode*> >::iterator iter;
+    for (iter = omp_variable_list.begin(); iter != omp_variable_list.end(); iter++) {
+        if (SgInitializedName* iname = isSgInitializedName((*iter).second)) {
+            SgVarRefExp * var_ref = buildVarRefExp(iname);
+            statement->get_variables().push_back(var_ref);
+            var_ref->set_parent(statement);
+        }
+        else if (SgVarRefExp* vref = isSgVarRefExp((*iter).second)) {
+            statement->get_variables().push_back(vref);
+            vref->set_parent(statement);
+        }
+        else {
+            cerr << "error: unhandled type of variable within a list:" << ((*iter).second)->class_name();
+        }
+    }
+    current_expressions->clear();
+    omp_variable_list.clear();
+    return statement;
+}
+
+// Convert an OpenMPIR Allocate Directive to a ROSE node
+SgStatement* convertOmpAllocateDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
+    SgOmpAllocateStatement *statement = new SgOmpAllocateStatement();
+    OpenMPAllocateDirective *current_ir = static_cast<OpenMPAllocateDirective *>(current_OpenMPIR_to_SageIII.second);
+    std::vector<OpenMPClause*>* all_clauses = current_OpenMPIR_to_SageIII.second->getClausesInOriginalOrder();
+    OpenMPClauseKind clause_kind;
+    std::vector<OpenMPClause*>::iterator clause_iter;
+    for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end(); clause_iter++) {
+        clause_kind = (*clause_iter)->getKind();
+        switch (clause_kind) {
+            default: {
+                convertClause(isSgStatement(statement), current_OpenMPIR_to_SageIII, *clause_iter);
+            }
+        };
+    };
+    std::vector<const char*>* current_expressions = current_ir->getAllocateList();
+    if (current_expressions->size() != 0) {
+        std::vector<const char*>::iterator iter;
         for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
             std::string expr_string = std::string() + "varlist " + *iter + "\n";
             omp_exprparser_parser_init(current_OpenMPIR_to_SageIII.first, expr_string.c_str());
@@ -3955,6 +4005,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_distribute:
         case OMPD_do:
         case OMPD_flush:
+        case OMPD_allocate:
         case OMPD_for:
         case OMPD_for_simd:
         case OMPD_loop:

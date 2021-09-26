@@ -19083,6 +19083,12 @@ SgOmpFlushStatement::post_construction_initialization()
    {}
 SOURCE_OMP_FLUSH_STATEMENT_END
 
+SOURCE_OMP_ALLOCATE_STATEMENT_START
+void
+SgOmpAllocateStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_ALLOCATE_STATEMENT_END
+
 HEADER_OMP_DECLARE_SIMD_STATEMENT_START
 //! Required for any declaration statement
      virtual SgName get_mangled_name(void) const $ROSE_OVERRIDE;

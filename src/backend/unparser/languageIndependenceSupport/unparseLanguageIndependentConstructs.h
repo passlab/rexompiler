@@ -394,6 +394,7 @@ class UnparseLanguageIndependentConstructs
           virtual void unparseOmpSimpleStatement             (SgStatement* stmt,     SgUnparse_Info& info);
           virtual void unparseOmpThreadprivateStatement      (SgStatement* stmt,     SgUnparse_Info& info);
           virtual void unparseOmpFlushStatement              (SgStatement* stmt,     SgUnparse_Info& info);
+          virtual void unparseOmpAllocateStatement           (SgStatement* stmt,     SgUnparse_Info& info);
           virtual void unparseOmpDeclareSimdStatement        (SgStatement* stmt,     SgUnparse_Info& info);
         
           // This is necessary since some clauses should only appear with the begin part of a directive
