@@ -3664,23 +3664,37 @@ SgOmpDependClause* convertDependClause(SgStatement* clause_body, std::pair<SgPra
     SgOmpClause::omp_depend_modifier_enum sg_modifier = toSgOmpClauseDependModifier(modifier);
     OpenMPDependClauseType type = ((OpenMPDependClause*)current_omp_clause)->getType();
     SgOmpClause::omp_dependence_type_enum sg_type = toSgOmpClauseDependenceType(type);
-
-    std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
-    if (current_expressions->size() != 0) {
+    SgExprListExp* explist = NULL;
+    SgExpression* vec = NULL;
+    std::list<SgExpression*> vec_list;
+    if(type != OMPC_DEPENDENCE_TYPE_sink) {
+      std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
+      if (current_expressions->size() != 0) {
         std::vector<const char*>::iterator iter;
         for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
-            parseOmpArraySection(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), *iter);
+          parseOmpArraySection(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), *iter);
         }
+      }
+      explist = buildExprListExp();
+    } else if (type == OMPC_DEPENDENCE_TYPE_sink){
+      explist = buildExprListExp();
+      std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
+      if (current_expressions->size() != 0) {
+        std::vector<const char*>::iterator iter;
+        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
+          vec = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), *iter);
+          vec_list.push_back(vec);
+        }
+      }
     }
-    SgExprListExp* explist = buildExprListExp();
-
     result = new SgOmpDependClause(explist, sg_modifier, sg_type);
     ROSE_ASSERT(result != NULL);
     buildVariableList(result);
-    explist->set_parent(result);
+    if(type != OMPC_DEPENDENCE_TYPE_sink)
+      explist->set_parent(result);
+    result->set_vec(vec_list);
     result->set_array_dimensions(array_dimensions);
     result->set_iterator(depend_iterators_definition_class);
-
     setOneSourcePositionForTransformation(result);
     SgOmpClause* sg_clause = result;
     if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_target_update) {

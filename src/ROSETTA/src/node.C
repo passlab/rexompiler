@@ -1968,6 +1968,8 @@ Grammar::setUpNodes ()
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      OmpDependClause.setDataPrototype("std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >", "array_dimensions", "",
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpDependClause.setDataPrototype("std::list<SgExpression*>", "vec", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
                           
      // affinity([aff-modifier :] locator-list)
      OmpAffinityClause.setDataPrototype("SgOmpClause::omp_affinity_modifier_enum", "affinity_modifier", "=e_omp_affinity_modifier_unspecified",
