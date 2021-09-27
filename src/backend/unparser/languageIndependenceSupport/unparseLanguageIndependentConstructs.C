@@ -10460,6 +10460,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
 
   //unparse variable list then
   SgExpressionPtrList::iterator p = c->get_variables()->get_expressions().begin();
+  
   while ( p != c->get_variables()->get_expressions().end() )
   {
     // We now try to put array reference expression into variable list.
@@ -10547,7 +10548,19 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
       curprint( ",");
     }
   }
-
+  
+  if (isSgOmpDependClause(c) && isSgOmpDependClause(c)->get_dependence_type() == SgOmpClause::e_omp_depend_sink) {
+    std::list<SgExpression*> vec_list = isSgOmpDependClause(c)->get_vec();
+    std::list<SgExpression*>::iterator iter;
+    int count_for_vec = 0;
+    for (iter = vec_list.begin(); iter != vec_list.end(); iter++) {
+      SgExpression* var = (*iter);
+      SgUnparse_Info ninfo(info);
+      unparseExpression(var, ninfo);
+      count_for_vec++;
+      if (count_for_vec < vec_list.size()) curprint( ",");
+    }
+  }
   // optional :step  for linear(list:step)
   if (isSgOmpLinearClause(c) && isSgOmpLinearClause(c)->get_modifier()) { curprint(string(")")); }
   if (isSgOmpLinearClause(c) && isSgOmpLinearClause(c)->get_step())
