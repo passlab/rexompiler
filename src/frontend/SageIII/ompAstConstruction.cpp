@@ -1852,15 +1852,20 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
             break;
         }
         case OMPD_ordered: {
+          if (current_OpenMPIR_to_SageIII.second->getClausesInOriginalOrder()->size() != 0) {
             std::vector<OpenMPClause*>* ordered_clauses = current_OpenMPIR_to_SageIII.second->getClausesInOriginalOrder();
             OpenMPClause* clause = *ordered_clauses->begin();
-            if(clause->getKind() == OMPC_depend) {
-                result = convertNonBodyDirective(current_OpenMPIR_to_SageIII);
-                break;
+            if (clause->getKind() == OMPC_depend) {
+              result = convertNonBodyDirective(current_OpenMPIR_to_SageIII);
+              break;
             } else {
-                result = convertBodyDirective(current_OpenMPIR_to_SageIII);
-                break;
+              result = convertBodyDirective(current_OpenMPIR_to_SageIII);
+              break;
             }
+          } else {
+            result = convertBodyDirective(current_OpenMPIR_to_SageIII);
+            break;
+          }
         }
         case OMPD_parallel_do:
         case OMPD_parallel_for:
