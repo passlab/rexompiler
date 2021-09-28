@@ -1847,10 +1847,20 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_section:
         case OMPD_simd:
         case OMPD_parallel:
-        case OMPD_ordered:
         case OMPD_workshare: {
             result = convertBodyDirective(current_OpenMPIR_to_SageIII);
             break;
+        }
+        case OMPD_ordered: {
+            std::vector<OpenMPClause*>* ordered_clauses = current_OpenMPIR_to_SageIII.second->getClausesInOriginalOrder();
+            OpenMPClause* clause = *ordered_clauses->begin();
+            if(clause->getKind() == OMPC_depend) {
+                result = convertNonBodyDirective(current_OpenMPIR_to_SageIII);
+                break;
+            } else {
+                result = convertBodyDirective(current_OpenMPIR_to_SageIII);
+                break;
+            }
         }
         case OMPD_parallel_do:
         case OMPD_parallel_for:
@@ -2105,6 +2115,10 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
             result = new SgOmpTargetUpdateStatement();
             break;
         }
+        case OMPD_ordered: {
+            result = new SgOmpOrderedDependStatement();
+            break;
+        }
         default: {
             printf("Unknown directive is found.\n");
         }
@@ -2134,6 +2148,7 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
             }
             case OMPC_depend: {
                 convertDependClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
             }
             default: {
                 cerr<<"error: unknown clause "<<endl;
@@ -3701,6 +3716,8 @@ SgOmpDependClause* convertDependClause(SgStatement* clause_body, std::pair<SgPra
         ((SgOmpTargetUpdateStatement*)clause_body)->get_clauses().push_back(sg_clause);
     } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_taskwait) {
         ((SgOmpTaskwaitStatement*)clause_body)->get_clauses().push_back(sg_clause);
+    } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_ordered) {
+        ((SgOmpOrderedDependStatement*)clause_body)->get_clauses().push_back(sg_clause);
     } else {
         ((SgOmpClauseBodyStatement*)clause_body)->get_clauses().push_back(sg_clause);
     }

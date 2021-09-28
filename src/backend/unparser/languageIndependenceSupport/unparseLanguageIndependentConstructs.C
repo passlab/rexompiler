@@ -3782,6 +3782,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpTaskyieldStatement:
                     case V_SgOmpMetadirectiveStatement:
                     case V_SgOmpOrderedStatement:
+                    case V_SgOmpOrderedDependStatement:
                     case V_SgOmpSectionsStatement:
                     case V_SgUpirSpmdStatement:
                     case V_SgOmpTaskwaitStatement:
@@ -11396,6 +11397,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpCancellationPointStatement:
       {
         curprint(string ("cancellation point "));
+        break;
+      }
+    case V_SgOmpOrderedDependStatement:
+      {
+        curprint(string ("ordered "));
         break;
       }
     case V_SgOmpDeclareMapperStatement:

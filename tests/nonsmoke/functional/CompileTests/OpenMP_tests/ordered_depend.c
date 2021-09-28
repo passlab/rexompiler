@@ -12,6 +12,7 @@ void work( int N, float *A, float *B, float *C )
         #pragma omp ordered depend(sink: i-1)
         B[i] = bar(A[i], B[i-1]);
         #pragma omp ordered depend(source)
+        
         C[i] = baz(B[i]);
     }
 }
