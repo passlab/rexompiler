@@ -349,6 +349,7 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpWorkshareStatement,    "OmpWorkshareStatement",    "OMP_WORKSHARE_STMT" );
     NEW_TERMINAL_MACRO (OmpFlushStatement,     "OmpFlushStatement",      "OMP_FLUSH_STMT" );
     NEW_TERMINAL_MACRO (OmpAllocateStatement,     "OmpAllocateStatement",      "OMP_ALLOCATE_STMT" );
+    NEW_TERMINAL_MACRO (OmpOrderedDependStatement,     "OmpOrderedDependStatement",      "OMP_ORDERED_DEPEND_STMT" );
     // + stmt/block + name
 
     //NEW_TERMINAL_MACRO (OmpCriticalStatement,  "OmpCriticalStatement",   "OMP_CRITICAL_STMT" );
@@ -357,7 +358,7 @@ Grammar::setUpStatements ()
         | OmpSectionStatement | OmpWorkshareStatement  | OmpClauseBodyStatement ,
         "OmpBodyStatement",      "OMP_BODY_STMT", false );
 
-    NEW_NONTERMINAL_MACRO (OmpClauseStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement,
+    NEW_NONTERMINAL_MACRO (OmpClauseStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement | OmpOrderedDependStatement,
         "OmpClauseStatement",      "OMP_CLAUSE_STMT", false );
 
 
@@ -4267,6 +4268,7 @@ Grammar::setUpStatements ()
     UpirSpmdStatement.setFunctionSource            ("SOURCE_UPIR_SPMD_STATEMENT", "../Grammar/Statement.code" );
     OmpTeamsStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_STATEMENT", "../Grammar/Statement.code" );
     OmpCancellationPointStatement.setFunctionSource            ("SOURCE_OMP_CANCELLATION_POINT_STATEMENT", "../Grammar/Statement.code" );
+    OmpOrderedDependStatement.setFunctionSource            ("SOURCE_OMP_ORDERED_DEPEND_STATEMENT", "../Grammar/Statement.code" );
     OmpDeclareMapperStatement.setFunctionSource            ("SOURCE_OMP_DECLARE_MAPPER_STATEMENT", "../Grammar/Statement.code" );
     OmpCancelStatement.setFunctionSource            ("SOURCE_OMP_CANCEL_STATEMENT", "../Grammar/Statement.code" );
     OmpTaskgroupStatement.setFunctionSource            ("SOURCE_OMP_TASKGROUP_STATEMENT", "../Grammar/Statement.code" );

@@ -339,6 +339,7 @@ int Labeler::numberOfAssociatedLabels(SgNode* node) {
   case V_SgOmpTargetEnterDataStatement:
   case V_SgOmpTargetExitDataStatement:
   case V_SgOmpOrderedStatement:
+  case V_SgOmpOrderedDependStatement:
   case V_SgOmpSectionStatement:
   case V_SgOmpSingleStatement:
   case V_SgOmpTargetDataStatement:

@@ -390,6 +390,7 @@ namespace sg
     GEN_VISIT(SgOmpTaskyieldStatement)
     GEN_VISIT(SgOmpSectionStatement)
     GEN_VISIT(SgOmpOrderedStatement)
+    GEN_VISIT(SgOmpOrderedDependStatement)
     GEN_VISIT(SgOmpWorkshareStatement)
     GEN_VISIT(SgOmpCriticalStatement)
     GEN_VISIT(SgOmpBodyStatement)
