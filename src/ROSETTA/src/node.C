@@ -139,6 +139,8 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpTaskReductionClause, "OmpTaskReductionClause", "OmpTaskReductionClauseTag" );
      NEW_TERMINAL_MACRO (OmpAllocateClause, "OmpAllocateClause", "OmpAllocateClauseTag" );
      NEW_TERMINAL_MACRO (OmpDependClause,    "OmpDependClause", "OmpDependClauseTag" );
+     NEW_TERMINAL_MACRO (OmpToClause,    "OmpToClause", "OmpToClauseTag" );
+     NEW_TERMINAL_MACRO (OmpFromClause,    "OmpFromClause", "OmpFromClauseTag" );
      NEW_TERMINAL_MACRO (OmpAffinityClause,    "OmpAffinityClause", "OmpAffinityClauseTag" );
      NEW_TERMINAL_MACRO (OmpMapClause, "OmpMapClause", "OmpMapClauseTag" );
      NEW_TERMINAL_MACRO (OmpLinearClause, "OmpLinearClause", "OmpLinearClauseTag" );
@@ -147,7 +149,7 @@ Grammar::setUpNodes ()
 
      NEW_NONTERMINAL_MACRO (OmpVariablesClause, OmpCopyprivateClause| OmpPrivateClause | OmpFirstprivateClause | OmpNontemporalClause | OmpInclusiveClause | OmpExclusiveClause | OmpIsDevicePtrClause | OmpUseDevicePtrClause | OmpUseDeviceAddrClause |
          OmpSharedClause |OmpCopyinClause| OmpLastprivateClause| OmpReductionClause | OmpInReductionClause | OmpTaskReductionClause | OmpMapClause | OmpAllocateClause |
-         OmpUniformClause | OmpAlignedClause | OmpLinearClause | OmpDependClause | OmpAffinityClause,
+         OmpUniformClause | OmpAlignedClause | OmpLinearClause | OmpDependClause | OmpAffinityClause | OmpToClause | OmpFromClause,
          "OmpVariablesClause", "OmpVariablesClauseTag", false);
 
      NEW_TERMINAL_MACRO (OmpScheduleClause, "OmpScheduleClause", "OmpScheduleClauseTag" );
@@ -1970,6 +1972,23 @@ Grammar::setUpNodes ()
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      OmpDependClause.setDataPrototype("std::list<SgExpression*>", "vec", "",
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // to([mapper(mapper-identifier):]locator-list)
+     OmpToClause.setDataPrototype("SgOmpClause::omp_to_kind_enum", "kind", "=e_omp_to_kind_unknown",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpToClause.setDataPrototype("SgExpression*", "mapper_identifier", "= NULL",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpToClause.setDataPrototype("std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >", "array_dimensions", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+                          
+     // from([mapper(mapper-identifier):]locator-list)
+     OmpFromClause.setDataPrototype("SgOmpClause::omp_from_kind_enum", "kind", "=e_omp_from_kind_unknown",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpFromClause.setDataPrototype("SgExpression*", "mapper_identifier", "= NULL",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpFromClause.setDataPrototype("std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >", "array_dimensions", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
                           
      // affinity([aff-modifier :] locator-list)
      OmpAffinityClause.setDataPrototype("SgOmpClause::omp_affinity_modifier_enum", "affinity_modifier", "=e_omp_affinity_modifier_unspecified",
