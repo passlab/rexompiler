@@ -11198,7 +11198,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpSimpleStatement(SgStatement
   ASSERT_not_null(stmt);
   unparseOmpDirectivePrefixAndName(stmt, info);
   unp->u_sage->curprint_newline();
-  SgOmpBodyStatement* b_stmt = isSgOmpBodyStatement(stmt);
+  SgUpirBaseStatement* b_stmt = isSgUpirBaseStatement(stmt);
   if (b_stmt)
   {
     ROSE_ASSERT (stmt->variantT() == V_SgOmpSectionStatement);
@@ -11723,7 +11723,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpGenericStatement (SgStateme
     unp->u_sage->curprint_newline();
   };
   // unparse the body, if exists.
-  SgOmpBodyStatement* b_stmt = isSgOmpBodyStatement(stmt);
+  SgUpirBaseStatement* b_stmt = isSgUpirBaseStatement(stmt);
   if (!isVariant && b_stmt)
   {
     SgUnparse_Info ninfo(info);

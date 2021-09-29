@@ -19459,7 +19459,7 @@ SgOmpTaskStatement::post_construction_initialization()
    {}
 SOURCE_OMP_TASK_STATEMENT_END
 
-HEADER_OMP_BODY_STATEMENT_START
+HEADER_UPIR_BASE_STATEMENT_START
       virtual bool replace_child(SgStatement *,SgStatement *, bool extractListFromBasicBlock = false) $ROSE_OVERRIDE;
 
       public:
@@ -19470,7 +19470,7 @@ HEADER_OMP_BODY_STATEMENT_START
       virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
 #endif
 
-HEADER_OMP_BODY_STATEMENT_END
+HEADER_UPIR_BASE_STATEMENT_END
 
 HEADER_OMP_CLAUSE_STATEMENT_START
 HEADER_OMP_CLAUSE_STATEMENT_END
@@ -19481,17 +19481,17 @@ SgOmpClauseStatement::post_construction_initialization()
    {}
 SOURCE_OMP_CLAUSE_STATEMENT_END
 
-SOURCE_OMP_BODY_STATEMENT_START
+SOURCE_UPIR_BASE_STATEMENT_START
 void
-SgOmpBodyStatement::post_construction_initialization()
+SgUpirBaseStatement::post_construction_initialization()
    {}
 
 bool
-SgOmpBodyStatement::replace_child(SgStatement *target,SgStatement *newstmt, bool extractBasicBlock)
+SgUpirBaseStatement::replace_child(SgStatement *target,SgStatement *newstmt, bool extractBasicBlock)
    {
      return ( StatementReplace(this, p_body, target, newstmt) == true );
    }
-SOURCE_OMP_BODY_STATEMENT_END
+SOURCE_UPIR_BASE_STATEMENT_END
 
 
 HEADER_OMP_CLAUSEBODY_STATEMENT_START

@@ -57,13 +57,13 @@ SgStatement* convertOpenACCDirective(std::pair<SgPragmaDeclaration*, OpenACCDire
     return result;
 }
 
-SgOmpBodyStatement* convertOpenACCBodyDirective(std::pair<SgPragmaDeclaration*, OpenACCDirective*> current_OpenACCIR_to_SageIII) {
+SgUpirBaseStatement* convertOpenACCBodyDirective(std::pair<SgPragmaDeclaration*, OpenACCDirective*> current_OpenACCIR_to_SageIII) {
     
     OpenACCDirectiveKind directive_kind = current_OpenACCIR_to_SageIII.second->getKind();
     // directives like parallel and for have a following code block beside the pragma itself.
     SgStatement* body = SageInterface::getNextStatement(current_OpenACCIR_to_SageIII.first);
     SageInterface::removeStatement(body,false);
-    SgOmpBodyStatement* result = NULL;
+    SgUpirBaseStatement* result = NULL;
     OpenACCClauseKind clause_kind;
 
     switch (directive_kind) {

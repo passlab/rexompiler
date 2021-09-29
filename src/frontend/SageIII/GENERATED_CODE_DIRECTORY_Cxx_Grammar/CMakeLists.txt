@@ -459,7 +459,7 @@ if(enable-smaller-generated-files)
     SgNullStatement.C
     SgOmpAtomicStatement.C
     SgOmpBarrierStatement.C
-    SgOmpBodyStatement.C
+    SgUpirBaseStatement.C
     SgOmpClauseBodyStatement.C
     SgOmpClause.C
     SgOmpCollapseClause.C
