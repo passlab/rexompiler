@@ -358,6 +358,8 @@ SgOmpSimdStatement
 SgOmpClause
 SgOmpAllocateClause
 SgOmpAllocatorClause
+SgOmpToClause
+SgOmpFromClause
 SgOmpThreadsClause
 SgOmpSimdClause
 SgOmpBeginClause

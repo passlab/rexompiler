@@ -266,6 +266,18 @@ HEADER_OMP_CLAUSE_START
 
             e_omp_allocator_user_defined_modifier
         };
+        
+        enum omp_to_kind_enum
+         {
+             e_omp_to_kind_unknown,
+             e_omp_to_kind_mapper
+         };
+         
+         enum omp_from_kind_enum
+         {
+             e_omp_from_kind_unknown,
+             e_omp_from_kind_mapper
+         };
 
         enum omp_dependence_type_enum
         {

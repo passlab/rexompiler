@@ -10208,8 +10208,10 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
   SgOmpVariablesClause* c= isSgOmpVariablesClause (clause);
   ASSERT_not_null(c);
   bool is_map = false;
-  bool is_depend= false;
-  bool is_affinity= false;
+  bool is_depend = false;
+  bool is_affinity = false;
+  bool is_to = false;
+  bool is_from = false;
   // unparse the  clause name first
   switch (c->variantT())
   {
@@ -10425,7 +10427,32 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
         curprint(string(" : "));
       break;
       }
-
+    case V_SgOmpToClause:
+      {
+        is_to = true;
+        SgUnparse_Info ninfo(info);
+        curprint(string(" to("));
+        if (isSgOmpToClause(c)->get_kind() != SgOmpClause::e_omp_to_kind_unknown) {
+          curprint("mapper (");
+          unparseExpression(isSgOmpToClause(c)->get_mapper_identifier(), info);
+          curprint(")");
+          curprint(string(" : "));
+        }        
+      break;
+      }
+    case V_SgOmpFromClause:
+      {
+        is_from = true;
+        SgUnparse_Info ninfo(info);
+        curprint(string(" from("));
+        if (isSgOmpFromClause(c)->get_kind() != SgOmpClause::e_omp_from_kind_unknown) {
+          curprint("mapper (");
+          unparseExpression(isSgOmpFromClause(c)->get_mapper_identifier(), info);
+          curprint(")");
+          curprint(string(" : "));
+        }        
+      break;
+      }
     case V_SgOmpSharedClause:
       curprint(string(" shared("));
       break;
@@ -10444,6 +10471,18 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
     ROSE_ASSERT (m_clause != NULL);
     dims = m_clause->get_array_dimensions();
     dist_policies = m_clause->get_dist_data_policies();
+  }
+  if (is_to)
+  {
+    SgOmpToClause * m_clause = isSgOmpToClause (clause);
+    ROSE_ASSERT (m_clause != NULL);
+    dims = m_clause->get_array_dimensions();
+  }
+  if (is_from)
+  {
+    SgOmpFromClause * m_clause = isSgOmpFromClause (clause);
+    ROSE_ASSERT (m_clause != NULL);
+    dims = m_clause->get_array_dimensions();
   }
   else if (is_depend) // task depend(A[i:BS][j:BS]) , is also stored as array section.
    // TODO: long term, we need a dedicated array section AST node
@@ -10510,6 +10549,52 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
         } // end if has bounds
       } // end if map
       else if (is_depend)
+      {
+        std::vector<std::pair<SgExpression*, SgExpression*> > bounds = dims[sym];
+        if (bounds.size() >0)
+        {
+          std::vector<std::pair<SgExpression*, SgExpression*> >:: const_iterator iter;
+          for (iter = bounds.begin(); iter != bounds.end(); iter ++)
+          {
+            SgUnparse_Info ninfo(info);
+            std::pair<SgExpression*, SgExpression*> bound  = (*iter);
+            SgExpression* lower = bound.first;
+            SgExpression* upper = bound.second;
+            ROSE_ASSERT (lower != NULL);
+            ROSE_ASSERT (upper != NULL);
+
+            curprint(string("["));
+            unparseExpression(lower, ninfo);
+            curprint(string(":"));
+            unparseExpression(upper, ninfo);
+            curprint(string("]"));
+          } // end for
+        } // end if has bounds
+      }
+      else if (is_to)
+      {
+        std::vector<std::pair<SgExpression*, SgExpression*> > bounds = dims[sym];
+        if (bounds.size() >0)
+        {
+          std::vector<std::pair<SgExpression*, SgExpression*> >:: const_iterator iter;
+          for (iter = bounds.begin(); iter != bounds.end(); iter ++)
+          {
+            SgUnparse_Info ninfo(info);
+            std::pair<SgExpression*, SgExpression*> bound  = (*iter);
+            SgExpression* lower = bound.first;
+            SgExpression* upper = bound.second;
+            ROSE_ASSERT (lower != NULL);
+            ROSE_ASSERT (upper != NULL);
+
+            curprint(string("["));
+            unparseExpression(lower, ninfo);
+            curprint(string(":"));
+            unparseExpression(upper, ninfo);
+            curprint(string("]"));
+          } // end for
+        } // end if has bounds
+      }
+      else if (is_from)
       {
         std::vector<std::pair<SgExpression*, SgExpression*> > bounds = dims[sym];
         if (bounds.size() >0)
@@ -11163,6 +11248,8 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpDependClause:
     case V_SgOmpAffinityClause:
     case V_SgOmpMapClause:
+    case V_SgOmpToClause:
+    case V_SgOmpFromClause:
     case V_SgOmpSharedClause:
     case V_SgOmpUniformClause:
     case V_SgOmpAlignedClause:
