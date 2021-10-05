@@ -131,8 +131,10 @@ namespace OmpSupport
   void transOmpSimd(SgNode *node, SgSourceFile *file);
 
   //! A helper function to generate implicit or explicit task for either omp parallel or omp task
-  // It calls the ROSE AST outliner internally. 
-  SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_name, std::set<SgVariableSymbol*>& syms);
+  // It calls the ROSE AST outliner internally.
+  SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_name,
+                                              std::set<const SgVariableSymbol*>& syms,
+                                              std::set<const SgVariableSymbol*>& pdSyms3);
 
   //! Translate OpenMP variables associated with an OpenMP pragma, such as private, firstprivate, lastprivate, reduction, etc. bb1 is the translation generated code block in which the variable handling statements will be inserted. Original loop upper bound is needed for implementing lastprivate (check if it is the last iteration). withinAcceleratorModel means if we only translate private() variables, used to support accelerator model
   ROSE_DLL_API void transOmpVariables(SgStatement * ompStmt, SgBasicBlock* bb1, SgExpression* orig_loop_upper = NULL, bool withinAcceleratorModel= false);
