@@ -277,6 +277,21 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 insertStatementAfter(pred_update, empty);
             } break;
             
+            // result += svaddv(__pg0, __vec);
+            case V_SgSIMDSVAddV: {
+                SgVarRefExp *scalar = static_cast<SgVarRefExp *>(lval);
+                SgVarRefExp *vec = static_cast<SgVarRefExp *>(rval);
+                SgVarRefExp *pred_var = buildVarRefExp(pg_name, new_block);
+                
+                SgExprListExp *parameters = buildExprListExp(pred_var, vec);
+                SgFunctionCallExp *reductionCall = buildFunctionCallExp("svaddv",
+                                                    scalar->get_type(), parameters, new_block);
+                SgPlusAssignOp *scalar_add = buildPlusAssignOp(scalar, reductionCall);
+                SgExprStatement *empty = buildExprStatement(scalar_add);
+                //insertStatementAfter(target, empty);
+                appendStatement(empty, new_block);
+            } break;
+            
             case V_SgSIMDAddOp:
             case V_SgSIMDSubOp:
             case V_SgSIMDMulOp:
@@ -313,7 +328,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
         }
         
         // Add the statement
-        if ((*i)->variantT() != V_SgSIMDScalarStore /*&& (*i)->variantT() != V_SgSIMDPartialStore*/) {
+        if ((*i)->variantT() != V_SgSIMDScalarStore && (*i)->variantT() != V_SgSIMDSVAddV) {
             if (isSgVarRefExp(lval)) {
                 SgVarRefExp *var = static_cast<SgVarRefExp *>(lval);
                 
