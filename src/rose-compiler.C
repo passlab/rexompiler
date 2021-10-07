@@ -22,6 +22,8 @@ int main( int argc, char * argv[] ) {
     simd_arch = Arm_SVE2;
   } else if (simd == "3addr") {
     simd_arch = Addr3;
+  } else if (simd == "3addr-arm") {
+    simd_arch = ArmAddr3;
   } else if (simd != "") {
     std::cout << "Error: Unknown SIMD architecture." << std::endl;
     simd_arch = Nothing;

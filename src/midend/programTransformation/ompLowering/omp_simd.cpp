@@ -119,9 +119,6 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
     }
 
     std::string name = simdGenName();
-    std::cout << "GEN_NAME: " << name << std::endl;
-    std::cout << "NODE: " << node->class_name() << std::endl;
-    std::cout << node->variantT() << std::endl;
     nameStack->push(name);
 
     // Build the assignment
@@ -129,7 +126,6 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
     
     switch (node->variantT()) {
         case V_SgIntVal: {
-         std::cout << "IN1" << std::endl;
             SgIntVal *val = static_cast<SgIntVal *>(node);
             
             if (type->variantT() == V_SgTypeInt) expr = buildIntVal(val->get_value());
@@ -138,7 +134,6 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
         } break;
         
         case V_SgFloatVal: {
-         std::cout << "IN2" << std::endl;
             SgFloatVal *val = static_cast<SgFloatVal *>(node);
             
             if (type->variantT() == V_SgTypeInt) expr = buildIntVal(val->get_value());
@@ -147,7 +142,6 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
         } break;
         
         case V_SgDoubleVal: {
-         std::cout << "IN3" << std::endl;
             SgDoubleVal *val = static_cast<SgDoubleVal *>(node);
             
             if (type->variantT() == V_SgTypeInt) expr = buildIntVal(val->get_value());
@@ -156,12 +150,10 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
         } break;
         
         case V_SgVarRefExp: {
-        std::cout << "IN4" << std::endl;
             expr = copyExpression(node);
         } break;
         
         default: {//expr = copyExpression(node);
-         std::cout << "IN5" << std::endl;
             expr = buildIntVal(0);}
     }
     
@@ -294,7 +286,7 @@ char omp_simd_get_reduction_mod(SgOmpSimdStatement *target, SgVarRefExp *var) {
 // and then converts the statements to 3-address scalar code
 //
 // The main purpose of this function is to break each expression between the load and store
-bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasicBlock *new_block) {
+bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasicBlock *new_block, bool isArm = false) {
 
     // Get the loop body
     SgStatement *loop_body = getLoopBody(for_loop);
@@ -321,6 +313,7 @@ bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasi
         
         char reduction_mod = 0;
         bool need_partial = false;
+        bool armReduction = false;
         
         // If we have a variable, we need to indicate a partial sum variable
         // These are prefixed with __part, and in this step, they are simply assigned
@@ -332,14 +325,15 @@ bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasi
             // Make sure we have a valid reduction clause
             reduction_mod = omp_simd_get_reduction_mod(target, var);
             if (reduction_mod == 0) {
-                //std::cout << "Invalid reduction. We cannot continue." << std::endl;
                 return false;
-                //continue;
-                //dest = var;
             } else {
-            
-            need_partial = true;
-            dest = var;
+                if (reduction_mod == '+' && isArm) {
+                    dest = orig;
+                    armReduction = true;
+                } else {
+                    need_partial = true;
+                    dest = var;
+                }
             }
             
         // Otherwise, we just have a conventional store
@@ -389,6 +383,18 @@ bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasi
             SgExpression *expr = static_cast<SgExpression *>(op->get_rhs_operand());
             SgDivideOp *add = buildDivideOp(lhs, expr);
             op->set_rhs_operand(add);
+        }
+        
+        if (op->get_rhs_operand()->variantT() == V_SgAddOp && armReduction) {
+            SgAddOp *addOP = static_cast<SgAddOp *>(op->get_rhs_operand());
+            omp_simd_build_3addr(addOP->get_rhs_operand(), new_block, &nameStack, type);
+            
+            std::string name = nameStack.top();
+            SgVarRefExp *var = buildVarRefExp(name, new_block);
+            SgExprStatement *storeExpr = buildExprStatement(buildBinaryExpression<SgPlusAssignOp>(dest, var));
+            appendStatement(storeExpr, new_block);
+            
+            return true;
         }
         
         // Build the rval (the expression)
@@ -488,8 +494,13 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
                 
             // Otherwise, we have a scalar store
             } else {
-                SgSIMDScalarStore *str = buildBinaryExpression<SgSIMDScalarStore>(deepCopy(lval), deepCopy(rval));
-                ir_block->push_back(str);
+                if (expr_statement->get_expression()->variantT() == V_SgPlusAssignOp) {
+                    SgSIMDSVAddV *addv = buildBinaryExpression<SgSIMDSVAddV>(deepCopy(lval), deepCopy(rval));
+                    ir_block->push_back(addv);
+                } else {
+                    SgSIMDScalarStore *str = buildBinaryExpression<SgSIMDScalarStore>(deepCopy(lval), deepCopy(rval));
+                    ir_block->push_back(str);
+                }
             }
             
         // Broadcast
@@ -654,7 +665,10 @@ void OmpSupport::transOmpSimd(SgNode *node, SgSourceFile *file) {
     SgBasicBlock *new_block = SageBuilder::buildBasicBlock();
     Rose_STL_Container<SgNode *> *ir_block = new Rose_STL_Container<SgNode *>();
     
-    if (!omp_simd_pass1(target, for_loop, new_block)) {
+    bool isArm = false;
+    if (simd_arch == ArmAddr3 || simd_arch == Arm_SVE2) isArm = true;
+    
+    if (!omp_simd_pass1(target, for_loop, new_block, isArm)) {
         delete ir_block;
         return;
     }
@@ -662,7 +676,7 @@ void OmpSupport::transOmpSimd(SgNode *node, SgSourceFile *file) {
     omp_simd_pass2(new_block, ir_block);
     
     // Output the final result
-    if (simd_arch == Addr3) {
+    if (simd_arch == Addr3 || simd_arch == ArmAddr3) {
         SgStatement *loop_body = getLoopBody(for_loop);
         replaceStatement(loop_body, new_block, true);
     } else {
