@@ -49,7 +49,7 @@ static SgVariableDeclaration* get_kmpc_global_tid(SgNode*, SgScopeStatement*);
 static void insert_function_parameter(std::string, SgType*, SgFunctionDeclaration*, bool);
 // move the outlined function to a separate file
 static void move_outlined_function(SgFunctionDeclaration*, SgSourceFile*);
-static std::vector<SgFunctionDeclaration* >* outlined_function_list = NULL;
+std::vector<SgFunctionDeclaration* >* outlined_function_list = NULL;
 static std::vector<SgFunctionDeclaration* >* target_outlined_function_list = NULL;
 static void post_processing(SgSourceFile*);
 static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration*, std::string);

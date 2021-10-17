@@ -14,6 +14,8 @@ using namespace SageInterface;
 using namespace SageBuilder;
 using namespace OmpSupport;
 
+extern std::vector<SgFunctionDeclaration* >* outlined_function_list;
+
 //! Translate omp task
 /*
 The translation of omp task is similar to the one for omp parallel
@@ -93,7 +95,7 @@ void OmpSupport::transOmpTask(SgNode* node)
 
   // Replace the parallel region with the function call statement
   // TODO should we introduce another level of scope here?
-  // SageInterface::replaceStatement(target,func_call, true);
+  //SageInterface::replaceStatement(target,func_call, true);
   // hide this from the unparser TODO this call statement is not really necessary, only the call expression is needed
   //  Sg_File_Info* file_info = type_decl->get_file_info();
   //      file_info->unsetOutputInCodeGeneration ();
@@ -246,5 +248,7 @@ void OmpSupport::transOmpTask(SgNode* node)
   // while the destination node is unknown until the outlining is done.
   pastePreprocessingInfo(s1, PreprocessingInfo::before, save_buf1);
   pastePreprocessingInfo(s1, PreprocessingInfo::after, save_buf2);
+  
+  outlined_function_list->push_back(isSgFunctionDeclaration(outlined_func));
 }
   

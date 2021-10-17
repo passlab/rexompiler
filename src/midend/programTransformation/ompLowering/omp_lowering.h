@@ -13,8 +13,11 @@
  *  all things go to the OmpSupport namespace to avoid conflicts
  * Liao, 8/10/2009
  */
+extern std::vector<SgFunctionDeclaration* >* outlined_function_list;
 namespace OmpSupport
 {
+  //static std::vector<SgFunctionDeclaration* >* outlined_function_list = new std::vector<SgFunctionDeclaration *>();
+
   // OpenMP version info.
   extern bool enable_accelerator;  
 
