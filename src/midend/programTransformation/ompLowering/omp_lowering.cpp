@@ -5064,8 +5064,6 @@ void transOmpTargetLoopBlock(SgNode* node)
     replaceStatement(target, func_call_stmt, true);
   }
 
-  //! Simply move the body up and remove omp target data directive since nothing to be done at this level for now
-  //  all map() clauses should already be handled when translating the inner "omp parallel" region
   // TODO: translate if() and device() clauses
   void transOmpTargetData(SgNode * node)
   {
@@ -5073,26 +5071,63 @@ void transOmpTargetLoopBlock(SgNode* node)
     SgOmpTargetDataStatement* target = isSgOmpTargetDataStatement(node);
     ROSE_ASSERT(target != NULL );
 
-    SgScopeStatement * scope = target->get_scope();
-    ROSE_ASSERT(scope != NULL );
+    SgScopeStatement * p_scope = target->get_scope();
+    ROSE_ASSERT(p_scope != NULL);
 
-    SgExprListExp* map_variable_list = NULL;
-    SgExprListExp* map_variable_base_list = NULL;
-    SgExprListExp* map_variables_size_list = NULL;
-    SgExprListExp* map_variable_type_list = NULL;
+    SgExprListExp* map_variable_list = buildExprListExp();
+    SgExprListExp* map_variable_base_list = buildExprListExp();
+    SgExprListExp* map_variable_size_list = buildExprListExp();
+    SgExprListExp* map_variable_type_list = buildExprListExp();
 
-    if (useDDE)
-      transOmpMapVariables(target, map_variable_list, map_variable_base_list, map_variables_size_list, map_variable_type_list);
+    transOmpMapVariables(target, map_variable_list, map_variable_base_list, map_variable_size_list, map_variable_type_list);
 
     SgBasicBlock* body = isSgBasicBlock(target->get_body());
     ROSE_ASSERT(body != NULL );
+
+    SgBasicBlock* target_data_begin_block = body;
+
+    // by default, the device id is set to 0
+    SgVariableDeclaration* device_id_decl = buildVariableDeclaration("__device_id", buildOpaqueType("int64_t", p_scope), buildAssignInitializer(buildIntVal(0)), p_scope);
+    target_data_begin_block->prepend_statement(device_id_decl);
+
+    int kernel_arg_num = map_variable_base_list->get_expressions().size();
+    SgBracedInitializer* offloading_variables_base = buildBracedInitializer(map_variable_base_list);
+    SgVariableDeclaration* args_base_decl = buildVariableDeclaration ("__args_base", buildArrayType(buildPointerType(buildVoidType())), buildAssignInitializer(offloading_variables_base), p_scope);
+    target_data_begin_block->prepend_statement(args_base_decl);
+
+    SgBracedInitializer* offloading_variables = buildBracedInitializer(map_variable_list);
+    SgVariableDeclaration* args_decl = buildVariableDeclaration ("__args", buildArrayType(buildPointerType(buildVoidType())), buildAssignInitializer(offloading_variables), p_scope);
+    target_data_begin_block->prepend_statement(args_decl);
+
+    SgBracedInitializer* map_variable_sizes = buildBracedInitializer(map_variable_size_list);
+    SgVariableDeclaration* arg_sizes = buildVariableDeclaration ("__arg_sizes", buildArrayType(buildOpaqueType("int64_t", p_scope)), buildAssignInitializer(map_variable_sizes), p_scope);
+    target_data_begin_block->prepend_statement(arg_sizes);
+
+    SgBracedInitializer* map_variable_types = buildBracedInitializer(map_variable_type_list);
+    SgVariableDeclaration* arg_types = buildVariableDeclaration ("__arg_types", buildArrayType(buildOpaqueType("int64_t", p_scope)), buildAssignInitializer(map_variable_types), p_scope);
+    target_data_begin_block->prepend_statement(arg_types);
+
+    SgVariableDeclaration* arg_number_decl = buildVariableDeclaration("__arg_num", buildOpaqueType("int32_t", p_scope), buildAssignInitializer(buildIntVal(kernel_arg_num)), p_scope);
+    target_data_begin_block->prepend_statement(arg_number_decl);
+
+    // call __tgt_target_data_begin to start the data mapping region for GPU
+    SgExprListExp* parameters = NULL;
+    parameters = buildExprListExp(buildVarRefExp(device_id_decl), buildVarRefExp(arg_number_decl), buildVarRefExp(args_base_decl), buildVarRefExp(args_decl), buildVarRefExp(arg_sizes), buildVarRefExp(arg_types));
+    string func_offloading_name = "__tgt_target_data_begin";
+    SgExprStatement* func_offloading_stmt = buildFunctionCallStmt(func_offloading_name, buildIntType(), parameters, p_scope);
+    setSourcePositionForTransformation(func_offloading_stmt);
+    insertStatementAfter(device_id_decl, func_offloading_stmt);
+
+    // call __tgt_target_data_end to end the data mapping region for GPU
+    func_offloading_name = "__tgt_target_data_end";
+    func_offloading_stmt = buildFunctionCallStmt(func_offloading_name, buildIntType(), parameters, p_scope);
+    setSourcePositionForTransformation(func_offloading_stmt);
+    body->append_statement(func_offloading_stmt);
     body->set_parent(NULL);
     target->set_body(NULL);
 
-
     replaceStatement (target, body, true);
     attachComment (body, "Translated from #pragma omp target data ...");
-   // removeStatement(target);
   }
 
 
