@@ -5,6 +5,23 @@ using namespace SageBuilder;
 using namespace SageInterface;
 
 namespace OmpSupport {
+
+Rose_STL_Container<SgNode *>
+mergeSgNodeList(Rose_STL_Container<SgNode *> *node_list1,
+                Rose_STL_Container<SgNode *> *node_list2) {
+
+  ROSE_ASSERT(node_list1 != NULL);
+  ROSE_ASSERT(node_list2 != NULL);
+  std::sort(node_list1->begin(), node_list1->end());
+  std::sort(node_list2->begin(), node_list2->end());
+  Rose_STL_Container<SgNode *> node_list;
+  std::merge(node_list1->begin(), node_list1->end(), node_list2->begin(),
+             node_list2->end(),
+             std::insert_iterator<Rose_STL_Container<SgNode *>>(
+                 node_list, node_list.end()));
+  return node_list;
+}
+
 void analyzeOmpFor(SgNode *node) {
   ROSE_ASSERT(node != NULL);
   SgUpirLoopParallelStatement *target1 = isSgUpirLoopParallelStatement(node);
@@ -105,7 +122,8 @@ int patchUpPrivateVariables(SgFile *file) {
   // For each omp for/do statement
   for (; nodeListIterator != nodeList_merged.end(); ++nodeListIterator) {
     SgStatement *omp_loop = NULL;
-    SgUpirLoopParallelStatement *for_node = isSgUpirLoopParallelStatement(*nodeListIterator);
+    SgUpirLoopParallelStatement *for_node =
+        isSgUpirLoopParallelStatement(*nodeListIterator);
     SgOmpDoStatement *do_node = isSgOmpDoStatement(*nodeListIterator);
     SgOmpTargetParallelForStatement *target_parallel_for_node =
         isSgOmpTargetParallelForStatement(*nodeListIterator);
@@ -557,6 +575,58 @@ int patchUpImplicitMappingVariables(SgFile *file) {
   return result;
 } // end patchUpImplicitMappingVariables()
 
+// map variables in omp target firstprivate clause
+int unifyUpirTaskMappingVariables(SgFile *file) {
+  int result = 0;
+  ROSE_ASSERT(file != NULL);
+  Rose_STL_Container<SgNode *> node_list =
+      NodeQuery::querySubTree(file, V_SgUpirTaskStatement);
+
+  Rose_STL_Container<SgNode *>::iterator iter;
+  for (iter = node_list.begin(); iter != node_list.end(); iter++) {
+    SgOmpClauseBodyStatement *target = NULL;
+    target = isSgOmpClauseBodyStatement(*iter);
+    SgScopeStatement *directive_scope = target->get_scope();
+    SgStatement *body = target->get_body();
+    ROSE_ASSERT(body != NULL);
+
+    if (hasClause(target, V_SgOmpFirstprivateClause) == false) {
+      continue;
+    }
+    Rose_STL_Container<SgOmpClause *> clauses =
+        getClause(target, V_SgOmpFirstprivateClause);
+    SgOmpFirstprivateClause *firstprivate_clause =
+        isSgOmpFirstprivateClause(clauses[0]);
+    SgExpressionPtrList firstprivate_symbols =
+        firstprivate_clause->get_variables()->get_expressions();
+
+    SgExprListExp *explist = buildExprListExp();
+    SgOmpClause::omp_map_operator_enum sg_type = SgOmpClause::e_omp_map_to;
+    SgOmpMapClause *map_clause = new SgOmpMapClause(explist, sg_type);
+    bool has_mapped = false;
+
+    for (size_t i = 0; i < firstprivate_symbols.size(); i++) {
+      SgVarRefExp *var_ref = isSgVarRefExp(firstprivate_symbols[i]);
+      SgVariableSymbol *sym = var_ref->get_symbol();
+      ROSE_ASSERT(sym != NULL);
+      SgType *orig_type = sym->get_type();
+      SgArrayType *a_type = isSgArrayType(orig_type);
+      if (a_type == NULL && !isPointerType(orig_type)) {
+        explist->append_expression(var_ref);
+        var_ref->set_parent(map_clause);
+        has_mapped = true;
+      }
+    }
+    if (has_mapped == true) {
+      setOneSourcePositionForTransformation(map_clause);
+      explist->set_parent(map_clause);
+      map_clause->set_parent(target);
+      target->get_clauses().push_back(map_clause);
+    }
+  }
+  return result;
+} // end unifyUpirTaskMappingVariables()
+
 void analyze_omp(SgSourceFile *file) {
 
   patchUpPrivateVariables(file); // the order of these two functions matter! We
@@ -582,5 +652,9 @@ void analyze_omp(SgSourceFile *file) {
     }
     } // switch
   }
+
+  // convert firstprivate clause in target directive to map clause because later
+  // only map clause will be lowered.
+  unifyUpirTaskMappingVariables(file);
 }
 } // namespace OmpSupport
