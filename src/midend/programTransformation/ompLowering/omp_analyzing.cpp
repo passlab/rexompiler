@@ -22,6 +22,78 @@ mergeSgNodeList(Rose_STL_Container<SgNode *> *node_list1,
   return node_list;
 }
 
+void analyzeOmpMetadirective(SgNode *node) {
+  ROSE_ASSERT(node != NULL);
+  SgOmpMetadirectiveStatement *target = isSgOmpMetadirectiveStatement(node);
+
+  ROSE_ASSERT(target != NULL);
+
+  SgFunctionDefinition *func_def = NULL;
+  if (SageInterface::is_Fortran_language()) {
+    func_def = getEnclosingFunctionDefinition(target);
+    ROSE_ASSERT(func_def != NULL);
+  }
+  SgStatement *body = target->get_body();
+  ROSE_ASSERT(body != NULL);
+  AttachedPreprocessingInfoType save_buf1, save_buf2, save_buf_inside;
+  cutPreprocessingInfo(target, PreprocessingInfo::before, save_buf1);
+  cutPreprocessingInfo(target, PreprocessingInfo::after, save_buf2);
+
+  cutPreprocessingInfo(target, PreprocessingInfo::inside, save_buf_inside);
+  std::cout << "Metadirective IR is caught.\n";
+
+  SgIfStmt *root_if_statement = NULL;
+  SgStatement *variant_directive;
+  SgStatement *variant_body = copyStatement(body);
+  ROSE_ASSERT(variant_body != NULL);
+  SgIfStmt *if_stmt = NULL;
+  SgIfStmt *previous_if_stmt = NULL;
+  if (hasClause(target, V_SgOmpWhenClause)) {
+    Rose_STL_Container<SgOmpClause *> clauses =
+        getClause(target, V_SgOmpWhenClause);
+    SgOmpWhenClause *when_clause = isSgOmpWhenClause(clauses[0]);
+    SgExpression *condition_expression = when_clause->get_user_condition();
+    SgExprStatement *condition_statement =
+        buildExprStatement(condition_expression);
+    variant_directive = when_clause->get_variant_directive();
+    ((SgUpirBaseStatement *)variant_directive)->set_body(variant_body);
+    setOneSourcePositionForTransformation(variant_directive);
+    if (variant_directive) {
+      variant_body->set_parent(variant_directive);
+      if_stmt = buildIfStmt(condition_statement, variant_directive, body);
+    } else {
+      if_stmt = buildIfStmt(condition_statement, variant_body, body);
+    }
+    root_if_statement = if_stmt;
+    for (unsigned int i = 1; i < clauses.size(); i++) {
+      previous_if_stmt = if_stmt;
+      when_clause = isSgOmpWhenClause(clauses[i]);
+      condition_expression = when_clause->get_user_condition();
+      condition_statement = buildExprStatement(condition_expression);
+      variant_directive = when_clause->get_variant_directive();
+      variant_directive->set_parent(target->get_parent());
+      variant_body = copyStatement(body);
+      ((SgUpirBaseStatement *)variant_directive)->set_body(variant_body);
+      setOneSourcePositionForTransformation(variant_directive);
+      ROSE_ASSERT(variant_body != NULL);
+      if (variant_directive) {
+        variant_body->set_parent(variant_directive);
+        if_stmt = buildIfStmt(condition_statement, variant_directive, NULL);
+      } else {
+        if_stmt = buildIfStmt(condition_statement, body, NULL);
+      }
+      previous_if_stmt->set_false_body(if_stmt);
+    }
+  }
+
+  SageInterface::replaceStatement(target, root_if_statement, true);
+  pastePreprocessingInfo(root_if_statement, PreprocessingInfo::after,
+                         save_buf2);
+  pastePreprocessingInfo(root_if_statement, PreprocessingInfo::before,
+                         save_buf1);
+  // std::cout << root_if_statement->unparseToString() << "\n";
+} // end analyze omp metadirective
+
 void analyzeOmpFor(SgNode *node) {
   ROSE_ASSERT(node != NULL);
   SgUpirLoopParallelStatement *target1 = isSgUpirLoopParallelStatement(node);
@@ -629,6 +701,15 @@ int unifyUpirTaskMappingVariables(SgFile *file) {
 
 void analyze_omp(SgSourceFile *file) {
 
+  Rose_STL_Container<SgNode *> variant_directives =
+      NodeQuery::querySubTree(file, V_SgOmpMetadirectiveStatement);
+  Rose_STL_Container<SgNode *>::reverse_iterator node_list_iterator;
+  for (node_list_iterator = variant_directives.rbegin();
+       node_list_iterator != variant_directives.rend(); node_list_iterator++) {
+    SgStatement *node = isSgStatement(*node_list_iterator);
+    ROSE_ASSERT(node != NULL);
+    analyzeOmpMetadirective(node);
+  }
   patchUpPrivateVariables(file); // the order of these two functions matter! We
                                  // want to patch up private variable first!
   patchUpFirstprivateVariables(file);
@@ -637,7 +718,6 @@ void analyze_omp(SgSourceFile *file) {
 
   Rose_STL_Container<SgNode *> node_list =
       NodeQuery::querySubTree(file, V_SgStatement);
-  Rose_STL_Container<SgNode *>::reverse_iterator node_list_iterator;
   for (node_list_iterator = node_list.rbegin();
        node_list_iterator != node_list.rend(); node_list_iterator++) {
     SgStatement *node = isSgStatement(*node_list_iterator);
