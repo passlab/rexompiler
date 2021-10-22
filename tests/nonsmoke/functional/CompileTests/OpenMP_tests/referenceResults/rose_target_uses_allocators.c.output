@@ -1,0 +1,4 @@
+#pragma omp target  in_reduction(+ : sum) uses_allocator(omp_default_mem_alloc ( sum )  , omp_const_mem_alloc ( total )  ) 
+#pragma omp parallel  private(sum0)
+#pragma omp for  private(i)
+#pragma omp critical 

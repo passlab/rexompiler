@@ -347,6 +347,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	subteam.c \
 	target.c \
 	target1.c \
+	target_uses_allocators.c \
 	targetparallel.c \
 	targetparallelforsimd.c \
 	targetparallelloop.c \

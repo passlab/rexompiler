@@ -9942,6 +9942,60 @@ static std::string allocateModifierToString(SgOmpClause::omp_allocate_modifier_e
   return result;
 }
 
+static std::string usesAllocatorsAllocatorToString(SgOmpClause::omp_uses_allocators_allocator_enum allocator)
+{
+  string result;
+  switch (allocator)
+  {
+    case SgOmpClause::e_omp_uses_allocators_allocator_default_mem_alloc:
+      {
+        result = "omp_default_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_uses_allocators_allocator_large_cap_mem_alloc:
+      {
+        result = "omp_large_cap_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_uses_allocators_allocator_const_mem_alloc:
+      {
+        result = "omp_const_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_uses_allocators_allocator_high_bw_mem_alloc:
+      {
+        result = "omp_high_bw_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_uses_allocators_allocator_low_lat_mem_alloc:
+      {
+        result = "omp_low_lat_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_uses_allocators_allocator_cgroup_mem_alloc:
+      {
+        result = "omp_cgroup_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_uses_allocators_allocator_pteam_mem_alloc:
+      {
+        result = "omp_pteam_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_uses_allocators_allocator_thread_mem_alloc:
+      {
+        result = "omp_thread_mem_alloc";
+        break;
+      }
+    default:
+      {
+        cerr << "Error: unhandled operator type usesAllocatorsAllocatorToString():" << allocator << endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
+
 //! A helper function to convert dependence type to strings
 // TODO put into a better place and expose it to users.
 static std::string dependenceTypeToString(SgOmpClause::omp_dependence_type_enum ro)
@@ -10175,6 +10229,38 @@ void UnparseLanguageIndependentConstructs::unparseOmpDefaultmapClause(SgOmpClaus
     curprint(defaultmapCategoryToString(category));
   }
   curprint(string(")"));
+}
+
+void UnparseLanguageIndependentConstructs::unparseOmpUsesAllocatorsClause(SgOmpClause* clause, SgUnparse_Info& info)
+{
+  ROSE_ASSERT(clause != NULL);
+  SgOmpUsesAllocatorsClause* c = isSgOmpUsesAllocatorsClause(clause);
+  ROSE_ASSERT(c!= NULL);
+  curprint (string (" uses_allocator("));
+  std::list<SgOmpUsesAllocatorsDefination*> uses_allocators_definations = c-> get_uses_allocators_defination();
+  std::list<SgOmpUsesAllocatorsDefination*>::iterator iter;
+  int count = 0;
+  for (iter = uses_allocators_definations.begin(); iter != uses_allocators_definations.end(); iter++) {
+    SgOmpClause::omp_uses_allocators_allocator_enum allocator = (*iter)-> get_allocator();
+    if (allocator != SgOmpClause::e_omp_uses_allocators_allocator_unknown) {
+      if (allocator == SgOmpClause::e_omp_uses_allocators_allocator_user_defined) {
+        SgUnparse_Info new_info(info);
+        unparseExpression((*iter)->get_user_defined_allocator(), new_info);
+      } else {
+        curprint(usesAllocatorsAllocatorToString(allocator));
+      }
+    }
+    if (((*iter)-> get_allocator_traits_array()) != NULL) {
+      curprint(string(" ( "));
+      SgExpression* allocator_traits_array =(*iter)-> get_allocator_traits_array();
+      SgUnparse_Info ninfo(info);
+      unparseExpression(allocator_traits_array, ninfo);
+      curprint(string(" ) "));
+    }
+    count++;
+    if (count != uses_allocators_definations.size()) curprint(string(" , "));
+  }
+  curprint(string(" ) "));
 }
 
 // Generate dist_data(p1, p2, p3)
@@ -11207,6 +11293,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         unparseOmpDefaultmapClause(isSgOmpDefaultmapClause(clause), info);
         break;
       }
+    case V_SgOmpAllocateClause: 
+      {
+        unparseOmpVariablesComplexClause(isSgOmpVariablesClause(clause), info);
+        break;
+      }
     case V_SgOmpDeviceClause:
     case V_SgOmpCollapseClause:
     case V_SgOmpIfClause:  
@@ -11226,10 +11317,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
       {
         unparseOmpExpressionClause(isSgOmpExpressionClause(clause), info);
         break; 
-      }
-    case V_SgOmpAllocateClause: {
-        unparseOmpVariablesComplexClause(isSgOmpVariablesClause(clause), info);
-        break;
       }
     case V_SgOmpCopyprivateClause:
     case V_SgOmpCopyinClause:
@@ -11261,6 +11348,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpWhenClause:
       {
         unparseOmpWhenClause(isSgOmpWhenClause(clause), info);
+        break;
+      }
+    case V_SgOmpUsesAllocatorsClause:
+      {
+        unparseOmpUsesAllocatorsClause(isSgOmpUsesAllocatorsClause(clause), info);
         break;
       }
    default:
