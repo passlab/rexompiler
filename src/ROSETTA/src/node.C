@@ -140,6 +140,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpAllocateClause, "OmpAllocateClause", "OmpAllocateClauseTag" );
      NEW_TERMINAL_MACRO (OmpDependClause,    "OmpDependClause", "OmpDependClauseTag" );
      NEW_TERMINAL_MACRO (OmpToClause,    "OmpToClause", "OmpToClauseTag" );
+     NEW_TERMINAL_MACRO (OmpUsesAllocatorsClause,    "OmpUsesAllocatorsClause", "OmpUsesAllocatorsClauseTag" );
      NEW_TERMINAL_MACRO (OmpFromClause,    "OmpFromClause", "OmpFromClauseTag" );
      NEW_TERMINAL_MACRO (OmpAffinityClause,    "OmpAffinityClause", "OmpAffinityClauseTag" );
      NEW_TERMINAL_MACRO (OmpMapClause, "OmpMapClause", "OmpMapClauseTag" );
@@ -157,10 +158,11 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpDistScheduleClause, "OmpDistScheduleClause", "OmpDistScheduleClauseTag" );
      NEW_TERMINAL_MACRO (OmpDefaultmapClause, "OmpDefaultmapClause", "OmpDefaultmapClauseTag" );
      NEW_TERMINAL_MACRO (OmpAllocatorClause, "OmpAllocatorClause", "OmpAllocatorClauseTag" );
+     NEW_TERMINAL_MACRO (OmpUsesAllocatorsDefination, "OmpUsesAllocatorsDefination", "OmpUsesAllocatorsDefinationTag" );
      NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpReadClause | OmpThreadsClause | OmpSimdClause | OmpWriteClause | OmpUpdateClause | OmpDepobjUpdateClause | OmpDestroyClause | OmpCaptureClause | OmpBeginClause |OmpEndClause | OmpUntiedClause | OmpSeqCstClause | OmpAcqRelClause | OmpReleaseClause | OmpAcquireClause | OmpRelaxedClause | OmpReverseOffloadClause | OmpUnifiedAddressClause | OmpUnifiedSharedMemoryClause | OmpDynamicAllocatorsClause |
          OmpParallelClause | OmpSectionsClause | OmpForClause | OmpTaskgroupClause | OmpNogroupClause |
-         OmpDefaultClause | OmpAllocatorClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpDistScheduleClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpDefaultmapClause | OmpAtomicDefaultMemOrderClause | OmpExtImplementationDefinedRequirementClause |
-         OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause ,
+         OmpDefaultClause | OmpAllocatorClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpDistScheduleClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpDefaultmapClause | OmpAtomicDefaultMemOrderClause | OmpExtImplementationDefinedRequirementClause | OmpUsesAllocatorsDefination |
+         OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause | OmpUsesAllocatorsClause,
          "OmpClause", "OmpClauseTag", false);
 #endif
 
@@ -1960,6 +1962,18 @@ Grammar::setUpNodes ()
      // allocate (user-defined modifier : variables)
      OmpAllocateClause.setDataPrototype("SgExpression*", "user_defined_modifier", "= NULL",
                                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+                                     
+     // uses_allocators(allocator[(allocator-traits-array)][,allocator[(allocator-traits-array)] ...])
+     OmpUsesAllocatorsClause.setDataPrototype("std::list<SgOmpUsesAllocatorsDefination*>", "uses_allocators_defination", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+                          
+     OmpUsesAllocatorsDefination.setDataPrototype("SgOmpClause::omp_uses_allocators_allocator_enum", "allocator", "=e_omp_uses_allocators_allocator_unknown",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpUsesAllocatorsDefination.setDataPrototype("SgExpression*", "user_defined_allocator", "= NULL",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);    
+     OmpUsesAllocatorsDefination.setDataPrototype("SgExpression*", "allocator_traits_array", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);                               
+
 
      // depend(modifier, type:variables) 
      OmpDependClause.setDataPrototype("SgOmpClause::omp_depend_modifier_enum", "depend_modifier", "=e_omp_depend_modifier_unspecified",

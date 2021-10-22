@@ -73,6 +73,7 @@ static SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, Open
 static SgOmpMapClause* convertMapClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpToClause* convertToClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpFromClause* convertFromClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpUsesAllocatorsClause* convertUsesAllocatorsClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDependClause* convertDependClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpAffinityClause* convertAffinityClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgStatement* convertOmpRequiresDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII);
@@ -1241,6 +1242,73 @@ namespace OmpSupport
       default:
         {
           printf("error: unacceptable omp construct enum for FROM kind conversion:%d\n", kind);
+          ROSE_ASSERT(false);
+          break;
+        }
+    }
+
+    return result;
+  }
+  
+  //! A helper function to convert OpenMPIR uses_allocator allocator to SgClause uses_allocator allocator
+  static SgOmpClause::omp_uses_allocators_allocator_enum toSgOmpClauseUsesAllocatorsAllocator(OpenMPUsesAllocatorsClauseAllocator allocator)
+  {
+    SgOmpClause::omp_uses_allocators_allocator_enum result;
+    switch (allocator)
+    {
+      case OMPC_USESALLOCATORS_ALLOCATOR_default:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_default_mem_alloc;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_large_cap:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_large_cap_mem_alloc;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_cons_mem:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_const_mem_alloc;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_high_bw:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_high_bw_mem_alloc;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_low_lat:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_low_lat_mem_alloc;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_cgroup:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_cgroup_mem_alloc;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_pteam:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_pteam_mem_alloc;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_thread:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_thread_mem_alloc;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_user:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_user_defined;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_unknown:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_unknown;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for allocator modifier conversion:%d\n", allocator);
           ROSE_ASSERT(false);
           break;
         }
@@ -2506,6 +2574,10 @@ SgUpirBaseStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMP
                 convertSimpleClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
+            case OMPC_uses_allocators: {
+                convertUsesAllocatorsClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
             case OMPC_read:
             case OMPC_write:
             case OMPC_threads:
@@ -2906,6 +2978,49 @@ SgOmpDefaultmapClause* convertDefaultmapClause(SgOmpClauseBodyStatement* clause_
     clause_body->get_clauses().push_back(sg_clause);
     sg_clause->set_parent(clause_body);
     printf("ompparser defaultmap clause is added.\n");
+    return result;
+}
+
+SgOmpUsesAllocatorsClause* convertUsesAllocatorsClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+
+//budui, allocator yinggai he array duiyingqilai , yinggai you henduo allocators
+    printf("ompparser uses_allocators clause is ready.\n");
+    SgOmpUsesAllocatorsClause* result = NULL;
+    SgOmpUsesAllocatorsDefination* uses_allocators_defination = NULL;
+    SgOmpClause::omp_uses_allocators_allocator_enum sg_allocator;
+    SgExpression* user_defined_allocator = NULL;
+    SgExpression* clause_expression = NULL;
+    std::vector<usesAllocatorParameter*>* uses_allocators = ((OpenMPUsesAllocatorsClause*)current_omp_clause)->getUsesAllocatorsAllocatorSequence();
+    std::vector<usesAllocatorParameter*>::iterator iter;
+    std::list<SgOmpUsesAllocatorsDefination*> uses_allocators_definations;
+    for (iter = uses_allocators->begin(); iter != uses_allocators->end(); iter++) {
+        OpenMPUsesAllocatorsClauseAllocator allocator = ((usesAllocatorParameter*)(*iter))->getUsesAllocatorsAllocator();
+        sg_allocator = toSgOmpClauseUsesAllocatorsAllocator(allocator);
+        if (sg_allocator == SgOmpClause::e_omp_uses_allocators_allocator_user_defined) {
+            clause_expression = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), ((usesAllocatorParameter*)(*iter))->getAllocatorUser());
+        }
+            
+        SgExpression* allocator_traits_array = NULL;
+        std::string allocator_array = ((usesAllocatorParameter*)(*iter))->getAllocatorTraitsArray();
+        allocator_traits_array = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), allocator_array);
+        
+        uses_allocators_defination = new SgOmpUsesAllocatorsDefination();
+        uses_allocators_defination->set_allocator_traits_array(allocator_traits_array);
+        uses_allocators_defination->set_allocator(sg_allocator);
+
+        uses_allocators_defination->set_user_defined_allocator(clause_expression);
+        uses_allocators_definations.push_back(uses_allocators_defination);
+    }
+
+    result = new SgOmpUsesAllocatorsClause();
+
+    ROSE_ASSERT(result != NULL);
+    result->set_uses_allocators_defination(uses_allocators_definations);
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+    printf("ompparser uses_allocators clause is added.\n");
     return result;
 }
 
@@ -4435,6 +4550,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_update:
                 case OMPC_use_device_addr:
                 case OMPC_use_device_ptr:
+                case OMPC_uses_allocators:
                 case OMPC_when:
                 case OMPC_threads:
                 case OMPC_simd:
