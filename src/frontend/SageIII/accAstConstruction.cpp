@@ -98,6 +98,7 @@ SgUpirBaseStatement* convertOpenACCBodyDirective(std::pair<SgPragmaDeclaration*,
     for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end(); clause_iter++) {
         clause_kind = (*clause_iter)->getKind();
         switch (clause_kind) {
+            case ACCC_collapse:
             case ACCC_num_gangs:
             case ACCC_num_workers: {
                 convertOpenACCExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenACCIR_to_SageIII, *clause_iter);
@@ -142,6 +143,11 @@ SgOmpExpressionClause* convertOpenACCExpressionClause(SgStatement* directive, st
         case ACCC_num_gangs: {            
             result = new SgOmpNumTeamsClause(clause_expression);
             printf("num_gangs Clause added!\n");
+            break;
+        }
+        case ACCC_collapse: {            
+            result = new SgOmpCollapseClause(clause_expression);
+            printf("collapse Clause added!\n");
             break;
         }
         default: {
@@ -272,6 +278,7 @@ bool checkOpenACCIR(OpenACCDirective* directive) {
         for (it = clauses->begin(); it != clauses->end(); it++) {
             switch (it->first) {
                 case ACCC_num_gangs:
+                case ACCC_collapse:
                 case ACCC_copy:
                 case ACCC_copyin:
                 case ACCC_copyout:

@@ -6306,12 +6306,15 @@ int patchUpPrivateVariables(SgStatement* omp_loop)
   SgUpirLoopParallelStatement* for_node = isSgUpirLoopParallelStatement(omp_loop);
   SgOmpDoStatement* do_node = isSgOmpDoStatement(omp_loop);
   SgOmpTargetParallelForStatement *target_parallel_for_node = isSgOmpTargetParallelForStatement(omp_loop);
+  SgOmpTargetTeamsDistributeParallelForStatement *target_teams_distribute_parallel_for_node = isSgOmpTargetTeamsDistributeParallelForStatement(omp_loop);
   if (for_node)
     omp_loop = for_node;
   else if (do_node)
     omp_loop = do_node;
   else if (target_parallel_for_node)
     omp_loop = target_parallel_for_node;
+  else if (target_teams_distribute_parallel_for_node)
+    omp_loop = target_teams_distribute_parallel_for_node;
   else
     ROSE_ASSERT (false);
 
@@ -6326,6 +6329,8 @@ int patchUpPrivateVariables(SgStatement* omp_loop)
     loops = NodeQuery::querySubTree(do_node->get_body(), V_SgFortranDo);
   else if (target_parallel_for_node)
     loops = NodeQuery::querySubTree(target_parallel_for_node->get_body(), V_SgForStatement);
+  else if (target_teams_distribute_parallel_for_node)
+    loops = NodeQuery::querySubTree(target_teams_distribute_parallel_for_node->get_body(), V_SgForStatement);
   else
     ROSE_ASSERT (false);
   // For all loops within the OpenMP loop
