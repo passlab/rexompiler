@@ -3254,11 +3254,13 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
   SgUpirTaskStatement* target_directive_stmt = NULL;
   SgOmpTargetDataStatement * target_data_stmt = NULL;
   SgOmpTargetParallelForStatement* target_parallel_for_stmt = NULL;
+  SgOmpTargetTeamsDistributeParallelForStatement* target_teams_distribute_parallel_for_stmt = NULL;
 
   target_parallel_stmt = isSgUpirSpmdStatement(target_data_or_target_parallel_stmt);
   target_data_stmt = isSgOmpTargetDataStatement(target_data_or_target_parallel_stmt);
   target_parallel_for_stmt = isSgOmpTargetParallelForStatement(target_data_or_target_parallel_stmt);
   target_directive_stmt = isSgUpirTaskStatement(target_data_or_target_parallel_stmt);
+  target_teams_distribute_parallel_for_stmt = isSgOmpTargetTeamsDistributeParallelForStatement(target_data_or_target_parallel_stmt);
 
   // the parallel directive must be combined with target directive
   if (target_parallel_stmt != NULL)
@@ -3299,6 +3301,11 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
      map_clauses = getClause(target_parallel_for_stmt, V_SgOmpMapClause);
      device_clauses = getClause(target_parallel_for_stmt, V_SgOmpDeviceClause);
   }
+  else if (target_teams_distribute_parallel_for_stmt)
+  {
+     map_clauses = getClause(target_teams_distribute_parallel_for_stmt, V_SgOmpMapClause);
+     device_clauses = getClause(target_teams_distribute_parallel_for_stmt, V_SgOmpDeviceClause);
+  }
   else
     ROSE_ASSERT (false);
 
@@ -3324,6 +3331,8 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     all_mapped_vars = collectClauseVariables (target_directive_stmt, VariantVector(V_SgOmpMapClause));
   else if (target_parallel_for_stmt)
     all_mapped_vars = collectClauseVariables (target_parallel_for_stmt, VariantVector(V_SgOmpMapClause));
+  else if (target_teams_distribute_parallel_for_stmt)
+    all_mapped_vars = collectClauseVariables (target_teams_distribute_parallel_for_stmt, VariantVector(V_SgOmpMapClause));
 
   // store all variables showing up in any of the device clauses
   SgExpression* device_expression = NULL;
@@ -3333,6 +3342,8 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     device_expression = getClauseExpression (target_directive_stmt, VariantVector(V_SgOmpDeviceClause));
   else if (target_parallel_for_stmt)
     device_expression = getClauseExpression (target_parallel_for_stmt, VariantVector(V_SgOmpDeviceClause));
+  else if (target_teams_distribute_parallel_for_stmt)
+    device_expression = getClauseExpression (target_teams_distribute_parallel_for_stmt, VariantVector(V_SgOmpDeviceClause));
 
 
   extractMapClauses (map_clauses, array_dimensions, dist_data_policies, &map_alloc_clause, &map_to_clause, &map_from_clause, &map_tofrom_clause);
@@ -3368,6 +3379,20 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
   {
    // at this point, the body should already be normalized to be a BB
    SgBasicBlock * body_block = ensureBasicBlockAsBodyOfOmpBodyStmt(target_parallel_for_stmt);
+   ROSE_ASSERT (body_block!= NULL);
+
+   SgStatement* target_data_child_stmt = NULL;
+   // We cannot assert this since the body of "omp target data" may already be expanded as part of a previous translation
+   //    ROSE_ASSERT( (target_data_stmt_body->get_statements()).size() ==1);
+   target_data_child_stmt = (body_block->get_statements())[0];
+
+   insertion_scope = body_block;
+   insertion_anchor_stmt = target_data_child_stmt;
+  }
+  else if (target_teams_distribute_parallel_for_stmt != NULL)
+  {
+   // at this point, the body should already be normalized to be a BB
+   SgBasicBlock * body_block = ensureBasicBlockAsBodyOfOmpBodyStmt(target_teams_distribute_parallel_for_stmt);
    ROSE_ASSERT (body_block!= NULL);
 
    SgStatement* target_data_child_stmt = NULL;
