@@ -2014,7 +2014,10 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
 //    translate OpenMP variables (first private, private, reduction, etc) so the code to be outlined is already as simple as possible (without OpenMP-specific semantics)
 //
 // It calls the ROSE AST outliner internally.
-SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_name, ASTtools::VarSymSet_t& syms, ASTtools::VarSymSet_t&pdSyms3)
+SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_name,
+                                            ASTtools::VarSymSet_t& syms,
+                                            ASTtools::VarSymSet_t&pdSyms3,
+                                            bool use_task_param)
 {
   ROSE_ASSERT(node != NULL);
   SgOmpClauseBodyStatement* target = isSgOmpClauseBodyStatement(node);
@@ -2213,7 +2216,13 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
 
   SgPointerType* int_pointer_type = buildPointerType(SgTypeInt::createType());
   // insert the kmpc ids as the first two parameters
-  insert_function_parameter("__bound_tid", int_pointer_type, result, false);
+  if (use_task_param) {
+      auto *taskType = buildOpaqueType("ptask", g_scope);
+      insert_function_parameter("task", taskType, result, false);
+  } else {
+      insert_function_parameter("__bound_tid", int_pointer_type, result, false);
+  }
+  
   insert_function_parameter("__global_tid", int_pointer_type, result, false);
 
   // insert the forward declaration
