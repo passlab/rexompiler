@@ -40,6 +40,7 @@ void OmpSupport::transOmpTask(SgNode* node) {
     ASTtools::VarSymSet_t syms;
     ASTtools::VarSymSet_t pdSyms3; // store all variables which should be passed by reference
     SgFunctionDeclaration* outlined_func = generateOutlinedTask (node, wrapper_name, syms, pdSyms3, true);
+    std::string outlinedName = outlined_func->get_name();
     
     SgFunctionDefinition *funcDef = outlined_func->get_definition();
     ROSE_ASSERT(funcDef != NULL);
@@ -82,14 +83,46 @@ void OmpSupport::transOmpTask(SgNode* node) {
     SgExprStatement *assignBody = buildAssignStatement(deref, rhs);
     funcDef->append_statement(assignBody);
     
-    // Setup the new body
-    //SgBasicBlock *newBlock = buildBasicBlock(n, assignBody);
-    //funcDef->set_body(newBlock);
-    
     outlined_function_list->push_back(isSgFunctionDeclaration(outlined_func));
     
     // Create the function call
-    SgExprListExp *parameters = buildExprListExp();
-    SgExprStatement *s1 = buildFunctionCallStmt(wrapper_name, buildVoidType(), parameters, g_scope);
-    SageInterface::replaceStatement(target, s1, true);
+    SgBasicBlock *block = buildBasicBlock();
+    SageInterface::replaceStatement(target, block, true);
+    
+    ///////////////////////////////////
+    // Now build the body
+    ///////////////////////////////////
+    //
+    ROSE_ASSERT(outlined_func->get_args().size() > 2);
+    
+    // int gtid = *__global_tid;
+    SgInitializedName *arg1 = outlined_func->get_args().at(0);
+    SgVarRefExp *arg1Ref = buildOpaqueVarRefExp(arg1->get_name(), g_scope);
+    
+    SgPointerDerefExp *gtidDeref = buildPointerDerefExp(arg1Ref);
+    SgAssignInitializer *gtidInit = buildAssignInitializer(gtidDeref, buildIntType());
+    SgVariableDeclaration *gtid = buildVariableDeclaration("gtid", buildIntType(), gtidInit, g_scope);
+    block->append_statement(gtid);
+    
+    // if (__kmpc_single(NULL, gtid)) { ... }
+    SgVarRefExp *nullRef = buildOpaqueVarRefExp("NULL", g_scope);
+    SgVarRefExp *gtidRef = buildOpaqueVarRefExp("gtid", g_scope);
+    SgExprListExp *parameters = buildExprListExp(nullRef, gtidRef);
+    SgFunctionCallExp *fcSingle = buildFunctionCallExp("__kmpc_single", buildIntType(), parameters, g_scope);
+    
+    SgBasicBlock *trueBlock = buildBasicBlock();
+    SgIfStmt *ifStmt = buildIfStmt(fcSingle, trueBlock, NULL);
+    block->append_statement(ifStmt);
+    
+    // ptask task;
+    // pshareds psh;
+    SgVariableDeclaration *taskDef = buildVariableDeclaration("task", buildOpaqueType("ptask", g_scope), NULL, g_scope);
+    SgVariableDeclaration *pshDef = buildVariableDeclaration("psh", buildOpaqueType("pshareds", g_scope), NULL, g_scope);
+    trueBlock->append_statement(taskDef);
+    trueBlock->append_statement(pshDef);
+    
+    // Create the function call
+    parameters = buildExprListExp();
+    SgExprStatement *s1 = buildFunctionCallStmt(outlinedName, buildVoidType(), parameters, g_scope);
+    trueBlock->append_statement(s1);
 }
