@@ -85,14 +85,12 @@ void OmpSupport::transOmpTask(SgNode* node) {
     
     outlined_function_list->push_back(isSgFunctionDeclaration(outlined_func));
     
-    // Create the function call
-    SgBasicBlock *block = buildBasicBlock();
-    SageInterface::replaceStatement(target, block, true);
-    
     ///////////////////////////////////
     // Now build the body
     ///////////////////////////////////
     //
+    SgBasicBlock *block = buildBasicBlock();
+    SageInterface::replaceStatement(target, block, true);
     ROSE_ASSERT(outlined_func->get_args().size() > 2);
     
     // int gtid = *__global_tid;
@@ -121,8 +119,71 @@ void OmpSupport::transOmpTask(SgNode* node) {
     trueBlock->append_statement(taskDef);
     trueBlock->append_statement(pshDef);
     
-    // Create the function call
-    parameters = buildExprListExp();
-    SgExprStatement *s1 = buildFunctionCallStmt(outlinedName, buildVoidType(), parameters, g_scope);
-    trueBlock->append_statement(s1);
+    // task = (ptask)__kmpc_omp_task_alloc(NULL, gtid, 1, sizeof(struct task),
+    //                      sizeof(struct shar), &OUT__1__3690__fib__14__);
+    taskRef = buildVarRefExp("task", g_scope);
+    
+    SgSizeOfOp *taskSizeOf = buildSizeOfOp(buildOpaqueType("task", g_scope));    // TODO: I think this is wrong
+    SgSizeOfOp *sharSizeOf = buildSizeOfOp(buildOpaqueType("shar", g_scope));    // TODO: And I think this is wrong
+    SgFunctionRefExp *outlinedRef = buildFunctionRefExp(outlined_func);
+    SgAddressOfOp *outlinedAddr = buildAddressOfOp(outlinedRef);
+    parameters = buildExprListExp(nullRef, gtidRef, buildIntVal(1), taskSizeOf, sharSizeOf, outlinedAddr);
+    
+    SgFunctionCallExp *fcTaskAlloc = buildFunctionCallExp("__kmpc_omp_task_alloc", buildPointerType(buildVoidType()), parameters, g_scope);
+    SgCastExp *taskCastExp = buildCastExp(fcTaskAlloc, buildOpaqueType("ptask", g_scope));
+    SgExprStatement *taskAllocAssign = buildAssignStatement(taskRef, taskCastExp);
+    trueBlock->append_statement(taskAllocAssign);
+    
+    // task->shareds->n = n;
+    // task->shareds->x = x;
+    SgVarRefExp *xRef = buildOpaqueVarRefExp("x", g_scope);
+    nRef = buildOpaqueVarRefExp("n", g_scope);
+    sharedsRef = buildOpaqueVarRefExp("shareds", g_scope);
+    taskRef = buildOpaqueVarRefExp("task", g_scope);
+    
+    arrow2 = buildArrowExp(sharedsRef, nRef);
+    arrow1 = buildArrowExp(taskRef, arrow2);
+    SgPointerDerefExp *nDeref = buildPointerDerefExp(nRef);
+    SgExprStatement *nArrowAssign = buildAssignStatement(arrow1, nDeref);
+    trueBlock->append_statement(nArrowAssign);
+    
+    arrow2 = buildArrowExp(sharedsRef, xRef);
+    arrow1 = buildArrowExp(taskRef, arrow2);
+    SgPointerDerefExp *xDeref = buildPointerDerefExp(xRef);
+    SgExprStatement *xArrowAssign = buildAssignStatement(arrow1, xDeref);
+    trueBlock->append_statement(xArrowAssign);
+    
+    // __kmpc_omp_task(NULL, gtid, task);
+    parameters = buildExprListExp(nullRef, gtidRef, taskRef);
+    SgExprStatement *ompTask = buildFunctionCallStmt("__kmpc_omp_task", buildVoidType(), parameters, g_scope);
+    trueBlock->append_statement(ompTask);
+    
+    // Move everything inside the body of the if statement
+    std::vector<SgStatement *> toMove;
+    SgStatement *nextStmt = SageInterface::getNextStatement(block);
+    while (nextStmt != nullptr) {
+        toMove.push_back(nextStmt);
+        nextStmt = SageInterface::getNextStatement(nextStmt);
+    }
+    
+    for (SgStatement *stmt : toMove) {
+        trueBlock->append_statement(deepCopy(stmt));
+        removeStatement(stmt);
+    }
+    
+    // __kmpc_omp_taskwait(NULL, gtid);
+    // __kmpc_end_single(NULL, gtid);
+    parameters = buildExprListExp(nullRef, gtidRef);
+    SgExprStatement *taskWait = buildFunctionCallStmt("__kmpc_omp_taskwait", buildVoidType(), parameters, g_scope);
+    trueBlock->append_statement(taskWait);
+    
+    parameters = buildExprListExp(nullRef, gtidRef);
+    SgExprStatement *endSingle = buildFunctionCallStmt("__kmpc_end_single", buildVoidType(), parameters, g_scope);
+    trueBlock->append_statement(endSingle);
+    
+    // __kmpc_barrier(NULL, gtid);
+    // This goes outside the if-statement just after it
+    parameters = buildExprListExp(nullRef, gtidRef);
+    SgExprStatement *barrierFc = buildFunctionCallStmt("__kmpc_barrier", buildVoidType(), parameters, g_scope);
+    block->append_statement(barrierFc);
 }
