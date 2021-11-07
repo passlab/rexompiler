@@ -49,12 +49,12 @@ void OmpSupport::transOmpTask(SgNode* node) {
     
     // Start with the body
     // First line: int n = task->shareds->n;
-    SgVarRefExp *taskRef = buildVarRefExp("task", g_scope);
-    SgVarRefExp *sharedsRef = buildVarRefExp("shareds", g_scope);
+    SgVarRefExp *taskRef = buildOpaqueVarRefExp("task", g_scope);
+    SgVarRefExp *sharedsRef = buildOpaqueVarRefExp("shareds", g_scope);
     SgVarRefExp *nRef = buildOpaqueVarRefExp("n", g_scope);
     
-    SgArrowExp *arrow2 = buildArrowExp(sharedsRef, nRef);
-    SgArrowExp *arrow1 = buildArrowExp(taskRef, arrow2);
+    SgArrowExp *arrow2 = buildArrowExp(taskRef, sharedsRef);
+    SgArrowExp *arrow1 = buildArrowExp(arrow2, nRef);
     
     SgAssignInitializer *init = buildAssignInitializer(arrow1, buildIntType());
     SgVariableDeclaration *n = buildVariableDeclaration("n", buildIntType(), init, funcDef);
@@ -76,8 +76,8 @@ void OmpSupport::transOmpTask(SgNode* node) {
     std::string name = lhs->get_symbol()->get_name();
     SgVarRefExp *destRef = buildOpaqueVarRefExp(name, g_scope);
     
-    arrow2 = buildArrowExp(sharedsRef, destRef);
-    arrow1 = buildArrowExp(taskRef, arrow2);
+    arrow2 = buildArrowExp(taskRef, sharedsRef);
+    arrow1 = buildArrowExp(arrow2, destRef);
     SgPointerDerefExp *deref = buildPointerDerefExp(arrow1);
     
     SgExprStatement *assignBody = buildAssignStatement(deref, rhs);
@@ -119,15 +119,19 @@ void OmpSupport::transOmpTask(SgNode* node) {
     trueBlock->append_statement(taskDef);
     trueBlock->append_statement(pshDef);
     
-    // task = (ptask)__kmpc_omp_task_alloc(NULL, gtid, 1, sizeof(struct task),
-    //                      sizeof(struct shar), &OUT__1__3690__fib__14__);
+    // task = (ptask)__kmpc_omp_task_alloc(NULL, gtid, 1, sizeof(task) * 4,
+    //                      sizeof(psh) * 2, &OUT__1__3690__fib__14__);
     taskRef = buildVarRefExp("task", g_scope);
     
-    SgSizeOfOp *taskSizeOf = buildSizeOfOp(buildOpaqueType("task", g_scope));    // TODO: I think this is wrong
-    SgSizeOfOp *sharSizeOf = buildSizeOfOp(buildOpaqueType("shar", g_scope));    // TODO: And I think this is wrong
+    SgSizeOfOp *taskSizeOf = buildSizeOfOp(buildOpaqueType("task", g_scope));
+    SgMultiplyOp *taskSizeMul = buildMultiplyOp(taskSizeOf, buildIntVal(4));
+    
+    SgSizeOfOp *sharSizeOf = buildSizeOfOp(buildOpaqueType("psh", g_scope));
+    SgMultiplyOp *sharSizeMul = buildMultiplyOp(sharSizeOf, buildIntVal(2));
+    
     SgFunctionRefExp *outlinedRef = buildFunctionRefExp(outlined_func);
     SgAddressOfOp *outlinedAddr = buildAddressOfOp(outlinedRef);
-    parameters = buildExprListExp(nullRef, gtidRef, buildIntVal(1), taskSizeOf, sharSizeOf, outlinedAddr);
+    parameters = buildExprListExp(nullRef, gtidRef, buildIntVal(1), taskSizeMul, sharSizeMul, outlinedAddr);
     
     SgFunctionCallExp *fcTaskAlloc = buildFunctionCallExp("__kmpc_omp_task_alloc", buildPointerType(buildVoidType()), parameters, g_scope);
     SgCastExp *taskCastExp = buildCastExp(fcTaskAlloc, buildOpaqueType("ptask", g_scope));
@@ -141,16 +145,17 @@ void OmpSupport::transOmpTask(SgNode* node) {
     sharedsRef = buildOpaqueVarRefExp("shareds", g_scope);
     taskRef = buildOpaqueVarRefExp("task", g_scope);
     
-    arrow2 = buildArrowExp(sharedsRef, nRef);
-    arrow1 = buildArrowExp(taskRef, arrow2);
+    arrow2 = buildArrowExp(taskRef, sharedsRef);
+    arrow1 = buildArrowExp(arrow2, nRef);
     SgPointerDerefExp *nDeref = buildPointerDerefExp(nRef);
     SgExprStatement *nArrowAssign = buildAssignStatement(arrow1, nDeref);
     trueBlock->append_statement(nArrowAssign);
     
-    arrow2 = buildArrowExp(sharedsRef, xRef);
-    arrow1 = buildArrowExp(taskRef, arrow2);
-    SgPointerDerefExp *xDeref = buildPointerDerefExp(xRef);
-    SgExprStatement *xArrowAssign = buildAssignStatement(arrow1, xDeref);
+    arrow2 = buildArrowExp(taskRef, sharedsRef);
+    arrow1 = buildArrowExp(arrow2, xRef);
+    //SgPointerDerefExp *xDeref = buildPointerDerefExp(xRef);
+    //SgExprStatement *xArrowAssign = buildAssignStatement(arrow1, xDeref);
+    SgExprStatement *xArrowAssign = buildAssignStatement(arrow1, xRef);
     trueBlock->append_statement(xArrowAssign);
     
     // __kmpc_omp_task(NULL, gtid, task);
@@ -186,4 +191,27 @@ void OmpSupport::transOmpTask(SgNode* node) {
     parameters = buildExprListExp(nullRef, gtidRef);
     SgExprStatement *barrierFc = buildFunctionCallStmt("__kmpc_barrier", buildVoidType(), parameters, g_scope);
     block->append_statement(barrierFc);
+    
+    //
+    // Check for return statements
+    //
+    SgFunctionDefinition *parentDec = getEnclosingFunctionDefinition(block);
+    Rose_STL_Container<SgNode *> bodyList = NodeQuery::querySubTree(parentDec->get_body(), V_SgStatement);
+    for (Rose_STL_Container<SgNode *>::iterator i = bodyList.begin(); i != bodyList.end(); i++) {
+        SgStatement *stmt = static_cast<SgStatement *>((*i));
+        if (stmt->variantT() != V_SgIfStmt) {
+            continue;
+        }
+        
+        Rose_STL_Container<SgNode *> ifStmtBody = NodeQuery::querySubTree(stmt, V_SgStatement);   
+        for (Rose_STL_Container<SgNode *>::iterator j = ifStmtBody.begin(); j != ifStmtBody.end(); j++) {
+            SgStatement *stmt2 = static_cast<SgStatement *>((*j));
+            if (stmt2->variantT() != V_SgReturnStmt) {
+                continue;
+            }
+                
+            SgReturnStmt *ret = buildReturnStmt();
+            replaceStatement(stmt2, ret);
+        } 
+    }
 }
