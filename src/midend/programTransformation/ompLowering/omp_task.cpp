@@ -28,6 +28,10 @@ void OmpSupport::transOmpTask(SgNode* node) {
     SgGlobal* g_scope = SageInterface::getGlobalScope(body);
     ROSE_ASSERT(g_scope != NULL);
     
+    // Make sure the rex_kmp.h header is included
+    SgSourceFile *file = getEnclosingSourceFile(target);
+    insertHeader(file, "rex_kmp.h", false);
+    
     // We don't actually use this outlined function, but for some reason we need it to make sure
     // we have all the correct parameters
     //
@@ -48,7 +52,7 @@ void OmpSupport::transOmpTask(SgNode* node) {
     funcDef->get_body()->get_statements().clear();
     
     // Start with the body
-    // First line: int n = task->shareds->n;
+    // First line: int *n = task->shareds->n;
     SgVarRefExp *taskRef = buildOpaqueVarRefExp("task", g_scope);
     SgVarRefExp *sharedsRef = buildOpaqueVarRefExp("shareds", g_scope);
     SgVarRefExp *nRef = buildOpaqueVarRefExp("n", g_scope);
@@ -56,8 +60,8 @@ void OmpSupport::transOmpTask(SgNode* node) {
     SgArrowExp *arrow2 = buildArrowExp(taskRef, sharedsRef);
     SgArrowExp *arrow1 = buildArrowExp(arrow2, nRef);
     
-    SgAssignInitializer *init = buildAssignInitializer(arrow1, buildIntType());
-    SgVariableDeclaration *n = buildVariableDeclaration("n", buildIntType(), init, funcDef);
+    SgAssignInitializer *init = buildAssignInitializer(arrow1, buildPointerType(buildIntType()));
+    SgVariableDeclaration *n = buildVariableDeclaration("n", buildPointerType(buildIntType()), init, funcDef);
     funcDef->append_statement(n);
     
     // Now the body
@@ -147,8 +151,9 @@ void OmpSupport::transOmpTask(SgNode* node) {
     
     arrow2 = buildArrowExp(taskRef, sharedsRef);
     arrow1 = buildArrowExp(arrow2, nRef);
-    SgPointerDerefExp *nDeref = buildPointerDerefExp(nRef);
-    SgExprStatement *nArrowAssign = buildAssignStatement(arrow1, nDeref);
+    //SgPointerDerefExp *nDeref = buildPointerDerefExp(nRef);
+    //SgExprStatement *nArrowAssign = buildAssignStatement(arrow1, nDeref);
+    SgExprStatement *nArrowAssign = buildAssignStatement(arrow1, nRef);
     trueBlock->append_statement(nArrowAssign);
     
     arrow2 = buildArrowExp(taskRef, sharedsRef);
