@@ -32,6 +32,32 @@ void OmpSupport::transOmpTask(SgNode* node) {
     SgSourceFile *file = getEnclosingSourceFile(target);
     insertHeader(file, "rex_kmp.h", false);
     
+    ////////////////////////////////////////////////
+    //
+    // First, we need to query arguments.
+    // Start with the original function
+    //
+    std::vector<std::string> originalVarRefs;
+    SgFunctionDeclaration *originalDec = getEnclosingFunctionDeclaration(target);
+    for (SgInitializedName *arg : originalDec->get_args()) {
+        std::string name = arg->get_name();
+        originalVarRefs.push_back(name);
+    }
+    
+    // Now get the shared variables
+    std::vector<std::string> sharedVarRefs = originalVarRefs;
+    for (SgOmpClause *clause : target->get_clauses()) {
+        if (clause->variantT() != V_SgOmpSharedClause) continue;
+        
+        SgOmpSharedClause *shared = static_cast<SgOmpSharedClause *>(clause);
+        for (SgExpression *expr : shared->get_variables()->get_expressions()) {
+            if (expr->variantT() != V_SgVarRefExp) continue;
+            SgVarRefExp *varRef = static_cast<SgVarRefExp *>(expr);
+            std::string name = varRef->get_symbol()->get_name();
+            sharedVarRefs.push_back(name);
+        }
+    }
+    
     // We don't actually use this outlined function, but for some reason we need it to make sure
     // we have all the correct parameters
     //
@@ -55,14 +81,18 @@ void OmpSupport::transOmpTask(SgNode* node) {
     // First line: int *n = task->shareds->n;
     SgVarRefExp *taskRef = buildOpaqueVarRefExp("task", g_scope);
     SgVarRefExp *sharedsRef = buildOpaqueVarRefExp("shareds", g_scope);
-    SgVarRefExp *nRef = buildOpaqueVarRefExp("n", g_scope);
+    SgArrowExp *arrow2, *arrow1;
     
-    SgArrowExp *arrow2 = buildArrowExp(taskRef, sharedsRef);
-    SgArrowExp *arrow1 = buildArrowExp(arrow2, nRef);
-    
-    SgAssignInitializer *init = buildAssignInitializer(arrow1, buildPointerType(buildIntType()));
-    SgVariableDeclaration *n = buildVariableDeclaration("n", buildPointerType(buildIntType()), init, funcDef);
-    funcDef->append_statement(n);
+    for (std::string varName : originalVarRefs) {
+        SgVarRefExp *nRef = buildOpaqueVarRefExp(varName, g_scope);
+        
+        arrow2 = buildArrowExp(taskRef, sharedsRef);
+        arrow1 = buildArrowExp(arrow2, nRef);
+        
+        SgAssignInitializer *init = buildAssignInitializer(arrow1, buildPointerType(buildIntType()));
+        SgVariableDeclaration *n = buildVariableDeclaration(varName, buildPointerType(buildIntType()), init, funcDef);
+        funcDef->append_statement(n);
+    }
     
     // Now the body
     SgExprStatement *exprStmt = static_cast<SgExprStatement *>(body);
@@ -144,24 +174,28 @@ void OmpSupport::transOmpTask(SgNode* node) {
     
     // task->shareds->n = n;
     // task->shareds->x = x;
-    SgVarRefExp *xRef = buildOpaqueVarRefExp("x", g_scope);
-    nRef = buildOpaqueVarRefExp("n", g_scope);
+    arrow2 = buildArrowExp(taskRef, sharedsRef);
+    for (std::string varName : sharedVarRefs) {
+        SgVarRefExp *varRef = buildOpaqueVarRefExp(varName, g_scope);
+        
+        arrow1 = buildArrowExp(arrow2, varRef);
+        SgExprStatement *arrowAssign = buildAssignStatement(arrow1, varRef);
+        trueBlock->append_statement(arrowAssign);
+    }
+    
+    /*SgVarRefExp *xRef = buildOpaqueVarRefExp("x", g_scope);
+    SgVarRefExp *nRef = buildOpaqueVarRefExp("n", g_scope);
     sharedsRef = buildOpaqueVarRefExp("shareds", g_scope);
     taskRef = buildOpaqueVarRefExp("task", g_scope);
     
     arrow2 = buildArrowExp(taskRef, sharedsRef);
     arrow1 = buildArrowExp(arrow2, nRef);
-    //SgPointerDerefExp *nDeref = buildPointerDerefExp(nRef);
-    //SgExprStatement *nArrowAssign = buildAssignStatement(arrow1, nDeref);
     SgExprStatement *nArrowAssign = buildAssignStatement(arrow1, nRef);
     trueBlock->append_statement(nArrowAssign);
     
     arrow2 = buildArrowExp(taskRef, sharedsRef);
     arrow1 = buildArrowExp(arrow2, xRef);
-    //SgPointerDerefExp *xDeref = buildPointerDerefExp(xRef);
-    //SgExprStatement *xArrowAssign = buildAssignStatement(arrow1, xDeref);
-    SgExprStatement *xArrowAssign = buildAssignStatement(arrow1, xRef);
-    trueBlock->append_statement(xArrowAssign);
+    trueBlock->append_statement(xArrowAssign);*/
     
     // __kmpc_omp_task(NULL, gtid, task);
     parameters = buildExprListExp(nullRef, gtidRef, taskRef);
