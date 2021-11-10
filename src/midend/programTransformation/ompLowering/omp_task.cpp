@@ -183,20 +183,6 @@ void OmpSupport::transOmpTask(SgNode* node) {
         trueBlock->append_statement(arrowAssign);
     }
     
-    /*SgVarRefExp *xRef = buildOpaqueVarRefExp("x", g_scope);
-    SgVarRefExp *nRef = buildOpaqueVarRefExp("n", g_scope);
-    sharedsRef = buildOpaqueVarRefExp("shareds", g_scope);
-    taskRef = buildOpaqueVarRefExp("task", g_scope);
-    
-    arrow2 = buildArrowExp(taskRef, sharedsRef);
-    arrow1 = buildArrowExp(arrow2, nRef);
-    SgExprStatement *nArrowAssign = buildAssignStatement(arrow1, nRef);
-    trueBlock->append_statement(nArrowAssign);
-    
-    arrow2 = buildArrowExp(taskRef, sharedsRef);
-    arrow1 = buildArrowExp(arrow2, xRef);
-    trueBlock->append_statement(xArrowAssign);*/
-    
     // __kmpc_omp_task(NULL, gtid, task);
     parameters = buildExprListExp(nullRef, gtidRef, taskRef);
     SgExprStatement *ompTask = buildFunctionCallStmt("__kmpc_omp_task", buildVoidType(), parameters, g_scope);
