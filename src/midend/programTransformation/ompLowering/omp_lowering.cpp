@@ -50,6 +50,7 @@ static void insert_function_parameter(std::string, SgType*, SgFunctionDeclaratio
 // move the outlined function to a separate file
 static void move_outlined_function(SgFunctionDeclaration*, SgSourceFile*);
 std::vector<SgFunctionDeclaration* >* outlined_function_list = NULL;
+std::vector<SgDeclarationStatement *>* outlined_struct_list = NULL;
 static std::vector<SgFunctionDeclaration* >* target_outlined_function_list = NULL;
 static void post_processing(SgSourceFile*);
 static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration*, std::string);
@@ -6114,6 +6115,7 @@ void lower_omp(SgSourceFile* file)
   // We record nodes first then do changes to them
 
   outlined_function_list = new std::vector<SgFunctionDeclaration* >();
+  outlined_struct_list = new std::vector<SgDeclarationStatement *>();
   target_outlined_function_list = new std::vector<SgFunctionDeclaration* >();
 
   Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(file, V_SgStatement);
@@ -6435,6 +6437,12 @@ static void post_processing(SgSourceFile* file) {
     if (outlined_function_list->size() > 0) {
         // create a new file
         new_file = generate_outlined_function_file(outlined_function_list->at(0), "");
+        
+        std::vector<SgDeclarationStatement *>::iterator j;
+        for (j = outlined_struct_list->begin(); j != outlined_struct_list->end(); j++) {
+            SageInterface::appendStatement(*j, new_file->get_globalScope());
+        }
+        
         // move the outlined functions
         std::vector<SgFunctionDeclaration* >::iterator i;
         for (i = outlined_function_list->begin(); i != outlined_function_list->end(); i++) {

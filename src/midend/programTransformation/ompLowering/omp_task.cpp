@@ -15,6 +15,7 @@ using namespace SageBuilder;
 using namespace OmpSupport;
 
 extern std::vector<SgFunctionDeclaration* >* outlined_function_list;
+extern std::vector<SgDeclarationStatement *>* outlined_struct_list;
 
 //! Translate omp task
 void OmpSupport::transOmpTask(SgNode* node) {
@@ -38,10 +39,12 @@ void OmpSupport::transOmpTask(SgNode* node) {
     // Start with the original function
     //
     std::vector<std::string> originalVarRefs;
+    std::map<std::string, SgType *> varRefTypeMap;
     SgFunctionDeclaration *originalDec = getEnclosingFunctionDeclaration(target);
     for (SgInitializedName *arg : originalDec->get_args()) {
         std::string name = arg->get_name();
         originalVarRefs.push_back(name);
+        varRefTypeMap[name] = arg->get_type();
     }
     
     // Now get the shared variables
@@ -55,8 +58,27 @@ void OmpSupport::transOmpTask(SgNode* node) {
             SgVarRefExp *varRef = static_cast<SgVarRefExp *>(expr);
             std::string name = varRef->get_symbol()->get_name();
             sharedVarRefs.push_back(name);
+            varRefTypeMap[name] = varRef->get_type();
         }
     }
+    
+    //
+    // Create the needed structures for this
+    //
+    SgClassDeclaration *strPshareds = buildStructDeclaration("shar", g_scope);
+    SgClassDefinition *strPsharedsDef = buildClassDefinition(strPshareds);
+    
+    for (std::string varName : sharedVarRefs) {
+        SgPointerType *type = buildPointerType(varRefTypeMap[varName]);
+        SgVariableDeclaration *varD = buildVariableDeclaration(varName, type, NULL, strPsharedsDef);
+        appendStatement(varD, strPsharedsDef);
+    }
+    
+    SgTypedefDeclaration *tyPshareds = buildTypedefDeclaration("pshareds", buildPointerType(strPshareds->get_type()), g_scope, true);
+    tyPshareds->set_declaration(strPshareds);
+    
+    outlined_struct_list->push_back(strPshareds);
+    outlined_struct_list->push_back(tyPshareds);
     
     // We don't actually use this outlined function, but for some reason we need it to make sure
     // we have all the correct parameters
