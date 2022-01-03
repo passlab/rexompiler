@@ -183,7 +183,7 @@ namespace OmpSupport
 
 
   // Check if a variable is explicitly specified by clauses of omp_clause_body_stmt. Return e_unknown if not.
-  static omp_construct_enum getExplicitDataSharingAttribute (SgInitializedName* iname, SgOmpClauseBodyStatement* omp_clause_body_stmt)
+  static omp_construct_enum getExplicitDataSharingAttribute (SgInitializedName* iname, SgUpirFieldBodyStatement* omp_clause_body_stmt)
   {
     ROSE_ASSERT  (iname != NULL);
     ROSE_ASSERT  (omp_clause_body_stmt != NULL);
@@ -242,7 +242,7 @@ namespace OmpSupport
   // TODO: expose to header
  // From collapse(Integer), find all affected for loops of a 'omp for' or 'omp simd' directive
  // In this case, normalizing combined constructs like 'parallel for' is convenient, less directives to consider.
-  vector <SgForStatement* > getAffectedForLoops (SgOmpClauseBodyStatement* forOrSimd)
+  vector <SgForStatement* > getAffectedForLoops (SgUpirFieldBodyStatement* forOrSimd)
   {
     vector <SgForStatement* > loops;
     ROSE_ASSERT (forOrSimd != NULL);
@@ -284,12 +284,12 @@ namespace OmpSupport
   }
 
   // TODO: expose to header
-  vector <SgInitializedName* > getAffectedForLoopIndexVars (SgOmpClauseBodyStatement* forOrSimd)
+  vector <SgInitializedName* > getAffectedForLoopIndexVars (SgUpirFieldBodyStatement* forOrSimd)
   {
     vector <SgInitializedName* > result;
     // use a map to cache results, avoid repetitive analysis of OpenMP regions
-    static map <SgOmpClauseBodyStatement*, vector <SgInitializedName* > > Region2Index;
-    static map <SgOmpClauseBodyStatement*, bool > RegionAnalyzed;
+    static map <SgUpirFieldBodyStatement*, vector <SgInitializedName* > > Region2Index;
+    static map <SgUpirFieldBodyStatement*, bool > RegionAnalyzed;
 
     if (!RegionAnalyzed[forOrSimd])
     {
@@ -307,7 +307,7 @@ namespace OmpSupport
 
   // TODO: expose to header
   // Check if a variable is a loop index variable of a loop affected by OpenMP for or simd directives.
-  bool isAffectedForLoopIndexVariable (SgOmpClauseBodyStatement* forOrSimd, SgInitializedName* iname)
+  bool isAffectedForLoopIndexVariable (SgUpirFieldBodyStatement* forOrSimd, SgInitializedName* iname)
   {
     vector <SgInitializedName* > loopIndexVars = getAffectedForLoopIndexVars (forOrSimd);
     vector <SgInitializedName* >::iterator where = find (loopIndexVars.begin(), loopIndexVars.end(), iname);
@@ -331,11 +331,11 @@ namespace OmpSupport
     ROSE_ASSERT (var_sym!= NULL);
 
     SgInitializedName* iname = isSgInitializedName( var_sym->get_declaration() );
-    //TODO: what to do with SgOmpWorkshareStatement ?  it is a region/SgUpirBaseStatement, but it does not belong to OmpClauseBodyStatement
+    //TODO: what to do with SgOmpWorkshareStatement ?  it is a region/SgUpirBaseStatement, but it does not belong to UpirFieldBodyStatement
 
     // obtain the enclosing OpenMP clause body statement: SgUpirLoopParallelStatement, parallel, sections, single, target, target data, task, etc.
     // TODO: this may not be reliable:  region {stmtlist ;  loop; stmtlist; }
-    SgOmpClauseBodyStatement* omp_clause_body_stmt = findEnclosingOmpClauseBodyStatement (anchor_stmt);
+    SgUpirFieldBodyStatement* omp_clause_body_stmt = findEnclosingUpirFieldBodyStatement (anchor_stmt);
 
     if (omp_clause_body_stmt != NULL)
     {
@@ -434,7 +434,7 @@ namespace OmpSupport
        //       }
        //
         // If implicit rules do not apply at this level (worksharing regions like single), Go to find higher level: most omp parallel
-        if  (SgOmpClauseBodyStatement * parent_clause_body_stmt = findEnclosingOmpClauseBodyStatement (getEnclosingStatement(omp_clause_body_stmt->get_parent())))
+        if  (SgUpirFieldBodyStatement * parent_clause_body_stmt = findEnclosingUpirFieldBodyStatement (getEnclosingStatement(omp_clause_body_stmt->get_parent())))
         {
           //if (isSgUpirSpmdStatement (parent_clause_body_stmt) && ( isSgUpirLoopParallelStatement(omp_clause_body_stmt)|| isSgOmpSingleStatement(omp_clause_body_stmt)  ) )
           //if (isSgUpirSpmdStatement (parent_clause_body_stmt) &&  isSgOmpSingleStatement(omp_clause_body_stmt))
@@ -572,24 +572,24 @@ namespace OmpSupport
         bool isInPrivate = false;
         SgInitializedName* reg = isSgInitializedName( item->get_symbol()->get_declaration() );
 
-        isInPrivate = isInClauseVariableList( reg, isSgOmpClauseBodyStatement( *allParallelRegionItr ), V_SgOmpPrivateClause);
+        isInPrivate = isInClauseVariableList( reg, isSgUpirFieldBodyStatement( *allParallelRegionItr ), V_SgOmpPrivateClause);
 
         bool isInShared = false;
 
-        isInShared = isInClauseVariableList( reg, isSgOmpClauseBodyStatement( *allParallelRegionItr ), V_SgOmpSharedClause );
+        isInShared = isInClauseVariableList( reg, isSgUpirFieldBodyStatement( *allParallelRegionItr ), V_SgOmpSharedClause );
 
         bool isInFirstprivate = false;
 
-        isInFirstprivate = isInClauseVariableList( reg, isSgOmpClauseBodyStatement( *allParallelRegionItr ), V_SgOmpFirstprivateClause );
+        isInFirstprivate = isInClauseVariableList( reg, isSgUpirFieldBodyStatement( *allParallelRegionItr ), V_SgOmpFirstprivateClause );
 
         bool isInReduction = false;
 
-        isInReduction = isInClauseVariableList( reg, isSgOmpClauseBodyStatement( *allParallelRegionItr ), V_SgOmpReductionClause );
+        isInReduction = isInClauseVariableList( reg, isSgUpirFieldBodyStatement( *allParallelRegionItr ), V_SgOmpReductionClause );
 
         if( !isLocal && !isInShared && !isInPrivate && !isInFirstprivate && ! isInReduction )
         {
           std::cout<<" the insert variable is: "<<item->unparseToString()<<std::endl;
-          addClauseVariable( reg, isSgOmpClauseBodyStatement( * allParallelRegionItr ), V_SgOmpSharedClause );
+          addClauseVariable( reg, isSgUpirFieldBodyStatement( * allParallelRegionItr ), V_SgOmpSharedClause );
           result++;
           std::cout<<" successfully !"<<std::endl;
         }
@@ -886,7 +886,7 @@ namespace OmpSupport
 
   //! check if an omp for/do loop use static schedule or not
   // Static schedule include: default schedule, or schedule(static[,chunk_size])
-  bool useStaticSchedule(SgOmpClauseBodyStatement* omp_loop)
+  bool useStaticSchedule(SgUpirFieldBodyStatement* omp_loop)
   {
     ROSE_ASSERT(omp_loop);
     bool result= false;
@@ -1120,7 +1120,7 @@ namespace OmpSupport
   }
   // and XOMP layer will compensate for the difference.
   */
-  static void transOmpLoop_others(SgOmpClauseBodyStatement* target, SgVariableDeclaration* index_decl, SgVariableDeclaration* lower_decl, SgVariableDeclaration* upper_decl, SgVariableDeclaration* stride_decl, SgVariableDeclaration* last_iter_decl, SgBasicBlock* bb1)
+  static void transOmpLoop_others(SgUpirFieldBodyStatement* target, SgVariableDeclaration* index_decl, SgVariableDeclaration* lower_decl, SgVariableDeclaration* upper_decl, SgVariableDeclaration* stride_decl, SgVariableDeclaration* last_iter_decl, SgBasicBlock* bb1)
   {
     ROSE_ASSERT (target != NULL);
     ROSE_ASSERT (index_decl != NULL);
@@ -1431,7 +1431,7 @@ namespace OmpSupport
     SgUpirLoopParallelStatement* target1 = isSgUpirLoopParallelStatement(node);
     SgOmpDoStatement* target2 = isSgOmpDoStatement(node);
 
-    SgOmpClauseBodyStatement* target = (target1!=NULL?(SgOmpClauseBodyStatement*)target1:(SgOmpClauseBodyStatement*)target2);
+    SgUpirFieldBodyStatement* target = (target1!=NULL?(SgUpirFieldBodyStatement*)target1:(SgUpirFieldBodyStatement*)target2);
     ROSE_ASSERT (target != NULL);
 
     SgScopeStatement* p_scope = target->get_scope();
@@ -1657,7 +1657,7 @@ Algorithm:
     SgUpirLoopParallelStatement* target1 = isSgUpirLoopParallelStatement(node);
     SgOmpDoStatement* target2 = isSgOmpDoStatement(node);
 
-    SgOmpClauseBodyStatement* target = (target1!=NULL?(SgOmpClauseBodyStatement*)target1:(SgOmpClauseBodyStatement*)target2);
+    SgUpirFieldBodyStatement* target = (target1!=NULL?(SgUpirFieldBodyStatement*)target1:(SgUpirFieldBodyStatement*)target2);
     ROSE_ASSERT (target != NULL);
 
     SgScopeStatement* p_scope = target->get_scope();
@@ -1832,7 +1832,7 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
   SgOmpDoStatement* target2 = isSgOmpDoStatement(node);
 
   // the target of the translation is a SgUpirLoopParallelStatement
-  SgOmpClauseBodyStatement* target = (target1!=NULL?(SgOmpClauseBodyStatement*)target1:(SgOmpClauseBodyStatement*)target2);
+  SgUpirFieldBodyStatement* target = (target1!=NULL?(SgUpirFieldBodyStatement*)target1:(SgUpirFieldBodyStatement*)target2);
   ROSE_ASSERT (target != NULL);
 
   SgScopeStatement* p_scope = target->get_scope();
@@ -1994,7 +1994,7 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
 
 
   //! Check if an OpenMP statement has a clause of type vt
-  Rose_STL_Container<SgOmpClause*> getClause(SgOmpClauseBodyStatement* clause_stmt, const VariantT & vt)
+  Rose_STL_Container<SgOmpClause*> getClause(SgUpirFieldBodyStatement* clause_stmt, const VariantT & vt)
   {
     ROSE_ASSERT(clause_stmt != NULL);
     Rose_STL_Container<SgOmpClause*> p_clause =
@@ -2003,7 +2003,7 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
   }
 
   //! Check if an OpenMP statement has a clause of type vt
-  bool hasClause(SgOmpClauseBodyStatement* clause_stmt, const VariantT & vt)
+  bool hasClause(SgUpirFieldBodyStatement* clause_stmt, const VariantT & vt)
   {
     ROSE_ASSERT(clause_stmt != NULL);
     Rose_STL_Container<SgOmpClause*> p_clause =
@@ -2024,7 +2024,7 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
 SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_name, ASTtools::VarSymSet_t& syms, ASTtools::VarSymSet_t&pdSyms3)
 {
   ROSE_ASSERT(node != NULL);
-  SgOmpClauseBodyStatement* target = isSgOmpClauseBodyStatement(node);
+  SgUpirFieldBodyStatement* target = isSgUpirFieldBodyStatement(node);
   ROSE_ASSERT (target != NULL);
 
   // must be either omp task or omp parallel
@@ -3639,7 +3639,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 
     //-----------------------------------------------------------------
     // step 1: generated an outlined function and make it a CUDA function
-    SgOmpClauseBodyStatement * target_parallel_stmt = isSgOmpClauseBodyStatement(node);
+    SgUpirFieldBodyStatement * target_parallel_stmt = isSgUpirFieldBodyStatement(node);
     ROSE_ASSERT (target_parallel_stmt);
 
     // Prepare the outliner
@@ -3886,7 +3886,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 
     //-----------------------------------------------------------------
     // step 1: generated an outlined function and make it a CUDA function
-    SgOmpClauseBodyStatement * target_parallel_stmt = isSgOmpClauseBodyStatement(node);
+    SgUpirFieldBodyStatement * target_parallel_stmt = isSgUpirFieldBodyStatement(node);
     ROSE_ASSERT (target_parallel_stmt);
 
     // Prepare the outliner
@@ -4094,7 +4094,7 @@ void transOmpTargetLoopBlock(SgNode* node)
 {
   //step 0: Sanity check
   ROSE_ASSERT(node != NULL);
-  SgOmpClauseBodyStatement* target = isSgOmpClauseBodyStatement(node);
+  SgUpirFieldBodyStatement* target = isSgUpirFieldBodyStatement(node);
   ROSE_ASSERT (target != NULL);
 
   SgScopeStatement* p_scope = target->get_scope();
@@ -4221,7 +4221,7 @@ void transOmpTargetLoopBlock(SgNode* node)
   {
     // Sanity check first
     ROSE_ASSERT(node != NULL);
-    SgOmpClauseBodyStatement* target = isSgOmpClauseBodyStatement(node);
+    SgUpirFieldBodyStatement* target = isSgUpirFieldBodyStatement(node);
     ROSE_ASSERT (target != NULL);
 
     transOmpTargetLoopBlock(target);
@@ -4252,7 +4252,7 @@ void transOmpTargetLoopBlock(SgNode* node)
 
     //-----------------------------------------------------------------
     // step 1: generated an outlined function and make it a CUDA function
-    SgOmpClauseBodyStatement * target_parallel_stmt = isSgOmpClauseBodyStatement(node);
+    SgUpirFieldBodyStatement * target_parallel_stmt = isSgUpirFieldBodyStatement(node);
     ROSE_ASSERT (target_parallel_stmt);
 
     // Prepare the outliner
@@ -5212,13 +5212,13 @@ void transOmpTargetLoopBlock(SgNode* node)
 
 
   //! Collect variables from OpenMP clauses: including private, firstprivate, lastprivate, reduction, etc.
-  SgInitializedNamePtrList collectClauseVariables (SgOmpClauseBodyStatement * clause_stmt, const VariantT & vt)
+  SgInitializedNamePtrList collectClauseVariables (SgUpirFieldBodyStatement * clause_stmt, const VariantT & vt)
   {
     return collectClauseVariables(clause_stmt, VariantVector(vt));
   }
 
   // Collect variables from an OpenMP clause: including private, firstprivate, lastprivate, reduction, etc.
-  SgInitializedNamePtrList collectClauseVariables (SgOmpClauseBodyStatement * clause_stmt, const VariantVector & vvt)
+  SgInitializedNamePtrList collectClauseVariables (SgUpirFieldBodyStatement * clause_stmt, const VariantVector & vvt)
   {
     SgInitializedNamePtrList result, result2;
     ROSE_ASSERT(clause_stmt != NULL);
@@ -5237,7 +5237,7 @@ void transOmpTargetLoopBlock(SgNode* node)
     return result;
   }
 
-  SgExpression* getClauseExpression(SgOmpClauseBodyStatement * clause_stmt, const VariantVector & vvt)
+  SgExpression* getClauseExpression(SgUpirFieldBodyStatement * clause_stmt, const VariantVector & vvt)
   {
      SgExpression* expr = NULL;
      ROSE_ASSERT(clause_stmt != NULL);
@@ -5251,7 +5251,7 @@ void transOmpTargetLoopBlock(SgNode* node)
   }
 
   //! Collect all variables from OpenMP clauses associated with an omp statement: private, reduction, etc
-  SgInitializedNamePtrList collectAllClauseVariables (SgOmpClauseBodyStatement * clause_stmt)
+  SgInitializedNamePtrList collectAllClauseVariables (SgUpirFieldBodyStatement * clause_stmt)
   {
     ROSE_ASSERT(clause_stmt != NULL);
 
@@ -5266,7 +5266,7 @@ void transOmpTargetLoopBlock(SgNode* node)
     return collectClauseVariables(clause_stmt, vvt);
   }
 
-  bool isInClauseVariableList(SgInitializedName* var, SgOmpClauseBodyStatement * clause_stmt, const VariantVector& vvt)
+  bool isInClauseVariableList(SgInitializedName* var, SgUpirFieldBodyStatement * clause_stmt, const VariantVector& vvt)
   {
     SgInitializedNamePtrList var_list = collectClauseVariables (clause_stmt, vvt);
     if (find(var_list.begin(), var_list.end(), var) != var_list.end() )
@@ -5276,7 +5276,7 @@ void transOmpTargetLoopBlock(SgNode* node)
   }
 
    //! Return a reduction variable's reduction operation type
-   SgOmpClause::omp_reduction_identifier_enum getReductionOperationType(SgInitializedName* init_name, SgOmpClauseBodyStatement* clause_stmt)
+   SgOmpClause::omp_reduction_identifier_enum getReductionOperationType(SgInitializedName* init_name, SgUpirFieldBodyStatement* clause_stmt)
    {
      SgOmpClause::omp_reduction_identifier_enum result = SgOmpClause::e_omp_reduction_unknown;
      bool found = false;
@@ -5349,7 +5349,7 @@ void transOmpTargetLoopBlock(SgNode* node)
    }
 
   //! Check if a variable is in a variable list of a given clause type
-  bool isInClauseVariableList(SgInitializedName* var, SgOmpClauseBodyStatement * clause_stmt, const VariantT& vt)
+  bool isInClauseVariableList(SgInitializedName* var, SgUpirFieldBodyStatement * clause_stmt, const VariantT& vt)
   {
     return isInClauseVariableList(var, clause_stmt, VariantVector(vt));
   }
@@ -5824,7 +5824,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
     {
       ROSE_ASSERT( ompStmt != NULL);
       ROSE_ASSERT( bb1 != NULL);
-      SgOmpClauseBodyStatement* clause_stmt = isSgOmpClauseBodyStatement(ompStmt);
+      SgUpirFieldBodyStatement* clause_stmt = isSgUpirFieldBodyStatement(ompStmt);
       ROSE_ASSERT( clause_stmt!= NULL);
 
       // collect variables
@@ -6202,7 +6202,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
   }//translationDriver::visit()
 
  //! Build a non-reduction variable clause for a given OpenMP directive. It directly returns the clause if the clause already exists
-  SgOmpVariablesClause* buildOmpVariableClause(SgOmpClauseBodyStatement * clause_stmt, const VariantT& vt)
+  SgOmpVariablesClause* buildOmpVariableClause(SgUpirFieldBodyStatement * clause_stmt, const VariantT& vt)
   {
     SgOmpVariablesClause* result = NULL;
     ROSE_ASSERT(clause_stmt != NULL);
@@ -6251,7 +6251,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
   }
 
   //! Remove one or more clauses of type vt
-  int removeClause (SgOmpClauseBodyStatement * clause_stmt, const VariantT& vt)
+  int removeClause (SgUpirFieldBodyStatement * clause_stmt, const VariantT& vt)
   {
     ROSE_ASSERT(clause_stmt != NULL);
     SgOmpClausePtrList& clause_list= clause_stmt->get_clauses ();
@@ -6273,7 +6273,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
   }
 
   //! Add a variable into a non-reduction clause of an OpenMP statement, create the clause transparently if it does not exist
-    void addClauseVariable(SgInitializedName* var, SgOmpClauseBodyStatement * clause_stmt, const VariantT& vt)
+    void addClauseVariable(SgInitializedName* var, SgUpirFieldBodyStatement * clause_stmt, const VariantT& vt)
     {
       ROSE_ASSERT(var != NULL);
       ROSE_ASSERT(clause_stmt!= NULL);
@@ -6345,20 +6345,20 @@ int patchUpPrivateVariables(SgStatement* omp_loop)
     {
       // Grab possible enclosing parallel region
       bool isPrivateInRegion = false;
-      SgOmpClauseBodyStatement *omp_stmt = NULL;
+      SgUpirFieldBodyStatement *omp_stmt = NULL;
       omp_stmt = isSgUpirSpmdStatement(getEnclosingNode<SgUpirSpmdStatement>(omp_loop));
       if (omp_stmt == NULL) {
         omp_stmt = isSgOmpTargetParallelForStatement(omp_loop);
       }
       if (omp_stmt)
       {
-        isPrivateInRegion = isInClauseVariableList(index_var, isSgOmpClauseBodyStatement(omp_stmt), V_SgOmpPrivateClause);
+        isPrivateInRegion = isInClauseVariableList(index_var, isSgUpirFieldBodyStatement(omp_stmt), V_SgOmpPrivateClause);
       }
       // add it into the private variable list only if it is not specified as private in both the loop and region levels.
-      if (!isPrivateInRegion && !isInClauseVariableList(index_var, isSgOmpClauseBodyStatement(omp_loop), V_SgOmpPrivateClause))
+      if (!isPrivateInRegion && !isInClauseVariableList(index_var, isSgUpirFieldBodyStatement(omp_loop), V_SgOmpPrivateClause))
       {
         result ++;
-        addClauseVariable(index_var,isSgOmpClauseBodyStatement(omp_loop), V_SgOmpPrivateClause);
+        addClauseVariable(index_var,isSgUpirFieldBodyStatement(omp_loop), V_SgOmpPrivateClause);
       }
     }
 
@@ -6375,7 +6375,7 @@ int patchUpPrivateVariables(SgStatement* omp_loop)
  * or map tofrom clause, if the collapse clause comes with target directive.
  *
  */
-void transOmpCollapse(SgOmpClauseBodyStatement * node)
+void transOmpCollapse(SgUpirFieldBodyStatement * node)
 {
 
   SgStatement * body =  node->get_body();
@@ -6418,14 +6418,14 @@ void transOmpCollapse(SgOmpClauseBodyStatement * node)
     SgOmpMapClause * map_to = NULL;
 
     /*get the data clause of this target statement*/
-    SgOmpClauseBodyStatement * target_clause_body = isSgOmpClauseBodyStatement(target_stmt);
+    SgUpirFieldBodyStatement * target_clause_body = isSgUpirFieldBodyStatement(target_stmt);
 
     map_clauses = target_clause_body->get_clauses();
     if(map_clauses.size() == 0 )
     {
       SgOmpTargetDataStatement * target_data_stmt = getEnclosingNode<SgOmpTargetDataStatement>(target_stmt);
 
-      target_clause_body = isSgOmpClauseBodyStatement(target_data_stmt);
+      target_clause_body = isSgUpirFieldBodyStatement(target_data_stmt);
       map_clauses = target_clause_body->get_clauses();
     }
 
@@ -6518,8 +6518,8 @@ void lower_omp(SgSourceFile* file)
     } //else
 
     /*Winnie, handle Collapse clause.*/
-    if(  isSgOmpClauseBodyStatement(node) != NULL && hasClause(isSgOmpClauseBodyStatement(node), V_SgOmpCollapseClause))
-      transOmpCollapse(isSgOmpClauseBodyStatement(node));
+    if(  isSgUpirFieldBodyStatement(node) != NULL && hasClause(isSgUpirFieldBodyStatement(node), V_SgOmpCollapseClause))
+      transOmpCollapse(isSgUpirFieldBodyStatement(node));
 #if 1 // debugging code after collapsing the loops
     if (!isVariant)
     switch (node->variantT())

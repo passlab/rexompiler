@@ -101,13 +101,13 @@ SgUpirBaseStatement* convertOpenACCBodyDirective(std::pair<SgPragmaDeclaration*,
             case ACCC_collapse:
             case ACCC_num_gangs:
             case ACCC_num_workers: {
-                convertOpenACCExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenACCIR_to_SageIII, *clause_iter);
+                convertOpenACCExpressionClause(isSgUpirFieldBodyStatement(result), current_OpenACCIR_to_SageIII, *clause_iter);
                 break;
             }
             case ACCC_copyin:
             case ACCC_copyout:
             case ACCC_copy: {
-                convertOpenACCClause(isSgOmpClauseBodyStatement(result), current_OpenACCIR_to_SageIII, *clause_iter);
+                convertOpenACCClause(isSgUpirFieldBodyStatement(result), current_OpenACCIR_to_SageIII, *clause_iter);
                 break;
             }
             default: {
@@ -157,7 +157,7 @@ SgOmpExpressionClause* convertOpenACCExpressionClause(SgStatement* directive, st
     SageInterface::setOneSourcePositionForTransformation(result);
 
     SgOmpClause* sg_clause = result;
-    ((SgOmpClauseBodyStatement*)directive)->get_clauses().push_back(sg_clause);
+    ((SgUpirFieldBodyStatement*)directive)->get_clauses().push_back(sg_clause);
  
     sg_clause->set_parent(directive);
 
@@ -205,7 +205,7 @@ SgOmpVariablesClause* convertOpenACCClause(SgStatement* directive, std::pair<SgP
     buildVariableList(result);
     explist->set_parent(result);
     SgOmpClause* sg_clause = result;
-    ((SgOmpClauseBodyStatement*)directive)->get_clauses().push_back(sg_clause);
+    ((SgUpirFieldBodyStatement*)directive)->get_clauses().push_back(sg_clause);
  
     sg_clause->set_parent(directive);
     omp_variable_list.clear();

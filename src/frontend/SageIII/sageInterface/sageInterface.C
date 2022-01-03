@@ -10758,14 +10758,14 @@ SgSwitchStatement* SageInterface::findEnclosingSwitch(SgStatement* s) {
 }
 
 //! Find enclosing OpenMP clause body statement from s. If s is already one, return it directly.
-SgOmpClauseBodyStatement* SageInterface::findEnclosingOmpClauseBodyStatement(SgStatement* s) {
-  while (s && !isSgOmpClauseBodyStatement(s)) {
+SgUpirFieldBodyStatement* SageInterface::findEnclosingUpirFieldBodyStatement(SgStatement* s) {
+  while (s && !isSgUpirFieldBodyStatement(s)) {
     s = isSgStatement(s->get_parent());
   }
   // ROSE_ASSERT (s); // s is allowed to be NULL.
   if (s==NULL)
     return NULL;
-  return isSgOmpClauseBodyStatement(s);
+  return isSgUpirFieldBodyStatement(s);
 }
 
 

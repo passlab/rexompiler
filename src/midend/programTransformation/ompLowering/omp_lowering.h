@@ -138,22 +138,22 @@ namespace OmpSupport
   ROSE_DLL_API void transOmpVariables(SgStatement * ompStmt, SgBasicBlock* bb1, SgExpression* orig_loop_upper = NULL, bool withinAcceleratorModel= false);
 
   //! Collect all variables from OpenMP clauses associated with an omp statement: private, reduction, etc 
-  ROSE_DLL_API SgInitializedNamePtrList collectAllClauseVariables (SgOmpClauseBodyStatement * clause_stmt);
+  ROSE_DLL_API SgInitializedNamePtrList collectAllClauseVariables (SgUpirFieldBodyStatement * clause_stmt);
 
   //! Collect variables from a particular type of OpenMP clauses associated with an omp statement: private, reduction, etc 
-  ROSE_DLL_API SgInitializedNamePtrList collectClauseVariables (SgOmpClauseBodyStatement * clause_stmt, const VariantT& vt);
+  ROSE_DLL_API SgInitializedNamePtrList collectClauseVariables (SgUpirFieldBodyStatement * clause_stmt, const VariantT& vt);
 
   //! Collect variables from given types of OpenMP clauses associated with an omp statement: private, reduction, etc 
-  ROSE_DLL_API SgInitializedNamePtrList collectClauseVariables (SgOmpClauseBodyStatement * clause_stmt, const VariantVector& vvt);
+  ROSE_DLL_API SgInitializedNamePtrList collectClauseVariables (SgUpirFieldBodyStatement * clause_stmt, const VariantVector& vvt);
 
   //! Collect expression from given types of OpenMP clauses associated with an omp statement: private, reduction, etc 
-  ROSE_DLL_API SgExpression* getClauseExpression (SgOmpClauseBodyStatement * clause_stmt, const VariantVector& vvt);
+  ROSE_DLL_API SgExpression* getClauseExpression (SgUpirFieldBodyStatement * clause_stmt, const VariantVector& vvt);
 
   //! Check if a variable is in a variable list of a given clause type
-  ROSE_DLL_API bool isInClauseVariableList(SgInitializedName* var, SgOmpClauseBodyStatement * clause_stmt, const VariantT& vt);
+  ROSE_DLL_API bool isInClauseVariableList(SgInitializedName* var, SgUpirFieldBodyStatement * clause_stmt, const VariantT& vt);
 
   //! Check if a variable is in variable lists of given clause types
-  ROSE_DLL_API bool isInClauseVariableList(SgInitializedName* var, SgOmpClauseBodyStatement * clause_stmt, const VariantVector& vvt);
+  ROSE_DLL_API bool isInClauseVariableList(SgInitializedName* var, SgUpirFieldBodyStatement * clause_stmt, const VariantVector& vvt);
 
   //! Replace references to oldVar within root with references to newVar, return the number of references replaced.
   ROSE_DLL_API int replaceVariableReferences(SgNode* root, SgVariableSymbol* oldVar, SgVariableSymbol* newVar);
@@ -167,25 +167,25 @@ namespace OmpSupport
   int replaceVariablesWithPointerDereference(SgNode* root, std::set<SgVariableSymbol*>& vars);
 
   //! Add a variable into a non-reduction clause of an OpenMP statement, create the clause transparently if it does not exist
-  ROSE_DLL_API void addClauseVariable(SgInitializedName* var, SgOmpClauseBodyStatement * clause_stmt, const VariantT& vt);
+  ROSE_DLL_API void addClauseVariable(SgInitializedName* var, SgUpirFieldBodyStatement * clause_stmt, const VariantT& vt);
 
   //! Build a non-reduction variable clause for a given OpenMP directive. It directly returns the clause if the clause already exists
-  ROSE_DLL_API SgOmpVariablesClause* buildOmpVariableClause(SgOmpClauseBodyStatement * clause_stmt, const VariantT& vt);
+  ROSE_DLL_API SgOmpVariablesClause* buildOmpVariableClause(SgUpirFieldBodyStatement * clause_stmt, const VariantT& vt);
 
   //! Remove one or more clauses of type vt 
-  ROSE_DLL_API int removeClause (SgOmpClauseBodyStatement * clause_stmt, const VariantT& vt);
+  ROSE_DLL_API int removeClause (SgUpirFieldBodyStatement * clause_stmt, const VariantT& vt);
 
   //! Check if an OpenMP statement has a clause of type vt
-  ROSE_DLL_API bool hasClause(SgOmpClauseBodyStatement* clause_stmt, const VariantT & vt);
+  ROSE_DLL_API bool hasClause(SgUpirFieldBodyStatement* clause_stmt, const VariantT & vt);
 
   //! Get OpenMP clauses from an eligible OpenMP statement
-  ROSE_DLL_API Rose_STL_Container<SgOmpClause*>  getClause(SgOmpClauseBodyStatement* clause_stmt, const VariantT & vt);
+  ROSE_DLL_API Rose_STL_Container<SgOmpClause*>  getClause(SgUpirFieldBodyStatement* clause_stmt, const VariantT & vt);
 
   //! Check if an omp for/do loop use static schedule or not, including: default schedule, or schedule(static[,chunk_size]) 
-  ROSE_DLL_API bool useStaticSchedule(SgOmpClauseBodyStatement* omp_loop);
+  ROSE_DLL_API bool useStaticSchedule(SgUpirFieldBodyStatement* omp_loop);
 
   //! Return a reduction variable's reduction operation type
-  ROSE_DLL_API SgOmpClause::omp_reduction_identifier_enum getReductionOperationType(SgInitializedName* init_name, SgOmpClauseBodyStatement* clause_stmt);
+  ROSE_DLL_API SgOmpClause::omp_reduction_identifier_enum getReductionOperationType(SgInitializedName* init_name, SgUpirFieldBodyStatement* clause_stmt);
 
   //! Create an initial value according to reduction operator type
   ROSE_DLL_API SgExpression* createInitialValueExp(SgOmpClause::omp_reduction_identifier_enum r_operator);

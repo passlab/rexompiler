@@ -99,9 +99,9 @@ void analyzeOmpFor(SgNode *node) {
   SgUpirLoopParallelStatement *target1 = isSgUpirLoopParallelStatement(node);
   SgOmpDoStatement *target2 = isSgOmpDoStatement(node);
 
-  SgOmpClauseBodyStatement *target =
-      (target1 != NULL ? (SgOmpClauseBodyStatement *)target1
-                       : (SgOmpClauseBodyStatement *)target2);
+  SgUpirFieldBodyStatement *target =
+      (target1 != NULL ? (SgUpirFieldBodyStatement *)target1
+                       : (SgUpirFieldBodyStatement *)target2);
   ROSE_ASSERT(target != NULL);
 
   SgScopeStatement *p_scope = target->get_scope();
@@ -513,8 +513,8 @@ int patchUpImplicitMappingVariables(SgFile *file) {
 
   Rose_STL_Container<SgNode *>::iterator iter = node_list.begin();
   for (iter = node_list.begin(); iter != node_list.end(); iter++) {
-    SgOmpClauseBodyStatement *target = NULL;
-    target = isSgOmpClauseBodyStatement(*iter);
+    SgUpirFieldBodyStatement *target = NULL;
+    target = isSgUpirFieldBodyStatement(*iter);
     SgScopeStatement *directive_scope = target->get_scope();
     SgStatement *body = target->get_body();
     ROSE_ASSERT(body != NULL);
@@ -564,7 +564,7 @@ int patchUpImplicitMappingVariables(SgFile *file) {
         ROSE_ASSERT(sym != NULL);
         SgType *orig_type = sym->get_type();
         SgArrayType *a_type = isSgArrayType(orig_type);
-        SgOmpClauseBodyStatement *target_parent = NULL;
+        SgUpirFieldBodyStatement *target_parent = NULL;
         if (isSgOmpTargetParallelForStatement(target)) {
           target_parent = isSgOmpTargetParallelForStatement(target);
         } else {
@@ -656,8 +656,8 @@ int unifyUpirTaskMappingVariables(SgFile *file) {
 
   Rose_STL_Container<SgNode *>::iterator iter;
   for (iter = node_list.begin(); iter != node_list.end(); iter++) {
-    SgOmpClauseBodyStatement *target = NULL;
-    target = isSgOmpClauseBodyStatement(*iter);
+    SgUpirFieldBodyStatement *target = NULL;
+    target = isSgUpirFieldBodyStatement(*iter);
     SgScopeStatement *directive_scope = target->get_scope();
     SgStatement *body = target->get_body();
     ROSE_ASSERT(body != NULL);
