@@ -26,7 +26,7 @@ class SgBasicBlock;
 class SgClassDefinition;
 class SgTemplateInstantiationDecl;
 class SgOmpClause;
-class SgUpirBaseStatement;
+class SgUpirBodyStatement;
 class SgOmpThreadBodyStatement;
 class SgOmpFlushStatement;
 class SgOmpDeclareSimdStatement;
@@ -502,7 +502,7 @@ class Unparse_ExprStmt : public UnparseLanguageIndependentConstructs
 //       virtual void unparseOmpExpressionClause(SgOmpExpressionClause* clause, SgUnparse_Info& info);
 //       virtual void unparseOmpClause(SgOmpClause* clause, SgUnparse_Info& info);
 //       virtual void unparseUpirSpmdStatement (SgStatement* stmt, SgUnparse_Info& info);
-//       virtual void unparseUpirBaseStatement(SgUpirBaseStatement* stmt, SgUnparse_Info& info);
+//       virtual void unparseUpirBodyStatement(SgUpirBodyStatement* stmt, SgUnparse_Info& info);
 //       virtual void unparseOmpThreadprivateStatement(SgOmpThreadprivateStatement* stmt, SgUnparse_Info& info);
 //       virtual void unparseOmpFlushStatement(SgOmpFlushStatement* stmt, SgUnparse_Info& info);
 //       virtual void unparseOmpBarrierStatement(SgOmpBarrierStatement* stmt, SgUnparse_Info& info);

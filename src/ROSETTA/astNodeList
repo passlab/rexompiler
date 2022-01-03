@@ -291,7 +291,7 @@ SgOmpAtomicStatement
 SgOmpBarrierStatement
 SgOmpCriticalStatement
 SgUpirFieldBodyStatement
-SgUpirBaseStatement
+SgUpirBodyStatement
 SgUpirFieldStatement
 SgOmpDoStatement
 SgOmpFlushStatement
