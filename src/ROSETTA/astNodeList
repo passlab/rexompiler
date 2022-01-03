@@ -292,7 +292,7 @@ SgOmpBarrierStatement
 SgOmpCriticalStatement
 SgOmpClauseBodyStatement
 SgUpirBaseStatement
-SgOmpClauseStatement
+SgUpirFieldStatement
 SgOmpDoStatement
 SgOmpFlushStatement
 SgOmpAllocateStatement

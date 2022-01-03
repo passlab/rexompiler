@@ -358,8 +358,8 @@ Grammar::setUpStatements ()
         | OmpSectionStatement | OmpWorkshareStatement  | OmpClauseBodyStatement ,
         "UpirBaseStatement",      "UPIR_BASE_STMT", false );
 
-    NEW_NONTERMINAL_MACRO (OmpClauseStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement | OmpOrderedDependStatement,
-        "OmpClauseStatement",      "OMP_CLAUSE_STMT", false );
+    NEW_NONTERMINAL_MACRO (UpirFieldStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement | OmpOrderedDependStatement,
+        "UpirFieldStatement",      "UPIR_FIELD_STMT", false );
 
 
 #endif
@@ -567,7 +567,7 @@ Grammar::setUpStatements ()
              AssignStatement           | ComputedGotoStatement  | AssignedGotoStatement           |
           /* FortranDo                 | */ AllocateStatement   | DeallocateStatement             | UpcNotifyStatement    | 
              UpcWaitStatement          | UpcBarrierStatement    | UpcFenceStatement               | OmpTaskyieldStatement   |
-             OmpBarrierStatement       | UpirBaseStatement       | OmpClauseStatement              |
+             OmpBarrierStatement       | UpirBaseStatement      | UpirFieldStatement              |
              SequenceStatement         | WithStatement          | PassStatement                   |
              AssertStmt                | ExecStatement          | OmpDeclareMapperStatement       |
 	     ImageControlStatement /* | JavaPackageDeclaration */,
@@ -4252,8 +4252,8 @@ Grammar::setUpStatements ()
     OmpClauseBodyStatement.setFunctionPrototype         ( "HEADER_OMP_CLAUSEBODY_STATEMENT", "../Grammar/Statement.code" );
     OmpClauseBodyStatement.setFunctionSource            ("SOURCE_OMP_CLAUSEBODY_STATEMENT", "../Grammar/Statement.code" );
 
-    OmpClauseStatement.setFunctionPrototype         ( "HEADER_OMP_CLAUSE_STATEMENT", "../Grammar/Statement.code" );
-    OmpClauseStatement.setFunctionSource            ("SOURCE_OMP_CLAUSE_STATEMENT", "../Grammar/Statement.code" );
+    UpirFieldStatement.setFunctionPrototype         ( "HEADER_UPIR_FIELD_STATEMENT", "../Grammar/Statement.code" );
+    UpirFieldStatement.setFunctionSource            ("SOURCE_UPIR_FIELD_STATEMENT", "../Grammar/Statement.code" );
 
     UpirBaseStatement.setFunctionPrototype         ("HEADER_UPIR_BASE_STATEMENT", "../Grammar/Statement.code");
     UpirBaseStatement.setFunctionSource            ("SOURCE_UPIR_BASE_STATEMENT", "../Grammar/Statement.code");
@@ -4357,7 +4357,7 @@ Grammar::setUpStatements ()
    // Directives with a statement/ structured body
     UpirBaseStatement.setDataPrototype ( "SgStatement*", "body",        "= NULL",
                                              CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-    OmpClauseStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
+    UpirFieldStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
     // Directive with a body + a name:
         // omp critical [name]  \n structured_block

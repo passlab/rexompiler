@@ -56,7 +56,7 @@ static SgOmpScheduleClause* convertScheduleClause(SgOmpClauseBodyStatement*, std
 static SgOmpDistScheduleClause* convertDistScheduleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDefaultmapClause* convertDefaultmapClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
-static SgOmpAllocatorClause* convertAllocatorClause(SgOmpClauseStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpAllocatorClause* convertAllocatorClause(SgUpirFieldStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpProcBindClause* convertProcBindClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpOrderClause* convertOrderClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpBindClause* convertBindClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
@@ -2784,7 +2784,7 @@ SgStatement* convertOmpAllocateDirective(std::pair<SgPragmaDeclaration*, OpenMPD
         clause_kind = (*clause_iter)->getKind();
         switch (clause_kind) {
           case OMPC_allocator: {
-            convertAllocatorClause(isSgOmpClauseStatement(statement), current_OpenMPIR_to_SageIII, *clause_iter);
+            convertAllocatorClause(isSgUpirFieldStatement(statement), current_OpenMPIR_to_SageIII, *clause_iter);
             break;
           }
           default: {
@@ -3379,7 +3379,7 @@ SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement* clause_body, 
 }
 
 //! Build SgOmpAllocatorClause from OpenMPIR
-SgOmpAllocatorClause* convertAllocatorClause(SgOmpClauseStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+SgOmpAllocatorClause* convertAllocatorClause(SgUpirFieldStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     OpenMPAllocatorClauseAllocator allocator = ((OpenMPAllocatorClause*)current_omp_clause)->getAllocator();
     SgOmpClause::omp_allocator_modifier_enum sg_modifier = toSgOmpClauseAllocatorAllocator(allocator);
     SgExpression* user_defined_parameter = NULL;

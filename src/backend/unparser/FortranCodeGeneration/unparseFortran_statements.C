@@ -6014,7 +6014,7 @@ FortranCodeGeneration_locatedNode::unparseOmpBeginDirectiveClauses (SgStatement*
     }
     unp->u_sage->curprint_newline();
   }
-  else if (isSgOmpClauseStatement(stmt))
+  else if (isSgUpirFieldStatement(stmt))
   { 
     const SgOmpClausePtrList& clause_ptr_list = isSgOmpFlushStatement(stmt)->get_clauses();
     SgOmpClausePtrList::const_iterator i;
