@@ -440,6 +440,10 @@ SgOmpNotinbranchClause
 SgOmpDependClause
 SgOmpAffinityClause
 SgOmpWhenClause
+SgUpirBranchField
+SgUpirNestedLevelField
+SgUpirNestedParentField
+SgUpirNestedChildField
 SgOpenclAccessModeModifier
 SgOpenStatement
 SgOptions
