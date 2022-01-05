@@ -319,6 +319,14 @@ HEADER_OMP_CLAUSE_START
             e_omp_affinity_modifier_iterator
         };
 
+        enum upir_target_type_enum
+        {
+            e_upir_target_unspecified,
+            e_upir_target_cpu,
+            e_upir_target_gpu,
+            e_upir_target_cluster,
+        };
+
         // Liao 1/22/2012: experimental support for OpenMP Accelerator model
         enum omp_map_operator_enum
         {

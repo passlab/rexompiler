@@ -127,6 +127,9 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (UpirNestedLevelField, "UpirNestedLevelField", "UpirNestedLevelFieldTag" );
      NEW_TERMINAL_MACRO (UpirNestedParentField, "UpirNestedParentField", "UpirNestedParentFieldTag" );
      NEW_TERMINAL_MACRO (UpirNestedChildField, "UpirNestedChildField", "UpirNestedChildFieldTag" );
+     NEW_TERMINAL_MACRO (UpirSyncField, "UpirSyncField", "UpirSyncFieldTag" );
+     NEW_TERMINAL_MACRO (UpirDataField, "UpirDataField", "UpirDataFieldTag" );
+     NEW_TERMINAL_MACRO (UpirTargetField, "UpirTargetField", "UpirTargetFieldTag" );
 
      NEW_NONTERMINAL_MACRO (OmpExpressionClause, OmpOrderedClause | OmpCollapseClause | OmpIfClause | UpirNumUnitsField | OmpNumTeamsClause | OmpThreadLimitClause | OmpDeviceClause | OmpHintClause | OmpGrainsizeClause | OmpNumTasksClause | OmpDetachClause |
                             OmpSafelenClause | OmpSimdlenClause | OmpFinalClause | OmpPriorityClause
@@ -167,7 +170,8 @@ Grammar::setUpNodes ()
      NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpReadClause | OmpThreadsClause | OmpSimdClause | OmpWriteClause | OmpUpdateClause | OmpDepobjUpdateClause | OmpDestroyClause | OmpCaptureClause | OmpBeginClause |OmpEndClause | OmpUntiedClause | OmpSeqCstClause | OmpAcqRelClause | OmpReleaseClause | OmpAcquireClause | OmpRelaxedClause | OmpReverseOffloadClause | OmpUnifiedAddressClause | OmpUnifiedSharedMemoryClause | OmpDynamicAllocatorsClause |
          OmpParallelClause | OmpSectionsClause | OmpForClause | OmpTaskgroupClause | OmpNogroupClause |
          OmpDefaultClause | OmpAllocatorClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpDistScheduleClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpDefaultmapClause | OmpAtomicDefaultMemOrderClause | OmpExtImplementationDefinedRequirementClause | OmpUsesAllocatorsDefination |
-         OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause | OmpUsesAllocatorsClause | UpirBranchField | UpirNestedLevelField | UpirNestedParentField | UpirNestedChildField,
+         OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause | OmpUsesAllocatorsClause |
+         UpirBranchField | UpirNestedLevelField | UpirNestedParentField | UpirNestedChildField | UpirSyncField | UpirDataField | UpirTargetField,
          "OmpClause", "OmpClauseTag", false);
 #endif
 
@@ -2048,6 +2052,18 @@ Grammar::setUpNodes ()
 
      // nested-child(node2)
      UpirNestedChildField.setDataPrototype("SgStatement*", "nested_child", "= NULL",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // sync(node)
+     UpirSyncField.setDataPrototype("SgStatement*", "sync", "= NULL",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // data(node1, node2, ...)
+     UpirDataField.setDataPrototype("std::list<SgNode*>", "data", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // target(cpu, gpu, cluster)
+     UpirTargetField.setDataPrototype("std::list<SgOmpClause::upir_target_type_enum>", "target_type", "",
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
 #endif

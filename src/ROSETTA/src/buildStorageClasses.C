@@ -904,6 +904,8 @@ AstNodeClass::evaluateType(std::string& varTypeString)
               // DQ (12/9/2015): Added to support use of enums from SgUntypedType class.
                  ( varTypeString == "SgUntypedType::type_enum" ) ||
                  ( varTypeString == "SgFile::standard_enum" ) ||
+              // UPIR
+                 ( varTypeString == "SgOmpClause::upir_target_type_enum" ) ||
                  false
               )
        {

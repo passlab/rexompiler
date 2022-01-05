@@ -444,6 +444,9 @@ SgUpirBranchField
 SgUpirNestedLevelField
 SgUpirNestedParentField
 SgUpirNestedChildField
+SgUpirSyncField
+SgUpirDataField
+SgUpirTargetField
 SgOpenclAccessModeModifier
 SgOpenStatement
 SgOptions
