@@ -324,7 +324,64 @@ HEADER_OMP_CLAUSE_START
             e_upir_target_unspecified,
             e_upir_target_cpu,
             e_upir_target_gpu,
-            e_upir_target_cluster,
+            e_upir_target_cluster
+        };
+
+        enum upir_data_sharing_enum
+        {
+            e_upir_data_sharing_unspecified,
+            e_upir_data_sharing_shared,
+            e_upir_data_sharing_private,
+            e_upir_data_sharing_firstprivate,
+            e_upir_data_sharing_lastprivate
+        };
+
+        enum upir_data_mapping_enum
+        {
+            e_upir_data_mapping_unspecified,
+            e_upir_data_mapping_to,
+            e_upir_data_mapping_from,
+            e_upir_data_mapping_tofrom,
+            e_upir_data_mapping_allocate,
+            e_upir_data_mapping_none
+        };
+
+        enum upir_property_visibility_enum
+        {
+            e_upir_property_visibility_unspecified,
+            e_upir_property_visibility_implicit,
+            e_upir_property_visibility_explicit
+        };
+
+        enum upir_data_access_enum
+        {
+            e_upir_data_access_unspecified,
+            e_upir_data_access_read_only,
+            e_upir_data_access_write_only,
+            e_upir_data_access_read_write
+        };
+
+        enum upir_data_distribution_pattern_enum
+        {
+            e_upir_data_distribution_pattern_unspecified,
+            e_upir_data_distribution_pattern_block,
+            e_upir_data_distribution_pattern_cyclic,
+            e_upir_data_distribution_pattern_linear,
+            e_upir_data_distribution_pattern_loop
+        };
+
+        enum upir_data_allocator_enum
+        {
+            e_upir_data_allocator_unspecified,
+            e_upir_data_allocator_default_mem_alloc,
+            e_upir_data_allocator_large_cap_mem_alloc
+        };
+
+        enum upir_data_deallocator_enum
+        {
+            e_upir_data_deallocator_unspecified,
+            e_upir_data_deallocator_default_mem_dealloc,
+            e_upir_data_deallocator_large_cap_mem_dealloc
         };
 
         // Liao 1/22/2012: experimental support for OpenMP Accelerator model

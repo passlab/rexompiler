@@ -906,6 +906,13 @@ AstNodeClass::evaluateType(std::string& varTypeString)
                  ( varTypeString == "SgFile::standard_enum" ) ||
               // UPIR
                  ( varTypeString == "SgOmpClause::upir_target_type_enum" ) ||
+                 ( varTypeString == "SgOmpClause::upir_data_sharing_enum" ) ||
+                 ( varTypeString == "SgOmpClause::upir_data_mapping_enum" ) ||
+                 ( varTypeString == "SgOmpClause::upir_property_visibility_enum" ) ||
+                 ( varTypeString == "SgOmpClause::upir_data_access_enum" ) ||
+                 ( varTypeString == "SgOmpClause::upir_data_distribution_pattern_enum" ) ||
+                 ( varTypeString == "SgOmpClause::upir_data_allocator_enum" ) ||
+                 ( varTypeString == "SgOmpClause::upir_data_deallocator_enum" ) ||
                  false
               )
        {

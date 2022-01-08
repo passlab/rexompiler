@@ -446,6 +446,7 @@ SgUpirNestedParentField
 SgUpirNestedChildField
 SgUpirSyncField
 SgUpirDataField
+SgUpirDataItemField
 SgUpirTargetField
 SgOpenclAccessModeModifier
 SgOpenStatement
