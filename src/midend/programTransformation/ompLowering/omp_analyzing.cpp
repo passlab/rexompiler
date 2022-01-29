@@ -699,6 +699,50 @@ int unifyUpirTaskMappingVariables(SgFile *file) {
   return result;
 } // end unifyUpirTaskMappingVariables()
 
+// create data fields
+int createUpirDataFields(SgFile *file) {
+  int result = 0;
+  ROSE_ASSERT(file != NULL);
+  Rose_STL_Container<SgNode *> node_list =
+      NodeQuery::querySubTree(file, V_SgOmpMapClause);
+
+  Rose_STL_Container<SgNode *>::iterator iter;
+  for (iter = node_list.begin(); iter != node_list.end(); iter++) {
+    SgOmpMapClause *target = isSgOmpMapClause(*iter);
+    SgUpirFieldBodyStatement *target_directive =
+        isSgUpirFieldBodyStatement(target->get_parent());
+    SgScopeStatement *directive_scope = target_directive->get_scope();
+
+    SgExpressionPtrList variables = target->get_variables()->get_expressions();
+
+    SgUpirDataField *upir_data = new SgUpirDataField();
+    std::list<SgUpirDataItemField *> data_items = upir_data->get_data();
+    for (size_t i = 0; i < variables.size(); i++) {
+      SgUpirDataItemField *upir_data_item =
+          new SgUpirDataItemField(copyExpression(variables[i]));
+      data_items.push_back(upir_data_item);
+      upir_data_item->set_parent(upir_data);
+    }
+
+    /*
+    for (std::list<SgUpirDataItemField *>::iterator iter = data_items.begin();
+         iter != data_items.end(); iter++)
+      std::cout << (*iter)->get_symbol()->unparseToString() << "\n";
+    */
+    upir_data->set_data(data_items);
+
+    /*
+    std::list<SgUpirDataItemField *> d = upir_data->get_data();
+    for (std::list<SgUpirDataItemField *>::iterator iter = d.begin();
+         iter != d.end(); iter++)
+      std::cout << (*iter)->get_symbol()->unparseToString() << "\n";
+    */
+    upir_data->set_parent(target_directive);
+  }
+
+  return result;
+} // end createUpirDataFields()
+
 void analyze_omp(SgSourceFile *file) {
 
   Rose_STL_Container<SgNode *> variant_directives =
@@ -715,6 +759,9 @@ void analyze_omp(SgSourceFile *file) {
   patchUpFirstprivateVariables(file);
 
   int shared_vars = patchUpImplicitMappingVariables(file);
+
+  // Generate UPIR data fields based on map clauses
+  createUpirDataFields(file);
 
   Rose_STL_Container<SgNode *> node_list =
       NodeQuery::querySubTree(file, V_SgStatement);

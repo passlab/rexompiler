@@ -399,6 +399,10 @@ class UnparseLanguageIndependentConstructs
           virtual void unparseOmpAllocateStatement           (SgStatement* stmt,     SgUnparse_Info& info);
           virtual void unparseOmpDeclareSimdStatement        (SgStatement* stmt,     SgUnparse_Info& info);
         
+          // UPIR unparsing
+          virtual void unparseUpirDataField                 (SgOmpClause* clause, SgUnparse_Info& info);
+          virtual void unparseUpirDataItemField             (SgOmpClause* clause, SgUnparse_Info& info);
+
           // This is necessary since some clauses should only appear with the begin part of a directive
           virtual void unparseOmpDirectivePrefixAndName     (SgStatement* stmt,     SgUnparse_Info& info);
           virtual void unparseOmpEndDirectivePrefixAndName  (SgStatement* stmt,     SgUnparse_Info& info);
