@@ -498,7 +498,7 @@ int patchUpImplicitMappingVariables(SgFile *file) {
   int result = 0;
   ROSE_ASSERT(file != NULL);
   Rose_STL_Container<SgNode *> node_list1 =
-      NodeQuery::querySubTree(file, V_SgUpirSpmdStatement);
+      NodeQuery::querySubTree(file, V_SgUpirTaskStatement);
 
   // TODO: implement a helper function to collect all the nodes into one list
   Rose_STL_Container<SgNode *> node_list2 =
@@ -536,15 +536,12 @@ int patchUpImplicitMappingVariables(SgFile *file) {
       if (isAncestor(directive_scope, var_scope))
         continue;
 
-      // TODO: is it necessary?
-      // if (SageInterface::isUseByAddressVariableRef(var_ref))
-      // continue;
-
       // Skip variables already with explicit data-sharing attributes
       VariantVector vv(V_SgOmpDefaultClause);
       vv.push_back(V_SgOmpPrivateClause);
       vv.push_back(V_SgOmpSharedClause);
       vv.push_back(V_SgOmpFirstprivateClause);
+      vv.push_back(V_SgOmpMapClause);
       if (isInClauseVariableList(init_var, target, vv))
         continue;
       // Skip variables which are class/structure members: part of another
@@ -555,21 +552,12 @@ int patchUpImplicitMappingVariables(SgFile *file) {
       if (isSharedInEnclosingConstructs(init_var, target))
         continue;
       // Now it should be a shared variable
-      SgNode *parent = target->get_parent();
-      if (isSgBasicBlock(parent)) // skip the padding block in between.
-        parent = parent->get_parent();
-      if (isSgUpirTaskStatement(parent) ||
+      if (isSgUpirTaskStatement(target) ||
           isSgOmpTargetParallelForStatement(target)) {
         SgVariableSymbol *sym = var_ref->get_symbol();
         ROSE_ASSERT(sym != NULL);
         SgType *orig_type = sym->get_type();
         SgArrayType *a_type = isSgArrayType(orig_type);
-        SgUpirFieldBodyStatement *target_parent = NULL;
-        if (isSgOmpTargetParallelForStatement(target)) {
-          target_parent = isSgOmpTargetParallelForStatement(target);
-        } else {
-          target_parent = isSgUpirTaskStatement(parent);
-        }
         if (a_type != NULL) {
           std::vector<SgExpression *> dims = get_C_array_dimensions(a_type);
           SgExpression *array_length = NULL;
@@ -589,9 +577,9 @@ int patchUpImplicitMappingVariables(SgFile *file) {
           SgExprListExp *explist = NULL;
           SgVariableSymbol *array_symbol = var_ref->get_symbol();
 
-          if (hasClause(target_parent, V_SgOmpMapClause)) {
+          if (hasClause(target, V_SgOmpMapClause)) {
             Rose_STL_Container<SgOmpClause *> map_clauses =
-                getClause(target_parent, V_SgOmpMapClause);
+                getClause(target, V_SgOmpMapClause);
             Rose_STL_Container<SgOmpClause *>::const_iterator iter;
             for (iter = map_clauses.begin(); iter != map_clauses.end();
                  iter++) {
@@ -613,7 +601,7 @@ int patchUpImplicitMappingVariables(SgFile *file) {
             map_clause = new SgOmpMapClause(explist, sg_type);
             explist->set_parent(map_clause);
             setOneSourcePositionForTransformation(map_clause);
-            map_clause->set_parent(target_parent);
+            map_clause->set_parent(target);
           }
 
           bool has_mapped = false;
@@ -636,7 +624,7 @@ int patchUpImplicitMappingVariables(SgFile *file) {
           }
 
         } else {
-          addClauseVariable(init_var, target_parent, V_SgOmpFirstprivateClause);
+          addClauseVariable(init_var, target, V_SgOmpFirstprivateClause);
         }
       } else {
         addClauseVariable(init_var, target, V_SgOmpSharedClause);
@@ -658,7 +646,6 @@ int unifyUpirTaskMappingVariables(SgFile *file) {
   for (iter = node_list.begin(); iter != node_list.end(); iter++) {
     SgUpirFieldBodyStatement *target = NULL;
     target = isSgUpirFieldBodyStatement(*iter);
-    SgScopeStatement *directive_scope = target->get_scope();
     SgStatement *body = target->get_body();
     ROSE_ASSERT(body != NULL);
 
@@ -711,7 +698,6 @@ int createUpirDataFields(SgFile *file) {
     SgOmpMapClause *target = isSgOmpMapClause(*iter);
     SgUpirFieldBodyStatement *target_directive =
         isSgUpirFieldBodyStatement(target->get_parent());
-    SgScopeStatement *directive_scope = target_directive->get_scope();
 
     SgExpressionPtrList variables = target->get_variables()->get_expressions();
 
@@ -721,22 +707,13 @@ int createUpirDataFields(SgFile *file) {
       SgUpirDataItemField *upir_data_item =
           new SgUpirDataItemField(copyExpression(variables[i]));
       data_items.push_back(upir_data_item);
+      setOneSourcePositionForTransformation(upir_data_item);
       upir_data_item->set_parent(upir_data);
     }
 
-    /*
-    for (std::list<SgUpirDataItemField *>::iterator iter = data_items.begin();
-         iter != data_items.end(); iter++)
-      std::cout << (*iter)->get_symbol()->unparseToString() << "\n";
-    */
     upir_data->set_data(data_items);
-
-    /*
-    std::list<SgUpirDataItemField *> d = upir_data->get_data();
-    for (std::list<SgUpirDataItemField *>::iterator iter = d.begin();
-         iter != d.end(); iter++)
-      std::cout << (*iter)->get_symbol()->unparseToString() << "\n";
-    */
+    setOneSourcePositionForTransformation(upir_data);
+    target_directive->get_clauses().push_back(upir_data);
     upir_data->set_parent(target_directive);
   }
 
@@ -758,7 +735,7 @@ void analyze_omp(SgSourceFile *file) {
                                  // want to patch up private variable first!
   patchUpFirstprivateVariables(file);
 
-  int shared_vars = patchUpImplicitMappingVariables(file);
+  patchUpImplicitMappingVariables(file);
 
   // Generate UPIR data fields based on map clauses
   createUpirDataFields(file);
