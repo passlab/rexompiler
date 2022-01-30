@@ -2101,7 +2101,7 @@ Grammar::setUpNodes ()
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
 
      // target(cpu, gpu, cluster)
-     UpirTargetField.setDataPrototype("std::list<SgOmpClause::upir_target_type_enum>", "target_type", "",
+     UpirTargetField.setDataPrototype("std::set<SgOmpClause::upir_target_type_enum>", "target_type", "",
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
 #endif

@@ -659,9 +659,31 @@ int unifyUpirTaskMappingVariables(SgFile *file) {
     SgExpressionPtrList firstprivate_symbols =
         firstprivate_clause->get_variables()->get_expressions();
 
-    SgExprListExp *explist = buildExprListExp();
-    SgOmpClause::omp_map_operator_enum sg_type = SgOmpClause::e_omp_map_to;
-    SgOmpMapClause *map_clause = new SgOmpMapClause(explist, sg_type);
+    SgOmpMapClause *map_clause = NULL;
+    SgExprListExp *explist = NULL;
+    bool has_map_to_clause = false;
+    // use the existing MAP TO clause if any.
+    if (hasClause(target, V_SgOmpMapClause)) {
+      Rose_STL_Container<SgOmpClause *> map_clauses =
+          getClause(target, V_SgOmpMapClause);
+      Rose_STL_Container<SgOmpClause *>::const_iterator iter;
+      for (iter = map_clauses.begin(); iter != map_clauses.end(); iter++) {
+        SgOmpMapClause *temp_map_clause = isSgOmpMapClause(*iter);
+        if (temp_map_clause->get_operation() == SgOmpClause::e_omp_map_to) {
+          map_clause = temp_map_clause;
+          explist = map_clause->get_variables();
+          has_map_to_clause = true;
+          break;
+        }
+      }
+    }
+
+    // create a new MAP TO clause if there isn't one.
+    if (has_map_to_clause == false) {
+      explist = buildExprListExp();
+      SgOmpClause::omp_map_operator_enum sg_type = SgOmpClause::e_omp_map_to;
+      map_clause = new SgOmpMapClause(explist, sg_type);
+    };
     bool has_mapped = false;
 
     for (size_t i = 0; i < firstprivate_symbols.size(); i++) {
@@ -676,7 +698,7 @@ int unifyUpirTaskMappingVariables(SgFile *file) {
         has_mapped = true;
       }
     }
-    if (has_mapped == true) {
+    if (has_map_to_clause == false && has_mapped == true) {
       setOneSourcePositionForTransformation(map_clause);
       explist->set_parent(map_clause);
       map_clause->set_parent(target);
@@ -737,6 +759,10 @@ void analyze_omp(SgSourceFile *file) {
 
   patchUpImplicitMappingVariables(file);
 
+  // convert firstprivate clause in target directive to map clause because later
+  // only map clause will be lowered.
+  unifyUpirTaskMappingVariables(file);
+
   // Generate UPIR data fields based on map clauses
   createUpirDataFields(file);
 
@@ -756,9 +782,5 @@ void analyze_omp(SgSourceFile *file) {
     }
     } // switch
   }
-
-  // convert firstprivate clause in target directive to map clause because later
-  // only map clause will be lowered.
-  unifyUpirTaskMappingVariables(file);
 }
 } // namespace OmpSupport
