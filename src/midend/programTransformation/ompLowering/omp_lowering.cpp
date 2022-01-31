@@ -3669,6 +3669,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
         offloading_variable_type_list = map_variable_type_list;
     }
 
+
     ASTtools::VarSymSet_t per_block_reduction_syms; // translation generated per block reduction symbols with name like _dev_per_block within the enclosed for loop
 
     // collect possible per block reduction variables introduced by transOmpTargetLoop()
@@ -3908,10 +3909,117 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 
     all_syms = transOmpMapVariables(target, map_variable_list, map_variable_base_list, map_variable_size_list, map_variable_type_list); //, addressOf_syms);
 
-    map_variable_list = offloading_variable_list;
-    map_variable_base_list = offloading_variable_base_list;
-    map_variable_size_list = offloading_variable_size_list;
-    map_variable_type_list = offloading_variable_type_list;
+    //map_variable_list = offloading_variable_list;
+    //map_variable_base_list = offloading_variable_base_list;
+    //map_variable_size_list = offloading_variable_size_list;
+    //map_variable_type_list = offloading_variable_type_list;
+
+    // use UPIR data for transformation
+    ASTtools::VarSymSet_t atom_syms;
+    ASTtools::VarSymSet_t array_syms;
+    map_variable_list = buildExprListExp();
+    map_variable_base_list = buildExprListExp();
+    map_variable_size_list = buildExprListExp();
+    map_variable_type_list = buildExprListExp();
+    std::map<const SgVariableSymbol*, std::vector<SgExpression*>> mapping_parameters;
+    if (hasClause(target, V_SgUpirDataField)) {
+        Rose_STL_Container<SgOmpClause*> data_fields = getClause(target, V_SgUpirDataField);
+        for (size_t i = 0; i < data_fields.size(); i++) {
+            std::list<SgUpirDataItemField*> data_items = ((SgUpirDataField*)data_fields[i])->get_data();
+            for (std::list<SgUpirDataItemField*>::iterator j = data_items.begin(); j != data_items.end(); j++) {
+                SgUpirDataItemField* data_item = *j;
+                SgVariableSymbol* variable_symbol = isSgVariableSymbol(data_item->get_symbol());
+                assert(variable_symbol != NULL);
+                SgInitializedName* mapping_variable = variable_symbol->get_declaration();
+                SgType* mapping_variable_type = mapping_variable->get_type();
+                SgExpression* mapping_variable_base_expression = NULL;
+                // get the variable name
+                if (isPointerType(mapping_variable_type) || isSgArrayType(mapping_variable_type)) {
+                    mapping_variable_base_expression = buildVarRefExp(variable_symbol);
+                }
+                else {
+                    mapping_variable_base_expression = buildAddressOfOp(buildVarRefExp(variable_symbol));
+                };
+                // get the variable address and length
+                SgExpression* mapping_variable_address = NULL;
+                SgExpression* mapping_variable_length = NULL;
+                std::list<std::list<SgExpression*>> sections = data_item->get_section();
+                // assume the array is always 1D for now
+                if (sections.size() > 0) {
+                    std::list<std::list<SgExpression*>>::iterator sections_iterator = sections.begin();
+                    std::list<SgExpression*> array_section = *sections_iterator;
+                    std::list<SgExpression*>::iterator array_section_iterator = array_section.begin();
+                    SgExpression* lower_bound = *array_section_iterator;
+                    array_section_iterator++;
+                    SgExpression* length = *array_section_iterator;
+                    // stride cannot be handled by ROSE/REX yet, ignore it for now.
+                    SgExpression* mapping_array_offset = lower_bound;
+                    mapping_variable_address = buildAddOp(mapping_variable_base_expression, mapping_array_offset);
+                    mapping_variable_length = length;
+                    array_syms.insert(variable_symbol);
+                }
+                else {
+                    mapping_variable_address = mapping_variable_base_expression;
+                    mapping_variable_length = buildIntVal(1);
+                    atom_syms.insert(variable_symbol);
+                }
+                // get the data type of mapping variable
+                if (isPointerType(mapping_variable_type) || isSgArrayType(mapping_variable_type)) {
+                    mapping_variable_type = variable_symbol->get_type()->findBaseType();
+                }
+
+                // get the total size of mapping variable
+                SgExpression* mapping_variable_size = buildCastExp(buildMultiplyOp(buildSizeOfOp(mapping_variable_type), mapping_variable_length), buildOpaqueType("int64_t", target->get_scope()));;
+
+                // get the mapping type
+                int variable_mapping_type_enum = OMP_TGT_MAPTYPE_TARGET_PARAM;
+                SgOmpClause::upir_data_mapping_enum data_mapping_type = data_item->get_mapping_property();
+                switch (data_mapping_type) {
+                    case SgOmpClause::e_upir_data_mapping_to:
+                        variable_mapping_type_enum = variable_mapping_type_enum | OMP_TGT_MAPTYPE_TO;
+                        break;
+                    case SgOmpClause::e_upir_data_mapping_from:
+                    case SgOmpClause::e_upir_data_mapping_tofrom:
+                        variable_mapping_type_enum = variable_mapping_type_enum | OMP_TGT_MAPTYPE_FROM;
+                        break;
+                    default:
+                        ;
+                }
+                SgExpression* variable_mapping_type = buildIntVal(variable_mapping_type_enum);
+
+                // save all parameters
+                mapping_parameters[variable_symbol] = {mapping_variable_address, mapping_variable_base_expression, mapping_variable_size, variable_mapping_type};
+            };
+        };
+
+        // the order of variable parameters in LLVM runtime call must be the same as the outlined function.
+        assert(mapping_parameters.size() == atom_syms.size() + array_syms.size());
+        for (std::set<const SgVariableSymbol*>::iterator iter = atom_syms.begin(); iter != atom_syms.end(); iter++) {
+            if (mapping_parameters.count((*iter)) > 0) {
+                std::vector<SgExpression*> mapping_data_item = mapping_parameters[*iter];
+                map_variable_list->append_expression(mapping_data_item[0]);
+                map_variable_base_list->append_expression(mapping_data_item[1]);
+                map_variable_size_list->append_expression(mapping_data_item[2]);
+                map_variable_type_list->append_expression(mapping_data_item[3]);
+            }
+            else {
+                assert(0);
+            };
+        };
+        for (std::set<const SgVariableSymbol*>::iterator iter = array_syms.begin(); iter != array_syms.end(); iter++) {
+            if (mapping_parameters.count((*iter)) > 0) {
+                std::vector<SgExpression*> mapping_data_item = mapping_parameters[*iter];
+                map_variable_list->append_expression(mapping_data_item[0]);
+                map_variable_base_list->append_expression(mapping_data_item[1]);
+                map_variable_size_list->append_expression(mapping_data_item[2]);
+                map_variable_type_list->append_expression(mapping_data_item[3]);
+            }
+            else {
+                assert(0);
+            };
+        };
+    };
+    // use UPIR data end
 
     ASTtools::VarSymSet_t per_block_reduction_syms; // translation generated per block reduction symbols with name like _dev_per_block within the enclosed for loop
 

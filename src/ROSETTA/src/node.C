@@ -2065,7 +2065,7 @@ Grammar::setUpNodes ()
 
      // symbol(sharing, mapping, access, distribution-list, allocator, deallocator, memcpy)
      // foo(shared(implicit), tofrom(explicit), read-write, section(0:20:2), allocator(default_mem_alloc), deallocator(default_mem_dealloc), memcpy(goo))
-     UpirDataItemField.setDataPrototype("SgExpression*", "symbol", "= NULL",
+     UpirDataItemField.setDataPrototype("SgSymbol*", "symbol", "= NULL",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
      UpirDataItemField.setDataPrototype("SgOmpClause::upir_data_sharing_enum", "sharing_property", "= e_upir_data_sharing_unspecified",
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
@@ -2083,12 +2083,8 @@ Grammar::setUpNodes ()
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
      UpirDataItemField.setDataPrototype("SgOmpClause::upir_data_distribution_pattern_enum", "distribution_pattern", "= e_upir_data_distribution_pattern_unspecified",
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     UpirDataItemField.setDataPrototype("SgExpression*", "lower_bound", "= NULL",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-     UpirDataItemField.setDataPrototype("SgExpression*", "length", "= NULL",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-     UpirDataItemField.setDataPrototype("SgExpression*", "stride", "= NULL",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     UpirDataItemField.setDataPrototype("std::list<std::list<SgExpression*>>", "section", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      UpirDataItemField.setDataPrototype("SgOmpClause::upir_data_allocator_enum", "allocator", "= e_upir_data_allocator_unspecified",
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      UpirDataItemField.setDataPrototype("SgExpression*", "user_defined_allocator", "= NULL",

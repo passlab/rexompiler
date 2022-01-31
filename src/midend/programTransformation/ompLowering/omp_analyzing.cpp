@@ -721,13 +721,54 @@ int createUpirDataFields(SgFile *file) {
     SgUpirFieldBodyStatement *target_directive =
         isSgUpirFieldBodyStatement(target->get_parent());
 
+    SgOmpClause::upir_data_mapping_enum data_mapping_type =
+        SgOmpClause::e_upir_data_mapping_unspecified;
+    SgOmpClause::omp_map_operator_enum sg_type = target->get_operation();
+    switch (sg_type) {
+    case SgOmpClause::e_omp_map_to:
+      data_mapping_type = SgOmpClause::e_upir_data_mapping_to;
+      break;
+    case SgOmpClause::e_omp_map_from:
+      data_mapping_type = SgOmpClause::e_upir_data_mapping_from;
+      break;
+    case SgOmpClause::e_omp_map_tofrom:
+      data_mapping_type = SgOmpClause::e_upir_data_mapping_tofrom;
+      break;
+    default:;
+    }
+
     SgExpressionPtrList variables = target->get_variables()->get_expressions();
+    std::map<SgSymbol *, std::vector<std::pair<SgExpression *, SgExpression *>>>
+        array_dimensions = target->get_array_dimensions();
 
     SgUpirDataField *upir_data = new SgUpirDataField();
     std::list<SgUpirDataItemField *> data_items = upir_data->get_data();
     for (size_t i = 0; i < variables.size(); i++) {
+
+      SgVarRefExp *variable_expression = isSgVarRefExp(variables[i]);
+      SgVariableSymbol *variable_symbol = variable_expression->get_symbol();
+      assert(variable_symbol != NULL);
+
       SgUpirDataItemField *upir_data_item =
-          new SgUpirDataItemField(copyExpression(variables[i]));
+          new SgUpirDataItemField(variable_symbol);
+
+      std::list<std::list<SgExpression *>> upir_section =
+          upir_data_item->get_section();
+      std::vector<std::pair<SgExpression *, SgExpression *>> sections =
+          array_dimensions[variable_symbol];
+      for (size_t i = 0; i < sections.size(); i++) {
+        SgExpression *lower_bound = sections[i].first;
+        SgExpression *length = sections[i].second;
+        // ROSE/REX doesn't support stride yet, it is always set to 1 for now.
+        SgExpression *stride = buildIntVal(1);
+        std::list<SgExpression *> section = {lower_bound, length, stride};
+        upir_section.push_back(section);
+      }
+
+      upir_data_item->set_section(upir_section);
+      upir_data_item->set_mapping_property(data_mapping_type);
+      upir_data_item->set_sharing_property(
+          SgOmpClause::e_upir_data_sharing_shared);
       data_items.push_back(upir_data_item);
       setOneSourcePositionForTransformation(upir_data_item);
       upir_data_item->set_parent(upir_data);
