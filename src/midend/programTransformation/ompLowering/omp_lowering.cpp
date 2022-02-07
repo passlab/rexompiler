@@ -2629,6 +2629,90 @@ bool isInClauseVariableList(SgOmpClause* cls, SgSymbol* var)
     return false;
 }
 
+  // Check if a variable with given sharing attribute is in the UPIR data field's item list
+bool isInUpirDataSharingList(SgUpirFieldBodyStatement* target, SgSymbol* variable, SgOmpClause::upir_data_sharing_enum sharing_property)
+{
+  SgUpirFieldBodyStatement* upir_statement = isSgUpirFieldBodyStatement(target);
+  ROSE_ASSERT(upir_statement);
+  Rose_STL_Container<SgOmpClause *> data_fields = getClause(upir_statement, V_SgUpirDataField);
+  SgVariableSymbol* variable_symbol = isSgVariableSymbol(variable);
+  for (size_t i = 0; i < data_fields.size(); i++) {
+      SgUpirDataField* data_field = (SgUpirDataField*)data_fields[i];
+      ROSE_ASSERT(data_field);
+      return isInUpirDataSharingList(data_field, variable, sharing_property);
+  };
+  return false;
+}
+
+  // Check if a variable with given sharing attribute is in the UPIR data field's item list
+bool isInUpirDataSharingList(SgUpirFieldBodyStatement* target, SgSymbol* variable, std::set<SgOmpClause::upir_data_sharing_enum> sharing_property)
+{
+  SgUpirFieldBodyStatement* upir_statement = isSgUpirFieldBodyStatement(target);
+  ROSE_ASSERT(upir_statement);
+  Rose_STL_Container<SgOmpClause *> data_fields = getClause(upir_statement, V_SgUpirDataField);
+  SgVariableSymbol* variable_symbol = isSgVariableSymbol(variable);
+  std::vector<SgSymbol*> variable_list;
+
+  for (size_t i = 0; i < data_fields.size(); i++) {
+      SgUpirDataField* data_field = (SgUpirDataField*)data_fields[i];
+      ROSE_ASSERT(data_field);
+      std::list<SgUpirDataItemField *> data_items = data_field->get_data();
+      for (std::list<SgUpirDataItemField*>::iterator iter = data_items.begin(); iter != data_items.end(); iter++) {
+          SgUpirDataItemField* data_item = *iter;
+          if (sharing_property.find(data_item->get_sharing_property()) != sharing_property.end()) {
+              variable_list.push_back(data_item->get_symbol());
+          }
+      }
+  };
+
+  if (find(variable_list.begin(), variable_list.end(), variable) != variable_list.end())
+    return true;
+  else
+    return false;
+}
+
+  // Check if a variable with given sharing attribute is in the UPIR data field's item list
+bool isInUpirDataSharingList(SgOmpClause* data, SgSymbol* variable, SgOmpClause::upir_data_sharing_enum sharing_property)
+{
+  SgUpirDataField* data_field = isSgUpirDataField(data);
+  SgVariableSymbol* variable_symbol = isSgVariableSymbol(variable);
+  ROSE_ASSERT(data_field);
+
+  std::vector<SgSymbol*> variable_list;
+  std::list<SgUpirDataItemField *> data_items = data_field->get_data();
+  for (std::list<SgUpirDataItemField*>::iterator iter = data_items.begin(); iter != data_items.end(); iter++) {
+      SgUpirDataItemField* data_item = *iter;
+      if (data_item->get_sharing_property() == sharing_property) {
+          variable_list.push_back(data_item->get_symbol());
+      }
+  }
+
+  if (find(variable_list.begin(), variable_list.end(), variable) != variable_list.end())
+    return true;
+  else
+    return false;
+}
+
+  // Check if a variable is in the UPIR data field's item list
+bool isInUpirDataList(SgOmpClause* data, SgSymbol* variable)
+{
+  SgUpirDataField* data_field = isSgUpirDataField(data);
+  SgVariableSymbol* variable_symbol = isSgVariableSymbol(variable);
+  ROSE_ASSERT(data_field);
+
+  std::vector<SgSymbol*> variable_list;
+  std::list<SgUpirDataItemField *> data_items = data_field->get_data();
+  for (std::list<SgUpirDataItemField*>::iterator iter = data_items.begin(); iter != data_items.end(); iter++) {
+      SgUpirDataItemField* data_item = *iter;
+      variable_list.push_back(data_item->get_symbol());
+  }
+
+  if (find(variable_list.begin(), variable_list.end(), variable) != variable_list.end())
+    return true;
+  else
+    return false;
+}
+
  // ! Replace all references to original symbol with references to new symbol
 // return the number of references being replaced.
 // TODO: move to SageInterface
@@ -6495,12 +6579,20 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
        vvt.push_back(V_SgOmpReductionClause);
        vvt.push_back(V_SgOmpFirstprivateClause);
 
+       // create a set of UPIR data sharing property
+       std::set<SgOmpClause::upir_data_sharing_enum> searching_variants;
+       searching_variants.insert(SgOmpClause::e_upir_data_sharing_private);
+       searching_variants.insert(SgOmpClause::e_upir_data_sharing_firstprivate);
+       searching_variants.insert(SgOmpClause::e_upir_data_sharing_reduction);
+
       //TODO: No such concept of firstprivate and lastprivate in accelerator model??
        if (!isAcceleratorModel) // we actually already has enable_accelerator, but it is too global for handling both CPU and GPU translation
        {
          vvt.push_back(V_SgOmpLastprivateClause);
+         searching_variants.insert(SgOmpClause::e_upir_data_sharing_lastprivate);
        }
 
+      // TODO: add the UPIR version of this code
       // a local private copy
       SgVariableDeclaration* local_decl = NULL;
       SgOmpClause::omp_reduction_identifier_enum r_operator = SgOmpClause::e_omp_reduction_unknown  ;
@@ -6526,7 +6618,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
       //   int (**M)[10UL] = (int (**)[10UL])(&(((struct OUT__17__7038___data *)__out_argv) -> M));
       //   (*M)[0][0] = 4;
       // }
-      if (isInClauseVariableList(orig_var, clause_stmt, vvt))
+      if (isInUpirDataSharingList(clause_stmt, orig_symbol, searching_variants))
       {
         if( !(isSgArrayType(orig_type) && isSgFunctionDefinition (orig_var->get_scope ())) )
         {
@@ -6537,7 +6629,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
           // But here is one exception: an array type firstprivate variable should
           // be initialized element-by-element
           // Liao, 4/12/2010
-          if (isInClauseVariableList(orig_var, clause_stmt, V_SgOmpFirstprivateClause) && !isSgArrayType(orig_type) )
+          if (isInUpirDataSharingList(clause_stmt, orig_symbol, SgOmpClause::e_upir_data_sharing_firstprivate) && !isSgArrayType(orig_type) )
           {
             init = buildAssignInitializer(buildVarRefExp(orig_var, bb1));
           }
@@ -6573,7 +6665,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
       }
       // step 2. Initialize the local copy for array-type firstprivate variables TODO copyin, copyprivate
 #if 1
-      if (isInClauseVariableList(orig_var, clause_stmt,V_SgOmpFirstprivateClause) &&
+      if (isInUpirDataSharingList(clause_stmt, orig_symbol, SgOmpClause::e_upir_data_sharing_firstprivate) &&
           isSgArrayType(orig_type) && !isSgFunctionDefinition (orig_var->get_scope ()))
       {
         // SgExprStatement* init_stmt = buildAssignStatement(buildVarRefExp(local_decl), buildVarRefExp(orig_var, bb1));
@@ -6582,6 +6674,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
        front_stmt_list.push_back(arrayAssign);
       }
 #endif
+      // TODO: add UPIR version of this code
       if (isReductionVar) // create initial value assignment for the local reduction variable
       {
         r_operator = getReductionOperationType(orig_var, clause_stmt);
@@ -6627,6 +6720,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
         // store all reduction variables at the loop level, they will be used later when translating the enclosing "omp target" to help decide on the variables being passed
       }
 
+      // TODO: add UPIR version of this code
       // step 3. Save the value back for lastprivate and reduction
       if (isInClauseVariableList(orig_var, clause_stmt,V_SgOmpLastprivateClause))
       {
@@ -6939,6 +7033,40 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
         target_clause->get_variables()->get_expressions().push_back(buildVarRefExp(var));
       }
     }
+
+  //! Add a variable into a non-reduction clause of an OpenMP statement, create the clause transparently if it does not exist
+    void addUpirDataVariable(SgUpirFieldBodyStatement* target, SgUpirDataItemField* data_item)
+    {
+      ROSE_ASSERT(target != NULL);
+      ROSE_ASSERT(data_item != NULL);
+      SgUpirFieldBodyStatement* upir_statement = isSgUpirFieldBodyStatement(target);
+      ROSE_ASSERT(upir_statement);
+      Rose_STL_Container<SgOmpClause *> data_fields = getClause(upir_statement, V_SgUpirDataField);
+
+      SgUpirDataField *upir_data = NULL;
+      if (data_fields.size() == 0) {
+          upir_data = new SgUpirDataField();
+          std::list<SgUpirDataItemField *> data_items = upir_data->get_data();
+          setOneSourcePositionForTransformation(upir_data);
+          target->get_clauses().push_back(upir_data);
+          upir_data->set_parent(target);
+      }
+      else {
+          ROSE_ASSERT(data_fields.size() == 1);
+          upir_data = isSgUpirDataField(data_fields[0]);
+          if (isInUpirDataList(upir_data, data_item->get_symbol())) {
+              return;
+          }
+      };
+
+      ROSE_ASSERT(upir_data);
+      std::list<SgUpirDataItemField *> data_items = upir_data->get_data();
+      data_items.push_back(data_item);
+      setOneSourcePositionForTransformation(data_item);
+      data_item->set_parent(upir_data);
+      upir_data->set_data(data_items);
+    }
+
 // Patch up private variables for a single OpenMP For or DO loop
 // return the number of private variables added.
 int patchUpPrivateVariables(SgStatement* omp_loop)
@@ -6981,6 +7109,8 @@ int patchUpPrivateVariables(SgStatement* omp_loop)
   {
     SgInitializedName* index_var = getLoopIndexVariable(*loopIter);
     ROSE_ASSERT (index_var != NULL);
+    SgVariableSymbol* variable_symbol = isSgVariableSymbol(index_var->get_symbol_from_symbol_table());
+    ROSE_ASSERT (variable_symbol != NULL);
     SgScopeStatement* var_scope = index_var->get_scope();
     // Only loop index variables declared in higher or the same scopes matter
     if (isAncestor(var_scope, directive_scope) || var_scope==directive_scope)
@@ -6994,13 +7124,15 @@ int patchUpPrivateVariables(SgStatement* omp_loop)
       }
       if (omp_stmt)
       {
-        isPrivateInRegion = isInClauseVariableList(index_var, isSgUpirFieldBodyStatement(omp_stmt), V_SgOmpPrivateClause);
+        isPrivateInRegion = isInUpirDataSharingList(isSgUpirFieldBodyStatement(omp_stmt), variable_symbol, SgOmpClause::e_upir_data_sharing_private);
       }
       // add it into the private variable list only if it is not specified as private in both the loop and region levels.
-      if (!isPrivateInRegion && !isInClauseVariableList(index_var, isSgUpirFieldBodyStatement(omp_loop), V_SgOmpPrivateClause))
+      if (!isPrivateInRegion && !isInUpirDataSharingList(isSgUpirFieldBodyStatement(omp_loop), variable_symbol, SgOmpClause::e_upir_data_sharing_private))
       {
-        result ++;
-        addClauseVariable(index_var,isSgUpirFieldBodyStatement(omp_loop), V_SgOmpPrivateClause);
+        result++;
+        SgUpirDataItemField *upir_data_item = new SgUpirDataItemField(variable_symbol);
+        upir_data_item->set_sharing_property(SgOmpClause::e_upir_data_sharing_private);
+        addUpirDataVariable(isSgUpirFieldBodyStatement(omp_loop), upir_data_item);
       }
     }
 

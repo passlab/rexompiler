@@ -168,6 +168,7 @@ namespace OmpSupport
 
   //! Add a variable into a non-reduction clause of an OpenMP statement, create the clause transparently if it does not exist
   ROSE_DLL_API void addClauseVariable(SgInitializedName* var, SgUpirFieldBodyStatement * clause_stmt, const VariantT& vt);
+  ROSE_DLL_API void addUpirDataVariable(SgUpirFieldBodyStatement* target, SgUpirDataItemField* data_item);
 
   //! Build a non-reduction variable clause for a given OpenMP directive. It directly returns the clause if the clause already exists
   ROSE_DLL_API SgOmpVariablesClause* buildOmpVariableClause(SgUpirFieldBodyStatement * clause_stmt, const VariantT& vt);
@@ -218,6 +219,10 @@ namespace OmpSupport
 
   //! Check if a variable is in the clause's variable list
   ROSE_DLL_API bool isInClauseVariableList(SgOmpClause* cls, SgSymbol* var);
+  ROSE_DLL_API bool isInUpirDataSharingList(SgOmpClause* data, SgSymbol* variable, SgOmpClause::upir_data_sharing_enum sharing_property);
+  ROSE_DLL_API bool isInUpirDataSharingList(SgUpirFieldBodyStatement* target, SgSymbol* variable, SgOmpClause::upir_data_sharing_enum sharing_property);
+  ROSE_DLL_API bool isInUpirDataSharingList(SgUpirFieldBodyStatement* target, SgSymbol* variable, std::set<SgOmpClause::upir_data_sharing_enum> sharing_property);
+  ROSE_DLL_API bool isInUpirDataList(SgUpirFieldBodyStatement* target, SgSymbol* variable);
 
   //! Check if a variable is a threadprivate variable. It will search for all threadprivate directives to find the answer.
   ROSE_DLL_API bool isThreadprivate(SgSymbol* var);

@@ -333,7 +333,8 @@ HEADER_OMP_CLAUSE_START
             e_upir_data_sharing_shared,
             e_upir_data_sharing_private,
             e_upir_data_sharing_firstprivate,
-            e_upir_data_sharing_lastprivate
+            e_upir_data_sharing_lastprivate,
+            e_upir_data_sharing_reduction
         };
 
         enum upir_data_mapping_enum
