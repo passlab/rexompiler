@@ -3834,6 +3834,9 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpAtomicStatement: // Atomic may have clause now
                          unparseOmpGenericStatement (stmt, info);
                          break;
+                    // UPIR statements that are only used for transformation
+                    case V_SgUpirSyncStatement:
+                         break;
 
                     default:
                       // DQ (11/4/2008): This is a bug for the case of a SgFortranDo statement, unclear what to do about this.

@@ -355,6 +355,7 @@ SgOmpParallelLoopStatement
 SgOmpParallelMasterStatement
 SgOmpMasterTaskloopStatement
 SgOmpSimdStatement
+SgUpirSyncStatement
 SgOmpClause
 SgOmpAllocateClause
 SgOmpAllocatorClause
