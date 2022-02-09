@@ -1966,8 +1966,6 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
   setLoopUpperBound (new_loop, buildVarRefExp (getFirstVarSym(dev_upper_decl)));
   removeStatement (for_loop);
 
-
-
   // handle private variables at this loop level, mostly loop index variables.
   // TODO: this is not very elegant since the outer most loop's loop variable is still translated.
   //for reduction
@@ -1977,20 +1975,7 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
   // Liao, 11/11/2014, clean up copied OmpAttribute
   if (new_loop->attributeExists("OmpAttributeList"))
      new_loop->removeAttribute("OmpAttributeList");
-#if 0
-  AstAttributeMechanism* astAttributeContainer = new_loop ->get_attributeMechanism();
-  if (astAttributeContainer != NULL)
-  {
-    for (AstAttributeMechanism::iterator i = astAttributeContainer->begin(); i != astAttributeContainer->end(); i++)
-    {
-      AstAttribute* attribute = i->second;
-      ROSE_ASSERT(attribute != NULL);
-    }
-  }
-#endif
-
 }
-
 
 
   //! Check if an OpenMP statement has a clause of type vt
@@ -2645,7 +2630,7 @@ bool isInUpirDataSharingList(SgUpirFieldBodyStatement* target, SgSymbol* variabl
 }
 
   // Check if a variable with given sharing attribute is in the UPIR data field's item list
-bool isInUpirDataSharingList(SgUpirFieldBodyStatement* target, SgSymbol* variable, std::set<SgOmpClause::upir_data_sharing_enum> sharing_property)
+bool isInUpirDataSharingList(SgUpirFieldBodyStatement* target, SgSymbol* variable, std::set<SgOmpClause::upir_data_sharing_enum> sharing_property_set)
 {
   SgUpirFieldBodyStatement* upir_statement = isSgUpirFieldBodyStatement(target);
   ROSE_ASSERT(upir_statement);
@@ -2659,13 +2644,13 @@ bool isInUpirDataSharingList(SgUpirFieldBodyStatement* target, SgSymbol* variabl
       std::list<SgUpirDataItemField *> data_items = data_field->get_data();
       for (std::list<SgUpirDataItemField*>::iterator iter = data_items.begin(); iter != data_items.end(); iter++) {
           SgUpirDataItemField* data_item = *iter;
-          if (sharing_property.find(data_item->get_sharing_property()) != sharing_property.end()) {
+          if (sharing_property_set.find(data_item->get_sharing_property()) != sharing_property_set.end()) {
               variable_list.push_back(data_item->get_symbol());
           }
       }
   };
 
-  if (find(variable_list.begin(), variable_list.end(), variable) != variable_list.end())
+  if (find(variable_list.begin(), variable_list.end(), variable_symbol) != variable_list.end())
     return true;
   else
     return false;
@@ -2687,7 +2672,7 @@ bool isInUpirDataSharingList(SgOmpClause* data, SgSymbol* variable, SgOmpClause:
       }
   }
 
-  if (find(variable_list.begin(), variable_list.end(), variable) != variable_list.end())
+  if (find(variable_list.begin(), variable_list.end(), variable_symbol) != variable_list.end())
     return true;
   else
     return false;
@@ -2707,7 +2692,7 @@ bool isInUpirDataList(SgOmpClause* data, SgSymbol* variable)
       variable_list.push_back(data_item->get_symbol());
   }
 
-  if (find(variable_list.begin(), variable_list.end(), variable) != variable_list.end())
+  if (find(variable_list.begin(), variable_list.end(), variable_symbol) != variable_list.end())
     return true;
   else
     return false;
@@ -4673,7 +4658,6 @@ ASTtools::VarSymSet_t transUpirDataMappingVariables (SgStatement* target_directi
     SgVariableDeclaration* host_point_decl = buildVariableDeclaration("__host_ptr", buildPointerType(buildVoidType()), buildAssignInitializer(buildCastExp(buildAddressOfOp(buildVarRefExp(outlined_kernel_id_decl)), buildPointerType(buildVoidType()))), p_scope);
     outlined_driver_body->append_statement(host_point_decl);
 
-    int kernel_arg_num = exp_list_exp->get_expressions().size();
     SgBracedInitializer* offloading_variables_base = buildBracedInitializer(map_variable_base_list);
     SgVariableDeclaration* args_base_decl = buildVariableDeclaration ("__args_base", buildArrayType(buildPointerType(buildVoidType())), buildAssignInitializer(offloading_variables_base), p_scope);
     outlined_driver_body->append_statement(args_base_decl);
@@ -4690,6 +4674,7 @@ ASTtools::VarSymSet_t transUpirDataMappingVariables (SgStatement* target_directi
     SgVariableDeclaration* arg_types = buildVariableDeclaration ("__arg_types", buildArrayType(buildOpaqueType("int64_t", p_scope)), buildAssignInitializer(map_variable_types), p_scope);
     outlined_driver_body->append_statement(arg_types);
 
+    int kernel_arg_num = map_variable_base_list->get_expressions().size();
     SgVariableDeclaration* arg_number_decl = buildVariableDeclaration("__arg_num", buildOpaqueType("int32_t", p_scope), buildAssignInitializer(buildIntVal(kernel_arg_num)), p_scope);
     outlined_driver_body->append_statement(arg_number_decl);
 
@@ -5145,7 +5130,6 @@ void transOmpTargetLoopBlock(SgNode* node)
     SgVariableDeclaration* host_point_decl = buildVariableDeclaration("__host_ptr", buildPointerType(buildVoidType()), buildAssignInitializer(buildCastExp(buildAddressOfOp(buildVarRefExp(outlined_kernel_id_decl)), buildPointerType(buildVoidType()))), p_scope);
     outlined_driver_body->append_statement(host_point_decl);
 
-    int kernel_arg_num = exp_list_exp->get_expressions().size();
     SgBracedInitializer* offloading_variables_base = buildBracedInitializer(map_variable_base_list);
     SgVariableDeclaration* args_base_decl = buildVariableDeclaration ("__args_base", buildArrayType(buildPointerType(buildVoidType())), buildAssignInitializer(offloading_variables_base), p_scope);
     outlined_driver_body->append_statement(args_base_decl);
@@ -5162,6 +5146,7 @@ void transOmpTargetLoopBlock(SgNode* node)
     SgVariableDeclaration* arg_types = buildVariableDeclaration ("__arg_types", buildArrayType(buildOpaqueType("int64_t", p_scope)), buildAssignInitializer(map_variable_types), p_scope);
     outlined_driver_body->append_statement(arg_types);
 
+    int kernel_arg_num = map_variable_base_list->get_expressions().size();
     SgVariableDeclaration* arg_number_decl = buildVariableDeclaration("__arg_num", buildOpaqueType("int32_t", p_scope), buildAssignInitializer(buildIntVal(kernel_arg_num)), p_scope);
     outlined_driver_body->append_statement(arg_number_decl);
 
@@ -5858,7 +5843,6 @@ void transOmpTargetLoopBlock(SgNode* node)
     SgVariableDeclaration* device_id_decl = buildVariableDeclaration("__device_id", buildOpaqueType("int64_t", p_scope), buildAssignInitializer(buildIntVal(0)), p_scope);
     target_data_begin_block->prepend_statement(device_id_decl);
 
-    int kernel_arg_num = map_variable_base_list->get_expressions().size();
     SgBracedInitializer* offloading_variables_base = buildBracedInitializer(map_variable_base_list);
     SgVariableDeclaration* args_base_decl = buildVariableDeclaration ("__args_base", buildArrayType(buildPointerType(buildVoidType())), buildAssignInitializer(offloading_variables_base), p_scope);
     target_data_begin_block->prepend_statement(args_base_decl);
@@ -5875,6 +5859,7 @@ void transOmpTargetLoopBlock(SgNode* node)
     SgVariableDeclaration* arg_types = buildVariableDeclaration ("__arg_types", buildArrayType(buildOpaqueType("int64_t", p_scope)), buildAssignInitializer(map_variable_types), p_scope);
     target_data_begin_block->prepend_statement(arg_types);
 
+    int kernel_arg_num = map_variable_base_list->get_expressions().size();
     SgVariableDeclaration* arg_number_decl = buildVariableDeclaration("__arg_num", buildOpaqueType("int32_t", p_scope), buildAssignInitializer(buildIntVal(kernel_arg_num)), p_scope);
     target_data_begin_block->prepend_statement(arg_number_decl);
 
@@ -5990,6 +5975,27 @@ void transOmpTargetLoopBlock(SgNode* node)
     // TODO : do we care about shared(var_list)?
 
     return collectClauseVariables(clause_stmt, vvt);
+  }
+
+  //! Collect all variables from UPIR data fields associated with an omp statement: private, reduction, etc
+  SgInitializedNamePtrList collectAllDataVariables (SgUpirFieldBodyStatement * target)
+  {
+    SgUpirFieldBodyStatement* upir_statement = isSgUpirFieldBodyStatement(target);
+    ROSE_ASSERT(upir_statement);
+    Rose_STL_Container<SgOmpClause *> data_fields = getClause(upir_statement, V_SgUpirDataField);
+    SgInitializedNamePtrList result;
+
+    for (size_t i = 0; i < data_fields.size(); i++) {
+        SgUpirDataField* data_field = (SgUpirDataField*)data_fields[i];
+        ROSE_ASSERT(data_field);
+        std::list<SgUpirDataItemField *> data_items = data_field->get_data();
+        for (std::list<SgUpirDataItemField*>::iterator iter = data_items.begin(); iter != data_items.end(); iter++) {
+            SgUpirDataItemField* data_item = *iter;
+            result.push_back(isSgVariableSymbol(data_item->get_symbol())->get_declaration());
+        }
+    }
+
+    return result;
   }
 
   bool isInClauseVariableList(SgInitializedName* var, SgUpirFieldBodyStatement * clause_stmt, const VariantVector& vvt)
@@ -6554,7 +6560,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
       ROSE_ASSERT( clause_stmt!= NULL);
 
       // collect variables
-     SgInitializedNamePtrList var_list = collectAllClauseVariables(clause_stmt);
+     SgInitializedNamePtrList var_list = collectAllDataVariables(clause_stmt);
      // Only keep the unique ones
      sort (var_list.begin(), var_list.end());;
      SgInitializedNamePtrList:: iterator new_end = unique (var_list.begin(), var_list.end());

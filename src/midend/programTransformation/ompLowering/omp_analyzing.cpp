@@ -473,11 +473,15 @@ int patchUpFirstprivateVariables(SgFile *file) {
       if (SageInterface::isUseByAddressVariableRef(var_ref))
         continue;
       // Skip variables already with explicit data-sharing attributes
-      VariantVector vv(V_SgOmpDefaultClause);
-      vv.push_back(V_SgOmpPrivateClause);
-      vv.push_back(V_SgOmpSharedClause);
-      vv.push_back(V_SgOmpFirstprivateClause);
-      if (isInClauseVariableList(init_var, target, vv))
+
+      SgVariableSymbol *variable_symbol =
+          isSgVariableSymbol(init_var->search_for_symbol_from_symbol_table());
+      std::set<SgOmpClause::upir_data_sharing_enum> searching_variants;
+      searching_variants.insert(SgOmpClause::e_upir_data_sharing_private);
+      searching_variants.insert(SgOmpClause::e_upir_data_sharing_firstprivate);
+      searching_variants.insert(SgOmpClause::e_upir_data_sharing_shared);
+
+      if (isInUpirDataSharingList(target, variable_symbol, searching_variants))
         continue;
       // Skip variables which are class/structure members: part of another
       // variable
@@ -487,7 +491,12 @@ int patchUpFirstprivateVariables(SgFile *file) {
       if (isSharedInEnclosingConstructs(init_var, target))
         continue;
       // Now it should be a firstprivate variable
-      addClauseVariable(init_var, target, V_SgOmpFirstprivateClause);
+      SgUpirDataItemField *upir_data_item =
+          new SgUpirDataItemField(variable_symbol);
+      upir_data_item->set_sharing_property(
+          SgOmpClause::e_upir_data_sharing_firstprivate);
+      addUpirDataVariable(isSgUpirFieldBodyStatement(target), upir_data_item);
+
       result++;
     } // end for each variable reference
   }   // end for each SgOmpTaskStatement
@@ -767,8 +776,10 @@ int createUpirDataFields(SgFile *file) {
 
       upir_data_item->set_section(upir_section);
       upir_data_item->set_mapping_property(data_mapping_type);
+      // TODO: FIX: set the data sharing attribute correctly instead of using an
+      // assumption.
       upir_data_item->set_sharing_property(
-          SgOmpClause::e_upir_data_sharing_shared);
+          SgOmpClause::e_upir_data_sharing_private);
       data_items.push_back(upir_data_item);
       setOneSourcePositionForTransformation(upir_data_item);
       upir_data_item->set_parent(upir_data);
