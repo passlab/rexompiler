@@ -4680,7 +4680,7 @@ ASTtools::VarSymSet_t transUpirDataMappingVariables (SgStatement* target_directi
 
     // call __tgt_target_teams to execute the CUDA kernel
     SgExprListExp* parameters = NULL;
-    parameters = buildExprListExp(buildVarRefExp(outlined_kernel_id_decl), buildVarRefExp(host_point_decl), buildVarRefExp(arg_number_decl), buildVarRefExp(args_base_decl), buildVarRefExp(args_decl), buildVarRefExp(arg_sizes), buildVarRefExp(arg_types), buildVarRefExp(num_blocks_decl), buildVarRefExp(threads_per_block_decl));
+    parameters = buildExprListExp(buildVarRefExp(device_id_decl), buildVarRefExp(host_point_decl), buildVarRefExp(arg_number_decl), buildVarRefExp(args_base_decl), buildVarRefExp(args_decl), buildVarRefExp(arg_sizes), buildVarRefExp(arg_types), buildVarRefExp(num_blocks_decl), buildVarRefExp(threads_per_block_decl));
     string func_offloading_name = "__tgt_target_teams";
     SgExprStatement* func_offloading_stmt = buildFunctionCallStmt(func_offloading_name, buildIntType(), parameters, p_scope);
     setSourcePositionForTransformation(func_offloading_stmt);

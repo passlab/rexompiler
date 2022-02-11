@@ -189,6 +189,8 @@ convertOpenACCClause(SgStatement *directive,
                      OpenACCClause *current_acc_clause) {
   printf("accparser variables clause is ready.\n");
   SgOmpClause *result = NULL;
+  SgUpirFieldBodyStatement *target = isSgUpirFieldBodyStatement(directive);
+  ROSE_ASSERT(target != NULL);
 
   OpenACCClauseKind clause_kind = current_acc_clause->getKind();
   std::vector<std::string> *current_expressions =
@@ -239,7 +241,26 @@ convertOpenACCClause(SgStatement *directive,
     variables.push_back(variable_symbol);
   }
 
-  SgUpirDataField *upir_data = new SgUpirDataField();
+  Rose_STL_Container<SgOmpClause *> data_fields =
+      OmpSupport::getClause(target, V_SgUpirDataField);
+
+  SgUpirDataField *upir_data = NULL;
+  if (data_fields.size() == 0) {
+    upir_data = new SgUpirDataField();
+    std::list<SgUpirDataItemField *> data_items = upir_data->get_data();
+    SageInterface::setOneSourcePositionForTransformation(upir_data);
+    target->get_clauses().push_back(upir_data);
+    upir_data->set_parent(target);
+  } else {
+    ROSE_ASSERT(data_fields.size() == 1);
+    upir_data = isSgUpirDataField(data_fields[0]);
+    /*
+    if (isInUpirDataList(upir_data, data_item->get_symbol())) {
+      ROSE_ASSERT(0);
+      return upir_data;
+    }
+    */
+  };
   std::list<SgUpirDataItemField *> data_items = upir_data->get_data();
 
   for (size_t i = 0; i < variables.size(); i++) {
@@ -270,10 +291,6 @@ convertOpenACCClause(SgStatement *directive,
   upir_data->set_data(data_items);
 
   result = upir_data;
-  SageInterface::setOneSourcePositionForTransformation(result);
-  ((SgUpirFieldBodyStatement *)directive)->get_clauses().push_back(result);
-
-  result->set_parent(directive);
   acc_variable_list->clear();
   array_dimensions.clear();
   return result;

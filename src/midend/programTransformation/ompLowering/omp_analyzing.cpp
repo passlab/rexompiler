@@ -7,16 +7,14 @@ using namespace SageInterface;
 namespace OmpSupport {
 
 Rose_STL_Container<SgNode *>
-mergeSgNodeList(Rose_STL_Container<SgNode *> *node_list1,
-                Rose_STL_Container<SgNode *> *node_list2) {
+mergeSgNodeList(Rose_STL_Container<SgNode *> node_list1,
+                Rose_STL_Container<SgNode *> node_list2) {
 
-  ROSE_ASSERT(node_list1 != NULL);
-  ROSE_ASSERT(node_list2 != NULL);
-  std::sort(node_list1->begin(), node_list1->end());
-  std::sort(node_list2->begin(), node_list2->end());
+  std::sort(node_list1.begin(), node_list1.end());
+  std::sort(node_list2.begin(), node_list2.end());
   Rose_STL_Container<SgNode *> node_list;
-  std::merge(node_list1->begin(), node_list1->end(), node_list2->begin(),
-             node_list2->end(),
+  std::merge(node_list1.begin(), node_list1.end(), node_list2.begin(),
+             node_list2.end(),
              std::insert_iterator<Rose_STL_Container<SgNode *>>(
                  node_list, node_list.end()));
   return node_list;
@@ -166,47 +164,25 @@ void analyzeOmpFor(SgNode *node) {
 int patchUpPrivateVariables(SgFile *file) {
   int result = 0;
   ROSE_ASSERT(file != NULL);
-  Rose_STL_Container<SgNode *> nodeList =
+  Rose_STL_Container<SgNode *> nodeList_merged =
       NodeQuery::querySubTree(file, V_SgUpirLoopParallelStatement);
-  Rose_STL_Container<SgNode *> nodeList2 =
-      NodeQuery::querySubTree(file, V_SgOmpDoStatement);
 
-  Rose_STL_Container<SgNode *> nodeList2_merged(nodeList.size() +
-                                                nodeList2.size());
-
-  std::sort(nodeList.begin(), nodeList.end());
-  std::sort(nodeList2.begin(), nodeList2.end());
-  std::merge(nodeList.begin(), nodeList.end(), nodeList2.begin(),
-             nodeList2.end(), nodeList2_merged.begin());
-
-  // TODO: implement a helper function to collect all the nodes into one list
-  Rose_STL_Container<SgNode *> nodeList3 =
-      NodeQuery::querySubTree(file, V_SgOmpTargetParallelForStatement);
-  std::sort(nodeList3.begin(), nodeList3.end());
-  Rose_STL_Container<SgNode *> nodeList_merged;
-  std::merge(nodeList2_merged.begin(), nodeList2_merged.end(),
-             nodeList3.begin(), nodeList3.end(),
-             std::insert_iterator<Rose_STL_Container<SgNode *>>(
-                 nodeList_merged, nodeList_merged.end()));
+  nodeList_merged = mergeSgNodeList(
+      nodeList_merged, NodeQuery::querySubTree(file, V_SgOmpDoStatement));
+  nodeList_merged = mergeSgNodeList(
+      nodeList_merged,
+      NodeQuery::querySubTree(file, V_SgOmpTargetParallelForStatement));
+  nodeList_merged = mergeSgNodeList(
+      nodeList_merged,
+      NodeQuery::querySubTree(
+          file, V_SgOmpTargetTeamsDistributeParallelForStatement));
 
   Rose_STL_Container<SgNode *>::iterator nodeListIterator =
       nodeList_merged.begin();
   // For each omp for/do statement
   for (; nodeListIterator != nodeList_merged.end(); ++nodeListIterator) {
-    SgStatement *omp_loop = NULL;
-    SgUpirLoopParallelStatement *for_node =
-        isSgUpirLoopParallelStatement(*nodeListIterator);
-    SgOmpDoStatement *do_node = isSgOmpDoStatement(*nodeListIterator);
-    SgOmpTargetParallelForStatement *target_parallel_for_node =
-        isSgOmpTargetParallelForStatement(*nodeListIterator);
-    if (for_node)
-      omp_loop = for_node;
-    else if (do_node)
-      omp_loop = do_node;
-    else if (target_parallel_for_node)
-      omp_loop = target_parallel_for_node;
-    else
-      ROSE_ASSERT(false);
+    SgStatement *omp_loop = isSgUpirFieldBodyStatement(*nodeListIterator);
+    ROSE_ASSERT(omp_loop != NULL);
     result += patchUpPrivateVariables(omp_loop);
   } // end for omp for statments
   return result;
