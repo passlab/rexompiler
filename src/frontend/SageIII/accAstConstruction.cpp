@@ -109,7 +109,8 @@ convertOpenACCBodyDirective(std::pair<SgPragmaDeclaration *, OpenACCDirective *>
     switch (clause_kind) {
     case ACCC_collapse:
     case ACCC_num_gangs:
-    case ACCC_num_workers: {
+    case ACCC_num_workers:
+    case ACCC_vector_length: {
       convertOpenACCExpressionClause(isSgUpirFieldBodyStatement(result),
                                      current_OpenACCIR_to_SageIII,
                                      *clause_iter);
@@ -124,7 +125,7 @@ convertOpenACCBodyDirective(std::pair<SgPragmaDeclaration *, OpenACCDirective *>
     }
     default: {
       printf("Unknown OpenACC clause is found.\n");
-      assert(0);
+      ROSE_ASSERT(false);
     }
     };
   };
@@ -153,9 +154,9 @@ SgOmpExpressionClause *convertOpenACCExpressionClause(
   }
 
   switch (clause_kind) {
-  case ACCC_num_workers: {
-    result = new SgUpirNumUnitsField(clause_expression);
-    printf("num_units Clause added!\n");
+  case ACCC_collapse: {
+    result = new SgOmpCollapseClause(clause_expression);
+    printf("collapse Clause added!\n");
     break;
   }
   case ACCC_num_gangs: {
@@ -163,9 +164,14 @@ SgOmpExpressionClause *convertOpenACCExpressionClause(
     printf("num_gangs Clause added!\n");
     break;
   }
-  case ACCC_collapse: {
-    result = new SgOmpCollapseClause(clause_expression);
-    printf("collapse Clause added!\n");
+  case ACCC_num_workers: {
+    result = new SgUpirNumUnitsField(clause_expression);
+    printf("num_units Clause added!\n");
+    break;
+  }
+  case ACCC_vector_length: {
+    result = new SgOmpSimdlenClause(clause_expression);
+    printf("simdlen Clause added!\n");
     break;
   }
   default: {
@@ -376,12 +382,13 @@ bool checkOpenACCIR(OpenACCDirective *directive) {
     std::map<OpenACCClauseKind, std::vector<OpenACCClause *> *>::iterator it;
     for (it = clauses->begin(); it != clauses->end(); it++) {
       switch (it->first) {
-      case ACCC_num_gangs:
       case ACCC_collapse:
       case ACCC_copy:
       case ACCC_copyin:
       case ACCC_copyout:
-      case ACCC_num_workers: {
+      case ACCC_num_gangs:
+      case ACCC_num_workers:
+      case ACCC_vector_length: {
         break;
       }
       default: {
