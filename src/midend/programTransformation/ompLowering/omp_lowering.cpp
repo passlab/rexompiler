@@ -3818,6 +3818,14 @@ ASTtools::VarSymSet_t transUpirDataMappingVariables (SgStatement* target_directi
   ROSE_ASSERT (all_syms.size() == 0); // it should be empty
 
   SgUpirFieldBodyStatement* target = (SgUpirFieldBodyStatement*)target_directive;
+  if (isSgUpirSpmdStatement(target) != NULL) {
+      SgNode* parent = target->get_parent();
+      ROSE_ASSERT(parent != NULL);
+      if (isSgBasicBlock(parent)) { //skip the possible block in between
+          parent = parent->get_parent();
+      }
+      target = isSgUpirTaskStatement(parent);
+  }
   ROSE_ASSERT (target != NULL);
 
   // collect map clauses and their variables
@@ -3835,7 +3843,6 @@ ASTtools::VarSymSet_t transUpirDataMappingVariables (SgStatement* target_directi
   data_fields = getClause(target, V_SgUpirDataField);
   device_clauses = getClause(target, V_SgOmpDeviceClause);
 
-  assert(data_fields.size() != 0);
   if ( data_fields.size() == 0) return all_syms; // stop if no map clauses at all
 
   // store each time of map clause explicitly
@@ -3947,7 +3954,8 @@ ASTtools::VarSymSet_t transUpirDataMappingVariables (SgStatement* target_directi
     // linearized array pointers should be directly passed to the outliner later on, without adding & operator in front of them
     // we assume AST is normalized and all target regions have explicit and correct map() clauses
     // Still some transformation like loop collapse will change the variables
-        if (variable_map[orig_sym])
+    // [REX] TODO: check whether all the mapped symbols should be always passed as parameters
+        if (variable_map[orig_sym] || variable_map[new_sym])
           all_syms.insert(new_sym);
     // generate memory allocation, copy, free function calls.
     generateUpirMappedArrayMemoryHandling (sym, array_dimensions, device_expression, insertion_scope, insertion_anchor_stmt, true);
@@ -4155,7 +4163,13 @@ ASTtools::VarSymSet_t transUpirDataMappingVariables (SgStatement* target_directi
     SgExprListExp* map_variable_size_list = buildExprListExp();
     SgExprListExp* map_variable_type_list = buildExprListExp();
 
-    all_syms = transOmpMapVariables(target, map_variable_list, map_variable_base_list, map_variable_size_list, map_variable_type_list); //, addressOf_syms);
+    //all_syms = transOmpMapVariables(target, map_variable_list, map_variable_base_list, map_variable_size_list, map_variable_type_list); //, addressOf_syms);
+    all_syms = transUpirDataMappingVariables(target, map_variable_list, map_variable_base_list, map_variable_size_list, map_variable_type_list); //, addressOf_syms);
+    /*
+    for (std::set<const SgVariableSymbol*>::iterator iter = all_syms.begin(); iter != all_syms.end(); iter++) {
+        std::cout << "TargetParallel variable: " << (*iter)->get_name() << "...\n";
+    };
+    */
 
     // save mapping list
     if (offloading_variable_list == NULL) {
@@ -4404,6 +4418,11 @@ ASTtools::VarSymSet_t transUpirDataMappingVariables (SgStatement* target_directi
     SgExprListExp* map_variable_type_list = buildExprListExp();
 
     all_syms = transUpirDataMappingVariables(target, map_variable_list, map_variable_base_list, map_variable_size_list, map_variable_type_list); //, addressOf_syms);
+    /*
+    for (std::set<const SgVariableSymbol*>::iterator iter = all_syms.begin(); iter != all_syms.end(); iter++) {
+        std::cout << "Target variable: " << (*iter)->get_name() << "...\n";
+    };
+    */
 
     //map_variable_list = offloading_variable_list;
     //map_variable_base_list = offloading_variable_base_list;
@@ -4878,6 +4897,11 @@ void transOmpTargetLoopBlock(SgNode* node)
     SgExprListExp* map_variable_type_list = buildExprListExp();
 
     all_syms = transUpirDataMappingVariables(target, map_variable_list, map_variable_base_list, map_variable_size_list, map_variable_type_list); //, addressOf_syms);
+    /*
+    for (std::set<const SgVariableSymbol*>::iterator iter = all_syms.begin(); iter != all_syms.end(); iter++) {
+        std::cout << "SPMD worksharing variable: " << (*iter)->get_name() << "...\n";
+    };
+    */
 
     // use UPIR data for transformation
     ASTtools::VarSymSet_t atom_syms;
