@@ -5,14 +5,101 @@ using namespace SageBuilder;
 using namespace SageInterface;
 
 namespace OmpSupport {
+
+Rose_STL_Container<SgNode *>
+mergeSgNodeList(Rose_STL_Container<SgNode *> node_list1,
+                Rose_STL_Container<SgNode *> node_list2) {
+
+  std::sort(node_list1.begin(), node_list1.end());
+  std::sort(node_list2.begin(), node_list2.end());
+  Rose_STL_Container<SgNode *> node_list;
+  std::merge(node_list1.begin(), node_list1.end(), node_list2.begin(),
+             node_list2.end(),
+             std::insert_iterator<Rose_STL_Container<SgNode *>>(
+                 node_list, node_list.end()));
+  return node_list;
+}
+
+void analyzeOmpMetadirective(SgNode *node) {
+  ROSE_ASSERT(node != NULL);
+  SgOmpMetadirectiveStatement *target = isSgOmpMetadirectiveStatement(node);
+
+  ROSE_ASSERT(target != NULL);
+
+  SgFunctionDefinition *func_def = NULL;
+  if (SageInterface::is_Fortran_language()) {
+    func_def = getEnclosingFunctionDefinition(target);
+    ROSE_ASSERT(func_def != NULL);
+  }
+  SgStatement *body = target->get_body();
+  ROSE_ASSERT(body != NULL);
+  AttachedPreprocessingInfoType save_buf1, save_buf2, save_buf_inside;
+  cutPreprocessingInfo(target, PreprocessingInfo::before, save_buf1);
+  cutPreprocessingInfo(target, PreprocessingInfo::after, save_buf2);
+
+  cutPreprocessingInfo(target, PreprocessingInfo::inside, save_buf_inside);
+  std::cout << "Metadirective IR is caught.\n";
+
+  SgIfStmt *root_if_statement = NULL;
+  SgStatement *variant_directive;
+  SgStatement *variant_body = copyStatement(body);
+  ROSE_ASSERT(variant_body != NULL);
+  SgIfStmt *if_stmt = NULL;
+  SgIfStmt *previous_if_stmt = NULL;
+  if (hasClause(target, V_SgOmpWhenClause)) {
+    Rose_STL_Container<SgOmpClause *> clauses =
+        getClause(target, V_SgOmpWhenClause);
+    SgOmpWhenClause *when_clause = isSgOmpWhenClause(clauses[0]);
+    SgExpression *condition_expression = when_clause->get_user_condition();
+    SgExprStatement *condition_statement =
+        buildExprStatement(condition_expression);
+    variant_directive = when_clause->get_variant_directive();
+    ((SgUpirBodyStatement *)variant_directive)->set_body(variant_body);
+    setOneSourcePositionForTransformation(variant_directive);
+    if (variant_directive) {
+      variant_body->set_parent(variant_directive);
+      if_stmt = buildIfStmt(condition_statement, variant_directive, body);
+    } else {
+      if_stmt = buildIfStmt(condition_statement, variant_body, body);
+    }
+    root_if_statement = if_stmt;
+    for (unsigned int i = 1; i < clauses.size(); i++) {
+      previous_if_stmt = if_stmt;
+      when_clause = isSgOmpWhenClause(clauses[i]);
+      condition_expression = when_clause->get_user_condition();
+      condition_statement = buildExprStatement(condition_expression);
+      variant_directive = when_clause->get_variant_directive();
+      variant_directive->set_parent(target->get_parent());
+      variant_body = copyStatement(body);
+      ((SgUpirBodyStatement *)variant_directive)->set_body(variant_body);
+      setOneSourcePositionForTransformation(variant_directive);
+      ROSE_ASSERT(variant_body != NULL);
+      if (variant_directive) {
+        variant_body->set_parent(variant_directive);
+        if_stmt = buildIfStmt(condition_statement, variant_directive, NULL);
+      } else {
+        if_stmt = buildIfStmt(condition_statement, body, NULL);
+      }
+      previous_if_stmt->set_false_body(if_stmt);
+    }
+  }
+
+  SageInterface::replaceStatement(target, root_if_statement, true);
+  pastePreprocessingInfo(root_if_statement, PreprocessingInfo::after,
+                         save_buf2);
+  pastePreprocessingInfo(root_if_statement, PreprocessingInfo::before,
+                         save_buf1);
+  // std::cout << root_if_statement->unparseToString() << "\n";
+} // end analyze omp metadirective
+
 void analyzeOmpFor(SgNode *node) {
   ROSE_ASSERT(node != NULL);
-  SgOmpForStatement *target1 = isSgOmpForStatement(node);
+  SgUpirLoopParallelStatement *target1 = isSgUpirLoopParallelStatement(node);
   SgOmpDoStatement *target2 = isSgOmpDoStatement(node);
 
-  SgOmpClauseBodyStatement *target =
-      (target1 != NULL ? (SgOmpClauseBodyStatement *)target1
-                       : (SgOmpClauseBodyStatement *)target2);
+  SgUpirFieldBodyStatement *target =
+      (target1 != NULL ? (SgUpirFieldBodyStatement *)target1
+                       : (SgUpirFieldBodyStatement *)target2);
   ROSE_ASSERT(target != NULL);
 
   SgScopeStatement *p_scope = target->get_scope();
@@ -77,46 +164,25 @@ void analyzeOmpFor(SgNode *node) {
 int patchUpPrivateVariables(SgFile *file) {
   int result = 0;
   ROSE_ASSERT(file != NULL);
-  Rose_STL_Container<SgNode *> nodeList =
-      NodeQuery::querySubTree(file, V_SgOmpForStatement);
-  Rose_STL_Container<SgNode *> nodeList2 =
-      NodeQuery::querySubTree(file, V_SgOmpDoStatement);
+  Rose_STL_Container<SgNode *> nodeList_merged =
+      NodeQuery::querySubTree(file, V_SgUpirLoopParallelStatement);
 
-  Rose_STL_Container<SgNode *> nodeList2_merged(nodeList.size() +
-                                                nodeList2.size());
-
-  std::sort(nodeList.begin(), nodeList.end());
-  std::sort(nodeList2.begin(), nodeList2.end());
-  std::merge(nodeList.begin(), nodeList.end(), nodeList2.begin(),
-             nodeList2.end(), nodeList2_merged.begin());
-
-  // TODO: implement a helper function to collect all the nodes into one list
-  Rose_STL_Container<SgNode *> nodeList3 =
-      NodeQuery::querySubTree(file, V_SgOmpTargetParallelForStatement);
-  std::sort(nodeList3.begin(), nodeList3.end());
-  Rose_STL_Container<SgNode *> nodeList_merged;
-  std::merge(nodeList2_merged.begin(), nodeList2_merged.end(),
-             nodeList3.begin(), nodeList3.end(),
-             std::insert_iterator<Rose_STL_Container<SgNode *>>(
-                 nodeList_merged, nodeList_merged.end()));
+  nodeList_merged = mergeSgNodeList(
+      nodeList_merged, NodeQuery::querySubTree(file, V_SgOmpDoStatement));
+  nodeList_merged = mergeSgNodeList(
+      nodeList_merged,
+      NodeQuery::querySubTree(file, V_SgOmpTargetParallelForStatement));
+  nodeList_merged = mergeSgNodeList(
+      nodeList_merged,
+      NodeQuery::querySubTree(
+          file, V_SgOmpTargetTeamsDistributeParallelForStatement));
 
   Rose_STL_Container<SgNode *>::iterator nodeListIterator =
       nodeList_merged.begin();
   // For each omp for/do statement
   for (; nodeListIterator != nodeList_merged.end(); ++nodeListIterator) {
-    SgStatement *omp_loop = NULL;
-    SgOmpForStatement *for_node = isSgOmpForStatement(*nodeListIterator);
-    SgOmpDoStatement *do_node = isSgOmpDoStatement(*nodeListIterator);
-    SgOmpTargetParallelForStatement *target_parallel_for_node =
-        isSgOmpTargetParallelForStatement(*nodeListIterator);
-    if (for_node)
-      omp_loop = for_node;
-    else if (do_node)
-      omp_loop = do_node;
-    else if (target_parallel_for_node)
-      omp_loop = target_parallel_for_node;
-    else
-      ROSE_ASSERT(false);
+    SgStatement *omp_loop = isSgUpirFieldBodyStatement(*nodeListIterator);
+    ROSE_ASSERT(omp_loop != NULL);
     result += patchUpPrivateVariables(omp_loop);
   } // end for omp for statments
   return result;
@@ -166,8 +232,8 @@ static bool isSharedInEnclosingConstructs(SgInitializedName *init_var,
 
   //   cout<<"Debug omp_lowering.cpp isSharedInEnclosingConstructs()
   //   SgInitializedName name = "<<init_var->get_name().getString()<<endl;
-  SgOmpParallelStatement *enclosing_par_stmt =
-      getEnclosingNode<SgOmpParallelStatement>(start_stmt, false);
+  SgUpirSpmdStatement *enclosing_par_stmt =
+      getEnclosingNode<SgUpirSpmdStatement>(start_stmt, false);
   // Lexically nested within a parallel region
   if (enclosing_par_stmt) {
     // locally declared variables are private to enclosing_par_stmt
@@ -383,11 +449,15 @@ int patchUpFirstprivateVariables(SgFile *file) {
       if (SageInterface::isUseByAddressVariableRef(var_ref))
         continue;
       // Skip variables already with explicit data-sharing attributes
-      VariantVector vv(V_SgOmpDefaultClause);
-      vv.push_back(V_SgOmpPrivateClause);
-      vv.push_back(V_SgOmpSharedClause);
-      vv.push_back(V_SgOmpFirstprivateClause);
-      if (isInClauseVariableList(init_var, target, vv))
+
+      SgVariableSymbol *variable_symbol =
+          isSgVariableSymbol(init_var->search_for_symbol_from_symbol_table());
+      std::set<SgOmpClause::upir_data_sharing_enum> searching_variants;
+      searching_variants.insert(SgOmpClause::e_upir_data_sharing_private);
+      searching_variants.insert(SgOmpClause::e_upir_data_sharing_firstprivate);
+      searching_variants.insert(SgOmpClause::e_upir_data_sharing_shared);
+
+      if (isInUpirDataSharingList(target, variable_symbol, searching_variants))
         continue;
       // Skip variables which are class/structure members: part of another
       // variable
@@ -397,7 +467,12 @@ int patchUpFirstprivateVariables(SgFile *file) {
       if (isSharedInEnclosingConstructs(init_var, target))
         continue;
       // Now it should be a firstprivate variable
-      addClauseVariable(init_var, target, V_SgOmpFirstprivateClause);
+      SgUpirDataItemField *upir_data_item =
+          new SgUpirDataItemField(variable_symbol);
+      upir_data_item->set_sharing_property(
+          SgOmpClause::e_upir_data_sharing_firstprivate);
+      addUpirDataVariable(isSgUpirFieldBodyStatement(target), upir_data_item);
+
       result++;
     } // end for each variable reference
   }   // end for each SgOmpTaskStatement
@@ -408,7 +483,7 @@ int patchUpImplicitMappingVariables(SgFile *file) {
   int result = 0;
   ROSE_ASSERT(file != NULL);
   Rose_STL_Container<SgNode *> node_list1 =
-      NodeQuery::querySubTree(file, V_SgOmpParallelStatement);
+      NodeQuery::querySubTree(file, V_SgUpirTaskStatement);
 
   // TODO: implement a helper function to collect all the nodes into one list
   Rose_STL_Container<SgNode *> node_list2 =
@@ -423,8 +498,8 @@ int patchUpImplicitMappingVariables(SgFile *file) {
 
   Rose_STL_Container<SgNode *>::iterator iter = node_list.begin();
   for (iter = node_list.begin(); iter != node_list.end(); iter++) {
-    SgOmpClauseBodyStatement *target = NULL;
-    target = isSgOmpClauseBodyStatement(*iter);
+    SgUpirFieldBodyStatement *target = NULL;
+    target = isSgUpirFieldBodyStatement(*iter);
     SgScopeStatement *directive_scope = target->get_scope();
     SgStatement *body = target->get_body();
     ROSE_ASSERT(body != NULL);
@@ -446,15 +521,12 @@ int patchUpImplicitMappingVariables(SgFile *file) {
       if (isAncestor(directive_scope, var_scope))
         continue;
 
-      // TODO: is it necessary?
-      // if (SageInterface::isUseByAddressVariableRef(var_ref))
-      // continue;
-
       // Skip variables already with explicit data-sharing attributes
       VariantVector vv(V_SgOmpDefaultClause);
       vv.push_back(V_SgOmpPrivateClause);
       vv.push_back(V_SgOmpSharedClause);
       vv.push_back(V_SgOmpFirstprivateClause);
+      vv.push_back(V_SgOmpMapClause);
       if (isInClauseVariableList(init_var, target, vv))
         continue;
       // Skip variables which are class/structure members: part of another
@@ -465,21 +537,12 @@ int patchUpImplicitMappingVariables(SgFile *file) {
       if (isSharedInEnclosingConstructs(init_var, target))
         continue;
       // Now it should be a shared variable
-      SgNode *parent = target->get_parent();
-      if (isSgBasicBlock(parent)) // skip the padding block in between.
-        parent = parent->get_parent();
-      if (isSgOmpTargetStatement(parent) ||
+      if (isSgUpirTaskStatement(target) ||
           isSgOmpTargetParallelForStatement(target)) {
         SgVariableSymbol *sym = var_ref->get_symbol();
         ROSE_ASSERT(sym != NULL);
         SgType *orig_type = sym->get_type();
         SgArrayType *a_type = isSgArrayType(orig_type);
-        SgOmpClauseBodyStatement *target_parent = NULL;
-        if (isSgOmpTargetParallelForStatement(target)) {
-          target_parent = isSgOmpTargetParallelForStatement(target);
-        } else {
-          target_parent = isSgOmpTargetStatement(parent);
-        }
         if (a_type != NULL) {
           std::vector<SgExpression *> dims = get_C_array_dimensions(a_type);
           SgExpression *array_length = NULL;
@@ -499,9 +562,9 @@ int patchUpImplicitMappingVariables(SgFile *file) {
           SgExprListExp *explist = NULL;
           SgVariableSymbol *array_symbol = var_ref->get_symbol();
 
-          if (hasClause(target_parent, V_SgOmpMapClause)) {
+          if (hasClause(target, V_SgOmpMapClause)) {
             Rose_STL_Container<SgOmpClause *> map_clauses =
-                getClause(target_parent, V_SgOmpMapClause);
+                getClause(target, V_SgOmpMapClause);
             Rose_STL_Container<SgOmpClause *>::const_iterator iter;
             for (iter = map_clauses.begin(); iter != map_clauses.end();
                  iter++) {
@@ -523,7 +586,7 @@ int patchUpImplicitMappingVariables(SgFile *file) {
             map_clause = new SgOmpMapClause(explist, sg_type);
             explist->set_parent(map_clause);
             setOneSourcePositionForTransformation(map_clause);
-            map_clause->set_parent(target_parent);
+            map_clause->set_parent(target);
           }
 
           bool has_mapped = false;
@@ -546,7 +609,7 @@ int patchUpImplicitMappingVariables(SgFile *file) {
           }
 
         } else {
-          addClauseVariable(init_var, target_parent, V_SgOmpFirstprivateClause);
+          addClauseVariable(init_var, target, V_SgOmpFirstprivateClause);
         }
       } else {
         addClauseVariable(init_var, target, V_SgOmpSharedClause);
@@ -557,23 +620,188 @@ int patchUpImplicitMappingVariables(SgFile *file) {
   return result;
 } // end patchUpImplicitMappingVariables()
 
+// map variables in omp target firstprivate clause
+int unifyUpirTaskMappingVariables(SgFile *file) {
+  int result = 0;
+  ROSE_ASSERT(file != NULL);
+  Rose_STL_Container<SgNode *> node_list =
+      NodeQuery::querySubTree(file, V_SgUpirTaskStatement);
+
+  Rose_STL_Container<SgNode *>::iterator iter;
+  for (iter = node_list.begin(); iter != node_list.end(); iter++) {
+    SgUpirFieldBodyStatement *target = NULL;
+    target = isSgUpirFieldBodyStatement(*iter);
+    SgStatement *body = target->get_body();
+    ROSE_ASSERT(body != NULL);
+
+    if (hasClause(target, V_SgOmpFirstprivateClause) == false) {
+      continue;
+    }
+    Rose_STL_Container<SgOmpClause *> clauses =
+        getClause(target, V_SgOmpFirstprivateClause);
+    SgOmpFirstprivateClause *firstprivate_clause =
+        isSgOmpFirstprivateClause(clauses[0]);
+    SgExpressionPtrList firstprivate_symbols =
+        firstprivate_clause->get_variables()->get_expressions();
+
+    SgOmpMapClause *map_clause = NULL;
+    SgExprListExp *explist = NULL;
+    bool has_map_to_clause = false;
+    // use the existing MAP TO clause if any.
+    if (hasClause(target, V_SgOmpMapClause)) {
+      Rose_STL_Container<SgOmpClause *> map_clauses =
+          getClause(target, V_SgOmpMapClause);
+      Rose_STL_Container<SgOmpClause *>::const_iterator iter;
+      for (iter = map_clauses.begin(); iter != map_clauses.end(); iter++) {
+        SgOmpMapClause *temp_map_clause = isSgOmpMapClause(*iter);
+        if (temp_map_clause->get_operation() == SgOmpClause::e_omp_map_to) {
+          map_clause = temp_map_clause;
+          explist = map_clause->get_variables();
+          has_map_to_clause = true;
+          break;
+        }
+      }
+    }
+
+    // create a new MAP TO clause if there isn't one.
+    if (has_map_to_clause == false) {
+      explist = buildExprListExp();
+      SgOmpClause::omp_map_operator_enum sg_type = SgOmpClause::e_omp_map_to;
+      map_clause = new SgOmpMapClause(explist, sg_type);
+    };
+    bool has_mapped = false;
+
+    for (size_t i = 0; i < firstprivate_symbols.size(); i++) {
+      SgVarRefExp *var_ref = isSgVarRefExp(firstprivate_symbols[i]);
+      SgVariableSymbol *sym = var_ref->get_symbol();
+      ROSE_ASSERT(sym != NULL);
+      SgType *orig_type = sym->get_type();
+      SgArrayType *a_type = isSgArrayType(orig_type);
+      if (a_type == NULL && !isPointerType(orig_type)) {
+        explist->append_expression(var_ref);
+        var_ref->set_parent(map_clause);
+        has_mapped = true;
+      }
+    }
+    if (has_map_to_clause == false && has_mapped == true) {
+      setOneSourcePositionForTransformation(map_clause);
+      explist->set_parent(map_clause);
+      map_clause->set_parent(target);
+      target->get_clauses().push_back(map_clause);
+    }
+  }
+  return result;
+} // end unifyUpirTaskMappingVariables()
+
+// create data fields
+int createUpirDataFields(SgFile *file) {
+  int result = 0;
+  ROSE_ASSERT(file != NULL);
+  Rose_STL_Container<SgNode *> node_list =
+      NodeQuery::querySubTree(file, V_SgOmpMapClause);
+
+  Rose_STL_Container<SgNode *>::iterator iter;
+  for (iter = node_list.begin(); iter != node_list.end(); iter++) {
+    SgOmpMapClause *target = isSgOmpMapClause(*iter);
+    SgUpirFieldBodyStatement *target_directive =
+        isSgUpirFieldBodyStatement(target->get_parent());
+
+    SgOmpClause::upir_data_mapping_enum data_mapping_type =
+        SgOmpClause::e_upir_data_mapping_unspecified;
+    SgOmpClause::omp_map_operator_enum sg_type = target->get_operation();
+    switch (sg_type) {
+    case SgOmpClause::e_omp_map_to:
+      data_mapping_type = SgOmpClause::e_upir_data_mapping_to;
+      break;
+    case SgOmpClause::e_omp_map_from:
+      data_mapping_type = SgOmpClause::e_upir_data_mapping_from;
+      break;
+    case SgOmpClause::e_omp_map_tofrom:
+      data_mapping_type = SgOmpClause::e_upir_data_mapping_tofrom;
+      break;
+    default:;
+    }
+
+    SgExpressionPtrList variables = target->get_variables()->get_expressions();
+    std::map<SgSymbol *, std::vector<std::pair<SgExpression *, SgExpression *>>>
+        array_dimensions = target->get_array_dimensions();
+
+    SgUpirDataField *upir_data = new SgUpirDataField();
+    std::list<SgUpirDataItemField *> data_items = upir_data->get_data();
+    for (size_t i = 0; i < variables.size(); i++) {
+
+      SgVarRefExp *variable_expression = isSgVarRefExp(variables[i]);
+      SgVariableSymbol *variable_symbol = variable_expression->get_symbol();
+      assert(variable_symbol != NULL);
+
+      SgUpirDataItemField *upir_data_item =
+          new SgUpirDataItemField(variable_symbol);
+
+      std::list<std::list<SgExpression *>> upir_section =
+          upir_data_item->get_section();
+      std::vector<std::pair<SgExpression *, SgExpression *>> sections =
+          array_dimensions[variable_symbol];
+      for (size_t i = 0; i < sections.size(); i++) {
+        SgExpression *lower_bound = sections[i].first;
+        SgExpression *length = sections[i].second;
+        // ROSE/REX doesn't support stride yet, it is always set to 1 for now.
+        SgExpression *stride = buildIntVal(1);
+        std::list<SgExpression *> section = {lower_bound, length, stride};
+        upir_section.push_back(section);
+      }
+
+      upir_data_item->set_section(upir_section);
+      upir_data_item->set_mapping_property(data_mapping_type);
+      // TODO: FIX: set the data sharing attribute correctly instead of using an
+      // assumption.
+      upir_data_item->set_sharing_property(
+          SgOmpClause::e_upir_data_sharing_private);
+      data_items.push_back(upir_data_item);
+      setOneSourcePositionForTransformation(upir_data_item);
+      upir_data_item->set_parent(upir_data);
+    }
+
+    upir_data->set_data(data_items);
+    setOneSourcePositionForTransformation(upir_data);
+    target_directive->get_clauses().push_back(upir_data);
+    upir_data->set_parent(target_directive);
+  }
+
+  return result;
+} // end createUpirDataFields()
+
 void analyze_omp(SgSourceFile *file) {
 
+  Rose_STL_Container<SgNode *> variant_directives =
+      NodeQuery::querySubTree(file, V_SgOmpMetadirectiveStatement);
+  Rose_STL_Container<SgNode *>::reverse_iterator node_list_iterator;
+  for (node_list_iterator = variant_directives.rbegin();
+       node_list_iterator != variant_directives.rend(); node_list_iterator++) {
+    SgStatement *node = isSgStatement(*node_list_iterator);
+    ROSE_ASSERT(node != NULL);
+    analyzeOmpMetadirective(node);
+  }
   patchUpPrivateVariables(file); // the order of these two functions matter! We
                                  // want to patch up private variable first!
   patchUpFirstprivateVariables(file);
 
-  int shared_vars = patchUpImplicitMappingVariables(file);
+  patchUpImplicitMappingVariables(file);
+
+  // convert firstprivate clause in target directive to map clause because later
+  // only map clause will be lowered.
+  unifyUpirTaskMappingVariables(file);
+
+  // Generate UPIR data fields based on map clauses
+  createUpirDataFields(file);
 
   Rose_STL_Container<SgNode *> node_list =
       NodeQuery::querySubTree(file, V_SgStatement);
-  Rose_STL_Container<SgNode *>::reverse_iterator node_list_iterator;
   for (node_list_iterator = node_list.rbegin();
        node_list_iterator != node_list.rend(); node_list_iterator++) {
     SgStatement *node = isSgStatement(*node_list_iterator);
     ROSE_ASSERT(node != NULL);
     switch (node->variantT()) {
-    case V_SgOmpForStatement: {
+    case V_SgUpirLoopParallelStatement: {
       analyzeOmpFor(node);
       break;
     }

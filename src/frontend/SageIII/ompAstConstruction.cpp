@@ -8,9 +8,18 @@
 #include "ompAstConstruction.h"
 
 #include "OpenMPIR.h"
+#include "OpenACCIR.h"
 #include <tuple>
 
 extern OpenMPDirective* parseOpenMP(const char*, void * _exprParse(const char*));
+extern OpenACCDirective* parseOpenACC(std::string);
+
+// the vector of pairs of OpenACC pragma and accparser IR.
+static std::vector<std::pair<SgPragmaDeclaration*, OpenACCDirective*> > OpenACCIR_list;
+OpenACCDirective* accparser_OpenACCIR;
+static bool use_accparser = false;
+extern bool checkOpenACCIR(OpenACCDirective*);
+extern SgStatement* convertOpenACCDirective(std::pair<SgPragmaDeclaration*, OpenACCDirective*>);
 
 //Liao, 10/27/2008: parsing OpenMP pragma here
 //Handle OpenMP pragmas. This should be called after preprocessing information is attached since macro calls may exist within pragmas, Liao, 3/31/2009
@@ -30,26 +39,28 @@ static bool use_ompparser = false;
 static bool checkOpenMPIR(OpenMPDirective*);
 static SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertVariantDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
-static SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
-static SgOmpBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
-static SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
+static SgUpirBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
+static SgUpirBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
+static SgUpirBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertOmpDeclareSimdDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertOmpFlushDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
+static SgStatement* convertOmpAllocateDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertOmpThreadprivateStatement(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII);
 static SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgOmpVariablesClause* convertClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static void buildVariableList(SgOmpVariablesClause*);
 static SgOmpExpressionClause* convertExpressionClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpClause* convertSimpleClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
-static SgOmpDepobjUpdateClause *convertDepobjUpdateClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause);
-static SgOmpScheduleClause* convertScheduleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
-static SgOmpDistScheduleClause* convertDistScheduleClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
-static SgOmpDefaultmapClause* convertDefaultmapClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
-static SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
-static SgOmpProcBindClause* convertProcBindClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpDepobjUpdateClause *convertDepobjUpdateClause(SgUpirFieldBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause);
+static SgOmpScheduleClause* convertScheduleClause(SgUpirFieldBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpDistScheduleClause* convertDistScheduleClause(SgUpirFieldBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpDefaultmapClause* convertDefaultmapClause(SgUpirFieldBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpDefaultClause* convertDefaultClause(SgUpirFieldBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpAllocatorClause* convertAllocatorClause(SgUpirFieldStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpProcBindClause* convertProcBindClause(SgUpirFieldBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpOrderClause* convertOrderClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
-static SgOmpBindClause* convertBindClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
-static SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpBindClause* convertBindClause(SgUpirFieldBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpWhenClause* convertWhenClause(SgUpirFieldBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 // store temporary expression pairs for ompparser.
 extern std::vector<std::pair<std::string, SgNode*> > omp_variable_list;
 extern std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >  array_dimensions;
@@ -57,12 +68,16 @@ extern SgExpression* omp_expression;
 static SgExpression* parseOmpExpression(SgPragmaDeclaration*, OpenMPClauseKind, std::string);
 static void parseOmpVariable(std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClauseKind, std::string);
 static SgExpression* parseOmpArraySection(SgPragmaDeclaration*, OpenMPClauseKind, std::string);
-static SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
+static SgUpirSpmdStatement* convertUpirSpmdStatementFromCombinedDirectives(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
-static SgOmpMapClause* convertMapClause(SgOmpClauseBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpMapClause* convertMapClause(SgUpirFieldBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpToClause* convertToClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpFromClause* convertFromClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpUsesAllocatorsClause* convertUsesAllocatorsClause(SgUpirFieldBodyStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpDependClause* convertDependClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpAffinityClause* convertAffinityClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgStatement* convertOmpRequiresDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII);
+static SgStatement* convertOmpTaskwaitDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII);
 static SgOmpAtomicDefaultMemOrderClause* convertAtomicDefaultMemOrderClause(SgStatement* directive, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause);
 static SgOmpExtImplementationDefinedRequirementClause* convertExtImplementationDefinedRequirementClause(SgStatement* directive, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause);
 
@@ -72,7 +87,7 @@ using namespace SageBuilder;
 using namespace OmpSupport;
 
 // Liao 4/23/2011, special function to copy file info of the original SgPragma or Fortran comments
-static bool copyStartFileInfo (SgNode* src, SgNode* dest)
+bool copyStartFileInfo (SgNode* src, SgNode* dest)
 {
   bool result = false;
   ROSE_ASSERT (src && dest);
@@ -121,13 +136,13 @@ static bool copyStartFileInfo (SgNode* src, SgNode* dest)
 }
 // Liao 3/11/2013, special function to copy end file info of the original SgPragma or Fortran comments (src) to OpenMP node (dest)
 // If the OpenMP node is a body statement, we have to use the body's end file info as the node's end file info.
-static bool copyEndFileInfo (SgNode* src, SgNode* dest)
+bool copyEndFileInfo (SgNode* src, SgNode* dest)
 {
   bool result = false;
   ROSE_ASSERT (src && dest);
   
-  if (isSgOmpBodyStatement(dest))
-    src = isSgOmpBodyStatement(dest)->get_body();
+  if (isSgUpirBodyStatement(dest))
+    src = isSgUpirBodyStatement(dest)->get_body();
 
   // same src and dest, no copy is needed
   if (src == dest) return true;
@@ -234,6 +249,21 @@ namespace OmpSupport
             OpenMPIR_list.push_back(std::make_pair(pragmaDeclaration, ompparser_OpenMPIR));
 #endif
           }
+        }
+        else if (key == "acc")
+        {
+          // store them into a buffer, reused by build_OpenMP_AST()
+          omp_pragma_list.push_back(pragmaDeclaration);
+          // Call parser
+#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
+          // Get the OpenMP IR converted from the OpenACC IR.
+          pragmaString = "#pragma " + pragmaString;
+          accparser_OpenACCIR = parseOpenACC(pragmaString);
+          assert(accparser_OpenACCIR != NULL);
+          use_accparser = checkOpenACCIR(accparser_OpenACCIR);
+          assert(use_accparser == true);
+          OpenACCIR_list.push_back(std::make_pair(pragmaDeclaration, accparser_OpenACCIR));
+#endif
         }
       }// end for
     }
@@ -1096,7 +1126,196 @@ namespace OmpSupport
 
     return result;
   }
+  
+  //! A helper function to convert OpenMPIR ALLOCATOR allocator to SgClause ALLOCATOR modifier
+  static SgOmpClause::omp_allocator_modifier_enum toSgOmpClauseAllocatorAllocator(OpenMPAllocatorClauseAllocator allocator)
+  {
+    SgOmpClause::omp_allocator_modifier_enum result;
+    switch (allocator)
+    {
+      case OMPC_ALLOCATOR_ALLOCATOR_default:
+        {
+          result = SgOmpClause::e_omp_allocator_default_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_large_cap:
+        {
+          result = SgOmpClause::e_omp_allocator_large_cap_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_cons_mem:
+        {
+          result = SgOmpClause::e_omp_allocator_const_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_high_bw:
+        {
+          result = SgOmpClause::e_omp_allocator_high_bw_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_low_lat:
+        {
+          result = SgOmpClause::e_omp_allocator_low_lat_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_cgroup:
+        {
+          result = SgOmpClause::e_omp_allocator_cgroup_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_pteam:
+        {
+          result = SgOmpClause::e_omp_allocator_pteam_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_thread:
+        {
+          result = SgOmpClause::e_omp_allocator_thread_mem_alloc;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_user:
+        {
+          result = SgOmpClause::e_omp_allocator_user_defined_modifier;
+          break;
+        }
+      case OMPC_ALLOCATOR_ALLOCATOR_unknown:
+        {
+          result = SgOmpClause::e_omp_allocator_modifier_unknown;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for allocator modifier conversion:%d\n", allocator);
+          ROSE_ASSERT(false);
+          break;
+        }
+    }
 
+    return result;
+  }
+
+//! A helper function to convert OpenMPIR TO kind to SgClause TO kind
+  static SgOmpClause::omp_to_kind_enum toSgOmpClauseToKind(OpenMPToClauseKind kind)
+  {
+    SgOmpClause::omp_to_kind_enum result;
+    switch (kind)
+    {
+      case OMPC_TO_mapper:
+        {
+          result = SgOmpClause::e_omp_to_kind_mapper;
+          break;
+        }
+        
+      case OMPC_TO_unspecified:
+        {
+          result = SgOmpClause::e_omp_to_kind_unknown;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for TO kind conversion:%d\n", kind);
+          ROSE_ASSERT(false);
+          break;
+        }
+    }
+ 
+    return result;
+  }
+
+  //! A helper function to convert OpenMPIR FROM kind to SgClause FROM kind
+  static SgOmpClause::omp_from_kind_enum toSgOmpClauseFromKind(OpenMPFromClauseKind kind)
+  {
+    SgOmpClause::omp_from_kind_enum result;
+    switch (kind)
+    {
+      case OMPC_FROM_mapper:
+        {
+          result = SgOmpClause::e_omp_from_kind_mapper;
+          break;
+        }
+        
+      case OMPC_FROM_unspecified:
+        {
+          result = SgOmpClause::e_omp_from_kind_unknown;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for FROM kind conversion:%d\n", kind);
+          ROSE_ASSERT(false);
+          break;
+        }
+    }
+
+    return result;
+  }
+  
+  //! A helper function to convert OpenMPIR uses_allocator allocator to SgClause uses_allocator allocator
+  static SgOmpClause::omp_uses_allocators_allocator_enum toSgOmpClauseUsesAllocatorsAllocator(OpenMPUsesAllocatorsClauseAllocator allocator)
+  {
+    SgOmpClause::omp_uses_allocators_allocator_enum result;
+    switch (allocator)
+    {
+      case OMPC_USESALLOCATORS_ALLOCATOR_default:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_default_mem_alloc;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_large_cap:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_large_cap_mem_alloc;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_cons_mem:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_const_mem_alloc;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_high_bw:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_high_bw_mem_alloc;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_low_lat:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_low_lat_mem_alloc;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_cgroup:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_cgroup_mem_alloc;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_pteam:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_pteam_mem_alloc;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_thread:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_thread_mem_alloc;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_user:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_user_defined;
+          break;
+        }
+      case OMPC_USESALLOCATORS_ALLOCATOR_unknown:
+        {
+          result = SgOmpClause::e_omp_uses_allocators_allocator_unknown;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for allocator modifier conversion:%d\n", allocator);
+          ROSE_ASSERT(false);
+          break;
+        }
+    }
+
+    return result;
+  }
 
   static SgOmpClause::omp_depobj_modifier_enum toSgOmpClauseDepobjModifierType(OpenMPDepobjUpdateClauseDependeceType type)
   {
@@ -1176,6 +1395,16 @@ namespace OmpSupport
       case OMPC_DEPENDENCE_TYPE_depobj:
         {
           result = SgOmpClause::e_omp_depend_depobj;
+          break;
+        }
+      case OMPC_DEPENDENCE_TYPE_source:
+        {
+          result = SgOmpClause::e_omp_depend_source;
+          break;
+        }
+      case OMPC_DEPENDENCE_TYPE_sink:
+        {
+          result = SgOmpClause::e_omp_depend_sink;
           break;
         }
       default:
@@ -1323,6 +1552,7 @@ namespace OmpSupport
     list<SgPragmaDeclaration* >::reverse_iterator iter; // bottom up handling for nested cases
     ROSE_ASSERT (sageFilePtr != NULL);
     int OpenMPIR_index = OpenMPIR_list.size()-1;
+    int OpenACCIR_index = OpenACCIR_list.size()-1;
     for (iter = omp_pragma_list.rbegin(); iter != omp_pragma_list.rend(); iter ++)
     {
       // Liao, 11/18/2009
@@ -1349,8 +1579,13 @@ namespace OmpSupport
       if (getEnclosingSourceFile(decl)!=sageFilePtr)
         continue;
 
-      convertDirective(OpenMPIR_list[OpenMPIR_index]);
-      OpenMPIR_index--;
+      if (OpenMPIR_list.size() != 0) {
+        convertDirective(OpenMPIR_list[OpenMPIR_index]);
+        OpenMPIR_index--;
+      } else {
+        convertOpenACCDirective(OpenACCIR_list[OpenACCIR_index]);
+        OpenACCIR_index--;
+      };
 
     }// end for (omp_pragma_list)
   }
@@ -1726,7 +1961,6 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_master_taskloop:
         case OMPD_parallel_loop:
         case OMPD_task:
-        case OMPD_taskwait:
         case OMPD_target_data:
         case OMPD_single:
         case OMPD_for:
@@ -1738,10 +1972,25 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_section:
         case OMPD_simd:
         case OMPD_parallel:
-        case OMPD_ordered:
         case OMPD_workshare: {
             result = convertBodyDirective(current_OpenMPIR_to_SageIII);
             break;
+        }
+        case OMPD_ordered: {
+          if (current_OpenMPIR_to_SageIII.second->getClausesInOriginalOrder()->size() != 0) {
+            std::vector<OpenMPClause*>* ordered_clauses = current_OpenMPIR_to_SageIII.second->getClausesInOriginalOrder();
+            OpenMPClause* clause = *ordered_clauses->begin();
+            if (clause->getKind() == OMPC_depend) {
+              result = convertNonBodyDirective(current_OpenMPIR_to_SageIII);
+              break;
+            } else {
+              result = convertBodyDirective(current_OpenMPIR_to_SageIII);
+              break;
+            }
+          } else {
+            result = convertBodyDirective(current_OpenMPIR_to_SageIII);
+            break;
+          }
         }
         case OMPD_parallel_do:
         case OMPD_parallel_for:
@@ -1762,6 +2011,10 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
             result = convertOmpRequiresDirective(current_OpenMPIR_to_SageIII);
             break;
         }
+        case OMPD_taskwait: {
+            result = convertOmpTaskwaitDirective(current_OpenMPIR_to_SageIII);
+            break;
+        }
         case OMPD_barrier: {
             result = new SgOmpBarrierStatement();
             break;
@@ -1772,6 +2025,10 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         }
         case OMPD_flush: {
             result = convertOmpFlushDirective(current_OpenMPIR_to_SageIII);
+            break;
+        }
+        case OMPD_allocate: {
+            result = convertOmpAllocateDirective(current_OpenMPIR_to_SageIII);
             break;
         }
         case OMPD_taskyield: {
@@ -1813,11 +2070,11 @@ SgStatement* convertVariantDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
     return result;
 }
 
-SgOmpBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
+SgUpirBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
     
     OpenMPDirectiveKind directive_kind = current_OpenMPIR_to_SageIII.second->getKind();
     // directives like parallel and for have a following code block beside the pragma itself.
-    SgOmpBodyStatement* result = NULL;
+    SgUpirBodyStatement* result = NULL;
 
     switch (directive_kind) {
         case OMPD_parallel_do:
@@ -1825,7 +2082,7 @@ SgOmpBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*,
         case OMPD_parallel_for_simd:
         case OMPD_parallel_sections:
         case OMPD_parallel_workshare: {
-            result = convertOmpParallelStatementFromCombinedDirectives(current_OpenMPIR_to_SageIII);
+            result = convertUpirSpmdStatementFromCombinedDirectives(current_OpenMPIR_to_SageIII);
             break;
         }
         default: {
@@ -1878,6 +2135,14 @@ SgOmpClause* convertSimpleClause(SgStatement* directive, std::pair<SgPragmaDecla
         }
         case OMPC_write: {
             sg_clause = new SgOmpWriteClause();
+            break;
+        }
+        case OMPC_threads: {
+            sg_clause = new SgOmpThreadsClause();
+            break;
+        }
+        case OMPC_simd: {
+            sg_clause = new SgOmpSimdClause();
             break;
         }
         case OMPC_update: {
@@ -1948,8 +2213,10 @@ SgOmpClause* convertSimpleClause(SgStatement* directive, std::pair<SgPragmaDecla
         ((SgOmpTargetUpdateStatement*)directive)->get_clauses().push_back(sg_clause);
     } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_requires) {
         ((SgOmpRequiresStatement*)directive)->get_clauses().push_back(sg_clause);
+    } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_flush) {
+        ((SgOmpFlushStatement*)directive)->get_clauses().push_back(sg_clause);
     } else {
-        ((SgOmpClauseBodyStatement*)directive)->get_clauses().push_back(sg_clause);
+        ((SgUpirFieldBodyStatement*)directive)->get_clauses().push_back(sg_clause);
     }
     sg_clause->set_parent(directive);
     return sg_clause;
@@ -1976,6 +2243,10 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
         }
         case OMPD_target_update: {
             result = new SgOmpTargetUpdateStatement();
+            break;
+        }
+        case OMPD_ordered: {
+            result = new SgOmpOrderedDependStatement();
             break;
         }
         default: {
@@ -2007,6 +2278,15 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
             }
             case OMPC_depend: {
                 convertDependClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            case OMPC_to: {
+                convertToClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            case OMPC_from: {
+                convertFromClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
             }
             default: {
                 cerr<<"error: unknown clause "<<endl;
@@ -2017,13 +2297,13 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
     return result;
 }
 
-SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
+SgUpirBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
     
     OpenMPDirectiveKind directive_kind = current_OpenMPIR_to_SageIII.second->getKind();
     // directives like parallel and for have a following code block beside the pragma itself.
     SgStatement* body = getOpenMPBlockBody(current_OpenMPIR_to_SageIII);
     removeStatement(body,false);
-    SgOmpBodyStatement* result = NULL;
+    SgUpirBodyStatement* result = NULL;
     OpenMPClauseKind clause_kind;
 
     switch (directive_kind) {
@@ -2036,11 +2316,7 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             break;
         }
         case OMPD_parallel: {
-            result = new SgOmpParallelStatement(NULL, body);
-            break;
-        }
-        case OMPD_taskwait: {
-            result = new SgOmpTaskwaitStatement(NULL, body);
+            result = new SgUpirSpmdStatement(NULL, body);
             break;
         }
         case OMPD_teams: {
@@ -2100,7 +2376,7 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             break;
         }
         case OMPD_for: {
-            result = new SgOmpForStatement(NULL, body);
+            result = new SgUpirLoopParallelStatement(NULL, body);
             break;
         }
         case OMPD_for_simd: {
@@ -2108,7 +2384,7 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             break;
         }
         case OMPD_target: {
-            result = new SgOmpTargetStatement(NULL, body);
+            result = new SgUpirTaskStatement(NULL, body);
             break;
         }
         case OMPD_critical: {
@@ -2270,27 +2546,27 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             case OMPC_detach:
             case OMPC_num_tasks:
             case OMPC_num_threads: {
-                convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertExpressionClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_default: {
-                convertDefaultClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertDefaultClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_proc_bind: {
-                convertProcBindClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertProcBindClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_order: {
-                convertOrderClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertOrderClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_bind: {
-                convertBindClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertBindClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_when: {
-                convertWhenClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertWhenClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_inbranch:
@@ -2298,8 +2574,14 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
                 convertSimpleClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
+            case OMPC_uses_allocators: {
+                convertUsesAllocatorsClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
             case OMPC_read:
             case OMPC_write:
+            case OMPC_threads:
+            case OMPC_simd:
             case OMPC_update:
             case OMPC_capture:
             case OMPC_seq_cst:
@@ -2312,39 +2594,39 @@ SgOmpBodyStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             case OMPC_nogroup:
             case OMPC_destroy:         
             case OMPC_nowait: {
-                convertSimpleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertSimpleClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_schedule: {
-                convertScheduleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertScheduleClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_dist_schedule: {
-                convertDistScheduleClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertDistScheduleClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_defaultmap: {
-                convertDefaultmapClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertDefaultmapClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_map: {
-                convertMapClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertMapClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_depend: {
-                convertDependClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertDependClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_affinity: {
-                convertAffinityClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertAffinityClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_depobj_update: {
-                convertDepobjUpdateClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertDepobjUpdateClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             default: {
-                convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
             }
         };
     };
@@ -2418,11 +2700,49 @@ SgStatement* convertOmpRequiresDirective(std::pair<SgPragmaDeclaration*, OpenMPD
     return result;
 }
 
+SgStatement* convertOmpTaskwaitDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
+    SgOmpTaskwaitStatement *result = new SgOmpTaskwaitStatement();
+    result->set_firstNondefiningDeclaration(result);
+    std::vector<OpenMPClause*>* all_clauses = current_OpenMPIR_to_SageIII.second->getClausesInOriginalOrder();
+    OpenMPClauseKind clause_kind;
+    std::vector<OpenMPClause*>::iterator clause_iter;
+    for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end(); clause_iter++) {
+        clause_kind = (*clause_iter)->getKind();
+        switch (clause_kind) {
+            case OMPC_depend:
+            {
+                convertDependClause(isSgStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            default: {
+            }
+        };
+    };
+    return result;
+}
+
 // Convert an OpenMPIR Flush Directive to a ROSE node
 SgStatement* convertOmpFlushDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
     SgOmpFlushStatement *statement = new SgOmpFlushStatement();
     OpenMPFlushDirective *current_ir = static_cast<OpenMPFlushDirective *>(current_OpenMPIR_to_SageIII.second);
-
+    std::vector<OpenMPClause*>* all_clauses = current_OpenMPIR_to_SageIII.second->getClausesInOriginalOrder();
+    OpenMPClauseKind clause_kind;
+    std::vector<OpenMPClause*>::iterator clause_iter;
+    for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end(); clause_iter++) {
+        clause_kind = (*clause_iter)->getKind();
+        switch (clause_kind) {
+            case OMPC_seq_cst:
+            case OMPC_acq_rel:
+            case OMPC_release:
+            case OMPC_acquire: {
+                convertSimpleClause(isSgStatement(statement), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            default: {
+                convertClause(isSgStatement(statement), current_OpenMPIR_to_SageIII, *clause_iter);
+            }
+        };
+    };
     std::vector<std::string>* current_expressions = current_ir->getFlushList();
     if (current_expressions->size() != 0) {
         std::vector<std::string>::iterator iter;
@@ -2435,14 +2755,70 @@ SgStatement* convertOmpFlushDirective(std::pair<SgPragmaDeclaration*, OpenMPDire
 
     std::vector<std::pair<std::string, SgNode*> >::iterator iter;
     for (iter = omp_variable_list.begin(); iter != omp_variable_list.end(); iter++) {
-        SgInitializedName* iname = isSgInitializedName((*iter).second);
-        ROSE_ASSERT(iname != NULL);
-        SgVarRefExp * var_ref = buildVarRefExp(iname);
-        statement->get_variables().push_back(var_ref);
-        var_ref->set_parent(statement);
+        if (SgInitializedName* iname = isSgInitializedName((*iter).second)) {
+            SgVarRefExp * var_ref = buildVarRefExp(iname);
+            statement->get_variables().push_back(var_ref);
+            var_ref->set_parent(statement);
+        }
+        else if (SgVarRefExp* vref = isSgVarRefExp((*iter).second)) {
+            statement->get_variables().push_back(vref);
+            vref->set_parent(statement);
+        }
+        else {
+            cerr << "error: unhandled type of variable within a list:" << ((*iter).second)->class_name();
+        }
     }
+    current_expressions->clear();
     omp_variable_list.clear();
+    return statement;
+}
 
+// Convert an OpenMPIR Allocate Directive to a ROSE node
+SgStatement* convertOmpAllocateDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
+    SgOmpAllocateStatement *statement = new SgOmpAllocateStatement();
+    OpenMPAllocateDirective *current_ir = static_cast<OpenMPAllocateDirective *>(current_OpenMPIR_to_SageIII.second);
+    std::vector<OpenMPClause*>* all_clauses = current_OpenMPIR_to_SageIII.second->getClausesInOriginalOrder();
+    OpenMPClauseKind clause_kind;
+    std::vector<OpenMPClause*>::iterator clause_iter;
+    for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end(); clause_iter++) {
+        clause_kind = (*clause_iter)->getKind();
+        switch (clause_kind) {
+          case OMPC_allocator: {
+            convertAllocatorClause(isSgUpirFieldStatement(statement), current_OpenMPIR_to_SageIII, *clause_iter);
+            break;
+          }
+          default: {
+            convertClause(isSgStatement(statement), current_OpenMPIR_to_SageIII, *clause_iter);
+          }
+        };
+    };
+    std::vector<const char*>* current_expressions = current_ir->getAllocateList();
+    if (current_expressions->size() != 0) {
+        std::vector<const char*>::iterator iter;
+        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
+            std::string expr_string = std::string() + "varlist " + *iter + "\n";
+            omp_exprparser_parser_init(current_OpenMPIR_to_SageIII.first, expr_string.c_str());
+            omp_exprparser_parse();
+        }
+    }
+
+    std::vector<std::pair<std::string, SgNode*> >::iterator iter;
+    for (iter = omp_variable_list.begin(); iter != omp_variable_list.end(); iter++) {
+        if (SgInitializedName* iname = isSgInitializedName((*iter).second)) {
+            SgVarRefExp * var_ref = buildVarRefExp(iname);
+            statement->get_variables().push_back(var_ref);
+            var_ref->set_parent(statement);
+        }
+        else if (SgVarRefExp* vref = isSgVarRefExp((*iter).second)) {
+            statement->get_variables().push_back(vref);
+            vref->set_parent(statement);
+        }
+        else {
+            cerr << "error: unhandled type of variable within a list:" << ((*iter).second)->class_name();
+        }
+    }
+    current_expressions->clear();
+    omp_variable_list.clear();
     return statement;
 }
 
@@ -2482,7 +2858,7 @@ SgStatement* convertOmpThreadprivateStatement(std::pair<SgPragmaDeclaration*, Op
     return statement;
 }
 
-SgOmpDepobjUpdateClause *convertDepobjUpdateClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+SgOmpDepobjUpdateClause *convertDepobjUpdateClause(SgUpirFieldBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     printf("ompparser depobj update clause is ready.\n");
     
     OpenMPDepobjUpdateClauseDependeceType modifier = ((OpenMPDepobjUpdateClause*)current_omp_clause)->getType();
@@ -2540,7 +2916,7 @@ SgOmpExtImplementationDefinedRequirementClause* convertExtImplementationDefinedR
     return result;
 }
 
-SgOmpScheduleClause* convertScheduleClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+SgOmpScheduleClause* convertScheduleClause(SgUpirFieldBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     printf("ompparser schedule clause is ready.\n");
 
     OpenMPScheduleClauseModifier modifier1 = ((OpenMPScheduleClause*)current_omp_clause)->getModifier1();
@@ -2565,7 +2941,7 @@ SgOmpScheduleClause* convertScheduleClause(SgOmpClauseBodyStatement* clause_body
     return result;
 }
 
-SgOmpDistScheduleClause* convertDistScheduleClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+SgOmpDistScheduleClause* convertDistScheduleClause(SgUpirFieldBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     printf("ompparser dist_schedule clause is ready.\n");
 
     OpenMPDistScheduleClauseKind kind = ((OpenMPDistScheduleClause*)current_omp_clause)->getKind();
@@ -2586,7 +2962,7 @@ SgOmpDistScheduleClause* convertDistScheduleClause(SgOmpClauseBodyStatement* cla
     return result;
 }
 
-SgOmpDefaultmapClause* convertDefaultmapClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+SgOmpDefaultmapClause* convertDefaultmapClause(SgUpirFieldBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     printf("ompparser defaultmap clause is ready.\n");
 
     OpenMPDefaultmapClauseBehavior behavior = ((OpenMPDefaultmapClause*)current_omp_clause)->getBehavior();
@@ -2605,7 +2981,50 @@ SgOmpDefaultmapClause* convertDefaultmapClause(SgOmpClauseBodyStatement* clause_
     return result;
 }
 
-SgOmpMapClause* convertMapClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+SgOmpUsesAllocatorsClause* convertUsesAllocatorsClause(SgUpirFieldBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+
+//budui, allocator yinggai he array duiyingqilai , yinggai you henduo allocators
+    printf("ompparser uses_allocators clause is ready.\n");
+    SgOmpUsesAllocatorsClause* result = NULL;
+    SgOmpUsesAllocatorsDefination* uses_allocators_defination = NULL;
+    SgOmpClause::omp_uses_allocators_allocator_enum sg_allocator;
+    SgExpression* user_defined_allocator = NULL;
+    SgExpression* clause_expression = NULL;
+    std::vector<usesAllocatorParameter*>* uses_allocators = ((OpenMPUsesAllocatorsClause*)current_omp_clause)->getUsesAllocatorsAllocatorSequence();
+    std::vector<usesAllocatorParameter*>::iterator iter;
+    std::list<SgOmpUsesAllocatorsDefination*> uses_allocators_definations;
+    for (iter = uses_allocators->begin(); iter != uses_allocators->end(); iter++) {
+        OpenMPUsesAllocatorsClauseAllocator allocator = ((usesAllocatorParameter*)(*iter))->getUsesAllocatorsAllocator();
+        sg_allocator = toSgOmpClauseUsesAllocatorsAllocator(allocator);
+        if (sg_allocator == SgOmpClause::e_omp_uses_allocators_allocator_user_defined) {
+            clause_expression = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), ((usesAllocatorParameter*)(*iter))->getAllocatorUser());
+        }
+            
+        SgExpression* allocator_traits_array = NULL;
+        std::string allocator_array = ((usesAllocatorParameter*)(*iter))->getAllocatorTraitsArray();
+        allocator_traits_array = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), allocator_array);
+        
+        uses_allocators_defination = new SgOmpUsesAllocatorsDefination();
+        uses_allocators_defination->set_allocator_traits_array(allocator_traits_array);
+        uses_allocators_defination->set_allocator(sg_allocator);
+
+        uses_allocators_defination->set_user_defined_allocator(clause_expression);
+        uses_allocators_definations.push_back(uses_allocators_defination);
+    }
+
+    result = new SgOmpUsesAllocatorsClause();
+
+    ROSE_ASSERT(result != NULL);
+    result->set_uses_allocators_defination(uses_allocators_definations);
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+    printf("ompparser uses_allocators clause is added.\n");
+    return result;
+}
+
+SgOmpMapClause* convertMapClause(SgUpirFieldBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     printf("ompparser map clause is ready.\n");
     SgOmpMapClause* result = NULL;
     OpenMPMapClauseType type = ((OpenMPMapClause*)current_omp_clause)->getType();
@@ -2636,11 +3055,11 @@ SgOmpMapClause* convertMapClause(SgOmpClauseBodyStatement* clause_body, std::pai
     return result;
 }
 
-SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
+SgUpirBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
 
     OpenMPDirectiveKind directive_kind = current_OpenMPIR_to_SageIII.second->getKind();
     // directives like parallel and for have a following code block beside the pragma itself.
-    SgOmpBodyStatement* result = NULL;
+    SgUpirBodyStatement* result = NULL;
     OpenMPClauseKind clause_kind;
 
     switch (directive_kind) {
@@ -2653,7 +3072,7 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
             break;
         }
         case OMPD_parallel: {
-            result = new SgOmpParallelStatement(NULL, NULL);
+            result = new SgUpirSpmdStatement(NULL, NULL);
             break;
         }
         case OMPD_simd: {
@@ -2692,10 +3111,6 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
             result = new SgOmpTaskloopStatement(NULL, NULL);
             break;
         }
-        case OMPD_taskwait: {
-            result = new SgOmpTaskwaitStatement(NULL, NULL);
-            break;
-        }
         case OMPD_target_enter_data: {
             result = new SgOmpTargetEnterDataStatement(NULL, NULL);
             break;
@@ -2717,11 +3132,11 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
             break;
         }
         case OMPD_for: {
-            result = new SgOmpForStatement(NULL, NULL);
+            result = new SgUpirLoopParallelStatement(NULL, NULL);
             break;
         }
         case OMPD_target: {
-            result = new SgOmpTargetStatement(NULL, NULL);
+            result = new SgUpirTaskStatement(NULL, NULL);
             break;
         }
         case OMPD_critical: {
@@ -2874,31 +3289,31 @@ SgOmpBodyStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, 
             case OMPC_priority:
             case OMPC_thread_limit:
             case OMPC_num_threads: {
-                convertExpressionClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertExpressionClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_default: {
-                convertDefaultClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertDefaultClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_proc_bind: {
-                convertProcBindClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertProcBindClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_order: {
-                convertOrderClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertOrderClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_bind: {
-                convertBindClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertBindClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_when: {
-                convertWhenClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertWhenClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             default: {
-                convertClause(isSgOmpClauseBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
             }
         };
     };
@@ -2915,7 +3330,7 @@ SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDirective*
 }
 
   //! Build SgOmpDefaultClause from OpenMPIR
-SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+SgOmpDefaultClause* convertDefaultClause(SgUpirFieldBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     OpenMPDefaultClauseKind default_kind = ((OpenMPDefaultClause*)current_omp_clause)->getDefaultClauseKind();
     SgOmpClause::omp_default_option_enum sg_dv;
     SgStatement* variant_directive = NULL;
@@ -2963,8 +3378,28 @@ SgOmpDefaultClause* convertDefaultClause(SgOmpClauseBodyStatement* clause_body, 
     return result;
 }
 
+//! Build SgOmpAllocatorClause from OpenMPIR
+SgOmpAllocatorClause* convertAllocatorClause(SgUpirFieldStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    OpenMPAllocatorClauseAllocator allocator = ((OpenMPAllocatorClause*)current_omp_clause)->getAllocator();
+    SgOmpClause::omp_allocator_modifier_enum sg_modifier = toSgOmpClauseAllocatorAllocator(allocator);
+    SgExpression* user_defined_parameter = NULL;
+    SgGlobal* global = SageInterface::getGlobalScope(current_OpenMPIR_to_SageIII.first);
+    if (sg_modifier == SgOmpClause::e_omp_allocator_user_defined_modifier) {
+      SgExpression* clause_expression = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), ((OpenMPAllocatorClause*)current_omp_clause)->getUserDefinedAllocator());
+      user_defined_parameter = checkOmpExpressionClause(clause_expression, global, e_allocate);
+    }
+    SgOmpAllocatorClause* result = new SgOmpAllocatorClause(sg_modifier, user_defined_parameter);
+    setOneSourcePositionForTransformation(result);
+    // reconsider the location of following code to attach clause
+    SgOmpClause* sg_clause = result;
+    clause_body->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(clause_body);
+
+    return result;
+}
+
   //! Build SgOmpProcBindClause from OpenMPIR
-SgOmpProcBindClause* convertProcBindClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+SgOmpProcBindClause* convertProcBindClause(SgUpirFieldBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     OpenMPProcBindClauseKind proc_bind_kind = ((OpenMPProcBindClause*)current_omp_clause)->getProcBindClauseKind();
     SgOmpClause::omp_proc_bind_policy_enum sg_dv;
     switch (proc_bind_kind) {
@@ -3016,14 +3451,14 @@ SgOmpOrderClause* convertOrderClause(SgStatement* directive, std::pair<SgPragmaD
     if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_declare_simd) {
         ((SgOmpDeclareSimdStatement*)directive)->get_clauses().push_back(sg_clause);
     } else {
-        ((SgOmpClauseBodyStatement*)directive)->get_clauses().push_back(sg_clause);
+        ((SgUpirFieldBodyStatement*)directive)->get_clauses().push_back(sg_clause);
     }
     sg_clause->set_parent(directive);
 
     return result;
 }
 
-SgOmpBindClause* convertBindClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+SgOmpBindClause* convertBindClause(SgUpirFieldBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     OpenMPBindClauseBinding bind_binding = ((OpenMPBindClause*)current_omp_clause)->getBindClauseBinding();
     SgOmpClause::omp_bind_binding_enum sg_dv = SgOmpClause::e_omp_bind_binding_unspecified;
     switch (bind_binding) {
@@ -3054,7 +3489,7 @@ SgOmpBindClause* convertBindClause(SgOmpClauseBodyStatement* clause_body, std::p
     return result;
 }
 
-SgOmpWhenClause* convertWhenClause(SgOmpClauseBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+SgOmpWhenClause* convertWhenClause(SgUpirFieldBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     printf("when clause is coming.\n");
     SgStatement* variant_directive = NULL;
     OpenMPDirective* variant_OpenMPIR = ((OpenMPWhenClause*)current_omp_clause)->getVariantDirective();
@@ -3376,12 +3811,87 @@ SgOmpVariablesClause* convertClause(SgStatement* directive, std::pair<SgPragmaDe
     if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_declare_simd) {
         ((SgOmpDeclareSimdStatement*)directive)->get_clauses().push_back(sg_clause);
     } else {
-        ((SgOmpClauseBodyStatement*)directive)->get_clauses().push_back(sg_clause);
+        ((SgUpirFieldBodyStatement*)directive)->get_clauses().push_back(sg_clause);
     }
     sg_clause->set_parent(directive);
     omp_variable_list.clear();
     return result;
 
+}
+
+SgOmpToClause* convertToClause(SgStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser to clause is ready.\n");
+    SgOmpToClause* result = NULL;
+    OpenMPToClauseKind kind = ((OpenMPToClause*)current_omp_clause)->getKind();
+    SgOmpClause::omp_to_kind_enum sg_type = toSgOmpClauseToKind(kind);
+    SgExpression* mapper_identifier = NULL;
+
+    std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
+    if (current_expressions->size() != 0) {
+        std::vector<const char*>::iterator iter;
+        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
+            parseOmpArraySection(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), *iter);
+        }
+    }
+    SgExprListExp* explist = buildExprListExp();
+
+    result = new SgOmpToClause(explist, sg_type);
+    if ( (((OpenMPToClause*)current_omp_clause)->getMapperIdentifier()) != "" ) {
+      mapper_identifier = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), ((OpenMPToClause*)current_omp_clause)->getMapperIdentifier());
+    }
+    result->set_mapper_identifier(mapper_identifier);         
+    ROSE_ASSERT(result != NULL);
+    buildVariableList(result);
+    explist->set_parent(result);
+    result->set_array_dimensions(array_dimensions);
+
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_target_update) {
+        ((SgOmpTargetUpdateStatement*)clause_body)->get_clauses().push_back(sg_clause);
+    }
+    sg_clause->set_parent(clause_body);
+    array_dimensions.clear();
+    omp_variable_list.clear();
+    printf("ompparser to clause is added.\n");
+    return result;
+}
+
+SgOmpFromClause* convertFromClause(SgStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    printf("ompparser from clause is ready.\n");
+    SgOmpFromClause* result = NULL;
+    OpenMPFromClauseKind kind = ((OpenMPFromClause*)current_omp_clause)->getKind();
+    SgOmpClause::omp_from_kind_enum sg_type = toSgOmpClauseFromKind(kind);
+    SgExpression* mapper_identifier = NULL;
+
+    std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
+    if (current_expressions->size() != 0) {
+        std::vector<const char*>::iterator iter;
+        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
+            parseOmpArraySection(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), *iter);
+        }
+    }
+    SgExprListExp* explist = buildExprListExp();
+    result = new SgOmpFromClause(explist, sg_type);
+    if ( (((OpenMPToClause*)current_omp_clause)->getMapperIdentifier()) != "" ) {
+      mapper_identifier = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), ((OpenMPToClause*)current_omp_clause)->getMapperIdentifier());
+    }
+    result->set_mapper_identifier(mapper_identifier); 
+    ROSE_ASSERT(result != NULL);
+    buildVariableList(result);
+    explist->set_parent(result);
+    result->set_array_dimensions(array_dimensions);
+
+    setOneSourcePositionForTransformation(result);
+    SgOmpClause* sg_clause = result;
+    if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_target_update) {
+        ((SgOmpTargetUpdateStatement*)clause_body)->get_clauses().push_back(sg_clause);
+    }
+    sg_clause->set_parent(clause_body);
+    array_dimensions.clear();
+    omp_variable_list.clear();
+    printf("ompparser from clause is added.\n");
+    return result;
 }
 
 SgOmpDependClause* convertDependClause(SgStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
@@ -3429,29 +3939,47 @@ SgOmpDependClause* convertDependClause(SgStatement* clause_body, std::pair<SgPra
     SgOmpClause::omp_depend_modifier_enum sg_modifier = toSgOmpClauseDependModifier(modifier);
     OpenMPDependClauseType type = ((OpenMPDependClause*)current_omp_clause)->getType();
     SgOmpClause::omp_dependence_type_enum sg_type = toSgOmpClauseDependenceType(type);
-
-    std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
-    if (current_expressions->size() != 0) {
+    SgExprListExp* explist = NULL;
+    SgExpression* vec = NULL;
+    std::list<SgExpression*> vec_list;
+    if(type != OMPC_DEPENDENCE_TYPE_sink) {
+      std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
+      if (current_expressions->size() != 0) {
         std::vector<const char*>::iterator iter;
         for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
-            parseOmpArraySection(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), *iter);
+          parseOmpArraySection(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), *iter);
         }
+      }
+      explist = buildExprListExp();
+    } else if (type == OMPC_DEPENDENCE_TYPE_sink){
+      explist = buildExprListExp();
+      std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
+      if (current_expressions->size() != 0) {
+        std::vector<const char*>::iterator iter;
+        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
+          vec = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), *iter);
+          vec_list.push_back(vec);
+        }
+      }
     }
-    SgExprListExp* explist = buildExprListExp();
-
     result = new SgOmpDependClause(explist, sg_modifier, sg_type);
     ROSE_ASSERT(result != NULL);
     buildVariableList(result);
-    explist->set_parent(result);
+    if(type != OMPC_DEPENDENCE_TYPE_sink)
+      explist->set_parent(result);
+    result->set_vec(vec_list);
     result->set_array_dimensions(array_dimensions);
     result->set_iterator(depend_iterators_definition_class);
-
     setOneSourcePositionForTransformation(result);
     SgOmpClause* sg_clause = result;
     if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_target_update) {
         ((SgOmpTargetUpdateStatement*)clause_body)->get_clauses().push_back(sg_clause);
+    } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_taskwait) {
+        ((SgOmpTaskwaitStatement*)clause_body)->get_clauses().push_back(sg_clause);
+    } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_ordered) {
+        ((SgOmpOrderedDependStatement*)clause_body)->get_clauses().push_back(sg_clause);
     } else {
-        ((SgOmpClauseBodyStatement*)clause_body)->get_clauses().push_back(sg_clause);
+        ((SgUpirFieldBodyStatement*)clause_body)->get_clauses().push_back(sg_clause);
     }
     sg_clause->set_parent(clause_body);
     array_dimensions.clear();
@@ -3522,7 +4050,7 @@ SgOmpAffinityClause* convertAffinityClause(SgStatement* clause_body, std::pair<S
 
     setOneSourcePositionForTransformation(result);
     SgOmpClause* sg_clause = result;
-    ((SgOmpClauseBodyStatement*)clause_body)->get_clauses().push_back(sg_clause);
+    ((SgUpirFieldBodyStatement*)clause_body)->get_clauses().push_back(sg_clause);
     sg_clause->set_parent(clause_body);
     array_dimensions.clear();
     omp_variable_list.clear();
@@ -3556,7 +4084,7 @@ SgOmpExpressionClause* convertExpressionClause(SgStatement* directive, std::pair
         }
         case OMPC_num_threads: {
             SgExpression* num_threads_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
-            result = new SgOmpNumThreadsClause(num_threads_expression);
+            result = new SgUpirNumUnitsField(num_threads_expression);
             printf("Num_threads Clause added!\n");
             break;
         }
@@ -3654,7 +4182,7 @@ SgOmpExpressionClause* convertExpressionClause(SgStatement* directive, std::pair
     } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_target_update) {
         ((SgOmpTargetUpdateStatement*)directive)->get_clauses().push_back(sg_clause);
     } else {
-        ((SgOmpClauseBodyStatement*)directive)->get_clauses().push_back(sg_clause);
+        ((SgUpirFieldBodyStatement*)directive)->get_clauses().push_back(sg_clause);
     }
     sg_clause->set_parent(directive);
 
@@ -3731,7 +4259,7 @@ void buildVariableList(SgOmpVariablesClause* current_omp_clause) {
     }
 }
 
-SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII)
+SgUpirSpmdStatement* convertUpirSpmdStatementFromCombinedDirectives(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII)
   {
     ROSE_ASSERT(current_OpenMPIR_to_SageIII.second != NULL);
     SgStatement* body = getOpenMPBlockBody(current_OpenMPIR_to_SageIII);
@@ -3749,7 +4277,7 @@ SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::p
         }
       case OMPD_parallel_for:
         {
-          second_stmt = new SgOmpForStatement(NULL, body);
+          second_stmt = new SgUpirLoopParallelStatement(NULL, body);
           break;
         }
       case OMPD_parallel_for_simd:
@@ -3769,7 +4297,7 @@ SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::p
         }
       default:
         {
-          cerr<<"error: unacceptable directive type in convertOmpParallelStatementFromCombinedDirectives() "<<endl;
+          cerr<<"error: unacceptable directive type in convertUpirSpmdStatementFromCombinedDirectives() "<<endl;
           ROSE_ASSERT(false);
         }
     }
@@ -3781,7 +4309,7 @@ SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::p
 
     copyStartFileInfo (current_OpenMPIR_to_SageIII.first, second_stmt);
     copyEndFileInfo (current_OpenMPIR_to_SageIII.first, second_stmt);
-    SgOmpParallelStatement* first_stmt = new SgOmpParallelStatement(NULL, second_stmt); 
+    SgUpirSpmdStatement* first_stmt = new SgUpirSpmdStatement(NULL, second_stmt);
     setOneSourcePositionForTransformation(first_stmt);
     copyStartFileInfo (current_OpenMPIR_to_SageIII.first, first_stmt);
     copyEndFileInfo (current_OpenMPIR_to_SageIII.first, first_stmt);
@@ -3798,10 +4326,10 @@ SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::p
             case OMPC_if:
             case OMPC_num_threads: {
                 if (clause_kind == OMPC_collapse || clause_kind == OMPC_ordered) {
-                    convertExpressionClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
+                    convertExpressionClause(isSgUpirFieldBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
                 }
                 else {
-                    convertExpressionClause(isSgOmpClauseBodyStatement(first_stmt), current_OpenMPIR_to_SageIII, *citer);
+                    convertExpressionClause(isSgUpirFieldBodyStatement(first_stmt), current_OpenMPIR_to_SageIII, *citer);
                 };
                 break;
             }
@@ -3815,27 +4343,27 @@ SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::p
             case OMPC_shared:
             case OMPC_uniform: {
                 if (clause_kind == OMPC_shared || clause_kind == OMPC_copyin) {
-                    convertClause(isSgOmpClauseBodyStatement(first_stmt), current_OpenMPIR_to_SageIII, *citer);
+                    convertClause(isSgUpirFieldBodyStatement(first_stmt), current_OpenMPIR_to_SageIII, *citer);
                 }
                 else {
-                    convertClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
+                    convertClause(isSgUpirFieldBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
                 };
                 break;
             }
             case OMPC_default: {
-                convertDefaultClause(isSgOmpClauseBodyStatement(first_stmt), current_OpenMPIR_to_SageIII, *citer);
+                convertDefaultClause(isSgUpirFieldBodyStatement(first_stmt), current_OpenMPIR_to_SageIII, *citer);
             break;
             }
             case OMPC_proc_bind: {
-                convertProcBindClause(isSgOmpClauseBodyStatement(first_stmt), current_OpenMPIR_to_SageIII, *citer);
+                convertProcBindClause(isSgUpirFieldBodyStatement(first_stmt), current_OpenMPIR_to_SageIII, *citer);
             break;
             }
             case OMPC_schedule: {
-                convertScheduleClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
+                convertScheduleClause(isSgUpirFieldBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
             break;
             }
             case OMPC_parallel: {
-                convertSimpleClause(isSgOmpClauseBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
+                convertSimpleClause(isSgUpirFieldBodyStatement(second_stmt), current_OpenMPIR_to_SageIII, *citer);
             break;
             }
             default: {
@@ -3880,6 +4408,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_distribute:
         case OMPD_do:
         case OMPD_flush:
+        case OMPD_allocate:
         case OMPD_for:
         case OMPD_for_simd:
         case OMPD_loop:
@@ -3952,7 +4481,10 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_acquire:
                 case OMPC_aligned:
                 case OMPC_allocate:
+                case OMPC_allocator:
                 case OMPC_bind:
+                case OMPC_to:
+                case OMPC_from:
                 case OMPC_capture:
                 case OMPC_collapse:
                 case OMPC_copyin:
@@ -4018,7 +4550,10 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_update:
                 case OMPC_use_device_addr:
                 case OMPC_use_device_ptr:
+                case OMPC_uses_allocators:
                 case OMPC_when:
+                case OMPC_threads:
+                case OMPC_simd:
                 case OMPC_write: {
                     break;
                 }

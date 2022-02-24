@@ -880,6 +880,10 @@ AstNodeClass::evaluateType(std::string& varTypeString)
                  ( varTypeString == "SgOmpClause::omp_device_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_linear_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_allocate_modifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_allocator_modifier_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_to_kind_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_uses_allocators_allocator_enum" ) ||
+                 ( varTypeString == "SgOmpClause::omp_from_kind_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_dependence_type_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_depend_modifier_enum" ) ||
                  ( varTypeString == "SgOmpClause::omp_affinity_modifier_enum" ) ||
@@ -900,6 +904,15 @@ AstNodeClass::evaluateType(std::string& varTypeString)
               // DQ (12/9/2015): Added to support use of enums from SgUntypedType class.
                  ( varTypeString == "SgUntypedType::type_enum" ) ||
                  ( varTypeString == "SgFile::standard_enum" ) ||
+              // UPIR
+                 ( varTypeString == "SgOmpClause::upir_target_type_enum" ) ||
+                 ( varTypeString == "SgOmpClause::upir_data_sharing_enum" ) ||
+                 ( varTypeString == "SgOmpClause::upir_data_mapping_enum" ) ||
+                 ( varTypeString == "SgOmpClause::upir_property_visibility_enum" ) ||
+                 ( varTypeString == "SgOmpClause::upir_data_access_enum" ) ||
+                 ( varTypeString == "SgOmpClause::upir_data_distribution_pattern_enum" ) ||
+                 ( varTypeString == "SgOmpClause::upir_data_allocator_enum" ) ||
+                 ( varTypeString == "SgOmpClause::upir_data_deallocator_enum" ) ||
                  false
               )
        {

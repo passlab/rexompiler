@@ -18977,15 +18977,15 @@ SOURCE_PREPROCESSOR_DIRECTIVE_STATEMENT_END
 SOURCE_LINEMARKER_PREPROCESSOR_DIRECTIVE_STATEMENT_START
 SOURCE_LINEMARKER_PREPROCESSOR_DIRECTIVE_STATEMENT_END
 
-HEADER_OMP_PARALLEL_STATEMENT_START
+HEADER_UPIR_SPMD_STATEMENT_START
 
-HEADER_OMP_PARALLEL_STATEMENT_END
+HEADER_UPIR_SPMD_STATEMENT_END
 
-SOURCE_OMP_PARALLEL_STATEMENT_START
+SOURCE_UPIR_SPMD_STATEMENT_START
 void
-SgOmpParallelStatement::post_construction_initialization()
+SgUpirSpmdStatement::post_construction_initialization()
    {}
-SOURCE_OMP_PARALLEL_STATEMENT_END
+SOURCE_UPIR_SPMD_STATEMENT_END
 
 SOURCE_OMP_TEAMS_STATEMENT_START
 void
@@ -18993,11 +18993,23 @@ SgOmpTeamsStatement::post_construction_initialization()
    {}
 SOURCE_OMP_TEAMS_STATEMENT_END
 
+SOURCE_UPIR_SYNC_STATEMENT_START
+void
+SgUpirSyncStatement::post_construction_initialization()
+   {}
+SOURCE_UPIR_SYNC_STATEMENT_END
+
 SOURCE_OMP_CANCELLATION_POINT_STATEMENT_START
 void
 SgOmpCancellationPointStatement::post_construction_initialization()
    {}
 SOURCE_OMP_CANCELLATION_POINT_STATEMENT_END
+
+SOURCE_OMP_ORDERED_DEPEND_STATEMENT_START
+void
+SgOmpOrderedDependStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_ORDERED_DEPEND_STATEMENT_END
 
 SOURCE_OMP_DECLARE_MAPPER_STATEMENT_START
 void
@@ -19082,6 +19094,12 @@ void
 SgOmpFlushStatement::post_construction_initialization()
    {}
 SOURCE_OMP_FLUSH_STATEMENT_END
+
+SOURCE_OMP_ALLOCATE_STATEMENT_START
+void
+SgOmpAllocateStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_ALLOCATE_STATEMENT_END
 
 HEADER_OMP_DECLARE_SIMD_STATEMENT_START
 //! Required for any declaration statement
@@ -19174,17 +19192,42 @@ SgOmpSectionsStatement::post_construction_initialization()
    {}
 SOURCE_OMP_SECTIONS_STATEMENT_END
 
-SOURCE_OMP_TARGET_STATEMENT_START
+SOURCE_UPIR_TASK_STATEMENT_START
 void
-SgOmpTargetStatement::post_construction_initialization()
+SgUpirTaskStatement::post_construction_initialization()
    {}
-SOURCE_OMP_TARGET_STATEMENT_END
+SOURCE_UPIR_TASK_STATEMENT_END
 
 SOURCE_OMP_TARGET_PARALLEL_FOR_STATEMENT_START
 void
 SgOmpTargetParallelForStatement::post_construction_initialization()
    {}
 SOURCE_OMP_TARGET_PARALLEL_FOR_STATEMENT_END
+
+HEADER_OMP_TASKWAIT_STATEMENT_START
+//! Required for any declaration statement
+     virtual SgName get_mangled_name(void) const $ROSE_OVERRIDE;
+HEADER_OMP_TASKWAIT_STATEMENT_END
+
+SOURCE_OMP_TASKWAIT_STATEMENT_START
+void
+SgOmpTaskwaitStatement::post_construction_initialization()
+   {}
+
+SgName
+SgOmpTaskwaitStatement::get_mangled_name(void) const
+   {
+     SgName returnName;
+       // The semantics of get_scope is that it can never be NULL (SgGlobal returns itself as its scope!)
+     SgScopeStatement* scope = get_scope();
+     ROSE_ASSERT(scope != NULL);
+
+     returnName = scope->get_mangled_name() + SgName("_omp_taskwait_");
+      //TODO: need more unique name adding clauses, followed function, etc.
+     return returnName;
+   }
+
+SOURCE_OMP_TASKWAIT_STATEMENT_END
 
 HEADER_OMP_REQUIRES_STATEMENT_START
 //! Required for any declaration statement
@@ -19373,13 +19416,6 @@ SgOmpTargetDataStatement::post_construction_initialization()
    {}
 SOURCE_OMP_TARGET_DATA_STATEMENT_END
 
-
-SOURCE_OMP_TASKWAIT_STATEMENT_START
-void
-SgOmpTaskwaitStatement::post_construction_initialization()
-   {}
-SOURCE_OMP_TASKWAIT_STATEMENT_END
-
 SOURCE_OMP_ATOMIC_STATEMENT_START
 void
 SgOmpAtomicStatement::post_construction_initialization()
@@ -19402,11 +19438,11 @@ SgOmpWorkshareStatement::post_construction_initialization()
 SOURCE_OMP_WORKSHARE_STATEMENT_END
 
 
-SOURCE_OMP_FOR_STATEMENT_START
+SOURCE_UPIR_LOOP_PARALLEL_STATEMENT_START
 void
-SgOmpForStatement::post_construction_initialization()
+SgUpirLoopParallelStatement::post_construction_initialization()
    {}
-SOURCE_OMP_FOR_STATEMENT_END
+SOURCE_UPIR_LOOP_PARALLEL_STATEMENT_END
 
 SOURCE_OMP_FOR_SIMD_STATEMENT_START
 void
@@ -19429,7 +19465,7 @@ SgOmpTaskStatement::post_construction_initialization()
    {}
 SOURCE_OMP_TASK_STATEMENT_END
 
-HEADER_OMP_BODY_STATEMENT_START
+HEADER_UPIR_BODY_STATEMENT_START
       virtual bool replace_child(SgStatement *,SgStatement *, bool extractListFromBasicBlock = false) $ROSE_OVERRIDE;
 
       public:
@@ -19440,31 +19476,31 @@ HEADER_OMP_BODY_STATEMENT_START
       virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
 #endif
 
-HEADER_OMP_BODY_STATEMENT_END
+HEADER_UPIR_BODY_STATEMENT_END
 
-HEADER_OMP_CLAUSE_STATEMENT_START
-HEADER_OMP_CLAUSE_STATEMENT_END
+HEADER_UPIR_FIELD_STATEMENT_START
+HEADER_UPIR_FIELD_STATEMENT_END
 
-SOURCE_OMP_CLAUSE_STATEMENT_START
+SOURCE_UPIR_FIELD_STATEMENT_START
 void
-SgOmpClauseStatement::post_construction_initialization()
+SgUpirFieldStatement::post_construction_initialization()
    {}
-SOURCE_OMP_CLAUSE_STATEMENT_END
+SOURCE_UPIR_FIELD_STATEMENT_END
 
-SOURCE_OMP_BODY_STATEMENT_START
+SOURCE_UPIR_BODY_STATEMENT_START
 void
-SgOmpBodyStatement::post_construction_initialization()
+SgUpirBodyStatement::post_construction_initialization()
    {}
 
 bool
-SgOmpBodyStatement::replace_child(SgStatement *target,SgStatement *newstmt, bool extractBasicBlock)
+SgUpirBodyStatement::replace_child(SgStatement *target,SgStatement *newstmt, bool extractBasicBlock)
    {
      return ( StatementReplace(this, p_body, target, newstmt) == true );
    }
-SOURCE_OMP_BODY_STATEMENT_END
+SOURCE_UPIR_BODY_STATEMENT_END
 
 
-HEADER_OMP_CLAUSEBODY_STATEMENT_START
+HEADER_UPIR_FIELDBODY_STATEMENT_START
       public:
 
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
@@ -19473,13 +19509,13 @@ HEADER_OMP_CLAUSEBODY_STATEMENT_START
       virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) $ROSE_OVERRIDE;
 #endif
 
-HEADER_OMP_CLAUSEBODY_STATEMENT_END
+HEADER_UPIR_FIELDBODY_STATEMENT_END
 
-SOURCE_OMP_CLAUSEBODY_STATEMENT_START
+SOURCE_UPIR_FIELDBODY_STATEMENT_START
 void
-SgOmpClauseBodyStatement::post_construction_initialization()
+SgUpirFieldBodyStatement::post_construction_initialization()
    {}
-SOURCE_OMP_CLAUSEBODY_STATEMENT_END
+SOURCE_UPIR_FIELDBODY_STATEMENT_END
 
 
 SOURCE_OMP_BARRIER_STATEMENT_START

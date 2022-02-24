@@ -46,7 +46,7 @@ class SgCaseOptionStmt;
 class SgDefaultOptionStmt;
 
 class SgPragmaDeclaration;
-class SgOmpClauseBodyStatement;
+class SgUpirFieldBodyStatement;
 
 namespace SgNodeHelper {
   
@@ -493,7 +493,7 @@ namespace SgNodeHelper {
   
 #if __cplusplus > 199711L
   //! Checks if an OpenMP construct is marked with a nowait clause
-  bool hasOmpNoWait(SgOmpClauseBodyStatement *ompNode);
+  bool hasOmpNoWait(SgUpirFieldBodyStatement *ompNode);
 
   typedef std::vector<SgOmpSectionStatement *> OmpSectionList;
   OmpSectionList getOmpSectionList(SgOmpSectionsStatement *sectionsStmt);
