@@ -101,7 +101,7 @@ AstDOTGenerationExtended<ExtraNodeInfo_t, ExtraNodeOptions_t, ExtraEdgeInfo_t, E
                    dotrep.addNode(node,dotrep.traceFormat(buTrace)+nodelabel,nodeoption);
                    break;
           default:
-                   assert(false);
+                   ROSE_ABORT();
         }
 
         ++tdbuTrace;
@@ -159,7 +159,7 @@ AstDOTGenerationExtended<ExtraNodeInfo_t, ExtraNodeOptions_t, ExtraEdgeInfo_t, E
                                          dotrep.addEdge(node,edgelabel,(*iter).node,edgeoption + "dir=back");
                                          break;
                                 default:
-                                         assert(false);
+                                         ROSE_ABORT();
                           }
                  }
 
@@ -242,7 +242,7 @@ AstDOTGenerationExtended<ExtraNodeInfo_t, ExtraNodeOptions_t, ExtraEdgeInfo_t, E
                  }
 
         // case V_SgFile: 
-          case V_SgSourceFile:
+          case V_SgSourceFile: 
                  {
                    SgFile* file = dynamic_cast<SgFile*>(node);
                    ROSE_ASSERT(file != NULL);

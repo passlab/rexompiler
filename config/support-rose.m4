@@ -222,9 +222,6 @@ ROSE_SUPPORT_EDG
 # This is the support for using Clang as a frontend in ROSE not the support for Clang as a compiler to compile ROSE source code.
 ROSE_SUPPORT_CLANG
 
-# Support for using F18/Flang as a Fortran frontend in ROSE
-ROSE_SUPPORT_FLANG
-
 # DQ (1/4/2009) Added support for optional GNU language extensions in new EDG/ROSE interface.
 # This value will be substituted into EDG/4.0/src/rose_lang_feat.h in the future (not used at present!)
 AC_ARG_ENABLE(gnu-extensions, AS_HELP_STRING([--enable-gnu-extensions], [Enable internal support in ROSE for GNU language extensions]))
@@ -345,9 +342,11 @@ AC_LANG(C++)
 AX_COMPILER_VENDOR
 FRONTEND_CXX_COMPILER_VENDOR="$ax_cv_cxx_compiler_vendor"
 
-echo "_AC_LANG_ABBREV              = $_AC_LANG_ABBREV"
-echo "ax_cv_c_compiler_vendor      = $ax_cv_c_compiler_vendor"
-echo "ax_cv_cxx_compiler_vendor    = $ax_cv_cxx_compiler_vendor"
+# DQ (10/27/2020): Fixed to avoid output spew.
+AC_MSG_NOTICE([_AC_LANG_ABBREV              = "$_AC_LANG_ABBREV"])
+AC_MSG_NOTICE([ax_cv_c_compiler_vendor      = "$ax_cv_c_compiler_vendor"])
+AC_MSG_NOTICE([ax_cv_cxx_compiler_vendor    = $ax_cv_cxx_compiler_vendor"])
+
 AC_MSG_NOTICE([FRONTEND_CXX_COMPILER_VENDOR = "$FRONTEND_CXX_COMPILER_VENDOR"])
 
 unset ax_cv_cxx_compiler_vendor
@@ -778,8 +777,6 @@ AC_PROG_MAKE_SET
 # DQ (9/21/2009): Debugging for RH release 5
 AC_MSG_NOTICE([testing the value of CC: (CC = "$CC")])
 AC_MSG_NOTICE([testing the value of CPPFLAGS: (CPPFLAGS = "$CPPFLAGS")])
-
-#ROSE_SUPPORT_LIBOMPPARSER
 
 AX_BOOST_IOSTREAMS
 ROSE_SUPPORT_LIBGCRYPT
@@ -1510,10 +1507,11 @@ exampleTranslators/documentedExamples/simpleTranslatorExamples/Makefile
 exampleTranslators/documentedExamples/simpleTranslatorExamples/exampleMakefile
 LicenseInformation/Makefile
 scripts/Makefile
+src/3rdPartyLibraries/json/Makefile
+src/3rdPartyLibraries/json/nlohmann/Makefile
 src/3rdPartyLibraries/MSTL/Makefile
 src/3rdPartyLibraries/Makefile
 src/3rdPartyLibraries/antlr-jars/Makefile
-src/3rdPartyLibraries/flang-parser/Makefile
 src/3rdPartyLibraries/fortran-parser/Makefile
 src/Makefile
 src/ROSETTA/Makefile
@@ -1625,6 +1623,8 @@ tests/nonsmoke/functional/CompilerOptionsTests/testGnuOptions/Makefile
 tests/nonsmoke/functional/CompilerOptionsTests/testHeaderFileOutput/Makefile
 tests/nonsmoke/functional/CompilerOptionsTests/testIncludeOptions/Makefile
 tests/nonsmoke/functional/CompilerOptionsTests/testOutputFileOption/Makefile
+tests/nonsmoke/functional/CompilerOptionsTests/testNostdincOption/Makefile
+tests/nonsmoke/functional/CompilerOptionsTests/testAnsiOption/Makefile
 tests/nonsmoke/functional/CompilerOptionsTests/testWave/Makefile
 tests/nonsmoke/functional/CompilerOptionsTests/tokenStream_tests/Makefile
 tests/nonsmoke/functional/Makefile
@@ -1707,6 +1707,7 @@ tools/Makefile
 tools/globalVariablesInLambdas/Makefile
 tools/classMemberVariablesInLambdas/Makefile
 tools/checkFortranInterfaces/Makefile
+tools/featureVector/Makefile
 tutorial/Makefile
 tutorial/exampleMakefile
 tutorial/outliner/Makefile

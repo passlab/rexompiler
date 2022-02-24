@@ -83,7 +83,16 @@ makeSysIncludeList(const Rose_STL_Container<string>& dirs, Rose_STL_Container<st
             // result.push_back(fullPath);
                 if (using_nostdinc_option == true)
                   {
-                    if (*i == "gcc_HEADERS" || *i == "g++_HEADERS")
+                    // Pei-Hung (03/01/2021): using only gcc_HEADERS and g++_HEADERS to check the header file directories is not sufficient.
+                    // The directory names change according the the executable names of gcc and g++.
+
+                    const char* CC_Basename = BACKEND_C_COMPILER_NAME_WITHOUT_PATH;
+                    const char* CXX_Basename = BACKEND_CXX_COMPILER_NAME_WITHOUT_PATH;
+                    string CC_Headername(CC_Basename);
+                    string CXX_Headername(CXX_Basename);
+                    CC_Headername += "_HEADERS";
+                    CXX_Headername += "_HEADERS";
+                    if (*i == CC_Headername || *i == CXX_Headername)
                        {
 #if 0
                          printf ("In makeSysIncludeList(): Where using_nostdinc_option == true: detected either gcc_HEADERS or g++_HEADERS ROSE specific directories \n");
@@ -287,7 +296,7 @@ CommandlineProcessing::isValidFileWithExecutableFileSuffixes ( string name )
 
 
                  // DQ (1/21/2009): This fails for ./binaryReader /home/dquinlan/ROSE/svn-rose/developersScratchSpace/Dan/Disassembler_tests//home/dquinlan/ROSE/svn-rose/developersScratchSpace/Dan/Disassembler_tests/arm-ctrlaltdel
-                    ROSE_ASSERT(false);
+                    ROSE_ABORT();
                   }
 
                if (returnValue) return true;
@@ -647,7 +656,8 @@ SgProject::processCommandLine(const vector<string>& input_argv)
               local_commandLineArgumentList);
   }
 
-  // Add "-D_REENTRANT" if "-pthread" is present before we save the command-line or do any other processing.
+// DQ (11/29/2020): Clang linker does not understand the -pthread option (issues a warning, but I think it is a makefile commandline issue).
+// Add "-D_REENTRANT" if "-pthread" is present before we save the command-line or do any other processing.
   vector<string>::iterator pthread =
       find(local_commandLineArgumentList.begin(), local_commandLineArgumentList.end(), "-pthread");
   if (pthread != local_commandLineArgumentList.end())
@@ -671,7 +681,7 @@ SgProject::processCommandLine(const vector<string>& input_argv)
           printf ("SgProject::processCommandLine(): local_commandLineArgumentList = %s \n",StringUtility::listToString(local_commandLineArgumentList).c_str());
 
           printf ("Exiting as a test! \n");
-          ROSE_ASSERT(false);
+          ROSE_ABORT();
         }
 #endif
 
@@ -832,7 +842,7 @@ SgProject::processCommandLine(const vector<string>& input_argv)
                       else
                        {
                          printf ("Error: -x <option> implementation in ROSE only permits specification of \"c\" or \"c++\" or \"none\" as supported languages \n");
-                         ROSE_ASSERT(false);
+                         ROSE_ABORT();
                        }
                   }
              }
@@ -840,7 +850,7 @@ SgProject::processCommandLine(const vector<string>& input_argv)
 
 #if 0
           printf ("Exiting as a test in SgProject::processCommandLine() \n");
-          ROSE_ASSERT(false);
+          ROSE_ABORT();
 #endif
         }
 
@@ -882,7 +892,7 @@ SgProject::processCommandLine(const vector<string>& input_argv)
                printf ("-undefined option specified on command line (for SgFile)\n");
 #if 0
           printf ("Exiting as a test! \n");
-          ROSE_ASSERT(false);
+          ROSE_ABORT();
 #endif
         }
 
@@ -900,7 +910,7 @@ SgProject::processCommandLine(const vector<string>& input_argv)
                printf ("-MM dependence file specification specified on command line (for SgFile)\n");
 #if 0
           printf ("Exiting as a test! \n");
-          ROSE_ASSERT(false);
+          ROSE_ABORT();
 #endif
         }
 #else
@@ -926,7 +936,7 @@ SgProject::processCommandLine(const vector<string>& input_argv)
                printf ("-version-info option specified on command line (for SgFile)\n");
 #if 0
           printf ("Exiting as a test! \n");
-          ROSE_ASSERT(false);
+          ROSE_ABORT();
 #endif
         }
 
@@ -972,7 +982,7 @@ SgProject::processCommandLine(const vector<string>& input_argv)
           if (p_noclobber_output_file == true)
              {
                printf ("Error: options -rose:noclobber_output_file and -rose:noclobber_if_different_output_file are mutually exclusive \n");
-               ROSE_ASSERT(false);
+               ROSE_ABORT();
              }
         }
 
@@ -1493,6 +1503,16 @@ SgProject::processCommandLine(const vector<string>& input_argv)
           p_projectSpecificDatabaseFile = projectSpecificDatabaseFileParamater;
         }
 
+  // DQ (10/28/2020): Adding option to output the compilation performance data.
+  // optionCount = sla_none(local_commandLineArgumentList, "-rose:", "($)", "(performance_tracking)",1);
+  // if ( optionCount > 0 )
+     AstPerformance::outputCompilationPerformance = false;
+     if ( CommandlineProcessing::isOption(local_commandLineArgumentList,"-rose:","(compilationPerformance)",true) == true )
+        {
+       // printf ("SgProject::processCommandLine(): option -rose:compilationPerformance found \n");
+          AstPerformance::outputCompilationPerformance = true;
+        }
+
   // DQ (8/29/2006): Added support for accumulation of performance data into CSV data file (for later processing to build performance graphs)
      std::string compilationPerformanceFilenameParameter;
      if ( CommandlineProcessing::isOptionWithParameter(local_commandLineArgumentList,
@@ -1562,7 +1582,7 @@ SgProject::processCommandLine(const vector<string>& input_argv)
 
 #if 0
      printf ("Exiting as a test at base of SgProject::processCommandLine() \n");
-     ROSE_ASSERT(false);
+     ROSE_ABORT();
 #endif
    }
 
@@ -1689,7 +1709,7 @@ ProcessKeepGoing (SgProject* project, std::vector<std::string>& argv)
 
 #if 0
      printf ("Exiting as a test! \n");
-     ROSE_ASSERT(false);
+     ROSE_ABORT();
 #endif
 }
 
@@ -1836,23 +1856,13 @@ GetRoseClasspath ()
   // CER (2/12/2019): Added support for OFP version 0.8.5 requiring antlr-3.5.2-complete.jar.
   ROSE_ASSERT(ROSE_OFP_MAJOR_VERSION_NUMBER >= 0);
   ROSE_ASSERT(ROSE_OFP_MINOR_VERSION_NUMBER >= 8);
-  if (ROSE_OFP_PATCH_VERSION_NUMBER >= 5)
-  {
-      classpath +=
-          findRoseSupportPathFromSource(
-              "src/3rdPartyLibraries/antlr-jars/antlr-3.5.2-complete.jar",
-              "lib/antlr-3.5.2-complete.jar");
-      classpath += ":";
-  }
-  else
-  {
-      classpath +=
-          findRoseSupportPathFromSource(
-              "src/3rdPartyLibraries/antlr-jars/antlr-3.2.jar",
-              "lib/antlr-3.2.jar"
-          );
-      classpath += ":";
-  }
+
+  // Pei-Hung (4/3/2022): Only one antlr jar file, antlr-3.5.2-complete.jar, is kept in ROSE.
+  classpath +=
+      findRoseSupportPathFromSource(
+          "src/3rdPartyLibraries/antlr-jars/antlr-3.5.2-complete.jar",
+          "lib/antlr-3.5.2-complete.jar");
+  classpath += ":";
 
   // Open Fortran Parser (OFP) support (this is the jar file)
   // CER (10/4/2011): Switched to using date-based version for OFP jar file.
@@ -2020,7 +2030,7 @@ ProcessEnableRemoteDebugging (SgProject* project, std::vector<std::string>& argv
               << "JVM remote debugging cannot be enabled since ROSE-Fortran "
               << "support is turned off"
               << std::endl;
-          ROSE_ASSERT(false);
+          ROSE_ABORT();
 #endif
   }// has_fortran_remote_debug
 }// Cmdline::Fortran::Ofp::ProcessEnableRemoteDebugging
@@ -2124,30 +2134,6 @@ SgFile::usage ( int status )
 "                             follow C++11 standard\n"
 "     -rose:Cxx14_only, -rose:Cxx14\n"
 "                             follow C++14 standard\n"
-"     -rose:java\n"
-"                             compile Java code (work in progress)\n"
-"     -rose:java:cp, -rose:java:classpath, -cp, -classpath\n"
-"                             Classpath to look for java classes\n"
-"     -rose:java:sourcepath, -sourcepath\n"
-"                             Sourcepath to look for java sources\n"
-"     -rose:java:d, -d\n"
-"                             Specifies generated classes destination dir\n"
-"     -rose:java:ds\n"
-"                             Specifies translated sources destination dir\n"
-"     -rose:java:source\n"
-"                             Specifies java sources version (default=1.6)\n"
-"     -rose:java:target\n"
-"                             Specifies java classes target version (default=1.6)\n"
-"     -rose:java:encoding\n"
-"                             Specifies the character encoding\n"
-"     -rose:java:ecj:jvm_options\n"
-"                             Specifies the JVM startup options\n"
-// "     -rose:java:Xms<size>\n"
-// "                             Set initial Java heap size\n"
-// "     -rose:java:Xmx<size>\n"
-// "                             Set maximum Java heap size\n"
-// "     -rose:java:Xss<size>\n"
-// "                             Set java thread stack size\n"
 "     -rose:OpenMP, -rose:openmp\n"
 "                             follow OpenMP 3.0 specification for C/C++ and Fortran, perform one of the following actions:\n"
 "     -rose:OpenMP:parse_only, -rose:openmp:parse_only\n"
@@ -2186,6 +2172,10 @@ SgFile::usage ( int status )
 "     -rose:projectSpecificDatabaseFile FILE\n"
 "                             filename where a database of all files used in a project are stored\n"
 "                             for producing unique trace ids and retrieving the reverse mapping from trace to files"
+"     -rose:compilationPerformance\n"
+"                             Output compilation performance after compilation of input file.\n"
+"                             Reports internal phases of ROSE compilation (time and memory requirements), output to stdout.\n"
+"                             See also \"-rose:compilationPerformanceFile FILE\" for CSV report in a file.\n"
 "     -rose:compilationPerformanceFile FILE\n"
 "                             filename where compiler performance for internal\n"
 "                             phases (in CSV form) is placed for later\n"
@@ -2809,6 +2799,16 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
           set_edg_il_to_graphviz(true);
         }
 
+  // DQ (11/27/2020): Turn on generation of GraphViz representation of Clang's internal representation
+     set_clang_il_to_graphviz(false);
+     ROSE_ASSERT (get_clang_il_to_graphviz() == false);
+     if ( CommandlineProcessing::isOption(argv,"-rose:","clang_il_to_graphviz",true) == true )
+        {
+          if ( SgProject::get_verbose() >= 1 )
+               printf ("Clang IL to GraphViz ON \n");
+          set_clang_il_to_graphviz(true);
+        }
+
   // TV (10/01/2018): ROSE-1424
      set_no_optimize_flag_for_frontend(false);
      if ( CommandlineProcessing::isOption(argv,"-rose:","no_optimize_flag_for_frontend",true) == true ) {
@@ -3292,6 +3292,9 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
           set_upc_threads(integerOptionForUPCThreads);
           if ( SgProject::get_verbose() >= 1 )
                printf ("upc_threads is set to %d\n",integerOptionForUPCThreads);
+
+       // DQ (11/25/2020): Add support to set this as a specific language kind file (there is at least one language kind file processed by ROSE).
+          Rose::is_UPC_dynamic_threads = true;
         }
 
 #if 0
@@ -3301,7 +3304,7 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
 
 #if 0
      printf ("Exiting as a test! \n");
-     ROSE_ASSERT(false);
+     ROSE_ABORT();
 #endif
 
   // Fixed format v.s. free format option handling (ROSE defaults to fix or free format, depending on the file extension).
@@ -3353,7 +3356,7 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
              {
                printf ("Error, Non Fortran source file name specificed with explicit fixed format code generation (unparser) option! \n");
             // set_fixedFormat(false);
-               ROSE_ASSERT(false);
+               ROSE_ABORT();
              }
         }
 
@@ -3369,7 +3372,7 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
              {
                printf ("Error, Non Fortran source file name specificed with explicit free format code generation (unparser) option! \n");
             // set_freeFormat(false);
-               ROSE_ASSERT(false);
+               ROSE_ABORT();
              }
         }
 
@@ -3389,7 +3392,7 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
           if (get_sourceFileUsesFortranFileExtension() == false)
              {
                printf ("Warning, Non Fortran source file name specificed with code generation option: free format! \n");
-               ROSE_ASSERT(false);
+               ROSE_ABORT();
              }
         }
      if ( CommandlineProcessing::isOption(argv,"-rose:","(freeOutput|freeFormatOutput)",true) == true )
@@ -3400,7 +3403,7 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
           if (get_sourceFileUsesFortranFileExtension() == false)
              {
                printf ("Warning, Non Fortran source file name specificed with code generation option: fixed format! \n");
-               ROSE_ASSERT(false);
+               ROSE_ABORT();
              }
         }
 
@@ -3420,7 +3423,7 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
           if (get_sourceFileUsesFortranFileExtension() == false)
              {
                printf ("Warning, Non Fortran source file name specificed with code generation option: free format! \n");
-               ROSE_ASSERT(false);
+               ROSE_ABORT();
              }
         }
 
@@ -3432,7 +3435,7 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
           if (get_sourceFileUsesFortranFileExtension() == false)
              {
                printf ("Warning, Non Fortran source file name specificed with code generation option: fixed format! \n");
-               ROSE_ASSERT(false);
+               ROSE_ABORT();
              }
         }
 
@@ -4126,7 +4129,7 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
                printf ("-undefined option specified on command line (for SgFile)\n");
 #if 1
           printf ("Exiting as a test! \n");
-          ROSE_ASSERT(false);
+          ROSE_ABORT();
 #endif
         }
 #endif
@@ -4328,6 +4331,10 @@ SgFile::stripRoseCommandLineOptions ( vector<string> & argv )
      char* filename = NULL;
      optionCount = sla(argv, "-rose:", "($)^", "(astMergeCommandFile)",filename,1);
      optionCount = sla(argv, "-rose:", "($)^", "(projectSpecificDatabaseFile)",filename,1);
+
+  // DQ (10/28/2020): Added to support output of compile-time performance data.
+     optionCount = sla(argv, "-rose:", "($)^", "(compilationPerformance)",1);
+
      optionCount = sla(argv, "-rose:", "($)^", "(compilationPerformanceFile)",filename,1);
 
          //AS(093007) Remove paramaters relating to excluding and include comments and directives
@@ -4432,6 +4439,9 @@ SgFile::stripRoseCommandLineOptions ( vector<string> & argv )
 
   // TV (04/11/2018): Generates GraphViz from EDG internal representation
      optionCount = sla(argv, "-rose:", "($)", "edg_il_to_graphviz",1);
+
+  // DQ (11/27/2020): Generates GraphViz from Clang internal representation
+     optionCount = sla(argv, "-rose:", "($)", "clang_il_to_graphviz",1);
 
   // TV (10/04/2018): Do not pass -D__OPTIMIZE__ to EDG frontend (ROSE-1424)
      optionCount = sla(argv, "-rose:", "($)", "no_optimize_flag_for_frontend",1);
@@ -4860,7 +4870,7 @@ SgFile::build_EDG_CommandLine ( vector<string> & inputCommandLine, vector<string
      if (emulate_backend_compiler_version_number == 40200)
         {
           printf ("Clang support is setting compiler version incorrectly \n");
-          ROSE_ASSERT(false);
+          ROSE_ABORT();
         }
 
   // DQ (4/13/2016): In the case of Clang we can catch an interesting bug where the values of the
@@ -4901,7 +4911,7 @@ SgFile::build_EDG_CommandLine ( vector<string> & inputCommandLine, vector<string
 #endif
 #if 0
      printf ("Exiting after output of configDefs \n");
-     ROSE_ASSERT(false);
+     ROSE_ABORT();
 #endif
 
 #if 0
@@ -4928,7 +4938,7 @@ SgFile::build_EDG_CommandLine ( vector<string> & inputCommandLine, vector<string
           roseSpecificDefs.push_back("-DROSE_M32BIT");
 #if 0
           printf ("Exiting as a test! \n");
-          ROSE_ASSERT(false);
+          ROSE_ABORT();
 #endif
         }
 
@@ -5159,7 +5169,7 @@ SgFile::build_EDG_CommandLine ( vector<string> & inputCommandLine, vector<string
                  else
                   {
                     printf ("Error: CUDA and OpenCL are mutually exclusive.\n");
-                    ROSE_ASSERT(false);
+                    ROSE_ABORT();
                   }
              }
         }
@@ -5372,7 +5382,7 @@ SgFile::build_EDG_CommandLine ( vector<string> & inputCommandLine, vector<string
 #if 0
                       // DQ (2/21/2017): Not is is going into place, so we don't need this assertion.
                          printf ("C++14 support for Intel compiler not implemented in ROSE yet! \n");
-                         ROSE_ASSERT(false);
+                         ROSE_ABORT();
 #endif
                          commandLine.push_back("-D__cplusplus=201400L");
                        }
@@ -5391,7 +5401,7 @@ SgFile::build_EDG_CommandLine ( vector<string> & inputCommandLine, vector<string
 
 #if 0
           printf ("Exting as a test! \n");
-          ROSE_ASSERT(false);
+          ROSE_ABORT();
 #endif
         }
 
@@ -5419,7 +5429,7 @@ SgFile::build_EDG_CommandLine ( vector<string> & inputCommandLine, vector<string
 
 #if 0
      printf ("Exting as a test! \n");
-     ROSE_ASSERT(false);
+     ROSE_ABORT();
 #endif
 
 #ifdef ROSE_USE_EDG_QUAD_FLOAT
@@ -5787,7 +5797,7 @@ SgFile::build_EDG_CommandLine ( vector<string> & inputCommandLine, vector<string
 #endif
 #if 0
                printf ("Detected use of -edg:E option to enable the EDG CPP mode \n");
-               ROSE_ASSERT(false);
+               ROSE_ABORT();
 #endif
              }
           j++;
@@ -5858,7 +5868,7 @@ SgFile::build_EDG_CommandLine ( vector<string> & inputCommandLine, vector<string
      printf ("In build_EDG_CommandLine(): Input Command Line Arguments: \n%s \n",tmp0_argString.c_str());
 
      printf ("Exiting as a test! \n");
-     ROSE_ASSERT(false);
+     ROSE_ABORT();
 #endif
 
 
@@ -5898,7 +5908,7 @@ SgFile::build_EDG_CommandLine ( vector<string> & inputCommandLine, vector<string
 #endif
 #if 0
      printf ("Exiting as a test! \n");
-     ROSE_ASSERT(false);
+     ROSE_ABORT();
 #endif
 
 #if 0
@@ -6313,7 +6323,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
           case SgFile::e_error_language:
              {
                printf ("Error: SgFile::e_error_language detected in SgFile::buildCompilerCommandLineOptions() \n");
-               ROSE_ASSERT(false);
+               ROSE_ABORT();
              }
 
           case SgFile::e_default_language:
@@ -6321,7 +6331,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
 #if 0
             // DQ (11/13/2017): This fails for the case of binaries.
                printf ("Error: SgFile::e_default_language detected in SgFile::buildCompilerCommandLineOptions() \n");
-               ROSE_ASSERT(false);
+               ROSE_ABORT();
 #endif
              }
 
@@ -6411,8 +6421,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
           case SgFile::e_last_language:
              {
                printf ("Error: SgFile::e_last_language detected in SgFile::buildCompilerCommandLineOptions() \n");
-               ROSE_ASSERT(false);
-               break;
+               ROSE_ABORT();
              }
 
           default:
@@ -6567,7 +6576,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
           default:
              {
                printf ("Unhandled case in switch: get_standard() = %d = %s \n",get_standard(),display_standard(get_standard()).c_str());
-               ROSE_ASSERT(false);
+               ROSE_ABORT();
              }
      }
 
@@ -7049,7 +7058,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
 
 #if 0
      printf ("Exiting as a test! \n");
-     ROSE_ASSERT(false);
+     ROSE_ABORT();
 #endif
 
   // DQ (6/27/2020): This code causes a problem for the linking test code in C_tests directory (test2014_83.c). Will be fixed later.
@@ -7184,7 +7193,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
 #endif
 #if 0
      printf ("Exitng as a test! \n");
-     ROSE_ASSERT(false);
+     ROSE_ABORT();
 #endif
 
 #if DEBUG_COMPILER_COMMAND_LINE || 0
@@ -7203,7 +7212,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
                   {
                  // Error: "-o" has been specified twice
                     printf ("Error: In SgFile::buildCompilerCommandLineOptions: \"-o \" has been specified twice \n");
-                    ROSE_ASSERT(false);
+                    ROSE_ABORT();
                   }
                  else
                   {
@@ -7323,7 +7332,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
 #endif
 #if 0
      printf ("Exiting as a test! \n");
-     ROSE_ASSERT(false);
+     ROSE_ABORT();
 #endif
 #if 0
   // AS(080704) Fix so that if user specifies name of -o file rose do not specify another in addition
@@ -7573,7 +7582,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
                       else
                        {
                          printf ("ERROR: In SgFile::buildCompilerCommandLineOptions(): file = %p has no associated project \n",this);
-                         ROSE_ASSERT(false);
+                         ROSE_ABORT();
                        }
                   }
              }
@@ -7703,7 +7712,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
                                       {
                                      // Error: "-o" has been specified twice
                                         printf ("Error: In SgFile::buildCompilerCommandLineOptions: \"-o \" has been specified twice \n");
-                                        ROSE_ASSERT(false);
+                                        ROSE_ABORT();
                                       }
                                      else
                                       {
@@ -7816,7 +7825,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
                  // DQ (4/4/2020): Commented out this this code is not used and the single double quote is an issue for the highlighting.
                  // compilerNameString.push_back(currentDirectory + "\" + objectFileName);
                     printf ("Commented out this this code is not used and the single double quote is an issue for the highlighting \n");
-                    ROSE_ASSERT(false);
+                    ROSE_ABORT();
 #else
                  // DQ (4/13/2015): Only output a -c and -o option to specify the executable if one has not already been specified.
                  // Liao 5/1/2015: for the case of doing both compiling and linking, and with multiple files,
@@ -7881,7 +7890,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
 
 #if 0
      printf ("Exiting at base of buildCompilerCommandLineOptions() ... \n");
-     ROSE_ASSERT (false);
+     ROSE_ABORT ();
 #endif
 
 #if 0
@@ -7895,7 +7904,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
 
 #if 0
      printf ("Exiting as a test! \n");
-     ROSE_ASSERT(false);
+     ROSE_ABORT();
 #endif
 
      return compilerNameString;

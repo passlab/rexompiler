@@ -344,6 +344,33 @@ int Labeler::numberOfAssociatedLabels(SgNode* node) {
   case V_SgOmpTargetDataStatement:
   case V_SgOmpTargetStatement:
   case V_SgOmpTargetParallelForStatement:
+  case V_SgOmpTargetParallelStatement:
+  case V_SgOmpDistributeSimdStatement:
+  case V_SgOmpDistributeParallelForStatement:
+  case V_SgOmpDistributeParallelForSimdStatement:
+  case V_SgOmpTaskloopSimdStatement:
+  case V_SgOmpTargetUpdateStatement:
+  case V_SgOmpRequiresStatement:
+  case V_SgOmpTargetParallelForSimdStatement:
+  case V_SgOmpTargetParallelLoopStatement:
+  case V_SgOmpTargetSimdStatement:
+  case V_SgOmpTargetTeamsStatement:
+  case V_SgOmpTargetTeamsDistributeStatement:
+  case V_SgOmpTargetTeamsDistributeSimdStatement:
+  case V_SgOmpTargetTeamsLoopStatement:
+  case V_SgOmpTargetTeamsDistributeParallelForStatement:
+  case V_SgOmpTargetTeamsDistributeParallelForSimdStatement:
+  case V_SgOmpMasterTaskloopSimdStatement:
+  case V_SgOmpParallelMasterTaskloopStatement:
+  case V_SgOmpParallelMasterTaskloopSimdStatement:
+  case V_SgOmpTeamsDistributeStatement:
+  case V_SgOmpTeamsDistributeSimdStatement:
+  case V_SgOmpTeamsDistributeParallelForStatement:
+  case V_SgOmpTeamsDistributeParallelForSimdStatement:
+  case V_SgOmpTeamsLoopStatement:
+  case V_SgOmpParallelMasterStatement:
+  case V_SgOmpMasterTaskloopStatement:
+  case V_SgOmpParallelLoopStatement:
   case V_SgOmpTaskStatement:
   case V_SgOmpTaskwaitStatement:
   case V_SgOmpThreadprivateStatement:

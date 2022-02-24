@@ -44,6 +44,7 @@ add_library(midend_pt OBJECT
   astOutlining/GenerateCall.cc
   ompLowering/omp_lowering.cpp
   ompLowering/omp_simd.cpp
+  ompLowering/omp_analyzing.cpp
   ompLowering/intel_simd.cpp
   ompLowering/arm_simd.cpp
   astInlining/isPotentiallyModified.C

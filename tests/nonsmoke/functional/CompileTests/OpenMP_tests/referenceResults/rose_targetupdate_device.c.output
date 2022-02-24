@@ -1,0 +1,5 @@
+#pragma omp target data  device(1)
+#pragma omp target 
+#pragma omp target update  if(target update : 1) nowait device(25)
+#pragma omp parallel 
+#pragma omp for 

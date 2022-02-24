@@ -31,7 +31,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	affinity.c \
 	jacobi.c \
 	jacobi-collapse.c \
-	#alignment.c \
+	alignment.c \
 	array_init.c \
 	array_init_2.c \
 	atomic.c \
@@ -39,37 +39,37 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	atomic-3.c \
 	barrier.c \
 	#collapse.c \
-	#copyin.c \
+	copyin.c \
 	copyprivate2.c \
-	#copyprivate3.c \
-	#copyprivate.c \
+	copyprivate3.c \
+	copyprivate.c \
 	critical.c \
 	critical1.c \
 	critical_dead.c \
 	critical_orphaned.c \
 	distribute.c \
 	distribute2.c \
-	#dijkstra_open_mp.c \
+	dijkstra_open_mp.c \
 	dynamicChunk.c \
 	empty.c \
-	#endif.c \
+	endif.c \
 	endif2.c \
 	endif3.c \
 	nowait.c \
-	#expressions.c \
+	expressions.c \
 	falsesharing.c \
 	firstprivate.c \
 	firstPrivateArray.c \
 	firstPrivateArray_2.c \
 	firstlastprivate.c \
-	#flush.c \
-	#flush_exampleA_21_1c.c \
+	flush.c \
+	flush_exampleA_21_1c.c \
 	full_verify.c \
 	get_max_threads.c \
 	hello.c \
 	hello-1.c \
 	hello-2.c \
-	#hello-ordered.c \
+	hello-ordered.c \
 	include_header_only.c \
 	lastprivate0.c \
 	lastprivate.c \
@@ -104,9 +104,9 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	ompfor-static.c \
 	ompGetNumThreads.c \
 	omp_sections.c \
-	#ordered3.c \
-	#ordered2.c \
-	#ordered.c \
+	ordered3.c \
+	ordered2.c \
+	ordered.c \
 	orphaned-directives.c \
 	parallel.c \
 	parallel_allocate_predefined_modifier.c \
@@ -120,7 +120,8 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	parallel_pragma.c \
 	parallelfor.c \
 	parallelfor2.c \
-	#parallelsections.c \
+	parallelsections.c \
+	parallelmaster.c \
 	pi.c \
 	preprocessingInfo.c \
 	prettyfunc.c \
@@ -134,7 +135,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	reduction_min_max.c \
 	reduction_modifier.c \
 	reduction_user_identifier.c \
-	#requires.c \
+	requires.c \
 	#requires1.c \
 	rice1.c \
 	scan.c \
@@ -166,12 +167,12 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	#task_dep2.c \
 	task_dep3.c \
 	#task_dep.load.compute.c \
-	#task_final.c \
-	#task_largenumber.c \
-	#task_mergeable.c \
-	#task_orphaned.c \
-	#task_outlining.c \
-	#task_priority.c \
+	task_final.c \
+	task_largenumber.c \
+	task_mergeable.c \
+	task_orphaned.c \
+	task_outlining.c \
+	task_priority.c \
 	task_untied.c \
 	task_untied2.c \
 	task_untied3.c \
@@ -184,15 +185,16 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 	threadprivate2.c \
 	threadprivate3.c \
 	threadprivate.c \
+	threadProcessor.c \
 	upperCase.c \
-	#variables.c
-	threadProcessor.c
+	variables.c
 
 REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	3loops.c \
 	affinity.c \
 	jacobi.c \
 	jacobi-collapse.c \
+	alignment.c \
 	array_init.c \
 	array_init_2.c \
 	atoms-2.c \
@@ -201,7 +203,10 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	barrier.c \
 	cancel.c \
 	cancellation_point.c \
+	copyin.c \
 	copyprivate2.c \
+	copyprivate3.c \
+	copyprivate.c \
 	critical.c \
 	critical1.c \
 	critical_dead.c \
@@ -211,23 +216,33 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	task_dep3.c \
 	task_dep_iterator1.c \
 	task_dep_iterator2.c \
+	declare_simd.c \
+	distribute_parallel_for.c \
+	distribute_parallel_for_simd.c \
+	distribute_simd.c \
 	distribute.c \
 	distribute2.c \
+	dijkstra_open_mp.c \
 	dynamicChunk.c \
 	empty.c \
+	endif.c \
 	endif2.c \
 	endif3.c \
 	nowait.c \
+	expressions.c \
 	falsesharing.c \
 	firstprivate.c \
 	firstPrivateArray.c \
 	firstPrivateArray_2.c \
 	firstlastprivate.c \
+	flush.c \
+	flush_exampleA_21_1c.c \
 	full_verify.c \
 	get_max_threads.c \
 	hello.c \
 	hello-1.c \
 	hello-2.c \
+	hello-ordered.c \
 	include_header_only.c \
 	lastprivate0.c \
 	lastprivate.c \
@@ -240,6 +255,8 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	lu_factorization.c \
 	master.c \
 	masterSingle.c \
+	mastertaskloop.c \
+	mastertaskloopsimd.c \
 	matrix_vector.c \
 	matrixmultiply.c \
 	md_open_mp.c \
@@ -262,6 +279,9 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	ompfor-static.c \
 	ompGetNumThreads.c \
 	omp_sections.c \
+	ordered3.c \
+	ordered2.c \
+	ordered.c \
 	orphaned-directives.c \
 	parallel.c \
 	parallel_allocate_predefined_modifier.c \
@@ -275,6 +295,11 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	parallel_pragma.c \
 	parallelfor.c \
 	parallelfor2.c \
+	parallelsections.c \
+	parallelloop.c \
+	parallelmaster.c \
+	parallelmastertaskloop.c \
+	parallelmastertaskloopsimd.c \
 	pi.c \
 	preprocessingInfo.c \
 	prettyfunc.c \
@@ -288,6 +313,13 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	reduction_min_max.c \
 	reduction_modifier.c \
 	reduction_user_identifier.c \
+	requires.c \
+	requires_atomic_default_mem_order.c \
+	requires_ext.c \
+	requires_reverse_offload.c \
+	requires_unified_address.c \
+	requires_dynamic_allocators.c \
+	requires_unified_shared_memory.c \
 	rice1.c \
 	scan.c \
 	section.c \
@@ -296,11 +328,15 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	sections1.c \
 	set_num_threads.c \
 	shared.c \
+	simd.c \
 	simd2.c \
 	simd3.c \
 	simd4.c \
 	simd5.c \
+	single.c \
+	single2.c \
 	single3.c \
+	single_copyprivate.c \
 	sizeof.c \
 	spmd1.c \
 	staticChunk.c \
@@ -308,8 +344,32 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	subteam.c \
 	target.c \
 	target1.c \
+	targetparallel.c \
+	targetparallelforsimd.c \
+	targetparallelloop.c \
+	targetsimd.c \
+	targetteams.c \
+	targetteamsdistribute.c \
+	targetteamsdistributesimd.c \
+	targetteamsloop.c \
+	targetteamsdistributeparallelfor.c \
+	targetteamsdistributeparallelforsimd.c \
+	targetupdate.c \
+	targetupdate_nowait.c \
+	targetupdate_device.c \
+	taskloop_simd_reduction.1.c \
+	task_affinity.c \
+	task_affinity1.c \
 	task_array.c \
 	task_array2.c \
+	task_dep1.c \
+	task_dep3.c \
+	task_final.c \
+	task_largenumber.c \
+	task_mergeable.c \
+	task_orphaned.c \
+	task_outlining.c \
+	task_priority.c \
 	task_untied.c \
 	task_untied2.c \
 	task_untied3.c \
@@ -323,6 +383,11 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	threadprivate2.c \
 	threadprivate3.c \
 	teams.c \
+	teamsdistribute.c \
+	teamsdistributesimd.c \
+	teamsdistributeparallelfor.c \
+	teamsdistributeparallelforsimd.c \
+	teamsloop.c \
 	twoRegions.c \
 	threadProcessor.c \
 	upperCase.c \
@@ -337,6 +402,14 @@ removed_Experimental_TEST = \
 	axpy_ompacc_parseonly.c 
 
 
+# NP 4/23/21 Fails on move to Intel 19 and RHEL8
+if USING_INTEL_COMPILER
+   TESTCODE_CURRENTLY_FAILING += \
+        simd.c 
+else
+   C_TESTCODES_REQUIRED_TO_PASS += \
+        simd.c 
+endif
 
 # DQ (2/19/2017): This logic has not yet been updated to reflect the new logic for GNU, Clang, Intel compilers.
 # It might be that it need not be updated since it is sufficently portable as it is (if not then it will be updated).

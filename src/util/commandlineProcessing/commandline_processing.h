@@ -112,16 +112,6 @@ namespace CommandlineProcessing
        // DQ (1/23/2009): Added support for Co-Array Fortran file extension.
           ROSE_UTIL_API bool isCoArrayFortranFileNameSuffix ( const std::string & suffix );
 
-          ROSE_UTIL_API bool isPHPFileNameSuffix ( const std::string & suffix );
-
-          ROSE_UTIL_API bool isPythonFileNameSuffix ( const std::string & suffix );
-
-       // DQ (28/8/2017): Adding language support.
-          ROSE_UTIL_API bool isCsharpFileNameSuffix ( const std::string & suffix );
-          ROSE_UTIL_API bool isAdaFileNameSuffix    ( const std::string & suffix );
-          ROSE_UTIL_API bool isJovialFileNameSuffix ( const std::string & suffix );
-          ROSE_UTIL_API bool isCobolFileNameSuffix  ( const std::string & suffix );
-
        // TV (05/17/2010) Support for CUDA
           ROSE_UTIL_API bool isCudaFileNameSuffix ( const std::string & suffix );
        // TV (05/17/2010) Support for OpenCL

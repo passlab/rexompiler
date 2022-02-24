@@ -2,6 +2,7 @@
 // #                           Header Files                       #
 // ################################################################
 
+#include <featureTests.h>
 #include "rose_config.h"
 #include "grammar.h"
 #include "AstNodeClass.h"
@@ -1281,7 +1282,7 @@ generate_override_keyword( AstNodeClass & node, GrammarString & data )
          returnResult = false;
 #if 0
          printf ("Exiting as a test! \n");
-         ROSE_ASSERT(false);
+         ROSE_ABORT();
 #endif
        }
 
@@ -1393,7 +1394,7 @@ generate_override_keyword_for_set_functions( AstNodeClass & node, GrammarString 
          returnResult = false;
 #if 0
          printf ("Exiting as a test! \n");
-         ROSE_ASSERT(false);
+         ROSE_ABORT();
 #endif
        }
 
@@ -1443,7 +1444,7 @@ Grammar::buildStringForDataAccessFunctionDeclaration ( AstNodeClass & node )
 #endif
 #if 0
                printf ("Exiting as a test! \n");
-               ROSE_ASSERT(false);
+               ROSE_ABORT();
 #endif
              }
 
@@ -1456,7 +1457,7 @@ Grammar::buildStringForDataAccessFunctionDeclaration ( AstNodeClass & node )
 #endif
 #if 0
                printf ("Exiting as a test! \n");
-               ROSE_ASSERT(false);
+               ROSE_ABORT();
 #endif
              }
 
@@ -1658,7 +1659,7 @@ Grammar::buildMemberAccessFunctionPrototypesAndConstuctorPrototype ( AstNodeClas
 
 #if 0
           printf ("Exiting as a test! \n");
-          ROSE_ASSERT(false);
+          ROSE_ABORT();
 #endif
         }
 
@@ -1960,7 +1961,7 @@ void
 Grammar::buildGrammarClassSourceCode ( StringUtility::FileWithLineNumbers & outputFile )
    {
      printf ("This should not be called! \n");
-     ROSE_ASSERT(false);
+     ROSE_ABORT();
 
      string fileName  = "../Grammar/grammarMainClassSourceCodeMacros.macro";
 
@@ -3373,10 +3374,13 @@ Grammar::buildCode ()
      includeHeaderString += defines2;
      includeHeaderString += defines3;
 
-     includeHeaderString += "#define ROSE_ALLOC_MEMSET 0\n";
+#define DEBUG_NEW_DELETE_IN_MEMORY_POOL 0
+#if DEBUG_NEW_DELETE_IN_MEMORY_POOL
+     includeHeaderString += "#define ROSE_ALLOC_TRACE 1\n";
+     includeHeaderString += "#include \"memory-pool-snapshot.h\"\n\n";
+#else
      includeHeaderString += "#define ROSE_ALLOC_TRACE 0\n";
-     includeHeaderString += "#define ROSE_ALLOC_AUTH_ALT_SIZE 1\n";
-     includeHeaderString += "#define ROSE_DEALLOC_ASSERT 0\n\n";
+#endif
 
   // DQ (3/5/2017): Add message stream support for diagnostic messge from the ROSE IR nodes.
   // This allows us to easily convert printf() functions to mprintf() functions that contain
@@ -3655,7 +3659,7 @@ Grammar::buildCode ()
 
 #if 0
      printf ("Exiting as a test in ROSETTA generation of ATerm support! \n");
-     ROSE_ASSERT(false);
+     ROSE_ABORT();
 #endif
 
   // ---------------------------------------------------------------------------------------------
@@ -3919,6 +3923,32 @@ Grammar::GrammarNodeInfo Grammar::getGrammarNodeInfo(AstNodeClass* grammarnode) 
         ||nodeName == "SgOmpTargetStatement"
         ||nodeName == "SgOmpTargetDataStatement"
         ||nodeName == "SgOmpTargetParallelForStatement"
+        ||nodeName == "SgOmpTargetUpdateStatement"
+        ||nodeName == "SgOmpTargetParallelStatement"
+        ||nodeName == "SgOmpDistributeSimdStatement"
+        ||nodeName == "SgOmpDistributeParallelForStatement"
+        ||nodeName == "SgOmpDistributeParallelForSimdStatement"
+        ||nodeName == "SgOmpTaskloopSimdStatement"
+        ||nodeName == "SgOmpTargetParallelForSimdStatement"
+        ||nodeName == "SgOmpTargetParallelLoopStatement"
+        ||nodeName == "SgOmpTargetSimdStatement"
+        ||nodeName == "SgOmpTargetTeamsStatement"
+        ||nodeName == "SgOmpTargetTeamsDistributeStatement"
+        ||nodeName == "SgOmpTargetTeamsDistributeSimdStatement"
+        ||nodeName == "SgOmpTargetTeamsLoopStatement"
+        ||nodeName == "SgOmpTargetTeamsDistributeParallelForStatement"
+        ||nodeName == "SgOmpTargetTeamsDistributeParallelForSimdStatement"
+        ||nodeName == "SgOmpMasterTaskloopSimdStatement"
+        ||nodeName == "SgOmpParallelMasterTaskloopStatement"
+        ||nodeName == "SgOmpParallelMasterTaskloopSimdStatement"
+        ||nodeName == "SgOmpTeamsDistributeStatement"
+        ||nodeName == "SgOmpTeamsDistributeSimdStatement"
+        ||nodeName == "SgOmpTeamsDistributeParallelForStatement"
+        ||nodeName == "SgOmpTeamsDistributeParallelForSimdStatement"
+        ||nodeName == "SgOmpTeamsLoopStatement"
+        ||nodeName == "SgOmpParallelMasterStatement"
+        ||nodeName == "SgOmpMasterTaskloopStatement"
+        ||nodeName == "SgOmpParallelLoopStatement"
         ||nodeName == "SgOmpSingleStatement"
         ||nodeName == "SgOmpSimdStatement"
         ||nodeName == "SgOmpTaskStatement"
@@ -4239,6 +4269,32 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                  ||string(node.getName()) == "SgOmpTargetStatement"
                  ||string(node.getName()) == "SgOmpTargetDataStatement"
                  ||string(node.getName()) == "SgOmpTargetParallelForStatement"
+                 ||string(node.getName()) == "SgOmpTargetUpdateStatement"
+                 ||string(node.getName()) == "SgOmpTargetParallelStatement"
+                 ||string(node.getName()) == "SgOmpDistributeSimdStatement"
+                 ||string(node.getName()) == "SgOmpDistributeParallelForStatement"
+                 ||string(node.getName()) == "SgOmpDistributeParallelForSimdStatement"
+                 ||string(node.getName()) == "SgOmpTaskloopSimdStatement"
+                 ||string(node.getName()) == "SgOmpTargetParallelForSimdStatement"
+                 ||string(node.getName()) == "SgOmpTargetParallelLoopStatement"
+                 ||string(node.getName()) == "SgOmpTargetSimdStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsDistributeStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsDistributeSimdStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsLoopStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsDistributeParallelForStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsDistributeParallelForSimdStatement"
+                 ||string(node.getName()) == "SgOmpMasterTaskloopSimdStatement"
+                 ||string(node.getName()) == "SgOmpParallelMasterTaskloopStatement"
+                 ||string(node.getName()) == "SgOmpParallelMasterTaskloopSimdStatement"
+                 ||string(node.getName()) == "SgOmpTeamsDistributeStatement"
+                 ||string(node.getName()) == "SgOmpTeamsDistributeSimdStatement"
+                 ||string(node.getName()) == "SgOmpTeamsDistributeParallelForStatement"
+                 ||string(node.getName()) == "SgOmpTeamsDistributeParallelForSimdStatement"
+                 ||string(node.getName()) == "SgOmpTeamsLoopStatement"
+                 ||string(node.getName()) == "SgOmpParallelMasterStatement"
+                 ||string(node.getName()) == "SgOmpMasterTaskloopStatement"
+                 ||string(node.getName()) == "SgOmpParallelLoopStatement"
                  ||string(node.getName()) == "SgOmpForStatement"
                  ||string(node.getName()) == "SgOmpForSimdStatement"
                  ||string(node.getName()) == "SgOmpForSimdStatement"
@@ -4364,7 +4420,33 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                  ||string(node.getName()) == "SgOmpSectionsStatement"
                  ||string(node.getName()) == "SgOmpTargetStatement"
                  ||string(node.getName()) == "SgOmpTargetDataStatement"
+                 ||string(node.getName()) == "SgOmpTargetUpdateStatement"
                  ||string(node.getName()) == "SgOmpTargetParallelForStatement"
+                 ||string(node.getName()) == "SgOmpTargetParallelStatement"
+                 ||string(node.getName()) == "SgOmpDistributeSimdStatement"
+                 ||string(node.getName()) == "SgOmpDistributeParallelForStatement"
+                 ||string(node.getName()) == "SgOmpDistributeParallelForSimdStatement"
+                 ||string(node.getName()) == "SgOmpTaskloopSimdStatement"
+                 ||string(node.getName()) == "SgOmpTargetParallelForSimdStatement"
+                 ||string(node.getName()) == "SgOmpTargetParallelLoopStatement"
+                 ||string(node.getName()) == "SgOmpTargetSimdStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsDistributeStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsDistributeSimdStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsLoopStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsDistributeParallelForStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsDistributeParallelForSimdStatement"
+                 ||string(node.getName()) == "SgOmpMasterTaskloopSimdStatement"
+                 ||string(node.getName()) == "SgOmpParallelMasterTaskloopStatement"
+                 ||string(node.getName()) == "SgOmpParallelMasterTaskloopSimdStatement"
+                 ||string(node.getName()) == "SgOmpTeamsDistributeStatement"
+                 ||string(node.getName()) == "SgOmpTeamsDistributeSimdStatement"
+                 ||string(node.getName()) == "SgOmpTeamsDistributeParallelForStatement"
+                 ||string(node.getName()) == "SgOmpTeamsDistributeParallelForSimdStatement"
+                 ||string(node.getName()) == "SgOmpTeamsLoopStatement"
+                 ||string(node.getName()) == "SgOmpParallelMasterStatement"
+                 ||string(node.getName()) == "SgOmpMasterTaskloopStatement"
+                 ||string(node.getName()) == "SgOmpParallelLoopStatement"
                  ||string(node.getName()) == "SgOmpForStatement"
                  ||string(node.getName()) == "SgOmpForSimdStatement"
                  ||string(node.getName()) == "SgOmpDoStatement"
@@ -4891,10 +4973,7 @@ AstNodeClass* lookupTerminal(const vector<AstNodeClass*>& tl, const std::string&
     }
   }
   cerr << "Reached end of AstNodeClass list in search for '" << name << "'" << endl;
-  ROSE_ASSERT (false);
-
-// DQ (11/28/2009): MSVC warns that this function should return a value from all paths.
-  return NULL;
+  ROSE_ABORT ();
 }
 
 bool Grammar::nameHasPrefix(string name, string prefix) {

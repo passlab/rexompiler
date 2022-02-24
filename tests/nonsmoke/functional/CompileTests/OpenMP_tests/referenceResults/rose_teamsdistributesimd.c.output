@@ -1,0 +1,1 @@
+#pragma omp teams distribute simd  num_teams(n) reduction(+ : res)

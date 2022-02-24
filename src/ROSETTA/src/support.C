@@ -1,3 +1,5 @@
+#include <featureTests.h>
+
 // DQ (10/14/2010):  This should only be included by source files that require it.
 // This fixed a reported bug which caused conflicts with autoconf macros (e.g. PACKAGE_BUGREPORT).
 #include "rose_config.h"
@@ -161,11 +163,7 @@ Grammar::setUpSupport ()
      NEW_TERMINAL_MACRO (DirectedGraphEdge,   "DirectedGraphEdge",   "DirectedGraphEdgeTag" );
 
   // Types of graph nodes and edges:
-  // SgNode to represent OpenMP flow graph
-     NEW_TERMINAL_MACRO (OmpFlowGraphTaskNode, "OmpFlowGraphTaskNode", "OmpFlowGraphTaskNodeTag" );
-     NEW_NONTERMINAL_MACRO (OmpFlowGraphSerialNode, OmpFlowGraphTaskNode, "OmpFlowGraphSerialNode", "OmpFlowGraphSerialNodeTag", false);
-     NEW_NONTERMINAL_MACRO (OmpFlowGraphNode, OmpFlowGraphSerialNode, "OmpFlowGraphNode", "OmpFlowGraphNodeTag", false);
-     NEW_NONTERMINAL_MACRO (GraphNode,  OmpFlowGraphNode, "GraphNode", "GraphNodeTag", false);
+     NEW_TERMINAL_MACRO (GraphNode,  "GraphNode", "GraphNodeTag");
      NEW_NONTERMINAL_MACRO (GraphEdge, DirectedGraphEdge | UndirectedGraphEdge, "GraphEdge", "GraphEdgeTag", false);
 
   // Types of Bi-directional graphs:
@@ -665,6 +663,11 @@ Grammar::setUpSupport ()
      Pragma.setDataPrototype ( "short" , "printed", "= 0",
                  NO_CONSTRUCTOR_PARAMETER, NO_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
+     // PP (01/25/21): Add arguments for Ada pragma
+     Pragma.setDataPrototype ( "SgExprListExp*" , "args", "= NULL",
+                 NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+
   // DQ (11/1/2015): Build the access functions, but don't let the set_* access function set the "p_isModified" flag.
   // DQ (1/3/2006): Added attribute via ROSETTA (changed to pointer to AstAttributeMechanism)
   // Modified implementation to only be at specific IR nodes.
@@ -857,6 +860,12 @@ Grammar::setUpSupport ()
      SourceFile.setDataPrototype ( "SgNodePtrList" , "extra_nodes_for_namequal_init", "" ,
                                    NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
+  // DQ (3/11/2021): We need to to support the dynamic library feature (used by the code segregation tool, and likely future tools).
+  // This feature is also part of outliner which supports outlining to a seperate file. Also, this is used to avoid running the 
+  // computation of first and last statements of include file.
+     SourceFile.setDataPrototype   ( "bool", "isDynamicLibrary", "= false",
+                                     NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
      UnknownFile.setDataPrototype   ( "SgGlobal*", "globalScope", "= NULL",
                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
@@ -963,6 +972,14 @@ Grammar::setUpSupport ()
   // DQ (5/26/2020): Allow us to mark the SgIncludeFile as being the root (associated with the input sourde file).
      IncludeFile.setDataPrototype   ( "bool", "isRootSourceFile", "= false",
                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+  // DQ (3/9/2021): Save the first and last statement associated with the file (required to support the 
+  // token-based unparsing (e.g. detecting the last statement so that we can output the trailing whitespace).
+     IncludeFile.setDataPrototype ( "SgStatement*", "firstStatement", " = NULL",
+                                     NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE, NO_COPY_DATA);
+     IncludeFile.setDataPrototype ( "SgStatement*", "lastStatement", " = NULL",
+                                     NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE, NO_COPY_DATA);
+
 
   // DQ (9/18/2018): We can likely eliminate this IR node now that we store the include file tree directly
   // (though this one is computed from the EDG/ROSE translation instead of from the CPP include directives).
@@ -1483,8 +1500,12 @@ Grammar::setUpSupport ()
      File.setDataPrototype ("bool", "suppress_variable_declaration_normalization", "= false",
                  NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-  // TV (04/11/2018): Whether or not to generate a graphviz representation of EDG internal representation
+  // TV (04/11/2018): Whether or not to generate a graphviz representation of the EDG internal representation
      File.setDataPrototype("bool", "edg_il_to_graphviz", "= false",
+                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+  // TV (11/27/2020): Whether or not to generate a graphviz representation of the Clang internal representation
+     File.setDataPrototype("bool", "clang_il_to_graphviz", "= false",
                  NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // TV (10/01/2018): ROSE-1424
@@ -1495,12 +1516,15 @@ Grammar::setUpSupport ()
      File.setDataPrototype("bool", "unparse_edg_normalized_method_ROSE_1392", "= false",
                  NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
+  // DQ (4/24/2021): Change this to be a static data member.
   // DQ (8/19/2019): Adding support to optimize the performance of the header file unarsing.
   // Specifically we want to limit the collection of comments and CPP dirctives to a set determined
   // as part of the unparsing, after we know what parts of the AST have been modified, but
   // immediiately before the unparsing of each file.
-     File.setDataPrototype("bool", "header_file_unparsing_optimization", "= false",
-                 NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+  // File.setDataPrototype("bool", "header_file_unparsing_optimization", "= false",
+  //             NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     File.setDataPrototype("static bool", "header_file_unparsing_optimization", "= false",
+                 NO_CONSTRUCTOR_PARAMETER, NO_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      File.setDataPrototype("bool", "header_file_unparsing_optimization_source_file", "= false",
                  NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      File.setDataPrototype("bool", "header_file_unparsing_optimization_header_file", "= false",
@@ -1571,22 +1595,6 @@ Grammar::setUpSupport ()
      GraphNode.setDataPrototype("std::map<int, std::string>","properties", "",
                            NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-     OmpFlowGraphNode.setDataPrototype("std::list<SgNode* >", "parents", "",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     OmpFlowGraphNode.setDataPrototype("std::list<SgNode* >", "children", "",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     OmpFlowGraphNode.setDataPrototype("SgNode*", "node", "= NULL",
-                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-     OmpFlowGraphNode.setDataPrototype("SgNode*", "begin_statement", "= NULL",
-                       NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-     OmpFlowGraphNode.setDataPrototype("SgNode*", "end_statement", "= NULL",
-                       NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-     OmpFlowGraphNode.setDataPrototype("int", "cost", "= 0",
-                       NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     OmpFlowGraphSerialNode.setDataPrototype("std::list<SgExpression* >", "data", "",
-                       NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     OmpFlowGraphTaskNode.setDataPrototype("int", "num_threads", "= 0",
-                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // ******************************************************************************
   //                                SgGraphEdge
@@ -1961,6 +1969,11 @@ Grammar::setUpSupport ()
      Project.setFunctionPrototype      ( "HEADER_ATTRIBUTE_SUPPORT", "../Grammar/Support.code");
      Project.setFunctionSource         ( "SOURCE_ATTRIBUTE_SUPPORT", "../Grammar/Support.code");
 #endif
+
+  // DQ (10/28/2020): Adding option to output compilation performance.  Relocated to be a
+  // static data member of AstPerformance class.
+  // Project.setDataPrototype         ( "bool", "compilationPerformance", "= false",
+  //        NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // DQ (8/29/2006): Support for CSV data file reporting performance of compilation.
   // This file accumulates information (if specified) and permits plots of performance
@@ -2376,7 +2389,6 @@ Specifiers that can have only one value (implemented with a protected enum varia
      BaseClassModifier.setDataPrototype("SgAccessModifier", "accessModifier", "",
                                     NO_CONSTRUCTOR_PARAMETER, NO_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-
   // MK: I moved the following data member declarations from ../Grammar/Support.code to this position:
   // File_Info.setDataPrototype("char*","filename","= NULL",
   //        NO_CONSTRUCTOR_PARAMETER, NO_ACCESS_FUNCTIONS, NO_TRAVERSAL, DEF_DELETE);
@@ -2786,7 +2798,6 @@ Specifiers that can have only one value (implemented with a protected enum varia
 
   // Place declarations of friend output operators after the BaseClassModifier
   // Modifier.setPostdeclarationString   ("SOURCE_MODIFIER_POSTDECLARATION", "../Grammar/Support.code");
-
      File_Info.setFunctionSource       ( "SOURCE_FILE_INFORMATION", "../Grammar/Support.code");
 
      Directory.setFunctionSource       ( "SOURCE_APPLICATION_DIRECTORY", "../Grammar/Support.code");

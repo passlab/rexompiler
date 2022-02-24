@@ -1,0 +1,1 @@
+#pragma omp teams distribute parallel for simd  num_teams(n) reduction(+ : res)

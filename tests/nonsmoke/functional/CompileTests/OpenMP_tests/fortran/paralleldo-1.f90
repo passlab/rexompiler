@@ -5,6 +5,6 @@ subroutine a1(a,b,n)
   do i=2,n
     b(i)= a(i)
   enddo
-!$omp end parallel do nowait
+!$omp end parallel do
   print *,'end'
 end subroutine a1  

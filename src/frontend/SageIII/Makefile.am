@@ -14,13 +14,6 @@ include $(srcdir)/sage_support/Makefile_variables
 #mptPartialRedundancyEliminationPath=$(srcdir)/partialRedundancyElimination#
 fSageSupportPath=sage_support#
 
-# DQ (6/25/2011): Readded this directory so that we can support the older behavior as a default
-# although this will likely fail at least some of the nearly one hundred new name qualification tests.
-# DQ (6/22/2011): I think that the astHiddenTypeAndDeclarationLists directory is no longer required in ROSE.
-# SUBDIRS = astFileIO astMerge astFixup astPostProcessing sageInterface virtualCFG astTokenStream astHiddenTypeAndDeclarationLists astVisualization astFromString
-# SUBDIRS = astFileIO astMerge astFixup astPostProcessing sageInterface virtualCFG astTokenStream astVisualization astFromString
-# SUBDIRS = astFileIO astMerge astFixup astPostProcessing sageInterface virtualCFG astTokenStream astHiddenTypeAndDeclarationLists astVisualization astFromString includeDirectivesProcessing
-
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
    SUBDIRS = astFixup astPostProcessing sageInterface astVisualization virtualCFG includeDirectivesProcessing
 else
@@ -44,8 +37,8 @@ if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 # CXXFLAGS += -g
 endif
 
-expression_lexer.lo: expression_parser.hh expression_lexer.cc
-expression_parser.hh: expression_parser.cc
+omp_exprparser_lexer.lo: omp_exprparser_parser.hh omp_exprparser_lexer.cc
+omp_exprparser_parser.hh: omp_exprparser_parser.cc
 
 # Force sage.docs to be make by default
 # (if sage.docs.in is modified)
@@ -86,10 +79,10 @@ EXTRA_DIST = CMakeLists.txt preproc-c.ll docs rtiHelpers.h attributeListMap.h \
              advanced_preprocessing_hooks.h rose_attributes_list.h \
              sage3basic.hhh fileoffsetbits.h rosedll.h PolicyControl.txt Utf8.h  \
              ompAstConstruction.h \
-             expression_lexer.cc expression_parser.cc expression_parser.hh
+             omp_exprparser_lexer.cc omp_exprparser_parser.cc omp_exprparser_parser.hh
 CLEANFILES = haveRosettaGeneratedSource
 
-DISTCLEANFILES = preproc-c.cc expression_lexer.cc expression_parser.hh expression_parser.cc
+DISTCLEANFILES = preproc-c.cc omp_exprparser_lexer.cc omp_exprparser_parser.hh omp_exprparser_parser.cc
 
 # Some source code is generated (call make in ROSE/src/ROSETTA/src to generate these files)
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
@@ -216,7 +209,7 @@ noinst_LTLIBRARIES = libsage3.la
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 libsage3_la_SOURCES = $(libsage3Sources) preproc-c.ll
 else
-libsage3_la_SOURCES = $(libsage3Sources) preproc-c.ll expression_lexer.ll expression_parser.yy
+libsage3_la_SOURCES = $(libsage3Sources) preproc-c.ll omp_exprparser_lexer.ll omp_exprparser_parser.yy
 endif
 
 # DQ (3/8/2009): I think that the dependence upon $(top_builddir)/rose_config.h 
@@ -226,43 +219,32 @@ nodist_libsage3_la_SOURCES = $(GENERATED_SOURCE)
 
 
 if ROSE_USE_BOOST_WAVE
-
-if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-libsage3_la_LIBADD  = \
-	astFixup/libastFixup.la \
-	astPostProcessing/libastPostProcessing.la \
-	sageInterface/libsageInterface.la \
-	ompparser/libompparser.la \
-        astVisualization/libastVisualization.la \
-	virtualCFG/libvirtualCFG.la \
-        includeDirectivesProcessing/libincludeDirectivesProcessing.la
+libsage3_la_LIBADD= \
+  astMerge/libastMerge.la \
+  astFileIO/libastFileIO.la \
+  astFixup/libastFixup.la \
+  ompparser/libompparser.la \
+  astPostProcessing/libastPostProcessing.la \
+  sageInterface/libsageInterface.la \
+  virtualCFG/libvirtualCFG.la \
+  astFromString/libAstFromString.la \
+  astVisualization/libastVisualization.la \
+  astHiddenTypeAndDeclarationLists/libastHiddenTypeAndDeclarationLists.la \
+  includeDirectivesProcessing/libincludeDirectivesProcessing.la \
+  astTokenStream/libastTokenStream.la
 else
-libsage3_la_LIBADD  = \
-	astFixup/libastFixup.la \
-	astPostProcessing/libastPostProcessing.la \
-	astMerge/libastMerge.la \
-	sageInterface/libsageInterface.la \
-	ompparser/libompparser.la \
-	astTokenStream/libastTokenStream.la \
-	virtualCFG/libvirtualCFG.la \
-        astVisualization/libastVisualization.la \
-        astFromString/libAstFromString.la \
-        astHiddenTypeAndDeclarationLists/libastHiddenTypeAndDeclarationLists.la \
-        includeDirectivesProcessing/libincludeDirectivesProcessing.la
-endif
-else
-
-libsage3_la_LIBADD  = \
-	astFixup/libastFixup.la \
-	astPostProcessing/libastPostProcessing.la \
-	astMerge/libastMerge.la \
-	sageInterface/libsageInterface.la \
-	ompparser/libompparser.la \
-	virtualCFG/libvirtualCFG.la \
-        astVisualization/libastVisualization.la \
-        astFromString/libAstFromString.la \
-        astHiddenTypeAndDeclarationLists/libastHiddenTypeAndDeclarationLists.la \
-        includeDirectivesProcessing/libincludeDirectivesProcessing.la
+libsage3_la_LIBADD= \
+  astMerge/libastMerge.la \
+  astFileIO/libastFileIO.la \
+  astFixup/libastFixup.la \
+  ompparser/libompparser.la \
+  astPostProcessing/libastPostProcessing.la \
+  sageInterface/libsageInterface.la \
+  virtualCFG/libvirtualCFG.la \
+  astFromString/libAstFromString.la \
+  astVisualization/libastVisualization.la \
+  astHiddenTypeAndDeclarationLists/libastHiddenTypeAndDeclarationLists.la \
+  includeDirectivesProcessing/libincludeDirectivesProcessing.la
 endif
 
 # DQ (6/25/2011): Readded this directory so that we can support the older behavior as a default
@@ -334,7 +316,7 @@ nodist_pkginclude_HEADERS = \
    AstQueryMemoryPool.h \
    astFileIO/AstSpecificDataManagingClass.h
 
-BUILT_SOURCES = $(GENERATED_SOURCE) expression_parser.cc expression_parser.hh expression_lexer.cc
+BUILT_SOURCES = $(GENERATED_SOURCE) omp_exprparser_parser.cc omp_exprparser_parser.hh omp_exprparser_lexer.cc
 
 # DQ (9/9/2007): Put C++_include_files.h back into place
 # since it is a convinient mechanism to handle included headers 

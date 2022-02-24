@@ -390,7 +390,7 @@ class UnparseLanguageIndependentConstructs
           virtual void unparseOmpExpressionClause           (SgOmpClause* clause, SgUnparse_Info& info);
           virtual void unparseOmpDepobjUpdateClause         (SgOmpClause* clause, SgUnparse_Info& info);
           virtual void unparseOmpClause                     (SgOmpClause* clause, SgUnparse_Info& info);
-
+          virtual void unparseOmpAtomicDefaultMemOrderClause (SgOmpClause* clause, SgUnparse_Info& info);
           virtual void unparseOmpSimpleStatement             (SgStatement* stmt,     SgUnparse_Info& info);
           virtual void unparseOmpThreadprivateStatement      (SgStatement* stmt,     SgUnparse_Info& info);
           virtual void unparseOmpFlushStatement              (SgStatement* stmt,     SgUnparse_Info& info);
@@ -454,9 +454,13 @@ class UnparseLanguageIndependentConstructs
 
           bool canBeUnparsedFromTokenStream(SgSourceFile* sourceFile, SgStatement* stmt);
 
+       // DQ (1/6/2021): Adding support to detect use of unparseToString() functionality.  This is required to avoid premature saving of state
+       // regarding the static previouslyUnparsedTokenSubsequences which is required to support multiple statements (e.g. a variable declarations 
+       // with containing multiple variables which translates (typically) to multiple variable declarations (each with one variable) within the AST).
        // DQ (11/29/2013): Added support to detect redundant statements (e.g. variable declarations 
        // with multiple variables that are mapped to a single token sequence).
-          bool redundantStatementMappingToTokenSequence(SgSourceFile* sourceFile, SgStatement* stmt);
+       // bool redundantStatementMappingToTokenSequence(SgSourceFile* sourceFile, SgStatement* stmt);
+          bool redundantStatementMappingToTokenSequence(SgSourceFile* sourceFile, SgStatement* stmt, SgUnparse_Info & info);
 
        // DQ (11/30/2013): Adding support to suppress redundant unparsing of CPP directives and comments.
        // bool isTransitionFromTokenUnparsingToASTunparsing(SgStatement* statement);

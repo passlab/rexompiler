@@ -4077,12 +4077,14 @@ void transOmpTargetLoopBlock(SgNode* node)
      new_loop->removeAttribute("OmpAttributeList");
 }
 
-  // transformation for combined directive omp target parallel for
-  void transOmpTargetParallelFor (SgNode* node)
+  // transformation for combined directive
+  // omp target parallel for
+  // omp target teams distribute parallel for
+  void transOmpSpmdWorksharing (SgNode* node, SgExpression* omp_num_teams, SgExpression* omp_num_threads)
   {
     // Sanity check first
     ROSE_ASSERT(node != NULL);
-    SgOmpTargetParallelForStatement* target = isSgOmpTargetParallelForStatement(node);
+    SgOmpClauseBodyStatement* target = isSgOmpClauseBodyStatement(node);
     ROSE_ASSERT (target != NULL);
 
     transOmpTargetLoopBlock(target);
@@ -4206,7 +4208,7 @@ void transOmpTargetLoopBlock(SgNode* node)
     // insert dim3 threadsPerBlock(xomp_get_maxThreadsPerBlock());
     // TODO: for 1-D mapping, int type is enough,  //TODO: a better interface accepting expression as initializer!!
     // the default number of threads per team is set to 1024
-    SgVariableDeclaration* threads_per_block_decl = buildVariableDeclaration ("_threads_per_block_", buildIntType(), buildAssignInitializer(buildIntVal(1024)), p_scope);
+    SgVariableDeclaration* threads_per_block_decl = buildVariableDeclaration ("_threads_per_block_", buildIntType(), buildAssignInitializer(omp_num_threads), p_scope);
     outlined_driver_body->append_statement(threads_per_block_decl);
     attachComment(threads_per_block_decl, string("Launch CUDA kernel ..."));
 
@@ -4214,7 +4216,7 @@ void transOmpTargetLoopBlock(SgNode* node)
     // TODO: handle 2-D or 3-D using dim type
     ROSE_ASSERT (cuda_loop_iter_count_1 != NULL);
     // the default number of teams is set to 256
-    SgVariableDeclaration* num_blocks_decl = buildVariableDeclaration ("_num_blocks_", buildIntType(), buildAssignInitializer(buildIntVal(256)), p_scope);
+    SgVariableDeclaration* num_blocks_decl = buildVariableDeclaration ("_num_blocks_", buildIntType(), buildAssignInitializer(omp_num_teams), p_scope);
     outlined_driver_body->append_statement(num_blocks_decl);
 
     // Now we have num_block declaration, we can insert the per block declaration used for reduction variables
@@ -4326,13 +4328,11 @@ void transOmpTargetLoopBlock(SgNode* node)
       SgStatement* assign_stmt = buildAssignStatement (buildVarRefExp(orig_var_name, omp_target_stmt_body_block )  ,func_call_exp);
      ROSE_ASSERT (target->get_scope () == target->get_body()); // there is a block in between
      ROSE_ASSERT (omp_target_stmt_body_block  == target->get_body()); // just to make sure
-     //insertStatementBefore (target_directive_stmt, buildExprStatement(func_call_exp2));
      insertStatementBefore (target, assign_stmt );
 
      // insert memory free for the _dev_per_block_variables
      // TODO: need runtime support to automatically free memory
       SgFunctionCallExp* func_call_exp2 = buildFunctionCallExp ("xomp_freeDevice", buildVoidType(), buildExprListExp(buildVarRefExp(const_cast<SgVariableSymbol*>(current_symbol))),  omp_target_stmt_body_block);
-     //insertStatementBefore (target_directive_stmt, buildExprStatement(func_call_exp2));
      insertStatementBefore (target, buildExprStatement(func_call_exp2));
     }
 
@@ -4342,6 +4342,66 @@ void transOmpTargetLoopBlock(SgNode* node)
     replaceStatement(target, outlined_driver_body, true);
 
     target_outlined_function_list->push_back(isSgFunctionDeclaration(result));
+  }
+
+  // transformation for combined directive omp target parallel for
+  void transOmpTargetParallelFor (SgNode* node)
+  {
+    // Sanity check first
+    ROSE_ASSERT(node != NULL);
+    SgOmpTargetParallelForStatement* target = isSgOmpTargetParallelForStatement(node);
+    ROSE_ASSERT(target != NULL);
+
+    SgExpression* omp_num_teams = buildIntVal(1);
+
+    SgExpression* omp_num_threads = NULL;
+    if (hasClause(target, V_SgOmpNumThreadsClause)) {
+      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgOmpNumThreadsClause);
+      ROSE_ASSERT (num_threads_clauses.size() == 1); // should only have one num_threads()
+      SgOmpNumThreadsClause * num_threads_clause = isSgOmpNumThreadsClause(num_threads_clauses[0]);
+      ROSE_ASSERT (num_threads_clause->get_expression() != NULL);
+      omp_num_threads = copyExpression(num_threads_clause->get_expression());
+    }
+    else {
+      omp_num_threads = buildIntVal(1024);
+    }
+
+    transOmpSpmdWorksharing(target, omp_num_teams, omp_num_threads);
+  }
+
+  // transformation for combined directive omp target teams distribute parallel for
+  void transOmpTargetTeamsDistributeParallelFor (SgNode* node)
+  {
+    // Sanity check first
+    ROSE_ASSERT(node != NULL);
+    SgOmpTargetTeamsDistributeParallelForStatement* target = isSgOmpTargetTeamsDistributeParallelForStatement(node);
+    ROSE_ASSERT(target != NULL);
+
+    SgExpression* omp_num_teams = NULL;
+    if (hasClause(target, V_SgOmpNumTeamsClause)) {
+      Rose_STL_Container<SgOmpClause*> num_teams_clauses = getClause(target, V_SgOmpNumTeamsClause);
+      ROSE_ASSERT (num_teams_clauses.size() == 1); // should only have one num_teams()
+      SgOmpNumTeamsClause * num_teams_clause = isSgOmpNumTeamsClause(num_teams_clauses[0]);
+      ROSE_ASSERT (num_teams_clause->get_expression() != NULL);
+      omp_num_teams = copyExpression(num_teams_clause->get_expression());
+    }
+    else {
+      omp_num_teams = buildIntVal(256);
+    }
+
+    SgExpression* omp_num_threads = NULL;
+    if (hasClause(target, V_SgOmpNumThreadsClause)) {
+      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgOmpNumThreadsClause);
+      ROSE_ASSERT (num_threads_clauses.size() == 1); // should only have one num_threads()
+      SgOmpNumThreadsClause * num_threads_clause = isSgOmpNumThreadsClause(num_threads_clauses[0]);
+      ROSE_ASSERT (num_threads_clause->get_expression() != NULL);
+      omp_num_threads = copyExpression(num_threads_clause->get_expression());
+    }
+    else {
+      omp_num_threads = buildIntVal(1024);
+    }
+
+    transOmpSpmdWorksharing(target, omp_num_teams, omp_num_threads);
   }
 
   /*
@@ -6427,6 +6487,11 @@ void lower_omp(SgSourceFile* file)
       case V_SgOmpTargetParallelForStatement:
         {
           transOmpTargetParallelFor(node);
+          break;
+        }
+      case V_SgOmpTargetTeamsDistributeParallelForStatement:
+        {
+          transOmpTargetTeamsDistributeParallelFor(node);
           break;
         }
       case V_SgOmpSimdStatement:

@@ -71,7 +71,7 @@ namespace Rose {
  *
  * @code
  *  // in BinaryLoader.C
- *  #include "BinaryLoader.h"
+ *  #include <Rose/BinaryAnalysis/BinaryLoader.h>
  *  Rose::Diagnostics::Facility BinaryLoader::mlog;
  * @endcode
  *
@@ -258,7 +258,7 @@ namespace Rose {
  *  Stream m1(mlog[INFO] <<"loading \"" <<filename <<"\""); //note no "\n"
  *  Sawyer::Stopwatch timer;
  *  do_other_stuff_that_might_emit_info_messages();
- *  m1 <<"; took " <<timer <<" seconds.\n"; //original message completed now
+ *  m1 <<"; took " <<timer <<"\n"; //original message completed now
  *  // you may continue to use m1 for additional messages...
  * @endcode
  *

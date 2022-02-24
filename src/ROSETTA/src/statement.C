@@ -88,7 +88,7 @@ Grammar::setUpStatements ()
   // test2017_47.C).  the purpose of this scope is similar to the unused FunctionParameterScope (above),
   // which was developed to support the case of "void foobar (int n, int array[n]);" type declarations
   // which are allowed in C99, but not in C++.  This nondefining (prototype) declaration works in ROSE,
-  // but is still assign the scope of the function parametes to gloval scope (but not assigning symbols
+  // but is still assigned the scope of the function parameters to global scope (but not assigning symbols
   // for them, so working OK, but is still not ideal).  The case of templates generating class declarations
   // (which in EDG are listed as proxy and nonreal classes) requires a better fix to support getting the
   // name qualification correct.  This is part of fixing a bug in the "backstroke" project (the last one
@@ -248,7 +248,7 @@ Grammar::setUpStatements ()
           WaitStatement,
           "IOStatement", "IO_STATEMENT", false);
 
-  // CR (9/25/2018): Fortran 2018 nodes related to synchronization
+  // Rasmussen (9/25/2018): Fortran 2018 nodes related to synchronization
      NEW_TERMINAL_MACRO (SyncAllStatement,     "SyncAllStatement",            "SYNC_ALL_STATEMENT" );
      NEW_TERMINAL_MACRO (SyncImagesStatement,  "SyncImagesStatement",         "SYNC_IMAGES_STATEMENT" );
      NEW_TERMINAL_MACRO (SyncMemoryStatement,  "SyncMemoryStatement",         "SYNC_MEMORY_STATEMENT" );
@@ -303,15 +303,43 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpTargetStatement,  "OmpTargetStatement",   "OMP_TARGET_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetDataStatement,  "OmpTargetDataStatement",   "OMP_TARGET_DATA_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetParallelForStatement,  "OmpTargetParallelForStatement",   "OMP_TARGET_PARALLEL_FOR_STMT" );
-
+    NEW_TERMINAL_MACRO (OmpTargetParallelStatement,  "OmpTargetParallelStatement",   "OMP_TARGET_PARALLEL_STMT" );
+    NEW_TERMINAL_MACRO (OmpDistributeSimdStatement,  "OmpDistributeSimdStatement",   "OMP_DISTRIBUTE_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpDistributeParallelForStatement,  "OmpDistributeParallelForStatement",   "OMP_DISTRIBUTE_PARALLEL_FOR_STMT" );
+    NEW_TERMINAL_MACRO (OmpDistributeParallelForSimdStatement,  "OmpDistributeParallelForSimdStatement",   "OMP_DISTRIBUTE_PARALLEL_FOR_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTaskloopSimdStatement,  "OmpTaskloopSimdStatement",   "OMP_TASKLOOP_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetUpdateStatement,  "OmpTargetUpdateStatement",   "OMP_TARGET_UPDATE_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetParallelForSimdStatement,  "OmpTargetParallelForSimdStatement",   "OMP_TARGET_PARALLEL_FOR_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetParallelLoopStatement,  "OmpTargetParallelLoopStatement",   "OMP_TARGET_PARALLEL_LOOP_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetSimdStatement,  "OmpTargetSimdStatement",   "OMP_TARGET_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsStatement,  "OmpTargetTeamsStatement",   "OMP_TARGET_TEAMS_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsDistributeStatement,  "OmpTargetTeamsDistributeStatement",   "OMP_TARGET_TEAMS_DISTRIBUTE_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsDistributeSimdStatement,  "OmpTargetTeamsDistributeSimdStatement",   "OMP_TARGET_TEAMS_DISTRIBUTE_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsLoopStatement,  "OmpTargetTeamsLoopStatement",   "OMP_TARGET_TEAMS_LOOP_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsDistributeParallelForStatement,  "OmpTargetTeamsDistributeParallelForStatement",   "OMP_TARGET_TEAMS_DISTRIBUTE_PARALLEL_FOR_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsDistributeParallelForSimdStatement,  "OmpTargetTeamsDistributeParallelForSimdStatement",   "OMP_TARGET_TEAMS_DISTRIBUTE_PARALLEL_FOR_SIMD_STMT" );   
+    NEW_TERMINAL_MACRO (OmpMasterTaskloopSimdStatement,  "OmpMasterTaskloopSimdStatement",   "OMP_MASTER_TASKLOOP_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpParallelMasterTaskloopStatement,  "OmpParallelMasterTaskloopStatement",   "OMP_PARALLEL_MASTER_TASKLOOP_STMT" );
+    NEW_TERMINAL_MACRO (OmpParallelMasterTaskloopSimdStatement,  "OmpParallelMasterTaskloopSimdStatement",   "OMP_PARALLEL_MASTER_TASKLOOP_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTeamsDistributeStatement,  "OmpTeamsDistributeStatement",   "OMP_TEAMS_DISTRIBUTE_STMT" );
+    NEW_TERMINAL_MACRO (OmpTeamsDistributeSimdStatement,  "OmpTeamsDistributeSimdStatement",   "OMP_TEAMS_DISTRIBUTE_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTeamsDistributeParallelForStatement,  "OmpTeamsDistributeParallelForStatement",   "OMP_TEAMS_DISTRIBUTE_PARALLEL_FOR_STMT" );
+    NEW_TERMINAL_MACRO (OmpTeamsDistributeParallelForSimdStatement,  "OmpTeamsDistributeParallelForSimdStatement",   "OMP_TEAMS_DISTRIBUTE_PARALLEL_FOR_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTeamsLoopStatement,  "OmpTeamsLoopStatement",   "OMP_TEAMS_LOOP_STMT" );
+    NEW_TERMINAL_MACRO (OmpParallelMasterStatement,  "OmpParallelMasterStatement",   "OMP_PARALLEL_MASTER_STMT" );
+    NEW_TERMINAL_MACRO (OmpMasterTaskloopStatement,  "OmpMasterTaskloopStatement",   "OMP_MASTER_TASKLOOP_STMT" );
+    NEW_TERMINAL_MACRO (OmpParallelLoopStatement,  "OmpParallelLoopStatement",   "OMP_PARALLEL_LOOP_STMT" );
+    
     NEW_TERMINAL_MACRO (OmpSimdStatement,    "OmpSimdStatement",     "OMP_SIMD_STMT" );
     NEW_TERMINAL_MACRO (OmpCriticalStatement,  "OmpCriticalStatement",   "OMP_CRITICAL_STMT" );
     NEW_TERMINAL_MACRO (OmpTaskwaitStatement,  "OmpTaskwaitStatement",  "OMP_TASKWAIT_STMT" );
     // A base class for the most commonly formed directives with both clauses and a structured body
     // We treat OmpSectionsStatement separatedly by move the body to a list of SgOmpSectionStatement
     // sensitive to 
-    NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement | OmpTaskgroupStatement | OmpTaskloopStatement | OmpDepobjStatement | OmpTargetEnterDataStatement | OmpTargetExitDataStatement |
-              OmpTaskStatement | OmpForStatement | OmpDoStatement | OmpSectionsStatement | OmpTargetStatement | OmpTargetDataStatement | OmpTargetParallelForStatement |
+    NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement | OmpTaskgroupStatement | OmpTaskloopStatement | OmpDepobjStatement | OmpTargetEnterDataStatement | OmpTargetExitDataStatement | OmpParallelMasterStatement | OmpMasterTaskloopStatement |
+              OmpTaskStatement | OmpForStatement | OmpDoStatement | OmpSectionsStatement | OmpTargetStatement | OmpTargetDataStatement | OmpTargetParallelForStatement | OmpParallelLoopStatement |              
+              OmpTargetParallelStatement | OmpTargetParallelForSimdStatement | OmpTargetParallelLoopStatement | OmpTargetSimdStatement | OmpTargetTeamsStatement | OmpTargetTeamsDistributeStatement | OmpTargetTeamsDistributeSimdStatement | OmpTargetTeamsLoopStatement | OmpTargetTeamsDistributeParallelForStatement | OmpTargetTeamsDistributeParallelForSimdStatement | OmpDistributeSimdStatement | OmpDistributeParallelForStatement | OmpDistributeParallelForSimdStatement | OmpTaskloopSimdStatement |            
+              OmpMasterTaskloopSimdStatement | OmpParallelMasterTaskloopStatement | OmpParallelMasterTaskloopSimdStatement | OmpTeamsDistributeStatement | OmpTeamsDistributeSimdStatement | OmpTeamsDistributeParallelForStatement | OmpTeamsDistributeParallelForSimdStatement | OmpTeamsLoopStatement |
               OmpSimdStatement | OmpForSimdStatement | OmpCriticalStatement | OmpDistributeStatement | OmpTaskwaitStatement,
         "OmpClauseBodyStatement",   "OMP_CLAUSEBODY_STMT", false );
 
@@ -328,7 +356,7 @@ Grammar::setUpStatements ()
         | OmpSectionStatement | OmpWorkshareStatement  | OmpClauseBodyStatement ,
         "OmpBodyStatement",      "OMP_BODY_STMT", false );
 
-    NEW_NONTERMINAL_MACRO (OmpClauseStatement,  OmpCancelStatement | OmpCancellationPointStatement ,
+    NEW_NONTERMINAL_MACRO (OmpClauseStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement,
         "OmpClauseStatement",      "OMP_CLAUSE_STMT", false );
 
 
@@ -418,7 +446,7 @@ Grammar::setUpStatements ()
 
   // Note that the associate statement is really a scope, with its own declarations of variables declared by reference to 
   // other variables or expressions.  They are only l-values if and only if the rhs is a l-value (I think).
-  // CR (10/22/2018): Added JovialForThenStatement
+  // Rasmussen (10/22/2018): Added JovialForThenStatement
      NEW_NONTERMINAL_MACRO (ScopeStatement,
           Global                       | BasicBlock           | IfStmt                    | ForStatement       | FunctionDefinition |
           ClassDefinition              | WhileStmt            | DoWhileStmt               | SwitchStatement    | CatchOptionStmt    |
@@ -493,7 +521,7 @@ Grammar::setUpStatements ()
   // simplest directives, just one line
      NEW_TERMINAL_MACRO (OmpBarrierStatement,   "OmpBarrierStatement",   "OMP_BARRIER_STMT" );
      NEW_TERMINAL_MACRO (OmpTaskyieldStatement,   "OmpTaskyieldStatement",   "OMP_TASKYIELD_STMT" );
-
+     NEW_TERMINAL_MACRO (OmpRequiresStatement,  "OmpRequiresStatement",   "OMP_REQUIRES_STMT" );
   // + variable list
      NEW_TERMINAL_MACRO (OmpThreadprivateStatement, "OmpThreadprivateStatement",    "OMP_THREADPRIVATE_STMT" );
 
@@ -516,7 +544,8 @@ Grammar::setUpStatements ()
           UsingDirectiveStatement                 | ClassDeclaration          | ImplicitStatement            |
           UsingDeclarationStatement               | NamelistStatement         | ImportStatement              |
           FunctionDeclaration                  /* | ModuleStatement */        | ContainsStatement            |
-          C_PreprocessorDirectiveStatement        | OmpThreadprivateStatement | FortranIncludeLine           | 
+          C_PreprocessorDirectiveStatement        | OmpThreadprivateStatement | OmpRequiresStatement         |
+          FortranIncludeLine           | 
           StmtDeclarationStatement     |
           StaticAssertionDeclaration              | OmpDeclareSimdStatement   | MicrosoftAttributeDeclaration|
           NonrealDecl               | EmptyDeclaration
@@ -524,8 +553,8 @@ Grammar::setUpStatements ()
           "DeclarationStatement", "DECL_STMT", false);
 
 
-  // CR (9/20/2018): Added ImageControlStatement
-  // CR (7/11/2020): Changed StopOrPauseStatement to ProcessControlStatement to allow more variants
+  // Rasmussen (9/20/2018): Added ImageControlStatement
+  //           (7/11/2020): Changed StopOrPauseStatement to ProcessControlStatement to allow more variants
      NEW_NONTERMINAL_MACRO (Statement,
              ScopeStatement            | FunctionTypeTable      | DeclarationStatement            | ExprStatement         |
              LabelStatement            | CaseOptionStmt         | TryStmt                         | DefaultOptionStmt     |
@@ -760,6 +789,10 @@ Grammar::setUpStatements ()
      DeclarationStatement.setDataPrototype ( "SgDeclarationScope*", "declarationScope", "= NULL",
                                         NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
+  // DQ (10/26/2020): Adding support to unparse the templates from the AST on a declaration by declaration basis.
+     DeclarationStatement.setDataPrototype ("bool", "unparse_template_ast", "= false",
+                                        NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
 
      BasicBlock.setFunctionPrototype ( "HEADER_BASIC_BLOCK", "../Grammar/Statement.code" );
 
@@ -950,7 +983,7 @@ Grammar::setUpStatements ()
                    CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
 
-// CR (09/24/2020): Finishing implementation of SgFunctionParameterScope for Jovial
+// Rasmussen (09/24/2020): Finishing implementation of SgFunctionParameterScope for Jovial
      FunctionParameterScope.setFunctionPrototype( "HEADER_FUNCTION_PARAMETER_SCOPE", "../Grammar/Statement.code" );
      FunctionParameterScope.editSubstitute      ( "HEADER_LIST_DECLARATIONS", "HEADER_LIST_DECLARATIONS", "../Grammar/Statement.code" );
      FunctionParameterScope.editSubstitute      ( "LIST_DATA_TYPE", "SgDeclarationStatementPtrList" );
@@ -1713,6 +1746,14 @@ Grammar::setUpStatements ()
   // template argument lists inside of template declarations.  Related to concept of is_non_real setting.
      ClassDeclaration.setDataPrototype("bool","isRepresentingTemplateParameterInTemplateDeclaration","= false",
                                 NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+  // PP (2/22/2021): To support declarations of Ada private types (aka forward declarations).
+  //                 In Ada, programmers can specify the base record as part of the public portion of
+  //                 a private type.
+  //                 e.g., type Manager is new Employee with private;
+     ClassDeclaration.setDataPrototype("SgBaseClass*","adaParentType","= NULL",
+                                NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
 #if 0
   // DQ (11/18/2013): Adding Java specific support
      ClassDeclaration.setDataPrototype("bool","java_annonomous","= false",
@@ -3131,6 +3172,8 @@ Grammar::setUpStatements ()
                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      UseStatement.setDataPrototype ( "bool", "only_option", "= false",
                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UseStatement.setDataPrototype ( "std::string", "module_nature", "= \"\"",
+                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
   // UseStatement.setDataPrototype ( "SgExprListExp*", "rename_list", "= NULL",
   //              CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
      UseStatement.setDataPrototype ( "SgRenamePairPtrList", "rename_list", "",
@@ -3194,7 +3237,7 @@ Grammar::setUpStatements ()
                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // Fortran 95 specific construct (different from C/C++ for loop).
-  // CR (10/25/2018): Added forall_statement_kind_enum to allow specifying as a DO CONCURRENT statement
+  // Rasmussen (10/25/2018): Added forall_statement_kind_enum to allow specifying as a DO CONCURRENT statement
      ForAllStatement.setFunctionPrototype ( "HEADER_FORALL_STATEMENT", "../Grammar/Statement.code" );
      ForAllStatement.setDataPrototype ( "SgExprListExp*", "forall_header", "= NULL",
                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
@@ -3217,15 +3260,15 @@ Grammar::setUpStatements ()
                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // DQ (8/14/2007): Added new data members to Fortran IR nodes.
-  // CR (7/11/2020): Added F2018 addition, quiet
+  // Rasmussen (7/11/2020): Added F2018 addition, quiet
      ProcessControlStatement.setFunctionPrototype ( "HEADER_PROCESS_CONTROL_STATEMENT", "../Grammar/Statement.code" );
      ProcessControlStatement.setDataPrototype     ( "SgProcessControlStatement::control_enum",
                                                     "control_kind", "= SgProcessControlStatement::e_unknown",
                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      ProcessControlStatement.setDataPrototype     ( "SgExpression*", "code", "= NULL",
-                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
      ProcessControlStatement.setDataPrototype     ( "SgExpression*", "quiet", "= NULL",
-               NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+               NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
   // DQ (8/14/2007): Added new data members to Fortran IR nodes.
      IOStatement.setFunctionPrototype ( "HEADER_IO_STATEMENT", "../Grammar/Statement.code" );
@@ -3242,7 +3285,7 @@ Grammar::setUpStatements ()
      IOStatement.setDataPrototype ( "SgExpression*", "iomsg", "= NULL",
                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
-  // CR (9/20/2018): Added F2018 image control statements
+  // Rasmussen (9/20/2018): Added F2018 image control statements
      ImageControlStatement.setFunctionPrototype ( "HEADER_IMAGE_CONTROL_STATEMENT", "../Grammar/Statement.code" );
      ImageControlStatement.setDataPrototype     ( "SgImageControlStatement::image_control_statement_enum", "image_control_statement", "= SgImageControlStatement::e_unknown",
                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
@@ -3504,7 +3547,7 @@ Grammar::setUpStatements ()
      BlockDataStatement.setDataPrototype    ( "SgBasicBlock*", "body", "= NULL",
                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-  // CR (8/3/2020): Added implicit_type enum for F2018 syntax (implicit_none becomes redundant)
+  // Rasmussen (8/3/2020): Added implicit_type enum for F2018 syntax (implicit_none becomes redundant)
      ImplicitStatement.setDataPrototype("bool", "implicit_none", "= false",
                      CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      ImplicitStatement.setDataPrototype("SgImplicitStatement::implicit_spec_enum",
@@ -4083,7 +4126,7 @@ Grammar::setUpStatements ()
 
      IOStatement.setFunctionSource              ("SOURCE_IO_STATEMENT", "../Grammar/Statement.code" );
 
-  // CR (9/20/2018): Added F2018 image control statements
+  // Rasmussen (9/20/2018): Added F2018 image control statements
      ImageControlStatement.setFunctionSource    ("SOURCE_IMAGE_CONTROL_STATEMENT", "../Grammar/Statement.code" );
 
   // Derived from ImageControlStatement
@@ -4216,7 +4259,9 @@ Grammar::setUpStatements ()
     OmpFlushStatement.setFunctionSource            ("SOURCE_OMP_FLUSH_STATEMENT", "../Grammar/Statement.code" );
     OmpDeclareSimdStatement.setFunctionPrototype   ("HEADER_OMP_DECLARE_SIMD_STATEMENT", "../Grammar/Statement.code");
     OmpDeclareSimdStatement.setFunctionSource      ("SOURCE_OMP_DECLARE_SIMD_STATEMENT", "../Grammar/Statement.code");
-
+    
+    OmpRequiresStatement.setFunctionPrototype   ("HEADER_OMP_REQUIRES_STATEMENT", "../Grammar/Statement.code");
+    OmpRequiresStatement.setFunctionSource            ("SOURCE_OMP_REQUIRES_STATEMENT", "../Grammar/Statement.code" );
     OmpParallelStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
     OmpTeamsStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_STATEMENT", "../Grammar/Statement.code" );
     OmpCancellationPointStatement.setFunctionSource            ("SOURCE_OMP_CANCELLATION_POINT_STATEMENT", "../Grammar/Statement.code" );
@@ -4250,6 +4295,32 @@ Grammar::setUpStatements ()
     OmpTargetStatement.setFunctionSource            ("SOURCE_OMP_TARGET_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetDataStatement.setFunctionSource            ("SOURCE_OMP_TARGET_DATA_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetParallelForStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_FOR_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetParallelStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
+    OmpDistributeSimdStatement.setFunctionSource            ("SOURCE_OMP_DISTRIBUTE_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpDistributeParallelForStatement.setFunctionSource            ("SOURCE_OMP_DISTRIBUTE_PARALLEL_FOR_STATEMENT", "../Grammar/Statement.code" );
+    OmpDistributeParallelForSimdStatement.setFunctionSource            ("SOURCE_OMP_DISTRIBUTE_PARALLEL_FOR_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTaskloopSimdStatement.setFunctionSource            ("SOURCE_OMP_TASKLOOP_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetUpdateStatement.setFunctionSource            ("SOURCE_OMP_TARGET_UPDATE_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetParallelForSimdStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_FOR_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetParallelLoopStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_LOOP_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetSimdStatement.setFunctionSource            ("SOURCE_OMP_TARGET_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsDistributeStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_DISTRIBUTE_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsDistributeSimdStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_DISTRIBUTE_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsLoopStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_LOOP_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsDistributeParallelForStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_DISTRIBUTE_PARALLEL_FOR_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsDistributeParallelForSimdStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_DISTRIBUTE_PARALLEL_FOR_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpMasterTaskloopSimdStatement.setFunctionSource            ("SOURCE_OMP_MASTER_TASKLOOP_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpParallelMasterTaskloopStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_MASTER_TASKLOOP_STATEMENT", "../Grammar/Statement.code" );
+    OmpParallelMasterTaskloopSimdStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_MASTER_TASKLOOP_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTeamsDistributeStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_DISTRIBUTE_STATEMENT", "../Grammar/Statement.code" );
+    OmpTeamsDistributeSimdStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_DISTRIBUTE_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTeamsDistributeParallelForStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_DISTRIBUTE_PARALLEL_FOR_STATEMENT", "../Grammar/Statement.code" );
+    OmpTeamsDistributeParallelForSimdStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_DISTRIBUTE_PARALLEL_FOR_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTeamsLoopStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_LOOP_STATEMENT", "../Grammar/Statement.code" );
+    OmpParallelMasterStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_MASTER_STATEMENT", "../Grammar/Statement.code" );
+    OmpMasterTaskloopStatement.setFunctionSource            ("SOURCE_OMP_MASTER_TASKLOOP_STATEMENT", "../Grammar/Statement.code" );
+    OmpParallelLoopStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_LOOP_STATEMENT", "../Grammar/Statement.code" );
     OmpSimdStatement.setFunctionSource            ("SOURCE_OMP_SIMD_STATEMENT", "../Grammar/Statement.code" );
 
    // sections {section, section} // `containerSuccessors >1 is not allowed in ROSETTA's traversal
@@ -4266,6 +4337,8 @@ Grammar::setUpStatements ()
                                                 NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
     OmpDeclareSimdStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+    OmpRequiresStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
    // omp threadprivate [(var-list)]

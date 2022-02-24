@@ -121,6 +121,7 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:astMatching>
   $<TARGET_OBJECTS:midend_util>
   $<TARGET_OBJECTS:midend_pt>
+  $<TARGET_OBJECTS:ompparser>
   $<TARGET_OBJECTS:sageInterface>
   $<TARGET_OBJECTS:astTokenStream>
   $<TARGET_OBJECTS:astHiddenTypeAndDeclarationLists>
@@ -147,11 +148,7 @@ add_dependencies(ROSE_DLL roseUtil)
 
 set_target_properties(ROSE_DLL PROPERTIES OUTPUT_NAME "rose")
 
-if (use_ompparser)
-    target_link_libraries(ROSE_DLL ${edg_lib} ${link_with_libraries} ompparser)
-else()
-    target_link_libraries(ROSE_DLL ${edg_lib} ${link_with_libraries})
-endif()
+target_link_libraries(ROSE_DLL ${edg_lib} ${link_with_libraries})
 
 set_target_properties(ROSE_DLL PROPERTIES
   VERSION 1.0.0
@@ -220,7 +217,7 @@ endif ()
 # If the C preprocessor is enabled, ROSE has some additional depenendencies
 if(enable-cpp)
   add_dependencies(ROSE_DLL
-    OMPPARSER ROSE_PREPROCESSOR ${edg_lib} libhpdf
+    ROSE_PREPROCESSOR ${edg_lib} libhpdf
     generate_rosePublicConfig)
 endif()
 

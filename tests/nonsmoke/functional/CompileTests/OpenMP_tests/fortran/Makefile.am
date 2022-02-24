@@ -1,8 +1,8 @@
 include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 
 F77_TESTCODES_TO_PASS = \
-	allocate_predefined_modifiers.f \
-	allocate_user_defined_modifiers.f \
+    allocate_predefined_modifiers.f \
+    allocate_user_defined_modifiers.f \
     #array-one.f \
     #array_initialize.f \
     default.f \
@@ -13,17 +13,17 @@ F77_TESTCODES_TO_PASS = \
     helloworld2.f \
     #jacobi.f \
     master.f \
-    #ompdo-decremental.f \
-    #ompdo-default.f \
+    ompdo-decremental.f \
+    ompdo-default.f \
     #ompdo-multiple.f \
-    #ompdo-orphaned.f \
-    #ompdo-static.f \
+    ompdo-orphaned.f \
+    ompdo-static.f \
     parallel-1.f \
     parallel-2.f \
     parallel.f \
     private.f \
-    #reduction.f \
-    #schedule.f \
+    reduction.f \
+    schedule.f \
     section1.f \
     #shared-array.f \
     shared.f \
@@ -34,8 +34,8 @@ F77_TESTCODES_TO_PASS = \
     task_simplest.f
 
 REX_F77_TESTCODES_TO_PASS = \
-	allocate_predefined_modifiers.f \
-	allocate_user_defined_modifiers.f \
+    allocate_predefined_modifiers.f \
+    allocate_user_defined_modifiers.f \
     default.f \
     exampleA251f.f \
     flush.f \
@@ -43,10 +43,16 @@ REX_F77_TESTCODES_TO_PASS = \
     helloworld0.f \
     helloworld2.f \
     master.f \
+    ompdo-decremental.f \
+    ompdo-default.f \
+    ompdo-orphaned.f \
+    ompdo-static.f \
     parallel-1.f \
     parallel-2.f \
     parallel.f \
     private.f \
+    reduction.f \
+    schedule.f \
     section1.f \
     shared.f \
     single.f \
@@ -60,17 +66,19 @@ F77_TESTCODES_TO_PASS += testNewOFP.f
 
 F90_TESTCODES_TO_PASS = \
   paralleldo.f90 \
-  #paralleldo-1.f90 \
-  #collapse.f90 \
+  paralleldo-1.f90 \
   critical.f90 \
-  single-copyprivate.f90 \
-  continuation.f90
+  continuation.f90 \
+  #collapse.f90 \
+  single-copyprivate.f90
 
 REX_F90_TESTCODES_TO_PASS = \
   paralleldo.f90 \
+  paralleldo-1.f90 \
   critical.f90 \
-  single-copyprivate.f90 \
-  continuation.f90
+  continuation.f90 \
+  single-copyprivate.f90
+
 
 #if !OS_VENDOR_DEBIAN
 ## This fails for Debian 5.0 systems (at least 32-bit, all compilers (4.3 tested), I think)

@@ -1,0 +1,1 @@
+#pragma omp parallel loop  if(1)

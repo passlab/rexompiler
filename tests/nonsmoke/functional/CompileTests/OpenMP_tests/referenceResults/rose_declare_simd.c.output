@@ -1,0 +1,4 @@
+#pragma omp declare simd uniform(fact)
+#pragma omp declare simd uniform(a,b,fact) linear(i:1)
+#pragma omp declare simd uniform(fact) linear(a,b:1)
+#pragma omp simd  private(tmp)

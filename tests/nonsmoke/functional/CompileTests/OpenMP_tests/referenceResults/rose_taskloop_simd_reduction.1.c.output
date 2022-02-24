@@ -1,0 +1,12 @@
+#pragma omp parallel master 
+#pragma omp taskloop  reduction(+ : asum)
+#pragma omp parallel  reduction(task, + : asum)
+#pragma omp master 
+#pragma omp task  in_reduction(+ : asum)
+#pragma omp master taskloop  in_reduction(+ : asum)
+#pragma omp parallel master 
+#pragma omp taskloop simd  reduction(+ : asum)
+#pragma omp parallel  reduction(task, + : asum)
+#pragma omp master 
+#pragma omp task  in_reduction(+ : asum)
+#pragma omp master taskloop simd  in_reduction(+ : asum)

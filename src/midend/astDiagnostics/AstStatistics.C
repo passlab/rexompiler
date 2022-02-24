@@ -146,6 +146,39 @@ AstNodeMemoryPoolStatistics::AstNodeMemoryPoolStatistics()
 
   // DQ (5/6/2011): Insure++ reports this as an error in the tests/nonsmoke/functional/RunTests/AstDeleteTests
      counter = 0;
+
+  // DQ (3/8/2021): Added support for specific nodes and groups of nodes that are dominate.
+     statement_nodes           = 0;
+     statement_memoryFootprint = 0;
+     statement_percent         = 0.0;
+
+     declaration_nodes           = 0;
+     declaration_memoryFootprint = 0;
+     declaration_percent         = 0.0;
+
+     support_nodes           = 0;
+     support_memoryFootprint = 0;
+     support_percent         = 0.0;
+
+     expression_nodes           = 0;
+     expression_memoryFootprint = 0;
+     expression_percent         = 0.0;
+
+     type_nodes           = 0;
+     type_memoryFootprint = 0;
+     type_percent         = 0.0;
+
+     symbol_nodes           = 0;
+     symbol_memoryFootprint = 0;
+     symbol_percent         = 0.0;
+
+     node_nodes           = 0;
+     node_memoryFootprint = 0;
+     node_percent         = 0.0;
+
+     file_info_nodes           = 0;
+     file_info_memoryFootprint = 0;
+     file_info_percent         = 0.0;
    }
 
 AstNodeMemoryPoolStatistics::~AstNodeMemoryPoolStatistics()
@@ -173,10 +206,59 @@ AstNodeMemoryPoolStatistics::ElementType::operator<(const ElementType & x)
                int numberOfNodes   = castNode->numberOfNodes(); \
                int memoryFootprint = castNode->memoryUsage(); \
                double percent = (((double) memoryFootprint) / ((double) totalMemoryUsed)) * 100.0; \
-               if ( SgProject::get_verbose() >= 2 ) \
+               if ( SgProject::get_verbose() >= 0 ) \
                     printf ("AST Memory Pool Statistics: numberOfNodes = %9d memory consumption = %10d bytes (%6.3f percent of total) sizeof() = %4ld node = %s \n",numberOfNodes,memoryFootprint,percent,sizeof(*castNode),castNode->class_name().c_str());\
+               if (isSgStatement(node) != NULL) \
+                  { \
+                    statement_nodes           += numberOfNodes; \
+                    statement_memoryFootprint += memoryFootprint; \
+                    statement_percent         += percent; \
+                  } \
+               if (isSgDeclarationStatement(node) != NULL) \
+                  { \
+                    declaration_nodes           += numberOfNodes; \
+                    declaration_memoryFootprint += memoryFootprint; \
+                    declaration_percent         += percent; \
+                  } \
+               if (isSgSupport(node) != NULL) \
+                  { \
+                    support_nodes           += numberOfNodes; \
+                    support_memoryFootprint += memoryFootprint; \
+                    support_percent         += percent; \
+                  } \
+               if (isSgExpression(node) != NULL) \
+                  { \
+                    expression_nodes           += numberOfNodes; \
+                    expression_memoryFootprint += memoryFootprint; \
+                    expression_percent         += percent; \
+                  } \
+               if (isSgType(node) != NULL) \
+                  { \
+                    type_nodes           += numberOfNodes; \
+                    type_memoryFootprint += memoryFootprint; \
+                    type_percent         += percent; \
+                  } \
+               if (isSgSymbol(node) != NULL) \
+                  { \
+                    symbol_nodes           += numberOfNodes; \
+                    symbol_memoryFootprint += memoryFootprint; \
+                    symbol_percent         += percent; \
+                  } \
+               if (isSgNode(node) != NULL) \
+                  { \
+                    node_nodes           += numberOfNodes; \
+                    node_memoryFootprint += memoryFootprint; \
+                    node_percent         += percent; \
+                  } \
+               if (isSg_File_Info(node) != NULL) \
+                  { \
+                    file_info_nodes           += numberOfNodes; \
+                    file_info_memoryFootprint += memoryFootprint; \
+                    file_info_percent         += percent; \
+                  } \
                break; \
              }
+
 
 void AstNodeMemoryPoolStatistics::visit ( SgNode* node)
    {
@@ -496,23 +578,6 @@ void AstNodeMemoryPoolStatistics::visit ( SgNode* node)
           IR_NODE_VISIT_CASE(SgLocatedNodeSupport)
           IR_NODE_VISIT_CASE(SgToken)
 
-#if 0
-Case not handled: SgTemplateMemberFunctionDeclaration 
-Case not handled: SgTemplateFunctionDeclaration 
-Case not handled: SgTemplateVariableDeclaration 
-Case not handled: SgTemplateClassDefinition 
-Case not handled: SgTemplateFunctionDefinition 
-Case not handled: SgTemplateMemberFunctionRefExp 
-No representative for SgShortVal found in memory pools 
-No representative for SgUnsignedCharVal found in memory pools 
-No representative for SgWcharVal found in memory pools 
-No representative for SgUnsignedShortVal found in memory pools 
-Case not handled: SgTemplateParameterVal 
-Case not handled: SgTemplateClassSymbol 
-Case not handled: SgTemplateFunctionSymbol 
-Case not handled: SgTemplateMemberFunctionSymbol 
-#endif
-
        // DQ (11/19/2012): Added missing IR nodes.
           IR_NODE_VISIT_CASE(SgTypeTable)
           IR_NODE_VISIT_CASE(SgPartialFunctionType)
@@ -527,6 +592,44 @@ Case not handled: SgTemplateMemberFunctionSymbol
           IR_NODE_VISIT_CASE(SgTemplateClassSymbol)
           IR_NODE_VISIT_CASE(SgTemplateFunctionSymbol)
           IR_NODE_VISIT_CASE(SgTemplateMemberFunctionSymbol)
+
+
+       // DQ (10/28/2020): Added missing IR nodes.
+       // IR_NODE_VISIT_CASE(SgUnparse_Info)
+          IR_NODE_VISIT_CASE(SgTypeNullptr)
+          IR_NODE_VISIT_CASE(SgDeclType)
+          IR_NODE_VISIT_CASE(SgTypeSigned128bitInteger)
+       // IR_NODE_VISIT_CASE(SgPartialFunctionType)
+          IR_NODE_VISIT_CASE(SgDeclarationScope)
+       // IR_NODE_VISIT_CASE(SgAggregateInitializer)
+          IR_NODE_VISIT_CASE(SgNullptrValExp)
+          IR_NODE_VISIT_CASE(SgNonrealBaseClass)
+          IR_NODE_VISIT_CASE(SgTypeSignedLongLong)
+          IR_NODE_VISIT_CASE(SgRvalueReferenceType)
+          IR_NODE_VISIT_CASE(SgTypeOfType)
+          IR_NODE_VISIT_CASE(SgTypeUnsigned128bitInteger)
+          IR_NODE_VISIT_CASE(SgNonrealType)
+          IR_NODE_VISIT_CASE(SgAutoType)
+          IR_NODE_VISIT_CASE(SgTypeChar16)
+          IR_NODE_VISIT_CASE(SgTypeChar32)
+          IR_NODE_VISIT_CASE(SgTemplateTypedefDeclaration)
+          IR_NODE_VISIT_CASE(SgTemplateInstantiationTypedefDeclaration)
+          IR_NODE_VISIT_CASE(SgNonrealDecl)
+          IR_NODE_VISIT_CASE(SgStaticAssertionDeclaration)
+          IR_NODE_VISIT_CASE(SgNonrealRefExp)
+          IR_NODE_VISIT_CASE(SgTemplateFunctionRefExp)
+          IR_NODE_VISIT_CASE(SgAlignOfOp)
+          IR_NODE_VISIT_CASE(SgNoexceptOp)
+          IR_NODE_VISIT_CASE(SgLambdaExp)
+          IR_NODE_VISIT_CASE(SgBracedInitializer)
+          IR_NODE_VISIT_CASE(SgFunctionParameterRefExp)
+          IR_NODE_VISIT_CASE(SgPseudoDestructorRefExp)
+          IR_NODE_VISIT_CASE(SgTypeTraitBuiltinOperator)
+          IR_NODE_VISIT_CASE(SgTemplateVariableSymbol)
+          IR_NODE_VISIT_CASE(SgNonrealSymbol)
+          IR_NODE_VISIT_CASE(SgLambdaCapture)
+          IR_NODE_VISIT_CASE(SgLambdaCaptureList)
+          IR_NODE_VISIT_CASE(SgTemplateTypedefSymbol)
 
        // IR_NODE_VISIT_CASE()
 
@@ -562,9 +665,50 @@ string
 AstNodeStatistics::IRnodeUsageStatistics()
    {
   // printf ("IR node statistics not implemented! \n");
+
+#if 0
+     printf ("AstNodeStatistics::IRnodeUsageStatistics(): AstPerformance::outputCompilationPerformance = %s \n",AstPerformance::outputCompilationPerformance ? "true" : "false");
+#endif
+
+#if 0
+  // DQ (10/28/2020): This function is now called from within the AstPerformance::generateReportFromObject() function.
+  // DQ (10/28/2020): Control output of reporting using static bool data member outputCompilationPerformance.
+     if (AstPerformance::outputCompilationPerformance == false)
+        {
+          return "";
+        }
+#endif
+
      string s = "\n\n";
      AstNodeMemoryPoolStatistics memoryPoolTraversal;
      memoryPoolTraversal.traverseRepresentativeIRnodes();
+
+  // DQ (3/8/2021): Adding support for representing different classes of IR nodes (e.g. statements, declarations, expressions, support, etc.).
+     if ( SgProject::get_verbose() >= 0 ) 
+        {
+          printf ("\n\nStatistics by class or IR node: \n");
+          printf ("AST Memory Pool Statistics: numberOfNodes = %9d memory consumption = %10d bytes (%7.3f percent of total) sizeof() = %4ld node = %s \n",
+               memoryPoolTraversal.node_nodes,memoryPoolTraversal.node_memoryFootprint,memoryPoolTraversal.node_percent,sizeof(SgNode),"SgNode");
+
+          printf ("\nAST Memory Pool Statistics: numberOfNodes = %9d memory consumption = %10d bytes (%6.3f percent of total)  sizeof() = %4ld node = %s \n",
+               memoryPoolTraversal.statement_nodes,memoryPoolTraversal.statement_memoryFootprint,memoryPoolTraversal.statement_percent,sizeof(SgStatement),"SgStatement");
+          printf ("AST Memory Pool Statistics: numberOfNodes = %9d memory consumption = %10d bytes (%6.3f percent of total)  sizeof() = %4ld node = %s \n",
+               memoryPoolTraversal.declaration_nodes,memoryPoolTraversal.declaration_memoryFootprint,memoryPoolTraversal.declaration_percent,sizeof(SgDeclarationStatement),"SgDeclarationStatement");
+
+          printf ("\nAST Memory Pool Statistics: numberOfNodes = %9d memory consumption = %10d bytes (%6.3f percent of total)  sizeof() = %4ld node = %s \n",
+               memoryPoolTraversal.support_nodes,memoryPoolTraversal.support_memoryFootprint,memoryPoolTraversal.support_percent,sizeof(SgSupport),"SgSupport");
+          printf ("AST Memory Pool Statistics: numberOfNodes = %9d memory consumption = %10d bytes (%6.3f percent of total)  sizeof() = %4ld node = %s \n",
+               memoryPoolTraversal.file_info_nodes,memoryPoolTraversal.file_info_memoryFootprint,memoryPoolTraversal.file_info_percent,sizeof(Sg_File_Info),"Sg_File_Info");
+
+          printf ("\nAST Memory Pool Statistics: numberOfNodes = %9d memory consumption = %10d bytes (%6.3f percent of total)  sizeof() = %4ld node = %s \n",
+               memoryPoolTraversal.expression_nodes,memoryPoolTraversal.expression_memoryFootprint,memoryPoolTraversal.expression_percent,sizeof(SgExpression),"SgExpression");
+
+          printf ("\nAST Memory Pool Statistics: numberOfNodes = %9d memory consumption = %10d bytes (%6.3f percent of total)  sizeof() = %4ld node = %s \n",
+               memoryPoolTraversal.type_nodes,memoryPoolTraversal.type_memoryFootprint,memoryPoolTraversal.type_percent,sizeof(SgType),"SgType");
+
+          printf ("\nAST Memory Pool Statistics: numberOfNodes = %9d memory consumption = %10d bytes (%6.3f percent of total)  sizeof() = %4ld node = %s \n",
+               memoryPoolTraversal.symbol_nodes,memoryPoolTraversal.symbol_memoryFootprint,memoryPoolTraversal.symbol_percent,sizeof(SgSymbol),"SgSymbol");
+        }
 
   // s = "AstNodeStatistics::IRnodeUsageStatistics(): Not finished being implemented \n";
 
