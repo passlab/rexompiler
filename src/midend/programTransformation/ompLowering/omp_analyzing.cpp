@@ -772,55 +772,19 @@ int createUpirDataFields(SgFile *file) {
 
 // set the UPIR parent and children of a given UPIR node
 void setUpirRelationship(SgStatement *parent, SgStatement *child) {
-  switch (parent->variantT()) {
-  case V_SgUpirLoopParallelStatement:
-  case V_SgUpirSpmdStatement:
-  case V_SgOmpSimdStatement: {
-    SgUpirBodyStatement *upir_parent = isSgUpirBodyStatement(parent);
-    SgStatementPtrList &children = upir_parent->get_upir_children();
-    children.push_back(child);
-    break;
-  }
-  default: {
-    ;
-  }
-  }
-  switch (child->variantT()) {
-  case V_SgUpirLoopParallelStatement:
-  case V_SgUpirSpmdStatement:
-  case V_SgOmpSimdStatement: {
-    SgUpirBodyStatement *upir_child = isSgUpirBodyStatement(child);
-    upir_child->set_upir_parent(parent);
-    break;
-  }
-  default: {
-    ;
-  }
-  }
-}
+  SgUpirBaseStatement *upir_parent = isSgUpirBaseStatement(parent);
+  SgStatementPtrList &children = upir_parent->get_upir_children();
+  children.push_back(child);
 
-// confirm whether a given SgNode is UPIR.
-bool isUpirStatement(SgStatement *node) {
-  bool result = false;
-  switch (node->variantT()) {
-  case V_SgUpirLoopParallelStatement:
-  case V_SgUpirSpmdStatement:
-  case V_SgOmpSimdStatement: {
-    result = true;
-    break;
-  }
-  default: {
-    result = false;
-  }
-  }
-  return result;
+  SgUpirBaseStatement *upir_child = isSgUpirBaseStatement(child);
+  upir_child->set_upir_parent(parent);
 }
 
 // search the UPIR parent of a given UPIR node, not its SgNode parent.
 SgStatement *getUpirParent(SgStatement *node) {
   SgStatement *parent = isSgStatement(node->get_parent());
   while (parent != NULL) {
-    if (isUpirStatement(parent)) {
+    if (isSgUpirBaseStatement(parent)) {
       break;
     }
     parent = isSgStatement(parent->get_parent());
@@ -831,16 +795,14 @@ SgStatement *getUpirParent(SgStatement *node) {
 // traverse the SgNode AST and fill the information of UPIR parent and children.
 void createUpirStatementTree(SgSourceFile *file) {
   Rose_STL_Container<SgNode *> node_list =
-      NodeQuery::querySubTree(file, V_SgStatement);
+      NodeQuery::querySubTree(file, V_SgUpirBaseStatement);
   Rose_STL_Container<SgNode *>::reverse_iterator node_list_iterator;
   for (node_list_iterator = node_list.rbegin();
        node_list_iterator != node_list.rend(); node_list_iterator++) {
-    SgStatement *node = isSgStatement(*node_list_iterator);
-    if (isUpirStatement(node)) {
-      SgStatement *parent = getUpirParent(node);
-      if (parent != NULL) {
-        setUpirRelationship(parent, node);
-      }
+    SgUpirBaseStatement *node = isSgUpirBaseStatement(*node_list_iterator);
+    SgStatement *parent = getUpirParent(node);
+    if (parent != NULL) {
+      setUpirRelationship(parent, node);
     }
   }
 }

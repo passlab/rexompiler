@@ -7296,19 +7296,36 @@ void lower_omp(SgSourceFile* file)
     insertRTLinitAndCleanCode(file);
   else
     insertAcceleratorInit(file);
-  //    translationDriver driver;
-  // SgOmpXXXStatment is compiler-generated and has no file info
-  //driver.traverseWithinFile(file,postorder);
-  //  driver.traverse(file,postorder);
-  // AST manipulation with postorder traversal is not reliable,
-  // We record nodes first then do changes to them
 
   outlined_function_list = new std::vector<SgFunctionDeclaration* >();
   target_outlined_function_list = new std::vector<SgFunctionDeclaration* >();
 
-  Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(file, V_SgStatement);
-  Rose_STL_Container<SgNode*>::reverse_iterator nodeListIterator = nodeList.rbegin();
-  for ( ;nodeListIterator !=nodeList.rend();  ++nodeListIterator)
+  Rose_STL_Container<SgNode*> upir_nodes;
+  do {
+    upir_nodes.clear();
+    Rose_STL_Container<SgNode*>::iterator iter;
+    Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(file, V_SgUpirBaseStatement);
+    for (iter = nodeList.begin(); iter != nodeList.end(); iter++) {
+        SgUpirBaseStatement* upir_node = isSgUpirBaseStatement(*iter);
+        ROSE_ASSERT(upir_node != NULL);
+        SgUpirBaseStatement *upir_parent = isSgUpirBaseStatement(upir_node->get_upir_parent());
+        //if (upir_parent == NULL) {
+            upir_nodes.push_back(upir_node);
+        //}
+    }
+
+    for (iter = upir_nodes.begin(); iter != upir_nodes.end(); iter++) {
+        SgUpirBaseStatement* upir_node = isSgUpirBaseStatement(*iter);
+        ROSE_ASSERT(upir_node != NULL);
+        SgStatementPtrList &upir_children = upir_node->get_upir_children();
+        for (size_t i = 0; i < upir_children.size(); i++) {
+            SgUpirBodyStatement *upir_child = isSgUpirBodyStatement(upir_children[i]);
+            upir_child->set_upir_parent(NULL);
+        }
+    }
+
+  Rose_STL_Container<SgNode*>::reverse_iterator nodeListIterator = upir_nodes.rbegin();
+  for ( ;nodeListIterator != upir_nodes.rend();  ++nodeListIterator)
   {
     SgStatement* node = isSgStatement(*nodeListIterator);
     ROSE_ASSERT(node != NULL);
@@ -7468,6 +7485,9 @@ void lower_omp(SgSourceFile* file)
 #endif
 
   }
+
+  } while (upir_nodes.size() != 0);
+
   // post processing
   post_processing(file);
 

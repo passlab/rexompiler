@@ -549,13 +549,16 @@ Grammar::setUpStatements ()
           UsingDeclarationStatement               | NamelistStatement         | ImportStatement              |
           FunctionDeclaration                  /* | ModuleStatement */        | ContainsStatement            |
           C_PreprocessorDirectiveStatement        | OmpThreadprivateStatement | OmpRequiresStatement         |
-          FortranIncludeLine                      | OmpTaskwaitStatement         |
-          StmtDeclarationStatement     |
+          FortranIncludeLine                      | OmpTaskwaitStatement      | StmtDeclarationStatement     |
           StaticAssertionDeclaration              | OmpDeclareSimdStatement   | MicrosoftAttributeDeclaration|
           NonrealDecl               | EmptyDeclaration
         /*| ClassPropertyList |*/,
           "DeclarationStatement", "DECL_STMT", false);
 
+     NEW_NONTERMINAL_MACRO (UpirBaseStatement,
+             OmpTaskyieldStatement     | OmpBarrierStatement    | UpirBodyStatement               | UpirFieldStatement    |
+             OmpDeclareMapperStatement,
+             "UpirBaseStatement","UpirBaseStatementTag", false);
 
   // Rasmussen (9/20/2018): Added ImageControlStatement
   //           (7/11/2020): Changed StopOrPauseStatement to ProcessControlStatement to allow more variants
@@ -568,10 +571,9 @@ Grammar::setUpStatements ()
              WhereStatement            | ElseWhereStatement     | NullifyStatement                | ArithmeticIfStatement |
              AssignStatement           | ComputedGotoStatement  | AssignedGotoStatement           |
           /* FortranDo                 | */ AllocateStatement   | DeallocateStatement             | UpcNotifyStatement    | 
-             UpcWaitStatement          | UpcBarrierStatement    | UpcFenceStatement               | OmpTaskyieldStatement   |
-             OmpBarrierStatement       | UpirBodyStatement      | UpirFieldStatement              |
+             UpcWaitStatement          | UpcBarrierStatement    | UpcFenceStatement               | UpirBaseStatement     |
              SequenceStatement         | WithStatement          | PassStatement                   |
-             AssertStmt                | ExecStatement          | OmpDeclareMapperStatement       |
+             AssertStmt                | ExecStatement          |
 	     ImageControlStatement /* | JavaPackageDeclaration */,
              "Statement","StatementTag", false);
 
@@ -4258,6 +4260,7 @@ Grammar::setUpStatements ()
     UpirFieldStatement.setFunctionSource            ("SOURCE_UPIR_FIELD_STATEMENT", "../Grammar/Statement.code" );
 
     UpirSyncStatement.setFunctionSource             ( "SOURCE_UPIR_SYNC_STATEMENT", "../Grammar/Statement.code" );
+    UpirBaseStatement.setFunctionSource             ( "SOURCE_UPIR_BASE_STATEMENT", "../Grammar/Statement.code" );
 
     UpirBodyStatement.setFunctionPrototype         ("HEADER_UPIR_BODY_STATEMENT", "../Grammar/Statement.code");
     UpirBodyStatement.setFunctionSource            ("SOURCE_UPIR_BODY_STATEMENT", "../Grammar/Statement.code");
@@ -4359,18 +4362,18 @@ Grammar::setUpStatements ()
                                                 NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
                                                 
    // Directives with a statement/ structured body
-    UpirBodyStatement.setDataPrototype ( "SgStatement*", "body",        "= NULL",
-                                             CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-    UpirBodyStatement.setDataPrototype("SgStatement*", "upir_parent", "= NULL",
+    UpirBaseStatement.setDataPrototype("SgStatement*", "upir_parent", "= NULL",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirBodyStatement.setDataPrototype("SgStatementPtrList", "upir_children", "",
+    UpirBaseStatement.setDataPrototype("SgStatementPtrList", "upir_children", "",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    UpirBodyStatement.setDataPrototype("SgStatement*", "body", "= NULL",
+                              CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
     UpirFieldStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirFieldStatement.setDataPrototype("SgStatement*", "upir_parent", "= NULL",
-                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirFieldStatement.setDataPrototype("SgStatementPtrList", "upir_children", "",
-                              NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    //UpirFieldStatement.setDataPrototype("SgStatement*", "upir_parent", "= NULL",
+    //                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    //UpirFieldStatement.setDataPrototype("SgStatementPtrList", "upir_children", "",
+    //                          NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
     // Directive with a body + a name:
         // omp critical [name]  \n structured_block
     OmpCriticalStatement.setDataPrototype ( "SgName", "name", "= \"\"",

@@ -164,7 +164,8 @@ SgBitXorOp.C                               SgFortranNonblockedDo.C              
 SgBlockDataStatement.C                     SgFuncDecl_attr.C                     SgNullStatement.C                       SgTemplateDeclaration.C                      SgWhereStatement.C \
 SgBoolValExp.C                             SgFunctionCallExp.C                   SgOmpAtomicStatement.C                  SgTemplateInstantiationDecl.C                SgWhileStmt.C \
 SgBreakStmt.C                              SgFunctionDeclaration.C               SgOmpBarrierStatement.C                 SgTemplateInstantiationDefn.C                SgWriteStatement.C \
-SgCaseOptionStmt.C                         SgFunctionDefinition.C                SgUpirBodyStatement.C                    SgTemplateInstantiationDirectiveStatement.C  SgXorAssignOp.C \
+SgCaseOptionStmt.C                         SgFunctionDefinition.C                SgUpirBodyStatement.C                   SgTemplateInstantiationDirectiveStatement.C  SgXorAssignOp.C \
+SgUpirBaseStatement.C \
 SgCastExp.C                                SgFunctionModifier.C                  SgUpirFieldBodyStatement.C              SgTemplateInstantiationFunctionDecl.C        SgHeaderFileBody.C
 
 
