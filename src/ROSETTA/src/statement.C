@@ -4370,10 +4370,6 @@ Grammar::setUpStatements ()
                               CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
     UpirFieldStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    //UpirFieldStatement.setDataPrototype("SgStatement*", "upir_parent", "= NULL",
-    //                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    //UpirFieldStatement.setDataPrototype("SgStatementPtrList", "upir_children", "",
-    //                          NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
     // Directive with a body + a name:
         // omp critical [name]  \n structured_block
     OmpCriticalStatement.setDataPrototype ( "SgName", "name", "= \"\"",

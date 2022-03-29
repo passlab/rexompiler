@@ -53,15 +53,16 @@ std::string intel_gen_vindex() {
 // This is needed for scalar stores
 SgType *intel_simd_type(SgType *type, SgScopeStatement *new_block, bool half_type = false) {
     SgType *vector_type;
+    SgScopeStatement *global_scope = getGlobalScope(new_block);
     
     int len = simd_len;
     if (half_type) len /= 2;
     
     if (len == 16) {
         switch (type->variantT()) {
-            case V_SgTypeInt: vector_type = buildOpaqueType("__m512i", new_block); break;
-            case V_SgTypeFloat: vector_type = buildOpaqueType("__m512", new_block); break;
-            case V_SgTypeDouble: vector_type = buildOpaqueType("__m512d", new_block); break;
+            case V_SgTypeInt: vector_type = buildOpaqueType("__m512i", global_scope); break;
+            case V_SgTypeFloat: vector_type = buildOpaqueType("__m512", global_scope); break;
+            case V_SgTypeDouble: vector_type = buildOpaqueType("__m512d", global_scope); break;
             default: vector_type = type;
         }
     } else {

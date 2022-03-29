@@ -7309,9 +7309,9 @@ void lower_omp(SgSourceFile* file)
         SgUpirBaseStatement* upir_node = isSgUpirBaseStatement(*iter);
         ROSE_ASSERT(upir_node != NULL);
         SgUpirBaseStatement *upir_parent = isSgUpirBaseStatement(upir_node->get_upir_parent());
-        //if (upir_parent == NULL) {
+        if (upir_parent == NULL) {
             upir_nodes.push_back(upir_node);
-        //}
+        }
     }
 
     for (iter = upir_nodes.begin(); iter != upir_nodes.end(); iter++) {
@@ -7319,15 +7319,14 @@ void lower_omp(SgSourceFile* file)
         ROSE_ASSERT(upir_node != NULL);
         SgStatementPtrList &upir_children = upir_node->get_upir_children();
         for (size_t i = 0; i < upir_children.size(); i++) {
-            SgUpirBodyStatement *upir_child = isSgUpirBodyStatement(upir_children[i]);
+            SgUpirBaseStatement *upir_child = isSgUpirBaseStatement(upir_children[i]);
             upir_child->set_upir_parent(NULL);
         }
     }
 
-  Rose_STL_Container<SgNode*>::reverse_iterator nodeListIterator = upir_nodes.rbegin();
-  for ( ;nodeListIterator != upir_nodes.rend();  ++nodeListIterator)
+  for (iter = upir_nodes.begin(); iter != upir_nodes.end(); iter++)
   {
-    SgStatement* node = isSgStatement(*nodeListIterator);
+    SgStatement* node = isSgStatement(*iter);
     ROSE_ASSERT(node != NULL);
 
     // check if it is a variant
@@ -7639,8 +7638,8 @@ static void post_processing(SgSourceFile* file) {
         // create a new file
         new_file = generate_outlined_function_file(outlined_function_list->at(0), "");
         // move the outlined functions
-        std::vector<SgFunctionDeclaration* >::iterator i;
-        for (i = outlined_function_list->begin(); i != outlined_function_list->end(); i++) {
+        std::vector<SgFunctionDeclaration* >::reverse_iterator i;
+        for (i = outlined_function_list->rbegin(); i != outlined_function_list->rend(); i++) {
             move_outlined_function(*i, new_file);
         };
     };
@@ -7659,8 +7658,8 @@ static void post_processing(SgSourceFile* file) {
         };
 
         // move the outlined functions
-        std::vector<SgFunctionDeclaration* >::iterator i;
-        for (i = target_outlined_function_list->begin(); i != target_outlined_function_list->end(); i++) {
+        std::vector<SgFunctionDeclaration* >::reverse_iterator i;
+        for (i = target_outlined_function_list->rbegin(); i != target_outlined_function_list->rend(); i++) {
             // set up an omp target parameter for each generated CUDA kernel
             // the naming pattern is "<kernel name>_exec_mode"
             SgVariableDeclaration* kernel_exec_mode_decl = buildVariableDeclaration ((*i)->get_name().getString() + "_exec_mode", buildCharType(), buildAssignInitializer(buildIntVal(0)), new_scope);
