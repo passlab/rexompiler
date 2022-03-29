@@ -48,8 +48,7 @@ static set<SgVarRefExp* > preservedHostVarRefs;
 static SgVariableDeclaration* get_kmpc_global_tid(SgNode*, SgScopeStatement*);
 static void insert_function_parameter(std::string, SgType*, SgFunctionDeclaration*, bool);
 // move the outlined function to a separate file
-static void move_outlined_function(SgFunctionDeclaration*, SgSourceFile*);
-static std::vector<SgFunctionDeclaration* >* outlined_function_list = NULL;
+static SgFunctionDeclaration* move_outlined_function(SgFunctionDeclaration*, SgSourceFile*);
 static std::vector<SgFunctionDeclaration* >* target_outlined_function_list = NULL;
 static void post_processing(SgSourceFile*);
 static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration*, std::string);
@@ -61,6 +60,8 @@ SgExprListExp* offloading_variable_list = NULL;
 SgExprListExp* offloading_variable_base_list = NULL;
 SgExprListExp* offloading_variable_size_list = NULL;
 SgExprListExp* offloading_variable_type_list = NULL;
+
+static SgSourceFile* cpu_outlined_file = NULL;
 
 #define ENABLE_XOMP 1  // Enable the middle layer (XOMP) of OpenMP runtime libraries
   //! Generate a symbol set from an initialized name list,
@@ -2315,10 +2316,6 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
     SgUpirSpmdStatement* target = isSgUpirSpmdStatement(node);
     ROSE_ASSERT (target != NULL);
 
-// Test if the file info has been corrected transferred to SgUpirSpmdStatement
-//    target->get_startOfConstruct()->display();
-//    target->get_endOfConstruct()->display();
-
     // Liao 12/7/2010
     // For Fortran code, we have to insert EXTERNAL OUTLINED_FUNC into
     // the function body containing the parallel region
@@ -2509,8 +2506,12 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
    // move dangling #endif etc from the body to the end of s2
    movePreprocessingInfo(body, s2, PreprocessingInfo::before, PreprocessingInfo::after);
 
-   // store the outlined functions for post processing later
-   outlined_function_list->push_back(isSgFunctionDeclaration(outlined_func));
+   // Generate a new source file for the outlined function if necessary
+   if (cpu_outlined_file == NULL) {
+       cpu_outlined_file = generate_outlined_function_file(outlined_func, "");
+   }
+   // Move the outlined function to the new source file
+   move_outlined_function(outlined_func, cpu_outlined_file);
   }
 
 
@@ -7297,30 +7298,29 @@ void lower_omp(SgSourceFile* file)
   else
     insertAcceleratorInit(file);
 
-  outlined_function_list = new std::vector<SgFunctionDeclaration* >();
   target_outlined_function_list = new std::vector<SgFunctionDeclaration* >();
 
   Rose_STL_Container<SgNode*> upir_nodes;
   do {
     upir_nodes.clear();
+    // Fix the parent-children relationship between UPIR nodes
+    OmpSupport::createUpirStatementTree(file);
+    if (cpu_outlined_file != NULL) {
+        OmpSupport::createUpirStatementTree(cpu_outlined_file);
+    }
     Rose_STL_Container<SgNode*>::iterator iter;
+    // Collect all the UPIR nodes
     Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(file, V_SgUpirBaseStatement);
+    if (cpu_outlined_file != NULL) {
+        nodeList = mergeSgNodeList(nodeList, NodeQuery::querySubTree(cpu_outlined_file, V_SgUpirBaseStatement));
+    }
+    // Collect all the UPIR nodes without UPIR parent
     for (iter = nodeList.begin(); iter != nodeList.end(); iter++) {
         SgUpirBaseStatement* upir_node = isSgUpirBaseStatement(*iter);
         ROSE_ASSERT(upir_node != NULL);
         SgUpirBaseStatement *upir_parent = isSgUpirBaseStatement(upir_node->get_upir_parent());
         if (upir_parent == NULL) {
             upir_nodes.push_back(upir_node);
-        }
-    }
-
-    for (iter = upir_nodes.begin(); iter != upir_nodes.end(); iter++) {
-        SgUpirBaseStatement* upir_node = isSgUpirBaseStatement(*iter);
-        ROSE_ASSERT(upir_node != NULL);
-        SgStatementPtrList &upir_children = upir_node->get_upir_children();
-        for (size_t i = 0; i < upir_children.size(); i++) {
-            SgUpirBaseStatement *upir_child = isSgUpirBaseStatement(upir_children[i]);
-            upir_child->set_upir_parent(NULL);
         }
     }
 
@@ -7471,7 +7471,7 @@ void lower_omp(SgSourceFile* file)
         }
       case V_SgOmpSimdStatement:
         {
-          transOmpSimd(node, file);
+          transOmpSimd(node, getEnclosingSourceFile(node));
           break;
         }
       default:
@@ -7484,7 +7484,6 @@ void lower_omp(SgSourceFile* file)
 #endif
 
   }
-
   } while (upir_nodes.size() != 0);
 
   // post processing
@@ -7546,7 +7545,7 @@ static void insert_function_parameter(std::string name, SgType* parameter_type, 
     non_def_func->set_type(function->get_type());
 }
 
-static void move_outlined_function(SgFunctionDeclaration* outlined_func, SgSourceFile* new_file) {
+static SgFunctionDeclaration* move_outlined_function(SgFunctionDeclaration* outlined_func, SgSourceFile* new_file) {
 
     // prepare the required information of original file
     SgGlobal* original_scope = getGlobalScope(outlined_func);
@@ -7572,6 +7571,7 @@ static void move_outlined_function(SgFunctionDeclaration* outlined_func, SgSourc
     removeStatement(outlined_func);
 
     AstPostProcessing(new_file);
+    return new_outlined_function;
 }
 
 static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration* outlined_func, std::string file_extension) {
@@ -7632,17 +7632,6 @@ static void post_processing(SgSourceFile* file) {
     ROSE_ASSERT(g_scope != NULL);
 
     SgSourceFile* new_file = NULL;
-
-    // handle the outlined functions for CPU
-    if (outlined_function_list->size() > 0) {
-        // create a new file
-        new_file = generate_outlined_function_file(outlined_function_list->at(0), "");
-        // move the outlined functions
-        std::vector<SgFunctionDeclaration* >::reverse_iterator i;
-        for (i = outlined_function_list->rbegin(); i != outlined_function_list->rend(); i++) {
-            move_outlined_function(*i, new_file);
-        };
-    };
 
     // handle the outlined functions for NVIDIA GPU
     if (target_outlined_function_list->size() > 0) {

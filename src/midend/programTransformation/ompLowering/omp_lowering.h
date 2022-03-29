@@ -130,6 +130,12 @@ namespace OmpSupport
   //! Translate omp simd
   void transOmpSimd(SgNode *node, SgSourceFile *file);
 
+  //! Analysis helpers
+  void createUpirStatementTree(SgSourceFile *file);
+  SgStatement *getUpirParent(SgStatement *node);
+  void setUpirRelationship(SgStatement *parent, SgStatement *child);
+  Rose_STL_Container<SgNode *> mergeSgNodeList(Rose_STL_Container<SgNode *> node_list1, Rose_STL_Container<SgNode *> node_list2);
+
   //! A helper function to generate implicit or explicit task for either omp parallel or omp task
   // It calls the ROSE AST outliner internally. 
   SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_name, std::set<SgVariableSymbol*>& syms);

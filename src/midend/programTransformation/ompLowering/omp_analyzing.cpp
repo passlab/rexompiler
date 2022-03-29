@@ -789,7 +789,7 @@ SgStatement *getUpirParent(SgStatement *node) {
     }
     parent = isSgStatement(parent->get_parent());
   }
-  return parent;
+  return isSgUpirBaseStatement(parent);
 }
 
 // traverse the SgNode AST and fill the information of UPIR parent and children.
@@ -803,6 +803,9 @@ void createUpirStatementTree(SgSourceFile *file) {
     SgStatement *parent = getUpirParent(node);
     if (parent != NULL) {
       setUpirRelationship(parent, node);
+    }
+    else {
+      node->set_upir_parent(parent);
     }
   }
 }
