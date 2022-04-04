@@ -353,6 +353,7 @@ Grammar::setUpStatements ()
     // + stmt/block + name
 
     // UPIR statements
+    NEW_TERMINAL_MACRO (UpirLoopStatement, "UpirLoopStatement", "UPIR_LOOP_STMT");
     NEW_TERMINAL_MACRO (UpirSyncStatement, "UpirSyncStatement", "UPIR_SYNC_STMT");
 
     //NEW_TERMINAL_MACRO (OmpCriticalStatement,  "OmpCriticalStatement",   "OMP_CRITICAL_STMT" );
@@ -361,7 +362,7 @@ Grammar::setUpStatements ()
         | OmpSectionStatement | OmpWorkshareStatement  | UpirFieldBodyStatement ,
         "UpirBodyStatement",      "UPIR_BODY_STMT", false );
 
-    NEW_NONTERMINAL_MACRO (UpirFieldStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement | OmpOrderedDependStatement | UpirSyncStatement,
+    NEW_NONTERMINAL_MACRO (UpirFieldStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement | OmpOrderedDependStatement | UpirSyncStatement | UpirLoopStatement,
         "UpirFieldStatement",      "UPIR_FIELD_STMT", false );
 
 #endif
@@ -4259,8 +4260,9 @@ Grammar::setUpStatements ()
     UpirFieldStatement.setFunctionPrototype         ( "HEADER_UPIR_FIELD_STATEMENT", "../Grammar/Statement.code" );
     UpirFieldStatement.setFunctionSource            ("SOURCE_UPIR_FIELD_STATEMENT", "../Grammar/Statement.code" );
 
-    UpirSyncStatement.setFunctionSource             ( "SOURCE_UPIR_SYNC_STATEMENT", "../Grammar/Statement.code" );
     UpirBaseStatement.setFunctionSource             ( "SOURCE_UPIR_BASE_STATEMENT", "../Grammar/Statement.code" );
+    UpirLoopStatement.setFunctionSource             ( "SOURCE_UPIR_LOOP_STATEMENT", "../Grammar/Statement.code" );
+    UpirSyncStatement.setFunctionSource             ( "SOURCE_UPIR_SYNC_STATEMENT", "../Grammar/Statement.code" );
 
     UpirBodyStatement.setFunctionPrototype         ("HEADER_UPIR_BODY_STATEMENT", "../Grammar/Statement.code");
     UpirBodyStatement.setFunctionSource            ("SOURCE_UPIR_BODY_STATEMENT", "../Grammar/Statement.code");
@@ -4370,6 +4372,16 @@ Grammar::setUpStatements ()
                               CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
     UpirFieldStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    UpirLoopParallelStatement.setDataPrototype("SgStatement*", "loop", "= NULL",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    UpirLoopStatement.setDataPrototype("SgExpression*", "induction", "= NULL",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    UpirLoopStatement.setDataPrototype("SgExpression*", "lower_bound", "= NULL",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    UpirLoopStatement.setDataPrototype("SgExpression*", "upper_bound", "= NULL",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    UpirLoopStatement.setDataPrototype("SgExpression*", "step", "= NULL",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
     // Directive with a body + a name:
         // omp critical [name]  \n structured_block
     OmpCriticalStatement.setDataPrototype ( "SgName", "name", "= \"\"",

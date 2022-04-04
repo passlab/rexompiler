@@ -18999,6 +18999,12 @@ SgUpirBaseStatement::post_construction_initialization()
    {}
 SOURCE_UPIR_BASE_STATEMENT_END
 
+SOURCE_UPIR_LOOP_STATEMENT_START
+void
+SgUpirLoopStatement::post_construction_initialization()
+   {}
+SOURCE_UPIR_LOOP_STATEMENT_END
+
 SOURCE_UPIR_SYNC_STATEMENT_START
 void
 SgUpirSyncStatement::post_construction_initialization()
