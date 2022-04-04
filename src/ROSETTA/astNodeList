@@ -297,7 +297,7 @@ SgOmpDoStatement
 SgOmpFlushStatement
 SgOmpAllocateStatement
 SgOmpDeclareSimdStatement
-SgUpirLoopParallelStatement
+SgUpirWorksharingStatement
 SgOmpForSimdStatement
 SgOmpMasterStatement
 SgOmpTaskyieldStatement
@@ -357,6 +357,7 @@ SgOmpMasterTaskloopStatement
 SgOmpSimdStatement
 SgUpirBaseStatement
 SgUpirLoopStatement
+SgUpirLoopParallelStatement
 SgUpirSyncStatement
 SgOmpClause
 SgOmpAllocateClause

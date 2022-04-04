@@ -471,7 +471,7 @@ if(enable-smaller-generated-files)
     SgOmpExpressionClause.C
     SgOmpFirstprivateClause.C
     SgOmpFlushStatement.C
-    SgUpirLoopParallelStatement.C
+    SgUpirWorksharingStatement.C
     SgOmpIfClause.C
     SgOmpLastprivateClause.C
     SgOmpMasterStatement.C

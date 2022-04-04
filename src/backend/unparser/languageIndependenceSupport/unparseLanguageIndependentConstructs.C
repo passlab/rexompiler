@@ -11831,7 +11831,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         }
         break;
       }
-         case V_SgUpirLoopParallelStatement:
+         case V_SgUpirWorksharingStatement:
       {
         curprint(string ("for "));
         break;
