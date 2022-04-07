@@ -250,6 +250,50 @@ HEADER_OMP_CLAUSE_START
 
             e_omp_allocate_user_defined_modifier
         };
+        
+        enum omp_allocator_modifier_enum
+        {
+            e_omp_allocator_modifier_unknown,
+
+            e_omp_allocator_default_mem_alloc,
+            e_omp_allocator_large_cap_mem_alloc,
+            e_omp_allocator_const_mem_alloc,
+            e_omp_allocator_high_bw_mem_alloc,
+            e_omp_allocator_low_lat_mem_alloc,
+            e_omp_allocator_cgroup_mem_alloc,
+            e_omp_allocator_pteam_mem_alloc,
+            e_omp_allocator_thread_mem_alloc,
+
+            e_omp_allocator_user_defined_modifier
+        };
+        
+        enum omp_uses_allocators_allocator_enum
+        {
+            e_omp_uses_allocators_allocator_unknown,
+
+            e_omp_uses_allocators_allocator_default_mem_alloc,
+            e_omp_uses_allocators_allocator_large_cap_mem_alloc,
+            e_omp_uses_allocators_allocator_const_mem_alloc,
+            e_omp_uses_allocators_allocator_high_bw_mem_alloc,
+            e_omp_uses_allocators_allocator_low_lat_mem_alloc,
+            e_omp_uses_allocators_allocator_cgroup_mem_alloc,
+            e_omp_uses_allocators_allocator_pteam_mem_alloc,
+            e_omp_uses_allocators_allocator_thread_mem_alloc,
+
+            e_omp_uses_allocators_allocator_user_defined
+        };
+        
+        enum omp_to_kind_enum
+         {
+             e_omp_to_kind_unknown,
+             e_omp_to_kind_mapper
+         };
+         
+         enum omp_from_kind_enum
+         {
+             e_omp_from_kind_unknown,
+             e_omp_from_kind_mapper
+         };
 
         enum omp_dependence_type_enum
         {
@@ -258,7 +302,9 @@ HEADER_OMP_CLAUSE_START
             e_omp_depend_out,
             e_omp_depend_inout,
             e_omp_depend_mutexinoutset,
-            e_omp_depend_depobj
+            e_omp_depend_depobj,
+            e_omp_depend_source,
+            e_omp_depend_sink
         };
 
         enum omp_depend_modifier_enum
@@ -271,6 +317,72 @@ HEADER_OMP_CLAUSE_START
         {
             e_omp_affinity_modifier_unspecified,
             e_omp_affinity_modifier_iterator
+        };
+
+        enum upir_target_type_enum
+        {
+            e_upir_target_unspecified,
+            e_upir_target_cpu,
+            e_upir_target_gpu,
+            e_upir_target_cluster
+        };
+
+        enum upir_data_sharing_enum
+        {
+            e_upir_data_sharing_unspecified,
+            e_upir_data_sharing_shared,
+            e_upir_data_sharing_private,
+            e_upir_data_sharing_firstprivate,
+            e_upir_data_sharing_lastprivate,
+            e_upir_data_sharing_reduction
+        };
+
+        enum upir_data_mapping_enum
+        {
+            e_upir_data_mapping_unspecified,
+            e_upir_data_mapping_to,
+            e_upir_data_mapping_from,
+            e_upir_data_mapping_tofrom,
+            e_upir_data_mapping_allocate,
+            e_upir_data_mapping_none
+        };
+
+        enum upir_property_visibility_enum
+        {
+            e_upir_property_visibility_unspecified,
+            e_upir_property_visibility_implicit,
+            e_upir_property_visibility_explicit
+        };
+
+        enum upir_data_access_enum
+        {
+            e_upir_data_access_unspecified,
+            e_upir_data_access_read_only,
+            e_upir_data_access_write_only,
+            e_upir_data_access_read_write
+        };
+
+        enum upir_data_distribution_pattern_enum
+        {
+            e_upir_data_distribution_pattern_unspecified,
+            e_upir_data_distribution_pattern_block,
+            e_upir_data_distribution_pattern_cyclic,
+            e_upir_data_distribution_pattern_linear,
+            e_upir_data_distribution_pattern_loop
+        };
+
+        enum upir_data_allocator_enum
+        {
+            e_upir_data_allocator_unspecified,
+            e_upir_data_allocator_default_mem_alloc,
+            e_upir_data_allocator_large_cap_mem_alloc
+        };
+
+        enum upir_data_deallocator_enum
+        {
+            e_upir_data_deallocator_unspecified,
+            e_upir_data_deallocator_default_mem_dealloc,
+            e_upir_data_deallocator_large_cap_mem_dealloc
         };
 
         // Liao 1/22/2012: experimental support for OpenMP Accelerator model

@@ -904,6 +904,7 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astFileIO
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/sageInterface
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/ompparser/src
+  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/accparser/src
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/virtualCFG
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astTokenStream
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astHiddenTypeAndDeclarationLists
@@ -1020,6 +1021,13 @@ add_subdirectory(scripts)
 # Copy CTestCustom.cmake into the binary directory.  This file tells CTest to ignore some output that it otherwise
 # considers compilation errors.
 configure_file(cmake/CTestCustom.cmake.in ${CMAKE_BINARY_DIR}/CTestCustom.cmake @ONLY)
+
+if(enable-cuda)
+    execute_process(
+      COMMAND mkdir -p "./include-staging/cuda_HEADERS")
+    execute_process(
+      COMMAND cp ${ROSE_TOP_SRC_DIR}/config/preinclude-cuda.h ./include-staging/cuda_HEADERS)
+endif()
 
 #TODO: better support for other compilers & operating systems
 if(enable-c)

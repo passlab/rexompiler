@@ -377,6 +377,7 @@ class UnparseLanguageIndependentConstructs
          // Liao 10/20/2010 common unparsing support for OpenMP AST 
           virtual void unparseOmpPrefix                     (SgUnparse_Info& info); // = 0;
           virtual void unparseOmpDefaultClause              (SgOmpClause* clause, SgUnparse_Info& info); 
+          virtual void unparseOmpAllocatorClause            (SgOmpClause* clause, SgUnparse_Info& info); 
           virtual void unparseOmpProcBindClause             (SgOmpClause* clause, SgUnparse_Info& info); 
           virtual void unparseOmpOrderClause                (SgOmpClause* clause, SgUnparse_Info& info); 
           virtual void unparseOmpBindClause                 (SgOmpClause* clause, SgUnparse_Info& info); 
@@ -385,6 +386,7 @@ class UnparseLanguageIndependentConstructs
           virtual void unparseOmpScheduleClause             (SgOmpClause* clause, SgUnparse_Info& info);
           virtual void unparseOmpDistScheduleClause         (SgOmpClause* clause, SgUnparse_Info& info);
           virtual void unparseOmpDefaultmapClause           (SgOmpClause* clause, SgUnparse_Info& info);
+          virtual void unparseOmpUsesAllocatorsClause       (SgOmpClause* clause, SgUnparse_Info& info);
           virtual void unparseOmpVariablesClause            (SgOmpClause* clause, SgUnparse_Info& info);
           virtual void unparseOmpVariablesComplexClause     (SgOmpClause* clause, SgUnparse_Info& info);
           virtual void unparseOmpExpressionClause           (SgOmpClause* clause, SgUnparse_Info& info);
@@ -394,8 +396,13 @@ class UnparseLanguageIndependentConstructs
           virtual void unparseOmpSimpleStatement             (SgStatement* stmt,     SgUnparse_Info& info);
           virtual void unparseOmpThreadprivateStatement      (SgStatement* stmt,     SgUnparse_Info& info);
           virtual void unparseOmpFlushStatement              (SgStatement* stmt,     SgUnparse_Info& info);
+          virtual void unparseOmpAllocateStatement           (SgStatement* stmt,     SgUnparse_Info& info);
           virtual void unparseOmpDeclareSimdStatement        (SgStatement* stmt,     SgUnparse_Info& info);
         
+          // UPIR unparsing
+          virtual void unparseUpirDataField                 (SgOmpClause* clause, SgUnparse_Info& info);
+          virtual void unparseUpirDataItemField             (SgOmpClause* clause, SgUnparse_Info& info);
+
           // This is necessary since some clauses should only appear with the begin part of a directive
           virtual void unparseOmpDirectivePrefixAndName     (SgStatement* stmt,     SgUnparse_Info& info);
           virtual void unparseOmpEndDirectivePrefixAndName  (SgStatement* stmt,     SgUnparse_Info& info);

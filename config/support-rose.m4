@@ -1536,6 +1536,7 @@ src/frontend/SageIII/includeDirectivesProcessing/Makefile
 src/frontend/SageIII/sage.docs
 src/frontend/SageIII/sageInterface/Makefile
 src/frontend/SageIII/ompparser/Makefile
+src/frontend/SageIII/accparser/Makefile
 src/frontend/SageIII/virtualCFG/Makefile
 src/midend/Makefile
 src/midend/programAnalysis/Makefile

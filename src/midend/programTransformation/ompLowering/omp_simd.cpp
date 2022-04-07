@@ -108,6 +108,16 @@ void omp_simd_build_ptr_assign(SgExpression *pntr_exp, SgBasicBlock *new_block, 
 }
 
 void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, std::stack<std::string> *nameStack, SgType *type) {
+    if (node->variantT() == V_SgVarRefExp) {
+        SgVarRefExp *ref = static_cast<SgVarRefExp *>(node);
+        std::string name = ref->get_symbol()->get_name().getString();
+        
+        if (name.rfind("__part", 0) == 0) {
+            nameStack->push(name);
+            return;
+        }
+    }
+
     std::string name = simdGenName();
     nameStack->push(name);
 
@@ -143,8 +153,11 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
             expr = copyExpression(node);
         } break;
         
-        default: expr = copyExpression(node);
+        default: {//expr = copyExpression(node);
+            expr = buildIntVal(0);}
     }
+    
+    std::cout << std::endl;
     
     // Build the variable declaration
     SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
@@ -273,7 +286,7 @@ char omp_simd_get_reduction_mod(SgOmpSimdStatement *target, SgVarRefExp *var) {
 // and then converts the statements to 3-address scalar code
 //
 // The main purpose of this function is to break each expression between the load and store
-bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasicBlock *new_block) {
+bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasicBlock *new_block, bool isArm = false) {
 
     // Get the loop body
     SgStatement *loop_body = getLoopBody(for_loop);
@@ -300,6 +313,7 @@ bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasi
         
         char reduction_mod = 0;
         bool need_partial = false;
+        bool armReduction = false;
         
         // If we have a variable, we need to indicate a partial sum variable
         // These are prefixed with __part, and in this step, they are simply assigned
@@ -311,12 +325,16 @@ bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasi
             // Make sure we have a valid reduction clause
             reduction_mod = omp_simd_get_reduction_mod(target, var);
             if (reduction_mod == 0) {
-                std::cout << "Invalid reduction. We cannot continue." << std::endl;
                 return false;
+            } else {
+                if (reduction_mod == '+' && isArm) {
+                    dest = orig;
+                    armReduction = true;
+                } else {
+                    need_partial = true;
+                    dest = var;
+                }
             }
-            
-            need_partial = true;
-            dest = var;
             
         // Otherwise, we just have a conventional store
         } else {
@@ -332,29 +350,51 @@ bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasi
             default: {}
         }
         
+        std::string partial_vec = "";
+        if (need_partial) {
+            partial_vec = simdGenName(2);
+            SgVariableDeclaration *vd = buildVariableDeclaration(partial_vec, type, NULL, new_block);
+            appendStatement(vd, new_block);
+        }
+        
+        SgExpression *lhs = copyExpression(op->get_lhs_operand());
+        if (partial_vec != "") lhs = buildVarRefExp(partial_vec, new_block);
+        
         // Expand +=
         if (isSgPlusAssignOp(op)) {
             SgExpression *expr = static_cast<SgExpression *>(op->get_rhs_operand());
-            SgAddOp *add = buildAddOp(copyExpression(op->get_lhs_operand()), expr);
+            SgAddOp *add = buildAddOp(lhs, expr);
             op->set_rhs_operand(add);
             
         // -=
         } else if (isSgMinusAssignOp(op)) {
             SgExpression *expr = static_cast<SgExpression *>(op->get_rhs_operand());
-            SgSubtractOp *add = buildSubtractOp(copyExpression(op->get_lhs_operand()), expr);
+            SgSubtractOp *add = buildSubtractOp(lhs, expr);
             op->set_rhs_operand(add);
             
         // *=
         } else if (isSgMultAssignOp(op)) {
             SgExpression *expr = static_cast<SgExpression *>(op->get_rhs_operand());
-            SgMultiplyOp *add = buildMultiplyOp(copyExpression(op->get_lhs_operand()), expr);
+            SgMultiplyOp *add = buildMultiplyOp(lhs, expr);
             op->set_rhs_operand(add);
             
         // /=
         } else if (isSgDivAssignOp(op)) {
             SgExpression *expr = static_cast<SgExpression *>(op->get_rhs_operand());
-            SgDivideOp *add = buildDivideOp(copyExpression(op->get_lhs_operand()), expr);
+            SgDivideOp *add = buildDivideOp(lhs, expr);
             op->set_rhs_operand(add);
+        }
+        
+        if (op->get_rhs_operand()->variantT() == V_SgAddOp && armReduction) {
+            SgAddOp *addOP = static_cast<SgAddOp *>(op->get_rhs_operand());
+            omp_simd_build_3addr(addOP->get_rhs_operand(), new_block, &nameStack, type);
+            
+            std::string name = nameStack.top();
+            SgVarRefExp *var = buildVarRefExp(name, new_block);
+            SgExprStatement *storeExpr = buildExprStatement(buildBinaryExpression<SgPlusAssignOp>(dest, var));
+            appendStatement(storeExpr, new_block);
+            
+            return true;
         }
         
         // Build the rval (the expression)
@@ -366,23 +406,13 @@ bool omp_simd_pass1(SgOmpSimdStatement *target, SgForStatement *for_loop, SgBasi
         // If application, build the reduction assignment
         if (need_partial) {
             std::string dest_vec = name;
-            name = simdGenName(2);
-            SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
-            appendStatement(vd, new_block);
+            name = partial_vec;
             
-            SgVarRefExp *va = buildVarRefExp(name, new_block);
+            SgVarRefExp *va = buildVarRefExp(partial_vec, new_block);
             SgVarRefExp *vec = buildVarRefExp(dest_vec, new_block);
             
-            SgBinaryOp *op = NULL;
-            switch (reduction_mod) {
-                case '+': op = buildAddOp(va, vec); break;
-                case '-': op = buildSubtractOp(va, vec); break;
-                case '*': op = buildMultiplyOp(va, vec); break;
-                default: {}
-            }
-            
-            SgExprListExp *exprList = buildExprListExp(op);
-            SgExprStatement *assign = buildAssignStatement(va, exprList);
+            SgExprListExp *exprList = buildExprListExp(vec);
+            SgExprStatement *assign = buildAssignStatement(va, vec);
             appendStatement(assign, new_block);
         }
 
@@ -464,8 +494,13 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
                 
             // Otherwise, we have a scalar store
             } else {
-                SgSIMDScalarStore *str = buildBinaryExpression<SgSIMDScalarStore>(deepCopy(lval), deepCopy(rval));
-                ir_block->push_back(str);
+                if (expr_statement->get_expression()->variantT() == V_SgPlusAssignOp) {
+                    SgSIMDSVAddV *addv = buildBinaryExpression<SgSIMDSVAddV>(deepCopy(lval), deepCopy(rval));
+                    ir_block->push_back(addv);
+                } else {
+                    SgSIMDScalarStore *str = buildBinaryExpression<SgSIMDScalarStore>(deepCopy(lval), deepCopy(rval));
+                    ir_block->push_back(str);
+                }
             }
             
         // Broadcast
@@ -493,6 +528,9 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
             SgExprListExp *expr_list = static_cast<SgExprListExp *>(rval);
             SgExpression *first = expr_list->get_expressions().front();
             if (!isSgBinaryOp(first)) {
+                //SgSIMDPartialStore *str = buildBinaryExpression<SgSIMDPartialStore>(deepCopy(lval), deepCopy(rval));
+                //ir_block->push_back(str);
+                //ir_block->push_back(deepCopy(*i));
                 continue;
             }
             
@@ -526,6 +564,8 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
             }
             
             if (math != NULL) ir_block->push_back(math);
+        } else {
+            std::cout << "??" << std::endl;
         }
     }
 }
@@ -625,7 +665,10 @@ void OmpSupport::transOmpSimd(SgNode *node, SgSourceFile *file) {
     SgBasicBlock *new_block = SageBuilder::buildBasicBlock();
     Rose_STL_Container<SgNode *> *ir_block = new Rose_STL_Container<SgNode *>();
     
-    if (!omp_simd_pass1(target, for_loop, new_block)) {
+    bool isArm = false;
+    if (simd_arch == ArmAddr3 || simd_arch == Arm_SVE2) isArm = true;
+    
+    if (!omp_simd_pass1(target, for_loop, new_block, isArm)) {
         delete ir_block;
         return;
     }
@@ -633,7 +676,7 @@ void OmpSupport::transOmpSimd(SgNode *node, SgSourceFile *file) {
     omp_simd_pass2(new_block, ir_block);
     
     // Output the final result
-    if (simd_arch == Addr3) {
+    if (simd_arch == Addr3 || simd_arch == ArmAddr3) {
         SgStatement *loop_body = getLoopBody(for_loop);
         replaceStatement(loop_body, new_block, true);
     } else {

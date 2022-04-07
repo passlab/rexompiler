@@ -1,0 +1,3 @@
+#pragma omp for  ordered(1)
+#pragma omp ordered  depend(sink : i - 1)
+#pragma omp ordered  depend(source)

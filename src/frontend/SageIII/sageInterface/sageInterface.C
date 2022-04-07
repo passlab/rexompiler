@@ -3394,7 +3394,7 @@ bool SageInterface::isOmpStatement(SgNode* n)
   ROSE_ASSERT (n != NULL);
   bool result = false;
   if (isSgOmpBarrierStatement(n)||
-      isSgOmpBodyStatement(n)||
+      isSgUpirBodyStatement(n)||
       isSgOmpDeclareSimdStatement(n) ||
       isSgOmpFlushStatement(n)||
       isSgOmpThreadprivateStatement(n)||
@@ -10758,14 +10758,14 @@ SgSwitchStatement* SageInterface::findEnclosingSwitch(SgStatement* s) {
 }
 
 //! Find enclosing OpenMP clause body statement from s. If s is already one, return it directly.
-SgOmpClauseBodyStatement* SageInterface::findEnclosingOmpClauseBodyStatement(SgStatement* s) {
-  while (s && !isSgOmpClauseBodyStatement(s)) {
+SgUpirFieldBodyStatement* SageInterface::findEnclosingUpirFieldBodyStatement(SgStatement* s) {
+  while (s && !isSgUpirFieldBodyStatement(s)) {
     s = isSgStatement(s->get_parent());
   }
   // ROSE_ASSERT (s); // s is allowed to be NULL.
   if (s==NULL)
     return NULL;
-  return isSgOmpClauseBodyStatement(s);
+  return isSgUpirFieldBodyStatement(s);
 }
 
 
@@ -13959,7 +13959,7 @@ void SageInterface::insertStatement(SgStatement *targetStmt, SgStatement* newStm
                             }
                            else
                             {
-                              if (SgOmpBodyStatement * p = isSgOmpBodyStatement (parent))
+                              if (SgUpirBodyStatement * p = isSgUpirBodyStatement (parent))
                                  {
                                    SgBasicBlock* newparent = buildBasicBlock (targetStmt);
                                    p->set_body(newparent);
@@ -16984,7 +16984,7 @@ void SageInterface::cleanupNontransformedBasicBlockNode()
     return isSgBasicBlock(b);
   }
 
-SgBasicBlock* SageInterface::ensureBasicBlockAsBodyOfOmpBodyStmt(SgOmpBodyStatement* fs)
+SgBasicBlock* SageInterface::ensureBasicBlockAsBodyOfOmpBodyStmt(SgUpirBodyStatement* fs)
 {
   SgStatement* b = fs->get_body();
   if (!isSgBasicBlock(b)) {
@@ -17064,7 +17064,7 @@ bool SageInterface::isBodyStatement (SgStatement* s)
       }
     default:
       {
-        if (isSgOmpBodyStatement(p))
+        if (isSgUpirBodyStatement(p))
           rt = true;
         break;
       }
@@ -17149,9 +17149,9 @@ SgBasicBlock * SageInterface::makeSingleStatementBodyToBlock(SgStatement* single
       }
     default:
       {
-        if (isSgOmpBodyStatement(p))
+        if (isSgUpirBodyStatement(p))
         {
-          rt = ensureBasicBlockAsBodyOfOmpBodyStmt(isSgOmpBodyStatement(p));
+          rt = ensureBasicBlockAsBodyOfOmpBodyStmt(isSgUpirBodyStatement(p));
         }
         break;
       }
@@ -17250,9 +17250,9 @@ SgLocatedNode* SageInterface::ensureBasicBlockAsParent(SgStatement* s)
                 }
                 default:
                 {
-                        if (isSgOmpBodyStatement(p))
+                        if (isSgUpirBodyStatement(p))
                         {
-                                return ensureBasicBlockAsBodyOfOmpBodyStmt(isSgOmpBodyStatement(p));
+                                return ensureBasicBlockAsBodyOfOmpBodyStmt(isSgUpirBodyStatement(p));
                         }
                         else
                                 // Liao, 7/3/2008 We allow other conditions to fall through,
@@ -17326,8 +17326,8 @@ SgLocatedNode* SageInterface::ensureBasicBlockAsParent(SgStatement* s)
 
           default:
             {
-              if (isSgOmpBodyStatement(n))
-                ensureBasicBlockAsBodyOfOmpBodyStmt(isSgOmpBodyStatement(n));
+              if (isSgUpirBodyStatement(n))
+                ensureBasicBlockAsBodyOfOmpBodyStmt(isSgUpirBodyStatement(n));
               break;
             }
         }

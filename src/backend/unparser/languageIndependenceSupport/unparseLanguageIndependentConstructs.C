@@ -3773,6 +3773,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpBarrierStatement:           unparseOmpSimpleStatement        (stmt, info);break;
                     case V_SgOmpThreadprivateStatement:     unparseOmpThreadprivateStatement (stmt, info);break;
                     case V_SgOmpFlushStatement:             unparseOmpFlushStatement         (stmt, info);break;
+                    case V_SgOmpAllocateStatement:             unparseOmpAllocateStatement   (stmt, info);break;
                     case V_SgOmpDeclareSimdStatement:       unparseOmpDeclareSimdStatement   (stmt, info);break;
                  // Generic OpenMP directives with a format of : begin-directive, begin-clauses, body, end-directive , end-clauses
                     case V_SgOmpCriticalStatement:
@@ -3781,8 +3782,9 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpTaskyieldStatement:
                     case V_SgOmpMetadirectiveStatement:
                     case V_SgOmpOrderedStatement:
+                    case V_SgOmpOrderedDependStatement:
                     case V_SgOmpSectionsStatement:
-                    case V_SgOmpParallelStatement:
+                    case V_SgUpirSpmdStatement:
                     case V_SgOmpTaskwaitStatement:
                     case V_SgOmpTeamsStatement:
                     case V_SgOmpCancellationPointStatement:
@@ -3796,7 +3798,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpTargetEnterDataStatement:
                     case V_SgOmpTargetExitDataStatement:
                     case V_SgOmpSimdStatement:
-                    case V_SgOmpTargetStatement:
+                    case V_SgUpirTaskStatement:
                     case V_SgOmpTargetDataStatement:
                     case V_SgOmpTargetParallelForStatement:
                     case V_SgOmpTargetParallelStatement:
@@ -3831,6 +3833,9 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpTaskStatement:
                     case V_SgOmpAtomicStatement: // Atomic may have clause now
                          unparseOmpGenericStatement (stmt, info);
+                         break;
+                    // UPIR statements that are only used for transformation
+                    case V_SgUpirSyncStatement:
                          break;
 
                     default:
@@ -8823,6 +8828,72 @@ void UnparseLanguageIndependentConstructs::unparseOmpDefaultClause(SgOmpClause* 
   curprint(string(")"));
 }
 
+void UnparseLanguageIndependentConstructs::unparseOmpAllocatorClause(SgOmpClause* clause, SgUnparse_Info& info)
+{
+  ASSERT_not_null(clause);
+  SgOmpAllocatorClause * c = isSgOmpAllocatorClause(clause);
+  ASSERT_not_null(c);
+  std::string result  = "";
+  curprint(string(" allocator("));
+  SgOmpClause::omp_allocator_modifier_enum modifier = c->get_modifier();
+    if (modifier != SgOmpClause::e_omp_allocator_modifier_unknown) {
+      if (modifier == SgOmpClause::e_omp_allocator_user_defined_modifier) {
+        SgUnparse_Info new_info(info);
+        unparseExpression(isSgOmpAllocatorClause(c)->get_user_defined_modifier(), new_info);
+      } else {
+        switch (modifier) {
+          case SgOmpClause::e_omp_allocator_default_mem_alloc:
+          {
+            result = "omp_default_mem_alloc";
+            break;
+          }
+          case SgOmpClause::e_omp_allocator_large_cap_mem_alloc:
+          {
+            result = "omp_large_cap_mem_alloc";
+            break;
+          }
+          case SgOmpClause::e_omp_allocator_const_mem_alloc:
+          {
+            result = "omp_const_mem_alloc";
+            break;
+          }
+          case SgOmpClause::e_omp_allocator_high_bw_mem_alloc:
+          {
+            result = "omp_high_bw_mem_alloc";
+            break;
+          }
+          case SgOmpClause::e_omp_allocator_low_lat_mem_alloc:
+          {
+            result = "omp_low_lat_mem_alloc";
+            break;
+          }
+          case SgOmpClause::e_omp_allocator_cgroup_mem_alloc:
+          {
+            result = "omp_cgroup_mem_alloc";
+            break;
+          }
+          case SgOmpClause::e_omp_allocator_pteam_mem_alloc:
+          {
+            result = "omp_pteam_mem_alloc";
+            break;
+          }
+          case SgOmpClause::e_omp_allocator_thread_mem_alloc:
+          {
+            result = "omp_thread_mem_alloc";
+            break;
+          }
+          default:
+          {
+            cerr<<"Error: UnparseLanguageIndependentConstructs::unparseOmpDefaultClause() meets unacceptable default option value:"<<endl;
+            ROSE_ABORT ();
+          }
+        }
+      }
+    }
+  curprint(result);
+  curprint(string(")"));
+}
+
 void UnparseLanguageIndependentConstructs::unparseOmpWhenClause(SgOmpClause* clause, SgUnparse_Info& info) {
     ROSE_ASSERT(clause != NULL);
     SgOmpWhenClause * c = isSgOmpWhenClause(clause);
@@ -9874,6 +9945,60 @@ static std::string allocateModifierToString(SgOmpClause::omp_allocate_modifier_e
   return result;
 }
 
+static std::string usesAllocatorsAllocatorToString(SgOmpClause::omp_uses_allocators_allocator_enum allocator)
+{
+  string result;
+  switch (allocator)
+  {
+    case SgOmpClause::e_omp_uses_allocators_allocator_default_mem_alloc:
+      {
+        result = "omp_default_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_uses_allocators_allocator_large_cap_mem_alloc:
+      {
+        result = "omp_large_cap_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_uses_allocators_allocator_const_mem_alloc:
+      {
+        result = "omp_const_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_uses_allocators_allocator_high_bw_mem_alloc:
+      {
+        result = "omp_high_bw_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_uses_allocators_allocator_low_lat_mem_alloc:
+      {
+        result = "omp_low_lat_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_uses_allocators_allocator_cgroup_mem_alloc:
+      {
+        result = "omp_cgroup_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_uses_allocators_allocator_pteam_mem_alloc:
+      {
+        result = "omp_pteam_mem_alloc";
+        break;
+      }
+    case SgOmpClause::e_omp_uses_allocators_allocator_thread_mem_alloc:
+      {
+        result = "omp_thread_mem_alloc";
+        break;
+      }
+    default:
+      {
+        cerr << "Error: unhandled operator type usesAllocatorsAllocatorToString():" << allocator << endl;
+        ROSE_ASSERT(false);
+      }
+  }
+  return result;
+}
+
 //! A helper function to convert dependence type to strings
 // TODO put into a better place and expose it to users.
 static std::string dependenceTypeToString(SgOmpClause::omp_dependence_type_enum ro)
@@ -9909,6 +10034,16 @@ static std::string dependenceTypeToString(SgOmpClause::omp_dependence_type_enum 
     case SgOmpClause::e_omp_depend_depobj:   
       {
         result = "depobj";
+        break;
+      }
+    case SgOmpClause::e_omp_depend_source:   
+      {
+        result = "source";
+        break;
+      }
+    case SgOmpClause::e_omp_depend_sink:   
+      {
+        result = "sink";
         break;
       }
     default:
@@ -10099,6 +10234,56 @@ void UnparseLanguageIndependentConstructs::unparseOmpDefaultmapClause(SgOmpClaus
   curprint(string(")"));
 }
 
+void UnparseLanguageIndependentConstructs::unparseOmpUsesAllocatorsClause(SgOmpClause* clause, SgUnparse_Info& info)
+{
+  ROSE_ASSERT(clause != NULL);
+  SgOmpUsesAllocatorsClause* c = isSgOmpUsesAllocatorsClause(clause);
+  ROSE_ASSERT(c!= NULL);
+  curprint (string (" uses_allocator("));
+  std::list<SgOmpUsesAllocatorsDefination*> uses_allocators_definations = c-> get_uses_allocators_defination();
+  std::list<SgOmpUsesAllocatorsDefination*>::iterator iter;
+  int count = 0;
+  for (iter = uses_allocators_definations.begin(); iter != uses_allocators_definations.end(); iter++) {
+    SgOmpClause::omp_uses_allocators_allocator_enum allocator = (*iter)-> get_allocator();
+    if (allocator != SgOmpClause::e_omp_uses_allocators_allocator_unknown) {
+      if (allocator == SgOmpClause::e_omp_uses_allocators_allocator_user_defined) {
+        SgUnparse_Info new_info(info);
+        unparseExpression((*iter)->get_user_defined_allocator(), new_info);
+      } else {
+        curprint(usesAllocatorsAllocatorToString(allocator));
+      }
+    }
+    if (((*iter)-> get_allocator_traits_array()) != NULL) {
+      curprint(string(" ( "));
+      SgExpression* allocator_traits_array =(*iter)-> get_allocator_traits_array();
+      SgUnparse_Info ninfo(info);
+      unparseExpression(allocator_traits_array, ninfo);
+      curprint(string(" ) "));
+    }
+    count++;
+    if (count != uses_allocators_definations.size()) curprint(string(" , "));
+  }
+  curprint(string(" ) "));
+}
+
+void UnparseLanguageIndependentConstructs::unparseUpirDataField(SgOmpClause* clause, SgUnparse_Info& info)
+{
+  ROSE_ASSERT(clause != NULL);
+  SgUpirDataField* c = isSgUpirDataField(clause);
+  ROSE_ASSERT(c!= NULL);
+  curprint("");
+  // For now, SgUpirDataField is only used for unified transformation but not unparsing.
+}
+
+void UnparseLanguageIndependentConstructs::unparseUpirDataItemField(SgOmpClause* clause, SgUnparse_Info& info)
+{
+  ROSE_ASSERT(clause != NULL);
+  SgUpirDataItemField* c = isSgUpirDataItemField(clause);
+  ROSE_ASSERT(c!= NULL);
+  curprint("");
+  // For now, SgUpirDataItemField is only used for unified transformation but not unparsing.
+}
+
 // Generate dist_data(p1, p2, p3)
 void UnparseLanguageIndependentConstructs::unparseMapDistDataPoliciesToString (std::vector< std::pair< SgOmpClause::omp_map_dist_data_enum, SgExpression * > > policies, SgUnparse_Info& info)
 {
@@ -10130,8 +10315,10 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
   SgOmpVariablesClause* c= isSgOmpVariablesClause (clause);
   ASSERT_not_null(c);
   bool is_map = false;
-  bool is_depend= false;
-  bool is_affinity= false;
+  bool is_depend = false;
+  bool is_affinity = false;
+  bool is_to = false;
+  bool is_from = false;
   // unparse the  clause name first
   switch (c->variantT())
   {
@@ -10276,7 +10463,8 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
             curprint(string(" , "));
           }
           curprint(dependenceTypeToString(isSgOmpDependClause(c)->get_dependence_type()));
-          curprint(string(" : "));
+          if((isSgOmpDependClause(c)->get_dependence_type()) != SgOmpClause::e_omp_depend_source)
+            curprint(string(" : "));
           is_depend = true;
           break;
       }
@@ -10346,7 +10534,32 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
         curprint(string(" : "));
       break;
       }
-
+    case V_SgOmpToClause:
+      {
+        is_to = true;
+        SgUnparse_Info ninfo(info);
+        curprint(string(" to("));
+        if (isSgOmpToClause(c)->get_kind() != SgOmpClause::e_omp_to_kind_unknown) {
+          curprint("mapper (");
+          unparseExpression(isSgOmpToClause(c)->get_mapper_identifier(), info);
+          curprint(")");
+          curprint(string(" : "));
+        }        
+      break;
+      }
+    case V_SgOmpFromClause:
+      {
+        is_from = true;
+        SgUnparse_Info ninfo(info);
+        curprint(string(" from("));
+        if (isSgOmpFromClause(c)->get_kind() != SgOmpClause::e_omp_from_kind_unknown) {
+          curprint("mapper (");
+          unparseExpression(isSgOmpFromClause(c)->get_mapper_identifier(), info);
+          curprint(")");
+          curprint(string(" : "));
+        }        
+      break;
+      }
     case V_SgOmpSharedClause:
       curprint(string(" shared("));
       break;
@@ -10366,6 +10579,18 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
     dims = m_clause->get_array_dimensions();
     dist_policies = m_clause->get_dist_data_policies();
   }
+  if (is_to)
+  {
+    SgOmpToClause * m_clause = isSgOmpToClause (clause);
+    ROSE_ASSERT (m_clause != NULL);
+    dims = m_clause->get_array_dimensions();
+  }
+  if (is_from)
+  {
+    SgOmpFromClause * m_clause = isSgOmpFromClause (clause);
+    ROSE_ASSERT (m_clause != NULL);
+    dims = m_clause->get_array_dimensions();
+  }
   else if (is_depend) // task depend(A[i:BS][j:BS]) , is also stored as array section.
    // TODO: long term, we need a dedicated array section AST node
   {
@@ -10382,6 +10607,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
 
   //unparse variable list then
   SgExpressionPtrList::iterator p = c->get_variables()->get_expressions().begin();
+  
   while ( p != c->get_variables()->get_expressions().end() )
   {
     // We now try to put array reference expression into variable list.
@@ -10452,6 +10678,52 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
           } // end for
         } // end if has bounds
       }
+      else if (is_to)
+      {
+        std::vector<std::pair<SgExpression*, SgExpression*> > bounds = dims[sym];
+        if (bounds.size() >0)
+        {
+          std::vector<std::pair<SgExpression*, SgExpression*> >:: const_iterator iter;
+          for (iter = bounds.begin(); iter != bounds.end(); iter ++)
+          {
+            SgUnparse_Info ninfo(info);
+            std::pair<SgExpression*, SgExpression*> bound  = (*iter);
+            SgExpression* lower = bound.first;
+            SgExpression* upper = bound.second;
+            ROSE_ASSERT (lower != NULL);
+            ROSE_ASSERT (upper != NULL);
+
+            curprint(string("["));
+            unparseExpression(lower, ninfo);
+            curprint(string(":"));
+            unparseExpression(upper, ninfo);
+            curprint(string("]"));
+          } // end for
+        } // end if has bounds
+      }
+      else if (is_from)
+      {
+        std::vector<std::pair<SgExpression*, SgExpression*> > bounds = dims[sym];
+        if (bounds.size() >0)
+        {
+          std::vector<std::pair<SgExpression*, SgExpression*> >:: const_iterator iter;
+          for (iter = bounds.begin(); iter != bounds.end(); iter ++)
+          {
+            SgUnparse_Info ninfo(info);
+            std::pair<SgExpression*, SgExpression*> bound  = (*iter);
+            SgExpression* lower = bound.first;
+            SgExpression* upper = bound.second;
+            ROSE_ASSERT (lower != NULL);
+            ROSE_ASSERT (upper != NULL);
+
+            curprint(string("["));
+            unparseExpression(lower, ninfo);
+            curprint(string(":"));
+            unparseExpression(upper, ninfo);
+            curprint(string("]"));
+          } // end for
+        } // end if has bounds
+      }
     }
     else
     {
@@ -10469,7 +10741,19 @@ void UnparseLanguageIndependentConstructs::unparseOmpVariablesClause(SgOmpClause
       curprint( ",");
     }
   }
-
+  
+  if (isSgOmpDependClause(c) && isSgOmpDependClause(c)->get_dependence_type() == SgOmpClause::e_omp_depend_sink) {
+    std::list<SgExpression*> vec_list = isSgOmpDependClause(c)->get_vec();
+    std::list<SgExpression*>::iterator iter;
+    int count_for_vec = 0;
+    for (iter = vec_list.begin(); iter != vec_list.end(); iter++) {
+      SgExpression* var = (*iter);
+      SgUnparse_Info ninfo(info);
+      unparseExpression(var, ninfo);
+      count_for_vec++;
+      if (count_for_vec < vec_list.size()) curprint( ",");
+    }
+  }
   // optional :step  for linear(list:step)
   if (isSgOmpLinearClause(c) && isSgOmpLinearClause(c)->get_modifier()) { curprint(string(")")); }
   if (isSgOmpLinearClause(c) && isSgOmpLinearClause(c)->get_step())
@@ -10721,7 +11005,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     curprint(string(" final("));
   else if (isSgOmpPriorityClause(c))
     curprint(string(" priority("));
-  else if (isSgOmpNumThreadsClause(c))
+  else if (isSgUpirNumUnitsField(c))
     curprint(string(" num_threads("));
   else if (isSgOmpNumTeamsClause(c))
     curprint(string(" num_teams("));
@@ -10825,6 +11109,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         unparseOmpDefaultClause(isSgOmpDefaultClause(clause),info);
         break;
       }
+    case V_SgOmpAllocatorClause:
+      {
+        unparseOmpAllocatorClause(isSgOmpAllocatorClause(clause),info);
+        break;
+      }
     case V_SgOmpProcBindClause:
       {
         unparseOmpProcBindClause(isSgOmpProcBindClause(clause),info);
@@ -10876,6 +11165,16 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpReadClause:
       {
         curprint(string(" read"));
+        break;
+      }
+    case V_SgOmpThreadsClause:
+      {
+        curprint(string(" threads"));
+        break;
+      }
+    case V_SgOmpSimdClause:
+      {
+        curprint(string(" simd"));
         break;
       }
     case V_SgOmpReverseOffloadClause:
@@ -11015,12 +11314,17 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         unparseOmpDefaultmapClause(isSgOmpDefaultmapClause(clause), info);
         break;
       }
+    case V_SgOmpAllocateClause: 
+      {
+        unparseOmpVariablesComplexClause(isSgOmpVariablesClause(clause), info);
+        break;
+      }
     case V_SgOmpDeviceClause:
     case V_SgOmpCollapseClause:
     case V_SgOmpIfClause:  
     case V_SgOmpFinalClause:  
     case V_SgOmpPriorityClause:  
-    case V_SgOmpNumThreadsClause:
+    case V_SgUpirNumUnitsField:
     case V_SgOmpGrainsizeClause:
     case V_SgOmpDetachClause:
     case V_SgOmpNumTasksClause:
@@ -11034,10 +11338,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
       {
         unparseOmpExpressionClause(isSgOmpExpressionClause(clause), info);
         break; 
-      }
-    case V_SgOmpAllocateClause: {
-        unparseOmpVariablesComplexClause(isSgOmpVariablesClause(clause), info);
-        break;
       }
     case V_SgOmpCopyprivateClause:
     case V_SgOmpCopyinClause:
@@ -11056,6 +11356,8 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpDependClause:
     case V_SgOmpAffinityClause:
     case V_SgOmpMapClause:
+    case V_SgOmpToClause:
+    case V_SgOmpFromClause:
     case V_SgOmpSharedClause:
     case V_SgOmpUniformClause:
     case V_SgOmpAlignedClause:
@@ -11067,6 +11369,21 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpWhenClause:
       {
         unparseOmpWhenClause(isSgOmpWhenClause(clause), info);
+        break;
+      }
+    case V_SgOmpUsesAllocatorsClause:
+      {
+        unparseOmpUsesAllocatorsClause(isSgOmpUsesAllocatorsClause(clause), info);
+        break;
+      }
+    case V_SgUpirDataField:
+      {
+        unparseUpirDataField(isSgUpirDataField(clause), info);
+        break;
+      }
+    case V_SgUpirDataItemField:
+      {
+        unparseUpirDataItemField(isSgUpirDataItemField(clause), info);
         break;
       }
    default:
@@ -11091,7 +11408,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpSimpleStatement(SgStatement
   ASSERT_not_null(stmt);
   unparseOmpDirectivePrefixAndName(stmt, info);
   unp->u_sage->curprint_newline();
-  SgOmpBodyStatement* b_stmt = isSgOmpBodyStatement(stmt);
+  SgUpirBodyStatement* b_stmt = isSgUpirBodyStatement(stmt);
   if (b_stmt)
   {
     ROSE_ASSERT (stmt->variantT() == V_SgOmpSectionStatement);
@@ -11101,10 +11418,44 @@ void UnparseLanguageIndependentConstructs::unparseOmpSimpleStatement(SgStatement
 }
 
 //----- refactor unparsing for threadprivate and flush ???
-void UnparseLanguageIndependentConstructs::unparseOmpFlushStatement(SgStatement* stmt,     SgUnparse_Info& info)
+void UnparseLanguageIndependentConstructs::unparseOmpFlushStatement(SgStatement* stmt, SgUnparse_Info& info)
 {
   ASSERT_not_null(stmt);
   SgOmpFlushStatement * s = isSgOmpFlushStatement(stmt);
+  ASSERT_not_null(s);
+
+  unparseOmpDirectivePrefixAndName(stmt, info);
+  if (s->get_clauses().size()!=0) { unparseOmpBeginDirectiveClauses(stmt, info); }
+  if (s->get_variables().size()>0)
+    curprint(string ("("));
+  //unparse variable list then
+  SgVarRefExpPtrList::iterator p = s->get_variables().begin();
+  while ( p != s->get_variables().end() )
+  {
+    ASSERT_not_null((*p)->get_symbol());
+    SgInitializedName* init_name = (*p)->get_symbol()->get_declaration();
+    ASSERT_not_null(init_name);
+    SgName tmp_name  = init_name->get_name();
+    curprint( tmp_name.str());
+
+    // Move to the next argument
+    p++;
+
+    // Check if this is the last argument (output a "," separator if not)
+    if (p != s->get_variables().end())
+    {
+      curprint( ",");
+    }
+  }
+  if (s->get_variables().size()>0)
+    curprint (string (")"));
+  unp->u_sage->curprint_newline();
+}
+
+void UnparseLanguageIndependentConstructs::unparseOmpAllocateStatement(SgStatement* stmt,     SgUnparse_Info& info)
+{
+  ASSERT_not_null(stmt);
+  SgOmpAllocateStatement * s = isSgOmpAllocateStatement(stmt);
   ASSERT_not_null(s);
 
   unparseOmpDirectivePrefixAndName(stmt, info);
@@ -11131,6 +11482,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpFlushStatement(SgStatement*
   }
   if (s->get_variables().size()>0)
     curprint (string (")"));
+  if (s->get_clauses().size()!=0) { unparseOmpBeginDirectiveClauses(stmt, info); }
   unp->u_sage->curprint_newline();
 }
 
@@ -11217,6 +11569,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         curprint(string ("flush "));
         break;
       }
+      case V_SgOmpAllocateStatement:
+      {
+        curprint(string ("allocate "));
+        break;
+      }
       case V_SgOmpThreadprivateStatement:
       {
         curprint(string ("threadprivate "));
@@ -11232,7 +11589,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         curprint(string ("metadirective "));
         break;
       }
-    case V_SgOmpParallelStatement:
+    case V_SgUpirSpmdStatement:
       {
         curprint(string ("parallel "));
         break;
@@ -11250,6 +11607,11 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
     case V_SgOmpCancellationPointStatement:
       {
         curprint(string ("cancellation point "));
+        break;
+      }
+    case V_SgOmpOrderedDependStatement:
+      {
+        curprint(string ("ordered "));
         break;
       }
     case V_SgOmpDeclareMapperStatement:
@@ -11297,7 +11659,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         curprint(string ("simd "));
         break;
       }
-    case V_SgOmpTargetStatement:
+    case V_SgUpirTaskStatement:
       {
         curprint(string ("target "));
         break;
@@ -11469,7 +11831,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         }
         break;
       }
-         case V_SgOmpForStatement:
+         case V_SgUpirWorksharingStatement:
       {
         curprint(string ("for "));
         break;
@@ -11571,7 +11933,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpGenericStatement (SgStateme
     unp->u_sage->curprint_newline();
   };
   // unparse the body, if exists.
-  SgOmpBodyStatement* b_stmt = isSgOmpBodyStatement(stmt);
+  SgUpirBodyStatement* b_stmt = isSgUpirBodyStatement(stmt);
   if (!isVariant && b_stmt)
   {
     SgUnparse_Info ninfo(info);

@@ -53,15 +53,16 @@ std::string intel_gen_vindex() {
 // This is needed for scalar stores
 SgType *intel_simd_type(SgType *type, SgScopeStatement *new_block, bool half_type = false) {
     SgType *vector_type;
+    SgScopeStatement *global_scope = getGlobalScope(new_block);
     
     int len = simd_len;
     if (half_type) len /= 2;
     
     if (len == 16) {
         switch (type->variantT()) {
-            case V_SgTypeInt: vector_type = buildOpaqueType("__m512i", new_block); break;
-            case V_SgTypeFloat: vector_type = buildOpaqueType("__m512", new_block); break;
-            case V_SgTypeDouble: vector_type = buildOpaqueType("__m512d", new_block); break;
+            case V_SgTypeInt: vector_type = buildOpaqueType("__m512i", global_scope); break;
+            case V_SgTypeFloat: vector_type = buildOpaqueType("__m512", global_scope); break;
+            case V_SgTypeDouble: vector_type = buildOpaqueType("__m512d", global_scope); break;
             default: vector_type = type;
         }
     } else {
@@ -383,8 +384,9 @@ void intel_write_scatter(SgBinaryOp *op, SgOmpSimdStatement *target, SgBasicBloc
 // ==================================================================================================
 // Generates an Intel partial-store statement
 //
-void intel_write_partial_store(SgBinaryOp *op, SgOmpSimdStatement *target, SgBasicBlock *new_block) {
+SgAssignInitializer *intel_write_partial_store(SgBinaryOp *op, SgOmpSimdStatement *target, SgBasicBlock *new_block) {
     SgVarRefExp *var = static_cast<SgVarRefExp *>(op->get_lhs_operand());
+    SgVarRefExp *srcVar = static_cast<SgVarRefExp *>(op->get_rhs_operand());
     
     // First, create the vector outside the loop and zero it
     SgType *vector_type = intel_simd_type(var->get_type(), target->get_scope());
@@ -397,6 +399,11 @@ void intel_write_partial_store(SgBinaryOp *op, SgOmpSimdStatement *target, SgBas
     
     SgVariableDeclaration *vd = buildVariableDeclaration(name, vector_type, local_init, new_block);
     insertStatementBefore(target, vd);
+    
+    // Now set the local variable
+    /*SgVarRefExp *varRef = buildVarRefExp(name, new_block);
+    return buildAssignInitializer(varRef);*/
+    return buildAssignInitializer(srcVar);
 }
 
 // ============================================================================================
@@ -618,7 +625,7 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
             } break;
             
             case V_SgSIMDPartialStore: {
-                intel_write_partial_store(op, target, new_block);
+                init = intel_write_partial_store(op, target, new_block);
             } break;
             
             case V_SgSIMDScalarStore: {
@@ -638,7 +645,7 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
         }
         
         // The variable declaration
-        if ((*i)->variantT() != V_SgSIMDScalarStore && (*i)->variantT() != V_SgSIMDPartialStore) {
+        if ((*i)->variantT() != V_SgSIMDScalarStore /*&& (*i)->variantT() != V_SgSIMDPartialStore*/) {
             if (isSgVarRefExp(lval)) {
                 SgVarRefExp *var = static_cast<SgVarRefExp *>(lval);
                 
@@ -652,6 +659,9 @@ void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, 
                         insertStatementBefore(target, vd);
                     else
                         appendStatement(vd, new_block);
+                } else {
+                    SgExprStatement *expr = buildAssignStatement(var, init);
+                    appendStatement(expr, new_block);
                 }
             }
         }

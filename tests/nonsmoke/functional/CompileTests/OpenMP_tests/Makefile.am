@@ -192,6 +192,7 @@ C_TESTCODES_REQUIRED_TO_PASS = \
 REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	3loops.c \
 	affinity.c \
+	allocate.c \
 	jacobi.c \
 	jacobi-collapse.c \
 	alignment.c \
@@ -238,6 +239,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	flush.c \
 	flush_exampleA_21_1c.c \
 	full_verify.c \
+	flush_with_clauses.c \
 	get_max_threads.c \
 	hello.c \
 	hello-1.c \
@@ -282,6 +284,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	ordered3.c \
 	ordered2.c \
 	ordered.c \
+	ordered_depend.c \
 	orphaned-directives.c \
 	parallel.c \
 	parallel_allocate_predefined_modifier.c \
@@ -344,6 +347,7 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	subteam.c \
 	target.c \
 	target1.c \
+	target_uses_allocators.c \
 	targetparallel.c \
 	targetparallelforsimd.c \
 	targetparallelloop.c \
@@ -357,6 +361,8 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	targetupdate.c \
 	targetupdate_nowait.c \
 	targetupdate_device.c \
+	target_update_from.c \
+	target_update_to.c \
 	taskloop_simd_reduction.1.c \
 	task_affinity.c \
 	task_affinity1.c \
@@ -378,6 +384,9 @@ REX_C_TESTCODES_REQUIRED_TO_PASS = \
 	taskloop.c \
 	taskwait.c \
 	taskwait2.c \
+	taskwait3.c \
+	taskwait4.c \
+	taskwait5.c \
 	taskyield.c \
 	threadprivate.c \
 	threadprivate2.c \

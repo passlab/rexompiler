@@ -1,5 +1,6 @@
-#include "xomp_cuda_lib.cu" 
-#include "xomp_cuda_lib_inlined.cu" 
+#include "rex_nvidia.h"
 
-__device__ int32_t omptarget_device_environment;
+#include "xomp_cuda_lib.cu"
+#include "xomp_cuda_lib_inlined.cu"
 
+__device__ DeviceEnvironmentTy omptarget_device_environment = {0, 0, 0, 0};
