@@ -13,8 +13,12 @@
  *  all things go to the OmpSupport namespace to avoid conflicts
  * Liao, 8/10/2009
  */
+extern std::vector<SgFunctionDeclaration* >* outlined_function_list;
+extern std::vector<SgDeclarationStatement *>* outlined_struct_list;
 namespace OmpSupport
 {
+  //static std::vector<SgFunctionDeclaration* >* outlined_function_list = new std::vector<SgFunctionDeclaration *>();
+
   // OpenMP version info.
   extern bool enable_accelerator;  
 
@@ -137,8 +141,11 @@ namespace OmpSupport
   Rose_STL_Container<SgNode *> mergeSgNodeList(Rose_STL_Container<SgNode *> node_list1, Rose_STL_Container<SgNode *> node_list2);
 
   //! A helper function to generate implicit or explicit task for either omp parallel or omp task
-  // It calls the ROSE AST outliner internally. 
-  SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_name, std::set<SgVariableSymbol*>& syms);
+  // It calls the ROSE AST outliner internally.
+  SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_name,
+                                              std::set<const SgVariableSymbol*>& syms,
+                                              std::set<const SgVariableSymbol*>& pdSyms3,
+                                              bool use_task_param = false);
 
   //! Translate OpenMP variables associated with an OpenMP pragma, such as private, firstprivate, lastprivate, reduction, etc. bb1 is the translation generated code block in which the variable handling statements will be inserted. Original loop upper bound is needed for implementing lastprivate (check if it is the last iteration). withinAcceleratorModel means if we only translate private() variables, used to support accelerator model
   ROSE_DLL_API void transOmpVariables(SgStatement * ompStmt, SgBasicBlock* bb1, SgExpression* orig_loop_upper = NULL, bool withinAcceleratorModel= false);
