@@ -2105,7 +2105,7 @@ Unparse_ExprStmt::unparseLanguageSpecificStatement(SgStatement* stmt, SgUnparse_
           case V_SgUpcForAllStatement:                  unparseUpcForAllStatement(stmt, info);    break; 
 
        // Liao, 5/31/2009, add OpenMP support, TODO refactor some code to language independent part
-          case V_SgUpirWorksharingStatement:                      unparseUpirWorksharingStatement(stmt, info); break;
+          case V_SgUpirLoopParallelStatement:           unparseUpirLoopParallelStatement(stmt, info); break;
           case V_SgOmpForSimdStatement:                  unparseOmpForSimdStatement(stmt, info); break;
 
        // DQ (7/25/2014): Adding support for C11 static assertions.
@@ -12965,10 +12965,10 @@ void Unparse_ExprStmt::unparseOmpPrefix(SgUnparse_Info& info)
 }
 
 
-void Unparse_ExprStmt::unparseUpirWorksharingStatement (SgStatement* stmt,     SgUnparse_Info& info)
+void Unparse_ExprStmt::unparseUpirLoopParallelStatement (SgStatement* stmt,     SgUnparse_Info& info)
 {
   ASSERT_not_null(stmt);
-  SgUpirWorksharingStatement * f_stmt = isSgUpirWorksharingStatement (stmt);
+  SgUpirLoopParallelStatement * f_stmt = isSgUpirLoopParallelStatement (stmt);
   ASSERT_not_null(f_stmt);
 
   unparseOmpDirectivePrefixAndName(stmt, info);
@@ -12977,10 +12977,11 @@ void Unparse_ExprStmt::unparseUpirWorksharingStatement (SgStatement* stmt,     S
   // TODO a better way to new line? and add indentation 
   curprint (string ("\n"));
 
+  SgStatement* body = ((SgUpirLoopStatement*)f_stmt->get_loop())->get_body();
   SgUnparse_Info ninfo(info);
-  if (f_stmt->get_body())
+  if (body)
   {
-    unparseStatement(f_stmt->get_body(), ninfo);
+    unparseStatement(body, ninfo);
   }
   else
   {

@@ -252,8 +252,16 @@ namespace OmpSupport
     vector <SgForStatement* > loops;
     ROSE_ASSERT (forOrSimd != NULL);
     int loop_count = 1; // by default, only one loop is affected.
-    SgExpression* exp = getClauseExpression (forOrSimd, V_SgOmpCollapseClause);
-    SgExpression* exp_ordered = getClauseExpression (forOrSimd, V_SgOmpOrderedClause);
+    SgExpression* exp = NULL;
+    SgExpression* exp_ordered = NULL;
+    if (isSgUpirLoopStatement(forOrSimd)) {
+        exp = getClauseExpression(forOrSimd->get_upir_parent(), V_SgOmpCollapseClause);
+        exp_ordered = getClauseExpression(forOrSimd->get_upir_parent(), V_SgOmpOrderedClause);
+    }
+    else {
+        exp = getClauseExpression (forOrSimd, V_SgOmpCollapseClause);
+        exp_ordered = getClauseExpression (forOrSimd, V_SgOmpOrderedClause);
+    };
     if (exp !=NULL)
     {
       SgIntVal * ival = isSgIntVal(exp);
@@ -398,7 +406,7 @@ namespace OmpSupport
             lastprivate: The loop iteration variables in the associated for-loops of a simd construct with multiple
             associated for-loops are lastprivate.
           */
-          if (isSgUpirWorksharingStatement(omp_clause_body_stmt))
+          if (isSgUpirLoopStatement(omp_clause_body_stmt))
           // TODO: check other types of constructs here: taskloop, distribute construct
           {
             rt_val = e_private;
@@ -1433,7 +1441,11 @@ namespace OmpSupport
     //void transOmpFor(SgNode* node)
   {
     ROSE_ASSERT(node != NULL);
-    SgUpirWorksharingStatement* target1 = isSgUpirWorksharingStatement(node);
+    SgUpirLoopStatement* target1 = NULL;
+    SgUpirLoopParallelStatement* loop_parallel = isSgUpirLoopParallelStatement(node);
+    if (loop_parallel != NULL) {
+        target1 = isSgUpirLoopStatement(loop_parallel->get_loop());
+    };
     SgOmpDoStatement* target2 = isSgOmpDoStatement(node);
 
     SgUpirFieldBodyStatement* target = (target1!=NULL?(SgUpirFieldBodyStatement*)target1:(SgUpirFieldBodyStatement*)target2);
@@ -5747,12 +5759,22 @@ void transOmpTargetLoopBlock(SgNode* node)
     return result;
   }
 
-  SgExpression* getClauseExpression(SgUpirFieldBodyStatement * clause_stmt, const VariantVector & vvt)
+  SgExpression* getClauseExpression(SgStatement * clause_stmt, const VariantVector & vvt)
   {
      SgExpression* expr = NULL;
      ROSE_ASSERT(clause_stmt != NULL);
+     SgOmpClausePtrList clauses;
+     if (isSgUpirFieldBodyStatement(clause_stmt)) {
+         clauses = (isSgUpirFieldBodyStatement(clause_stmt))->get_clauses();
+     }
+     else if (isSgUpirFieldStatement(clause_stmt)) {
+         clauses = (isSgUpirFieldStatement(clause_stmt))->get_clauses();
+     }
+     else {
+         ROSE_ASSERT(0);
+     }
      Rose_STL_Container<SgOmpClause*> p_clause =
-       NodeQuery::queryNodeList<SgOmpClause>(clause_stmt->get_clauses(),vvt);
+       NodeQuery::queryNodeList<SgOmpClause>(clauses, vvt);
      //It is possible that the requested clauses are not found. We allow returning NULL expression.
      //Liao, 6/16/2015
      if (p_clause.size()>=1)
@@ -6877,8 +6899,13 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
 int patchUpPrivateVariables(SgStatement* omp_loop)
 {
   int result = 0;
-  ROSE_ASSERT ( omp_loop != NULL);
-  SgUpirWorksharingStatement* for_node = isSgUpirWorksharingStatement(omp_loop);
+  ROSE_ASSERT(omp_loop != NULL);
+
+  SgUpirLoopStatement* for_node = NULL;
+  SgUpirLoopParallelStatement* loop_parallel = isSgUpirLoopParallelStatement(omp_loop);
+  if (loop_parallel != NULL) {
+    for_node = isSgUpirLoopStatement(loop_parallel->get_loop());
+  };
   SgOmpDoStatement* do_node = isSgOmpDoStatement(omp_loop);
   SgOmpTargetParallelForStatement *target_parallel_for_node = isSgOmpTargetParallelForStatement(omp_loop);
   SgOmpTargetTeamsDistributeParallelForStatement *target_teams_distribute_parallel_for_node = isSgOmpTargetTeamsDistributeParallelForStatement(omp_loop);
@@ -7143,7 +7170,7 @@ void lower_omp(SgSourceFile* file)
           transOmpTask(node);
           break;
         }
-      case V_SgUpirWorksharingStatement:
+      case V_SgUpirLoopParallelStatement:
       case V_SgOmpDoStatement:
         {
           // check if the loop is part of the combined "omp parallel for" under the "omp target" directive

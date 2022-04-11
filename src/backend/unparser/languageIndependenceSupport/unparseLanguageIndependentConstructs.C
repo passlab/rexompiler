@@ -11831,9 +11831,12 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         }
         break;
       }
-         case V_SgUpirWorksharingStatement:
+         case V_SgUpirLoopParallelStatement:
       {
-        curprint(string ("for "));
+        SgUpirLoopParallelStatement* upir_node = isSgUpirLoopParallelStatement(stmt);
+        if (upir_node->get_worksharing() != NULL) {
+          curprint(string ("for "));
+        };
         break;
       }
          case V_SgOmpForSimdStatement:

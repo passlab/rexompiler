@@ -263,15 +263,15 @@ collectFortranTarget (SgProject* proj, TargetList_t& targets)
 // The assumption is that OpenMP parsing and AST creation is already turned on. 
 // The AST has normalized #pragma omp parallel for also (split into separated paralle and for AST nodes).
 static size_t
-collectOmpLoops(SgProject* proj, Rose_STL_Container<SgUpirWorksharingStatement*> & ompfor_stmts)
+collectOmpLoops(SgProject* proj, Rose_STL_Container<SgUpirLoopParallelStatement*> & ompfor_stmts)
 {
   typedef Rose_STL_Container<SgNode *> NodeList_t;
-  NodeList_t raw_list = NodeQuery::querySubTree (proj, V_SgUpirWorksharingStatement);
+  NodeList_t raw_list = NodeQuery::querySubTree (proj, V_SgUpirLoopParallelStatement);
   size_t count = 0;
   for (NodeList_t::reverse_iterator i = raw_list.rbegin ();
       i != raw_list.rend (); ++i)
   {
-    SgUpirWorksharingStatement* decl = isSgUpirWorksharingStatement(*i);
+    SgUpirLoopParallelStatement* decl = isSgUpirLoopParallelStatement(*i);
     if (decl)
     {
       ompfor_stmts.push_back (decl);
@@ -395,13 +395,13 @@ Outliner::outlineAll (SgProject* project)
     // New interface : OpenMP for loops, for testing purpose, only for C/C++ code
     if (select_omp_loop)
     {
-      Rose_STL_Container<SgUpirWorksharingStatement*> ompfor_stmts;
+      Rose_STL_Container<SgUpirLoopParallelStatement*> ompfor_stmts;
       if (collectOmpLoops(project, ompfor_stmts))
       {  
-        for ( Rose_STL_Container<SgUpirWorksharingStatement*> ::iterator i = ompfor_stmts.begin (); i != ompfor_stmts.end (); ++i)
+        for ( Rose_STL_Container<SgUpirLoopParallelStatement*> ::iterator i = ompfor_stmts.begin (); i != ompfor_stmts.end (); ++i)
         {  
-          SgUpirWorksharingStatement* omp_stmt = *i;
-          SgStatement* body = omp_stmt->get_body();
+          SgUpirLoopParallelStatement* omp_stmt = *i;
+          SgStatement* body = ((SgUpirLoopStatement*)omp_stmt->get_loop())->get_body();
           string func_name =  generateFuncName(body);
 
           if (outline(body, func_name).isValid ())

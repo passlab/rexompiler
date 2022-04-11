@@ -94,7 +94,11 @@ void analyzeOmpMetadirective(SgNode *node) {
 
 void analyzeOmpFor(SgNode *node) {
   ROSE_ASSERT(node != NULL);
-  SgUpirWorksharingStatement *target1 = isSgUpirWorksharingStatement(node);
+  SgUpirLoopStatement* target1 = NULL;
+  SgUpirLoopParallelStatement* loop_parallel = isSgUpirLoopParallelStatement(node);
+  if (loop_parallel != NULL) {
+      target1 = isSgUpirLoopStatement(loop_parallel->get_loop());
+  };
   SgOmpDoStatement *target2 = isSgOmpDoStatement(node);
 
   SgUpirFieldBodyStatement *target =
@@ -165,7 +169,7 @@ int patchUpPrivateVariables(SgFile *file) {
   int result = 0;
   ROSE_ASSERT(file != NULL);
   Rose_STL_Container<SgNode *> nodeList_merged =
-      NodeQuery::querySubTree(file, V_SgUpirWorksharingStatement);
+      NodeQuery::querySubTree(file, V_SgUpirLoopParallelStatement);
 
   nodeList_merged = mergeSgNodeList(
       nodeList_merged, NodeQuery::querySubTree(file, V_SgOmpDoStatement));
@@ -841,7 +845,7 @@ void analyze_omp(SgSourceFile *file) {
     SgStatement *node = isSgStatement(*node_list_iterator);
     ROSE_ASSERT(node != NULL);
     switch (node->variantT()) {
-    case V_SgUpirWorksharingStatement: {
+    case V_SgUpirLoopParallelStatement: {
       analyzeOmpFor(node);
       break;
     }
