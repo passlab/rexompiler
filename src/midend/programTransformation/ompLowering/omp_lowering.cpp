@@ -406,17 +406,18 @@ namespace OmpSupport
             lastprivate: The loop iteration variables in the associated for-loops of a simd construct with multiple
             associated for-loops are lastprivate.
           */
-          if (isSgUpirLoopStatement(omp_clause_body_stmt))
+          SgUpirLoopStatement* upir_loop = isSgUpirLoopStatement(omp_clause_body_stmt);
+          if (upir_loop != NULL && ((SgUpirLoopParallelStatement*)(upir_loop->get_upir_parent()))->get_worksharing())
           // TODO: check other types of constructs here: taskloop, distribute construct
           {
             rt_val = e_private;
             return rt_val;
           }
-          else if (SgOmpSimdStatement* simd_stmt = isSgOmpSimdStatement(omp_clause_body_stmt))
+          else if (upir_loop != NULL && ((SgUpirLoopParallelStatement*)(upir_loop->get_upir_parent()))->get_simd())
           {
             // if simd+ multiple affected loops:  lastprivate().  We check collapse() to see if multiple loops are affected.
             // TODO: we need to check if collapse(val) val >=1
-            if (hasClause(simd_stmt, V_SgOmpCollapseClause))
+            if (hasClause(upir_loop->get_upir_parent(), V_SgOmpCollapseClause))
             {
               rt_val = e_lastprivate;
             }
@@ -453,7 +454,7 @@ namespace OmpSupport
           //if (isSgUpirSpmdStatement (parent_clause_body_stmt) &&  isSgOmpSingleStatement(omp_clause_body_stmt))
           // TODO: add other directives which may be nested within others
           if (isSgUpirWorksharingStatement (omp_clause_body_stmt) ||
-              isSgOmpSimdStatement (omp_clause_body_stmt) ||
+              isSgUpirSimdStatement (omp_clause_body_stmt) ||
               isSgOmpSingleStatement(omp_clause_body_stmt))
           {
             // we need to consider the variable's data sharing attribute in the new context
@@ -1387,6 +1388,24 @@ namespace OmpSupport
     }
   }
 
+  void transUpirLoopParallel(SgNode* node) {
+    SgUpirLoopParallelStatement* target = isSgUpirLoopParallelStatement(node);
+    ROSE_ASSERT(target != NULL);
+
+    //TODO: for simd combined directive
+    SgUpirWorksharingStatement* worksharing = isSgUpirWorksharingStatement(target->get_worksharing());
+    SgUpirSimdStatement* simd = isSgUpirSimdStatement(target->get_simd());
+    if (worksharing != NULL) {
+        transOmpLoop(worksharing);
+    }
+    else if (simd != NULL) {
+        transOmpSimd(simd);
+    }
+    else {
+        ROSE_ASSERT(0);
+    };
+  }
+
   // Expected AST
   // * SgUpirWorksharingStatement
   // ** SgForStatement
@@ -1438,7 +1457,6 @@ namespace OmpSupport
   // upper bound adjustment should be +1 instead of -1
   */
   void transOmpLoop(SgNode* node)
-    //void transOmpFor(SgNode* node)
   {
     ROSE_ASSERT(node != NULL);
     SgUpirLoopStatement* target1 = NULL;
@@ -1996,21 +2014,41 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
 
 
   //! Check if an OpenMP statement has a clause of type vt
-  Rose_STL_Container<SgOmpClause*> getClause(SgUpirFieldBodyStatement* clause_stmt, const VariantT & vt)
+  Rose_STL_Container<SgOmpClause*> getClause(SgStatement* clause_stmt, const VariantT & vt)
   {
     ROSE_ASSERT(clause_stmt != NULL);
+    SgOmpClausePtrList clauses;
+    if (isSgUpirFieldBodyStatement(clause_stmt)) {
+        clauses = (isSgUpirFieldBodyStatement(clause_stmt))->get_clauses();
+    }
+    else if (isSgUpirFieldStatement(clause_stmt)) {
+        clauses = (isSgUpirFieldStatement(clause_stmt))->get_clauses();
+    }
+    else {
+        ROSE_ASSERT(0);
+    };
     Rose_STL_Container<SgOmpClause*> p_clause =
-      NodeQuery::queryNodeList<SgOmpClause>(clause_stmt->get_clauses(),vt);
-    return  p_clause;
+      NodeQuery::queryNodeList<SgOmpClause>(clauses,vt);
+    return p_clause;
   }
 
   //! Check if an OpenMP statement has a clause of type vt
-  bool hasClause(SgUpirFieldBodyStatement* clause_stmt, const VariantT & vt)
+  bool hasClause(SgStatement* clause_stmt, const VariantT & vt)
   {
     ROSE_ASSERT(clause_stmt != NULL);
+    SgOmpClausePtrList clauses;
+    if (isSgUpirFieldBodyStatement(clause_stmt)) {
+        clauses = (isSgUpirFieldBodyStatement(clause_stmt))->get_clauses();
+    }
+    else if (isSgUpirFieldStatement(clause_stmt)) {
+        clauses = (isSgUpirFieldStatement(clause_stmt))->get_clauses();
+    }
+    else {
+        ROSE_ASSERT(0);
+    };
     Rose_STL_Container<SgOmpClause*> p_clause =
-      NodeQuery::queryNodeList<SgOmpClause>(clause_stmt->get_clauses(),vt);
-    return  (p_clause.size()!= 0) ;
+      NodeQuery::queryNodeList<SgOmpClause>(clauses,vt);
+    return (p_clause.size()!= 0);
   }
 
 //! A helper function to generate implicit or explicit task for either omp parallel or omp task
@@ -6814,10 +6852,14 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
   }
 
   //! Remove one or more clauses of type vt
-  int removeClause (SgUpirFieldBodyStatement * clause_stmt, const VariantT& vt)
+  int removeClause(SgStatement* clause_stmt, const VariantT& vt)
   {
     ROSE_ASSERT(clause_stmt != NULL);
-    SgOmpClausePtrList& clause_list= clause_stmt->get_clauses ();
+    ROSE_ASSERT(isSgUpirFieldBodyStatement(clause_stmt) || isSgUpirFieldStatement(clause_stmt));
+    SgOmpClausePtrList& clause_list
+        = (isSgUpirFieldBodyStatement(clause_stmt))
+        ? (isSgUpirFieldBodyStatement(clause_stmt))->get_clauses()
+        : (isSgUpirFieldStatement(clause_stmt))->get_clauses();
     std::vector< Rose_STL_Container<SgOmpClause*>::iterator > iter_vec;
     Rose_STL_Container<SgOmpClause*>::iterator iter ;
     // collect iterators pointing the matching clauses
@@ -6981,15 +7023,16 @@ int patchUpPrivateVariables(SgStatement* omp_loop)
  * or map tofrom clause, if the collapse clause comes with target directive.
  *
  */
-void transOmpCollapse(SgUpirFieldBodyStatement * node)
+void transOmpCollapse(SgStatement* node)
 {
 
-  SgStatement * body =  node->get_body();
+  SgUpirLoopParallelStatement* target = isSgUpirLoopParallelStatement(node);
+  ROSE_ASSERT(target != NULL);
+  SgStatement* body = ((SgUpirLoopStatement*)target->get_loop())->get_body();;
   ROSE_ASSERT(body != NULL);
 
   // The OpenMP syntax requires that the omp for pragma is immediately followed by the for loop.
   SgForStatement * for_loop = isSgForStatement(body);
-  //SgStatement * loop = for_loop;
 
   if(for_loop == NULL)
     return;
@@ -7140,8 +7183,8 @@ void lower_omp(SgSourceFile* file)
     } //else
 
     /*Winnie, handle Collapse clause.*/
-    if(  isSgUpirFieldBodyStatement(node) != NULL && hasClause(isSgUpirFieldBodyStatement(node), V_SgOmpCollapseClause))
-      transOmpCollapse(isSgUpirFieldBodyStatement(node));
+    if(hasClause(node, V_SgOmpCollapseClause))
+      transOmpCollapse(node);
 #if 1 // debugging code after collapsing the loops
     if (!isVariant)
     switch (node->variantT())
@@ -7197,7 +7240,7 @@ void lower_omp(SgSourceFile* file)
           }
           else
           {
-            transOmpLoop(node);
+            transUpirLoopParallel(node);
           }
           break;
         }
@@ -7269,11 +7312,6 @@ void lower_omp(SgSourceFile* file)
       case V_SgOmpTargetTeamsDistributeParallelForStatement:
         {
           transOmpTargetTeamsDistributeParallelFor(node);
-          break;
-        }
-      case V_SgOmpSimdStatement:
-        {
-          transOmpSimd(node, getEnclosingSourceFile(node));
           break;
         }
       default:

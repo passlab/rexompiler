@@ -85,6 +85,9 @@ namespace OmpSupport
   //! Translate omp task
   void transOmpTask(SgNode* node);
 
+  //! Translate UPIR parallel loops
+  void transUpirLoopParallel(SgNode* node);
+
   //! Translate omp for or omp do loops
   void transOmpLoop(SgNode* node);
 
@@ -132,7 +135,7 @@ namespace OmpSupport
   void transOmpMetadirective(SgNode* node);
   
   //! Translate omp simd
-  void transOmpSimd(SgNode *node, SgSourceFile *file);
+  void transOmpSimd(SgNode *node);
 
   //! Analysis helpers
   void createUpirStatementTree(SgSourceFile *file);
@@ -187,13 +190,13 @@ namespace OmpSupport
   ROSE_DLL_API SgOmpVariablesClause* buildOmpVariableClause(SgUpirFieldBodyStatement * clause_stmt, const VariantT& vt);
 
   //! Remove one or more clauses of type vt 
-  ROSE_DLL_API int removeClause (SgUpirFieldBodyStatement * clause_stmt, const VariantT& vt);
+  ROSE_DLL_API int removeClause (SgStatement * clause_stmt, const VariantT& vt);
 
   //! Check if an OpenMP statement has a clause of type vt
-  ROSE_DLL_API bool hasClause(SgUpirFieldBodyStatement* clause_stmt, const VariantT & vt);
+  ROSE_DLL_API bool hasClause(SgStatement* clause_stmt, const VariantT & vt);
 
   //! Get OpenMP clauses from an eligible OpenMP statement
-  ROSE_DLL_API Rose_STL_Container<SgOmpClause*>  getClause(SgUpirFieldBodyStatement* clause_stmt, const VariantT & vt);
+  ROSE_DLL_API Rose_STL_Container<SgOmpClause*> getClause(SgStatement* clause_stmt, const VariantT & vt);
 
   //! Check if an omp for/do loop use static schedule or not, including: default schedule, or schedule(static[,chunk_size]) 
   ROSE_DLL_API bool useStaticSchedule(SgUpirFieldBodyStatement* omp_loop);

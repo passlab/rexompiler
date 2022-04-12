@@ -138,7 +138,7 @@ std::string intel_simd_func(OpType op_type, SgType *type, bool half_type = false
 }
 
 // Generates a SIMD load statement for Intel
-SgAssignInitializer *intel_write_load(SgBinaryOp *op, SgOmpSimdStatement *target, SgBasicBlock *new_block) {
+SgAssignInitializer *intel_write_load(SgBinaryOp *op, SgUpirLoopParallelStatement *target, SgBasicBlock *new_block) {
     SgExpression *lval = op->get_lhs_operand();
     SgExpression *rval = op->get_rhs_operand();
         
@@ -175,7 +175,7 @@ SgAssignInitializer *intel_write_load(SgBinaryOp *op, SgOmpSimdStatement *target
 // ==============================================================================================================
 // Generates a SIMD broadcast statement on Intel architecture
 //
-SgAssignInitializer *intel_write_broadcast(SgBinaryOp *op, SgOmpSimdStatement *target, SgBasicBlock *new_block) {
+SgAssignInitializer *intel_write_broadcast(SgBinaryOp *op, SgUpirLoopParallelStatement *target, SgBasicBlock *new_block) {
     SgExpression *lval = op->get_lhs_operand();
     SgExpression *rval = op->get_rhs_operand();
     
@@ -196,7 +196,7 @@ SgAssignInitializer *intel_write_broadcast(SgBinaryOp *op, SgOmpSimdStatement *t
 // ===========================================================================================================
 // Generates a SIMD gather statement
 //
-SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgOmpSimdStatement *target, SgBasicBlock *new_block) {
+SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgUpirLoopParallelStatement *target, SgBasicBlock *new_block) {
     SgExpression *lval = op->get_lhs_operand();
     SgExpression *rval = op->get_rhs_operand();
     
@@ -319,7 +319,7 @@ void intel_write_store(SgBinaryOp *op, SgBasicBlock *new_block) {
 // ============================================================================================
 /// Generates a SIMD scatter statement
 //
-void intel_write_scatter(SgBinaryOp *op, SgOmpSimdStatement *target, SgBasicBlock *new_block) {
+void intel_write_scatter(SgBinaryOp *op, SgUpirLoopParallelStatement *target, SgBasicBlock *new_block) {
     SgExpression *lval = op->get_lhs_operand();
     SgExpression *rval = op->get_rhs_operand();
     
@@ -384,7 +384,7 @@ void intel_write_scatter(SgBinaryOp *op, SgOmpSimdStatement *target, SgBasicBloc
 // ==================================================================================================
 // Generates an Intel partial-store statement
 //
-SgAssignInitializer *intel_write_partial_store(SgBinaryOp *op, SgOmpSimdStatement *target, SgBasicBlock *new_block) {
+SgAssignInitializer *intel_write_partial_store(SgBinaryOp *op, SgUpirLoopParallelStatement *target, SgBasicBlock *new_block) {
     SgVarRefExp *var = static_cast<SgVarRefExp *>(op->get_lhs_operand());
     SgVarRefExp *srcVar = static_cast<SgVarRefExp *>(op->get_rhs_operand());
     
@@ -420,7 +420,7 @@ SgAssignInitializer *intel_write_partial_store(SgBinaryOp *op, SgOmpSimdStatemen
 //_mm256_storeu_ps(&__buf0,__sub2);
 //temp = __buf0[1] + __buf0[5];
 //
-void intel_write_scalar_store(SgBinaryOp *op, SgOmpSimdStatement *target, SgBasicBlock *new_block) {
+void intel_write_scalar_store(SgBinaryOp *op, SgUpirLoopParallelStatement *target, SgBasicBlock *new_block) {
     SgExpression *lval = op->get_lhs_operand();
     SgExpression *rval = op->get_rhs_operand();
     
@@ -541,7 +541,7 @@ void intel_write_scalar_store(SgBinaryOp *op, SgOmpSimdStatement *target, SgBasi
 // ===========================================================================================================
 // Writes an Intel SIMD math statement
 //
-SgAssignInitializer *intel_write_math(SgBinaryOp *op, SgOmpSimdStatement *target, SgBasicBlock *new_block, VariantT math_type) {
+SgAssignInitializer *intel_write_math(SgBinaryOp *op, SgUpirLoopParallelStatement *target, SgBasicBlock *new_block, VariantT math_type) {
     SgExpression *lval = op->get_lhs_operand();
     SgExpression *rval = op->get_rhs_operand();
     
@@ -575,7 +575,7 @@ SgAssignInitializer *intel_write_math(SgBinaryOp *op, SgOmpSimdStatement *target
 
 // =======================================================================================================================================
 // Write the Intel intrinsics
-void omp_simd_write_intel(SgOmpSimdStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block, int simd_length) {
+void omp_simd_write_intel(SgUpirLoopParallelStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block, int simd_length) {
     // Set the simd_len variable
     if (simd_length == 0) {
         simd_len = 16;

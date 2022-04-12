@@ -3797,7 +3797,6 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpTaskloopStatement:
                     case V_SgOmpTargetEnterDataStatement:
                     case V_SgOmpTargetExitDataStatement:
-                    case V_SgOmpSimdStatement:
                     case V_SgUpirTaskStatement:
                     case V_SgOmpTargetDataStatement:
                     case V_SgOmpTargetParallelForStatement:
@@ -11654,11 +11653,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         curprint(string ("target exit data "));
         break;
       }
-    case V_SgOmpSimdStatement:
-      {
-        curprint(string ("simd "));
-        break;
-      }
     case V_SgUpirTaskStatement:
       {
         curprint(string ("target "));
@@ -11836,6 +11830,9 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         SgUpirLoopParallelStatement* upir_node = isSgUpirLoopParallelStatement(stmt);
         if (upir_node->get_worksharing() != NULL) {
           curprint(string ("for "));
+        }
+        else if (upir_node->get_simd() != NULL) {
+          curprint(string ("simd "));
         };
         break;
       }

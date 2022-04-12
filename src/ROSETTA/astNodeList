@@ -354,7 +354,7 @@ SgOmpTeamsLoopStatement
 SgOmpParallelLoopStatement
 SgOmpParallelMasterStatement
 SgOmpMasterTaskloopStatement
-SgOmpSimdStatement
+SgUpirSimdStatement
 SgUpirBaseStatement
 SgUpirLoopStatement
 SgUpirLoopParallelStatement

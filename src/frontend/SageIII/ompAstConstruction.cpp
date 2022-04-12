@@ -2227,10 +2227,8 @@ SgOmpClause* convertSimpleClause(SgStatement* directive, std::pair<SgPragmaDecla
         ((SgOmpRequiresStatement*)directive)->get_clauses().push_back(sg_clause);
     } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_flush) {
         ((SgOmpFlushStatement*)directive)->get_clauses().push_back(sg_clause);
-    } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_for) {
-        ((SgUpirFieldStatement*)directive)->get_clauses().push_back(sg_clause);
     } else {
-        ((SgUpirFieldBodyStatement*)directive)->get_clauses().push_back(sg_clause);
+        addUpirField(directive, sg_clause);
     }
     sg_clause->set_parent(directive);
     return sg_clause;
@@ -2390,7 +2388,11 @@ SgStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirectiv
             break;
         }
         case OMPD_simd: {
-            result = new SgOmpSimdStatement(NULL, body);
+            result = new SgUpirLoopParallelStatement(NULL);
+            SgStatement* loop = new SgUpirLoopStatement(NULL, body);
+            SgStatement* loop_parallel_statement = new SgUpirSimdStatement(NULL);
+            ((SgUpirLoopParallelStatement*)result)->set_loop(loop);
+            ((SgUpirLoopParallelStatement*)result)->set_simd(loop_parallel_statement);
             break;
         }
         case OMPD_single: {
@@ -2576,7 +2578,7 @@ SgStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirectiv
                 break;
             }
             case OMPC_order: {
-                convertOrderClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertOrderClause(result, current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_bind: {
@@ -3093,7 +3095,11 @@ SgStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             break;
         }
         case OMPD_simd: {
-            result = new SgOmpSimdStatement(NULL, NULL);
+            result = new SgUpirLoopParallelStatement(NULL);
+            SgStatement* loop = new SgUpirLoopStatement(NULL, NULL);
+            SgStatement* loop_parallel_statement = new SgUpirSimdStatement(NULL);
+            ((SgUpirLoopParallelStatement*)result)->set_loop(loop);
+            ((SgUpirLoopParallelStatement*)result)->set_simd(loop_parallel_statement);
             break;
         }
         case OMPD_teams: {
@@ -3322,7 +3328,7 @@ SgStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
                 break;
             }
             case OMPC_order: {
-                convertOrderClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                convertOrderClause(result, current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_bind: {
@@ -3445,9 +3451,8 @@ SgOmpProcBindClause* convertProcBindClause(SgUpirFieldBodyStatement* clause_body
     setOneSourcePositionForTransformation(result);
 
     // reconsider the location of following code to attach clause
-    SgOmpClause* sg_clause = result;
-    clause_body->get_clauses().push_back(sg_clause);
-    sg_clause->set_parent(clause_body);
+    clause_body->get_clauses().push_back(result);
+    result->set_parent(clause_body);
 
     return result;
 }
@@ -3468,13 +3473,12 @@ SgOmpOrderClause* convertOrderClause(SgStatement* directive, std::pair<SgPragmaD
     setOneSourcePositionForTransformation(result);
 
     // reconsider the location of following code to attach clause
-    SgOmpClause* sg_clause = result;
     if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_declare_simd) {
-        ((SgOmpDeclareSimdStatement*)directive)->get_clauses().push_back(sg_clause);
+        ((SgOmpDeclareSimdStatement*)directive)->get_clauses().push_back(result);
     } else {
-        ((SgUpirFieldBodyStatement*)directive)->get_clauses().push_back(sg_clause);
+        addUpirField(directive, result);
     }
-    sg_clause->set_parent(directive);
+    result->set_parent(directive);
 
     return result;
 }

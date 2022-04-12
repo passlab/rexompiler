@@ -81,7 +81,7 @@ SgType *arm_get_type(SgType *input, SgBasicBlock *new_block) {
 }
 
 // Write the Arm intrinsics
-void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block) {
+void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block) {
     // Setup the for loop
     SgBasicBlock *new_block = SageBuilder::buildBasicBlock();
     

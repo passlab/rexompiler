@@ -330,7 +330,7 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpMasterTaskloopStatement,  "OmpMasterTaskloopStatement",   "OMP_MASTER_TASKLOOP_STMT" );
     NEW_TERMINAL_MACRO (OmpParallelLoopStatement,  "OmpParallelLoopStatement",   "OMP_PARALLEL_LOOP_STMT" );
     
-    NEW_TERMINAL_MACRO (OmpSimdStatement,    "OmpSimdStatement",     "OMP_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (UpirSimdStatement,    "UpirSimdStatement",     "UPIR_SIMD_STMT" );
     NEW_TERMINAL_MACRO (OmpCriticalStatement,  "OmpCriticalStatement",   "OMP_CRITICAL_STMT" );
     NEW_TERMINAL_MACRO (OmpOrderedStatement,   "OmpOrderedStatement",   "OMP_ORDERED_STMT" );
 
@@ -346,7 +346,7 @@ Grammar::setUpStatements ()
               OmpTaskStatement | OmpDoStatement | OmpSectionsStatement | UpirTaskStatement | OmpTargetDataStatement | OmpTargetParallelForStatement | OmpParallelLoopStatement |
               OmpTargetParallelStatement | OmpTargetParallelForSimdStatement | OmpTargetParallelLoopStatement | OmpTargetSimdStatement | OmpTargetTeamsStatement | OmpTargetTeamsDistributeStatement | OmpTargetTeamsDistributeSimdStatement | OmpTargetTeamsLoopStatement | OmpTargetTeamsDistributeParallelForStatement | OmpTargetTeamsDistributeParallelForSimdStatement | OmpDistributeSimdStatement | OmpDistributeParallelForStatement | OmpDistributeParallelForSimdStatement | OmpTaskloopSimdStatement |            
               OmpMasterTaskloopSimdStatement | OmpParallelMasterTaskloopStatement | OmpParallelMasterTaskloopSimdStatement | OmpTeamsDistributeStatement | OmpTeamsDistributeSimdStatement | OmpTeamsDistributeParallelForStatement | OmpTeamsDistributeParallelForSimdStatement | OmpTeamsLoopStatement |
-              OmpSimdStatement | OmpForSimdStatement | OmpCriticalStatement | OmpDistributeStatement | UpirLoopStatement,
+              OmpForSimdStatement | OmpCriticalStatement | OmpDistributeStatement | UpirLoopStatement,
         "UpirFieldBodyStatement",   "UPIR_FIELDBODY_STMT", false );
 
     // + a statement / block
@@ -364,7 +364,7 @@ Grammar::setUpStatements ()
         | OmpSectionStatement | OmpWorkshareStatement  | UpirFieldBodyStatement,
         "UpirBodyStatement",      "UPIR_BODY_STMT", false );
 
-    NEW_NONTERMINAL_MACRO (UpirFieldStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement | OmpOrderedDependStatement | UpirSyncStatement | UpirLoopParallelStatement | UpirWorksharingStatement,
+    NEW_NONTERMINAL_MACRO (UpirFieldStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement | OmpOrderedDependStatement | UpirSyncStatement | UpirLoopParallelStatement | UpirWorksharingStatement | UpirSimdStatement,
         "UpirFieldStatement",      "UPIR_FIELD_STMT", false );
 
 #endif
@@ -4338,7 +4338,7 @@ Grammar::setUpStatements ()
     OmpParallelMasterStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_MASTER_STATEMENT", "../Grammar/Statement.code" );
     OmpMasterTaskloopStatement.setFunctionSource            ("SOURCE_OMP_MASTER_TASKLOOP_STATEMENT", "../Grammar/Statement.code" );
     OmpParallelLoopStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_LOOP_STATEMENT", "../Grammar/Statement.code" );
-    OmpSimdStatement.setFunctionSource            ("SOURCE_OMP_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    UpirSimdStatement.setFunctionSource            ("SOURCE_UPIR_SIMD_STATEMENT", "../Grammar/Statement.code" );
 
    // sections {section, section} // `containerSuccessors >1 is not allowed in ROSETTA's traversal
    // We hack the code to handle this special case

@@ -19555,11 +19555,11 @@ SgCAFWithTeamStatement::post_construction_initialization()
 
 SOURCE_WITH_TEAM_STATEMEMT_END
 
-SOURCE_OMP_SIMD_STATEMENT_START
+SOURCE_UPIR_SIMD_STATEMENT_START
 void
-SgOmpSimdStatement::post_construction_initialization()
+SgUpirSimdStatement::post_construction_initialization()
    {}
-SOURCE_OMP_SIMD_STATEMENT_END
+SOURCE_UPIR_SIMD_STATEMENT_END
 
 
 SOURCE_MICROSOFT_ATTRIBUTE_DECLARATION_STATEMENT_START
