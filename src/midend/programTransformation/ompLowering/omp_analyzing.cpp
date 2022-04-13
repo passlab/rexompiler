@@ -92,32 +92,44 @@ void analyzeOmpMetadirective(SgNode *node) {
   // std::cout << root_if_statement->unparseToString() << "\n";
 } // end analyze omp metadirective
 
-void analyzeOmpFor(SgNode *node) {
-  ROSE_ASSERT(node != NULL);
-  SgUpirLoopStatement* target1 = NULL;
-  SgUpirLoopParallelStatement* loop_parallel = isSgUpirLoopParallelStatement(node);
-  if (loop_parallel != NULL) {
-      target1 = isSgUpirLoopStatement(loop_parallel->get_loop());
-  };
-  SgOmpDoStatement *target2 = isSgOmpDoStatement(node);
-
-  SgUpirFieldBodyStatement *target =
-      (target1 != NULL ? (SgUpirFieldBodyStatement *)target1
-                       : (SgUpirFieldBodyStatement *)target2);
+void analyzeUpirLoop(SgStatement *node) {
+  SgUpirLoopStatement *target = isSgUpirLoopStatement(node);
   ROSE_ASSERT(target != NULL);
+  SgForStatement *for_loop = isSgForStatement(target->get_body());
+  ROSE_ASSERT(for_loop != NULL);
+  SageInterface::forLoopNormalization(for_loop);
+
+  SgInitializedName *orig_index = NULL;
+  SgExpression *orig_lower = NULL;
+  SgExpression *orig_upper = NULL;
+  SgExpression *orig_stride = NULL;
+  bool isIncremental = false;
+  bool is_canonical = false;
+  is_canonical =
+      isCanonicalForLoop(for_loop, &orig_index, &orig_lower, &orig_upper,
+                         &orig_stride, NULL, &isIncremental);
+  ROSE_ASSERT(is_canonical == true);
+  target->set_induction(orig_index);
+  target->set_lower_bound(orig_lower);
+  target->set_upper_bound(orig_upper);
+  target->set_step(orig_stride);
+  target->set_incremental(isIncremental);
+}
+
+void normalizeUpirLoop(SgStatement *node) {
+  ROSE_ASSERT(node != NULL);
+  SgUpirLoopParallelStatement *loop_parallel =
+      isSgUpirLoopParallelStatement(node);
+  ROSE_ASSERT(loop_parallel != NULL);
+  SgUpirLoopStatement *target =
+      isSgUpirLoopStatement(loop_parallel->get_loop());
+  ROSE_ASSERT(target != NULL);
+
+  analyzeUpirLoop(target);
 
   SgScopeStatement *p_scope = target->get_scope();
   ROSE_ASSERT(p_scope != NULL);
-
-  SgStatement *body = target->get_body();
-  ROSE_ASSERT(body != NULL);
-  // The OpenMP syntax requires that the omp for pragma is immediately followed
-  // by the for loop.
-  SgForStatement *for_loop = isSgForStatement(body);
-  SgFortranDo *do_loop = isSgFortranDo(body);
-
-  SgStatement *loop =
-      (for_loop != NULL ? (SgStatement *)for_loop : (SgStatement *)do_loop);
+  SgForStatement *loop = isSgForStatement(target->get_body());
   ROSE_ASSERT(loop != NULL);
 
   Rose_STL_Container<SgOmpClause *> clauses =
@@ -156,15 +168,15 @@ void analyzeOmpFor(SgNode *node) {
 
     ROSE_ASSERT(sg_clause);
     setOneSourcePositionForTransformation(sg_clause);
-    target->get_clauses().push_back(sg_clause);
-    sg_clause->set_parent(target);
+    loop_parallel->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(loop_parallel);
     printf("A default schedule clause is added.\n");
   }
-} // end analyze omp for
+}
 
 //! Patch up private variables for omp for. The reason is that loop indices
-//! should be private by default and this function will make this explicit. This
-//! should happen before the actual translation is done.
+//! should be private by default and this function will make this explicit.
+//! This should happen before the actual translation is done.
 int patchUpPrivateVariables(SgFile *file) {
   int result = 0;
   ROSE_ASSERT(file != NULL);
@@ -192,8 +204,8 @@ int patchUpPrivateVariables(SgFile *file) {
   return result;
 } // end patchUpPrivateVariables()
 
-//! Collect threadprivate variables within the current project, return a set to
-//! avoid duplicated elements
+//! Collect threadprivate variables within the current project, return a set
+//! to avoid duplicated elements
 std::set<SgInitializedName *> collectThreadprivateVariables() {
   // Do the actual collection only once
   static bool calledOnce = false;
@@ -218,8 +230,8 @@ std::set<SgInitializedName *> collectThreadprivateVariables() {
 
 // Check if a variable that is determined to be shared in all enclosing
 // constructs, up to and including the innermost enclosing parallel construct,
-// is shared start_stmt is the start point to find enclosing OpenMP constructs.
-// It is excluded as an enclosing construct for itself.
+// is shared start_stmt is the start point to find enclosing OpenMP
+// constructs. It is excluded as an enclosing construct for itself.
 // TODO: we only check if it is shared to the innermost enclosing parallel
 // construct for now
 static bool isSharedInEnclosingConstructs(SgInitializedName *init_var,
@@ -265,9 +277,10 @@ static bool isSharedInEnclosingConstructs(SgInitializedName *init_var,
   // the variable is in an orphaned construct
   // The variable could be
   // 1. a function parameter: it is private to its enclosing parallel region
-  // 2. a global variable: either a threadprivate variable or shared by default
-  // 3. is a variable declared within an orphaned function: it is private to its
-  // enclosing parallel region
+  // 2. a global variable: either a threadprivate variable or shared by
+  // default
+  // 3. is a variable declared within an orphaned function: it is private to
+  // its enclosing parallel region
   // ?? any other cases?? TODO
   {
     SgFunctionDefinition *func_def = getEnclosingFunctionDefinition(start_stmt);
@@ -286,7 +299,8 @@ static bool isSharedInEnclosingConstructs(SgInitializedName *init_var,
       // declared within an orphaned function, should be private
       result = false;
     } else {
-      cerr << "Error: OmpSupport::isSharedInEnclosingConstructs() \n Unhandled "
+      cerr << "Error: OmpSupport::isSharedInEnclosingConstructs() \n "
+              "Unhandled "
               "variables within an orphaned construct:"
            << endl;
       cerr << "SgInitializedName name = " << init_var->get_name().getString()
@@ -301,8 +315,8 @@ static bool isSharedInEnclosingConstructs(SgInitializedName *init_var,
 
 //! Patch up firstprivate variables for omp task. The reason is that the
 //! specification 3.0 defines rules for implicitly determined data-sharing
-//! attributes and this function will make the implicit firstprivate variable of
-//! omp task explicit.
+//! attributes and this function will make the implicit firstprivate variable
+//! of omp task explicit.
 /*
 variables used in task block:
 
@@ -313,20 +327,21 @@ A variable is firstprivate to the task (default) , if
 clauses
 ** not shared in enclosing constructs
 
-It should also satisfy the restriction defined in specification 3.0 page 93 TODO
+It should also satisfy the restriction defined in specification 3.0 page 93
+TODO
 * cannot be a variable which is part of another variable (as an array or
 structure element)
 * cannot be private, reduction
 * must have an accessible, unambiguous copy constructor for the class type
-* must not have a const-qualified type unless it is of class type with a mutable
-member
+* must not have a const-qualified type unless it is of class type with a
+mutable member
 * must not have an incomplete C/C++ type or a reference type
 *
 I decided to exclude variables which are used by addresses when recognizing
 firstprivate variables The reason is that in real code, it is often to have
-private variables first then use their address later.   Skipping the replacement
-will result in wrong semantics. e.g. from Allan Porterfield void    create_seq(
-double seed, double a )
+private variables first then use their address later.   Skipping the
+replacement will result in wrong semantics. e.g. from Allan Porterfield void
+create_seq( double seed, double a )
       {
              double x, s;
              int    i, k;
@@ -361,7 +376,8 @@ If not, wrong code will be generated later on. The reason follows:
             }
    * the variable j will be firstprivate by default
    * however, it is used by its address within a nested task (&j)
-   * replacing it with its local copy will not get the right, original address.
+   * replacing it with its local copy will not get the right, original
+address.
    *
    * Even worse: the replacement will cause some later translation (outlining)
 to
@@ -405,8 +421,8 @@ or not, no difference
     void *__out_argv1__1527__[1];
     // cannot access auto variable from the stack of another task instance!!
     //__out_argv1__1527__[0] = ((void *)(&_p_i));
-    __out_argv1__1527__[0] = ((void *)(&(*i)));// this is the right translation
-    GOMP_task(OUT__1__1527__,&__out_argv1__1527__,0,4,4,1,0);
+    __out_argv1__1527__[0] = ((void *)(&(*i)));// this is the right
+translation GOMP_task(OUT__1__1527__,&__out_argv1__1527__,0,4,4,1,0);
   }
 }
 void OUT__1__1527__(void **__out_argv)
@@ -756,8 +772,8 @@ int createUpirDataFields(SgFile *file) {
 
       upir_data_item->set_section(upir_section);
       upir_data_item->set_mapping_property(data_mapping_type);
-      // TODO: FIX: set the data sharing attribute correctly instead of using an
-      // assumption.
+      // TODO: FIX: set the data sharing attribute correctly instead of using
+      // an assumption.
       upir_data_item->set_sharing_property(
           SgOmpClause::e_upir_data_sharing_private);
       data_items.push_back(upir_data_item);
@@ -796,7 +812,8 @@ SgStatement *getUpirParent(SgStatement *node) {
   return isSgUpirBaseStatement(parent);
 }
 
-// traverse the SgNode AST and fill the information of UPIR parent and children.
+// traverse the SgNode AST and fill the information of UPIR parent and
+// children.
 void createUpirStatementTree(SgSourceFile *file) {
   Rose_STL_Container<SgNode *> node_list =
       NodeQuery::querySubTree(file, V_SgUpirBaseStatement);
@@ -807,8 +824,7 @@ void createUpirStatementTree(SgSourceFile *file) {
     SgStatement *parent = getUpirParent(node);
     if (parent != NULL) {
       setUpirRelationship(parent, node);
-    }
-    else {
+    } else {
       node->set_upir_parent(parent);
     }
   }
@@ -818,10 +834,10 @@ void analyze_omp(SgSourceFile *file) {
 
   Rose_STL_Container<SgNode *> variant_directives =
       NodeQuery::querySubTree(file, V_SgOmpMetadirectiveStatement);
-  Rose_STL_Container<SgNode *>::reverse_iterator node_list_iterator;
-  for (node_list_iterator = variant_directives.rbegin();
-       node_list_iterator != variant_directives.rend(); node_list_iterator++) {
-    SgStatement *node = isSgStatement(*node_list_iterator);
+  Rose_STL_Container<SgNode *>::iterator node_list_iterator;
+  for (node_list_iterator = variant_directives.begin();
+       node_list_iterator != variant_directives.end(); node_list_iterator++) {
+    SgUpirBaseStatement *node = isSgUpirBaseStatement(*node_list_iterator);
     ROSE_ASSERT(node != NULL);
     analyzeOmpMetadirective(node);
   }
@@ -831,22 +847,22 @@ void analyze_omp(SgSourceFile *file) {
 
   patchUpImplicitMappingVariables(file);
 
-  // convert firstprivate clause in target directive to map clause because later
-  // only map clause will be lowered.
+  // convert firstprivate clause in target directive to map clause because
+  // later only map clause will be lowered.
   unifyUpirTaskMappingVariables(file);
 
   // Generate UPIR data fields based on map clauses
   createUpirDataFields(file);
 
   Rose_STL_Container<SgNode *> node_list =
-      NodeQuery::querySubTree(file, V_SgStatement);
-  for (node_list_iterator = node_list.rbegin();
-       node_list_iterator != node_list.rend(); node_list_iterator++) {
-    SgStatement *node = isSgStatement(*node_list_iterator);
+      NodeQuery::querySubTree(file, V_SgUpirBaseStatement);
+  for (node_list_iterator = node_list.begin();
+       node_list_iterator != node_list.end(); node_list_iterator++) {
+    SgUpirBaseStatement *node = isSgUpirBaseStatement(*node_list_iterator);
     ROSE_ASSERT(node != NULL);
     switch (node->variantT()) {
     case V_SgUpirLoopParallelStatement: {
-      analyzeOmpFor(node);
+      normalizeUpirLoop(node);
       break;
     }
     default: {
