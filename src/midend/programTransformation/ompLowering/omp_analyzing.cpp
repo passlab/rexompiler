@@ -185,7 +185,7 @@ int patchUpPrivateVariables(SgFile *file) {
       nodeList_merged.begin();
   // For each omp for/do statement
   for (; nodeListIterator != nodeList_merged.end(); ++nodeListIterator) {
-    SgStatement *omp_loop = isSgUpirFieldBodyStatement(*nodeListIterator);
+    SgStatement *omp_loop = isSgStatement(*nodeListIterator);
     ROSE_ASSERT(omp_loop != NULL);
     result += patchUpPrivateVariables(omp_loop);
   } // end for omp for statments

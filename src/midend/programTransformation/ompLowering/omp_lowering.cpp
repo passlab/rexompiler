@@ -1396,10 +1396,10 @@ namespace OmpSupport
     SgUpirWorksharingStatement* worksharing = isSgUpirWorksharingStatement(target->get_worksharing());
     SgUpirSimdStatement* simd = isSgUpirSimdStatement(target->get_simd());
     if (worksharing != NULL) {
-        transOmpLoop(worksharing);
+        transOmpLoop(target);
     }
     else if (simd != NULL) {
-        transOmpSimd(simd);
+        transOmpSimd(target);
     }
     else {
         ROSE_ASSERT(0);
