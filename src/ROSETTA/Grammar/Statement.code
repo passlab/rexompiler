@@ -19005,10 +19005,23 @@ SgUpirLoopStatement::post_construction_initialization()
    {}
 SOURCE_UPIR_LOOP_STATEMENT_END
 
+HEADER_UPIR_LOOP_PARALLEL_STATEMENT_START
+      virtual bool replace_child(SgStatement *,SgStatement *, bool extractListFromBasicBlock = false) $ROSE_OVERRIDE;
+
+      public:
+HEADER_UPIR_LOOP_PARALLEL_STATEMENT_END
+
 SOURCE_UPIR_LOOP_PARALLEL_STATEMENT_START
 void
 SgUpirLoopParallelStatement::post_construction_initialization()
    {}
+
+bool
+SgUpirLoopParallelStatement::replace_child(SgStatement *target,SgStatement *newstmt, bool extractBasicBlock)
+   {
+     SgStatement* upir_loop_body = ((SgUpirLoopStatement*)((SgUpirLoopParallelStatement*)this)->get_loop())->get_body();
+     return ( StatementReplace(this, upir_loop_body, target, newstmt) == true );
+   }
 SOURCE_UPIR_LOOP_PARALLEL_STATEMENT_END
 
 SOURCE_UPIR_SYNC_STATEMENT_START

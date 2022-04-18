@@ -1459,20 +1459,16 @@ namespace OmpSupport
   void transOmpLoop(SgNode* node)
   {
     ROSE_ASSERT(node != NULL);
-    SgUpirLoopStatement* target1 = NULL;
+    SgUpirLoopStatement* target = NULL;
     SgUpirLoopParallelStatement* loop_parallel = isSgUpirLoopParallelStatement(node);
-    if (loop_parallel != NULL) {
-        target1 = isSgUpirLoopStatement(loop_parallel->get_loop());
-    };
-    SgOmpDoStatement* target2 = isSgOmpDoStatement(node);
+    target = isSgUpirLoopStatement(loop_parallel->get_loop());
 
-    SgUpirFieldBodyStatement* target = (target1!=NULL?(SgUpirFieldBodyStatement*)target1:(SgUpirFieldBodyStatement*)target2);
     ROSE_ASSERT (target != NULL);
 
     SgScopeStatement* p_scope = target->get_scope();
     ROSE_ASSERT (p_scope != NULL);
 
-    SgStatement * body =  target->get_body();
+    SgStatement* body = target->get_body();
     ROSE_ASSERT(body != NULL);
     // The OpenMP syntax requires that the omp for pragma is immediately followed by the for loop.
     SgForStatement * for_loop = isSgForStatement(body);
@@ -1514,9 +1510,7 @@ namespace OmpSupport
     // This newly introduced scope is used to hold loop variables, private variables ,etc
     SgBasicBlock * bb1 = SageBuilder::buildBasicBlock();
 
-    //   fprintf(stderr, "target: %s\n", target->unparseToString().c_str() );
-
-    replaceStatement(target, bb1, true);
+    replaceStatement(loop_parallel, bb1, true);
 
     //TODO handle preprocessing information
     // Save some preprocessing information for later restoration.
@@ -1634,25 +1628,23 @@ namespace OmpSupport
       appendStatement(if_statement, bb1);
 
       // add loop here
-      appendStatement(loop, bb1);
+      SgStatement* new_loop = deepCopy(loop);
+      appendStatement(new_loop, bb1);
       // replace loop index with the new one
-      replaceVariableReferences(loop,
+      replaceVariableReferences(new_loop,
           isSgVariableSymbol(orig_index->get_symbol_from_symbol_table()), getFirstVarSym(index_decl))    ;
       // rewrite the lower and upper bounds
-      SageInterface::setLoopLowerBound(loop, buildVarRefExp(lower_decl));
-      SageInterface::setLoopUpperBound(loop, buildVarRefExp(upper_decl));
+      SageInterface::setLoopLowerBound(new_loop, buildVarRefExp(lower_decl));
+      SageInterface::setLoopUpperBound(new_loop, buildVarRefExp(upper_decl));
 
+      // TODO: implement UPIR: transUpirVariables(loop_parallel, bb1, orig_upper);
       transOmpVariables(target, bb1,orig_upper); // This should happen before the barrier is inserted.
       parameters = buildExprListExp(buildIntVal(0), thread_global_tid);
       appendStatement(buildFunctionCallStmt("__kmpc_for_static_fini", buildVoidType(), parameters, bb1), bb1);
       // insert barrier if there is no nowait clause
       if (!hasClause(target, V_SgOmpNowaitClause))
       {
-#ifdef ENABLE_XOMP
         appendStatement(buildFunctionCallStmt("__kmpc_barrier", buildVoidType(), parameters, bb1), bb1);
-#else
-        appendStatement(buildFunctionCallStmt("GOMP_barrier", buildVoidType(), NULL, bb1), bb1);
-#endif
       }
     }
 
@@ -4320,7 +4312,7 @@ ASTtools::VarSymSet_t transUpirDataMappingVariables (SgStatement* target_directi
 
     // dim3 numBlocks (xomp_get_max1DBlock(VEC_LEN));
     // TODO: handle 2-D or 3-D using dim type
-    ROSE_ASSERT (cuda_loop_iter_count_1 != NULL);
+    // ROSE_ASSERT (cuda_loop_iter_count_1 != NULL);
 
     // the default number of teams is set to 256
     SgVariableDeclaration* num_blocks_decl = buildVariableDeclaration ("_num_blocks_", buildIntType(), buildAssignInitializer(buildIntVal(256)), p_scope);
@@ -4676,7 +4668,8 @@ ASTtools::VarSymSet_t transUpirDataMappingVariables (SgStatement* target_directi
 
     // dim3 numBlocks (xomp_get_max1DBlock(VEC_LEN));
     // TODO: handle 2-D or 3-D using dim type
-    ROSE_ASSERT (cuda_loop_iter_count_1 != NULL);
+    // ROSE_ASSERT (cuda_loop_iter_count_1 != NULL);
+
     // the default number of teams is set to 1
     SgVariableDeclaration* num_blocks_decl = buildVariableDeclaration ("_num_blocks_", buildIntType(), buildAssignInitializer(buildIntVal(1)), p_scope);
     outlined_driver_body->append_statement(num_blocks_decl);

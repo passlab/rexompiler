@@ -4264,6 +4264,7 @@ Grammar::setUpStatements ()
 
     UpirBaseStatement.setFunctionSource             ( "SOURCE_UPIR_BASE_STATEMENT", "../Grammar/Statement.code" );
     UpirLoopStatement.setFunctionSource             ( "SOURCE_UPIR_LOOP_STATEMENT", "../Grammar/Statement.code" );
+    UpirLoopParallelStatement.setFunctionPrototype  ( "HEADER_UPIR_LOOP_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
     UpirLoopParallelStatement.setFunctionSource     ( "SOURCE_UPIR_LOOP_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
     UpirSyncStatement.setFunctionSource             ( "SOURCE_UPIR_SYNC_STATEMENT", "../Grammar/Statement.code" );
 
