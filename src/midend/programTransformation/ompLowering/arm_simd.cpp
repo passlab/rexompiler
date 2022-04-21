@@ -100,6 +100,7 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
     // Determine the proper function
     std::string pred_func_name = "svwhilelt_b32";
     std::string pred_count_name = "svcntw";
+    bool pg64 = false;
     
     SgNode *first_node = ir_block->at(0);
     if (!isSgBinaryOp(first_node)) return;
@@ -108,11 +109,13 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
     if (first->get_type()->variantT() == V_SgTypeDouble) {
         pred_func_name = "svwhilelt_b64";
         pred_count_name = "svcntd";
+        pg64 = true;
     } else if (first->get_type()->variantT() == V_SgPointerType) {
         SgPointerType *pt = static_cast<SgPointerType *>(first->get_type());
         if (pt->get_base_type()->variantT() == V_SgTypeDouble) {
             pred_func_name = "svwhilelt_b64";
             pred_count_name = "svcntd";
+            pg64 = true;
         }
     }
 
@@ -121,7 +124,12 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
     SgBinaryOp *test_op = static_cast<SgBinaryOp *>(test_stmt->get_expression());
     SgExpression *max_val = test_op->get_rhs_operand();
     
-    SgIntVal *start = buildIntVal(0);
+    SgExpression *start;
+    if (pg64) {
+        start = buildCastExp(buildIntVal(0), buildUnsignedLongType());
+    } else {
+        start = buildIntVal(0);
+    }
     SgExprListExp *parameters = buildExprListExp(start, max_val);
     
     SgType *pred_type = buildOpaqueType("svbool_t", new_block);
@@ -215,6 +223,7 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
             // Partial store (save partial sums to a register)
             // Basically, all we do is create a zero'ed register outside the for-loop
             case V_SgSIMDPartialStore: {
+            puts("ARM Partial");
                 SgVarRefExp *dest = static_cast<SgVarRefExp *>(lval);
                 SgVarRefExp *srcVar = static_cast<SgVarRefExp *>(rval);
                 
@@ -246,6 +255,7 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
             // result = svaddv_f64(__pg0, __part0);
             //
             case V_SgSIMDScalarStore: {
+            puts("ARM Scalar");
                 SgVarRefExp *scalar = static_cast<SgVarRefExp *>(lval);
                 SgVarRefExp *vec = static_cast<SgVarRefExp *>(rval);
                 
@@ -279,6 +289,7 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
             
             // result += svaddv(__pg0, __vec);
             case V_SgSIMDSVAddV: {
+            puts("SIMD_SVADDV");
                 SgVarRefExp *scalar = static_cast<SgVarRefExp *>(lval);
                 SgVarRefExp *vec = static_cast<SgVarRefExp *>(rval);
                 SgVarRefExp *pred_var = buildVarRefExp(pg_name, new_block);
