@@ -313,7 +313,6 @@ bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loo
         
         char reduction_mod = 0;
         bool need_partial = false;
-        bool armReduction = false;
         
         // If we have a variable, we need to indicate a partial sum variable
         // These are prefixed with __part, and in this step, they are simply assigned
@@ -327,13 +326,8 @@ bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loo
             if (reduction_mod == 0) {
                 return false;
             } else {
-                //if (reduction_mod == '+' && isArm) {
-                //    dest = orig;
-                //    armReduction = true;
-                //} else {
-                    need_partial = true;
-                    dest = var;
-                //}
+                need_partial = true;
+                dest = var;
             }
             
         // Otherwise, we just have a conventional store
@@ -384,18 +378,6 @@ bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loo
             SgDivideOp *add = buildDivideOp(lhs, expr);
             op->set_rhs_operand(add);
         }
-        
-        /*if (op->get_rhs_operand()->variantT() == V_SgAddOp && armReduction) {
-            SgAddOp *addOP = static_cast<SgAddOp *>(op->get_rhs_operand());
-            omp_simd_build_3addr(addOP->get_rhs_operand(), new_block, &nameStack, type);
-            
-            std::string name = nameStack.top();
-            SgVarRefExp *var = buildVarRefExp(name, new_block);
-            SgExprStatement *storeExpr = buildExprStatement(buildBinaryExpression<SgPlusAssignOp>(dest, var));
-            appendStatement(storeExpr, new_block);
-            
-            return true;
-        }*/
         
         // Build the rval (the expression)
         omp_simd_build_3addr(op->get_rhs_operand(), new_block, &nameStack, type);
@@ -494,19 +476,13 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
                 
             // Otherwise, we have a scalar store
             } else {
-                //if (expr_statement->get_expression()->variantT() == V_SgPlusAssignOp) {
-                //    SgSIMDSVAddV *addv = buildBinaryExpression<SgSIMDSVAddV>(deepCopy(lval), deepCopy(rval));
-                //    ir_block->push_back(addv);
-                //} else {
-                    SgSIMDScalarStore *str = buildBinaryExpression<SgSIMDScalarStore>(deepCopy(lval), deepCopy(rval));
-                    ir_block->push_back(str);
-                //}
+                SgSIMDScalarStore *str = buildBinaryExpression<SgSIMDScalarStore>(deepCopy(lval), deepCopy(rval));
+                ir_block->push_back(str);
             }
             
         // Broadcast
         // TODO: This is not the most elegent piece of code...
-        } else if (lval->variantT() == V_SgVarRefExp &&
-                    (/*rval->variantT() == V_SgVarRefExp ||*/ rval->variantT() == V_SgIntVal
+        } else if (lval->variantT() == V_SgVarRefExp && (rval->variantT() == V_SgIntVal
                     || rval->variantT() == V_SgFloatVal || rval->variantT() == V_SgDoubleVal)) {
             SgSIMDBroadcast *ld = buildBinaryExpression<SgSIMDBroadcast>(deepCopy(lval), deepCopy(rval));
             ir_block->push_back(ld);
@@ -528,9 +504,6 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
             SgExprListExp *expr_list = static_cast<SgExprListExp *>(rval);
             SgExpression *first = expr_list->get_expressions().front();
             if (!isSgBinaryOp(first)) {
-                //SgSIMDPartialStore *str = buildBinaryExpression<SgSIMDPartialStore>(deepCopy(lval), deepCopy(rval));
-                //ir_block->push_back(str);
-                //ir_block->push_back(deepCopy(*i));
                 continue;
             }
             

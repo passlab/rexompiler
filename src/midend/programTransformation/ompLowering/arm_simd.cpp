@@ -223,7 +223,6 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
             // Partial store (save partial sums to a register)
             // Basically, all we do is create a zero'ed register outside the for-loop
             case V_SgSIMDPartialStore: {
-            puts("ARM Partial");
                 SgVarRefExp *dest = static_cast<SgVarRefExp *>(lval);
                 SgVarRefExp *srcVar = static_cast<SgVarRefExp *>(rval);
                 
@@ -255,7 +254,6 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
             // result = svaddv_f64(__pg0, __part0);
             //
             case V_SgSIMDScalarStore: {
-            puts("ARM Scalar");
                 SgVarRefExp *scalar = static_cast<SgVarRefExp *>(lval);
                 SgVarRefExp *vec = static_cast<SgVarRefExp *>(rval);
                 
@@ -285,22 +283,6 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
                 SgAssignOp *scalar_add = buildAssignOp(scalar, reductionCall);
                 SgExprStatement *empty = buildExprStatement(scalar_add);
                 insertStatementAfter(pred_update, empty);
-            } break;
-            
-            // result += svaddv(__pg0, __vec);
-            case V_SgSIMDSVAddV: {
-            puts("SIMD_SVADDV");
-                SgVarRefExp *scalar = static_cast<SgVarRefExp *>(lval);
-                SgVarRefExp *vec = static_cast<SgVarRefExp *>(rval);
-                SgVarRefExp *pred_var = buildVarRefExp(pg_name, new_block);
-                
-                SgExprListExp *parameters = buildExprListExp(pred_var, vec);
-                SgFunctionCallExp *reductionCall = buildFunctionCallExp("svaddv",
-                                                    scalar->get_type(), parameters, new_block);
-                SgPlusAssignOp *scalar_add = buildPlusAssignOp(scalar, reductionCall);
-                SgExprStatement *empty = buildExprStatement(scalar_add);
-                //insertStatementAfter(target, empty);
-                appendStatement(empty, new_block);
             } break;
             
             case V_SgSIMDAddOp:
