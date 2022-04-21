@@ -357,7 +357,6 @@ Grammar::setUpExpressions ()
      NEW_TERMINAL_MACRO (SIMDStore, "SIMDStore", "SIMD_STORE");
      NEW_TERMINAL_MACRO (SIMDPartialStore, "SIMDPartialStore", "SIMD_PARTIAL_STORE");
      NEW_TERMINAL_MACRO (SIMDScalarStore, "SIMDScalarStore", "SIMD_SCALAR_STORE");
-     NEW_TERMINAL_MACRO (SIMDSVAddV, "SIMDSVAddV", "SIMD_SVADDV");
      
      NEW_TERMINAL_MACRO (SIMDGather, "SIMDGather", "SIMD_GATHER");
      NEW_TERMINAL_MACRO (SIMDScatter, "SIMDScatter", "SIMD_SCATTER");
@@ -400,7 +399,7 @@ Grammar::setUpExpressions ()
           ConcatenationOp | PointerAssignOp | UserDefinedBinaryOp | CompoundAssignOp | MembershipOp         | SpaceshipOp    |
           NonMembershipOp | IsOp            | IsNotOp             | ElementwiseOp        | PowerOp        |
           LeftDivideOp    |
-          SIMDBinaryOp | SIMDLoad | SIMDBroadcast | SIMDStore | SIMDPartialStore | SIMDScalarStore | SIMDSVAddV |
+          SIMDBinaryOp | SIMDLoad | SIMDBroadcast | SIMDStore | SIMDPartialStore | SIMDScalarStore |
           SIMDGather | SIMDScatter,
           "BinaryOp","BINARY_EXPRESSION", false);
 
@@ -1051,7 +1050,6 @@ Grammar::setUpExpressions ()
      SIMDStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
      SIMDPartialStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
      SIMDScalarStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
-     SIMDSVAddV.editSubstitute ( "PRECEDENCE_VALUE", "16" );
      SIMDGather.editSubstitute ( "PRECEDENCE_VALUE", "16" );
      SIMDScatter.editSubstitute ( "PRECEDENCE_VALUE", "16" );
 
@@ -3396,9 +3394,6 @@ Grammar::setUpExpressions ()
      
      SIMDScalarStore.setFunctionPrototype ( "HEADER_SIMD_SCALAR_STORE", "../Grammar/Expression.code" );
      SIMDScalarStore.setFunctionSource ( "SOURCE_SIMD_SCALAR_STORE", "../Grammar/Expression.code" );
-     
-     SIMDSVAddV.setFunctionPrototype ( "HEADER_SIMD_SVADDV", "../Grammar/Expression.code" );
-     SIMDSVAddV.setFunctionSource ( "SOURCE_SIMD_SVADDV", "../Grammar/Expression.code" );
      
      SIMDGather.setFunctionPrototype ( "HEADER_SIMD_GATHER", "../Grammar/Expression.code" );
      SIMDGather.setFunctionSource ( "SOURCE_SIMD_GATHER", "../Grammar/Expression.code" );

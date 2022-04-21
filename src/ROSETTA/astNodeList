@@ -509,7 +509,6 @@ SgSIMDBroadcast
 SgSIMDStore
 SgSIMDPartialStore
 SgSIMDScalarStore
-SgSIMDSVAddV
 SgSIMDGather
 SgSIMDScatter
 SgSizeOfOp

@@ -321,7 +321,7 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
         }
         
         // Add the statement
-        if ((*i)->variantT() != V_SgSIMDScalarStore && (*i)->variantT() != V_SgSIMDSVAddV) {
+        if ((*i)->variantT() != V_SgSIMDScalarStore) {
             if (isSgVarRefExp(lval)) {
                 SgVarRefExp *var = static_cast<SgVarRefExp *>(lval);
                 
