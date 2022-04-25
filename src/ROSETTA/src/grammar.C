@@ -3961,6 +3961,7 @@ Grammar::GrammarNodeInfo Grammar::getGrammarNodeInfo(AstNodeClass* grammarnode) 
         ||nodeName == "SgOmpForSimdStatement"
         ||nodeName == "SgOmpDoStatement"
         ||nodeName == "SgOmpAtomicStatement"
+        ||nodeName == "SgOmpUnrollStatement"
         ||nodeName == "SgExprListExp");
   }
   return info;
@@ -4303,6 +4304,7 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                  ||string(node.getName()) == "SgUpirWorksharingStatement"
                  ||string(node.getName()) == "SgOmpForSimdStatement"
                  ||string(node.getName()) == "SgOmpForSimdStatement"
+                 ||string(node.getName()) == "SgOmpUnrollStatement"
                  ||string(node.getName()) == "SgOmpDoStatement"
                  ||string(node.getName()) == "SgUpirBaseStatement"
                  ||string(node.getName()) == "SgUpirLoopStatement"
@@ -4458,6 +4460,7 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                  ||string(node.getName()) == "SgOmpParallelLoopStatement"
                  ||string(node.getName()) == "SgUpirWorksharingStatement"
                  ||string(node.getName()) == "SgOmpForSimdStatement"
+                 ||string(node.getName()) == "SgOmpUnrollStatement"
                  ||string(node.getName()) == "SgOmpDoStatement"
                  ||string(node.getName()) == "SgUpirBaseStatement"
                  ||string(node.getName()) == "SgUpirLoopStatement"
