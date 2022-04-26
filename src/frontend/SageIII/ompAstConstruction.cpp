@@ -2548,6 +2548,10 @@ SgStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirectiv
             result = new SgOmpWorkshareStatement(NULL, body);
             break;
         }
+        case OMPD_unroll: {
+            result = new SgOmpUnrollStatement(NULL, body);
+            break;
+        }
         default: {
             printf("Unknown directive is found.\n");
         }
