@@ -136,6 +136,9 @@ namespace OmpSupport
   
   //! Translate omp simd
   void transOmpSimd(SgNode *node);
+  
+  //! Translate omp unroll
+  void transOmpUnroll(SgNode *node);
 
   //! Analysis helpers
   void createUpirStatementTree(SgSourceFile *file);

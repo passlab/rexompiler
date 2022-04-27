@@ -5762,6 +5762,16 @@ void transOmpTargetLoopBlock(SgNode* node)
 
     removeStatement(target);
   }
+  
+  //! Lowers the OMP unroll statement
+  void transOmpUnroll(SgNode *node)
+  {
+    ROSE_ASSERT(node != NULL);
+    SgOmpUnrollStatement *target = isSgOmpUnrollStatement(node);
+    ROSE_ASSERT(target != NULL);
+    
+    removeStatement(target);
+  }
 
 
   //! Collect variables from OpenMP clauses: including private, firstprivate, lastprivate, reduction, etc.
@@ -7307,9 +7317,14 @@ void lower_omp(SgSourceFile* file)
           transOmpTargetTeamsDistributeParallelFor(node);
           break;
         }
+      case V_SgOmpUnrollStatement:
+        {
+          transOmpUnroll(node);
+          break;
+        }
       default:
         {
-          //std::cout << "Nothing happened.\n";
+          std::cout << "Nothing happened.\n";
           // do nothing here
         }
     }// switch

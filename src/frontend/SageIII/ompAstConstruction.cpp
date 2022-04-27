@@ -1984,7 +1984,9 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         case OMPD_section:
         case OMPD_simd:
         case OMPD_parallel:
-        case OMPD_workshare: {
+        case OMPD_workshare:
+        case OMPD_tile:
+        case OMPD_unroll: {
             result = convertBodyDirective(current_OpenMPIR_to_SageIII);
             break;
         }
@@ -2662,7 +2664,7 @@ SgStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirectiv
             }
         };
     };
-
+    
     return result;
 }
 
@@ -4516,7 +4518,9 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_taskyield:
         case OMPD_teams:
         case OMPD_threadprivate:
-        case OMPD_workshare: {
+        case OMPD_workshare:
+        case OMPD_tile:
+        case OMPD_unroll: {
             break;
         }
         default: {
