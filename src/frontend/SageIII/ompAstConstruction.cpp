@@ -2214,6 +2214,10 @@ SgOmpClause* convertSimpleClause(SgStatement* directive, std::pair<SgPragmaDecla
         case OMPC_taskgroup: {
             sg_clause = new SgOmpTaskgroupClause();
             break;
+        }
+        case OMPC_full: {
+            sg_clause = new SgOmpFullClause();
+            break;
         }   
         default: {
             cerr<<"error: unknown clause "<<endl;
@@ -2579,7 +2583,8 @@ SgStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirectiv
             case OMPC_grainsize:
             case OMPC_detach:
             case OMPC_num_tasks:
-            case OMPC_num_threads: {
+            case OMPC_num_threads:
+            case OMPC_partial: {
                 convertExpressionClause(result, current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
@@ -2627,7 +2632,8 @@ SgStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirectiv
             case OMPC_untied:
             case OMPC_nogroup:
             case OMPC_destroy:         
-            case OMPC_nowait: {
+            case OMPC_nowait:
+            case OMPC_full: {
                 convertSimpleClause(result, current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
@@ -4215,6 +4221,12 @@ SgOmpExpressionClause* convertExpressionClause(SgStatement* directive, std::pair
             printf("Device Clause added!\n");
             break;
         }
+        case OMPC_partial: {
+            SgExpression *partial_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
+            result = new SgOmpPartialClause(partial_expression);
+            printf("Partial Clause added!\n");
+            break;
+        }
         default: {
             printf("Unknown Clause!\n");
         }
@@ -4609,7 +4621,9 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_when:
                 case OMPC_threads:
                 case OMPC_simd:
-                case OMPC_write: {
+                case OMPC_write:
+                case OMPC_full:
+                case OMPC_partial: {
                     break;
                 }
                 default: {

@@ -445,6 +445,8 @@ SgOmpNotinbranchClause
 SgOmpDependClause
 SgOmpAffinityClause
 SgOmpWhenClause
+SgOmpFullClause
+SgOmpPartialClause
 SgUpirBranchField
 SgUpirNestedLevelField
 SgUpirNestedParentField

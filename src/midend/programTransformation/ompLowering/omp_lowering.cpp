@@ -5770,6 +5770,8 @@ void transOmpTargetLoopBlock(SgNode* node)
     SgOmpUnrollStatement *target = isSgOmpUnrollStatement(node);
     ROSE_ASSERT(target != NULL);
     
+    printAST(target);
+    
     removeStatement(target);
   }
 
