@@ -11390,7 +11390,11 @@ bool SageInterface::loopUnrolling(SgForStatement* target_loop, size_t unrolling_
    // generate the fringe loop
    bool needFringe = true;
    SgForStatement* fringe_loop = deepCopy<SgForStatement>(target_loop);
-   insertStatementAfter(target_loop,fringe_loop);
+   if (target_loop->get_parent()->variantT() == V_SgUpirLoopParallelStatement) {
+       insertStatementAfter(static_cast<SgStatement *>(target_loop->get_parent()),fringe_loop);
+   } else {
+       insertStatementAfter(target_loop,fringe_loop);
+   }
    removeStatement(fringe_loop->get_for_init_stmt());
    fringe_loop->set_for_init_stmt(NULL);
 
@@ -11410,7 +11414,11 @@ bool SageInterface::loopUnrolling(SgForStatement* target_loop, size_t unrolling_
    ROSE_ASSERT(scope != NULL);
    string fringe_name = "_lu_fringe_"+ StringUtility::numberToString(++gensym_counter);
    SgVariableDeclaration* fringe_decl = buildVariableDeclaration(fringe_name, buildIntType(),buildAssignInitializer(initor), scope);
-   insertStatementBefore(target_loop, fringe_decl);
+   if (target_loop->get_parent()->variantT() == V_SgUpirLoopParallelStatement) {
+       insertStatementAfter(static_cast<SgStatement *>(target_loop->get_parent()),fringe_decl);
+   } else {
+       insertStatementAfter(target_loop,fringe_decl);
+   }
    attachComment(fringe_decl, "iter_count = (ub-lb+1)%step ==0?(ub-lb+1)/step: (ub-lb+1)/step+1;");
    attachComment(fringe_decl, "fringe = iter_count%unroll_factor==0 ? 0:unroll_factor*step");
 
