@@ -126,6 +126,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpSimdlenClause, "OmpSimdlenClause", "OmpSimdlenTag" );
      NEW_TERMINAL_MACRO (OmpPartialClause, "OmpPartialClause", "OmpPartialTag" );
      NEW_TERMINAL_MACRO (OmpFullClause, "OmpFullClause", "OmpFullTag" );
+     NEW_TERMINAL_MACRO (OmpSizesClause, "OmpSizesClause", "OmpSizesTag" );
 
      NEW_TERMINAL_MACRO (UpirBranchField, "UpirBranchField", "UpirBranchFieldTag" );
      NEW_TERMINAL_MACRO (UpirNestedLevelField, "UpirNestedLevelField", "UpirNestedLevelFieldTag" );
@@ -137,7 +138,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (UpirDataItemField, "UpirDataItemField", "UpirDataItemFieldTag" );
 
      NEW_NONTERMINAL_MACRO (OmpExpressionClause, OmpOrderedClause | OmpCollapseClause | OmpIfClause | UpirNumUnitsField | OmpNumTeamsClause | OmpThreadLimitClause | OmpDeviceClause | OmpHintClause | OmpGrainsizeClause | OmpNumTasksClause | OmpDetachClause |
-                            OmpSafelenClause | OmpSimdlenClause | OmpFinalClause | OmpPriorityClause | OmpPartialClause
+                            OmpSafelenClause | OmpSimdlenClause | OmpFinalClause | OmpPriorityClause | OmpPartialClause | OmpSizesClause
          ,"OmpExpressionClause", "OmpExpressionClauseTag",false );
 
 

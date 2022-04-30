@@ -19489,6 +19489,13 @@ SgOmpUnrollStatement::post_construction_initialization()
 SOURCE_OMP_UNROLL_STATEMENT_END
 
 
+SOURCE_OMP_TILE_STATEMENT_START
+void
+SgOmpTileStatement::post_construction_initialization()
+    {}
+SOURCE_OMP_TILE_STATEMENT_END
+
+
 SOURCE_OMP_SECTION_STATEMENT_START
 void
 SgOmpSectionStatement::post_construction_initialization()

@@ -11654,7 +11654,12 @@ bool SageInterface::loopTiling(SgForStatement* loopNest, size_t targetLevel, siz
   SgScopeStatement* scope = loopNest->get_scope();
   SgVariableDeclaration* loop_index_decl = buildVariableDeclaration
   (ivar2_name, buildIntType(),NULL, scope);
-  insertStatementBefore(loopNest, loop_index_decl);
+  //insertStatementBefore(loopNest, loop_index_decl);
+  if (loopNest->get_parent()->variantT() == V_SgUpirLoopParallelStatement) {
+    insertStatementAfter(static_cast<SgStatement *>(loopNest->get_parent()),loop_index_decl);
+  } else {
+    insertStatementAfter(loopNest, loop_index_decl);
+  }
    // init statement of the loop header, copy the lower bound
    SgStatement* init_stmt = buildAssignStatement(buildVarRefExp(ivar2_name,scope), copyExpression(lb));
    //two cases <= or >= for a normalized loop
@@ -11702,9 +11707,15 @@ bool SageInterface::loopTiling(SgForStatement* loopNest, size_t targetLevel, siz
       ROSE_ABORT();
     }
     SgForStatement* control_loop = buildForStatement(init_stmt, cond_stmt,incr_exp, buildBasicBlock());
-  insertStatementBefore(loopNest, control_loop);
+  //insertStatementBefore(loopNest, control_loop);
+  if (loopNest->get_parent()->variantT() == V_SgUpirLoopParallelStatement) {
+      insertStatementAfter(static_cast<SgStatement *>(loopNest->get_parent()),control_loop);
+  } else {
+      insertStatementAfter(loopNest,control_loop);
+  }
   // move loopNest into the control loop
-  removeStatement(loopNest);
+  if (loopNest->get_parent()->variantT() != V_SgUpirLoopParallelStatement)
+    removeStatement(loopNest);
   appendStatement(loopNest,isSgBasicBlock(control_loop->get_loop_body()));
 
   // rewrite the lower (i=lb), upper bounds (i<=/>= ub) of the target loop

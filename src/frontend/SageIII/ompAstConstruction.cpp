@@ -48,6 +48,7 @@ static SgStatement* convertOmpAllocateDirective(std::pair<SgPragmaDeclaration*, 
 static SgStatement* convertOmpThreadprivateStatement(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII);
 static SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgOmpVariablesClause* convertClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
+static SgOmpSizesClause* convertSizesClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static void buildVariableList(SgOmpVariablesClause*);
 static SgOmpExpressionClause* convertExpressionClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
 static SgOmpClause* convertSimpleClause(SgStatement*, std::pair<SgPragmaDeclaration*, OpenMPDirective*>, OpenMPClause*);
@@ -2558,6 +2559,10 @@ SgStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirectiv
             result = new SgOmpUnrollStatement(NULL, body);
             break;
         }
+        case OMPD_tile: {
+            result = new SgOmpTileStatement(NULL, body);
+            break;
+        }
         default: {
             printf("Unknown directive is found.\n");
         }
@@ -2586,6 +2591,10 @@ SgStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirectiv
             case OMPC_num_threads:
             case OMPC_partial: {
                 convertExpressionClause(result, current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+            case OMPC_sizes: {
+                convertSizesClause(result, current_OpenMPIR_to_SageIII, *clause_iter);
                 break;
             }
             case OMPC_default: {
@@ -3700,6 +3709,40 @@ SgOmpWhenClause* convertWhenClause(SgUpirFieldBodyStatement* clause_body, std::p
 }
 
 
+SgOmpSizesClause *convertSizesClause(SgStatement* directive, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
+    omp_variable_list.clear();
+    OpenMPClauseKind clause_kind = current_omp_clause->getKind();
+    SgGlobal* global = SageInterface::getGlobalScope(current_OpenMPIR_to_SageIII.first);
+    std::vector<const char*>* current_expressions = current_omp_clause->getExpressions();
+    SgExprListExp* explist = buildExprListExp();
+    if (current_expressions->size() != 0) {
+        std::vector<const char*>::iterator iter;
+        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
+            SgExpression *exp = parseOmpExpression(current_OpenMPIR_to_SageIII.first, current_omp_clause->getKind(), *iter);
+            explist->append_expression(exp);
+        }
+    }
+
+    //SgExprListExp* explist = buildExprListExp();
+    SgOmpSizesClause *result = new SgOmpSizesClause(explist);
+    printf("Sizes Clause added!\n");
+    
+    setOneSourcePositionForTransformation(result);
+    //buildVariableList(result);
+    explist->set_parent(result);
+    // reconsider the location of following code to attach clause
+    if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_declare_simd) {
+        ((SgOmpDeclareSimdStatement*)directive)->get_clauses().push_back(result);
+    } else {
+        addUpirField(directive, result);
+    }
+    result->set_parent(directive);
+    omp_variable_list.clear();
+    return result;
+
+}
+
+
 SgOmpVariablesClause* convertClause(SgStatement* directive, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
     omp_variable_list.clear();
     SgOmpVariablesClause* result = NULL;
@@ -4623,7 +4666,8 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
                 case OMPC_simd:
                 case OMPC_write:
                 case OMPC_full:
-                case OMPC_partial: {
+                case OMPC_partial:
+                case OMPC_sizes: {
                     break;
                 }
                 default: {

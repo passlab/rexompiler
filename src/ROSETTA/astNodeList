@@ -355,6 +355,7 @@ SgOmpParallelLoopStatement
 SgOmpParallelMasterStatement
 SgOmpMasterTaskloopStatement
 SgOmpUnrollStatement
+SgOmpTileStatement
 SgUpirSimdStatement
 SgUpirBaseStatement
 SgUpirLoopStatement
@@ -447,6 +448,7 @@ SgOmpAffinityClause
 SgOmpWhenClause
 SgOmpFullClause
 SgOmpPartialClause
+SgOmpSizesClause
 SgUpirBranchField
 SgUpirNestedLevelField
 SgUpirNestedParentField

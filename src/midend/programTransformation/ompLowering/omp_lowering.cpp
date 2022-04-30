@@ -5815,6 +5815,68 @@ void transOmpTargetLoopBlock(SgNode* node)
     
     replaceStatement(target, body, true);
   }
+  
+  //! Lowers the OMP tile statement
+  // Yes, this is basically the same as the unroll
+  void transOmpTile(SgNode *node)
+  {
+    ROSE_ASSERT(node != NULL);
+    SgOmpTileStatement *target = isSgOmpTileStatement(node);
+    ROSE_ASSERT(target != NULL);
+    
+    SgScopeStatement *scope = target->get_scope();
+    ROSE_ASSERT(scope != NULL );
+    SgStatement *body = target->get_body();
+    ROSE_ASSERT(body != NULL);
+    
+    // Get the for loop
+    SgForStatement *for_loop;
+    if (body->variantT() == V_SgUpirLoopParallelStatement) {
+        SgUpirLoopParallelStatement *target2 = isSgUpirLoopParallelStatement(body);
+        SgStatement *b2 =  ((SgUpirLoopStatement*)target2->get_loop())->get_body();
+        for_loop = isSgForStatement(b2);
+    } else {
+        for_loop = isSgForStatement(body);
+    }
+    
+    ROSE_ASSERT(for_loop != NULL);
+    SageInterface::forLoopNormalization(for_loop); 
+    
+    SgOmpSizesClause *sizes = static_cast<SgOmpSizesClause *>(target->get_clauses().front());
+    SgExprListExp *list = static_cast<SgExprListExp *>(sizes->get_expression());
+    
+    SgIntVal *target_level = static_cast<SgIntVal *>(list->get_expressions().front());
+    SgIntVal *tile_size = static_cast<SgIntVal *>(list->get_expressions().at(1));
+    
+    SageInterface::loopTiling(for_loop, target_level->get_value(), tile_size->get_value());
+    
+    // Get the clause so we can figure out the unrolling factor
+    /*SgOmpClause *clause = target->get_clauses().front();
+    if (clause->variantT() == V_SgOmpFullClause) {
+        SgExprStatement *test_stmt = isSgExprStatement(for_loop->get_test());
+        SgBinaryOp *test = isSgBinaryOp(test_stmt->get_expression());
+        ROSE_ASSERT(test != NULL);
+        
+        SgIntVal *val = isSgIntVal(test->get_rhs_operand());
+        ROSE_ASSERT(val != NULL);
+        
+        SageInterface::loopUnrolling(for_loop, val->get_value() + 1);
+        test->set_rhs_operand(val);
+    } else if (clause->variantT() == V_SgOmpPartialClause) {
+        SgOmpPartialClause *partial = static_cast<SgOmpPartialClause *>(clause);
+        SgExpression *partial_expr = partial->get_expression();
+        if (partial_expr->variantT() == V_SgIntVal) {
+            SgIntVal *val = static_cast<SgIntVal *>(partial_expr);
+            SageInterface::loopUnrolling(for_loop, val->get_value());
+        } else {
+            puts("Expected integer in OMP Partial Clause.");
+        }
+    } else {
+        puts("Unknown clause in OMP unroll.");
+    }*/
+    
+    replaceStatement(target, body, true);
+  }
 
 
   //! Collect variables from OpenMP clauses: including private, firstprivate, lastprivate, reduction, etc.
@@ -7363,6 +7425,11 @@ void lower_omp(SgSourceFile* file)
       case V_SgOmpUnrollStatement:
         {
           transOmpUnroll(node);
+          break;
+        }
+      case V_SgOmpTileStatement:
+        {
+          transOmpTile(node);
           break;
         }
       default:
