@@ -125,11 +125,11 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
     SgExpression *max_val = test_op->get_rhs_operand();
     
     SgExpression *start;
-    if (pg64) {
+    //if (pg64) {
         start = buildCastExp(buildIntVal(0), buildUnsignedLongType());
-    } else {
-        start = buildIntVal(0);
-    }
+    //} else {
+        //start = buildIntVal(0);
+    //}
     SgExprListExp *parameters = buildExprListExp(start, max_val);
     
     SgType *pred_type = buildOpaqueType("svbool_t", new_block);
