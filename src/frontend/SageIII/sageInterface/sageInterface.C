@@ -11415,7 +11415,7 @@ bool SageInterface::loopUnrolling(SgForStatement* target_loop, size_t unrolling_
    string fringe_name = "_lu_fringe_"+ StringUtility::numberToString(++gensym_counter);
    SgVariableDeclaration* fringe_decl = buildVariableDeclaration(fringe_name, buildIntType(),buildAssignInitializer(initor), scope);
    if (target_loop->get_parent()->variantT() == V_SgUpirLoopParallelStatement) {
-       insertStatementAfter(static_cast<SgStatement *>(target_loop->get_parent()),fringe_decl);
+       insertStatementBefore(static_cast<SgStatement *>(target_loop->get_parent()),fringe_decl);
    } else {
        insertStatementAfter(target_loop,fringe_decl);
    }
@@ -11440,9 +11440,9 @@ bool SageInterface::loopUnrolling(SgForStatement* target_loop, size_t unrolling_
   // rewrite loop header ub --> ub -fringe; step --> step *unrolling_factor
    SgBinaryOp* ub_bin_op = isSgBinaryOp(ub->get_parent());
    ROSE_ASSERT(ub_bin_op);
-   if (needFringe)
-     ub_bin_op->set_rhs_operand(buildSubtractOp(copyExpression(ub),buildVarRefExp(fringe_name,scope)));
-   else
+   if (needFringe) {
+     //ub_bin_op->set_rhs_operand(buildSubtractOp(copyExpression(ub),buildVarRefExp(fringe_name,scope)));
+   } else
    {
      ub_bin_op->set_rhs_operand(copyExpression(ub));
      removeStatement(fringe_decl);
