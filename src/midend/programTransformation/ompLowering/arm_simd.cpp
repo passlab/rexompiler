@@ -14,6 +14,7 @@ using namespace SageBuilder;
 
 // Global variables to for naming control
 int pg_pos = 0;
+int vi_pos = 0;
 int arm_buf_pos = 0;
 
 std::string arm_gen_buf() {
@@ -156,6 +157,7 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
     //} else {
         //start = buildIntVal(0);
     //}
+    max_val = buildCastExp(max_val, buildUnsignedLongType());
     SgExprListExp *parameters = buildExprListExp(start, max_val);
     
     SgType *pred_type = buildOpaqueType("svbool_t", new_block);
@@ -216,7 +218,8 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
                 SgPntrArrRefExp *element = static_cast<SgPntrArrRefExp *>(rval);
                 SgPntrArrRefExp *mask_pntr = static_cast<SgPntrArrRefExp *>(element->get_rhs_operand());
                 
-                std::string vindex_name = "__vindex0";
+                std::string vindex_name = "__vindex" + std::to_string(vi_pos);
+                ++vi_pos;
                 SgType *mask_type = arm_get_type(mask_pntr->get_type(), new_block);
                 SgType *vector_type = arm_get_type(dest->get_type(), new_block);
                 
@@ -380,6 +383,11 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
     // At the end of each loop, we need to update the predicate
     SgExpression *loop_var = test_op->get_lhs_operand();
     SgVarRefExp *pred_var = buildVarRefExp(pg_name, new_block);
+    
+    if (isSgCastExp(max_val)) {
+        loop_var = buildCastExp(loop_var, buildUnsignedLongType());
+        //buildCastExp(buildIntVal(0), buildUnsignedLongType());
+    }
     
     parameters = buildExprListExp(loop_var, max_val);
     predicate = buildFunctionCallExp(pred_func_name, pred_type, parameters, new_block);
