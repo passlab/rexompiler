@@ -137,6 +137,31 @@ std::string intel_simd_func(OpType op_type, SgType *type, bool half_type = false
     return instr;
 }
 
+//
+// This is specific to the loop unrolling.
+// If we find this specific sequence, we very likely have an index altered by the loopUnrolling
+// from an OMP unroll clause. In that case, we need to adjust the base with the proper loop
+// increment value.
+//
+void intel_normalize_offset(SgPntrArrRefExp *array) {
+    SgAddOp *add = isSgAddOp(array->get_rhs_operand());
+    if (!add) return;
+    
+    SgMultiplyOp *mul = isSgMultiplyOp(add->get_rhs_operand());
+    if (!mul) {
+        SgAddOp *add2 = isSgAddOp(add->get_rhs_operand());
+        if (!add2) return;
+        
+        mul = isSgMultiplyOp(add2->get_rhs_operand());
+        if (!mul) return;
+    }
+    
+    SgIntVal *inc = isSgIntVal(mul->get_lhs_operand());
+    if (!inc) return;
+    
+    inc->set_value(loop_increment);
+}
+
 // Generates a SIMD load statement for Intel
 SgAssignInitializer *intel_write_load(SgBinaryOp *op, SgUpirLoopParallelStatement *target, SgBasicBlock *new_block) {
     SgExpression *lval = op->get_lhs_operand();
@@ -151,6 +176,8 @@ SgAssignInitializer *intel_write_load(SgBinaryOp *op, SgUpirLoopParallelStatemen
     if (va->get_type()->variantT() == V_SgTypeDouble) {
         loop_increment = simd_len / 2;
     }
+    
+    intel_normalize_offset(array);
     
     // Build function call parameters
     SgExprListExp *parameters;
@@ -302,6 +329,9 @@ SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgUpirLoopParallelStatem
 void intel_write_store(SgBinaryOp *op, SgBasicBlock *new_block) {
     SgExpression *lval = op->get_lhs_operand();
     SgExpression *rval = op->get_rhs_operand();
+    
+    SgPntrArrRefExp *array = isSgPntrArrRefExp(lval);
+    if (array) intel_normalize_offset(array);
     
     SgVarRefExp *v_src = static_cast<SgVarRefExp *>(rval);
                 
@@ -526,7 +556,7 @@ void intel_write_scalar_store(SgBinaryOp *op, SgUpirLoopParallelStatement *targe
     SgPntrArrRefExp *pntr1 = buildPntrArrRefExp(vd_ref, buildIntVal(0));
     SgPntrArrRefExp *pntr2 = buildPntrArrRefExp(vd_ref, buildIntVal(pos2));
     SgAddOp *add = buildAddOp(pntr1, pntr2);
-    SgAssignOp *assign = buildAssignOp(scalar, add);
+    SgPlusAssignOp *assign = buildPlusAssignOp(scalar, add);
     
     expr = buildExprStatement(assign);
     to_insert.push_back(expr);
@@ -668,11 +698,17 @@ void omp_simd_write_intel(SgUpirLoopParallelStatement *target, SgForStatement *f
     }
     
     // Update the loop increment
-    SgExpression *inc = for_loop->get_increment();
+    SgBinaryOp *inc = static_cast<SgBinaryOp *>(for_loop->get_increment());
+    SgMultiplyOp *mul = buildMultiplyOp(inc->get_rhs_operand(), buildIntVal(loop_increment));
+    inc->set_rhs_operand(mul);
+    
+    // Update the loop increment
+    /*SgExpression *inc = for_loop->get_increment();
+    printAST(inc);
 
     Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(inc, V_SgExpression);
     SgIntVal *inc_amount = isSgIntVal(nodeList.at(2));
     ROSE_ASSERT(inc_amount != NULL);
-    inc_amount->set_value(loop_increment);
+    inc_amount->set_value(loop_increment);*/
 }
 

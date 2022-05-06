@@ -80,6 +80,32 @@ SgType *arm_get_type(SgType *input, SgBasicBlock *new_block) {
     return input;
 }
 
+//
+// This is specific to the loop unrolling.
+// If we find this specific sequence, we very likely have an index altered by the loopUnrolling
+// from an OMP unroll clause. In that case, we need to adjust the base with the proper loop
+// increment value.
+//
+void arm_normalize_offset(SgPntrArrRefExp *array, SgExpression *inc_fc) {
+    SgAddOp *add = isSgAddOp(array->get_rhs_operand());
+    if (!add) return;
+    
+    SgMultiplyOp *mul = isSgMultiplyOp(add->get_rhs_operand());
+    if (!mul) {
+        SgAddOp *add2 = isSgAddOp(add->get_rhs_operand());
+        if (!add2) return;
+        
+        mul = isSgMultiplyOp(add2->get_rhs_operand());
+        if (!mul) return;
+    }
+    
+    //SgIntVal *inc = isSgIntVal(mul->get_lhs_operand());
+    //if (!inc) return;
+    
+    //SgExpression *inc_fc = buildFunctionCallExp(pred_count_name, buildIntType(), NULL, for_loop);
+    mul->set_lhs_operand(inc_fc);
+}
+
 // Write the Arm intrinsics
 void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block) {
     // Setup the for loop
@@ -139,6 +165,9 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
     SgVariableDeclaration *vd = buildVariableDeclaration(pg_name, pred_type, init, new_block);
     insertStatementBefore(target, vd);
     
+    // Build this for safe keeping
+    SgExpression *inc_fc = buildFunctionCallExp(pred_count_name, buildIntType(), NULL, for_loop);
+    
     // Translate the IR
     for (Rose_STL_Container<SgNode *>::iterator i = ir_block->begin(); i != ir_block->end(); i++) {
         if (!isSgBinaryOp(*i)) {
@@ -158,6 +187,8 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
                 SgVarRefExp *dest = static_cast<SgVarRefExp *>(lval);
                 SgType *vector_type = arm_get_type(dest->get_type(), new_block);
                 SgPntrArrRefExp *array = static_cast<SgPntrArrRefExp *>(rval);
+                
+                arm_normalize_offset(array, inc_fc);
                 
                 SgAddressOfOp *addr = buildAddressOfOp(array);
                 SgExprListExp *parameters = buildExprListExp(pred_ref, addr);
@@ -212,6 +243,8 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
             case V_SgSIMDStore: {
                 SgPntrArrRefExp *array = static_cast<SgPntrArrRefExp *>(lval);
                 SgVarRefExp *src = static_cast<SgVarRefExp *>(rval);
+                
+                arm_normalize_offset(array, inc_fc);
                 
                 SgAddressOfOp *addr = buildAddressOfOp(array);
                 SgExprListExp *parameters = buildExprListExp(pred_ref, addr, src);
@@ -280,7 +313,7 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
                 SgExprListExp *parameters = buildExprListExp(pred_var, vec);
                 SgFunctionCallExp *reductionCall = buildFunctionCallExp("svaddv",
                                                     scalar->get_type(), parameters, new_block);
-                SgAssignOp *scalar_add = buildAssignOp(scalar, reductionCall);
+                SgPlusAssignOp *scalar_add = buildPlusAssignOp(scalar, reductionCall);
                 SgExprStatement *empty = buildExprStatement(scalar_add);
                 insertStatementAfter(pred_update, empty);
             } break;
@@ -355,8 +388,9 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
     appendStatement(pred_update, new_block);
     
     // Update the loop increment
-    SgExpression *inc_fc = buildFunctionCallExp(pred_count_name, buildIntType(), NULL, for_loop);
-    SgPlusAssignOp *assign = buildPlusAssignOp(loop_var, inc_fc);
-    for_loop->set_increment(assign);
+    //SgExpression *inc_fc = buildFunctionCallExp(pred_count_name, buildIntType(), NULL, for_loop);
+    SgBinaryOp *inc = static_cast<SgBinaryOp *>(for_loop->get_increment());
+    SgMultiplyOp *mul = buildMultiplyOp(inc->get_rhs_operand(), inc_fc);
+    inc->set_rhs_operand(mul);
 }
 

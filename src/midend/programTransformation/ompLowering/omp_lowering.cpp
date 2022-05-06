@@ -5804,6 +5804,14 @@ void transOmpTargetLoopBlock(SgNode* node)
         SgOmpPartialClause *partial = static_cast<SgOmpPartialClause *>(clause);
         SgExpression *partial_expr = partial->get_expression();
         if (partial_expr->variantT() == V_SgIntVal) {
+            /*/
+            SgExprStatement *test_stmt = isSgExprStatement(for_loop->get_test());
+            SgBinaryOp *test = isSgBinaryOp(test_stmt->get_expression());
+            ROSE_ASSERT(test != NULL);
+            
+            SgIntVal *val = isSgIntVal(test->get_rhs_operand());
+            ROSE_ASSERT(val != NULL);*/
+        
             SgIntVal *val = static_cast<SgIntVal *>(partial_expr);
             SageInterface::loopUnrolling(for_loop, val->get_value());
         } else {
