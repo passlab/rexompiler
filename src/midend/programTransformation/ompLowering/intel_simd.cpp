@@ -1,6 +1,8 @@
 
 #include <iostream>
 #include <stack>
+#include <vector>
+#include <algorithm>
 
 #include "sage3basic.h"
 #include "sageBuilder.h"
@@ -21,6 +23,9 @@ int loop_increment = 16;
 int buf_pos = 0;
 int mask_pos = 0;
 int vindex_pos = 0;
+
+// For maintaining declarations
+std::vector<std::string> partial_broadcasts;
 
 std::string intel_gen_buf() {
     char str[5];
@@ -419,16 +424,24 @@ SgAssignInitializer *intel_write_partial_store(SgBinaryOp *op, SgUpirLoopParalle
     SgVarRefExp *srcVar = static_cast<SgVarRefExp *>(op->get_rhs_operand());
     
     // First, create the vector outside the loop and zero it
-    SgType *vector_type = intel_simd_type(var->get_type(), target->get_scope());
-    SgName name = var->get_symbol()->get_name();
+    std::string name = var->get_symbol()->get_name();
     
-    std::string func_name = intel_simd_func(BroadcastZero, var->get_type());
+    if (std::find(partial_broadcasts.begin(), partial_broadcasts.end(), name) != partial_broadcasts.end()) {
+        // Found
+    } else {
+        SgType *vector_type = intel_simd_type(var->get_type(), target->get_scope());
+        std::string func_name = intel_simd_func(BroadcastZero, var->get_type());
+        
+        SgExpression *ld = buildFunctionCallExp(func_name, vector_type, NULL, new_block);
+        SgAssignInitializer *local_init = buildAssignInitializer(ld);
+        
+        SgVariableDeclaration *vd = buildVariableDeclaration(name, vector_type, local_init, new_block);
+        insertStatementBefore(target, vd);
+        
+        partial_broadcasts.push_back(name);
+    }
     
-    SgExpression *ld = buildFunctionCallExp(func_name, vector_type, NULL, new_block);
-    SgAssignInitializer *local_init = buildAssignInitializer(ld);
     
-    SgVariableDeclaration *vd = buildVariableDeclaration(name, vector_type, local_init, new_block);
-    insertStatementBefore(target, vd);
     
     // Now set the local variable
     /*SgVarRefExp *varRef = buildVarRefExp(name, new_block);

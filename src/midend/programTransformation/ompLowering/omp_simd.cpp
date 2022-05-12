@@ -1,7 +1,8 @@
 
 #include <iostream>
 #include <stack>
-#include <stdio.h>
+#include <cstdio>
+#include <map>
 
 #include "sage3basic.h"
 #include "sageBuilder.h"
@@ -19,6 +20,7 @@ SimdType simd_arch = Intel_AVX512;
 
 // For generating names
 int name_pos = 0;
+std::map<std::string, std::string> reduction_map;
 
 std::string simdGenName(int type = 0) {
     char str[5];
@@ -291,6 +293,8 @@ bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loo
     // Get the loop body
     SgStatement *loop_body = getLoopBody(for_loop);
     Rose_STL_Container<SgNode *> bodyList = NodeQuery::querySubTree(loop_body, V_SgExprStatement);
+    std::vector<SgAssignOp *> assign_list;
+    std::vector<SgStatement *> reduction_statements;
     
     for (Rose_STL_Container<SgNode *>::iterator i = bodyList.begin(); i != bodyList.end(); i++) {
         SgExpression *expr = static_cast<SgExprStatement *>((*i))->get_expression();
@@ -313,6 +317,7 @@ bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loo
         
         char reduction_mod = 0;
         bool need_partial = false;
+        std::string reduction_name = "";
         
         // If we have a variable, we need to indicate a partial sum variable
         // These are prefixed with __part, and in this step, they are simply assigned
@@ -326,6 +331,7 @@ bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loo
             if (reduction_mod == 0) {
                 return false;
             } else {
+                reduction_name = var->get_symbol()->get_name();
                 need_partial = true;
                 dest = var;
             }
@@ -346,9 +352,14 @@ bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loo
         
         std::string partial_vec = "";
         if (need_partial) {
-            partial_vec = simdGenName(2);
-            SgVariableDeclaration *vd = buildVariableDeclaration(partial_vec, type, NULL, new_block);
-            appendStatement(vd, new_block);
+            if (reduction_map.find(reduction_name) == reduction_map.end()) {
+                partial_vec = simdGenName(2);
+                SgVariableDeclaration *vd = buildVariableDeclaration(partial_vec, type, NULL, new_block);
+                appendStatement(vd, new_block);
+                reduction_map[reduction_name] = partial_vec;
+            } else {
+                partial_vec = reduction_map[reduction_name];
+            }
         }
         
         SgExpression *lhs = copyExpression(op->get_lhs_operand());
@@ -401,6 +412,32 @@ bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loo
         SgVarRefExp *var = buildVarRefExp(name, new_block);
         SgExprStatement *storeExpr = buildAssignStatement(dest, var);
         appendStatement(storeExpr, new_block);
+        
+        SgExpression *expr2 = storeExpr->get_expression();
+        if (isSgAssignOp(expr2)) assign_list.push_back(isSgAssignOp(expr2));
+        reduction_statements.push_back(storeExpr);
+    }
+    
+    std::map<std::string, std::string> reduction_map2;
+    
+    for (size_t i = assign_list.size() - 1; i >= 0; i--) {
+        if (i < 0 || i >= assign_list.size()) break;
+        SgAssignOp *op = assign_list.at(i);
+        if (!isSgVarRefExp(op->get_lhs_operand()) || !isSgVarRefExp(op->get_rhs_operand())) {
+            std::cout << "SKIP: " << i << std::endl;
+            break;
+        }
+        
+        SgVarRefExp *lval = isSgVarRefExp(op->get_lhs_operand());
+        SgVarRefExp *rval = isSgVarRefExp(op->get_rhs_operand());
+        std::string lval_name = lval->get_symbol()->get_name();
+        std::string rval_name = rval->get_symbol()->get_name();
+        
+        if (reduction_map2.find(lval_name) == reduction_map2.end()) {
+            reduction_map2[lval_name] = rval_name;
+        } else {
+            removeStatement(reduction_statements.at(i));
+        }
     }
     
     return true;
@@ -654,6 +691,7 @@ void OmpSupport::transOmpSimd(SgNode *node) {
     if (simd_arch == Addr3 || simd_arch == ArmAddr3) {
         SgStatement *loop_body = getLoopBody(for_loop);
         replaceStatement(loop_body, new_block, true);
+        replaceStatement(target, for_loop);
     } else {
         if (simd_arch == Intel_AVX512) {
             int simd_length = omp_simd_get_length(target);
