@@ -11652,13 +11652,21 @@ bool SageInterface::loopTiling(SgForStatement* loopNest, size_t targetLevel, siz
      // Now we can prepend a controlling loop index variable: __lt_var_originalIndex
   string ivar2_name = "_lt_var_"+ivar->get_name().getString();
   SgScopeStatement* scope = loopNest->get_scope();
-  SgVariableDeclaration* loop_index_decl = buildVariableDeclaration
-  (ivar2_name, buildIntType(),NULL, scope);
+  SgVariableDeclaration* loop_index_decl = buildVariableDeclaration(ivar2_name, buildIntType(),NULL, scope);
   //insertStatementBefore(loopNest, loop_index_decl);
+  SgNode *loopNestParent = loopNest->get_parent();
+  if (loopNestParent->get_parent()) loopNestParent = loopNestParent->get_parent();
+  
   if (loopNest->get_parent()->variantT() == V_SgUpirLoopParallelStatement) {
-    insertStatementAfter(static_cast<SgStatement *>(loopNest->get_parent()),loop_index_decl);
+    if (loopNestParent->variantT() == V_SgOmpTileStatement || loopNestParent->variantT() == V_SgOmpUnrollStatement) {
+        insertStatementBefore(static_cast<SgStatement *>(loopNestParent),loop_index_decl);
+    } else {
+        insertStatementBefore(static_cast<SgStatement *>(loopNest->get_parent()),loop_index_decl);
+    }
+  } else if (loopNestParent->variantT() == V_SgOmpTileStatement || loopNestParent->variantT() == V_SgOmpUnrollStatement) {
+    insertStatementBefore(static_cast<SgStatement *>(loopNestParent),loop_index_decl);
   } else {
-    insertStatementAfter(loopNest, loop_index_decl);
+    insertStatementBefore(loopNest, loop_index_decl);
   }
    // init statement of the loop header, copy the lower bound
    SgStatement* init_stmt = buildAssignStatement(buildVarRefExp(ivar2_name,scope), copyExpression(lb));
@@ -11708,11 +11716,23 @@ bool SageInterface::loopTiling(SgForStatement* loopNest, size_t targetLevel, siz
     }
     SgForStatement* control_loop = buildForStatement(init_stmt, cond_stmt,incr_exp, buildBasicBlock());
   //insertStatementBefore(loopNest, control_loop);
-  if (loopNest->get_parent()->variantT() == V_SgUpirLoopParallelStatement) {
+  /*if (loopNest->get_parent()->variantT() == V_SgUpirLoopParallelStatement) {
       insertStatementAfter(static_cast<SgStatement *>(loopNest->get_parent()),control_loop);
   } else {
       insertStatementAfter(loopNest,control_loop);
+  }*/
+  if (loopNest->get_parent()->variantT() == V_SgUpirLoopParallelStatement) {
+    if (loopNestParent->variantT() == V_SgOmpTileStatement || loopNestParent->variantT() == V_SgOmpUnrollStatement) {
+        insertStatementBefore(static_cast<SgStatement *>(loopNestParent),control_loop);
+    } else {
+        insertStatementBefore(static_cast<SgStatement *>(loopNest->get_parent()),control_loop);
+    }
+  } else if (loopNestParent->variantT() == V_SgOmpTileStatement || loopNestParent->variantT() == V_SgOmpUnrollStatement) {
+    insertStatementBefore(static_cast<SgStatement *>(loopNestParent),control_loop);
+  } else {
+    insertStatementBefore(loopNest, control_loop);
   }
+  
   // move loopNest into the control loop
   if (loopNest->get_parent()->variantT() != V_SgUpirLoopParallelStatement)
     removeStatement(loopNest);

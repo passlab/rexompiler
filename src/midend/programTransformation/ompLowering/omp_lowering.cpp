@@ -5824,6 +5824,20 @@ void transOmpTargetLoopBlock(SgNode* node)
     replaceStatement(target, body, true);
   }
   
+  void transOmpTileSub(SgForStatement *for_loop, SgExprListExp *list, int loop_level) {
+    std::vector<SgNode*> loop_list = NodeQuery::querySubTree(getLoopBody(for_loop), V_SgForStatement);
+    for (std::vector<SgNode *>::iterator i = loop_list.begin(); i != loop_list.end(); i++) {
+        //std::cout << "Loop: " << (*i)->unparseToString() << std::endl;
+        SgForStatement *loop = isSgForStatement(*i);
+        ROSE_ASSERT(loop != NULL);
+        
+        SgIntVal *tile_size = isSgIntVal(list->get_expressions().at(loop_level - 1));
+        SageInterface::loopTiling(loop, 1, tile_size->get_value());
+        
+        transOmpTileSub(loop, list, loop_level+1);
+    }
+  }
+  
   //! Lowers the OMP tile statement
   // Yes, this is basically the same as the unroll
   void transOmpTile(SgNode *node)
@@ -5853,34 +5867,22 @@ void transOmpTargetLoopBlock(SgNode* node)
     SgOmpSizesClause *sizes = static_cast<SgOmpSizesClause *>(target->get_clauses().front());
     SgExprListExp *list = static_cast<SgExprListExp *>(sizes->get_expression());
     
-    SgIntVal *target_level = static_cast<SgIntVal *>(list->get_expressions().front());
-    SgIntVal *tile_size = static_cast<SgIntVal *>(list->get_expressions().at(1));
+    // There should always be at least one size
+    SgIntVal *tile_size = static_cast<SgIntVal *>(list->get_expressions().front());
+    SageInterface::loopTiling(for_loop, 1, tile_size->get_value());
     
-    SageInterface::loopTiling(for_loop, target_level->get_value(), tile_size->get_value());
+    // Get any sub loops
+    transOmpTileSub(for_loop, list, 2);
+    /*int loop_level = 2;
     
-    // Get the clause so we can figure out the unrolling factor
-    /*SgOmpClause *clause = target->get_clauses().front();
-    if (clause->variantT() == V_SgOmpFullClause) {
-        SgExprStatement *test_stmt = isSgExprStatement(for_loop->get_test());
-        SgBinaryOp *test = isSgBinaryOp(test_stmt->get_expression());
-        ROSE_ASSERT(test != NULL);
+    std::vector<SgNode*> loop_list = NodeQuery::querySubTree(getLoopBody(for_loop), V_SgForStatement);
+    for (std::vector<SgNode *>::iterator i = loop_list.begin(); i != loop_list.end(); i++) {
+        //std::cout << "Loop: " << (*i)->unparseToString() << std::endl;
+        SgForStatement *loop = isSgForStatement(*i);
+        ROSE_ASSERT(loop != NULL);
         
-        SgIntVal *val = isSgIntVal(test->get_rhs_operand());
-        ROSE_ASSERT(val != NULL);
-        
-        SageInterface::loopUnrolling(for_loop, val->get_value() + 1);
-        test->set_rhs_operand(val);
-    } else if (clause->variantT() == V_SgOmpPartialClause) {
-        SgOmpPartialClause *partial = static_cast<SgOmpPartialClause *>(clause);
-        SgExpression *partial_expr = partial->get_expression();
-        if (partial_expr->variantT() == V_SgIntVal) {
-            SgIntVal *val = static_cast<SgIntVal *>(partial_expr);
-            SageInterface::loopUnrolling(for_loop, val->get_value());
-        } else {
-            puts("Expected integer in OMP Partial Clause.");
-        }
-    } else {
-        puts("Unknown clause in OMP unroll.");
+        tile_size = isSgIntVal(list->get_expressions().at(loop_level - 1));
+        SageInterface::loopTiling(loop, 1, tile_size->get_value());
     }*/
     
     replaceStatement(target, body, true);
