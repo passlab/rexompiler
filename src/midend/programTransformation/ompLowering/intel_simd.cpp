@@ -698,10 +698,15 @@ void omp_simd_write_intel(SgUpirLoopParallelStatement *target, SgForStatement *f
                 if (name.getString().rfind("__part", 0) != 0) {
                     SgVariableDeclaration *vd = buildVariableDeclaration(name, vector_type, init, new_block);
                     
-                    if ((*i)->variantT() == V_SgSIMDBroadcast)
-                        insertStatementBefore(target, vd);
-                    else
+                    if ((*i)->variantT() == V_SgSIMDBroadcast) {
+                        //SgFunctionDefinition *scope = getEnclosingFunctionDefinition(for_loop);
+                        //appendStatement(vd, scope);
+                        //std::cout << getEnclosingScope(target)->unparseToString() << std::endl;
+                        prependStatement(vd, getEnclosingScope(target));
+                        //insertStatementBefore(target, vd);
+                    } else {
                         appendStatement(vd, new_block);
+                    }
                 } else {
                     SgExprStatement *expr = buildAssignStatement(var, init);
                     appendStatement(expr, new_block);
@@ -710,18 +715,21 @@ void omp_simd_write_intel(SgUpirLoopParallelStatement *target, SgForStatement *f
         }
     }
     
+    // Check to see if the loop was tiled
+    SgFunctionDefinition *scope = getEnclosingFunctionDefinition(for_loop);
+    std::vector<SgVariableDeclaration *> loop_statements = SageInterface::querySubTree<SgVariableDeclaration>(scope, V_SgVariableDeclaration);
+    for (size_t i = 0; i<loop_statements.size(); i++) {
+        SgVariableDeclaration *var_dec = loop_statements.at(i);
+        SgInitializedName *var_name = var_dec->get_variables().front();
+        if (var_name->get_name() == "_lt_var_inc") {
+            SgAssignInitializer *init = buildAssignInitializer(buildIntVal(loop_increment));
+            var_dec->reset_initializer(init);
+        }
+    }
+    
     // Update the loop increment
     SgBinaryOp *inc = static_cast<SgBinaryOp *>(for_loop->get_increment());
     SgMultiplyOp *mul = buildMultiplyOp(inc->get_rhs_operand(), buildIntVal(loop_increment));
     inc->set_rhs_operand(mul);
-    
-    // Update the loop increment
-    /*SgExpression *inc = for_loop->get_increment();
-    printAST(inc);
-
-    Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(inc, V_SgExpression);
-    SgIntVal *inc_amount = isSgIntVal(nodeList.at(2));
-    ROSE_ASSERT(inc_amount != NULL);
-    inc_amount->set_value(loop_increment);*/
 }
 

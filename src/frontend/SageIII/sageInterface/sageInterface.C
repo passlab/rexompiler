@@ -11656,13 +11656,26 @@ bool SageInterface::loopTiling(SgForStatement* loopNest, size_t targetLevel, siz
   //insertStatementBefore(loopNest, loop_index_decl);
   SgNode *loopNestParent = loopNest->get_parent();
   if (loopNestParent->get_parent()) loopNestParent = loopNestParent->get_parent();
+  bool is_simd = false;
+  std::string inc_name = "_lt_var_inc";
+  SgVarRefExp *inc_var_ref = NULL;
   
+  // Check if the parent is a SIMD statement
   if (loopNest->get_parent()->variantT() == V_SgUpirLoopParallelStatement) {
     if (loopNestParent->variantT() == V_SgOmpTileStatement || loopNestParent->variantT() == V_SgOmpUnrollStatement) {
+        // If we also have an unroll or tile statement, we should create a variable to hold the loop index
+        is_simd = true;
+        SgAssignInitializer *init = buildAssignInitializer(buildIntVal(1));
+        SgVariableDeclaration *var_inc_decl = buildVariableDeclaration(inc_name, buildIntType(), init, scope);
+        inc_var_ref = buildVarRefExp(inc_name, scope);
+        
+        insertStatementBefore(static_cast<SgStatement *>(loopNestParent), var_inc_decl);
         insertStatementBefore(static_cast<SgStatement *>(loopNestParent),loop_index_decl);
     } else {
         insertStatementBefore(static_cast<SgStatement *>(loopNest->get_parent()),loop_index_decl);
     }
+    
+  // Otherwise, setup normally
   } else if (loopNestParent->variantT() == V_SgOmpTileStatement || loopNestParent->variantT() == V_SgOmpUnrollStatement) {
     insertStatementBefore(static_cast<SgStatement *>(loopNestParent),loop_index_decl);
   } else {
@@ -11700,9 +11713,14 @@ bool SageInterface::loopTiling(SgForStatement* loopNest, size_t targetLevel, siz
    // expression var+=up*tilesize or var-=upper * tilesize
    SgExpression* incr_exp = NULL;
    SgExpression* orig_incr_exp = target_loop->get_increment();
+   
    if( isSgPlusAssignOp(orig_incr_exp))
    {
-     incr_exp = buildPlusAssignOp(buildVarRefExp(ivar2_name,scope), buildMultiplyOp(copyExpression(step), buildIntVal(tileSize)));
+     if (is_simd) {
+        incr_exp = buildPlusAssignOp(buildVarRefExp(ivar2_name,scope), buildMultiplyOp(inc_var_ref, buildIntVal(tileSize)));
+     } else {
+        incr_exp = buildPlusAssignOp(buildVarRefExp(ivar2_name,scope), buildMultiplyOp(copyExpression(step), buildIntVal(tileSize)));
+     }
    }
     else if (isSgMinusAssignOp(orig_incr_exp))
     {
@@ -11745,7 +11763,13 @@ bool SageInterface::loopTiling(SgForStatement* loopNest, size_t targetLevel, siz
     // ub< var_i+tileSize-1? ub:var_i+tileSize-1
   SgBinaryOp* bin_op = isSgBinaryOp(ub->get_parent());
   ROSE_ASSERT(bin_op);
-  SgExpression* ub2 = buildSubtractOp(buildAddOp(buildVarRefExp(ivar2_name,scope), buildIntVal(tileSize)), buildIntVal(1));
+  SgExpression* ub2;
+  if (is_simd) {
+    SgMultiplyOp *mul = buildMultiplyOp(inc_var_ref, buildIntVal(tileSize));
+    ub2 = buildSubtractOp(buildAddOp(buildVarRefExp(ivar2_name,scope), mul), buildIntVal(1));
+  } else {
+    ub2 = buildSubtractOp(buildAddOp(buildVarRefExp(ivar2_name,scope), buildIntVal(tileSize)), buildIntVal(1));
+  }
   SgExpression* test_exp = buildLessThanOp(copyExpression(ub),ub2);
   test_exp->set_need_paren(true);
   ub->set_need_paren(true);
