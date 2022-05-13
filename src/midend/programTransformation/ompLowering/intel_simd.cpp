@@ -436,7 +436,8 @@ SgAssignInitializer *intel_write_partial_store(SgBinaryOp *op, SgUpirLoopParalle
         SgAssignInitializer *local_init = buildAssignInitializer(ld);
         
         SgVariableDeclaration *vd = buildVariableDeclaration(name, vector_type, local_init, new_block);
-        insertStatementBefore(target, vd);
+        //insertStatementBefore(target, vd);
+        prependStatement(vd, getEnclosingScope(target));
         
         partial_broadcasts.push_back(name);
     }
@@ -699,9 +700,6 @@ void omp_simd_write_intel(SgUpirLoopParallelStatement *target, SgForStatement *f
                     SgVariableDeclaration *vd = buildVariableDeclaration(name, vector_type, init, new_block);
                     
                     if ((*i)->variantT() == V_SgSIMDBroadcast) {
-                        //SgFunctionDefinition *scope = getEnclosingFunctionDefinition(for_loop);
-                        //appendStatement(vd, scope);
-                        //std::cout << getEnclosingScope(target)->unparseToString() << std::endl;
                         prependStatement(vd, getEnclosingScope(target));
                         //insertStatementBefore(target, vd);
                     } else {
