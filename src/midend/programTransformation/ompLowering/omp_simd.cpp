@@ -289,7 +289,6 @@ char omp_simd_get_reduction_mod(SgUpirLoopParallelStatement *target, SgVarRefExp
 //
 // The main purpose of this function is to break each expression between the load and store
 bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loop, SgBasicBlock *new_block, bool isArm = false) {
-
     // Get the loop body
     SgStatement *loop_body = getLoopBody(for_loop);
     Rose_STL_Container<SgNode *> bodyList = NodeQuery::querySubTree(loop_body, V_SgExprStatement);
@@ -329,6 +328,7 @@ bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loo
             // Make sure we have a valid reduction clause
             reduction_mod = omp_simd_get_reduction_mod(target, var);
             if (reduction_mod == 0) {
+                std::cerr << "Invalid reduction modifier." << std::endl;
                 return false;
             } else {
                 reduction_name = var->get_symbol()->get_name();
@@ -682,6 +682,7 @@ void OmpSupport::transOmpSimd(SgNode *node) {
     
     if (!omp_simd_pass1(target, for_loop, new_block, isArm)) {
         delete ir_block;
+        replaceStatement(target, for_loop);
         return;
     }
     
