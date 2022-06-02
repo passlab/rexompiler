@@ -1,4 +1,6 @@
 #include <iostream>
+#include <vector>
+#include <string>
 
 #include "sage3basic.h"
 #include "sageBuilder.h"
@@ -16,6 +18,9 @@ using namespace SageBuilder;
 int pg_pos = 0;
 int vi_pos = 0;
 int arm_buf_pos = 0;
+
+// For maintaining declarations
+std::vector<std::string> arm_partial_broadcasts;
 
 std::string arm_gen_buf() {
     char str[5];
@@ -165,7 +170,18 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
     SgAssignInitializer *init = buildAssignInitializer(predicate);
     
     SgVariableDeclaration *vd = buildVariableDeclaration(pg_name, pred_type, init, new_block);
-    insertStatementBefore(target, vd);
+    Rose_STL_Container<SgNode *> bodyList = NodeQuery::querySubTree(getEnclosingScope(target), V_SgVariableDeclaration);
+    bool insertFound = false;
+    for (Rose_STL_Container<SgNode *>::iterator i = bodyList.begin(); i != bodyList.end(); i++) {
+        SgVariableDeclaration *var = isSgVariableDeclaration(*i);
+        std::string name = var->get_variables().at(0)->get_name();
+        if (name.rfind("_lt_var_", 0) == 0 && name != "_lt_var_inc") {
+            insertStatementAfter(var, vd);
+            insertFound = true;
+            break;
+        }
+    }
+    if (!insertFound) insertStatementBefore(target, vd);
     
     // Build this for safe keeping
     SgExpression *inc_fc = buildFunctionCallExp(pred_count_name, buildIntType(), NULL, for_loop);
@@ -263,23 +279,30 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
                 SgVarRefExp *srcVar = static_cast<SgVarRefExp *>(rval);
                 
                 SgType *vector_type = arm_get_type(dest->get_type(), new_block);
-                SgName dest_name = dest->get_symbol()->get_name();
+                std::string dest_name = dest->get_symbol()->get_name();
                 
-                SgExpression *val;
-                switch (dest->get_type()->variantT()) {
-                    case V_SgTypeFloat: val = buildFloatVal(0); break;
-                    case V_SgTypeDouble: val = buildDoubleVal(0); break; 
-                    default: val = buildIntVal(0);
+                if (std::find(arm_partial_broadcasts.begin(), arm_partial_broadcasts.end(), dest_name) != arm_partial_broadcasts.end()) {
+                    // Found
+                } else {
+                    SgExpression *val;
+                    switch (dest->get_type()->variantT()) {
+                        case V_SgTypeFloat: val = buildFloatVal(0); break;
+                        case V_SgTypeDouble: val = buildDoubleVal(0); break; 
+                        default: val = buildIntVal(0);
+                    }
+                    
+                    SgExprListExp *parameters = buildExprListExp(val);
+                    std::string func_name = arm_get_func(dest->get_type(), Broadcast);
+                    
+                    SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
+                    SgAssignInitializer *local_init = buildAssignInitializer(ld);
+                    
+                    SgVariableDeclaration *vd = buildVariableDeclaration(dest_name, vector_type, local_init, new_block);
+                    //insertStatementBefore(target, vd);
+                    prependStatement(vd, getEnclosingScope(target));
+                    
+                    arm_partial_broadcasts.push_back(dest_name);
                 }
-                
-                SgExprListExp *parameters = buildExprListExp(val);
-                std::string func_name = arm_get_func(dest->get_type(), Broadcast);
-                
-                SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
-                SgAssignInitializer *local_init = buildAssignInitializer(ld);
-                
-                SgVariableDeclaration *vd = buildVariableDeclaration(dest_name, vector_type, local_init, new_block);
-                insertStatementBefore(target, vd);
                 
                 init = buildAssignInitializer(srcVar);
             } break;
@@ -368,7 +391,8 @@ void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for
                     SgVariableDeclaration *vd = buildVariableDeclaration(name, vector_type, init, new_block);
                     
                     if ((*i)->variantT() == V_SgSIMDBroadcast) {
-                        insertStatementBefore(target, vd);
+                        //insertStatementBefore(target, vd);
+                        prependStatement(vd, getEnclosingScope(target));
                     } else {
                         appendStatement(vd, new_block);
                     }

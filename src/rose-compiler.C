@@ -43,6 +43,7 @@ int main( int argc, char * argv[] ) {
   }
 #endif
 
-  return backend(frontend(args));
+  auto proj = frontend(args);
+  return backend(proj);
 }
 
