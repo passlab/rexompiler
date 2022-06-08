@@ -180,10 +180,11 @@ void omp_simd_build_math(SgBasicBlock *new_block, std::stack<std::string> *nameS
     
     // Build the assignment
     // The variables
-    std::string name1 = nameStack->top();
+
+    std::string name2 = nameStack->top();
     nameStack->pop();
     
-    std::string name2 = nameStack->top();
+    std::string name1 = nameStack->top();
     nameStack->pop();
     
     SgVarRefExp *var1 = buildVarRefExp(name1, new_block);
