@@ -1,7 +1,0 @@
-START
-PROGRAM testCharacterFormula ;
-BEGIN
-  ivar = 'ibbr';
-  ivar = C(ibbr);
-END
-TERM

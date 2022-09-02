@@ -1,7 +1,0 @@
-START
-    ;
-PROGRAM main ;
-    ;
-  DEF PROC sub1 ;
-    ;
-TERM

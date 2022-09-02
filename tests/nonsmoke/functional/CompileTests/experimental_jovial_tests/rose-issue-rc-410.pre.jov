@@ -1,7 +1,0 @@
-START 
-!COMPOOL('RC410'); 
-DEF PROC trials ; 
-   BEGIN 
-   STOP 1 ; 
-   END 
-TERM 

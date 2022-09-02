@@ -1,7 +1,0 @@
-START
-PROGRAM testreturn ;
-BEGIN
-  RETURN ;
-  return ;
-END
-TERM
