@@ -1,3 +1,0 @@
-# Don't mount the RMC/Spock software because we want to test that the
-# project can be compiled on a basic user machine.
-mount-spock = no

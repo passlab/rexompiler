@@ -1,7 +1,0 @@
-asmUnparser_la_sources=					\
-	$(asmUnparserPath)/AsmUnparser.C		\
-	$(asmUnparserPath)/AsmUnparser_compat.C	
-
-asmUnparser_distIncludeHeaders=				\
-	$(asmUnparserPath)/AsmUnparser_compat.h		\
-	$(asmUnparserPath)/AsmUnparser.h
