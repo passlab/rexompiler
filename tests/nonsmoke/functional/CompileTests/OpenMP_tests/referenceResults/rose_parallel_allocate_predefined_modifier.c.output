@@ -1,0 +1,8 @@
+#pragma omp parallel  allocate(omp_cgroup_mem_alloc : a,b) allocate(a,c)
+#pragma omp parallel  allocate(omp_default_mem_alloc : a,b) allocate(a)
+#pragma omp parallel  allocate(omp_const_mem_alloc : a,b) allocate(c)
+#pragma omp parallel  allocate(omp_large_cap_mem_alloc : a,b) allocate(a,c)
+#pragma omp parallel  allocate(omp_high_bw_mem_alloc : a,b) allocate(a,c)
+#pragma omp parallel  allocate(omp_low_lat_mem_alloc : a,b) allocate(a,c)
+#pragma omp parallel  allocate(omp_pteam_mem_alloc : a,b) allocate(a,c)
+#pragma omp parallel  allocate(omp_thread_mem_alloc : a,b) allocate(a,c)

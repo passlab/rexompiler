@@ -49,7 +49,7 @@ TEST_TARGETS =
 # variable names, as in "nonsmoke_specimens_binary_elf_exe_any" which means any ELF executable regardless of architecture.
 # This example includes the latter file, which indirectly includes the former.
 
-include $(top_srcdir)/tests/nonsmoke/specimens/binary/SpecimenSets.inc
+# include $(top_srcdir)/tests/nonsmoke/specimens/binary/SpecimenSets.inc
 
 
 

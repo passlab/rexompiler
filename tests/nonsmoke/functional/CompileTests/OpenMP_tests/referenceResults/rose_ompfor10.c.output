@@ -1,0 +1,3 @@
+#pragma omp parallel 
+#pragma omp for  nowait linear(i,j) collapse(456) ordered(i)
+#pragma omp for  nowait ordered schedule(monotonic : runtime)

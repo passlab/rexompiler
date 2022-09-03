@@ -1,8 +1,8 @@
+
 // tps (01/14/2010) : Switching from rose.h to sage3.
 #include "sage3basic.h"
 
 #include "checkIsModifiedFlag.h"
-#include <Rose/CommandLine.h>
 
 #if ROSE_WITH_LIBHARU
 #include "AstPDFGeneration.h"
@@ -22,29 +22,8 @@
 
 // Headers required only to obtain version numbers
 #include <boost/version.hpp>
-#ifdef ROSE_HAVE_LIBREADLINE
-#   include <readline/readline.h>
-#endif
-#ifdef ROSE_HAVE_LIBMAGIC
-#   include <magic.h>
-#endif
-#ifdef ROSE_HAVE_LIBYICES
-#   include <yices_c.h>
-#endif
-#ifdef ROSE_HAVE_Z3_VERSION_H
-#   include <z3_version.h>
-#endif
-#ifdef ROSE_HAVE_CAPSTONE
-#   include <capstone/capstone.h>
-#endif
-#ifdef ROSE_HAVE_DLIB
-#   include <dlib/revision.h>
-#endif
 #ifdef ROSE_HAVE_LIBGCRYPT
 #   include <gcrypt.h>
-#endif
-#ifdef ROSE_HAVE_LIBPQXX
-#   include <pqxx/version.hxx>
 #endif
 #ifdef ROSE_HAVE_SQLITE3
 #   include <sqlite3.h>
@@ -60,9 +39,6 @@
 
 // DQ (9/8/2017): Debugging ROSE_ASSERT. Call sighandler_t signal(int signum, sighandler_t handler);
 #include<signal.h>
-
-#include "Rose/AST/IO.h"
-#include "Rose/AST/cmdline.h"
 
 #include "AST_FILE_IO.h"
 // Note that this is required to define the Sg_File_Info_XXX symbols (need for file I/O)
@@ -217,25 +193,16 @@ std::map<std::string, SgIncludeFile*> Rose::includeFileMapForUnparsing;
 // DQ (11/25/2020): These are the boolean variables that are computed in the function compute_language_kind()
 // and inlined via the SageInterface::is_<language kind>_language() functions.  See more details comment in
 // the header file.
-bool Rose::is_Ada_language        = false;
 bool Rose::is_C_language          = false;
-bool Rose::is_Cobol_language      = false;
 bool Rose::is_OpenMP_language     = false;
 bool Rose::is_UPC_language        = false;
 bool Rose::is_UPC_dynamic_threads = false;
 bool Rose::is_C99_language        = false;
 bool Rose::is_Cxx_language        = false;
-bool Rose::is_Java_language       = false;
-bool Rose::is_Jvm_language        = false;
-bool Rose::is_Jovial_language     = false;
 bool Rose::is_Fortran_language    = false;
 bool Rose::is_CAF_language        = false;
-bool Rose::is_PHP_language        = false;
-bool Rose::is_Python_language     = false;
 bool Rose::is_Cuda_language       = false;
 bool Rose::is_OpenCL_language     = false;
-bool Rose::is_X10_language        = false;
-bool Rose::is_binary_executable   = false;
 
 
 // DQ (3/24/2016): Adding Robb's message logging mechanism to contrl output debug message from the EDG/ROSE connection code.
@@ -290,18 +257,6 @@ std::string ofpVersionString()
      return ofp_version;
    }
 
-#ifdef ROSE_HAVE_LIBREADLINE
-static std::string
-readlineVersionString() {
-    #if !defined(RL_VERSION_MAJOR) || !defined(RL_VERSION_MINOR)
-        // It appears as though RL_READLINE_VERSION is a 16-bit number whose low 8 bits are the minor version and whose high 8
-        // bits are the major version.
-        #define RL_VERSION_MAJOR ((RL_READLINE_VERSION & 0xff00) >> 8)
-        #define RL_VERSION_MINOR (RL_READLINE_VERSION & 0xff)
-    #endif
-    return StringUtility::numberToString(RL_VERSION_MAJOR) + "." + StringUtility::numberToString(RL_VERSION_MINOR);
-}
-#endif
 
 // similar to rose_boost_version_id but intended for human consumption (i.e., "1.50.0" rather than 105000).
 static std::string
@@ -416,178 +371,11 @@ std::string version_message() {
 #else
     ss <<"  --- Fortran analysis:           disabled\n";
 #endif
-
-    //-----------------------------------------------------------------------
-    // Information related to binary analysis.
-    //-----------------------------------------------------------------------
-
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-    ss <<"  --- binary analysis:            enabled\n";
-
-#ifdef ROSE_HAVE_BOOST_SERIALIZATION_LIB
-    ss <<"  ---   object serialization:     enabled\n";
-#else
-    ss <<"  ---   object serialization:     disabled\n";
-#endif
-
-#ifdef ROSE_ENABLE_ASM_AARCH32
-    ss <<"  ---   ARM AArch32 (A32/T32):    enabled\n";
-#else
-    ss <<"  ---   ARM AArch32 (A32/T32):    disabled\n";
-#endif
-
-#ifdef ROSE_ENABLE_ASM_AARCH64
-    ss <<"  ---   ARM AArch64 (A64):        enabled\n";
-#else
-    ss <<"  ---   ARM AArch64 (A64):        disabled\n";
-#endif
-
-    ss <<"  ---   MIPS (be and le):         enabled\n";
-    ss <<"  ---   Motorola m68k (coldfire): enabled\n";
-    ss <<"  ---   PowerPC (be and le):      enabled\n";
-    ss <<"  ---   Intel x86 (i386):         enabled\n";
-    ss <<"  ---   Intel x86-64 (amd64):     enabled\n";
-
-#ifdef ROSE_ENABLE_CONCOLIC_TESTING
-    ss <<"  ---   concolic testing:         enabled\n";
-#else
-    ss <<"  ---   concolic testing:         disabled\n";
-#endif
-
-#ifdef ROSE_HAVE_CAPSTONE
-    ss <<"  ---   capstone library:         " <<CS_VERSION_MAJOR <<"." <<CS_VERSION_MINOR <<"." <<CS_VERSION_EXTRA <<"\n";
-#else
-    ss <<"  ---   capstone library:         unused\n";
-#endif
-
-#if !defined(ROSE_HAVE_DLIB)
-    ss <<"  ---   dlib library:             unused\n";
-#elif defined(DLIB_PATCH_VERSION)
-    ss <<"  ---   dlib library:             " <<DLIB_MAJOR_VERSION <<"." <<DLIB_MINOR_VERSION <<"." <<DLIB_PATCH_VERSION <<"\n";
-#elif defined(DLIB_MINOR_VERSION)
-    ss <<"  ---   dlib library:             " <<DLIB_MAJOR_VERSION <<"." <<DLIB_MINOR_VERSION <<"\n";
-#else
-    ss <<"  ---   dlib library:             unknown version\n";
-#endif
-
-#ifdef ROSE_HAVE_LIBGCRYPT
-    ss <<"  ---   gcrypt library:           " <<GCRYPT_VERSION <<"\n";
-#else
-    ss <<"  ---   gcrypt library:           unused\n";
-#endif
-
-#ifdef ROSE_HAVE_LIBMAGIC
-    ss <<"  ---   magic numbers library:    " <<MAGIC_VERSION <<"\n";
-#else
-    ss <<"  ---   magic numbers library:    unused\n";
-#endif
-
-#ifdef ROSE_HAVE_LIBPQXX
-    ss <<"  ---   pqxx library:             " <<PQXX_VERSION <<"\n";
-#else
-    ss <<"  ---   pqxx library:             unused\n";
-#endif
-
-#ifdef ROSE_HAVE_SQLITE3
-    ss <<"  ---   sqilte library:           " <<SQLITE_VERSION <<"\n";
-#else
-    ss <<"  ---   sqilte library:           unused\n";
-#endif
-
-#ifdef ROSE_HAVE_YAMLCPP
-    ss <<"  ---   yaml-cpp library:         unknown version\n"; // not provided by the library or headers
-#else
-    ss <<"  ---   yaml-cpp library:         unused\n";
-#endif
-
-#ifdef Z3_FULL_VERSION
-    ss <<"  ---   z3 library:               " <<Z3_FULL_VERSION <<" (" <<ROSE_Z3 <<")\n";
-#elif defined(ROSE_HAVE_Z3)
-    ss <<"  ---   z3 library:               unknown version (" <<ROSE_Z3 <<")\n";
-#else
-    ss <<"  ---   z3 library:               unused\n";
-#endif
-
-#else
-    ss <<"  --- binary analysis:            disabled\n";
-#endif
-
-    //-----------------------------------------------------------------------
-    // Information related to other language analysis, alphabetically. These
-    // CPP symbols with weird and inconsistent names come from ROSE's Autotools
-    // configuration system. If you remove them from this list because they're
-    // not supported anymore, then kindly also remove them from the rest of the
-    // ROSE library source code and tests!
-    //-----------------------------------------------------------------------
-
-#ifdef ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION
-    ss <<"  --- Ada analysis:               enabled\n";
-#else
-    ss <<"  --- Ada analysis:               disabled\n";
-#endif
-
-#ifdef ROSE_EXPERIMENTAL_CSHARP_ROSE_CONNECTION
-    ss <<"  --- C# analysis:                enabled\n";
-#else
-    ss <<"  --- C# analysis:                disabled\n";
-#endif
-
-#ifdef ROSE_EXPERIMENTAL_COBAL_ROSE_CONNECTION
-    ss <<"  --- COBOL analysis:             enabled\n";
-#else
-    ss <<"  --- COBOL analysis:             disabled\n";
-#endif
-
-#ifdef ROSE_BUILD_CUDA_LANGUAGE_SUPPORT
-    ss <<"  --- CUDA analysis:              enabled\n";
-#else
-    ss <<"  --- CUDA analysis:              disabled\n";
-#endif
-
-#ifdef ROSE_BUID_JAVA_LANGUAGE_SUPPORT
-    ss <<"  --- Java analysis:              enabled\n";
-#else
-    ss <<"  --- Java analysis:              disabled\n";
-#endif
-
-#ifdef ROSE_EXPERIMENTAL_JOVIAL_ROSE_CONNECTION
-    ss <<"  --- Jovial analysis:            enabled\n";
-#else
-    ss <<"  --- Jovial analysis:            disabled\n";
-#endif
-
-#ifdef ROSE_EXPERIMENTAL_MATLAB_ROSE_CONNECTION
-    ss <<"  --- Matlab analysis:            enabled\n";
-#else
-    ss <<"  --- Matlab analysis:            disabled\n";
-#endif
-
-#ifdef ROSE_EXPERIMENTAL_OFP_ROSE_CONNECTION
-    ss <<"  --- OFP analysis:               enabled\n";
-#else
-    ss <<"  --- OFP analysis:               disabled\n";
-#endif
-
-#ifdef ROSE_BUILD_OPENCL_LANGUAGE_SUPPORT
-    ss <<"  --- OpenCL analysis:            enabled\n";
-#else
-    ss <<"  --- OpenCL analysis:            disabled\n";
-#endif
-
-#ifdef ROSE_BUILD_PHP_LANGUAGE_SUPPORT
-    ss <<"  --- PHP analysis:               enabled\n";
-#else
-    ss <<"  --- PHP analysis:               disabled\n";
-#endif
-
-#ifdef ROSE_BUILD_PYTHON_LANGUAGE_SUPPORT
-    ss <<"  --- Python analysis:            enabled\n";
-#else
-    ss <<"  --- Python analysis:            disabled\n";
-#endif
-
-    return ss.str();
-}
+         "\n  --- using original build tree path: " + build_tree_path +
+         "\n  --- using instalation path: " + install_path +
+         "\n  --- using lib-yices version: " + yicesVersionString()
+         ;
+  }
 
 // DQ (11/1/2009): replaced "version()" with separate "version_number()" and "version_message()" functions.
 std::string version_number()
@@ -865,19 +653,11 @@ backend ( SgProject* project, UnparseFormatHelp *unparseFormatHelp, UnparseDeleg
           printf ("Inside of backend(SgProject*) \n");
         }
 
-#ifdef ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION
-  // DQ (9/8/2017): Debugging ROSE_ASSERT. Call sighandler_t signal(int signum, sighandler_t handler);
-  // signal(SIG_DFL,NULL);
-     signal(SIGABRT,SIG_DFL);
-#endif
-     Rose::AST::cmdline::graphviz.backend.exec(project);
-     Rose::AST::cmdline::checker.backend.exec(project);
-
      std::string const & astfile_out = project->get_astfile_out();
      if (astfile_out != "") {
        std::list<std::string> empty_file_list;
        project->set_astfiles_in(empty_file_list);
-       project->get_astfile_out() = "";
+       project->get_astfile_out() == "";
        AST_FILE_IO::reset();
        AST_FILE_IO::startUp(project);
        AST_FILE_IO::writeASTToFile(astfile_out);
@@ -889,17 +669,6 @@ backend ( SgProject* project, UnparseFormatHelp *unparseFormatHelp, UnparseDeleg
      printf ("Exiting as a test! \n");
      ROSE_ABORT();
 #endif
-
-     if (project->get_binary_only() == true)
-        {
-          ROSE_ASSERT(project != NULL);
-
-       // DQ (8/21/2008): Only output a message when we we use verbose option.
-          if ( SgProject::get_verbose() >= 1 )
-               printf ("Note: Binary executables are unparsed, but not passed to gcc as assembly source code \n");
-
-          project->skipfinalCompileStep(true);
-        }
 
   // printf ("   project->get_useBackendOnly() = %s \n",project->get_useBackendOnly() ? "true" : "false");
      if (project->get_useBackendOnly() == false)
@@ -2120,10 +1889,3 @@ Rose::getPreviousStatement ( SgStatement *targetStatement , bool climbOutScope /
 
      return previousStatement;
    }
-
-
-
-
-
-
-

@@ -8,7 +8,6 @@
 
 class SgNode;
 class SgNamedType;
-class SgJavaParameterizedType;
 class SgTemplateParameter;
 class SgTemplateParameterList;
 

@@ -292,7 +292,6 @@ main ( int argc, char* argv[])
   is_OpenMP_language();
   is_CAF_language();
   is_UPC_dynamic_threads();
-  is_X10_language();
   is_mixed_Fortran_and_C_language();
 
     SgFilePtrList file_list = project->get_files();

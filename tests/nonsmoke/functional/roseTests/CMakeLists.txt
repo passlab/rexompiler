@@ -46,19 +46,10 @@ if(enable-c)
   endif() # gcc 3.4.4
 endif() # C/C++
 
-if (enable-php)
-  #add_subdirectorY(PHPTests)
-endif()
-
 if (NOT with-insure)
   # DQ (4/23/2011): At least one of the files (process_cmdline.o) in this
   # directory does not seem to compile with Insure++ (it hangs for Hudson, but
   # I can't reproduce the problem locally).
   # This was not a problem the second time that Insure++ compiled ROSE.
   #add_subdirectory (utilTests)
-
-  # Binary tests are a current problem for Insure++.
-  if (enable-binary-analysis)
-    #add_subdirectory(binaryTests)
-  endif()
 endif()

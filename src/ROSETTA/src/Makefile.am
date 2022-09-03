@@ -52,7 +52,6 @@ GRAMMAR_SOURCE_FILES = \
      ../Grammar/dataMemberAccessFunctions.macro \
      ../Grammar/grammarMainClassParseFunctionSourceCode.macro \
      ../Grammar/Node.code \
-     ../Grammar/BinaryInstruction.code \
      ../Grammar/grammarClassDeclarationMacros.macro \
      ../Grammar/grammarMainClassSourceCodeMacros.macro \
      ../Grammar/grammarNewDeleteOperatorMacros.macro \
@@ -116,7 +115,6 @@ CxxGrammarMetaProgram_SOURCES = \
    expression.C \
    statement.C \
    support.C \
-   binaryInstruction.C \
    storageSize.C \
    visitorSupport.C \
    poolBasedTraversal.C \
@@ -126,7 +124,6 @@ CxxGrammarMetaProgram_SOURCES = \
    buildStorageClasses.C \
    buildConstructorsWithoutSourcePositionInformation.C \
    outputClassesAndFields.C \
-   java/terminals.cpp \
    StringUtility.C
 
 # buildConstructorsWithoutSourcePositionInformation.o: buildConstructorsWithoutSourcePositionInformation.C

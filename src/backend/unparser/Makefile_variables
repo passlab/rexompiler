@@ -20,13 +20,7 @@ unparser_la_sources=\
 	$(unparseCxxCodeGeneration_la_sources) \
 	$(unparseFormatSupport_la_sources) \
 	$(unparseFortran_la_sources) \
-	$(unparseJavaCodeGeneration_la_sources) \
-	$(unparseLanguageIndependenceSupport_la_sources) \
-	$(unparsePHPCodeGeneration_la_sources) \
-	$(unparsePythonCodeGeneration_la_sources) \
-	$(unparseX10CodeGeneration_la_sources) \
-	$(unparseAdaCodeGeneration_la_sources) \
-	$(unparseJovialCodeGeneration_la_sources)
+	$(unparseLanguageIndependenceSupport_la_sources) 
 
 
 unparser_includeHeaders=\
@@ -34,39 +28,21 @@ unparser_includeHeaders=\
 	$(unparseCxxCodeGeneration_includeHeaders) \
 	$(unparseFormat_includeHeaders) \
 	$(unparseFortran_includeHeaders) \
-	$(unparseJavaCodeGeneration_includeHeaders) \
-	$(unparseLanguageIndependenceSupport_includeHeaders) \
-	$(unparsePHPCodeGeneration_includeHeaders) \
-	$(unparsePythonCodeGeneration_includeHeaders) \
-	$(unparseX10CodeGeneration_includeHeaders) \
-	$(unparseAdaCodeGeneration_includeHeaders) \
-	$(unparseJovialCodeGeneration_includeHeaders)
+	$(unparseLanguageIndependenceSupport_includeHeaders)
 
 unparser_extraDist=\
 	$(unparserPath)/CMakeLists.txt \
 	$(unparserPath)/unparser.docs \
 	$(unparseCxxCodeGeneration_extraDist) \
-	$(unparseJavaCodeGeneration_extraDist) \
 	$(unparseFormatSupport_extraDist) \
 	$(unparseFortran_extraDist) \
-	$(unparseLanguageIndependenceSupport_extraDist) \
-	$(unparsePHPCodeGeneration_extraDist) \
-	$(unparsePythonCodeGeneration_extraDist) \
-	$(unparseX10CodeGeneration_extraDist) \
-	$(unparseAdaCodeGeneration_extraDist) \
-	$(unparseJovialCodeGeneration_extraDist)
+	$(unparseLanguageIndependenceSupport_extraDist) 
 
 unparser_cleanLocal=\
 	$(unparseCxxCodeGeneration_cleanLocal) \
-	$(unparseJavaCodeGeneration_cleanLocal) \
 	$(unparseFormatSupport_cleanLocal) \
 	$(unparseFortran_cleanLocal) \
-	$(unparseLanguageIndependenceSupport_cleanLocal) \
-	$(unparsePHPCodeGeneration_cleanLocal) \
-	$(unparsePythonCodeGeneration_cleanLocal) \
-	$(unparseX10CodeGeneration_cleanLocal) \
-	$(unparseAdaCodeGeneration_cleanLocal) \
-	$(unparseJovialCodeGeneration_cleanLocal)
+	$(unparseLanguageIndependenceSupport_cleanLocal)
 
 
 #	rm -rf \

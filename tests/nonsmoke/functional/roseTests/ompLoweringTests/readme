@@ -1,1 +1,3 @@
 The test input files are put under tests/nonsmoke/functional/CompileTests/OpenMP_tests by default.
+
+For the latest OpenMP support, more test can be found from https://github.com/SOLLVE/sollve_vv/tree/master/tests/5.0 and OpenMP example document. 

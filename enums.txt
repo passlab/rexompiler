@@ -892,7 +892,7 @@ Cxx_GrammarVariants::NonrealBaseClassTag	561
 Cxx_GrammarVariants::OMP_ATOMIC_STMT	566
 Cxx_GrammarVariants::OMP_BARRIER_STMT	567
 Cxx_GrammarVariants::OMP_BODY_STMT	570
-Cxx_GrammarVariants::OMP_CLAUSEBODY_STMT	569
+Cxx_GrammarVariants::UPIR_FIELDBODY_STMT	569
 Cxx_GrammarVariants::OMP_CRITICAL_STMT	568
 Cxx_GrammarVariants::OMP_DECLARE_SIMD_STMT	573
 Cxx_GrammarVariants::OMP_DO_STMT	571
@@ -2004,8 +2004,8 @@ E_SgOmpAlignedClause::SgOmpAlignedClause_variables	0
 E_SgOmpAtomicStatement::SgOmpAtomicStatement_body	0
 E_SgOmpAtomicStatement::SgOmpAtomicStatement_clauses	1
 E_SgOmpBodyStatement::SgOmpBodyStatement_body	0
-E_SgOmpClauseBodyStatement::SgOmpClauseBodyStatement_body	0
-E_SgOmpClauseBodyStatement::SgOmpClauseBodyStatement_clauses	1
+E_SgUpirFieldBodyStatement::SgUpirFieldBodyStatement_body	0
+E_SgUpirFieldBodyStatement::SgUpirFieldBodyStatement_clauses	1
 E_SgOmpCollapseClause::SgOmpCollapseClause_expression	0
 E_SgOmpCopyinClause::SgOmpCopyinClause_variables	0
 E_SgOmpCopyprivateClause::SgOmpCopyprivateClause_variables	0
@@ -9086,7 +9086,7 @@ VariantT::V_SgOmpBarrierStatement	567
 VariantT::V_SgOmpBeginClause	590
 VariantT::V_SgOmpBodyStatement	570
 VariantT::V_SgOmpClause	589
-VariantT::V_SgOmpClauseBodyStatement	569
+VariantT::V_SgUpirFieldBodyStatement	569
 VariantT::V_SgOmpCollapseClause	591
 VariantT::V_SgOmpCopyinClause	592
 VariantT::V_SgOmpCopyprivateClause	593

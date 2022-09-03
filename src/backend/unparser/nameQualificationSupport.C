@@ -2072,8 +2072,6 @@ NameQualificationTraversal::associatedDeclaration(SgScopeStatement* scope)
           case V_SgSwitchStatement:
           case V_SgCatchOptionStmt:
           case V_SgUpcForAllStatement:
-          case V_SgJovialForThenStatement:
-          case V_SgAdaPackageSpec:
              {
                return_declaration = NULL;
                break;
@@ -2233,7 +2231,6 @@ NameQualificationTraversal::associatedDeclaration(SgType* type)
           case V_SgTypeFloat128:
 
           case V_SgTypeFixed:
-          case V_SgJovialTableType:
        // TV (09/06/2018): Type of an unresolved auto keyword
           case V_SgAutoType:
              {
@@ -4935,7 +4932,6 @@ NameQualificationTraversal::nameQualificationDepth ( SgDeclarationStatement* dec
                        }
 
                     case V_SgProcedureHeaderStatement:
-                    case V_SgJovialTableStatement:
                        {
                          return 0;
                          break;

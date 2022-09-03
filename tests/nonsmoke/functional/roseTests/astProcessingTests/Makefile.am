@@ -346,10 +346,6 @@ $(binaryPaths_TEST_TARGETS): bp_%.passed: % $(TEST_CONFIG) binaryPaths
 .PHONY: check-binaryPaths
 check-binaryPaths: $(binaryPaths_TEST_TARGETS)
 
-if ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-noinst_PROGRAMS += binaryPaths
-TEST_TARGETS += $(binaryPaths_TEST_TARGETS)
-endif
 EXTRA_DIST += $(binaryPaths_SPECIMENS)
 MOSTLYCLEANFILES += analysis.dot hotness0.dot
 
@@ -366,10 +362,6 @@ $(bPTP_TEST_TARGETS): bptp_%.passed: % $(TEST_CONFIG) bPTP
 .PHONY: check-bPTP
 check-bPTP: $(bPTP_TEST_TARGETS)
 
-if ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-noinst_PROGRAMS += bPTP
-TEST_TARGETS += $(bPTP_TEST_TARGETS)
-endif
 EXTRA_DIST += $(bPTP_SPECIMENS)
 MOSTLYCLEANFILES += analysis.dot hotness0.dot
 

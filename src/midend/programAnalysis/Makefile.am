@@ -34,7 +34,6 @@ endif
 #>..e.g. include $(cxxCodeGenerationPath)/Makefile_variables
 #
 include $(srcdir)/arithmeticIntensity/Makefile_variables
-include $(srcdir)/annotationLanguageParser/Makefile_variables
 include $(srcdir)/CallGraphAnalysis/Makefile_variables
 include $(srcdir)/CFG/Makefile_variables
 include $(srcdir)/bitvectorDataflow/Makefile_variables
@@ -52,7 +51,6 @@ include $(srcdir)/EditDistance/Makefile_variables
 
 
 mpaArithmeticIntensityPath=$(srcdir)/arithmeticIntensity#
-mpaAnnotationLanguageParserPath=$(srcdir)/annotationLanguageParser#
 mpaCallGraphAnalysisPath=$(srcdir)/CallGraphAnalysis#
 mpaCFGPath=$(srcdir)/CFG#
 mpaBitvectorDataflowPath=$(srcdir)/bitvectorDataflow#
@@ -100,8 +98,7 @@ AM_CPPFLAGS=\
 	$(AM_CPPFLAGS_OMP)
 
 
-BUILT_SOURCES=\
-	$(mpaAnnotationLanguageParser_builtSources)
+BUILT_SOURCES=
 
 
 noinst_LTLIBRARIES=\

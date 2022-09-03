@@ -1,13 +1,7 @@
 include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 
 # Add Projects that are associated with capabilities that belong to ROSE here
-SUBDIRS = outliner intelPin
-
-# TOO (2/16/2011): Errors with Tensilica's Xtensa compilers as alternative backend compilers. We can
-# gradually enable these tests at a later stage if necessary.
-if !USING_XTENSA_BACKEND_COMPILER
-SUBDIRS += roseHPCT 
-endif
+SUBDIRS = outliner 
 
 AM_CPPFLAGS = $(ROSE_INCLUDES)
 AM_LDFLAGS = $(ROSE_RPATHS)
@@ -39,21 +33,6 @@ endif
    #traverseBinCFG \
    #traverseSourceCFG 
 
-if ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-
-noinst_PROGRAMS +=				\
-	binaryAnalysis_symbolTable		\
-	binaryAttribute				\
-	binaryCallGraph				\
-	binaryDominance				\
-	binaryFunctionCfg			\
-	binaryHelloWorld			\
-	binaryStrings
-
-SUBDIRS += binaryAnalysis
-
-endif
-
 #varSubstCopy , disabled this one Liao, and sorted the list
 # tutorial examples which will not be installed to ROSE_INS/bin
 NOINST_TUTORIAL_EXAMPLES = \
@@ -76,9 +55,6 @@ NOINST_TUTORIAL_EXAMPLES = \
    astFileIO_ReadMultipleASTs \
    ASTGraphGenerator \
    ASTGraphGeneratorCustomized \
-   bin_example \
-   binaryFileRead \
-   binaryFileWrite \
    buildFile \
    buildCFG \
    buildVFA \
@@ -102,8 +78,6 @@ NOINST_TUTORIAL_EXAMPLES = \
    dataFlowGraph \
    debuggingIRnodeToString \
    debuggingSourceCodePositionInformation \
-   dwarfAnalysis \
-   dwarfInstructionAddressToSourceLineAnalysis \
    findVariableDeclarations \
    generatingUniqueNamesFromDeclaration \
    graphGenerationOfSubtree \
@@ -161,22 +135,6 @@ endif
 #traverseSourceCFG_SOURCES = traverseSourceCFG.C
 
 #traverseBinCFG_SOURCES = traverseBinCFG.C
-
-binaryFileRead_SOURCES = binaryFileRead.C
-
-binaryFileWrite_SOURCES = binaryFileWrite.C
-
-binaryCallGraph_SOURCES = binaryCallGraph.C
-
-binaryFunctionCfg_SOURCES = binaryFunctionCfg.C
-
-binaryHelloWorld_SOURCES = binaryHelloWorld.C
-
-binaryStrings_SOURCES = binaryStrings.C
-
-binaryAttribute_SOURCES = binaryAttribute.C
-
-binaryDominance_SOURCES = binaryDominance.C
 
 ASTGraphGenerator_SOURCES = ASTGraphGenerator.C
 
@@ -270,10 +228,6 @@ buildFile_SOURCES = buildFile.C
 
 defuseAnalysis_SOURCES = defuseAnalysis.C
 
-binaryAnalysis_symbolTable_SOURCES = binaryAnalysis_symbolTable.C
-
-bin_example_SOURCES = bin_example.C
-
 buildCallGraph_SOURCES = buildCallGraph.C
 
 buildVFA_SOURCES = buildVFA.C
@@ -297,10 +251,6 @@ changeFunction_SOURCES = changeFunction.C
 classHierarchyGraph_SOURCES = classHierarchyGraph.C
 
 dataBaseUsage_SOURCES = dataBaseUsage.C
-
-dwarfAnalysis_SOURCES = dwarfAnalysis.C
-
-dwarfInstructionAddressToSourceLineAnalysis_SOURCES = dwarfInstructionAddressToSourceLineAnalysis.C
 
 loopNestingInfoProcessing_SOURCES = loopNestingInfoProcessing.C
 
@@ -430,16 +380,6 @@ testWholeASTGraphGenerator_large: wholeASTGraphGenerator
 if ROSE_USE_GRAPHVIZ_DOT
 #	DQ (10/19/2009): Added error checking to (catches lack of "dot" in path).
 	if ! test -e inputCode_WholeAST_large.pdf; then exit 1; fi
-endif
-
-# DQ (9/6/2008): Added test to generate a graph of the binary for the tiny program example (with debugging data).
-testBinaryASTGraphGenerator: wholeASTGraphGenerator
-	gcc -g $(srcdir)/inputCode_binaryAST_1.c -o inputCode_binaryAST_1
-	./wholeASTGraphGenerator inputCode_binaryAST_1
-	$(top_srcdir)/scripts/dotgenLetterPDF inputCode_binaryAST_1_WholeAST.dot inputCode_binaryAST_1_WholeAST.pdf
-if ROSE_USE_GRAPHVIZ_DOT
-#	DQ (10/19/2009): Added error checking to (catches lack of "dot" in path).
-	if ! test -e inputCode_binaryAST_1_WholeAST.pdf; then exit 1; fi
 endif
 
 testLoopRecognition: loopRecognition
@@ -594,11 +534,6 @@ testInheritedAttributeTraversal: inheritedAttributeTraversal
 
 testPersistantAttributes: persistantAttributes
 	./persistantAttributes -c $(srcdir)/inputCode_ExampleTraversals_2.C
-
-# TAU_INCLUDES = -I/home/dquinlan/TAU/tau-2.14.8/include
-TAU_INCLUDES = -I$(srcdir)/TAU_INCLUDE_DIR
-testTauInstrumenter: tauInstrumenter
-	./tauInstrumenter $(TAU_INCLUDES) -c $(srcdir)/inputCode_tauInstrumenter.C
 
 testTypeTransformation: typeTransformation
 	./typeTransformation -c $(srcdir)/inputCode_typeTransformation.C
@@ -766,35 +701,6 @@ testSeedBugsExample_arrayIndexing: seedBugsExample_arrayIndexing
 testVolatileTypeModifier: volatileTypeModifier
 	./volatileTypeModifier -rose:verbose 0 -c $(srcdir)/inputCode_volatileTypeModifier.C
 
-if ROSE_HAVE_LIBDWARF
-# This should only be tested if Dwarf is in use, and it should not 
-# be used on the Mac OSX system because we build the executable and
-# ROSE does not yet handle the Mach-O executable i386 binary file format.
-inputCode_dwarfAnalysis:
-	g++ -g3 -o inputCode_dwarfAnalysis $(srcdir)/inputCode_dwarfAnalysis.C
-else
-inputCode_dwarfAnalysis:
-#	DQ (2/12/2009): This fails when make check is run and the file ($(top_srcdir)/developersScratchSpace/Dan/Disassembler_tests/i386-nologin)
-#	is not available (e.g. external distributions).
-#	cp $(top_srcdir)/developersScratchSpace/Dan/Disassembler_tests/i386-nologin inputCode_dwarfAnalysis
-	cp $(srcdir)/buffer2.bin inputCode_dwarfAnalysis
-endif
-
-
-testDwarfAnalysis: dwarfAnalysis inputCode_dwarfAnalysis 
-# Note: different stages of AST representation and visualization.
-#	./dwarfAnalysis -c $(srcdir)/inputCode_dwarfAnalysis.C
-#	./dwarfAnalysis -rose:visualize_dwarf_only inputCode_dwarfAnalysis
-#	./dwarfAnalysis -rose:visualize_executable_file_format_skip_symbols inputCode_dwarfAnalysis
-#	./dwarfAnalysis -rose:read_executable_file_format_only inputCode_dwarfAnalysis
-#	./dwarfAnalysis -rose:read_executable_file_format_only -rose:visualize_executable_file_format_skip_symbols inputCode_dwarfAnalysis
-	./dwarfAnalysis -rose:visualize_dwarf_only -rose:read_executable_file_format_only inputCode_dwarfAnalysis
-
-testDwarfInstructionAddressToSourceLineAnalysis: dwarfInstructionAddressToSourceLineAnalysis inputCode_dwarfAnalysis
-#	./dwarfAnalysis -rose:verbose 0 -c $(srcdir)/inputCode_dwarfAnalysis.C
-#	./dwarfInstructionAddressToSourceLineAnalysis -rose:visualize_dwarf_only inputCode_dwarfAnalysis
-	./dwarfInstructionAddressToSourceLineAnalysis inputCode_dwarfAnalysis
-
 # DQ (3/20/2017): Added test to include DOTGraphEdges and DOTGraphNodes from src/frontend/SageIII/astVisualization/AstAttributeDOT.* files.
 testWholeGraphFilterOnPersistantAttributes: wholeGraphFilterOnPersistantAttributes
 	@echo "Generating dot file ..."
@@ -894,11 +800,8 @@ generatedCodeExamples = \
    collectCommentsAcrossHeaderFiles.out \
    collectDefineDirectives.out \
    defuseAnalysis_pic1.pdf \
-   binaryAnalysis_pic3.pdf \
    rose_inputCode_seedBugsExample_arrayIndexing.C \
    rose_inputCode_VolatileTypeModifier.C \
-   inputCode_dwarfAnalysis.pdf \
-   inputCode_dwarfAnalysis.out \
    rose_inputCode_buildFile.C \
    wholeGraphFilterOnPersistantAttributes.dot
 
@@ -1223,25 +1126,6 @@ if ROSE_USE_GRAPHVIZ_DOT
 	if ! test -e defuseAnalysis_pic1.pdf; then exit 1; fi
 endif
 
-# DQ (8/17/2008): Added example to show how to use traversal on AST for binary executable format.
-binaryAnalysis_pic3.pdf: binaryAnalysis_symbolTable
-	@echo "Building an example BinaryAnalysis ..."
-	cp -f $(srcdir)/buffer2.bin ./bin_example_2
-	./binaryAnalysis_symbolTable -rose:read_executable_file_format_only bin_example_2
-#	DQ (9/6/2008): We are not ready for these yet, so don't generate them.
-#	@echo "BinaryAnalysis: Building postscript file from AST and whole graph dot files..."
-	$(top_srcdir)/scripts/dotgenLetterPDF bin_example_2_WholeAST.dot binaryAnalysis_pic3.pdf
-if ROSE_USE_GRAPHVIZ_DOT
-	if ! test -e binaryAnalysis_pic3.pdf; then exit 1; fi
-endif
-	$(top_srcdir)/scripts/dotgenLetterPDF bin_example_2.dot binaryAnalysis_pic4.pdf
-if ROSE_USE_GRAPHVIZ_DOT
-#	DQ (10/19/2009): Added error checking to (catches lack of "dot" in path).
-	if ! test -e binaryAnalysis_pic4.pdf; then exit 1; fi
-endif
-
-# rose_bin_example.s.aa: binaryAnalysis_pic1.pdf
-
 debuggingIRnodeToString.out: debuggingIRnodeToString
 	@echo "Generate executable from compilation of input code (debuggingIRnodeToString) ..."
 	./debuggingIRnodeToString $(ROSE_FLAGS) -c $(srcdir)/inputCode_ExampleDebugging.C > debuggingIRnodeToString.out
@@ -1453,17 +1337,6 @@ rose_inputCode_seedBugsExample_arrayIndexing.C: seedBugsExample_arrayIndexing
 rose_inputCode_VolatileTypeModifier.C: volatileTypeModifier
 	./volatileTypeModifier $(ROSE_FLAGS) -c $(srcdir)/inputCode_VolatileTypeModifier.C
 
-inputCode_dwarfAnalysis.pdf: dwarfAnalysis inputCode_dwarfAnalysis
-	./dwarfAnalysis -rose:visualize_dwarf_only -rose:read_executable_file_format_only inputCode_dwarfAnalysis
-	$(top_srcdir)/scripts/dotgenLetterPDF inputCode_dwarfAnalysis.dot inputCode_dwarfAnalysis.pdf
-if ROSE_USE_GRAPHVIZ_DOT
-#	DQ (10/19/2009): Added error checking to (catches lack of "dot" in path).
-	if ! test -e inputCode_dwarfAnalysis.pdf; then exit 1; fi
-endif
-
-inputCode_dwarfAnalysis.out: dwarfInstructionAddressToSourceLineAnalysis inputCode_dwarfAnalysis
-	./dwarfInstructionAddressToSourceLineAnalysis inputCode_dwarfAnalysis > inputCode_dwarfAnalysis.out
-
 # DQ (3/20/2017): Added test to include DOTGraphEdges and DOTGraphNodes from src/frontend/SageIII/astVisualization/AstAttributeDOT.* files.
 wholeGraphFilterOnPersistantAttributes.dot: wholeGraphFilterOnPersistantAttributes
 	@echo "Generating dot file ..."
@@ -1563,12 +1436,9 @@ EXTRA_DIST = \
    input_runtimeErrorCheck.C \
    input_runtimeErrorCheck2.C \
    attributeCopyExamples.C \
-   TAU_INCLUDE_DIR \
    inputCode_addStruct.C \
-   rose_bin_example_backup.s \
    buffer2.bin \
    inputCode_seedBugsExample_arrayIndexing.C \
-   inputCode_dwarfAnalysis.C \
    inputCode_reductionRecognition.C \
    livenessAnalysis-2.C \
    bt_onefile.c \
@@ -1586,7 +1456,7 @@ endif
 # disabled this one due to problem with copy mechanism, Liao
 #   inputCode_varSubstCopy.C 
 
-CLEANFILES = rose_bin_example.s rose_bin_example.s.* callgraph.gml
+CLEANFILES = callgraph.gml
 
 docs: $(noinst_PROGRAMS) $(bin_PROGRAMS) $(generatedCodeExamples)
 	@echo ""
@@ -1594,10 +1464,6 @@ docs: $(noinst_PROGRAMS) $(bin_PROGRAMS) $(generatedCodeExamples)
 	cd outliner; $(MAKE) docs
 # TOO (2/16/2011): Errors with Tensilica's Xtensa compilers as alternative backend compilers. We can
 # gradually enable these tests at a later stage if necessary.
-if !USING_XTENSA_BACKEND_COMPILER
-	cd roseHPCT; $(MAKE) docs
-endif
-	cd intelPin; $(MAKE) docs
 	@echo "******************************************************************"
 	@echo "Generated required documentation for tutorial (make docs rule) ..."
 	@echo "******************************************************************"
@@ -1608,13 +1474,12 @@ endif
 cleanDocs:
 #	This can not be called after make distclean (by make distcheck)
 #	cd outliner; $(MAKE) cleanDocs
-	rm -f rose_*.C rose_*.c rose_*.cpp *.out *.a[a-l] *.dot *.ps *.pdf *.trace *.binaryAST 
+	rm -f rose_*.C rose_*.c rose_*.cpp *.out *.a[a-l] *.dot *.ps *.pdf *.trace
 	rm -f ExampleCodeCoverage_GeneratedBinary 
 	rm -f inputCode_AST_PDF_Generator.C 
-	rm -f rose_inputCode_dwarfAnalysis.s inputCode_dwarfAnalysis rose_inputCode_dwarfAnalysis
 
 clean-local: cleanDocs
-	rm -rf Templates.DB ii_files ti_files *.ti *.svg  *.new rose_bin_example.s rose_bin_example_2.s bin_example_2 *.dump
+	rm -rf Templates.DB ii_files ti_files *.ti *.svg  *.new *.dump
 	find . -depth -name \*.dSYM -exec rm -rf {} \; # OS X object file debug info
 	rm -rf $(generatedCodeExamples) *.out *.pdf *.dot
 

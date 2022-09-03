@@ -23,6 +23,7 @@ D.1 Example of the omp.h Header File
 
 typedef void *omp_lock_t;  /* represented as a pointer */
 typedef void *omp_nest_lock_t; /* represented as a pointer */
+typedef void *omp_depend_t;
 
 /*
 * define the lock hints

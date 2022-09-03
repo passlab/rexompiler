@@ -6,14 +6,6 @@
 void
 fixupInClassDataInitialization( SgNode* node )
    {
-  // PP (15/01/2020) Ada's code should not need this fixup (see also CR's comment below).
-  //    a particular problem was:
-  //    type X is record y : float := 0; end record; -- here y was set to "const float"
-     if (SageInterface::is_Ada_language())
-        {
-           return;
-        }
-
   // DQ (7/7/2005): Introduce tracking of performance of ROSE.
      TimingPerformance timer ("Fixup class data member initialization:");
 
@@ -35,11 +27,6 @@ FixupInClassDataInitialization::visit (SgNode* node)
   // unparsed but only when the original module files are later unparsed. At least this is true for Jovial
   // Compool files (and *.rcmp files).
   //
-     if (SageInterface::is_Jovial_language())
-        {
-           return;
-        }
-
      switch(node->variantT())
         {
           case V_SgVariableDeclaration:

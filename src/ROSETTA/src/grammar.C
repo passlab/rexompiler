@@ -134,11 +134,6 @@ Grammar::Grammar ( const string& inputGrammarName,
      setUpExpressions();
      setUpSymbols();
 
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-  // DQ (3/15/2007): Added support for binaries
-     setUpBinaryInstructions();
-#endif
-
   // Setup of Node requires previous definition of types,
   // expressions, statements, symbols within the grammar
      setUpNodes();
@@ -1194,8 +1189,6 @@ generate_override_keyword( AstNodeClass & node, GrammarString & data )
   // construct regular IR nodes from the Jovial parser. Using the untyped system just led to an
   // unnecessary step and wasted effort.
 
-  // PP (06/03/20): Added Ada nodes
-
   // Except in the root class for the virtual access function.
      if ( (nodeName == "XXXPragma"                  && variableNameString == "startOfConstruct")  ||
           (nodeName == "XXXPragma"                  && variableNameString == "endOfConstruct")    ||
@@ -1217,13 +1210,6 @@ generate_override_keyword( AstNodeClass & node, GrammarString & data )
           (nodeName == "JavaQualifiedType"          && variableNameString == "type")  ||
           (nodeName == "EnumDeclaration"            && variableNameString == "type")  ||
           (nodeName == "TypedefDeclaration"         && variableNameString == "type")  ||
-          (nodeName == "AdaDiscriminatedTypeDecl"   && variableNameString == "type")  ||
-          (nodeName == "AdaTaskTypeDecl"            && variableNameString == "type")  ||
-          (nodeName == "AdaTaskSpecDecl"            && variableNameString == "type")  ||
-          (nodeName == "AdaProtectedTypeDecl"       && variableNameString == "type")  ||
-          (nodeName == "AdaProtectedSpecDecl"       && variableNameString == "type")  ||
-          (nodeName == "AdaFormalTypeDecl"          && variableNameString == "type")  ||
-          (nodeName == "AdaRenamingDecl"            && variableNameString == "type")  ||
           (nodeName == "ClassDeclaration"           && variableNameString == "type")  ||
           (nodeName == "FunctionDeclaration"        && variableNameString == "type")  ||
           (nodeName == "AsmExpression"              && variableNameString == "type")  ||
@@ -1249,8 +1235,6 @@ generate_override_keyword( AstNodeClass & node, GrammarString & data )
           (nodeName == "TypeDefault"                && variableNameString == "name")  ||
           (nodeName == "TypeLabel"                  && variableNameString == "name")  ||
           (nodeName == "InitializedName"            && variableNameString == "name")  ||
-          (nodeName == "JavaMemberValuePair"        && variableNameString == "name")  ||
-          (nodeName == "JovialCompoolStatement"     && variableNameString == "name")  ||
           (nodeName == "EnumDeclaration"            && variableNameString == "name")  ||
           (nodeName == "TemplateDeclaration"        && variableNameString == "name")  ||
           (nodeName == "UseStatement"               && variableNameString == "name")  ||
@@ -1260,36 +1244,14 @@ generate_override_keyword( AstNodeClass & node, GrammarString & data )
           (nodeName == "TypedefDeclaration"         && variableNameString == "name")  ||
           (nodeName == "ClassDeclaration"           && variableNameString == "name")  ||
           (nodeName == "FunctionDeclaration"        && variableNameString == "name")  ||
-          (nodeName == "JavaPackageStatement"       && variableNameString == "name")  ||
           (nodeName == "InquireStatement"           && variableNameString == "name")  ||
           (nodeName == "OmpCriticalStatement"       && variableNameString == "name")  ||
+          (nodeName == "OmpDepobjStatement"         && variableNameString == "name")  ||
           (nodeName == "EnumVal"                    && variableNameString == "name")  ||
           (nodeName == "IOItemExpression"           && variableNameString == "name")  ||
           (nodeName == "AsmOp"                      && variableNameString == "name")  ||
           (nodeName == "UnknownArrayOrFunctionReference" && variableNameString == "name")  ||
-          (nodeName == "TypeTraitBuiltinOperator"   && variableNameString == "name")  ||
-          (nodeName == "AdaPackageBodyDecl"         && variableNameString == "name")  ||
-          (nodeName == "AdaPackageSpecDecl"         && variableNameString == "name")  ||
-          (nodeName == "AdaFormalTypeDecl"          && variableNameString == "name")  ||
-          (nodeName == "AdaFormalPackageDecl"       && variableNameString == "name")  ||
-          (nodeName == "AdaTaskBodyDecl"            && variableNameString == "name")  ||
-          (nodeName == "AdaTaskSpecDecl"            && variableNameString == "name")  ||
-          (nodeName == "AdaTaskTypeDecl"            && variableNameString == "name")  ||
-          (nodeName == "AdaProtectedBodyDecl"       && variableNameString == "name")  ||
-          (nodeName == "AdaProtectedSpecDecl"       && variableNameString == "name")  ||
-          (nodeName == "AdaProtectedTypeDecl"       && variableNameString == "name")  ||
-          (nodeName == "AdaRenamingDecl"            && variableNameString == "name")  ||
-          (nodeName == "AdaDiscriminatedTypeDecl"   && variableNameString == "name")  ||
-          (nodeName == "AdaGenericInstanceDecl"     && variableNameString == "name")  ||
-          (nodeName == "AsmFunction"                && variableNameString == "name")  ||
-          (nodeName == "AsmSynthesizedFieldDeclaration" && variableNameString == "name")  ||
-          (nodeName == "AsmGenericFile"             && variableNameString == "name")  ||
-          (nodeName == "AsmElfSymverNeededAux"      && variableNameString == "name")  ||
-          (nodeName == "AsmPESectionTableEntry"     && variableNameString == "name")  ||
-          (nodeName == "AsmElfSymverDefinedAux"     && variableNameString == "name")  ||
-          (nodeName == "AsmPEExportDirectory"       && variableNameString == "name")  ||
-          (nodeName == "AsmDwarfConstruct"          && variableNameString == "name")  ||
-          (nodeName == "AsmPEImportItem"            && variableNameString == "name")  )
+          (nodeName == "TypeTraitBuiltinOperator"   && variableNameString == "name")   )
        {
          returnResult = false;
 #if 0
@@ -1333,14 +1295,6 @@ generate_override_keyword_for_set_functions( AstNodeClass & node, GrammarString 
           (nodeName == "JavaQualifiedType"          && variableNameString == "type")  ||
           (nodeName == "EnumDeclaration"            && variableNameString == "type")  ||
           (nodeName == "TypedefDeclaration"         && variableNameString == "type")  ||
-          (nodeName == "AdaDiscriminatedTypeDecl"   && variableNameString == "type")  ||
-          (nodeName == "AdaTaskTypeDecl"            && variableNameString == "type")  ||
-          (nodeName == "AdaTaskSpecDecl"            && variableNameString == "type")  ||
-          (nodeName == "AdaProtectedTypeDecl"       && variableNameString == "type")  ||
-          (nodeName == "AdaProtectedSpecDecl"       && variableNameString == "type")  ||
-          (nodeName == "AdaRenamingDecl"            && variableNameString == "type")  ||
-          (nodeName == "AdaFormalTypeDecl"          && variableNameString == "type")  ||
-          (nodeName == "AdaAttributeExp"            && variableNameString == "type")  ||
           (nodeName == "ClassDeclaration"           && variableNameString == "type")  ||
           (nodeName == "FunctionDeclaration"        && variableNameString == "type")  ||
           (nodeName == "FunctionTypeSymbol"         && variableNameString == "type")  ||
@@ -1348,7 +1302,6 @@ generate_override_keyword_for_set_functions( AstNodeClass & node, GrammarString 
           (nodeName == "AsmExpression"              && variableNameString == "type")  ||
           (nodeName == "AsmGenericSymbol"           && variableNameString == "type")  ||
           (nodeName == "AsmElfSegmentTableEntry"    && variableNameString == "type")  ||
-          (nodeName == "JavaTypeExpression"         && variableNameString == "type")  ||
           (nodeName == "TypeExpression"             && variableNameString == "type")  ||
           (nodeName == "AsmElfRelocEntry"           && variableNameString == "type")  ||
           (nodeName == "AsmElfNoteEntry"            && variableNameString == "type")  ||
@@ -1368,8 +1321,6 @@ generate_override_keyword_for_set_functions( AstNodeClass & node, GrammarString 
           (nodeName == "TypeDefault"                && variableNameString == "name")  ||
           (nodeName == "TypeLabel"                  && variableNameString == "name")  ||
           (nodeName == "InitializedName"            && variableNameString == "name")  ||
-          (nodeName == "JavaMemberValuePair"        && variableNameString == "name")  ||
-          (nodeName == "JovialCompoolStatement"     && variableNameString == "name")  ||
           (nodeName == "EnumDeclaration"            && variableNameString == "name")  ||
           (nodeName == "TemplateDeclaration"        && variableNameString == "name")  ||
           (nodeName == "UseStatement"               && variableNameString == "name")  ||
@@ -1379,37 +1330,15 @@ generate_override_keyword_for_set_functions( AstNodeClass & node, GrammarString 
           (nodeName == "TypedefDeclaration"         && variableNameString == "name")  ||
           (nodeName == "ClassDeclaration"           && variableNameString == "name")  ||
           (nodeName == "FunctionDeclaration"        && variableNameString == "name")  ||
-          (nodeName == "JavaPackageStatement"       && variableNameString == "name")  ||
           (nodeName == "InquireStatement"           && variableNameString == "name")  ||
           (nodeName == "OmpCriticalStatement"       && variableNameString == "name")  ||
+          (nodeName == "OmpDepobjStatement"         && variableNameString == "name")  ||
           (nodeName == "EnumVal"                    && variableNameString == "name")  ||
           (nodeName == "IOItemExpression"           && variableNameString == "name")  ||
           (nodeName == "AsmOp"                      && variableNameString == "name")  ||
           (nodeName == "UnknownArrayOrFunctionReference" && variableNameString == "name")  ||
           (nodeName == "TypeTraitBuiltinOperator"   && variableNameString == "name")  ||
-          (nodeName == "FunctionTypeSymbol"         && variableNameString == "name")  ||
-          (nodeName == "AdaPackageBodyDecl"         && variableNameString == "name")  ||
-          (nodeName == "AdaPackageSpecDecl"         && variableNameString == "name")  ||
-          (nodeName == "AdaFormalTypeDecl"          && variableNameString == "name")  ||
-          (nodeName == "AdaFormalPackageDecl"       && variableNameString == "name")  ||
-          (nodeName == "AdaTaskBodyDecl"            && variableNameString == "name")  ||
-          (nodeName == "AdaTaskSpecDecl"            && variableNameString == "name")  ||
-          (nodeName == "AdaTaskTypeDecl"            && variableNameString == "name")  ||
-          (nodeName == "AdaProtectedBodyDecl"       && variableNameString == "name")  ||
-          (nodeName == "AdaProtectedSpecDecl"       && variableNameString == "name")  ||
-          (nodeName == "AdaProtectedTypeDecl"       && variableNameString == "name")  ||
-          (nodeName == "AdaRenamingDecl"            && variableNameString == "name")  ||
-          (nodeName == "AdaDiscriminatedTypeDecl"   && variableNameString == "name")  ||
-          (nodeName == "AdaGenericInstanceDecl"     && variableNameString == "name")  ||
-          (nodeName == "AsmFunction"                && variableNameString == "name")  ||
-          (nodeName == "AsmSynthesizedFieldDeclaration" && variableNameString == "name")  ||
-          (nodeName == "AsmGenericFile"             && variableNameString == "name")  ||
-          (nodeName == "AsmElfSymverNeededAux"      && variableNameString == "name")  ||
-          (nodeName == "AsmPESectionTableEntry"     && variableNameString == "name")  ||
-          (nodeName == "AsmElfSymverDefinedAux"     && variableNameString == "name")  ||
-          (nodeName == "AsmPEExportDirectory"       && variableNameString == "name")  ||
-          (nodeName == "AsmDwarfConstruct"          && variableNameString == "name")  ||
-          (nodeName == "AsmPEImportItem"            && variableNameString == "name")  )
+          (nodeName == "FunctionTypeSymbol"         && variableNameString == "name")  )
        {
          returnResult = false;
 #if 0
@@ -1900,29 +1829,6 @@ Grammar::buildConstructor ( AstNodeClass & node )
 
      return returnString;
    }
-
-
-#if BUILD_ATERM_SUPPORT
-StringUtility::FileWithLineNumbers
-Grammar::buildAtermConstructor ( AstNodeClass & node )
-   {
-  // DQ (10/10/2014): This function is only called to generate the skeleton for a
-  // small part of the API to translate Aterms to ROSE IR nodes.
-
-  // DQ (10/7/2014): Build the Aterm support static member function (constructor).
-
-     StringUtility::FileWithLineNumbers returnString;
-
-     string constructorTemplateFileName = "../Grammar/grammarAtermConstructorDefinitionMacros.macro";
-     StringUtility::FileWithLineNumbers constructorSourceCodeTemplate = readFileWithPos (constructorTemplateFileName);
-
-     bool complete  = false;
-     constructorLoopBody(CONSTRUCTOR_PARAMETER, complete, constructorSourceCodeTemplate, node, returnString);
-
-     return returnString;
-   }
-#endif // BUILD_ATERM_SUPPORT
-
 
 StringUtility::FileWithLineNumbers
 Grammar::buildCopyMemberFunctionSource ( AstNodeClass & node )
@@ -2495,41 +2401,6 @@ Grammar::buildSourceFiles( AstNodeClass & node, StringUtility::FileWithLineNumbe
         }
 #endif
    }
-
-
-#if BUILD_ATERM_SUPPORT
-void
-Grammar::buildAtermBuildFunctionsSourceFile( AstNodeClass & node, StringUtility::FileWithLineNumbers & outputFile )
-   {
-  // DQ (10/10/2014): This function is only called to generate the skeleton for a
-  // small part of the API to translate Aterms to ROSE IR nodes.
-
-     printf ("At TOP of Grammar::buildAtermBuildFunctionsSourceFile() \n");
-
-#if 0
-     printf ("Exiting at TOP of Grammar::buildAtermBuildFunctionsSourceFile() \n");
-     ROSE_ABORT();
-#endif
-
-     StringUtility::FileWithLineNumbers editStringMiddleNodeDataMemberFunctions = buildAtermConstructor (node);
-
-  // Also output strings to single file
-     outputFile += editStringMiddleNodeDataMemberFunctions;
-
-  // printf ("node.name = %s  (# of subtrees/leaves = %zu) \n",node.getName(),node.nodeList.size());
-
-  // Call this function recursively on the children of this node in the tree
-     vector<AstNodeClass *>::iterator treeNodeIterator;
-     for( treeNodeIterator = node.subclasses.begin(); treeNodeIterator != node.subclasses.end(); treeNodeIterator++ )
-        {
-          ROSE_ASSERT ((*treeNodeIterator) != NULL);
-          ROSE_ASSERT ((*treeNodeIterator)->getBaseClass() != NULL);
-
-          buildAtermBuildFunctionsSourceFile(**treeNodeIterator,outputFile);
-        }
-   }
-#endif // BUILD_ATERM_SUPPORT
-
 
 void
 Grammar::printTreeNodeNames ( const AstNodeClass & node ) const
@@ -3322,16 +3193,6 @@ Grammar::buildCode ()
   // DQ (10/6/2006): Added output function for STL map objects
      ROSE_ArrayGrammarHeaderFile << "std::ostream& operator<<(std::ostream&, const std::map<SgNode*,std::string>&);\n\n";
 
-  // DQ (3/31/2007): Modified to be a list instead of a set (and added case for list of SgAsmExpression),
-  //                 though I am not certain these are even required to be specified.
-  // DQ (3/15/2007): Added output function for STL list objects
-  // ROSE_ArrayGrammarHeaderFile << "std::ostream& operator<<(std::ostream&, const std::set<SgAsmStatement*>&);\n\n";
-
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-     ROSE_ArrayGrammarHeaderFile << "std::ostream& operator<<(std::ostream&, const Rose_STL_Container<SgAsmStatement*>&);\n\n";
-     ROSE_ArrayGrammarHeaderFile << "std::ostream& operator<<(std::ostream&, const Rose_STL_Container<SgAsmExpression*>&);\n\n";
-#endif
-
   // DQ (11/20/2007): Part of support for the Fortran data statement
      ROSE_ArrayGrammarHeaderFile << "std::ostream& operator<<(std::ostream&, const Rose_STL_Container<SgDataStatementObject*>&);\n\n";
      ROSE_ArrayGrammarHeaderFile << "std::ostream& operator<<(std::ostream&, const Rose_STL_Container<SgDataStatementValue*>&);\n\n";
@@ -3464,12 +3325,6 @@ Grammar::buildCode ()
      string defines5 = "#define mprintf Rose::Diagnostics::mfprintf(Rose::ir_node_mlog[Rose::Diagnostics::DEBUG])\n\n";
      includeHeaderString += defines5;
 
-     // Some IR nodes have pointers to reference counted objects, and for better compiling speed, only the forward declarations
-     // are included into most headers. Destructors for these IR nodes need to have definitions for the reference counted
-     // objects in order to call the destructors for those objects when the pointer goes out of scope.  It would be better if
-     // these heavy-weight definitions were only included for the IR nodes that need them, but alas, ROSETTA places the code
-     // for all the IR nodes into a single gigantic .C file.
-     includeHeaderString += "#include <Rose/BinaryAnalysis/RegisterDictionary.h>\n";
 
      includeHeaderString += "\nusing namespace std;\n";
 
@@ -3733,31 +3588,10 @@ Grammar::buildCode ()
          cout << "DONE: buildTreeTraversalFunctions()" << endl;
      Grammar::writeFile(ROSE_treeTraversalFunctionsSourceFile, target_directory, getGrammarName() + "TreeTraversalSuccessorContainer", ".C");
 
-#if BUILD_ATERM_SUPPORT
-  // DQ (10/4/2014): Adding ATerm support via ROSETTA.
-  // ---------------------------------------------------------------------------------------------
-  // generate a function for each node in the AST to support ATerm read and write operations.
-  // ---------------------------------------------------------------------------------------------
-     StringUtility::FileWithLineNumbers ROSE_ATermSupportSourceFile;
-     if (verbose)
-         cout << "Calling buildAtermSupportFunctions() ..." << endl;
-  // Write header string to file (it's the same string as above, we just reuse it)
-     ROSE_ATermSupportSourceFile << includeHeaderString;
-
-  // DQ (10/4/2014): Insert "using namespace std;" into the source file (but never into the header files!)
-     ROSE_ATermSupportSourceFile << "\n// Simplify code by using AtermSupport namespace (never put into header files since it effects users) \nusing namespace AtermSupport;\n\n";
-
-  // Generate the implementations of the ATerm support functions
-     buildAtermSupportFunctions(*rootNode, ROSE_ATermSupportSourceFile);
-     if (verbose)
-         cout << "DONE: buildAtermSupportFunctions()" << endl;
-     Grammar::writeFile(ROSE_ATermSupportSourceFile, target_directory, getGrammarName() + "AtermSupport", ".C");
-
 #if 0
      printf ("Exiting as a test in ROSETTA generation of ATerm support! \n");
      ROSE_ABORT();
 #endif
-#endif // BUILD_ATERM_SUPPORT
 
   // ---------------------------------------------------------------------------------------------
   // generate what is necessary for SAGE support in AstProcessing classes
@@ -3999,23 +3833,67 @@ Grammar::GrammarNodeInfo Grammar::getGrammarNodeInfo(AstNodeClass* grammarnode) 
           nodeName == "SgVariableDeclaration"
      // DQ (12/21/2011): Added exception for SgTemplateVariableDeclaration derived from SgVariableDeclaration.
         ||nodeName == "SgTemplateVariableDeclaration"
-        ||nodeName == "SgOmpClauseBodyStatement"
-        ||nodeName == "SgOmpParallelStatement"
+        ||nodeName == "SgUpirBaseStatement"
+        ||nodeName == "SgUpirLoopStatement"
+        ||nodeName == "SgUpirLoopParallelStatement"
+        ||nodeName == "SgUpirFieldBodyStatement"
+        ||nodeName == "SgUpirFieldStatement"
+        ||nodeName == "SgOmpMetadirectiveStatement"
+        ||nodeName == "SgUpirSpmdStatement"
+        ||nodeName == "SgOmpTeamsStatement"
+        ||nodeName == "SgOmpCancellationPointStatement"
+        ||nodeName == "SgOmpDeclareMapperStatement"
+        ||nodeName == "SgOmpCancelStatement"
+        ||nodeName == "SgOmpTaskgroupStatement"
+        ||nodeName == "SgOmpDepobjStatement"
+        ||nodeName == "SgOmpDistributeStatement"
+        ||nodeName == "SgOmpLoopStatement"
+        ||nodeName == "SgOmpOrderedStatement"
+        ||nodeName == "SgOmpOrderedDependStatement"
+        ||nodeName == "SgOmpScanStatement"
+        ||nodeName == "SgOmpTaskloopStatement"
+        ||nodeName == "SgOmpTargetEnterDataStatement"
+        ||nodeName == "SgOmpTargetExitDataStatement"
+        ||nodeName == "SgOmpCriticalStatement"
         ||nodeName == "SgOmpSectionsStatement"
-        ||nodeName == "SgOmpTargetStatement"
+        ||nodeName == "SgUpirTaskStatement"
         ||nodeName == "SgOmpTargetDataStatement"
+        ||nodeName == "SgOmpTargetParallelForStatement"
+        ||nodeName == "SgOmpTargetUpdateStatement"
+        ||nodeName == "SgOmpTargetParallelStatement"
+        ||nodeName == "SgOmpDistributeSimdStatement"
+        ||nodeName == "SgOmpDistributeParallelForStatement"
+        ||nodeName == "SgOmpDistributeParallelForSimdStatement"
+        ||nodeName == "SgOmpTaskloopSimdStatement"
+        ||nodeName == "SgOmpTargetParallelForSimdStatement"
+        ||nodeName == "SgOmpTargetParallelLoopStatement"
+        ||nodeName == "SgOmpTargetSimdStatement"
+        ||nodeName == "SgOmpTargetTeamsStatement"
+        ||nodeName == "SgOmpTargetTeamsDistributeStatement"
+        ||nodeName == "SgOmpTargetTeamsDistributeSimdStatement"
+        ||nodeName == "SgOmpTargetTeamsLoopStatement"
+        ||nodeName == "SgOmpTargetTeamsDistributeParallelForStatement"
+        ||nodeName == "SgOmpTargetTeamsDistributeParallelForSimdStatement"
+        ||nodeName == "SgOmpMasterTaskloopSimdStatement"
+        ||nodeName == "SgOmpParallelMasterTaskloopStatement"
+        ||nodeName == "SgOmpParallelMasterTaskloopSimdStatement"
+        ||nodeName == "SgOmpTeamsDistributeStatement"
+        ||nodeName == "SgOmpTeamsDistributeSimdStatement"
+        ||nodeName == "SgOmpTeamsDistributeParallelForStatement"
+        ||nodeName == "SgOmpTeamsDistributeParallelForSimdStatement"
+        ||nodeName == "SgOmpTeamsLoopStatement"
+        ||nodeName == "SgOmpParallelMasterStatement"
+        ||nodeName == "SgOmpMasterTaskloopStatement"
+        ||nodeName == "SgOmpParallelLoopStatement"
         ||nodeName == "SgOmpSingleStatement"
-        ||nodeName == "SgOmpSimdStatement"
+        ||nodeName == "SgUpirSimdStatement"
         ||nodeName == "SgOmpTaskStatement"
-        ||nodeName == "SgOmpForStatement"
+        ||nodeName == "SgUpirWorksharingStatement"
         ||nodeName == "SgOmpForSimdStatement"
         ||nodeName == "SgOmpForSimdStatement"
         ||nodeName == "SgOmpDoStatement"
         ||nodeName == "SgOmpAtomicStatement"
-        ||nodeName == "SgExprListExp"
-        ||nodeName == "SgAdaTaskSpec" /* \todo \revisit PP */
-        ||nodeName == "SgAdaProtectedSpec" /* \todo \revisit PP */
-        );
+        ||nodeName == "SgExprListExp");
   }
   return info;
 }
@@ -4305,20 +4183,67 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                                << "else return p_variables[idx-1];\n";
                   }
                 // Liao, 5/30/2009
-               // More exceptional cases for SgOmpClauseBodyStatement and its derived classes
+               // More exceptional cases for SgUpirFieldBodyStatement and its derived classes
               // We allow them to have mixed members (simple member and container member)
-               else if (string(node.getName()) == "SgOmpClauseBodyStatement"
-                 ||string(node.getName()) == "SgOmpParallelStatement"
+               else if (string(node.getName()) == "SgUpirFieldBodyStatement"
+                 ||string(node.getName()) == "SgOmpMetadirectiveStatement"
+                 ||string(node.getName()) == "SgUpirSpmdStatement"
+                 ||string(node.getName()) == "SgOmpTeamsStatement"
+                 ||string(node.getName()) == "SgOmpCancellationPointStatement"
+                 ||string(node.getName()) == "SgOmpDeclareMapperStatement"
+                 ||string(node.getName()) == "SgOmpCancelStatement"
+                 ||string(node.getName()) == "SgOmpTaskgroupStatement"
+                 ||string(node.getName()) == "SgOmpDepobjStatement"
+                 ||string(node.getName()) == "SgOmpDistributeStatement"
+                 ||string(node.getName()) == "SgOmpLoopStatement"
+                 ||string(node.getName()) == "SgOmpOrderedStatement"
+                 ||string(node.getName()) == "SgOmpOrderedDependStatement"
+                 ||string(node.getName()) == "SgOmpScanStatement"
+                 ||string(node.getName()) == "SgOmpTaskloopStatement"
+                 ||string(node.getName()) == "SgOmpTargetEnterDataStatement"
+                 ||string(node.getName()) == "SgOmpTargetExitDataStatement"
+                 ||string(node.getName()) == "SgOmpCriticalStatement"
                  ||string(node.getName()) == "SgOmpSingleStatement"
-                 ||string(node.getName()) == "SgOmpSimdStatement"
+                 ||string(node.getName()) == "SgUpirSimdStatement"
                  ||string(node.getName()) == "SgOmpTaskStatement"
                  ||string(node.getName()) == "SgOmpSectionsStatement"
-                 ||string(node.getName()) == "SgOmpTargetStatement"
+                 ||string(node.getName()) == "SgUpirTaskStatement"
                  ||string(node.getName()) == "SgOmpTargetDataStatement"
-                 ||string(node.getName()) == "SgOmpForStatement"
+                 ||string(node.getName()) == "SgOmpTargetParallelForStatement"
+                 ||string(node.getName()) == "SgOmpTargetUpdateStatement"
+                 ||string(node.getName()) == "SgOmpTargetParallelStatement"
+                 ||string(node.getName()) == "SgOmpDistributeSimdStatement"
+                 ||string(node.getName()) == "SgOmpDistributeParallelForStatement"
+                 ||string(node.getName()) == "SgOmpDistributeParallelForSimdStatement"
+                 ||string(node.getName()) == "SgOmpTaskloopSimdStatement"
+                 ||string(node.getName()) == "SgOmpTargetParallelForSimdStatement"
+                 ||string(node.getName()) == "SgOmpTargetParallelLoopStatement"
+                 ||string(node.getName()) == "SgOmpTargetSimdStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsDistributeStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsDistributeSimdStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsLoopStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsDistributeParallelForStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsDistributeParallelForSimdStatement"
+                 ||string(node.getName()) == "SgOmpMasterTaskloopSimdStatement"
+                 ||string(node.getName()) == "SgOmpParallelMasterTaskloopStatement"
+                 ||string(node.getName()) == "SgOmpParallelMasterTaskloopSimdStatement"
+                 ||string(node.getName()) == "SgOmpTeamsDistributeStatement"
+                 ||string(node.getName()) == "SgOmpTeamsDistributeSimdStatement"
+                 ||string(node.getName()) == "SgOmpTeamsDistributeParallelForStatement"
+                 ||string(node.getName()) == "SgOmpTeamsDistributeParallelForSimdStatement"
+                 ||string(node.getName()) == "SgOmpTeamsLoopStatement"
+                 ||string(node.getName()) == "SgOmpParallelMasterStatement"
+                 ||string(node.getName()) == "SgOmpMasterTaskloopStatement"
+                 ||string(node.getName()) == "SgOmpParallelLoopStatement"
+                 ||string(node.getName()) == "SgUpirWorksharingStatement"
                  ||string(node.getName()) == "SgOmpForSimdStatement"
                  ||string(node.getName()) == "SgOmpForSimdStatement"
                  ||string(node.getName()) == "SgOmpDoStatement"
+                 ||string(node.getName()) == "SgUpirBaseStatement"
+                 ||string(node.getName()) == "SgUpirLoopStatement"
+                 ||string(node.getName()) == "SgUpirLoopParallelStatement"
+                 ||string(node.getName()) == "SgUpirFieldStatement"
                  ||string(node.getName()) == "SgOmpAtomicStatement"
                  )
                   {
@@ -4416,19 +4341,66 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                                << "else return (size_t) -1;\n"
                                << "}\n";
                   }
-               // More exceptional cases for SgOmpClauseBodyStatement and its derived classes
+               // More exceptional cases for SgUpirFieldBodyStatement and its derived classes
               // We allow them to have mixed members
-               else if (string(node.getName()) == "SgOmpClauseBodyStatement"
-                 ||string(node.getName()) == "SgOmpParallelStatement"
+               else if (string(node.getName()) == "SgUpirFieldBodyStatement"
+                 ||string(node.getName()) == "SgOmpMetadirectiveStatement"
+                 ||string(node.getName()) == "SgUpirSpmdStatement"
+                 ||string(node.getName()) == "SgOmpTeamsStatement"
+                 ||string(node.getName()) == "SgOmpCancellationPointStatement"
+                 ||string(node.getName()) == "SgOmpDeclareMapperStatement"
+                 ||string(node.getName()) == "SgOmpCancelStatement"
+                 ||string(node.getName()) == "SgOmpTaskgroupStatement"
+                 ||string(node.getName()) == "SgOmpDepobjStatement"
+                 ||string(node.getName()) == "SgOmpCriticalStatement"
+                 ||string(node.getName()) == "SgOmpDistributeStatement"
+                 ||string(node.getName()) == "SgOmpLoopStatement"
+                 ||string(node.getName()) == "SgOmpOrderedStatement"
+                 ||string(node.getName()) == "SgOmpOrderedDependStatement"
+                 ||string(node.getName()) == "SgOmpScanStatement"
+                 ||string(node.getName()) == "SgOmpTaskloopStatement"
+                 ||string(node.getName()) == "SgOmpTargetEnterDataStatement"
+                 ||string(node.getName()) == "SgOmpTargetExitDataStatement"
                  ||string(node.getName()) == "SgOmpSingleStatement"
-                 ||string(node.getName()) == "SgOmpSimdStatement"
+                 ||string(node.getName()) == "SgUpirSimdStatement"
                  ||string(node.getName()) == "SgOmpTaskStatement"
                  ||string(node.getName()) == "SgOmpSectionsStatement"
-                 ||string(node.getName()) == "SgOmpTargetStatement"
+                 ||string(node.getName()) == "SgUpirTaskStatement"
                  ||string(node.getName()) == "SgOmpTargetDataStatement"
-                 ||string(node.getName()) == "SgOmpForStatement"
+                 ||string(node.getName()) == "SgOmpTargetUpdateStatement"
+                 ||string(node.getName()) == "SgOmpTargetParallelForStatement"
+                 ||string(node.getName()) == "SgOmpTargetParallelStatement"
+                 ||string(node.getName()) == "SgOmpDistributeSimdStatement"
+                 ||string(node.getName()) == "SgOmpDistributeParallelForStatement"
+                 ||string(node.getName()) == "SgOmpDistributeParallelForSimdStatement"
+                 ||string(node.getName()) == "SgOmpTaskloopSimdStatement"
+                 ||string(node.getName()) == "SgOmpTargetParallelForSimdStatement"
+                 ||string(node.getName()) == "SgOmpTargetParallelLoopStatement"
+                 ||string(node.getName()) == "SgOmpTargetSimdStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsDistributeStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsDistributeSimdStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsLoopStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsDistributeParallelForStatement"
+                 ||string(node.getName()) == "SgOmpTargetTeamsDistributeParallelForSimdStatement"
+                 ||string(node.getName()) == "SgOmpMasterTaskloopSimdStatement"
+                 ||string(node.getName()) == "SgOmpParallelMasterTaskloopStatement"
+                 ||string(node.getName()) == "SgOmpParallelMasterTaskloopSimdStatement"
+                 ||string(node.getName()) == "SgOmpTeamsDistributeStatement"
+                 ||string(node.getName()) == "SgOmpTeamsDistributeSimdStatement"
+                 ||string(node.getName()) == "SgOmpTeamsDistributeParallelForStatement"
+                 ||string(node.getName()) == "SgOmpTeamsDistributeParallelForSimdStatement"
+                 ||string(node.getName()) == "SgOmpTeamsLoopStatement"
+                 ||string(node.getName()) == "SgOmpParallelMasterStatement"
+                 ||string(node.getName()) == "SgOmpMasterTaskloopStatement"
+                 ||string(node.getName()) == "SgOmpParallelLoopStatement"
+                 ||string(node.getName()) == "SgUpirWorksharingStatement"
                  ||string(node.getName()) == "SgOmpForSimdStatement"
                  ||string(node.getName()) == "SgOmpDoStatement"
+                 ||string(node.getName()) == "SgUpirBaseStatement"
+                 ||string(node.getName()) == "SgUpirLoopStatement"
+                 ||string(node.getName()) == "SgUpirLoopParallelStatement"
+                 ||string(node.getName()) == "SgUpirFieldStatement"
                  ||string(node.getName()) == "SgOmpAtomicStatement"
                  )
                   {

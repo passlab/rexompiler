@@ -1,9 +1,6 @@
 include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 include $(top_srcdir)/tests/nonsmoke/functional/input_codes/Makefile.for.input.codes
 
-# DQ (2/6/2010): I don't understand why this is required in every Makefile.am through out ROSE.
-include $(top_srcdir)/projects/compass/src/compassSupport/compass_dirs.inc
-
 # When debugging latex documentation skip using the --interaction=batchmode option
 # PDFLATEX = env TEXINPUTS=$(srcdir):$(top_srcdir)/tests:.: pdflatex --interaction=batchmode
 # Liao 12/18/2009, use normal mode to ease finding bugs from hudson logs
@@ -51,8 +48,7 @@ RoseDocsDependencies = \
      $(top_srcdir)/src/midend/astRewriteMechanism/ASTRewrite.docs \
      $(top_srcdir)/src/midend/astProcessing/AstProcessing.docs \
      $(top_srcdir)/src/backend/unparser/unparser.docs \
-     $(top_srcdir)/src/3rdPartyLibraries/MSTL/MSTL.docs \
-     $(top_srcdir)/src/roseExtensions/roseHPCToolkit/docs/roseHPCToolkit.docs
+     $(top_srcdir)/src/3rdPartyLibraries/MSTL/MSTL.docs
 
 # If the generated sage source code is older than the code used to
 # generate the sage source code then regenerate the sage source code
@@ -111,7 +107,7 @@ latexFiles = preface.tex acknowledgments.tex introduction.tex \
              rose-processing-phases.pdf testing.tex \
              writingYourFirstTranslator.tex overviewOfRose.tex \
              developersAppendix.tex astMerge.tex installRose.tex \
-             binaryAnalysis.tex demo.tex OpenMPsupport.tex UPCsupport.tex \
+             demo.tex OpenMPsupport.tex \
              rose_exam_1.tex rose_exam_traversals_1.tex
 
 # DQ (3/4/2009): Removed requirements.tex since it is not longer used.
@@ -186,30 +182,6 @@ html-local: $(RoseDoxygenDocumentation) $(PACKAGE_NAME)-$(PACKAGE_VERSION)-HTML-
 footer.html: footer.html.in
 leftmenu.html: leftmenu.html.in
 
-# Liao, 6/11/2008. Added a new directory (Projects) for various ROSE projects 
-# compass_build_tooldir=$(top_builddir)/projects/compass/tools
-COMPASS_MANUAL = $(compass_build_tooldir)/compass/doc/compass.pdf
-$(COMPASS_MANUAL):
-	cd $(compass_build_tooldir)/compass/doc && $(MAKE) docs
-
-# Liao, 8/6/2009. tutorial for autotuning	
-AUTOTUNING_MANUAL = $(top_builddir)/projects/autoTuning/doc/autoTuning.pdf
-$(AUTOTUNING_MANUAL):
-	cd $(top_builddir)/projects/autoTuning/doc && $(MAKE) docs
-
-# Liao, 8/11/2009. QROSE Manual
-QROSE_MANUAL = $(top_srcdir)/src/3rdPartyLibraries/qrose/docs/QROSE.pdf
-
-HASKELLPORT_APIDOCS = $(top_builddir)/projects/haskellport/dist/doc/html/rose
-$(HASKELLPORT_APIDOCS):
-	$(MAKE) -C$(top_builddir)/projects/haskellport docs
-
-# DQ (9/15/2009): This appears to be a problem for Mac OSX
-RoseQtDoc:
-if !OS_MACOSX
-	@echo "Skipping doxygen processing of roseQtWidgets.doxygen (failing in OSX)"
-#	$(DOXYGEN) roseQtWidgets.doxygen
-endif
 # Liao, 2014/1/10, comment out $(HASKELLPORT_APIDOCS) to migrate to EDG 4.7 based rose
 make-web-pages: $(RoseDoxygenDocumentation) $(PACKAGE_NAME)-$(PACKAGE_VERSION)-UserManual.pdf ROSE_InstallationInstructions.pdf ROSE_Exam.pdf ROSE_DeveloperInstructions.pdf ROSE_DemoGuide.pdf footer.html leftmenu.html $(COMPASS_MANUAL) $(AUTOTUNING_MANUAL) RoseQtDoc
 	cd Tutorial; $(MAKE) make-web-pages
@@ -345,47 +317,11 @@ generated_ompLowering_files_for_manual = \
        $(top_builddir)/tests/nonsmoke/functional/roseTests/ompLoweringTests/fortran/rose_ompdo-multiple.f \
        $(top_builddir)/tests/nonsmoke/functional/roseTests/ompLoweringTests/fortran/rose_task_largenumber.f
 
-generated_autoPar_files_for_manual = \
-       $(top_builddir)/projects/autoParallelization/tests/rose_doall_2.c \
-       $(top_builddir)/projects/autoParallelization/tests/rose_doall_2.out \
-       $(top_builddir)/projects/autoParallelization/tests/rose_inner_only.c \
-       $(top_builddir)/projects/autoParallelization/tests/rose_inner_only.out \
-       $(top_builddir)/projects/autoParallelization/tests/rose_reduction.c \
-       $(top_builddir)/projects/autoParallelization/tests/rose_vector2.C
-
-generated_upcCompile_files_for_manual = \
-       $(top_builddir)/tests/nonsmoke/functional/CompileTests/UPC_tests/rose_hello.upc \
-       $(top_builddir)/tests/nonsmoke/functional/CompileTests/UPC_tests/rose_consistency.upc \
-       $(top_builddir)/tests/nonsmoke/functional/CompileTests/UPC_tests/rose_continue.upc \
-       $(top_builddir)/tests/nonsmoke/functional/CompileTests/UPC_tests/rose_affinity.upc \
-       $(top_builddir)/tests/nonsmoke/functional/CompileTests/UPC_tests/rose_shared.upc.aa \
-       $(top_builddir)/tests/nonsmoke/functional/CompileTests/UPC_tests/rose_shared.upc.ab \
-       $(top_builddir)/tests/nonsmoke/functional/CompileTests/UPC_tests/rose_lock.upc
-
-generated_upcTrans_files_for_manual = \
-       $(top_builddir)/projects/UpcTranslation/tests/rose_hello.c \
-       $(top_builddir)/projects/UpcTranslation/tests/rose_shared_1.c.aaf \
-       $(top_builddir)/projects/UpcTranslation/tests/rose_shared_1.c.abf \
-       $(top_builddir)/projects/UpcTranslation/tests/rose_unshared_1.c.aaf \
-       $(top_builddir)/projects/UpcTranslation/tests/rose_unshared_1.c.abf
-
 $(generated_ompLowering_files_for_manual):
 	$(MAKE) -C$(top_builddir)/tests/nonsmoke/functional/roseTests/ompLoweringTests check
 
-$(generated_autoPar_files_for_manual):
-	$(MAKE) -C$(top_builddir)/projects/autoParallelization check
-
-$(generated_upcCompile_files_for_manual):
-	$(MAKE) -C$(top_builddir)/tests/nonsmoke/functional/CompileTests/UPC_tests check
-
-$(generated_upcTrans_files_for_manual):
-	$(MAKE) -C$(top_builddir)/projects/UpcTranslation check
-
 generated_files_for_manual = \
-	$(generated_ompLowering_files_for_manual) \
-	$(generated_autoPar_files_for_manual) \
-	$(generated_upcCompile_files_for_manual) \
-	$(generated_upcTrans_files_for_manual)
+	$(generated_ompLowering_files_for_manual)
 
 # DQ (7/25/2004): Need to include manual.tex and reference.tex since they are build from 
 # manual.tex.in and reference.tex.in
@@ -416,7 +352,7 @@ EXTRA_DIST = CMakeLists.txt \
    fixme.sty  acknowledgments.tex bothlevel.c \
    bibliography.tex  examples.tex fd-docs.tex overviewOfRose.tex pre-docs.tex loopTransformDoc.tex  \
    mm.tex preprocessorDesign.tex tridvpk.tex writingYourFirstTranslator.tex appendix.tex \
-   developersAppendix.tex designOfRose.tex  FAQ.tex FAQ-Binary.dox glossary.tex introduction.tex lu.tex \
+   developersAppendix.tex designOfRose.tex  FAQ.tex glossary.tex introduction.tex lu.tex \
    preface.tex rose-processing-phases.pdf compass_rose.gif SageIII.tex QueryLibrary.tex \
    AstRewrite.tex ProgramAnalysis.tex AstProcessing.tex testing.tex astMerge.tex installRose.tex \
    roseExecutionOutput.txt roseHelpOutput.txt asm_code_samples_gcc.pdf introduction_start.tex \
@@ -444,4 +380,4 @@ CLEANFILES = roseDoxygen.tags SageIntermediateForm *.log *.aux *.dvi \
 	     leftmenu.html rosePlatformPrerequisites.txt \
         rosePlatformConfigureOptions.txt
 
-.PHONY :generated_files_for_manual generated_ompLowering_files_for_manual generated_autoPar_files_for_manual generated_upcCompile_files_for_manual generated_upcTrans_files_for_manual
+.PHONY :generated_files_for_manual generated_ompLowering_files_for_manual

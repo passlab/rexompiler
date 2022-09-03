@@ -42,7 +42,6 @@ EXTRA_DIST = CMakeLists.txt \
      cleanConfigGuessOutput \
      get_compiler_header_dirs \
      iomanip-gnu-4.5 \
-     upc.h upc_relaxed.h upc_strict.h upc_collective.h upc_io.h bupc_extensions.h \
      automake_conditional_display_makefile \
      preinclude-cuda.h \
      preinclude-opencl.h
@@ -59,7 +58,6 @@ FILES_NOT_REQUIRED_FOR_DISTRIBUTIONS = \
      EDG.m4 \
      enable-rosehpct.m4 \
      generate-backend-compiler-specific-headers.m4 \
-     qrose.m4 \
      ROSE.m4 \
      support-doxygen.m4 \
      support-i386.m4 \
@@ -81,6 +79,5 @@ FILES_NOT_REQUIRED_FOR_DISTRIBUTIONS = \
 
 # DQ (9/2/2006): I don't think these are required except in the development version of ROSE
 REMOVED_FROM_EXTRA_DIST = \
-     enable-rosehpct.m4 \
      acx_libxml2.m4
 

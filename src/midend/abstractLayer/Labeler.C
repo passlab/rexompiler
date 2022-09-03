@@ -257,10 +257,10 @@ int CLabeler::numberOfAssociatedLabels(SgNode* node) {
   // omp parallel results in fork/join nodes.
   // for and sections (and currently also SIMD) results in workshare/barrier nodes
   case V_SgOmpForSimdStatement:
-  case V_SgOmpSimdStatement:
-  case V_SgOmpForStatement:
+  case V_SgUpirSimdStatement:
+  case V_SgUpirWorksharingStatement:
   case V_SgOmpSectionsStatement:
-  case V_SgOmpParallelStatement:
+  case V_SgUpirSpmdStatement:
     return 2;
   // OpenMP barrier results in an actual barrier node
   case V_SgOmpBarrierStatement:
@@ -269,11 +269,53 @@ int CLabeler::numberOfAssociatedLabels(SgNode* node) {
   case V_SgOmpDoStatement:
   case V_SgOmpFlushStatement:
   case V_SgOmpMasterStatement:
+  case V_SgOmpTaskyieldStatement:
+  case V_SgOmpMetadirectiveStatement:
+  case V_SgOmpTeamsStatement:
+  case V_SgOmpCancellationPointStatement:
+  case V_SgOmpDeclareMapperStatement:
+  case V_SgOmpCancelStatement:
+  case V_SgOmpTaskgroupStatement:
+  case V_SgOmpDistributeStatement:
+  case V_SgOmpLoopStatement:
+  case V_SgOmpScanStatement:
+  case V_SgOmpTaskloopStatement:
+  case V_SgOmpTargetEnterDataStatement:
+  case V_SgOmpTargetExitDataStatement:
   case V_SgOmpOrderedStatement:
+  case V_SgOmpOrderedDependStatement:
   case V_SgOmpSectionStatement:
   case V_SgOmpSingleStatement:
   case V_SgOmpTargetDataStatement:
-  case V_SgOmpTargetStatement:
+  case V_SgUpirTaskStatement:
+  case V_SgOmpTargetParallelForStatement:
+  case V_SgOmpTargetParallelStatement:
+  case V_SgOmpDistributeSimdStatement:
+  case V_SgOmpDistributeParallelForStatement:
+  case V_SgOmpDistributeParallelForSimdStatement:
+  case V_SgOmpTaskloopSimdStatement:
+  case V_SgOmpTargetUpdateStatement:
+  case V_SgOmpRequiresStatement:
+  case V_SgOmpTargetParallelForSimdStatement:
+  case V_SgOmpTargetParallelLoopStatement:
+  case V_SgOmpTargetSimdStatement:
+  case V_SgOmpTargetTeamsStatement:
+  case V_SgOmpTargetTeamsDistributeStatement:
+  case V_SgOmpTargetTeamsDistributeSimdStatement:
+  case V_SgOmpTargetTeamsLoopStatement:
+  case V_SgOmpTargetTeamsDistributeParallelForStatement:
+  case V_SgOmpTargetTeamsDistributeParallelForSimdStatement:
+  case V_SgOmpMasterTaskloopSimdStatement:
+  case V_SgOmpParallelMasterTaskloopStatement:
+  case V_SgOmpParallelMasterTaskloopSimdStatement:
+  case V_SgOmpTeamsDistributeStatement:
+  case V_SgOmpTeamsDistributeSimdStatement:
+  case V_SgOmpTeamsDistributeParallelForStatement:
+  case V_SgOmpTeamsDistributeParallelForSimdStatement:
+  case V_SgOmpTeamsLoopStatement:
+  case V_SgOmpParallelMasterStatement:
+  case V_SgOmpMasterTaskloopStatement:
+  case V_SgOmpParallelLoopStatement:
   case V_SgOmpTaskStatement:
   case V_SgOmpTaskwaitStatement:
   case V_SgOmpThreadprivateStatement:
@@ -325,12 +367,12 @@ void CLabeler::createLabels(SgNode* root) {
         assert(num==1);
         registerLabel(LabelProperty(*i,LabelProperty::LABEL_BLOCKBEGIN));
         // registerLabel(LabelProperty(*i,LabelProperty::LABEL_BLOCKEND));
-      } else if(isSgOmpParallelStatement(*i)){
+      } else if(isSgUpirSpmdStatement(*i)){
         assert(num == 2);
         registerLabel(LabelProperty(*i, LabelProperty::LABEL_FORK));
         registerLabel(LabelProperty(*i, LabelProperty::LABEL_JOIN));
-      } else if(isSgOmpForStatement(*i) || isSgOmpSectionsStatement(*i)
-                || isSgOmpSimdStatement(*i) || isSgOmpForSimdStatement(*i)) {
+      } else if(isSgUpirWorksharingStatement(*i) || isSgOmpSectionsStatement(*i)
+                || isSgUpirSimdStatement(*i) || isSgOmpForSimdStatement(*i)) {
         assert(num == 2);
         registerLabel(LabelProperty(*i, LabelProperty::LABEL_WORKSHARE));
         registerLabel(LabelProperty(*i, LabelProperty::LABEL_BARRIER));
@@ -507,20 +549,20 @@ Label CLabeler::functionExitLabel(SgNode* node) {
 }
 
 Label CLabeler::forkLabel(SgNode *node) {
-  ROSE_ASSERT(isSgOmpParallelStatement(node));
+  ROSE_ASSERT(isSgUpirSpmdStatement(node));
   Label lab = getLabel(node);
   return lab;
 }
 
-Label CLabeler::joinLabel(SgNode *node) {
+Label Labeler::joinLabel(SgNode *node) {
   ROSE_ASSERT(isSgOmpParallelStatement(node));
   Label lab = getLabel(node);
   return lab+1;
 }
 
 Label CLabeler::workshareLabel(SgNode *node) {
-  ROSE_ASSERT(isSgOmpForStatement(node) || isSgOmpSectionsStatement(node)
-                || isSgOmpSimdStatement(node) || isSgOmpForSimdStatement(node));
+  ROSE_ASSERT(isSgUpirWorksharingStatement(node) || isSgOmpSectionsStatement(node)
+                || isSgUpirSimdStatement(node) || isSgOmpForSimdStatement(node));
   Label lab = getLabel(node);
   return lab;
 }
@@ -530,8 +572,8 @@ Label CLabeler::barrierLabel(SgNode *node) {
     Label lab = getLabel(node);
     return lab;
   }
-  ROSE_ASSERT(isSgOmpForStatement(node) || isSgOmpSectionsStatement(node)
-                || isSgOmpSimdStatement(node) || isSgOmpForSimdStatement(node));
+  ROSE_ASSERT(isSgUpirWorksharingStatement(node) || isSgOmpSectionsStatement(node)
+                || isSgUpirSimdStatement(node) || isSgOmpForSimdStatement(node));
   Label lab = getLabel(node);
   return lab+1;
 }

@@ -127,17 +127,6 @@ void AstPostProcessing (SgNode* node)
                break;
              }
 
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-       // Test for a binary executable, object file, etc.
-          case V_SgBinaryComposite:
-             {
-               ROSE_ASSERT(isSgBinaryComposite(node));
-
-               printf ("Error: AstPostProcessing of SgBinaryFile is not defined \n");
-               ROSE_ABORT();
-             }
-#endif
-
           default:
              {
             // list general post-processing fixup here ...
@@ -203,12 +192,8 @@ void postProcessingSupport (SgNode* node)
   // Only do AST post-processing for C/C++
   // Rasmussen (4/8/2018): Added Ada, Cobol, and Jovial. The logic should probably
   // be inverted to only process C and C++ but I don't understand interactions like OpenMP langauges.
-     bool noPostprocessing = (SageInterface::is_Ada_language()     == true) ||
-                             (SageInterface::is_Cobol_language()   == true) ||
-                             (SageInterface::is_Fortran_language() == true) ||
-                             (SageInterface::is_Jovial_language()  == true) ||
-                             (SageInterface::is_PHP_language()     == true) ||
-                             (SageInterface::is_Python_language()  == true);
+     bool noPostprocessing =
+                             (SageInterface::is_Fortran_language() == true);
 
   // If this is C or C++ then we are using the new EDG translation and using fewer 
   // fixups should be required, some are still required.
@@ -537,7 +522,7 @@ void postProcessingSupport (SgNode* node)
           printf ("In postProcessingSupport: project = %p \n",project);
           printf (" --- project->get_suppressConstantFoldingPostProcessing() = %s \n",project->get_suppressConstantFoldingPostProcessing() ? "true" : "false");
 #endif
-          if (project != NULL && project->get_suppressConstantFoldingPostProcessing() == false) 
+          if (project != NULL && project->get_suppressConstantFoldingPostProcessing() == false)
              {
                resetConstantFoldedValues(node);
              } else if (project != NULL && SgProject::get_verbose() >= 1) {
@@ -680,7 +665,7 @@ void postProcessingSupport (SgNode* node)
           checkPhysicalSourcePosition(node);
 
 #if 0
-       // DQ (6/19/2020): The new design does not require this in the AST currently 
+       // DQ (6/19/2020): The new design does not require this in the AST currently
        // (and can cause the output of replicated include directives).
        // DQ (5/7/2020): Adding support to insert include directives.
           if (SgProject::get_verbose() > 1)
@@ -794,13 +779,13 @@ void postProcessingSupport (SgNode* node)
        // fixup handles this case and traverses just the SgEnumVal objects.
           fixupEnumValues();
 
-       // DQ (4/7/2010): This was commented out to modify Fortran code, but I think it should NOT modify Fortran code.
-       // DQ (5/21/2008): This only make since for C and C++ (Error, this DOES apply to Fortran where the "parameter" attribute is used!)
-          if (SageInterface::is_Fortran_language() == false && SageInterface::is_Java_language() == false)
-             {
-            // DQ (3/20/2005): Fixup AST so that GNU g++ compile-able code will be generated
-               fixupInClassDataInitialization(node);
-             }
+  // DQ (4/7/2010): This was commented out to modify Fortran code, but I think it should NOT modify Fortran code.
+  // DQ (5/21/2008): This only make since for C and C++ (Error, this DOES apply to Fortran where the "parameter" attribute is used!)
+     if (SageInterface::is_Fortran_language() == false)
+        {
+       // DQ (3/20/2005): Fixup AST so that GNU g++ compile-able code will be generated
+          fixupInClassDataInitialization(node);
+        }
 
        // DQ (3/24/2005): Fixup AST to generate code that works around GNU g++ bugs
           fixupforGnuBackendCompiler(node);
@@ -835,15 +820,11 @@ void postProcessingSupport (SgNode* node)
        // DQ (3/17/2007): This should be empty
           ROSE_ASSERT(SgNode::get_globalMangledNameMap().size() == 0);
 
-       // DQ (3/16/2006): fixup any newly added declarations (see if we can eliminate the first place where this is called, above)
-       // fixup all definingDeclaration and NondefiningDeclaration pointers in SgDeclarationStatement IR nodes
-       // driscoll6 (6/10/11): this traversal sets p_firstNondefiningDeclaration for defining declarations, which
-       // causes justifiable failures in AstConsistencyTests. Until this is resolved, skip this test for Python.
-          if (SageInterface::is_Python_language()) {
-              //cerr << "warning: python. Skipping fixupDeclarations() in astPostProcessing.C" << endl;
-          } else {
-              fixupDeclarations(node);
-          }
+  // DQ (3/16/2006): fixup any newly added declarations (see if we can eliminate the first place where this is called, above)
+  // fixup all definingDeclaration and NondefiningDeclaration pointers in SgDeclarationStatement IR nodes
+  // driscoll6 (6/10/11): this traversal sets p_firstNondefiningDeclaration for defining declarations, which
+  // causes justifiable failures in AstConsistencyTests. Until this is resolved, skip this test for Python.
+     fixupDeclarations(node);
 
        // DQ (3/17/2007): This should be empty
           ROSE_ASSERT(SgNode::get_globalMangledNameMap().size() == 0);
@@ -922,9 +903,7 @@ void postProcessingSupport (SgNode* node)
        // was found. This is only seen when compiling ROSE using ROSE and was a mysterious property of ROSE for a long 
        // time until it was identified.  This fixup traversal changes the name back to "__PRETTY_FUNCTION__" to make
        // the code generated using ROSE when compiling ROSE source code the same as if GNU processed it (e.g. using CPP).
-          if (SageInterface::is_Java_language() == false) {
-              fixupPrettyFunctionVariables(node);
-          }
+       fixupPrettyFunctionVariables(node);
 #endif
 
        // DQ (11/24/2007): Support for Fortran resolution of array vs. function references.
@@ -974,7 +953,7 @@ void postProcessingSupport (SgNode* node)
                ROSE_ASSERT(globalScope != NULL);
                globalScope->buildStatementNumbering();
              }
-            else 
+            else
              {
                if (SgProject* project = isSgProject(node))
                   {
@@ -994,13 +973,13 @@ void postProcessingSupport (SgNode* node)
        // DQ (4/4/2010): check that the global scope has statements.
        // This was an error for Fortran and it appeared that everything
        // was working when it was not.  It appeared because of a strange
-       // error between versions of the OFP support files.  So as a 
+       // error between versions of the OFP support files.  So as a
        // way to avoid this in the future, we issue a warning for Fortran
        // code that has no statements in the global scope.  It can still
        // be a valid Fortran code (containing only comments).  but this
-       // should help avoid our test codes appearing to work when they 
+       // should help avoid our test codes appearing to work when they
        // don't (in the future). For C/C++ files there should always be
-       // something in the global scope (because or ROSE defined functions), 
+       // something in the global scope (because or ROSE defined functions),
        // so this test should not be a problem.
           if (sourceFile != NULL)
              {
@@ -1012,7 +991,7 @@ void postProcessingSupport (SgNode* node)
                     mprintf ("WARNING: no statements in global scope for file = %s \n",sourceFile->getFileName().c_str());
                   }
              }
-            else 
+            else
              {
                if (SgProject* project = isSgProject(node))
                   {

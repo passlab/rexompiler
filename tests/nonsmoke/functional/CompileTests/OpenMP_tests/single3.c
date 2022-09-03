@@ -1,17 +1,27 @@
 /*
- * a pragma immediately following another 
 */
-#ifdef _OPENMP
+#include <stdio.h>
 #include <omp.h>
-#endif 
+#include<assert.h>
 
-void foo(void)
+int a;
+int b;
+int main(void)
 {
-  int num_threads =0;
 
 #pragma omp parallel
   {
+
 #pragma omp single
-    num_threads = omp_get_num_threads();
+    {
+      int num_threads = 2;
+    }
+#pragma omp single nowait copyprivate(a,b)
+    {
+      int num_threads = 3;
+    }
+
   }
+  return 0;
 }
+

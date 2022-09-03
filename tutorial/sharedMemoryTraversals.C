@@ -1,4 +1,5 @@
 #include <rose.h>
+#include <AstSharedMemoryParallelSimpleProcessing.h>
 
 #ifdef _REENTRANT                                       // Does user want ROSE to be thread-aware?
 

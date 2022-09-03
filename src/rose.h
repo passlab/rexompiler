@@ -13,16 +13,6 @@
 
 #include "rosedefs.h"
 
-#if 0
-// Forward references to namespaces used in the binary execuable file format support.
-namespace Exec{
-namespace ELF{
-   int xxx;
-}
-   int xxx;
-}
-#endif
-
 // DQ (4/21/2009): This header file contains the definitions of the IR nodes.
 // tps : avoid detection" header files are scanned whether they include sage3basic.h for .h and .hh
 
@@ -120,24 +110,6 @@ namespace ELF{
 // DQ (3/8/2009): Why is this here?
 // added .h file for error check transformations
 //#include "RuntimeInstrumentation.h"
-
-// Laksono (12/06/2010): we include PHPFrontend.h if and only if a PHP support is required
-#ifdef USE_ROSE_PHP_SUPPORT
-#ifndef _MSC_VER
-// tps (11/23/2009) : Commented out right now to make progress in Windows
-#include "PHPFrontend.h"
-#endif
-#endif
-
-// Include PythonFrontend.h if and only if a Python support is required
-#ifdef USE_ROSE_PYTHON_SUPPORT
-#include "PythonFrontend.h"
-#endif
-
-// Support for Xen/Ether hypervisor
-#ifndef _MSC_VER
-#include "ether.h"
-#endif
 
 // King84 (2010.08.03) : Now that everything is defined we can include all the implementation files for templates.
 #define TEMPLATE_IMPLEMENTATIONS

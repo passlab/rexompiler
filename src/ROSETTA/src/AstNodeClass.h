@@ -398,10 +398,6 @@ class AstNodeClass
   // DQ (5/18/2007): support for documentation to handle mapping to KDM
   std::string outputClassesAndFields();
   
-  // DQ (10/4/2014): Support for ATerms.
-  // Rasmussen (04/17/2019): Support for ATerms has been deprecated.
-  // std::string buildAtermSupport();
-  
   // MS (5/27/2015)
   std::string outputFields();
 

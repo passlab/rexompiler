@@ -1,0 +1,1 @@
+#pragma omp master taskloop simd  if(1)

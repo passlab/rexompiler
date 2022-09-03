@@ -154,10 +154,7 @@ FixupAstDeclarationScope::visit ( SgNode* node )
        // Note that these declarations don't follow the same rules (namely the get_firstNondefiningDeclaration() can be NULL).
           if ( isSgFunctionParameterList(node)    ||
                isSgVariableDefinition(node)       ||
-               isSgNonrealDecl(node)              ||
-               isSgJovialCompoolStatement(node)   ||
-               isSgJovialDirectiveStatement(node) ||
-               isSgJovialDefineDeclaration(node)
+               isSgNonrealDecl(node)
              ) {
 #if 0
                printf ("In FixupAstDeclarationScope::visit(): node = %p = %s firstNondefiningDeclaration = %p (skipping this processing) \n",node,node->class_name().c_str(),firstNondefiningDeclaration);

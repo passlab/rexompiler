@@ -31,9 +31,6 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (LambdaCapture    , "LambdaCapture"    , "LambdaCaptureTag" );
      NEW_TERMINAL_MACRO (LambdaCaptureList, "LambdaCaptureList", "LambdaCaptureListTag" );
 
-  // DQ(1/13/2014): Added Java support for JavaMemberValuePair
-     NEW_TERMINAL_MACRO (JavaMemberValuePair, "JavaMemberValuePair", "JavaMemberValuePairTag" );
-
 #if USE_OMP_IR_NODES  // Liao, 5/30/2009 add nodes for OpenMP Clauses,
  // they have source position info and should be traversed
      // add all terminals first, then bottom-up traverse class hierarchy to define non-terminals
@@ -55,7 +52,7 @@ Grammar::setUpNodes ()
            * SgOmpExpressionClause
            ** SgOmpCollapseClause
            ** SgOmpIfClause
-           ** SgOmpNumThreadsClause
+           ** SgUpirNumUnitsField
              // with variable list
            * SgOmpVariablesClause
            ** SgOmpCopyprivateClause
@@ -69,6 +66,30 @@ Grammar::setUpNodes ()
         */
      NEW_TERMINAL_MACRO (OmpOrderedClause, "OmpOrderedClause", "OmpOrderedClauseTag" );
      NEW_TERMINAL_MACRO (OmpNowaitClause, "OmpNowaitClause", "OmpNowaitClauseTag" );
+     NEW_TERMINAL_MACRO (OmpNogroupClause, "OmpNogroupClause", "OmpNogroupClauseTag" );
+     NEW_TERMINAL_MACRO (OmpReadClause, "OmpReadClause", "OmpReadClauseTag" );
+     NEW_TERMINAL_MACRO (OmpThreadsClause, "OmpThreadsClause", "OmpThreadsClauseTag" );
+     NEW_TERMINAL_MACRO (OmpSimdClause, "OmpSimdClause", "OmpSimdClauseTag" );
+     NEW_TERMINAL_MACRO (OmpReverseOffloadClause, "OmpReverseOffloadClause", "OmpReverseOffloadClauseTag" );
+     NEW_TERMINAL_MACRO (OmpExtImplementationDefinedRequirementClause, "OmpExtImplementationDefinedRequirementClause", "OmpExtImplementationDefinedRequirementClauseTag" );
+     NEW_TERMINAL_MACRO (OmpUnifiedAddressClause, "OmpUnifiedAddressClause", "OmpUnifiedAddressClauseTag" );
+     NEW_TERMINAL_MACRO (OmpUnifiedSharedMemoryClause, "OmpUnifiedSharedMemoryClause", "OmpUnifiedSharedMemoryClauseTag" );
+     NEW_TERMINAL_MACRO (OmpDynamicAllocatorsClause, "OmpDynamicAllocatorsClause", "OmpDynamicAllocatorsClauseTag" );
+     NEW_TERMINAL_MACRO (OmpAtomicDefaultMemOrderClause, "OmpAtomicDefaultMemOrderClause", "OmpAtomicDefaultMemOrderClauseTag" );
+     NEW_TERMINAL_MACRO (OmpWriteClause, "OmpWriteClause", "OmpWriteClauseTag" );
+     NEW_TERMINAL_MACRO (OmpUpdateClause, "OmpUpdateClause", "OmpUpdateClauseTag" );
+     NEW_TERMINAL_MACRO (OmpDepobjUpdateClause, "OmpDepobjUpdateClause", "OmpDepobjUpdateClauseTag" );
+     NEW_TERMINAL_MACRO (OmpDestroyClause, "OmpDestroyClause", "OmpDestroyClauseTag" );
+     NEW_TERMINAL_MACRO (OmpCaptureClause, "OmpCaptureClause", "OmpCaptureClauseTag" );
+     NEW_TERMINAL_MACRO (OmpSeqCstClause, "OmpSeqCstClause", "OmpSeqCstClauseTag" );
+     NEW_TERMINAL_MACRO (OmpAcqRelClause, "OmpAcqRelClause", "OmpAcqRelClauseTag" );
+     NEW_TERMINAL_MACRO (OmpReleaseClause, "OmpReleaseClause", "OmpReleaseClauseTag" );
+     NEW_TERMINAL_MACRO (OmpAcquireClause, "OmpAcquireClause", "OmpAcquireClauseTag" );
+     NEW_TERMINAL_MACRO (OmpRelaxedClause, "OmpRelaxedClause", "OmpRelaxedClauseTag" );
+     NEW_TERMINAL_MACRO (OmpParallelClause, "OmpParallelClause", "OmpParallelClauseTag" );
+     NEW_TERMINAL_MACRO (OmpSectionsClause, "OmpSectionsClause", "OmpSectionsClauseTag" );
+     NEW_TERMINAL_MACRO (OmpForClause, "OmpForClause", "OmpForClauseTag" );
+     NEW_TERMINAL_MACRO (OmpTaskgroupClause, "OmpTaskgroupClause", "OmpTaskgroupClauseTag" );
      NEW_TERMINAL_MACRO (OmpBeginClause, "OmpBeginClause", "OmpBeginClauseTag" );
      NEW_TERMINAL_MACRO (OmpEndClause, "OmpEndClause", "OmpEndClauseTag" );
      NEW_TERMINAL_MACRO (OmpUntiedClause, "OmpUntiedClause", "OmpUntiedClauseTag" );
@@ -76,6 +97,8 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpDefaultClause, "OmpDefaultClause", "OmpDefaultClauseTag" );
      NEW_TERMINAL_MACRO (OmpAtomicClause, "OmpAtomicClause", "OmpAtomicClauseTag" );
      NEW_TERMINAL_MACRO (OmpProcBindClause, "OmpProcBindClause", "OmpProcBindClauseTag" );
+     NEW_TERMINAL_MACRO (OmpOrderClause, "OmpOrderClause", "OmpOrderClauseTag" );
+     NEW_TERMINAL_MACRO (OmpBindClause, "OmpBindClause", "OmpBindClauseTag" );
      NEW_TERMINAL_MACRO (OmpInbranchClause, "OmpInbranchClause", "OmpInbranchClauseTag" );
      NEW_TERMINAL_MACRO (OmpNotinbranchClause, "OmpNotinbranchClause", "OmpNotinbranchClauseTag" );
 
@@ -83,12 +106,33 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpIfClause, "OmpIfClause", "OmpIfClauseTag" );
      NEW_TERMINAL_MACRO (OmpFinalClause, "OmpFinalClause", "OmpFinalClauseTag" );
      NEW_TERMINAL_MACRO (OmpPriorityClause, "OmpPriorityClause", "OmpPriorityClauseTag" );
-     NEW_TERMINAL_MACRO (OmpNumThreadsClause, "OmpNumThreadsClause", "OmpNumThreadsClauseTag" );
+     NEW_TERMINAL_MACRO (UpirNumUnitsField, "UpirNumUnitsField", "UpirNumUnitsFieldTag" );
+     NEW_TERMINAL_MACRO (OmpNumTeamsClause, "OmpNumTeamsClause", "OmpNumTeamsClauseTag" );
+     NEW_TERMINAL_MACRO (OmpGrainsizeClause, "OmpGrainsizeClause", "OmpGrainsizeClauseTag" );
+     NEW_TERMINAL_MACRO (OmpDetachClause, "OmpDetachClause", "OmpDetachClauseTag" );
+     NEW_TERMINAL_MACRO (OmpNumTasksClause, "OmpNumTasksClause", "OmpNumTasksClauseTag" );
+     NEW_TERMINAL_MACRO (OmpHintClause, "OmpHintClause", "OmpHintClauseTag" );
+     NEW_TERMINAL_MACRO (OmpThreadLimitClause, "OmpThreadLimitClause", "OmpThreadLimitClauseTag" );
+     NEW_TERMINAL_MACRO (OmpNontemporalClause, "OmpNontemporalClause", "OmpNontemporalClauseTag" );
+     NEW_TERMINAL_MACRO (OmpInclusiveClause, "OmpInclusiveClause", "OmpInclusiveClauseTag" );
+     NEW_TERMINAL_MACRO (OmpExclusiveClause, "OmpExclusiveClause", "OmpExclusiveClauseTag" );
+     NEW_TERMINAL_MACRO (OmpIsDevicePtrClause, "OmpIsDevicePtrClause", "OmpIsDevicePtrClauseTag" );
+     NEW_TERMINAL_MACRO (OmpUseDevicePtrClause, "OmpUseDevicePtrClause", "OmpUseDevicePtrClauseTag" );
+     NEW_TERMINAL_MACRO (OmpUseDeviceAddrClause, "OmpUseDeviceAddrClause", "OmpUseDeviceAddrClauseTag" );
      NEW_TERMINAL_MACRO (OmpDeviceClause, "OmpDeviceClause", "OmpIfDeviceTag" );
      NEW_TERMINAL_MACRO (OmpSafelenClause, "OmpSafelenClause", "OmpSafelenTag" );
      NEW_TERMINAL_MACRO (OmpSimdlenClause, "OmpSimdlenClause", "OmpSimdlenTag" );
 
-     NEW_NONTERMINAL_MACRO (OmpExpressionClause, OmpOrderedClause | OmpCollapseClause | OmpIfClause | OmpNumThreadsClause | OmpDeviceClause |
+     NEW_TERMINAL_MACRO (UpirBranchField, "UpirBranchField", "UpirBranchFieldTag" );
+     NEW_TERMINAL_MACRO (UpirNestedLevelField, "UpirNestedLevelField", "UpirNestedLevelFieldTag" );
+     NEW_TERMINAL_MACRO (UpirNestedParentField, "UpirNestedParentField", "UpirNestedParentFieldTag" );
+     NEW_TERMINAL_MACRO (UpirNestedChildField, "UpirNestedChildField", "UpirNestedChildFieldTag" );
+     NEW_TERMINAL_MACRO (UpirSyncField, "UpirSyncField", "UpirSyncFieldTag" );
+     NEW_TERMINAL_MACRO (UpirDataField, "UpirDataField", "UpirDataFieldTag" );
+     NEW_TERMINAL_MACRO (UpirTargetField, "UpirTargetField", "UpirTargetFieldTag" );
+     NEW_TERMINAL_MACRO (UpirDataItemField, "UpirDataItemField", "UpirDataItemFieldTag" );
+
+     NEW_NONTERMINAL_MACRO (OmpExpressionClause, OmpOrderedClause | OmpCollapseClause | OmpIfClause | UpirNumUnitsField | OmpNumTeamsClause | OmpThreadLimitClause | OmpDeviceClause | OmpHintClause | OmpGrainsizeClause | OmpNumTasksClause | OmpDetachClause |
                             OmpSafelenClause | OmpSimdlenClause | OmpFinalClause | OmpPriorityClause
          ,"OmpExpressionClause", "OmpExpressionClauseTag",false );
 
@@ -100,23 +144,35 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpCopyinClause, "OmpCopyinClause", "OmpCopyinClauseTag" );
      NEW_TERMINAL_MACRO (OmpLastprivateClause, "OmpLastprivateClause", "OmpLastprivateClauseTag" );
      NEW_TERMINAL_MACRO (OmpReductionClause, "OmpReductionClause", "OmpReductionClauseTag" );
+     NEW_TERMINAL_MACRO (OmpInReductionClause, "OmpInReductionClause", "OmpInReductionClauseTag" );
+     NEW_TERMINAL_MACRO (OmpTaskReductionClause, "OmpTaskReductionClause", "OmpTaskReductionClauseTag" );
+     NEW_TERMINAL_MACRO (OmpAllocateClause, "OmpAllocateClause", "OmpAllocateClauseTag" );
      NEW_TERMINAL_MACRO (OmpDependClause,    "OmpDependClause", "OmpDependClauseTag" );
-
+     NEW_TERMINAL_MACRO (OmpToClause,    "OmpToClause", "OmpToClauseTag" );
+     NEW_TERMINAL_MACRO (OmpUsesAllocatorsClause,    "OmpUsesAllocatorsClause", "OmpUsesAllocatorsClauseTag" );
+     NEW_TERMINAL_MACRO (OmpFromClause,    "OmpFromClause", "OmpFromClauseTag" );
+     NEW_TERMINAL_MACRO (OmpAffinityClause,    "OmpAffinityClause", "OmpAffinityClauseTag" );
      NEW_TERMINAL_MACRO (OmpMapClause, "OmpMapClause", "OmpMapClauseTag" );
      NEW_TERMINAL_MACRO (OmpLinearClause, "OmpLinearClause", "OmpLinearClauseTag" );
      NEW_TERMINAL_MACRO (OmpUniformClause, "OmpUniformClause", "OmpUniformClauseTag" );
      NEW_TERMINAL_MACRO (OmpAlignedClause, "OmpAlignedClause", "OmpAlignedClauseTag" );
 
-     NEW_NONTERMINAL_MACRO (OmpVariablesClause, OmpCopyprivateClause| OmpPrivateClause |OmpFirstprivateClause|
-         OmpSharedClause |OmpCopyinClause| OmpLastprivateClause| OmpReductionClause | OmpMapClause |
-         OmpUniformClause | OmpAlignedClause | OmpLinearClause | OmpDependClause ,
+     NEW_NONTERMINAL_MACRO (OmpVariablesClause, OmpCopyprivateClause| OmpPrivateClause | OmpFirstprivateClause | OmpNontemporalClause | OmpInclusiveClause | OmpExclusiveClause | OmpIsDevicePtrClause | OmpUseDevicePtrClause | OmpUseDeviceAddrClause |
+         OmpSharedClause |OmpCopyinClause| OmpLastprivateClause| OmpReductionClause | OmpInReductionClause | OmpTaskReductionClause | OmpMapClause | OmpAllocateClause |
+         OmpUniformClause | OmpAlignedClause | OmpLinearClause | OmpDependClause | OmpAffinityClause | OmpToClause | OmpFromClause,
          "OmpVariablesClause", "OmpVariablesClauseTag", false);
 
      NEW_TERMINAL_MACRO (OmpScheduleClause, "OmpScheduleClause", "OmpScheduleClauseTag" );
-
-     NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpBeginClause |OmpEndClause | OmpUntiedClause |
-         OmpDefaultClause | OmpAtomicClause | OmpProcBindClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause |
-         OmpVariablesClause | OmpScheduleClause | OmpMergeableClause ,
+     NEW_TERMINAL_MACRO (OmpWhenClause, "OmpWhenClause", "OmpWhenClauseTag" );
+     NEW_TERMINAL_MACRO (OmpDistScheduleClause, "OmpDistScheduleClause", "OmpDistScheduleClauseTag" );
+     NEW_TERMINAL_MACRO (OmpDefaultmapClause, "OmpDefaultmapClause", "OmpDefaultmapClauseTag" );
+     NEW_TERMINAL_MACRO (OmpAllocatorClause, "OmpAllocatorClause", "OmpAllocatorClauseTag" );
+     NEW_TERMINAL_MACRO (OmpUsesAllocatorsDefination, "OmpUsesAllocatorsDefination", "OmpUsesAllocatorsDefinationTag" );
+     NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpReadClause | OmpThreadsClause | OmpSimdClause | OmpWriteClause | OmpUpdateClause | OmpDepobjUpdateClause | OmpDestroyClause | OmpCaptureClause | OmpBeginClause |OmpEndClause | OmpUntiedClause | OmpSeqCstClause | OmpAcqRelClause | OmpReleaseClause | OmpAcquireClause | OmpRelaxedClause | OmpReverseOffloadClause | OmpUnifiedAddressClause | OmpUnifiedSharedMemoryClause | OmpDynamicAllocatorsClause |
+         OmpParallelClause | OmpSectionsClause | OmpForClause | OmpTaskgroupClause | OmpNogroupClause |
+         OmpDefaultClause | OmpAllocatorClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpDistScheduleClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpDefaultmapClause | OmpAtomicDefaultMemOrderClause | OmpExtImplementationDefinedRequirementClause | OmpUsesAllocatorsDefination |
+         OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause | OmpUsesAllocatorsClause |
+         UpirBranchField | UpirNestedLevelField | UpirNestedParentField | UpirNestedChildField | UpirSyncField | UpirDataField | UpirTargetField | UpirDataItemField,
          "OmpClause", "OmpClauseTag", false);
 #endif
 
@@ -130,18 +186,8 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (HeaderFileBody,  "HeaderFileBody",  "TEMP_Header_File_Body" );
 
 
-  // PP (3/5/21) make ada type constraint extend SgLocatedNodeSupport instead SgSupport
-     NEW_TERMINAL_MACRO (AdaRangeConstraint, "AdaRangeConstraint", "AdaRangeConstraintTag");
-     NEW_TERMINAL_MACRO (AdaIndexConstraint, "AdaIndexConstraint", "AdaIndexConstraintTag");
-     NEW_TERMINAL_MACRO (AdaDigitsConstraint, "AdaDigitsConstraint", "AdaDigitsConstraintTag");
-     NEW_TERMINAL_MACRO (AdaDeltaConstraint,  "AdaDeltaConstraint", "AdaDeltaConstraintTag");
-     NEW_TERMINAL_MACRO (AdaDiscriminantConstraint, "AdaDiscriminantConstraint", "AdaDiscriminantConstraintTag");
-     NEW_TERMINAL_MACRO (AdaNullConstraint, "AdaNullConstraint", "AdaNullConstraintTag");
-
-     NEW_NONTERMINAL_MACRO (AdaTypeConstraint,
-          AdaRangeConstraint | AdaIndexConstraint | AdaDigitsConstraint | AdaDeltaConstraint |
-          AdaDiscriminantConstraint | AdaNullConstraint,
-          "AdaTypeConstraint", "AdaTypeConstraintTag", false);
+  // DQ (11/26/2013): Moved SgToken to be before the UntypedNode IR nodes.
+  // NEW_TERMINAL_MACRO (Token, "Token", "TOKEN" );
 
   // ***************************************************************************************
   // ***************************************************************************************
@@ -161,6 +207,7 @@ Grammar::setUpNodes ()
   // ***************************************************************************************
 
   // DQ(1/13/2014): Added Java support for JavaMemberValuePair
+  // DQ (11/26/2013): Added UntypedNode to be derived from LocatedNodeSupport.
   // DQ (10/6/2008): Migrate some of the SgSupport derived IR nodes, that truly have a position in the
   // source code, to SgLocatedNode.  Start with some of the newer IR nodes which are traversed and thus
   // are forced to have an interface for the source position interface information (already present in
@@ -168,8 +215,8 @@ Grammar::setUpNodes ()
   // should be moved to be here (e.g. SgTemplateArgument, SgTemplateParameter, and
   // a number of the new Fortran specific IRnodes, etc.).
      NEW_NONTERMINAL_MACRO (LocatedNodeSupport, CommonBlockObject | InitializedName | InterfaceBody |
-                            HeaderFileBody | RenamePair | JavaMemberValuePair | OmpClause |
-                            LambdaCapture  | LambdaCaptureList | AdaTypeConstraint,
+                            HeaderFileBody | RenamePair | OmpClause |
+                            LambdaCapture  | LambdaCaptureList,
                             "LocatedNodeSupport", "LocatedNodeSupportTag", false );
 
   // DQ (3/24/2007): Added support for tokens in the IR (to support threading of the token stream
@@ -186,27 +233,12 @@ Grammar::setUpNodes ()
      AstNodeClass & Symbol  = *lookupTerminal(terminalList, "Symbol");
      AstNodeClass & Support = *lookupTerminal(terminalList, "Support");
 
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-  // DQ (3/14/2007): Added IR support for binaries
-     AstNodeClass & AsmNode = *lookupTerminal(terminalList, "AsmNode");
-#endif
-
   // printf ("nonTerminalList.size() = %" PRIuPTR " \n",nonTerminalList.size());
 
-  // DQ (4/20/2014): Adding more support for ATerm library.
-  // Rasmussen (04/17/2019): Support for ATerms has been deprecated.
-  // NEW_TERMINAL_MACRO (Aterm, "Aterm", "ATERM" );
-
-  // DQ (3/14/2007): Added IR support for binaries
   // NEW_NONTERMINAL_MACRO (Node, Type | Symbol | LocatedNode | Support, "Node", "NodeTag" );
   // NEW_NONTERMINAL_MACRO (Node, Support | Type | LocatedNode | Symbol | AsmNode, "Node", "NodeTag", false );
   // NEW_NONTERMINAL_MACRO (Node, Type | Symbol | LocatedNode | Support, "Node", "NodeTag" );
-  // NEW_NONTERMINAL_MACRO (Node, Support | Type | LocatedNode | Symbol | AsmNode | Aterm, "Node", "NodeTag", false );
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-     NEW_NONTERMINAL_MACRO (Node, Support | Type | LocatedNode | Symbol | AsmNode, "Node", "NodeTag", false );
-#else
-     NEW_NONTERMINAL_MACRO (Node, Support | Type | LocatedNode | Symbol          , "Node", "NodeTag", false );
-#endif
+     NEW_NONTERMINAL_MACRO (Node, Support | Type | LocatedNode | Symbol, "Node", "NodeTag", false );
 
   // ***********************************************************************
   // ***********************************************************************
@@ -441,36 +473,6 @@ Grammar::setUpNodes ()
   // DQ (9/3/2014): Adding support for C++11 lambda expresions.
      LambdaCapture.setFunctionPrototype     ( "HEADER_LAMBDA_CAPTURE", "../Grammar/LocatedNode.code");
      LambdaCaptureList.setFunctionPrototype ( "HEADER_LAMBDA_CAPTURE_LIST", "../Grammar/LocatedNode.code");
-
-     AdaTypeConstraint.setFunctionPrototype      ( "HEADER_ADA_TYPE_CONSTRAINT"      , "../Grammar/LocatedNode.code");
-     AdaRangeConstraint.setFunctionPrototype     ( "HEADER_ADA_RANGE_CONSTRAINT"     , "../Grammar/LocatedNode.code");
-     AdaIndexConstraint.setFunctionPrototype     ( "HEADER_ADA_INDEX_CONSTRAINT"     , "../Grammar/LocatedNode.code");
-     AdaDigitsConstraint.setFunctionPrototype    ( "HEADER_ADA_DIGITS_CONSTRAINT"    , "../Grammar/LocatedNode.code");
-     AdaDeltaConstraint.setFunctionPrototype     ( "HEADER_ADA_DELTA_CONSTRAINT"     , "../Grammar/LocatedNode.code");
-     AdaDiscriminantConstraint.setFunctionPrototype ( "HEADER_ADA_DISCRIMINANT_CONSTRAINT", "../Grammar/LocatedNode.code");
-     AdaNullConstraint.setFunctionPrototype      ( "HEADER_ADA_NULL_CONSTRAINT", "../Grammar/LocatedNode.code");
-
-
-  // ***************************************************************************************
-  // ***************************************************************************************
-  //                                 ATerm IR Node Support
-  // ***************************************************************************************
-  // ***************************************************************************************
-  // DQ (4/20/2014): Added support for ATerms in the IR.  The goal is to support a new level
-  // of reading ATerms (previously demonstrated in projects/AtermTranslation directory).
-  // This level of support reads the Aterms and represents the Aterms in a ROSE AST using
-  // specific SgAterm IR nodes that as fundamentally simpler then the more commonly use
-  // ROSE IR nodes.  This work is in contrast to the Aterm API for the ROSE AST which has
-  // become problematic to support beyond a specific level.  Current level of support for
-  // the ATerm API in ROSE is limited to the demonstration using ATerm specific tools that
-  // generate DOT graph files from any Aterm and can be make to work on the ROSE AST as
-  // well though the use of the ATerm API in ROSE (all this is demonstrated in the examples
-  // in the projects/AtermTranslation directory).
-
-  // Rasmussen (04/17/2019): Support for ATerms has been deprecated.
-  // Aterm.setFunctionPrototype ( "HEADER_ATERM_NODE", "../Grammar/LocatedNode.code");
-  // Aterm.setDataPrototype     ( "std::string", "name", "= \"\"",
-  //              CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // ***************************************************************************************
   // ***************************************************************************************
@@ -833,13 +835,6 @@ Grammar::setUpNodes ()
      InitializedName.setDataPrototype     ( "bool", "is_pack_element", "= false",
                NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-  // DQ(1/13/2014): Added Java support for JavaMemberValuePair
-     JavaMemberValuePair.setFunctionPrototype     ( "HEADER_JAVA_MEMBER_VALUE_PAIR", "../Grammar/LocatedNode.code");
-     JavaMemberValuePair.setDataPrototype("SgName","name", "= NULL",
-          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JavaMemberValuePair.setDataPrototype("SgExpression*","value", "= NULL",
-          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
   // DQ (9/3/2014): Adding support for C++11 lambda expresions.
 #if 0
      LambdaCapture.setDataPrototype ( "SgInitializedName*", "capture_variable", "= NULL",
@@ -866,37 +861,6 @@ Grammar::setUpNodes ()
 
      LambdaCaptureList.setDataPrototype ( "SgLambdaCapturePtrList", "capture_list", "",
                  NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-
-  // PP: Ada Constraints
-     AdaRangeConstraint.setDataPrototype("SgExpression*", "range", "= nullptr",
-                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-/*
-     AdaIndexConstraint.editSubstitute( "HEADER_LIST_DECLARATIONS", "HEADER_LIST_DECLARATIONS", "../Grammar/Statement.code" );
-     AdaIndexConstraint.editSubstitute( "LIST_DATA_TYPE", "SgExpressionPtrList" );
-     AdaIndexConstraint.editSubstitute( "LIST_NAME", "ranges" );
-     AdaIndexConstraint.editSubstitute( "LIST_FUNCTION_RETURN_TYPE", "void" );
-     AdaIndexConstraint.editSubstitute( "LIST_FUNCTION_NAME", "range" );
-     AdaIndexConstraint.editSubstitute( "LIST_ELEMENT_DATA_TYPE", "SgRangeExp*" );
-*/
-     AdaIndexConstraint.setDataPrototype("SgExpressionPtrList", "indexRanges", "",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-     AdaDigitsConstraint.setDataPrototype("SgExpression*", "digits", "= nullptr",
-                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaDigitsConstraint.setDataPrototype("SgAdaTypeConstraint*", "subConstraint", "= nullptr",
-                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-     AdaDeltaConstraint.setDataPrototype("SgExpression*", "delta", "= nullptr",
-                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaDeltaConstraint.setDataPrototype("SgAdaTypeConstraint*", "subConstraint", "= nullptr",
-                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaDeltaConstraint.setDataPrototype("bool", "isDecimal", "= false",
-                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaDiscriminantConstraint.setDataPrototype("SgExpressionPtrList", "discriminants", "",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
 
 
   // ***********************************************************************
@@ -938,25 +902,6 @@ Grammar::setUpNodes ()
      LambdaCapture.setFunctionSource ( "SOURCE_LAMBDA_CAPTURE", "../Grammar/LocatedNode.code");
      LambdaCaptureList.setFunctionSource ( "SOURCE_LAMBDA_CAPTURE_LIST", "../Grammar/LocatedNode.code");
 
-     AdaTypeConstraint.setFunctionSource       ( "SOURCE_ADA_TYPE_CONSTRAINT"      , "../Grammar/LocatedNode.code");
-     AdaRangeConstraint.setFunctionSource      ( "SOURCE_ADA_RANGE_CONSTRAINT"     , "../Grammar/LocatedNode.code");
-     AdaIndexConstraint.setFunctionSource      ( "SOURCE_ADA_INDEX_CONSTRAINT"     , "../Grammar/LocatedNode.code");
-     AdaDigitsConstraint.setFunctionSource     ( "SOURCE_ADA_DIGITS_CONSTRAINT"    , "../Grammar/LocatedNode.code");
-     AdaDeltaConstraint.setFunctionSource      ( "SOURCE_ADA_DELTA_CONSTRAINT"     , "../Grammar/LocatedNode.code");
-     AdaDiscriminantConstraint.setFunctionSource ( "SOURCE_ADA_DISCRIMINANT_CONSTRAINT", "../Grammar/LocatedNode.code");
-     AdaNullConstraint.setFunctionSource       ( "SOURCE_ADA_NULL_CONSTRAINT", "../Grammar/LocatedNode.code");
-
-
-
-  // ***************************************************************************************
-  // ***************************************************************************************
-  //                                 ATerm IR Node Support
-  // ***************************************************************************************
-  // ***************************************************************************************
-  // DQ (4/20/2014): Added support for ATerms in the IR.
-
-  // Rasmussen (04/17/2019): Support for ATerms has been deprecated.
-  // Aterm.setFunctionSource    ( "SOURCE_ATERM_NODE", "../Grammar/LocatedNode.code");
 
   // ***************************************************************************************
   // ***************************************************************************************
@@ -1008,10 +953,6 @@ Grammar::setUpNodes ()
 #endif
 
 
-  // DQ(1/13/2014): Added Java support for JavaMemberValuePair
-     JavaMemberValuePair.setFunctionSource ("SOURCE_JAVA_MEMBER_VALUE_PAIR", "../Grammar/LocatedNode.code");
-
-
   // ***********************************************************************
   // ***********************************************************************
   //                       OpenMP Clauses
@@ -1028,10 +969,37 @@ Grammar::setUpNodes ()
      OmpExpressionClause.setDataPrototype ( "SgExpression*", "expression", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
 
-     // schedule (kind[, chunksize_exp])
-     OmpScheduleClause.setDataPrototype("SgOmpClause::omp_schedule_kind_enum", "kind", "=e_omp_schedule_unknown",
+     // schedule([modifier [, modifier]:]kind[, chunk_size])
+
+     OmpScheduleClause.setDataPrototype("SgOmpClause::omp_schedule_modifier_enum", "modifier", "=e_omp_schedule_modifier_unspecified",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpScheduleClause.setDataPrototype("SgOmpClause::omp_schedule_modifier_enum", "modifier1", "=e_omp_schedule_modifier_unspecified",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpScheduleClause.setDataPrototype("SgOmpClause::omp_schedule_kind_enum", "kind", "=e_omp_schedule_kind_unspecified",
                                    CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      OmpScheduleClause.setDataPrototype ( "SgExpression*", "chunk_size", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+
+     // when (user = {condition(boolean expr)}, construct = {directive1(clause1, clause2, ...), directive2(clause1, clause2, ...), ...} : variant-directive)
+     OmpWhenClause.setDataPrototype("SgExpression*", "user_condition", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpWhenClause.setDataPrototype("SgExpression*", "user_condition_score", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpWhenClause.setDataPrototype("std::list<SgStatement*>", "construct_directives", "",
+                       NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpWhenClause.setDataPrototype("SgExpression*", "device_arch", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpWhenClause.setDataPrototype("SgExpression*", "device_isa", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpWhenClause.setDataPrototype("SgOmpClause::omp_when_context_kind_enum", "device_kind", "= e_omp_when_context_kind_unknown",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpWhenClause.setDataPrototype("SgOmpClause::omp_when_context_vendor_enum", "implementation_vendor", "= e_omp_when_context_vendor_unspecified",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpWhenClause.setDataPrototype("SgExpression*", "implementation_user_defined", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpWhenClause.setDataPrototype("SgExpression*", "implementation_extension", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     OmpWhenClause.setDataPrototype("SgStatement*", "variant_directive", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
 
      // clauses with variable lists
@@ -1042,9 +1010,12 @@ Grammar::setUpNodes ()
      // Using a SgNode for variable list, avoiding mixed container + simple member
      OmpVariablesClause.setDataPrototype ( "SgExprListExp*", "variables", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-     // linear (varlist[:step])
+     // linear (varlist[:step]) varlist may be modifier(list)
      OmpLinearClause.setDataPrototype ( "SgExpression*", "step", "= NULL",
                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+
+     OmpLinearClause.setDataPrototype("SgOmpClause::omp_linear_modifier_enum", "modifier", "=e_omp_linear_modifier_unspecified",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
      // aligned (varlist[:alignment])
      OmpAlignedClause.setDataPrototype ( "SgExpression*", "alignment", "= NULL",
@@ -1053,6 +1024,15 @@ Grammar::setUpNodes ()
       // default (private | firstprivate | shared | none)
      OmpDefaultClause.setDataPrototype("SgOmpClause::omp_default_option_enum", "data_sharing", "=e_omp_default_unknown",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpDefaultClause.setDataPrototype("SgStatement*", "variant_directive", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+
+      // allocate (allocator)
+     OmpAllocatorClause.setDataPrototype("SgOmpClause::omp_allocator_modifier_enum", "modifier", "=e_omp_allocator_modifier_unknown",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+      // allocate (user-defined modifier)
+     OmpAllocatorClause.setDataPrototype("SgExpression*", "user_defined_modifier", "= NULL",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
       // atomic clause is one of : read, write, update, or capture
      OmpAtomicClause.setDataPrototype("SgOmpClause::omp_atomic_clause_enum", "atomicity", "=e_omp_atomic_clause_unknown",
@@ -1062,14 +1042,129 @@ Grammar::setUpNodes ()
      OmpProcBindClause.setDataPrototype("SgOmpClause::omp_proc_bind_policy_enum", "policy", "=e_omp_proc_bind_policy_unknown",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-     // reduction(op:variables)
-     OmpReductionClause.setDataPrototype("SgOmpClause::omp_reduction_operator_enum", "operation", "=e_omp_reduction_unknown",
+     // order(concurrent)
+     OmpOrderClause.setDataPrototype("SgOmpClause::omp_order_kind_enum", "kind", "=e_omp_order_kind_unspecified",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-     // depend(type:variables)
-     OmpDependClause.setDataPrototype("SgOmpClause::omp_dependence_type_enum", "dependence_type", "=e_omp_depend_unknown",
+     // dist_schedule(kind[, chunk_size])
+     OmpDistScheduleClause.setDataPrototype("SgOmpClause::omp_dist_schedule_kind_enum", "kind", "=e_omp_dist_schedule_kind_unspecified",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpDistScheduleClause.setDataPrototype ( "SgExpression*", "chunk_size", "= NULL",
+                       CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+
+     // defaultmap(implicit-behavior[:variable-category])
+     OmpDefaultmapClause.setDataPrototype("SgOmpClause::omp_defaultmap_behavior_enum", "behavior", "=e_omp_defaultmap_behavior_unspecified",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpDefaultmapClause.setDataPrototype("SgOmpClause::omp_defaultmap_category_enum", "category", "=e_omp_defaultmap_category_unspecified",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // ext_implementation_defined_requirement
+     OmpExtImplementationDefinedRequirementClause.setDataPrototype ( "SgExpression*", "implementation_defined_requirement", "= NULL",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+
+     // bind(binding)
+     OmpBindClause.setDataPrototype("SgOmpClause::omp_bind_binding_enum", "binding", "=e_omp_bind_binding_unspecified",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // atomic_default_mem_order(seq_cst | acq_rel | relaxed)
+     OmpAtomicDefaultMemOrderClause.setDataPrototype("SgOmpClause::omp_atomic_default_mem_order_kind_enum", "kind", "=e_omp_atomic_default_mem_order_kind_unspecified",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // reduction(modifier, identifier : variables)
+     OmpReductionClause.setDataPrototype("SgOmpClause::omp_reduction_modifier_enum", "modifier", "=e_omp_reduction_modifier_unknown",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // reduction(op:variables)
+     OmpReductionClause.setDataPrototype("SgOmpClause::omp_reduction_identifier_enum", "identifier", "=e_omp_reduction_unknown",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // reduction(modifier, user-defined identifier : variables)
+     OmpReductionClause.setDataPrototype("SgExpression*", "user_defined_identifier", "= NULL",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // in_reduction(op:variables)
+     OmpInReductionClause.setDataPrototype("SgOmpClause::omp_in_reduction_identifier_enum", "identifier", "=e_omp_in_reduction_identifier_unspecified",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // in_reduction(user-defined identifier : variables)
+     OmpInReductionClause.setDataPrototype("SgExpression*", "user_defined_identifier", "= NULL",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // task_reduction(op:variables)
+     OmpTaskReductionClause.setDataPrototype("SgOmpClause::omp_task_reduction_identifier_enum", "identifier", "=e_omp_task_reduction_identifier_unspecified",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // task_reduction(user-defined identifier : variables)
+     OmpTaskReductionClause.setDataPrototype("SgExpression*", "user_defined_identifier", "= NULL",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // if (modifier : expression)
+     OmpIfClause.setDataPrototype("SgOmpClause::omp_if_modifier_enum", "modifier", "=e_omp_if_modifier_unknown",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // lastprivate (modifier : variable_list)
+     OmpLastprivateClause.setDataPrototype("SgOmpClause::omp_lastprivate_modifier_enum", "modifier", "=e_omp_lastprivate_modifier_unspecified",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // device([ device-modifier :] integer-expression)
+     OmpDeviceClause.setDataPrototype("SgOmpClause::omp_device_modifier_enum", "modifier", "=e_omp_device_modifier_unspecified",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // allocate (modifier : variables)
+     OmpAllocateClause.setDataPrototype("SgOmpClause::omp_allocate_modifier_enum", "modifier", "=e_omp_allocate_modifier_unknown",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // allocate (user-defined modifier : variables)
+     OmpAllocateClause.setDataPrototype("SgExpression*", "user_defined_modifier", "= NULL",
+                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // uses_allocators(allocator[(allocator-traits-array)][,allocator[(allocator-traits-array)] ...])
+     OmpUsesAllocatorsClause.setDataPrototype("std::list<SgOmpUsesAllocatorsDefination*>", "uses_allocators_defination", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     OmpUsesAllocatorsDefination.setDataPrototype("SgOmpClause::omp_uses_allocators_allocator_enum", "allocator", "=e_omp_uses_allocators_allocator_unknown",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpUsesAllocatorsDefination.setDataPrototype("SgExpression*", "user_defined_allocator", "= NULL",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpUsesAllocatorsDefination.setDataPrototype("SgExpression*", "allocator_traits_array", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+
+     // depend(modifier, type:variables)
+     OmpDependClause.setDataPrototype("SgOmpClause::omp_depend_modifier_enum", "depend_modifier", "=e_omp_depend_modifier_unspecified",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpDependClause.setDataPrototype("SgOmpClause::omp_dependence_type_enum", "dependence_type", "=e_omp_depend_unspecified",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpDependClause.setDataPrototype("std::list<std::list<SgExpression*> >", "iterator", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      OmpDependClause.setDataPrototype("std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >", "array_dimensions", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpDependClause.setDataPrototype("std::list<SgExpression*>", "vec", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // to([mapper(mapper-identifier):]locator-list)
+     OmpToClause.setDataPrototype("SgOmpClause::omp_to_kind_enum", "kind", "=e_omp_to_kind_unknown",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpToClause.setDataPrototype("SgExpression*", "mapper_identifier", "= NULL",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpToClause.setDataPrototype("std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >", "array_dimensions", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // from([mapper(mapper-identifier):]locator-list)
+     OmpFromClause.setDataPrototype("SgOmpClause::omp_from_kind_enum", "kind", "=e_omp_from_kind_unknown",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpFromClause.setDataPrototype("SgExpression*", "mapper_identifier", "= NULL",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpFromClause.setDataPrototype("std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >", "array_dimensions", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+
+     // affinity([aff-modifier :] locator-list)
+     OmpAffinityClause.setDataPrototype("SgOmpClause::omp_affinity_modifier_enum", "affinity_modifier", "=e_omp_affinity_modifier_unspecified",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpAffinityClause.setDataPrototype("std::list<std::list<SgExpression*> >", "iterator", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     OmpAffinityClause.setDataPrototype("std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >", "array_dimensions", "",
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
      // map (inout|alloc|in|out:variable_list) , a variable could be array type with additional dimension info, such as a[0:n][0:m]
@@ -1082,6 +1177,74 @@ Grammar::setUpNodes ()
      // I choose to attach this info. to map clauses since dist_data() does not exist alone. It must follow a map() clause
      OmpMapClause.setDataPrototype("std::map<SgSymbol*,  std::vector < std::pair <SgOmpClause::omp_map_dist_data_enum, SgExpression*> > >", "dist_data_policies", "",
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // update(in|out|inout|mutexinoutset|depobj)
+     OmpDepobjUpdateClause.setDataPrototype("SgOmpClause::omp_depobj_modifier_enum", "modifier", "=e_omp_depobj_modifier_unknown",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // branch((node1, node2), (node3, node4, node5), ...)
+     // branch1: node1, node2
+     // branch2: node3, node4, node5
+     UpirBranchField.setDataPrototype("std::list<std::list<SgStatement*> >", "branches", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // nested-level(int)
+     UpirNestedLevelField.setDataPrototype("int", "nested_level", "= 0",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // nested-parent(node1)
+     UpirNestedParentField.setDataPrototype("SgStatement*", "nested_parent", "= NULL",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // nested-child(node2)
+     UpirNestedChildField.setDataPrototype("SgStatement*", "nested_child", "= NULL",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // sync(node)
+     UpirSyncField.setDataPrototype("SgStatement*", "sync", "= NULL",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // data(node1, node2, ...)
+     UpirDataField.setDataPrototype("std::list<SgUpirDataItemField*>", "data", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
+     // symbol(sharing, mapping, access, distribution-list, allocator, deallocator, memcpy)
+     // foo(shared(implicit), tofrom(explicit), read-write, section(0:20:2), allocator(default_mem_alloc), deallocator(default_mem_dealloc), memcpy(goo))
+     UpirDataItemField.setDataPrototype("SgSymbol*", "symbol", "= NULL",
+                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     UpirDataItemField.setDataPrototype("SgOmpClause::upir_data_sharing_enum", "sharing_property", "= e_upir_data_sharing_unspecified",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UpirDataItemField.setDataPrototype("SgOmpClause::upir_property_visibility_enum", "sharing_visibility", "= e_upir_property_visibility_unspecified",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UpirDataItemField.setDataPrototype("SgOmpClause::upir_data_mapping_enum", "mapping_property", "= e_upir_data_mapping_unspecified",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UpirDataItemField.setDataPrototype("SgOmpClause::upir_property_visibility_enum", "mapping_visibility", "= e_upir_property_visibility_unspecified",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UpirDataItemField.setDataPrototype("SgExpression*", "mapper", "= NULL",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     UpirDataItemField.setDataPrototype("SgOmpClause::upir_data_access_enum", "access_property", "= e_upir_data_access_unspecified",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UpirDataItemField.setDataPrototype("SgExpression*", "unit_id", "= NULL",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     UpirDataItemField.setDataPrototype("SgOmpClause::upir_data_distribution_pattern_enum", "distribution_pattern", "= e_upir_data_distribution_pattern_unspecified",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UpirDataItemField.setDataPrototype("std::list<std::list<SgExpression*>>", "section", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UpirDataItemField.setDataPrototype("SgOmpClause::upir_data_allocator_enum", "allocator", "= e_upir_data_allocator_unspecified",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UpirDataItemField.setDataPrototype("SgExpression*", "user_defined_allocator", "= NULL",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     UpirDataItemField.setDataPrototype("SgOmpClause::upir_data_deallocator_enum", "deallocator", "= e_upir_data_deallocator_unspecified",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UpirDataItemField.setDataPrototype("SgExpression*", "user_defined_deallocator", "= NULL",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+     UpirDataItemField.setDataPrototype("SgExpression*", "memcpy_helper", "= NULL",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
+
+     // target(cpu, gpu, cluster)
+     UpirTargetField.setDataPrototype("std::set<SgOmpClause::upir_target_type_enum>", "target_type", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
 #endif
 
 

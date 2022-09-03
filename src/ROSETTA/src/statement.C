@@ -65,7 +65,6 @@ Grammar::setUpStatements ()
 
      NEW_TERMINAL_MACRO (CatchStatementSeq,         "CatchStatementSeq",         "CATCH_STATEMENT_SEQ" );
      NEW_TERMINAL_MACRO (FunctionParameterList,     "FunctionParameterList",     "FUNCTION_PARAMETER_LIST" );
-     NEW_TERMINAL_MACRO (AdaParameterList,          "AdaParameterList",          "ADA_PARAMETER_LIST" );
      NEW_TERMINAL_MACRO (CtorInitializerList,       "CtorInitializerList",       "CTOR_INITIALIZER_LIST" );
      NEW_TERMINAL_MACRO (BasicBlock,                "BasicBlock",                "BASIC_BLOCK_STMT");
      NEW_TERMINAL_MACRO (Global,                    "Global",                    "GLOBAL_STMT" );
@@ -116,14 +115,6 @@ Grammar::setUpStatements ()
      NEW_TERMINAL_MACRO (ContinueStmt,              "ContinueStmt",              "CONTINUE_STMT" );
      NEW_TERMINAL_MACRO (ReturnStmt,                "ReturnStmt",                "RETURN_STMT" );
      NEW_TERMINAL_MACRO (GotoStatement,             "GotoStatement",             "GOTO_STMT" );
-     NEW_TERMINAL_MACRO (AdaExitStmt,               "AdaExitStmt",               "ADA_EXIT_STMT" );
-     NEW_TERMINAL_MACRO (AdaLoopStmt,               "AdaLoopStmt",               "ADA_LOOP_STMT" );
-     NEW_TERMINAL_MACRO (AdaDelayStmt,              "AdaDelayStmt",              "ADA_DELAY_STMT" );
-     NEW_TERMINAL_MACRO (AdaSelectStmt,             "AdaSelectStmt",             "ADA_SELECT_STMT" );
-     NEW_TERMINAL_MACRO (AdaSelectAlternativeStmt,  "AdaSelectAlternativeStmt",  "ADA_SELECT_ALTERNATIVE_STMT" );
-     NEW_TERMINAL_MACRO (AdaTerminateStmt,          "AdaTerminateStmt",          "ADA_TERMINATE_STMT" );
-     NEW_TERMINAL_MACRO (AdaUnscopedBlock,          "AdaUnscopedBlock",          "ADA_UNSCOPED_BLOCK" );
-     NEW_TERMINAL_MACRO (AdaVariantWhenStmt,        "AdaVariantWhenStmt",        "ADA_VARIANT_WHEN_STMT" );
      NEW_TERMINAL_MACRO (SpawnStmt,                 "SpawnStmt",                 "SPAWN_STMT" );
 
   // DQ (10/14/2014): Added template typedef as part of C++11 support.
@@ -185,8 +176,6 @@ Grammar::setUpStatements ()
 
   // driscoll6 (6/27/11): Support for Python
      NEW_TERMINAL_MACRO (WithStatement,             "WithStatement",             "WITH_STATEMENT" );
-     NEW_TERMINAL_MACRO (PythonGlobalStmt,          "PythonGlobalStmt",          "PYTHON_GLOBAL_STMT" );
-     NEW_TERMINAL_MACRO (PythonPrintStmt,           "PythonPrintStmt",           "PYTHON_PRINT_STMT" );
      NEW_TERMINAL_MACRO (PassStatement,             "PassStatement",             "PASS_STATEMENT" );
      NEW_TERMINAL_MACRO (AssertStmt,                "AssertStmt",                "ASSERT_STMT" );
      NEW_TERMINAL_MACRO (ExecStatement,             "ExecStatement",             "EXEC_STMT" );
@@ -275,24 +264,6 @@ Grammar::setUpStatements ()
           "ImageControlStatement", "IMAGE_CONTROL_STATEMENT", false);
 #endif
 
-  // Rasmussen (11/12/2018): Support for Jovial Compool modules
-     NEW_TERMINAL_MACRO (JovialCompoolStatement, "JovialCompoolStatement", "JOVIAL_COMPOOL_STATEMENT" );
-
-  // Rasmussen (03/26/2019): Support for Jovial directives and define declarations
-     NEW_TERMINAL_MACRO (JovialDefineDeclaration,  "JovialDefineDeclaration",  "JOVIAL_DEFINE_DECLARATION" );
-     NEW_TERMINAL_MACRO (JovialDirectiveStatement, "JovialDirectiveStatement", "JOVIAL_DIRECTIVE_STATEMENT" );
-
-  // Rasmussen (5/17/2020): Jovial overlays are used to control memory layout.
-     NEW_TERMINAL_MACRO (JovialOverlayDeclaration, "JovialOverlayDeclaration", "JOVIAL_OVERLAY_DECLARATION" );
-
-  // Rasmussen (10/22/2018): Node specific to Jovial for statements with a then construct.
-     NEW_TERMINAL_MACRO (JovialForThenStatement, "JovialForThenStatement", "JOVIAL_FOR_THEN_STATEMENT");
-
-
-     //SK(08/20/2015): Matlab For-loop
-     NEW_TERMINAL_MACRO (MatlabForStatement,    "MatlabForStatement",    "MATLAB_FOR_STATEMENT");
-
-
 #if USE_UPC_IR_NODES
   // DQ and Liao (6/10/2008): Added new IR nodes specific to UPC.
      NEW_TERMINAL_MACRO (UpcNotifyStatement,    "UpcNotifyStatement",    "UPC_NOTIFY_STMT" );
@@ -307,10 +278,23 @@ Grammar::setUpStatements ()
      // define terminals and non-terminals  and their hierarchy
      //------------------------------------------------------------
     // +body+ clauses
-    NEW_TERMINAL_MACRO (OmpParallelStatement,  "OmpParallelStatement",   "OMP_PARALLEL_STMT" );
+    NEW_TERMINAL_MACRO (UpirSpmdStatement,  "UpirSpmdStatement",   "UPIR_SPMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpLoopStatement,  "OmpLoopStatement",   "OMP_LOOP_STMT" );
+    NEW_TERMINAL_MACRO (OmpScanStatement,  "OmpScanStatement",   "OMP_SCAN_STMT" );
+    NEW_TERMINAL_MACRO (OmpTaskloopStatement,  "OmpTaskloopStatement",   "OMP_TASKLOOP_STMT" );
+    NEW_TERMINAL_MACRO (OmpTaskgroupStatement,  "OmpTaskgroupStatement",   "OMP_TASKGROUP_STMT" );
+    NEW_TERMINAL_MACRO (OmpDepobjStatement, "OmpDepobjStatement", "OMP_DEPOBJ_STMT" );
+    NEW_TERMINAL_MACRO (OmpTeamsStatement,  "OmpTeamsStatement",   "OMP_TEAMS_STMT" );
+    NEW_TERMINAL_MACRO (OmpCancellationPointStatement,  "OmpCancellationPointStatement",   "OMP_CANCELLATION_POINT_STMT" );
+    NEW_TERMINAL_MACRO (OmpDeclareMapperStatement,  "OmpDeclareMapperStatement",   "OMP_DECLARE_MAPPER_STMT" );
+    NEW_TERMINAL_MACRO (OmpCancelStatement,  "OmpCancelStatement",   "OMP_CANCEL_STMT" );
+    NEW_TERMINAL_MACRO (OmpDistributeStatement,  "OmpDistributeStatement",   "OMP_DISTRIBUTE_STMT" );
+    NEW_TERMINAL_MACRO (OmpMetadirectiveStatement,  "OmpMetadirectiveStatement",   "OMP_METADIRECTIVE_STMT" );
     NEW_TERMINAL_MACRO (OmpSingleStatement,    "OmpSingleStatement",     "OMP_SINGLE_STMT" );
     NEW_TERMINAL_MACRO (OmpTaskStatement,      "OmpTaskStatement",       "OMP_TASK_STMT" );
-    NEW_TERMINAL_MACRO (OmpForStatement,       "OmpForStatement",        "OMP_FOR_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetEnterDataStatement,      "OmpTargetEnterDataStatement",       "OMP_TARGET_ENTER_DATA_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetExitDataStatement,      "OmpTargetExitDataStatement",       "OMP_TARGET_EXIT_DATA_STMT" );
+    NEW_TERMINAL_MACRO (UpirWorksharingStatement,       "UpirWorksharingStatement",        "UPIR_WORKSHARING_STMT" );
     NEW_TERMINAL_MACRO (OmpForSimdStatement,   "OmpForSimdStatement",     "OMP_FOR_SIMD_STMT" );
     NEW_TERMINAL_MACRO (OmpDoStatement,        "OmpDoStatement",         "OMP_DO_STMT" );
     NEW_TERMINAL_MACRO (OmpSectionsStatement,  "OmpSectionsStatement",   "OMP_SECTIONS_STMT" );
@@ -318,38 +302,74 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpAtomicStatement,    "OmpAtomicStatement",    "OMP_ATOMIC_STMT" );
      // experimental omp target directive, Liao 1/22/2012
      // use for testing OpenMP accelerator model
-    NEW_TERMINAL_MACRO (OmpTargetStatement,  "OmpTargetStatement",   "OMP_TARGET_STMT" );
+    NEW_TERMINAL_MACRO (UpirTaskStatement,  "UpirTaskStatement",   "UPIR_TASK_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetDataStatement,  "OmpTargetDataStatement",   "OMP_TARGET_DATA_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetParallelForStatement,  "OmpTargetParallelForStatement",   "OMP_TARGET_PARALLEL_FOR_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetParallelStatement,  "OmpTargetParallelStatement",   "OMP_TARGET_PARALLEL_STMT" );
+    NEW_TERMINAL_MACRO (OmpDistributeSimdStatement,  "OmpDistributeSimdStatement",   "OMP_DISTRIBUTE_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpDistributeParallelForStatement,  "OmpDistributeParallelForStatement",   "OMP_DISTRIBUTE_PARALLEL_FOR_STMT" );
+    NEW_TERMINAL_MACRO (OmpDistributeParallelForSimdStatement,  "OmpDistributeParallelForSimdStatement",   "OMP_DISTRIBUTE_PARALLEL_FOR_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTaskloopSimdStatement,  "OmpTaskloopSimdStatement",   "OMP_TASKLOOP_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetUpdateStatement,  "OmpTargetUpdateStatement",   "OMP_TARGET_UPDATE_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetParallelForSimdStatement,  "OmpTargetParallelForSimdStatement",   "OMP_TARGET_PARALLEL_FOR_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetParallelLoopStatement,  "OmpTargetParallelLoopStatement",   "OMP_TARGET_PARALLEL_LOOP_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetSimdStatement,  "OmpTargetSimdStatement",   "OMP_TARGET_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsStatement,  "OmpTargetTeamsStatement",   "OMP_TARGET_TEAMS_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsDistributeStatement,  "OmpTargetTeamsDistributeStatement",   "OMP_TARGET_TEAMS_DISTRIBUTE_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsDistributeSimdStatement,  "OmpTargetTeamsDistributeSimdStatement",   "OMP_TARGET_TEAMS_DISTRIBUTE_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsLoopStatement,  "OmpTargetTeamsLoopStatement",   "OMP_TARGET_TEAMS_LOOP_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsDistributeParallelForStatement,  "OmpTargetTeamsDistributeParallelForStatement",   "OMP_TARGET_TEAMS_DISTRIBUTE_PARALLEL_FOR_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetTeamsDistributeParallelForSimdStatement,  "OmpTargetTeamsDistributeParallelForSimdStatement",   "OMP_TARGET_TEAMS_DISTRIBUTE_PARALLEL_FOR_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpMasterTaskloopSimdStatement,  "OmpMasterTaskloopSimdStatement",   "OMP_MASTER_TASKLOOP_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpParallelMasterTaskloopStatement,  "OmpParallelMasterTaskloopStatement",   "OMP_PARALLEL_MASTER_TASKLOOP_STMT" );
+    NEW_TERMINAL_MACRO (OmpParallelMasterTaskloopSimdStatement,  "OmpParallelMasterTaskloopSimdStatement",   "OMP_PARALLEL_MASTER_TASKLOOP_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTeamsDistributeStatement,  "OmpTeamsDistributeStatement",   "OMP_TEAMS_DISTRIBUTE_STMT" );
+    NEW_TERMINAL_MACRO (OmpTeamsDistributeSimdStatement,  "OmpTeamsDistributeSimdStatement",   "OMP_TEAMS_DISTRIBUTE_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTeamsDistributeParallelForStatement,  "OmpTeamsDistributeParallelForStatement",   "OMP_TEAMS_DISTRIBUTE_PARALLEL_FOR_STMT" );
+    NEW_TERMINAL_MACRO (OmpTeamsDistributeParallelForSimdStatement,  "OmpTeamsDistributeParallelForSimdStatement",   "OMP_TEAMS_DISTRIBUTE_PARALLEL_FOR_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpTeamsLoopStatement,  "OmpTeamsLoopStatement",   "OMP_TEAMS_LOOP_STMT" );
+    NEW_TERMINAL_MACRO (OmpParallelMasterStatement,  "OmpParallelMasterStatement",   "OMP_PARALLEL_MASTER_STMT" );
+    NEW_TERMINAL_MACRO (OmpMasterTaskloopStatement,  "OmpMasterTaskloopStatement",   "OMP_MASTER_TASKLOOP_STMT" );
+    NEW_TERMINAL_MACRO (OmpParallelLoopStatement,  "OmpParallelLoopStatement",   "OMP_PARALLEL_LOOP_STMT" );
 
-    NEW_TERMINAL_MACRO (OmpSimdStatement,    "OmpSimdStatement",     "OMP_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (UpirSimdStatement,    "UpirSimdStatement",     "UPIR_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpCriticalStatement,  "OmpCriticalStatement",   "OMP_CRITICAL_STMT" );
+    NEW_TERMINAL_MACRO (OmpOrderedStatement,   "OmpOrderedStatement",   "OMP_ORDERED_STMT" );
+
+    // UPIR statements
+    NEW_TERMINAL_MACRO (UpirLoopStatement, "UpirLoopStatement", "UPIR_LOOP_STMT");
+    NEW_TERMINAL_MACRO (UpirLoopParallelStatement, "UpirLoopParallelStatement", "UPIR_LOOP_PARALLEL_STMT");
+    NEW_TERMINAL_MACRO (UpirSyncStatement, "UpirSyncStatement", "UPIR_SYNC_STMT");
 
     // A base class for the most commonly formed directives with both clauses and a structured body
     // We treat OmpSectionsStatement separatedly by move the body to a list of SgOmpSectionStatement
     // sensitive to
-    NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpSingleStatement | OmpAtomicStatement |
-              OmpTaskStatement| OmpForStatement| OmpDoStatement | OmpSectionsStatement | OmpTargetStatement| OmpTargetDataStatement |
-              OmpSimdStatement| OmpForSimdStatement ,
-        "OmpClauseBodyStatement",   "OMP_CLAUSEBODY_STMT", false );
+    NEW_NONTERMINAL_MACRO (UpirFieldBodyStatement,  UpirSpmdStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement | OmpOrderedStatement | OmpTaskgroupStatement | OmpTaskloopStatement | OmpDepobjStatement | OmpTargetEnterDataStatement | OmpTargetExitDataStatement | OmpParallelMasterStatement | OmpMasterTaskloopStatement |
+              OmpTaskStatement | OmpDoStatement | OmpSectionsStatement | UpirTaskStatement | OmpTargetDataStatement | OmpTargetParallelForStatement | OmpParallelLoopStatement |
+              OmpTargetParallelStatement | OmpTargetParallelForSimdStatement | OmpTargetParallelLoopStatement | OmpTargetSimdStatement | OmpTargetTeamsStatement | OmpTargetTeamsDistributeStatement | OmpTargetTeamsDistributeSimdStatement | OmpTargetTeamsLoopStatement | OmpTargetTeamsDistributeParallelForStatement | OmpTargetTeamsDistributeParallelForSimdStatement | OmpDistributeSimdStatement | OmpDistributeParallelForStatement | OmpDistributeParallelForSimdStatement | OmpTaskloopSimdStatement |
+              OmpMasterTaskloopSimdStatement | OmpParallelMasterTaskloopStatement | OmpParallelMasterTaskloopSimdStatement | OmpTeamsDistributeStatement | OmpTeamsDistributeSimdStatement | OmpTeamsDistributeParallelForStatement | OmpTeamsDistributeParallelForSimdStatement | OmpTeamsLoopStatement |
+              OmpForSimdStatement | OmpCriticalStatement | OmpDistributeStatement | UpirLoopStatement,
+        "UpirFieldBodyStatement",   "UPIR_FIELDBODY_STMT", false );
 
     // + a statement / block
     NEW_TERMINAL_MACRO (OmpMasterStatement,    "OmpMasterStatement",    "OMP_MASTER_STMT" );
     NEW_TERMINAL_MACRO (OmpSectionStatement,   "OmpSectionStatement",    "OMP_SECTION_STMT" ); // need this?
-    NEW_TERMINAL_MACRO (OmpOrderedStatement,   "OmpOrderedStatement",   "OMP_ORDERED_STMT" );
     NEW_TERMINAL_MACRO (OmpWorkshareStatement,    "OmpWorkshareStatement",    "OMP_WORKSHARE_STMT" );
+    NEW_TERMINAL_MACRO (OmpFlushStatement,     "OmpFlushStatement",      "OMP_FLUSH_STMT" );
+    NEW_TERMINAL_MACRO (OmpAllocateStatement,     "OmpAllocateStatement",      "OMP_ALLOCATE_STMT" );
+    NEW_TERMINAL_MACRO (OmpOrderedDependStatement,     "OmpOrderedDependStatement",      "OMP_ORDERED_DEPEND_STMT" );
     // + stmt/block + name
-    NEW_TERMINAL_MACRO (OmpCriticalStatement,  "OmpCriticalStatement",   "OMP_CRITICAL_STMT" );
 
+    //NEW_TERMINAL_MACRO (OmpCriticalStatement,  "OmpCriticalStatement",   "OMP_CRITICAL_STMT" );
     // A base class for all directives with a body/statement
-    NEW_NONTERMINAL_MACRO (OmpBodyStatement,  OmpMasterStatement  | OmpOrderedStatement
-        | OmpCriticalStatement   |  OmpSectionStatement | OmpWorkshareStatement  | OmpClauseBodyStatement ,
-        "OmpBodyStatement",      "OMP_BODY_STMT", false );
+    NEW_NONTERMINAL_MACRO (UpirBodyStatement,  OmpMasterStatement
+        | OmpSectionStatement | OmpWorkshareStatement  | UpirFieldBodyStatement,
+        "UpirBodyStatement",      "UPIR_BODY_STMT", false );
 
+    NEW_NONTERMINAL_MACRO (UpirFieldStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement | OmpOrderedDependStatement | UpirSyncStatement | UpirLoopParallelStatement | UpirWorksharingStatement | UpirSimdStatement,
+        "UpirFieldStatement",      "UPIR_FIELD_STMT", false );
 
 #endif
-
-#include "java/terminals.cpp"
-#include "x10/terminals.cpp"
-
 
   // DQ (8/21/2007): More IR nodes required for Fortran support
      NEW_TERMINAL_MACRO (BlockDataStatement,        "BlockDataStatement",         "TEMP_Block_Data_Statement" );
@@ -359,9 +379,6 @@ Grammar::setUpStatements ()
      NEW_TERMINAL_MACRO (NullifyStatement,          "NullifyStatement",           "TEMP_Nullify_Statement" );
      NEW_TERMINAL_MACRO (EquivalenceStatement,      "EquivalenceStatement",       "TEMP_Equivalence_Statement" );
      NEW_TERMINAL_MACRO (DerivedTypeStatement,      "DerivedTypeStatement",       "TEMP_Derived_Type_Statement" );
-
-  // Rasmussen (3/18/2019): New IR node for Jovial tables (arrays of structs)
-     NEW_TERMINAL_MACRO (JovialTableStatement,      "JovialTableStatement",       "TEMP_Jovial_Table_Statement" );
 
   // DQ (9/4/2007): Added DIMENSION statement (for array declaration support)
   // These are the type attributes: ALLOCATABLE, DIMENSION, EXTERNAL, INTENT, INTRINSIC, OPTIONAL, PARAMETER, POINTER, SAVE, TARGET
@@ -428,7 +445,7 @@ Grammar::setUpStatements ()
 
   // DQ (12/21/2011): New design...
      NEW_NONTERMINAL_MACRO (ClassDeclaration,
-          TemplateClassDeclaration | TemplateInstantiationDecl | DerivedTypeStatement | ModuleStatement | JavaPackageDeclaration | JovialTableStatement,
+          TemplateClassDeclaration | TemplateInstantiationDecl | DerivedTypeStatement | ModuleStatement,
           "ClassDeclaration", "CLASS_DECL_STMT", true );
   // NEW_NONTERMINAL_MACRO (ClassDefinition,  TemplateInstantiationDefn, "ClassDefinition",  "CLASS_DEFN_STMT", true );
      NEW_NONTERMINAL_MACRO (ClassDefinition,  TemplateInstantiationDefn | TemplateClassDefinition, "ClassDefinition",  "CLASS_DEFN_STMT", true );
@@ -436,28 +453,15 @@ Grammar::setUpStatements ()
   // DQ (6/10/2011): Changed this to be a non-AstNodeClass and added TemplateFunctionDefinition
      NEW_NONTERMINAL_MACRO (FunctionDefinition, TemplateFunctionDefinition, "FunctionDefinition",  "FUNC_DEFN_STMT", true );
 
-  // PP 05/07/20: Add Ada nodes
-     NEW_TERMINAL_MACRO (AdaAcceptStmt,  "AdaAcceptStmt", "ADA_ACCEPT_STMT" );
-     NEW_TERMINAL_MACRO (AdaPackageBody, "AdaPackageBody", "ADA_PACKAGE_BODY");
-     NEW_TERMINAL_MACRO (AdaPackageSpec, "AdaPackageSpec", "ADA_PACKAGE_SPEC");
-     NEW_TERMINAL_MACRO (AdaTaskBody,    "AdaTaskBody",    "ADA_TASK_BODY");
-     NEW_TERMINAL_MACRO (AdaTaskSpec,    "AdaTaskSpec",    "ADA_TASK_SPEC");
-     NEW_TERMINAL_MACRO (AdaProtectedBody, "AdaProtectedBody", "ADA_PROTECTED_BODY");
-     NEW_TERMINAL_MACRO (AdaProtectedSpec, "AdaProtectedSpec", "ADA_PROTECTED_SPEC");
-     NEW_TERMINAL_MACRO (AdaGenericDefn, "AdaGenericDefn", "ADA_GENERIC_DEFN" );
-
   // Note that the associate statement is really a scope, with its own declarations of variables declared by reference to
   // other variables or expressions.  They are only l-values if and only if the rhs is a l-value (I think).
   // Rasmussen (10/22/2018): Added JovialForThenStatement
      NEW_NONTERMINAL_MACRO (ScopeStatement,
-          Global                       | BasicBlock           | IfStmt                    | /* IfConstexprStatement   | */
-          ForStatement                 | FunctionDefinition   |
-          ClassDefinition              | WhileStmt            | DoWhileStmt               | SwitchStatement        | CatchOptionStmt    |
-          NamespaceDefinitionStatement | BlockDataStatement   | AssociateStatement        | FortranDo              | ForAllStatement    |
-          UpcForAllStatement           | CAFWithTeamStatement | JavaForEachStatement      | JavaLabelStatement     | MatlabForStatement |
-          FunctionParameterScope       | DeclarationScope     | RangeBasedForStatement    | JovialForThenStatement | AdaAcceptStmt  |
-          AdaPackageSpec               | AdaPackageBody       | AdaTaskSpec               | AdaTaskBody            | AdaProtectedBody |
-          AdaProtectedSpec             | AdaGenericDefn
+          Global                       | BasicBlock           | IfStmt                    | ForStatement       | FunctionDefinition |
+          ClassDefinition              | WhileStmt            | DoWhileStmt               | SwitchStatement    | CatchOptionStmt    |
+          NamespaceDefinitionStatement | BlockDataStatement   | AssociateStatement        | FortranDo          | ForAllStatement    |
+          UpcForAllStatement           | CAFWithTeamStatement |
+          FunctionParameterScope       | DeclarationScope     | RangeBasedForStatement
      /* | TemplateInstantiationDefn */ ,
           "ScopeStatement","SCOPE_STMT", false);
 
@@ -465,16 +469,10 @@ Grammar::setUpStatements ()
   // DQ (12/21/2011): New design...
      NEW_NONTERMINAL_MACRO (MemberFunctionDeclaration, TemplateMemberFunctionDeclaration | TemplateInstantiationMemberFunctionDecl,"MemberFunctionDeclaration","MFUNC_DECL_STMT", true);
 
-  // PP 08/05/20 Ada Nodes
-     NEW_TERMINAL_MACRO (AdaEntryDecl,            "AdaEntryDecl",            "ADA_ENTRY_DECL_STMT" );
-  // MS 12/20/20 Ada Nodes
-     NEW_TERMINAL_MACRO (AdaFunctionRenamingDecl, "AdaFunctionRenamingDecl", "ADA_FUNCTION_RENAMING_DECL_STMT" );
-
   // DQ (3/20/2007): ProgramHeaderStatement and ProcedureHeaderStatement are derived from FunctionDeclaration
   // DQ (12/21/2011): New design...
      NEW_NONTERMINAL_MACRO (FunctionDeclaration,
-          TemplateFunctionDeclaration | MemberFunctionDeclaration | TemplateInstantiationFunctionDecl | ProgramHeaderStatement |
-          ProcedureHeaderStatement    | EntryStatement            | AdaEntryDecl                      | AdaFunctionRenamingDecl ,
+          TemplateFunctionDeclaration | MemberFunctionDeclaration | TemplateInstantiationFunctionDecl | ProgramHeaderStatement | ProcedureHeaderStatement | EntryStatement,
           "FunctionDeclaration","FUNC_DECL_STMT", true);
 
 #if 0
@@ -527,13 +525,12 @@ Grammar::setUpStatements ()
           "ClinkageDeclarationStatement", "C_LINKAGE_DECLARATION_STMT", false );
 
   // + variable list
-     NEW_TERMINAL_MACRO (OmpFlushStatement,     "OmpFlushStatement",      "OMP_FLUSH_STMT" );
      NEW_TERMINAL_MACRO (OmpDeclareSimdStatement, "OmpDeclareSimdStatement",  "OMP_DECLARE_SIMD_STMT" );
   // simplest directives, just one line
      NEW_TERMINAL_MACRO (OmpBarrierStatement,   "OmpBarrierStatement",   "OMP_BARRIER_STMT" );
-     NEW_TERMINAL_MACRO (OmpTaskwaitStatement,  "OmpTaskwaitStatement",  "OMP_TASKWAIT_STMT" );
-
-
+     NEW_TERMINAL_MACRO (OmpTaskyieldStatement,   "OmpTaskyieldStatement",   "OMP_TASKYIELD_STMT" );
+     NEW_TERMINAL_MACRO (OmpRequiresStatement,  "OmpRequiresStatement",   "OMP_REQUIRES_STMT" );
+     NEW_TERMINAL_MACRO (OmpTaskwaitStatement,  "OmpTaskwaitStatement",   "OMP_TASKWAIT_STMT" );
   // + variable list
      NEW_TERMINAL_MACRO (OmpThreadprivateStatement, "OmpThreadprivateStatement",    "OMP_THREADPRIVATE_STMT" );
 
@@ -544,30 +541,6 @@ Grammar::setUpStatements ()
   // token-based unparsing to work with greater precision. For example, used to add an include directive with
   // greater precission to the global scope and permit the unparsing via the token stream to be used as well.
      NEW_TERMINAL_MACRO (EmptyDeclaration,"EmptyDeclaration","EMPTY_DECLARATION_STMT" );
-
-  // PP (05/04/20): Adding Ada scoped declarations (tasks, ...)
-     NEW_TERMINAL_MACRO (AdaPackageSpecDecl,    "AdaPackageSpecDecl", "ADA_PACKAGE_SPEC_DECL_STMT" );
-     NEW_TERMINAL_MACRO (AdaPackageBodyDecl,    "AdaPackageBodyDecl", "ADA_PACKAGE_BODY_DECL_STMT" );
-     NEW_TERMINAL_MACRO (AdaTaskSpecDecl,       "AdaTaskSpecDecl", "ADA_TASK_SPEC_DECL_STMT" );
-     NEW_TERMINAL_MACRO (AdaTaskTypeDecl,       "AdaTaskTypeDecl", "ADA_TASK_TYPE_DECL_STMT" );
-     NEW_TERMINAL_MACRO (AdaTaskBodyDecl,       "AdaTaskBodyDecl", "ADA_TASK_BODY_DECL_STMT" );
-     NEW_TERMINAL_MACRO (AdaProtectedSpecDecl,  "AdaProtectedSpecDecl", "ADA_PROTECTED_SPEC_DECL_STMT" );
-     NEW_TERMINAL_MACRO (AdaProtectedTypeDecl,  "AdaProtectedTypeDecl", "ADA_PROTECTED_TYPE_DECL_STMT" );
-     NEW_TERMINAL_MACRO (AdaProtectedBodyDecl,  "AdaProtectedBodyDecl", "ADA_PROTECTED_BODY_DECL_STMT" );
-     NEW_TERMINAL_MACRO (AdaRepresentationClause, "AdaRepresentationClause", "ADA_REPRESENTATION_CLAUSE" );
-     NEW_TERMINAL_MACRO (AdaEnumRepresentationClause,   "AdaEnumRepresentationClause",   "ADA_ENUM_REPRESENTATION_CLAUSE" );
-     NEW_TERMINAL_MACRO (AdaAttributeClause,            "AdaAttributeClause",            "ADA_ATTRIBUTE_CLAUSE" );
-     NEW_TERMINAL_MACRO (AdaComponentClause,            "AdaComponentClause",            "ADA_COMPONENT_CLAUSE" );
-  // PP (07/14/20): Adding Ada renaming declarations
-     NEW_TERMINAL_MACRO (AdaRenamingDecl,       "AdaRenamingDecl", "ADA_RENAMING_DECL_STMT" );
-  // MS (08/01/21): Adding Ada generics
-     NEW_TERMINAL_MACRO (AdaGenericDecl,        "AdaGenericDecl", "ADA_GENERIC_DECL" );
-     NEW_TERMINAL_MACRO (AdaGenericInstanceDecl,"AdaGenericInstanceDecl", "ADA_GENERIC_INSTANCE_DECL" );
-     NEW_TERMINAL_MACRO (AdaFormalTypeDecl,     "AdaFormalTypeDecl", "ADA_FORMAL_TYPE_DECL_STMT" );
-     NEW_TERMINAL_MACRO (AdaFormalPackageDecl,  "AdaFormalPackageDecl", "ADA_FORMAL_PACKAGE_DECL_STMT" );
-  // PP (07/14/20): Adding Ada discriminated type declarations
-     NEW_TERMINAL_MACRO (AdaDiscriminatedTypeDecl, "AdaDiscriminatedTypeDecl", "ADA_DISCRIMINATED_TYPE_DECL" );
-     NEW_TERMINAL_MACRO (AdaVariantDecl,      "AdaVariantDecl", "ADA_VARIANT_DECL_STATEMENT" );
 
      NEW_NONTERMINAL_MACRO (DeclarationStatement,
           FunctionParameterList                   | VariableDeclaration       | VariableDefinition           |
@@ -580,21 +553,17 @@ Grammar::setUpStatements ()
           UsingDirectiveStatement                 | ClassDeclaration          | ImplicitStatement            |
           UsingDeclarationStatement               | NamelistStatement         | ImportStatement              |
           FunctionDeclaration                  /* | ModuleStatement */        | ContainsStatement            |
-          C_PreprocessorDirectiveStatement        | OmpThreadprivateStatement | FortranIncludeLine           |
-          JavaImportStatement                     | JavaPackageStatement      | StmtDeclarationStatement     |
+          C_PreprocessorDirectiveStatement        | OmpThreadprivateStatement | OmpRequiresStatement         |
+          FortranIncludeLine                      | OmpTaskwaitStatement      | StmtDeclarationStatement     |
           StaticAssertionDeclaration              | OmpDeclareSimdStatement   | MicrosoftAttributeDeclaration|
-          JovialCompoolStatement                  | JovialDirectiveStatement  | JovialDefineDeclaration      |
-          JovialOverlayDeclaration                | NonrealDecl               | EmptyDeclaration             |
-          AdaPackageBodyDecl                      | AdaPackageSpecDecl        | AdaRenamingDecl              |
-          AdaTaskSpecDecl                         | AdaTaskBodyDecl           | AdaTaskTypeDecl              |
-          AdaProtectedSpecDecl                    | AdaProtectedBodyDecl      | AdaProtectedTypeDecl         |
-          AdaRepresentationClause                 | AdaComponentClause        | AdaAttributeClause           |
-          AdaEnumRepresentationClause             | AdaGenericDecl            | AdaFormalTypeDecl            |
-          AdaDiscriminatedTypeDecl                | AdaGenericInstanceDecl    | AdaFormalPackageDecl         |
-          AdaParameterList                        | AdaVariantDecl
-          /*| ClassPropertyList |*/,
+          NonrealDecl               | EmptyDeclaration
+        /*| ClassPropertyList |*/,
           "DeclarationStatement", "DECL_STMT", false);
 
+     NEW_NONTERMINAL_MACRO (UpirBaseStatement,
+             OmpTaskyieldStatement     | OmpBarrierStatement    | UpirBodyStatement               | UpirFieldStatement    |
+             OmpDeclareMapperStatement,
+             "UpirBaseStatement","UpirBaseStatementTag", false);
 
   // Rasmussen (9/20/2018): Added ImageControlStatement
   //           (7/11/2020): Changed StopOrPauseStatement to ProcessControlStatement to allow more variants
@@ -607,14 +576,10 @@ Grammar::setUpStatements ()
              WhereStatement            | ElseWhereStatement     | NullifyStatement                | ArithmeticIfStatement |
              AssignStatement           | ComputedGotoStatement  | AssignedGotoStatement           |
           /* FortranDo                 | */ AllocateStatement   | DeallocateStatement             | UpcNotifyStatement    |
-             UpcWaitStatement          | UpcBarrierStatement    | UpcFenceStatement               |
-             OmpBarrierStatement       | OmpTaskwaitStatement   |  OmpFlushStatement              | OmpBodyStatement      |
-             SequenceStatement         | WithStatement          | PythonPrintStmt                 | PassStatement         |
-             AssertStmt                | ExecStatement          | PythonGlobalStmt                | JavaThrowStatement    |
-             JavaSynchronizedStatement | AsyncStmt              | FinishStmt                      | AtStmt                |
-             AtomicStmt                | WhenStmt               | ImageControlStatement | /* JavaPackageDeclaration | */
-             AdaExitStmt               | AdaDelayStmt           | AdaLoopStmt                     | AdaSelectStmt         |
-             AdaSelectAlternativeStmt  | AdaTerminateStmt       | AdaUnscopedBlock                | AdaVariantWhenStmt,
+             UpcWaitStatement          | UpcBarrierStatement    | UpcFenceStatement               | UpirBaseStatement     |
+             SequenceStatement         | WithStatement          | PassStatement                   |
+             AssertStmt                | ExecStatement          |
+	     ImageControlStatement /* | JavaPackageDeclaration */,
              "Statement","StatementTag", false);
 
   // DQ (11/24/2007): These have been moved to be declarations, so they can appear where only declaration statements are allowed
@@ -1659,31 +1624,9 @@ Grammar::setUpStatements ()
      VariableDefinition.setDataPrototype ( "SgExpression*", "bitfield", "= NULL",
                                            CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
-     AdaVariantDecl.setFunctionPrototype  ( "HEADER_ADA_VARIANT_DECL", "../Grammar/Statement.code" );
-     AdaVariantDecl.setDataPrototype("SgExpression*", "discriminant", "= nullptr",
-                                     CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaVariantDecl.setDataPrototype("SgAdaUnscopedBlock*", "variants", "= nullptr",
-                                     CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-
-
   // VariableDefinition.setDataPrototype("SgExpressionRoot*", "initializer_expr_root", "= NULL",
   //                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL,
   //                                      NO_COPY_DATA);
-
-     AdaParameterList.setFunctionPrototype ( "HEADER_ADA_PARAMETER_LIST", "../Grammar/Statement.code" );
-
-     AdaParameterList.editSubstitute ( "HEADER_LIST_DECLARATIONS", "HEADER_LIST_DECLARATIONS", "../Grammar/Statement.code" );
-     AdaParameterList.editSubstitute ( "LIST_DATA_TYPE", "SgDeclarationStatementPtrList" );
-     AdaParameterList.editSubstitute ( "LIST_NAME", "parameters" );
-     AdaParameterList.editSubstitute ( "LIST_FUNCTION_RETURN_TYPE", "SgDeclarationStatementPtrList::iterator" );
-     AdaParameterList.editSubstitute ( "LIST_FUNCTION_NAME", "parameter" );
-     AdaParameterList.editSubstitute ( "LIST_ELEMENT_DATA_TYPE", "SgDeclarationStatement*" );
-     AdaParameterList.setDataPrototype ( "SgDeclarationStatementPtrList", "parameters", "",
-                                            NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-
-
 
      ClassDeclaration.setFunctionPrototype ( "HEADER_CLASS_DECLARATION_STATEMENT", "../Grammar/Statement.code" );
      ClassDeclaration.setFunctionPrototype ( "HEADER_TEMPLATE_SPECIALIZATION_SUPPORT", "../Grammar/Statement.code" );
@@ -2571,10 +2514,6 @@ Grammar::setUpStatements ()
      CaseOptionStmt.setDataPrototype ( "std::string", "case_construct_name", " = \"\"",
                    NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-  // Rasmussen (8/21/2018): Added support for Jovial FALLTHRU option.
-     CaseOptionStmt.setDataPrototype ( "bool", "has_fall_through", " = false",
-                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
      TryStmt.setFunctionPrototype ( "HEADER_TRY_STATEMENT", "../Grammar/Statement.code" );
      TryStmt.editSubstitute       ( "HEADER_LIST_DECLARATIONS", "HEADER_LIST_DECLARATIONS", "../Grammar/Statement.code" );
      TryStmt.editSubstitute       ( "LIST_DATA_TYPE", "SgStatementPtrList" );
@@ -2627,10 +2566,6 @@ Grammar::setUpStatements ()
 
   // DQ (1/31/2009): Added support for named default case construct.
      DefaultOptionStmt.setDataPrototype ( "std::string", "default_construct_name", " = \"\"",
-                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // Rasmussen (8/21/2018): Added support for Jovial FALLTHRU option.
-     DefaultOptionStmt.setDataPrototype ( "bool", "has_fall_through", " = false",
                    NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
      BreakStmt.setFunctionPrototype ( "HEADER_BREAK_STATEMENT", "../Grammar/Statement.code" );
@@ -2686,72 +2621,6 @@ Grammar::setUpStatements ()
   // goto" does not make sense for the C language.
      GotoStatement.setDataPrototype     ( "SgExpression*", "selector_expression", "= NULL",
                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // Ada begin
-  // PP (03/23/20) Ada Exit Stmt
-     AdaExitStmt.setFunctionPrototype ( "HEADER_ADA_EXIT_STATEMENT", "../Grammar/Statement.code" );
-     AdaExitStmt.setDataPrototype     ( "SgStatement*", "loop", "= NULL",
-                                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaExitStmt.setDataPrototype     ( "SgExpression*", "condition", "= NULL",
-                                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-     AdaExitStmt.setDataPrototype     ( "bool", "explicitLoopName", "= false",
-                                        CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaLoopStmt.setFunctionPrototype ( "HEADER_ADA_LOOP_STATEMENT", "../Grammar/Statement.code" );
-     AdaLoopStmt.setDataPrototype     ( "SgBasicBlock*", "body", "= NULL",
-                                        NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     // in analogy to for and while loops
-     AdaLoopStmt.setDataPrototype     ( "std::string", "string_label", "= \"\"",
-                                        NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaDelayStmt.setFunctionPrototype ( "HEADER_ADA_DELAY_STATEMENT", "../Grammar/Statement.code" );
-     AdaDelayStmt.setDataPrototype     ( "SgExpression*", "time", "= NULL",
-                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaDelayStmt.setDataPrototype     ( "bool", "isRelative", "= false",
-                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // Rasmussen (11/09/2020)
-     AdaSelectStmt.setFunctionPrototype            ( "HEADER_ADA_SELECT_STATEMENT", "../Grammar/Statement.code" );
-     AdaSelectStmt.setDataPrototype                ( "SgAdaSelectAlternativeStmt*", "select_path", "= NULL",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaSelectStmt.setDataPrototype                ( "SgAdaSelectAlternativeStmt*", "or_path", "= NULL",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaSelectStmt.setDataPrototype                ( "SgBasicBlock*", "else_path", "= NULL",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaSelectStmt.setDataPrototype                ( "SgBasicBlock*", "abort_path", "= NULL",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaSelectStmt.setDataPrototype                ( "SgAdaSelectStmt::select_type_enum",
-                                                     "select_type", "= SgAdaSelectStmt::e_unknown",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL,  NO_DELETE);
-     AdaSelectAlternativeStmt.setFunctionPrototype ( "HEADER_ADA_SELECT_ALTERNATIVE_STATEMENT", "../Grammar/Statement.code" );
-     AdaSelectAlternativeStmt.setDataPrototype     ( "SgBasicBlock*", "body", "= NULL",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaSelectAlternativeStmt.setDataPrototype     ( "SgExpression*", "guard", "= NULL",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaSelectAlternativeStmt.setDataPrototype     ( "SgAdaSelectAlternativeStmt*", "next", "= NULL",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-     AdaTerminateStmt.setFunctionPrototype ( "HEADER_ADA_TERMINATE_STATEMENT", "../Grammar/Statement.code" );
-
-     AdaUnscopedBlock.setFunctionPrototype ( "HEADER_ADA_UNSCOPED_BLOCK", "../Grammar/Statement.code" );
-     AdaUnscopedBlock.editSubstitute( "HEADER_LIST_DECLARATIONS", "HEADER_LIST_DECLARATIONS", "../Grammar/Statement.code" );
-     AdaUnscopedBlock.editSubstitute( "LIST_DATA_TYPE", "SgStatementPtrList");
-     AdaUnscopedBlock.editSubstitute( "LIST_NAME", "statements" );
-     AdaUnscopedBlock.editSubstitute( "LIST_FUNCTION_RETURN_TYPE", "void" );
-     AdaUnscopedBlock.editSubstitute( "LIST_FUNCTION_NAME", "statement" );
-     AdaUnscopedBlock.editSubstitute( "LIST_ELEMENT_DATA_TYPE", "SgStatement*" );
-     AdaUnscopedBlock.setDataPrototype( "SgStatementPtrList", "statements", "= {}",
-                                        NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE );
-
-     AdaVariantWhenStmt.setFunctionPrototype ( "HEADER_ADA_VARIANT_WHEN_STMT", "../Grammar/Statement.code" );
-     AdaVariantWhenStmt.setDataPrototype( "SgExprListExp*", "choices", "= nullptr",
-                                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE );
-     AdaVariantWhenStmt.setDataPrototype( "SgAdaUnscopedBlock*", "components", "= nullptr",
-                                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE );
-
-     // Ada end
 
      AsmStmt.setFunctionPrototype  ( "HEADER_ASM_STATEMENT", "../Grammar/Statement.code" );
 
@@ -3147,212 +3016,6 @@ Grammar::setUpStatements ()
      UsingDirectiveStatement.setDataPrototype("bool","global_qualification_required","= false",
                                 NO_CONSTRUCTOR_PARAMETER, NO_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-  // PP ADA types
-     // packages
-     AdaPackageBodyDecl.setFunctionPrototype  ( "HEADER_ADA_PACKAGE_BODY_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaPackageBodyDecl.setDataPrototype ( "SgName", "name", "= \"\"",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaPackageBodyDecl.setDataPrototype ( "SgAdaPackageBody*", "definition", "= NULL",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     // \todo PP could we compute the scope from the AdaPackageSpecDecl instead?
-     AdaPackageBodyDecl.setDataPrototype ( "SgScopeStatement*", "scope", "= NULL",
-                                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-/*
- *     OmpCriticalStatement.setDataPrototype ( "SgName", "name", "= \"\"",
-                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
- */
-
-     AdaPackageSpecDecl.setFunctionPrototype  ( "HEADER_ADA_PACKAGE_SPEC_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaPackageSpecDecl.setDataPrototype ( "SgName", "name", "= \"\"",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaPackageSpecDecl.setDataPrototype ( "SgAdaPackageSpec*", "definition", "= NULL",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaPackageSpecDecl.setDataPrototype ( "SgScopeStatement*", "scope", "= NULL",
-                                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     // generics
-     AdaGenericDefn.setFunctionPrototype ( "HEADER_ADA_GENERIC_DEFN", "../Grammar/Statement.code" );
-     AdaGenericDefn.setDataPrototype     ( "SgDeclarationStatementPtrList", "declarations", "",
-                                           NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-     AdaGenericDecl.setFunctionPrototype ( "HEADER_ADA_GENERIC_DECL", "../Grammar/Statement.code" );
-     AdaGenericDecl.setDataPrototype     ( "SgAdaGenericDefn*", "definition", "= NULL",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaGenericDecl.setDataPrototype     ( "SgDeclarationStatement*", "declaration", "= NULL",
-                                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-     AdaFormalTypeDecl.setFunctionPrototype ( "HEADER_ADA_FORMAL_TYPE_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaFormalTypeDecl.setDataPrototype ( "SgName", "name", "=\"\"",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaFormalTypeDecl.setDataPrototype ( "SgAdaFormalType*", "type", "= NULL",
-                                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-
-     AdaFormalPackageDecl.setFunctionPrototype ( "HEADER_ADA_FORMAL_PACKAGE_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaFormalPackageDecl.setDataPrototype ( "SgName", "name", "=\"\"",
-                                             CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     // PP (3/31/22) like AdaGenericInstanceDecl, AdaFormalPackageDecl refers to a generic package, but that could also be
-     //              a package renaming declaration. => use SgDeclarationStatement
-     AdaFormalPackageDecl.setDataPrototype ( "SgDeclarationStatement*", "declaration", "= nullptr",
-                                             CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaFormalPackageDecl.setDataPrototype ( "SgExprListExp*", "actual_parameters", "= NULL",
-                                             CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     // PP (7/15/22): adding support for storing prototype instantiations
-     AdaFormalPackageDecl.setDataPrototype ( "SgDeclarationStatement*", "prototype", "= nullptr",
-                                             NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaFormalPackageDecl.setDataPrototype ( "SgScopeStatement*", "prototypeScope", "= nullptr",
-                                             NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaGenericInstanceDecl.setFunctionPrototype ( "HEADER_ADA_GENERIC_INSTANCE_DECL", "../Grammar/Statement.code" );
-     AdaGenericInstanceDecl.setDataPrototype ( "SgName", "name", "=\"\"",
-                                               CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     // PP (2/2/22) weakend type to SgDeclarationStatement to account for renamed generics
-     // was: AdaGenericInstanceDecl.setDataPrototype ( "SgAdaGenericDecl*", "declaration", "= NULL",
-     AdaGenericInstanceDecl.setDataPrototype ( "SgDeclarationStatement*", "declaration", "= nullptr",
-                                               CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     // PP (4/1/22): adding scope to store actual instantiation
-     //              \todo specify which scope it will be..
-     AdaGenericInstanceDecl.setDataPrototype ( "SgScopeStatement*", "instantiatedScope", "= nullptr",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     // PP (4/1/22): return_type is not used currently
-     //~ AdaGenericInstanceDecl.setDataPrototype ( "SgType*", "return_type", "= NULL",
-                                               //~ CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaGenericInstanceDecl.setDataPrototype ( "SgExprListExp*", "actual_parameters", "= NULL",
-                                               NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaGenericInstanceDecl.setDataPrototype ( "SgScopeStatement*", "scope", "= nullptr",
-                                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-
-     // tasks
-     AdaTaskSpecDecl.setFunctionPrototype  ( "HEADER_ADA_TASK_SPEC_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaTaskSpecDecl.setDataPrototype ( "SgName", "name", "= \"\"",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaTaskSpecDecl.setDataPrototype ( "SgAdaTaskSpec*", "definition", "= NULL",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaTaskSpecDecl.setDataPrototype ( "SgAdaTaskType*", "type", "= nullptr",
-                                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaTaskTypeDecl.setFunctionPrototype  ( "HEADER_ADA_TASK_TYPE_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaTaskTypeDecl.setDataPrototype ( "SgName", "name", "= \"\"",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaTaskTypeDecl.setDataPrototype ( "SgAdaTaskSpec*", "definition", "= NULL",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaTaskTypeDecl.setDataPrototype ( "SgAdaTaskType*", "type", "= nullptr",
-                                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-
-     AdaTaskBodyDecl.setFunctionPrototype  ( "HEADER_ADA_TASK_BODY_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaTaskBodyDecl.setDataPrototype ( "SgName", "name", "= \"\"",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaTaskBodyDecl.setDataPrototype ( "SgAdaTaskBody*", "definition", "= NULL",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-     // protected objects
-     AdaProtectedSpecDecl.setFunctionPrototype  ( "HEADER_ADA_PROTECTED_SPEC_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaProtectedSpecDecl.setDataPrototype ( "SgName", "name", "= \"\"",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaProtectedSpecDecl.setDataPrototype ( "SgAdaProtectedSpec*", "definition", "= NULL",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaProtectedSpecDecl.setDataPrototype ( "SgAdaProtectedType*", "type", "= nullptr",
-                                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaProtectedTypeDecl.setFunctionPrototype  ( "HEADER_ADA_PROTECTED_TYPE_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaProtectedTypeDecl.setDataPrototype ( "SgName", "name", "= \"\"",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaProtectedTypeDecl.setDataPrototype ( "SgAdaProtectedSpec*", "definition", "= NULL",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaProtectedTypeDecl.setDataPrototype ( "SgAdaProtectedType*", "type", "= nullptr",
-                                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-
-     AdaProtectedBodyDecl.setFunctionPrototype  ( "HEADER_ADA_PROTECTED_BODY_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaProtectedBodyDecl.setDataPrototype ( "SgName", "name", "= \"\"",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaProtectedBodyDecl.setDataPrototype ( "SgAdaProtectedBody*", "definition", "= NULL",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-     // renaming
-     AdaRenamingDecl.setFunctionPrototype  ( "HEADER_ADA_RENAMING_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaRenamingDecl.setDataPrototype ( "SgName", "name", "= \"\"",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     // PP (4/6/21): renamed initially was designed to rename another declaration. To make it work for
-     //              initialized names and 'real' declarations, the symbol was used as common denominator.
-     //              Ada allows to rename array elements and ranges, which is why a symbol is insufficient.
-     //              Thus the AST type of renamed was changed to SgExpression.
-     //~ AdaRenamingDecl.setDataPrototype ( "SgSymbol*", "renamed", "= nullptr",
-                                           //~ CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaRenamingDecl.setDataPrototype ( "SgExpression*", "renamed", "= nullptr",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaRenamingDecl.setDataPrototype ( "SgType*", "type", "= nullptr",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaDiscriminatedTypeDecl.setFunctionPrototype  ( "HEADER_ADA_DISCRIMINATED_TYPE_DECL_STATEMENT", "../Grammar/Statement.code" );
-
-
-     AdaDiscriminatedTypeDecl.setDataPrototype ( "SgDeclarationScope*", "discriminantScope", "= nullptr",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaDiscriminatedTypeDecl.setDataPrototype ( "SgAdaParameterList*", "discriminants", "= nullptr",
-                                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaDiscriminatedTypeDecl.setDataPrototype ( "SgDeclarationStatement*", "discriminatedDecl", "= nullptr",
-                                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaDiscriminatedTypeDecl.setDataPrototype ( "SgAdaDiscriminatedType*", "type", "= nullptr",
-                                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-#if 0 /* NO_NAME */
-     // the name is computed from the child
-     AdaDiscriminatedTypeDecl.setDataPrototype ( "SgName", "name", "= \"\"",
-                                                 CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-#endif /* NO_NAME */
-
-
-
-     AdaRepresentationClause.setFunctionPrototype("HEADER_ADA_REPRESENTATION_CLAUSE", "../Grammar/Statement.code" );
-     AdaRepresentationClause.setDataPrototype ( "SgType*", "recordType", "= NULL",
-                                                      CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaRepresentationClause.setDataPrototype ( "SgExpression*", "alignment", "= NULL",
-                                                      CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaRepresentationClause.setDataPrototype ( "SgBasicBlock*", "components", "= NULL",
-                                                      CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-/*
-     \pp replaced list of SgAdaComponentClausePtrList with an SgBasicBlock, because we need to also store pragmas.
-     AdaRepresentationClause.editSubstitute( "HEADER_LIST_DECLARATIONS", "HEADER_LIST_DECLARATIONS", "../Grammar/Statement.code" );
-     AdaRepresentationClause.editSubstitute( "LIST_DATA_TYPE", "SgAdaComponentClausePtrList" );
-     AdaRepresentationClause.editSubstitute( "LIST_NAME", "components" );
-     AdaRepresentationClause.editSubstitute( "LIST_FUNCTION_RETURN_TYPE", "void" );
-     AdaRepresentationClause.editSubstitute( "LIST_FUNCTION_NAME", "component" );
-     AdaRepresentationClause.editSubstitute( "LIST_ELEMENT_DATA_TYPE", "SgAdaComponentClause*" );
-     AdaRepresentationClause.setDataPrototype("SgAdaComponentClausePtrList", "components", "",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-*/
-
-     AdaEnumRepresentationClause.setFunctionPrototype("HEADER_ADA_ENUM_REPRESENTATION_CLAUSE", "../Grammar/Statement.code" );
-     AdaEnumRepresentationClause.setDataPrototype ( "SgType*", "enumType", "= NULL",
-                                                      CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaEnumRepresentationClause.setDataPrototype ( "SgExprListExp*", "components", "= NULL",
-                                                      CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-
-     AdaAttributeClause.setFunctionPrototype("HEADER_ADA_ATTRIBUTE_CLAUSE", "../Grammar/Statement.code" );
-     AdaAttributeClause.setDataPrototype ( "SgAdaAttributeExp*", "attribute", "= NULL",
-                                                      CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaAttributeClause.setDataPrototype ( "SgExpression*", "size", "= NULL",
-                                                      CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-
-
-  // PP (01/28/21): Making AdaComponentClause a declaration
-     AdaComponentClause.setFunctionPrototype ( "HEADER_ADA_COMPONENT_CLAUSE"     , "../Grammar/Statement.code");
-
-     AdaComponentClause.setDataPrototype("SgVarRefExp*", "component", "",
-                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaComponentClause.setDataPrototype("SgExpression*", "offset", "",
-                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaComponentClause.setDataPrototype("SgRangeExp*", "range", "",
-                                         CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-
-
 #if USE_FORTRAN_IR_NODES
      ProgramHeaderStatement.setFunctionPrototype ( "HEADER_PROGRAM_HEADER_STATEMENT", "../Grammar/Statement.code" );
 
@@ -3614,36 +3277,6 @@ Grammar::setUpStatements ()
      ForAllStatement.setDataPrototype ( "SgForAllStatement::forall_statement_kind_enum",
                                         "forall_statement_kind", "= SgForAllStatement::e_forall_statement",
                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // Rasmussen (10/22/2018): Added JovialForThenStatement; An SgForStatement is used for other
-  // forms of Jovial for statements to allow analysis be the same as C.
-     JovialForThenStatement.setFunctionPrototype ( "HEADER_JOVIAL_FOR_THEN_STATEMENT", "../Grammar/Statement.code" );
-     JovialForThenStatement.setDataPrototype     ( "SgExpression*", "initialization", "= NULL",
-                                      CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     JovialForThenStatement.setDataPrototype     ( "SgExpression*", "while_expression", "= NULL",
-                                      CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     JovialForThenStatement.setDataPrototype     ( "SgExpression*", "by_or_then_expression", "= NULL",
-                                      CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     JovialForThenStatement.setDataPrototype     ( "SgBasicBlock*", "loop_body", "= NULL",
-                                      CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     JovialForThenStatement.setDataPrototype     ( "SgJovialForThenStatement::loop_statement_type_enum",
-                                         "loop_statement_type", "= SgJovialForThenStatement::e_unknown",
-                                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS,  NO_TRAVERSAL, NO_DELETE);
-
-  // Rasmussen (11/12/2018): Added to support Jovial COMPOOL modules
-     JovialCompoolStatement.setFunctionPrototype ( "HEADER_JOVIAL_COMPOOL_STATEMENT", "../Grammar/Statement.code" );
-     JovialCompoolStatement.setDataPrototype     ( "SgName", "name", "= \"\"",
-                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     //SK: Matlab specific for loop
-     MatlabForStatement.setFunctionPrototype ("HEADER_MATLAB_FOR_STATEMENT", "../Grammar/Statement.code" );
-     MatlabForStatement.setDataPrototype ( "SgExpression*", "index", "= NULL",
-                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-     MatlabForStatement.setDataPrototype ( "SgExpression*", "range", "= NULL",
-                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-     MatlabForStatement.setDataPrototype ( "SgBasicBlock*", "body", "= NULL",
-                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-
 
   // DQ (3/22/2007): Added new Fortran Nonblocked do loop construct. For example: "do 10 i=... \n 10 a = 1 \n"
      FortranNonblockedDo.setFunctionPrototype ( "HEADER_FORTRAN_NONBLOCKED_DO", "../Grammar/Statement.code" );
@@ -3935,9 +3568,6 @@ Grammar::setUpStatements ()
      AssignedGotoStatement.setFunctionPrototype      ("HEADER_ASSIGNED_GOTO_STATEMENT", "../Grammar/Statement.code" );
 #endif
 
-  // Rasmussen (3/18/2019): Added new IR node for Jovial support
-     JovialTableStatement.setFunctionPrototype       ("HEADER_JOVIAL_TABLE_STATEMENT",  "../Grammar/Statement.code" );
-
   // DQ (7/21/2007): More IR nodes required for Fortran support
      BlockDataStatement.setDataPrototype    ( "SgBasicBlock*", "body", "= NULL",
                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
@@ -4002,15 +3632,6 @@ Grammar::setUpStatements ()
   // DerivedTypeStatement.setDataPrototype ( "int", "end_numeric_label", "= -1",
   //              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
      DerivedTypeStatement.setDataPrototype ( "SgLabelRefExp*", "end_numeric_label", "= NULL",
-                  NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-  // Rasmussen (3/18/2019): Added new IR node for Jovial support
-     JovialTableStatement.setDataPrototype ( "SgExpression*", "table_entry_size", "= NULL",
-                  NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JovialTableStatement.setDataPrototype ( "bool", "has_table_entry_size", "= false",
-                  NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JovialTableStatement.setDataPrototype ("SgJovialTableStatement::WordsPerEntry",
-                                            "words_per_entry", "= SgJovialTableStatement::WordsPerEntry::e_default",
                   NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // DQ (9/11/2007): Added support for new IR nodes, but have not added the correct data members yet!
@@ -4135,27 +3756,6 @@ Grammar::setUpStatements ()
      C_StyleCommentStatement.setDataPrototype     ( "std::string"   , "dummyString2", "= \"\"",
                                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL);
 #endif
-
-  // Rasmussen (03/26/2019): Added support for Jovial directives and define declarations.
-
-     JovialDirectiveStatement.setFunctionPrototype ( "HEADER_JOVIAL_DIRECTIVE_STATEMENT", "../Grammar/Statement.code" );
-     JovialDirectiveStatement.setFunctionSource    ( "SOURCE_JOVIAL_DIRECTIVE_STATEMENT", "../Grammar/Statement.code" );
-     JovialDirectiveStatement.setDataPrototype     ( "std::string", "content_string", "= \"\"",
-                                                CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     JovialDirectiveStatement.setDataPrototype     ( "SgJovialDirectiveStatement::directive_types", "directive_type", "= SgJovialDirectiveStatement::e_unknown",
-                                                CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     JovialDefineDeclaration.setFunctionPrototype  ( "HEADER_JOVIAL_DEFINE_DECLARATION", "../Grammar/Statement.code" );
-     JovialDefineDeclaration.setFunctionSource     ( "SOURCE_JOVIAL_DEFINE_DECLARATION", "../Grammar/Statement.code" );
-     JovialDefineDeclaration.setDataPrototype      ( "std::string", "define_string", "= \"\"",
-                                                CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     JovialOverlayDeclaration.setFunctionPrototype ( "HEADER_JOVIAL_OVERLAY_DECLARATION", "../Grammar/Statement.code" );
-     JovialOverlayDeclaration.setFunctionSource    ( "SOURCE_JOVIAL_OVERLAY_DECLARATION", "../Grammar/Statement.code" );
-     JovialOverlayDeclaration.setDataPrototype     ( "SgExpression*", "address", "= NULL",
-                                                CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     JovialOverlayDeclaration.setDataPrototype     ( "SgExprListExp*", "overlay", "= NULL",
-                                                CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
   // DQ (11/23/2008): Added support for CPP directives as IR nodes.
      C_PreprocessorDirectiveStatement.setFunctionPrototype ( "HEADER_PREPROCESSOR_DIRECTIVE_STATEMENT", "../Grammar/Statement.code" );
@@ -4411,15 +4011,6 @@ Grammar::setUpStatements ()
 
      ReturnStmt.setFunctionSource           ( "SOURCE_RETURN_STATEMENT", "../Grammar/Statement.code" );
      GotoStatement.setFunctionSource        ( "SOURCE_GOTO_STATEMENT", "../Grammar/Statement.code" );
-     AdaExitStmt.setFunctionSource          ( "SOURCE_ADA_EXIT_STATEMENT", "../Grammar/Statement.code" );
-     AdaLoopStmt.setFunctionSource          ( "SOURCE_ADA_LOOP_STATEMENT", "../Grammar/Statement.code" );
-     AdaDelayStmt.setFunctionSource         ( "SOURCE_ADA_DELAY_STATEMENT", "../Grammar/Statement.code" );
-     AdaSelectStmt.setFunctionSource        ( "SOURCE_ADA_SELECT_STATEMENT", "../Grammar/Statement.code" );
-     AdaSelectAlternativeStmt.setFunctionSource ( "SOURCE_ADA_SELECT_ALTERNATIVE_STATEMENT", "../Grammar/Statement.code" );
-     AdaTerminateStmt.setFunctionSource     ( "SOURCE_ADA_TERMINATE_STATEMENT", "../Grammar/Statement.code" );
-     AdaUnscopedBlock.setFunctionSource     ( "SOURCE_ADA_UNSCOPED_BLOCK", "../Grammar/Statement.code" );
-     AdaVariantWhenStmt.setFunctionSource           ( "SOURCE_ADA_VARIANT_WHEN_STMT", "../Grammar/Statement.code" );
-
      AsmStmt.setFunctionSource              ( "SOURCE_ASM_STATEMENT", "../Grammar/Statement.code" );
      SpawnStmt.setFunctionSource            ( "SOURCE_SPAWN_STATEMENT", "../Grammar/Statement.code" );
 
@@ -4433,7 +4024,6 @@ Grammar::setUpStatements ()
      ForInitStatement.setFunctionSource     ( "SOURCE_FOR_INIT_STATEMENT", "../Grammar/Statement.code" );
      CatchStatementSeq.setFunctionSource           ( "SOURCE_CATCH_STATEMENT_SEQ", "../Grammar/Statement.code" );
      FunctionParameterList.setFunctionSource( "SOURCE_FUNCTION_PARAMETER_LIST", "../Grammar/Statement.code" );
-     AdaParameterList.setFunctionSource( "SOURCE_ADA_PARAMETER_LIST", "../Grammar/Statement.code" );
      CtorInitializerList.setFunctionSource  ( "SOURCE_CTOR_INITIALIZER_LIST", "../Grammar/Statement.code" );
 
      TypedefDeclaration.setFunctionSource   ( "SOURCE_TYPEDEF_DECLARATION_STATEMENT", "../Grammar/Statement.code" );
@@ -4477,51 +4067,10 @@ Grammar::setUpStatements ()
   // Support for pragmas in the IR
      PragmaDeclaration.setFunctionSource      ( "SOURCE_PRAGMA_STATEMENT", "../Grammar/Statement.code" );
 
-  // Ada support
-     AdaPackageSpecDecl.setFunctionSource ( "SOURCE_ADA_PACKAGE_SPEC_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaPackageBodyDecl.setFunctionSource ( "SOURCE_ADA_PACKAGE_BODY_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaTaskSpecDecl.setFunctionSource   ( "SOURCE_ADA_TASK_SPEC_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaTaskTypeDecl.setFunctionSource   ( "SOURCE_ADA_TASK_TYPE_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaTaskBodyDecl.setFunctionSource   ( "SOURCE_ADA_TASK_BODY_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaProtectedSpecDecl.setFunctionSource   ( "SOURCE_ADA_PROTECTED_SPEC_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaProtectedTypeDecl.setFunctionSource   ( "SOURCE_ADA_PROTECTED_TYPE_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaProtectedBodyDecl.setFunctionSource   ( "SOURCE_ADA_PROTECTED_BODY_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaRenamingDecl.setFunctionSource   ( "SOURCE_ADA_RENAMING_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaDiscriminatedTypeDecl.setFunctionSource   ( "SOURCE_ADA_DISCRIMINATED_TYPE_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaRepresentationClause.setFunctionSource ( "SOURCE_ADA_REPRESENTATION_CLAUSE", "../Grammar/Statement.code" );
-     AdaEnumRepresentationClause.setFunctionSource ( "SOURCE_ADA_ENUM_REPRESENTATION_CLAUSE", "../Grammar/Statement.code" );
-     AdaComponentClause.setFunctionSource ( "SOURCE_ADA_COMPONENT_CLAUSE", "../Grammar/Statement.code");
-     AdaAttributeClause.setFunctionSource ( "SOURCE_ADA_ATTRIBUTE_CLAUSE", "../Grammar/Statement.code" );
-     AdaGenericDecl.setFunctionSource ( "SOURCE_ADA_GENERIC_DECL", "../Grammar/Statement.code" );
-     AdaGenericDefn.setFunctionSource ( "SOURCE_ADA_GENERIC_DEFN", "../Grammar/Statement.code" );
-     AdaGenericInstanceDecl.setFunctionSource ( "SOURCE_ADA_GENERIC_INSTANCE_DECL", "../Grammar/Statement.code" );
-     AdaFormalTypeDecl.setFunctionSource ( "SOURCE_ADA_FORMAL_TYPE_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaFormalPackageDecl.setFunctionSource ( "SOURCE_ADA_FORMAL_PACKAGE_DECL_STATEMENT", "../Grammar/Statement.code" );
-     AdaVariantDecl.setFunctionSource ( "SOURCE_ADA_VARIANT_DECL", "../Grammar/Statement.code" );
-
   // DQ (3/22/2019): Adding EmptyDeclaration to support addition of comments and CPP directives that will permit
   // token-based unparsing to work with greater precision. For example, used to add an include directive with
   // greater precision to the global scope and permit the unparsing via the token stream to be used as well.
      EmptyDeclaration.setFunctionSource      ( "SOURCE_EMPTY_DECLARATION", "../Grammar/Statement.code" );
-
-  // driscoll6 (6/30/11) Support for python
-     PythonPrintStmt.setFunctionPrototype ( "HEADER_PYTHON_PRINT_STMT", "../Grammar/Statement.code" );
-     PythonPrintStmt.setFunctionSource    ( "SOURCE_PYTHON_PRINT_STMT", "../Grammar/Statement.code" );
-     PythonPrintStmt.setDataPrototype     ( "SgExpression*", "destination", "= NULL",
-             CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     PythonPrintStmt.setDataPrototype     ( "SgExprListExp*", "values", "= NULL",
-             CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-     PythonGlobalStmt.setFunctionPrototype ( "HEADER_PYTHON_GLOBAL_STMT", "../Grammar/Statement.code" );
-     PythonGlobalStmt.setFunctionSource    ( "SOURCE_PYTHON_GLOBAL_STMT", "../Grammar/Statement.code" );
-     PythonGlobalStmt.editSubstitute       ( "HEADER_LIST_DECLARATIONS", "HEADER_LIST_DECLARATIONS", "../Grammar/Statement.code" );
-     PythonGlobalStmt.editSubstitute      ( "LIST_DATA_TYPE", "SgInitializedNamePtrList" );
-     PythonGlobalStmt.editSubstitute      ( "LIST_NAME", "names" );
-     PythonGlobalStmt.editSubstitute      ( "LIST_FUNCTION_RETURN_TYPE", "SgInitializedNamePtrList::iterator" );
-     PythonGlobalStmt.editSubstitute      ( "LIST_FUNCTION_NAME", "name" );
-     PythonGlobalStmt.editSubstitute      ( "LIST_ELEMENT_DATA_TYPE", "SgInitializedName*" );
-     PythonGlobalStmt.setDataPrototype    ( "SgInitializedNamePtrList", "names", "",
-                                            NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
      PassStatement.setFunctionSource        ( "SOURCE_PASS_STATEMENT", "../Grammar/Statement.code" );
 
@@ -4587,14 +4136,6 @@ Grammar::setUpStatements ()
      WithStatement.setFunctionSource            ("SOURCE_WITH_STATEMENT", "../Grammar/Statement.code" );
      WithStatement.setFunctionSource (
           "SOURCE_POST_CONSTRUCTION_INITIALIZATION_STATEMENT", "../Grammar/Statement.code" );
-
-    AdaPackageSpec.setFunctionSource            ( "SOURCE_ADA_PACKAGE_SPEC_STATEMENT", "../Grammar/Statement.code" );
-    AdaPackageBody.setFunctionSource            ( "SOURCE_ADA_PACKAGE_BODY_STATEMENT", "../Grammar/Statement.code" );
-    AdaTaskSpec.setFunctionSource            ( "SOURCE_ADA_TASK_SPEC_STATEMENT", "../Grammar/Statement.code" );
-    AdaTaskBody.setFunctionSource            ( "SOURCE_ADA_TASK_BODY_STATEMENT", "../Grammar/Statement.code" );
-    AdaProtectedSpec.setFunctionSource            ( "SOURCE_ADA_PROTECTED_SPEC_STATEMENT", "../Grammar/Statement.code" );
-    AdaProtectedBody.setFunctionSource            ( "SOURCE_ADA_PROTECTED_BODY_STATEMENT", "../Grammar/Statement.code" );
-    AdaAcceptStmt.setFunctionSource          ( "SOURCE_ADA_ACCEPT_STATEMENT",    "../Grammar/Statement.code" );
 
 #if USE_FORTRAN_IR_NODES
      ProgramHeaderStatement.setFunctionSource   ("SOURCE_PROGRAM_HEADER_STATEMENT", "../Grammar/Statement.code" );
@@ -4672,9 +4213,6 @@ Grammar::setUpStatements ()
      AssignedGotoStatement.setFunctionSource      ("SOURCE_ASSIGNED_GOTO_STATEMENT", "../Grammar/Statement.code" );
 #endif
 
-  // Rasmussen (3/18/2019): Added new IR node for Jovial support
-     JovialTableStatement.setFunctionSource       ("SOURCE_JOVIAL_TABLE_STATEMENT", "../Grammar/Statement.code" );
-
      NamelistStatement.setFunctionSource          ("SOURCE_NAMELIST_STATEMENT", "../Grammar/Statement.code" );
      ImportStatement.setFunctionSource            ("SOURCE_IMPORT_STATEMENT", "../Grammar/Statement.code" );
 
@@ -4684,103 +4222,6 @@ Grammar::setUpStatements ()
 
      ForAllStatement.setFunctionSource            ( "SOURCE_FORALL_STATEMENT", "../Grammar/Statement.code" );
 #endif
-
-  // Rasmussen (11/12/2018): Added to support Jovial COMPOOL modules
-     JovialCompoolStatement.setFunctionSource     ( "SOURCE_JOVIAL_COMPOOL_STATEMENT",  "../Grammar/Statement.code" );
-     JovialForThenStatement.setFunctionSource     ( "SOURCE_JOVIAL_FOR_THEN_STATEMENT", "../Grammar/Statement.code" );
-
-
-  // PP 05/08/20 Adding Ada nodes
-     // packages
-     AdaPackageSpec.setFunctionPrototype ( "HEADER_ADA_PACKAGE_SPEC_STATEMENT", "../Grammar/Statement.code" );
-     AdaPackageSpec.setDataPrototype ( "SgAdaPackageBody*", "body", "= NULL",
-                                    NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaPackageSpec.setDataPrototype ( "bool", "hasPrivate", "= false",
-                                    NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaPackageSpec.setDataPrototype ( "SgDeclarationStatementPtrList", "declarations", "",
-                                    NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-     AdaPackageBody.setFunctionPrototype ( "HEADER_ADA_PACKAGE_BODY_STATEMENT", "../Grammar/Statement.code" );
-     AdaPackageBody.setDataPrototype ( "SgAdaPackageSpec*", "spec", "= NULL",
-                                    NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaPackageBody.setDataPrototype ( "SgStatementPtrList", "statements", "",
-                                    NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-     // tasks
-     AdaTaskSpec.setFunctionPrototype ( "HEADER_ADA_TASK_SPEC_STATEMENT", "../Grammar/Statement.code" );
-     AdaTaskSpec.setDataPrototype ( "SgAdaTaskBody*", "body", "= NULL",
-                                    NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     // hasMembers is true, if the task specification has an explicit member list
-     //               false, for cases like "task type The_Task_Type;"
-     AdaTaskSpec.setDataPrototype ( "bool", "hasMembers", "= false",
-                                    NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaTaskSpec.setDataPrototype ( "SgDeclarationStatementPtrList", "declarations", "",
-                                    NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaTaskSpec.setDataPrototype ( "bool", "hasPrivate", "= false",
-                                    NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-
-     AdaTaskBody.setFunctionPrototype ( "HEADER_ADA_TASK_BODY_STATEMENT", "../Grammar/Statement.code" );
-     AdaTaskBody.setDataPrototype ( "SgAdaTaskSpec*", "spec", "= NULL",
-                                    NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaTaskBody.setDataPrototype ( "SgStatementPtrList", "statements", "",
-                                    NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-     // protected objects (PP 01/11/22)
-     AdaProtectedSpec.setFunctionPrototype ( "HEADER_ADA_PROTECTED_SPEC_STATEMENT", "../Grammar/Statement.code" );
-     AdaProtectedSpec.setDataPrototype ( "SgAdaProtectedBody*", "body", "= NULL",
-                                    NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     // hasMembers is true, if the task specification has an explicit member list
-     //               false, for cases like "task type The_Task_Type;"
-     //~ AdaProtectedSpec.setDataPrototype ( "bool", "hasMembers", "= false",
-                                    //~ NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaProtectedSpec.setDataPrototype ( "SgDeclarationStatementPtrList", "declarations", "",
-                                    NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaProtectedSpec.setDataPrototype ( "bool", "hasPrivate", "= false",
-                                    NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaProtectedBody.setFunctionPrototype ( "HEADER_ADA_PROTECTED_BODY_STATEMENT", "../Grammar/Statement.code" );
-     AdaProtectedBody.setDataPrototype ( "SgAdaProtectedSpec*", "spec", "= NULL",
-                                    NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaProtectedBody.setDataPrototype ( "SgStatementPtrList", "statements", "",
-                                    NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-
-     AdaAcceptStmt.setFunctionPrototype ( "HEADER_ADA_ACCEPT_STATEMENT", "../Grammar/Statement.code" );
-     AdaAcceptStmt.setDataPrototype ( "SgFunctionParameterScope*", "parameterScope", "= NULL",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     AdaAcceptStmt.setDataPrototype ( "SgFunctionParameterList*", "parameterList", "= NULL",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-     AdaAcceptStmt.setDataPrototype ( "SgExpression*", "entry", "= NULL",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaAcceptStmt.setDataPrototype ( "SgExpression*", "index", "= NULL",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaAcceptStmt.setDataPrototype ( "SgStatement*", "body", "= NULL",
-                                      NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-     AdaEntryDecl.setFunctionPrototype ( "HEADER_ADA_ENTRY_DECL_STMT", "../Grammar/Statement.code" );
-     AdaEntryDecl.setDataPrototype ( "SgInitializedName*", "entryIndex", "= nullptr",
-                  NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-     AdaEntryDecl.setDataPrototype ( "SgExpression*", "entryBarrier", "= nullptr",
-                  NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
-/*
-     // PP (2/11/22) the type of the index variable is determined by the type of the possibly unnamed entryIndex variable.
-     AdaEntryDecl.setDataPrototype ( "SgType*", "discrete_index_type", "= NULL",
-                  NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-*/
-     AdaEntryDecl.setFunctionSource ( "SOURCE_ADA_ENTRY_DECL_STMT", "../Grammar/Statement.code");
-
-     AdaFunctionRenamingDecl.setFunctionPrototype ( "HEADER_ADA_FUNCTION_RENAMING_DECL_STMT", "../Grammar/Statement.code" );
-
-     AdaFunctionRenamingDecl.setDataPrototype ( "SgFunctionDeclaration*", "renamed_function", "= NULL",
-                                                NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     AdaFunctionRenamingDecl.setFunctionSource ( "SOURCE_ADA_FUNCTION_RENAMING_DECL_STMT", "../Grammar/Statement.code" );
-
-     MatlabForStatement.setFunctionSource         ( "SOURCE_MATLAB_FOR_STATEMENT", "../Grammar/Statement.code" );
 
 #if 0
   // Every node needs a definition of the post_construction_initialization() member function
@@ -4831,36 +4272,90 @@ Grammar::setUpStatements ()
 
     OmpDoStatement.setFunctionSource            ("SOURCE_OMP_DO_STATEMENT", "../Grammar/Statement.code" );
     OmpWorkshareStatement.setFunctionSource            ("SOURCE_OMP_WORKSHARE_STATEMENT", "../Grammar/Statement.code" );
-    OmpClauseBodyStatement.setFunctionPrototype         ( "HEADER_OMP_CLAUSEBODY_STATEMENT", "../Grammar/Statement.code" );
-    OmpClauseBodyStatement.setFunctionSource            ("SOURCE_OMP_CLAUSEBODY_STATEMENT", "../Grammar/Statement.code" );
+    UpirFieldBodyStatement.setFunctionPrototype         ( "HEADER_UPIR_FIELDBODY_STATEMENT", "../Grammar/Statement.code" );
+    UpirFieldBodyStatement.setFunctionSource            ("SOURCE_UPIR_FIELDBODY_STATEMENT", "../Grammar/Statement.code" );
 
-    OmpBodyStatement.setFunctionPrototype         ("HEADER_OMP_BODY_STATEMENT", "../Grammar/Statement.code");
-    OmpBodyStatement.setFunctionSource            ("SOURCE_OMP_BODY_STATEMENT", "../Grammar/Statement.code");
+    UpirFieldStatement.setFunctionPrototype         ( "HEADER_UPIR_FIELD_STATEMENT", "../Grammar/Statement.code" );
+    UpirFieldStatement.setFunctionSource            ("SOURCE_UPIR_FIELD_STATEMENT", "../Grammar/Statement.code" );
+
+    UpirBaseStatement.setFunctionSource             ( "SOURCE_UPIR_BASE_STATEMENT", "../Grammar/Statement.code" );
+    UpirLoopStatement.setFunctionSource             ( "SOURCE_UPIR_LOOP_STATEMENT", "../Grammar/Statement.code" );
+    UpirLoopParallelStatement.setFunctionPrototype  ( "HEADER_UPIR_LOOP_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
+    UpirLoopParallelStatement.setFunctionSource     ( "SOURCE_UPIR_LOOP_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
+    UpirSyncStatement.setFunctionSource             ( "SOURCE_UPIR_SYNC_STATEMENT", "../Grammar/Statement.code" );
+
+    UpirBodyStatement.setFunctionPrototype         ("HEADER_UPIR_BODY_STATEMENT", "../Grammar/Statement.code");
+    UpirBodyStatement.setFunctionSource            ("SOURCE_UPIR_BODY_STATEMENT", "../Grammar/Statement.code");
     OmpCriticalStatement.setFunctionSource            ("SOURCE_OMP_CRITICAL_STATEMENT", "../Grammar/Statement.code");
-    OmpFlushStatement.setFunctionSource            ("SOURCE_OMP_FLUSH_STATEMENT", "../Grammar/Statement.code" );
     OmpDeclareSimdStatement.setFunctionPrototype   ("HEADER_OMP_DECLARE_SIMD_STATEMENT", "../Grammar/Statement.code");
     OmpDeclareSimdStatement.setFunctionSource      ("SOURCE_OMP_DECLARE_SIMD_STATEMENT", "../Grammar/Statement.code");
 
-    OmpParallelStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
+    OmpRequiresStatement.setFunctionPrototype   ("HEADER_OMP_REQUIRES_STATEMENT", "../Grammar/Statement.code");
+    OmpRequiresStatement.setFunctionSource            ("SOURCE_OMP_REQUIRES_STATEMENT", "../Grammar/Statement.code" );
+    OmpTaskwaitStatement.setFunctionPrototype   ("HEADER_OMP_TASKWAIT_STATEMENT", "../Grammar/Statement.code");
+    OmpTaskwaitStatement.setFunctionSource            ("SOURCE_OMP_TASKWAIT_STATEMENT", "../Grammar/Statement.code" );
+    UpirSpmdStatement.setFunctionSource            ("SOURCE_UPIR_SPMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTeamsStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_STATEMENT", "../Grammar/Statement.code" );
+    OmpCancellationPointStatement.setFunctionSource            ("SOURCE_OMP_CANCELLATION_POINT_STATEMENT", "../Grammar/Statement.code" );
+    OmpOrderedDependStatement.setFunctionSource            ("SOURCE_OMP_ORDERED_DEPEND_STATEMENT", "../Grammar/Statement.code" );
+    OmpDeclareMapperStatement.setFunctionSource            ("SOURCE_OMP_DECLARE_MAPPER_STATEMENT", "../Grammar/Statement.code" );
+    OmpCancelStatement.setFunctionSource            ("SOURCE_OMP_CANCEL_STATEMENT", "../Grammar/Statement.code" );
+    OmpTaskgroupStatement.setFunctionSource            ("SOURCE_OMP_TASKGROUP_STATEMENT", "../Grammar/Statement.code" );
+    OmpDepobjStatement.setFunctionSource        ("SOURCE_OMP_DEPOBJ_STATEMENT", "../Grammar/Statement.code" );
+    OmpDistributeStatement.setFunctionSource            ("SOURCE_OMP_DISTRIBUTE_STATEMENT", "../Grammar/Statement.code" );
+    OmpLoopStatement.setFunctionSource            ("SOURCE_OMP_LOOP_STATEMENT", "../Grammar/Statement.code" );
+    OmpScanStatement.setFunctionSource            ("SOURCE_OMP_SCAN_STATEMENT", "../Grammar/Statement.code" );
+    OmpTaskloopStatement.setFunctionSource            ("SOURCE_OMP_TASKLOOP_STATEMENT", "../Grammar/Statement.code" ); OmpMetadirectiveStatement.setFunctionSource            ("SOURCE_OMP_METADIRECTIVE_STATEMENT", "../Grammar/Statement.code" );
     OmpSectionsStatement.setFunctionSource            ("SOURCE_OMP_SECTIONS_STATEMENT", "../Grammar/Statement.code" );
     OmpSectionStatement.setFunctionSource            ("SOURCE_OMP_SECTION_STATEMENT", "../Grammar/Statement.code" );
     OmpTaskStatement.setFunctionSource            ("SOURCE_OMP_TASK_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetEnterDataStatement.setFunctionSource            ("SOURCE_OMP_TARGET_ENTER_DATA_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetExitDataStatement.setFunctionSource            ("SOURCE_OMP_TARGET_EXIT_DATA_STATEMENT", "../Grammar/Statement.code" );
     OmpSingleStatement.setFunctionSource            ("SOURCE_OMP_SINGLE_STATEMENT", "../Grammar/Statement.code" );
 
     OmpThreadprivateStatement.setFunctionPrototype    ( "HEADER_OMP_THREADPRIVATE_STATEMENT", "../Grammar/Statement.code" );
 
     OmpThreadprivateStatement.setFunctionSource            ("SOURCE_OMP_THREADPRIVATE_STATEMENT", "../Grammar/Statement.code" );
-    OmpForStatement.setFunctionSource            ("SOURCE_OMP_FOR_STATEMENT", "../Grammar/Statement.code" );
+    OmpFlushStatement.setFunctionSource            ("SOURCE_OMP_FLUSH_STATEMENT", "../Grammar/Statement.code" );
+    OmpAllocateStatement.setFunctionSource            ("SOURCE_OMP_ALLOCATE_STATEMENT", "../Grammar/Statement.code" );
+    UpirWorksharingStatement.setFunctionSource            ("SOURCE_UPIR_WORKSHARING_STATEMENT", "../Grammar/Statement.code" );
     OmpForSimdStatement.setFunctionSource            ("SOURCE_OMP_FOR_SIMD_STATEMENT", "../Grammar/Statement.code" );
     OmpAtomicStatement.setFunctionSource            ("SOURCE_OMP_ATOMIC_STATEMENT", "../Grammar/Statement.code" );
     OmpBarrierStatement.setFunctionSource            ("SOURCE_OMP_BARRIER_STATEMENT", "../Grammar/Statement.code" );
     OmpMasterStatement.setFunctionSource            ("SOURCE_OMP_MASTER_STATEMENT", "../Grammar/Statement.code" );
+    OmpTaskyieldStatement.setFunctionSource            ("SOURCE_OMP_TASKYIELD_STATEMENT", "../Grammar/Statement.code" );
     OmpOrderedStatement.setFunctionSource            ("SOURCE_OMP_ORDERED_STATEMENT", "../Grammar/Statement.code" );
-    OmpTaskwaitStatement.setFunctionSource            ("SOURCE_OMP_TASKWAIT_STATEMENT", "../Grammar/Statement.code" );
 
-    OmpTargetStatement.setFunctionSource            ("SOURCE_OMP_TARGET_STATEMENT", "../Grammar/Statement.code" );
+    UpirTaskStatement.setFunctionSource            ("SOURCE_UPIR_TASK_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetDataStatement.setFunctionSource            ("SOURCE_OMP_TARGET_DATA_STATEMENT", "../Grammar/Statement.code" );
-    OmpSimdStatement.setFunctionSource            ("SOURCE_OMP_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetParallelForStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_FOR_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetParallelStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
+    OmpDistributeSimdStatement.setFunctionSource            ("SOURCE_OMP_DISTRIBUTE_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpDistributeParallelForStatement.setFunctionSource            ("SOURCE_OMP_DISTRIBUTE_PARALLEL_FOR_STATEMENT", "../Grammar/Statement.code" );
+    OmpDistributeParallelForSimdStatement.setFunctionSource            ("SOURCE_OMP_DISTRIBUTE_PARALLEL_FOR_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTaskloopSimdStatement.setFunctionSource            ("SOURCE_OMP_TASKLOOP_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetUpdateStatement.setFunctionSource            ("SOURCE_OMP_TARGET_UPDATE_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetParallelForSimdStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_FOR_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetParallelLoopStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_LOOP_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetSimdStatement.setFunctionSource            ("SOURCE_OMP_TARGET_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsDistributeStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_DISTRIBUTE_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsDistributeSimdStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_DISTRIBUTE_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsLoopStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_LOOP_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsDistributeParallelForStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_DISTRIBUTE_PARALLEL_FOR_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetTeamsDistributeParallelForSimdStatement.setFunctionSource            ("SOURCE_OMP_TARGET_TEAMS_DISTRIBUTE_PARALLEL_FOR_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpMasterTaskloopSimdStatement.setFunctionSource            ("SOURCE_OMP_MASTER_TASKLOOP_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpParallelMasterTaskloopStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_MASTER_TASKLOOP_STATEMENT", "../Grammar/Statement.code" );
+    OmpParallelMasterTaskloopSimdStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_MASTER_TASKLOOP_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTeamsDistributeStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_DISTRIBUTE_STATEMENT", "../Grammar/Statement.code" );
+    OmpTeamsDistributeSimdStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_DISTRIBUTE_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTeamsDistributeParallelForStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_DISTRIBUTE_PARALLEL_FOR_STATEMENT", "../Grammar/Statement.code" );
+    OmpTeamsDistributeParallelForSimdStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_DISTRIBUTE_PARALLEL_FOR_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpTeamsLoopStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_LOOP_STATEMENT", "../Grammar/Statement.code" );
+    OmpParallelMasterStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_MASTER_STATEMENT", "../Grammar/Statement.code" );
+    OmpMasterTaskloopStatement.setFunctionSource            ("SOURCE_OMP_MASTER_TASKLOOP_STATEMENT", "../Grammar/Statement.code" );
+    OmpParallelLoopStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_LOOP_STATEMENT", "../Grammar/Statement.code" );
+    UpirSimdStatement.setFunctionSource            ("SOURCE_UPIR_SIMD_STATEMENT", "../Grammar/Statement.code" );
 
    // sections {section, section} // `containerSuccessors >1 is not allowed in ROSETTA's traversal
    // We hack the code to handle this special case
@@ -4871,30 +4366,65 @@ Grammar::setUpStatements ()
     // directives with variable lists
             // omp flush [(var-list)]
     // Liao 9/27/2010, per user's report, modeling the variable reference use SgVarRefExp
-    //OmpFlushStatement.setDataPrototype( "SgInitializedNamePtrList", "variables", "",
     OmpFlushStatement.setDataPrototype( "SgVarRefExpPtrList", "variables", "",
                                                 NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
+    OmpAllocateStatement.setDataPrototype( "SgVarRefExpPtrList", "variables", "",
+                                                NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+
     OmpDeclareSimdStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+    OmpRequiresStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+    OmpTaskwaitStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
    // omp threadprivate [(var-list)]
     OmpThreadprivateStatement.setDataPrototype( "SgVarRefExpPtrList", "variables", "",
                                                 NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+
    // Directives with a statement/ structured body
-    OmpBodyStatement.setDataPrototype ( "SgStatement*", "body",        "= NULL",
-                                             CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+    UpirBaseStatement.setDataPrototype("SgStatement*", "upir_parent", "= NULL",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    UpirBaseStatement.setDataPrototype("SgStatementPtrList", "upir_children", "",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    UpirBodyStatement.setDataPrototype("SgStatement*", "body", "= NULL",
+                              CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+    UpirFieldStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    UpirLoopStatement.setDataPrototype("SgInitializedName*", "induction", "= NULL",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    UpirLoopStatement.setDataPrototype("SgExpression*", "lower_bound", "= NULL",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    UpirLoopStatement.setDataPrototype("SgExpression*", "upper_bound", "= NULL",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    UpirLoopStatement.setDataPrototype("SgExpression*", "step", "= NULL",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    UpirLoopStatement.setDataPrototype("bool", "incremental", "= true",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    UpirLoopParallelStatement.setDataPrototype("SgStatement*", "worksharing", "= NULL",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    UpirLoopParallelStatement.setDataPrototype("SgStatement*", "simd", "= NULL",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    UpirLoopParallelStatement.setDataPrototype("SgStatement*", "taskloop", "= NULL",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    UpirLoopParallelStatement.setDataPrototype("SgStatement*", "loop", "= NULL",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
     // Directive with a body + a name:
         // omp critical [name]  \n structured_block
     OmpCriticalStatement.setDataPrototype ( "SgName", "name", "= \"\"",
                   CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
+        // omp depobj [name] ...
+    OmpDepobjStatement.setDataPrototype ( "SgName", "name", "= \"\"",
+                  CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+
     // omp clause-body : e.g: parallel clause \n  body
     // having both
-    OmpClauseBodyStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
+    UpirFieldBodyStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
-//    OmpClauseBodyStatement.setAutomaticGenerationOfDestructor(false);
+//    UpirFieldBodyStatement.setAutomaticGenerationOfDestructor(false);
 #endif
 
      MicrosoftAttributeDeclaration.setFunctionSource ( "SOURCE_MICROSOFT_ATTRIBUTE_DECLARATION_STATEMENT", "../Grammar/Statement.code" );

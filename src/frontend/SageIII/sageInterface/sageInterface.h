@@ -106,17 +106,6 @@ namespace SageInterface
 //! An internal counter for generating unique SgName
 ROSE_DLL_API extern int gensym_counter;
 
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-//! Find the main interpretation.
-SgAsmInterpretation* getMainInterpretation(SgAsmGenericFile* file);
-
-//! Get the unsigned value of a disassembled constant.
-uint64_t getAsmConstant(SgAsmValueExpression* e);
-
-//! Get the signed value of a disassembled constant.
-int64_t getAsmSignedConstant(SgAsmValueExpression *e);
-#endif
-
 //! Function to add "C" style comment to statement.
  void addMessageStatement( SgStatement* stmt, std::string message );
 
@@ -576,9 +565,6 @@ ROSE_DLL_API void setExtern(SgDeclarationStatement* stmt);
 //! True if an SgInitializedName is "mutable' (has storage modifier set)
 bool ROSE_DLL_API isMutable(SgInitializedName* name);
 
-//! True if a parameter name is a Jovial output parameter
-bool ROSE_DLL_API isJovialOutParam(SgInitializedName* name);
-
 //! Get a vector of Jovial input parameters from the function parameter list (may work for Fortran in the future)
 std::vector<SgInitializedName*> getInParameters(const SgInitializedNamePtrList &params);
 
@@ -661,44 +647,28 @@ void markNodeToBeUnparsed(SgNode* node, int physical_file_id);
   /*! Brief These traverse the memory pool of SgFile IR nodes and determine what languages are in use!
    */
 #if INLINE_OPTIMIZED_IS_LANGUAGE_KIND_FUNCTIONS
-  ROSE_DLL_API inline bool is_Ada_language ()       { return Rose::is_Ada_language; }
   ROSE_DLL_API inline bool is_C_language ()         { return Rose::is_C_language; }
-  ROSE_DLL_API inline bool is_Cobol_language ()     { return Rose::is_Cobol_language; }
   ROSE_DLL_API inline bool is_OpenMP_language ()    { return Rose::is_OpenMP_language; }
   ROSE_DLL_API inline bool is_UPC_language ()       { return Rose::is_UPC_language; }
   ROSE_DLL_API inline bool is_UPC_dynamic_threads() { return Rose::is_UPC_dynamic_threads; }
   ROSE_DLL_API inline bool is_C99_language ()       { return Rose::is_C99_language; }
   ROSE_DLL_API inline bool is_Cxx_language ()       { return Rose::is_Cxx_language; }
-  ROSE_DLL_API inline bool is_Java_language ()      { return Rose::is_Java_language; }
-  ROSE_DLL_API inline bool is_Jovial_language ()    { return Rose::is_Jovial_language; }
   ROSE_DLL_API inline bool is_Fortran_language ()   { return Rose::is_Fortran_language; }
   ROSE_DLL_API inline bool is_CAF_language ()       { return Rose::is_CAF_language; }
-  ROSE_DLL_API inline bool is_PHP_language()        { return Rose::is_PHP_language; }
-  ROSE_DLL_API inline bool is_Python_language()     { return Rose::is_Python_language; }
   ROSE_DLL_API inline bool is_Cuda_language()       { return Rose::is_Cuda_language; }
   ROSE_DLL_API inline bool is_OpenCL_language()     { return Rose::is_OpenCL_language; }
-  ROSE_DLL_API inline bool is_X10_language()        { return Rose::is_X10_language; }
-  ROSE_DLL_API inline bool is_binary_executable()   { return Rose::is_binary_executable; }
 #else
-  ROSE_DLL_API bool is_Ada_language ();
   ROSE_DLL_API bool is_C_language ();
-  ROSE_DLL_API bool is_Cobol_language ();
   ROSE_DLL_API bool is_OpenMP_language ();
   ROSE_DLL_API bool is_UPC_language ();
   //! Check if dynamic threads compilation is used for UPC programs
   ROSE_DLL_API bool is_UPC_dynamic_threads();
   ROSE_DLL_API bool is_C99_language ();
   ROSE_DLL_API bool is_Cxx_language ();
-  ROSE_DLL_API bool is_Java_language ();
-  ROSE_DLL_API bool is_Jovial_language ();
   ROSE_DLL_API bool is_Fortran_language ();
   ROSE_DLL_API bool is_CAF_language ();
-  ROSE_DLL_API bool is_PHP_language();
-  ROSE_DLL_API bool is_Python_language();
   ROSE_DLL_API bool is_Cuda_language();
   ROSE_DLL_API bool is_OpenCL_language();
-  ROSE_DLL_API bool is_X10_language();
-  ROSE_DLL_API bool is_binary_executable();
 #endif
 
   ROSE_DLL_API bool is_mixed_C_and_Cxx_language ();
@@ -1704,7 +1674,7 @@ NodeType* getEnclosingNode(const SgNode* astNode, const bool includingSelf = fal
   ROSE_DLL_API SgSwitchStatement* findEnclosingSwitch(SgStatement* s);
 
   //! Find enclosing OpenMP clause body statement from s. If s is already one, return it directly.
-  ROSE_DLL_API SgOmpClauseBodyStatement* findEnclosingOmpClauseBodyStatement(SgStatement* s);
+  ROSE_DLL_API SgUpirFieldBodyStatement* findEnclosingUpirFieldBodyStatement(SgStatement* s);
 
   //! Find the closest loop outside the given statement; if fortranLabel is not empty, the Fortran label of the loop must be equal to it
   ROSE_DLL_API SgScopeStatement* findEnclosingLoop(SgStatement* s, const std::string& fortranLabel = "", bool stopOnSwitches = false);
@@ -1930,12 +1900,6 @@ ROSE_DLL_API void deleteExpressionTreeWithOriginalExpressionSubtrees(SgNode* roo
 //! Move statements in first block to the second block (preserves order and rebuilds the symbol table).
 ROSE_DLL_API void moveStatementsBetweenBlocks ( SgBasicBlock* sourceBlock, SgBasicBlock* targetBlock );
 
-//! Move statements in Ada's package spec into C++ namespace's definition
-ROSE_DLL_API void moveStatementsBetweenBlocks ( SgAdaPackageSpec * sourceBlock, SgNamespaceDefinitionStatement* targetBlock );
-
-//! Move statements in Ada's package body into C++ namespace's definition
-ROSE_DLL_API void moveStatementsBetweenBlocks ( SgAdaPackageBody* sourceBlock, SgNamespaceDefinitionStatement* targetBlock );
-
 //! Move statements between C++ namespace's definitions
 ROSE_DLL_API void moveStatementsBetweenBlocks ( SgNamespaceDefinitionStatement* sourceBlock, SgNamespaceDefinitionStatement* targetBlock );
 
@@ -1944,7 +1908,6 @@ ROSE_DLL_API bool isLambdaFunction (SgFunctionDeclaration* func);
 
 //! check if a variable reference is this->a[i] inside of a lambda function
 ROSE_DLL_API bool isLambdaCapturedVariable (SgVarRefExp* varRef);
-
 
 //! Move a variable declaration to a new scope, handle symbol, special scopes like For loop, etc.
 ROSE_DLL_API void moveVariableDeclaration(SgVariableDeclaration* decl, SgScopeStatement* target_scope);
@@ -2116,18 +2079,6 @@ void setParameterList(actualFunction *func,SgFunctionParameterList *paralist) {
      func->set_parameterList(paralist);
      paralist->set_parent(func);
 
-     if (SageInterface::is_Ada_language())
-     {
-       // Ada stores variable declarations in the function parameter scope (for functions)
-       //   and in a discriminantScope (for discriminated declarations).
-       //   ==> just make sure that these are set.
-      SgInitializedNamePtrList& args = paralist->get_args();
-       for (SgInitializedNamePtrList::iterator i = args.begin(); i != args.end(); ++i)
-       {
-         ROSE_ASSERT(*i && isSgVariableDeclaration((*i)->get_declptr()));
-       }
-     }
-     else
      {
         // DQ (5/15/2012): Need to set the declptr in each SgInitializedName IR node.
         // This is needed to support the AST Copy mechanism (at least). The files: test2005_150.C,
@@ -2445,8 +2396,8 @@ ROSE_DLL_API SgBasicBlock* ensureBasicBlockAsFalseBodyOfIf(SgIfStmt* ifs, bool c
 //! Check if the body of a 'catch' statement is a SgBasicBlock, create one if not.
 ROSE_DLL_API SgBasicBlock* ensureBasicBlockAsBodyOfCatch(SgCatchOptionStmt* cos);
 
-//! Check if the body of a SgOmpBodyStatement is a SgBasicBlock, create one if not
-ROSE_DLL_API SgBasicBlock* ensureBasicBlockAsBodyOfOmpBodyStmt(SgOmpBodyStatement* ompbodyStmt);
+//! Check if the body of a SgUpirBodyStatement is a SgBasicBlock, create one if not
+ROSE_DLL_API SgBasicBlock* ensureBasicBlockAsBodyOfOmpBodyStmt(SgUpirBodyStatement* ompbodyStmt);
 
 // DQ (1/18/2015): This is added to support better quality token-based unparsing.
 //! Remove unused basic block IR nodes added as part of normalization.
@@ -2460,7 +2411,7 @@ ROSE_DLL_API void recordNormalizations(SgStatement* s);
 //! switch, If, Catch, OmpBodyStmt, etc
 bool isBodyStatement (SgStatement* s);
 
-//! Fix up ifs, loops, while, switch, Catch, OmpBodyStatement, etc. to have blocks as body components. It also adds an empty else body to if statements that don't have them.
+//! Fix up ifs, loops, while, switch, Catch, UpirBodyStatement, etc. to have blocks as body components. It also adds an empty else body to if statements that don't have them.
 void changeAllBodiesToBlocks(SgNode* top, bool createEmptyBody = true);
 
 // The same as changeAllBodiesToBlocks(SgNode* top). Phased out.
@@ -2841,24 +2792,6 @@ SgInitializedName& getFirstVariable(SgVariableDeclaration& vardecl);
 // JP (9/17/14): Added function to test whether two SgType* are equivalent or not
    bool checkTypesAreEqual(SgType *typeA, SgType *typeB);
 
-//--------------------------------Java interface functions ---------------------
-#ifdef ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
-      ROSE_DLL_API std::string getTempDirectory(SgProject *project);
-      ROSE_DLL_API void destroyTempDirectory(std::string);
-      ROSE_DLL_API SgFile *processFile(SgProject *, std::string, bool unparse = false);
-      ROSE_DLL_API std::string preprocessPackage(SgProject *, std::string);
-      ROSE_DLL_API std::string preprocessImport(SgProject *, std::string);
-      ROSE_DLL_API SgFile* preprocessCompilationUnit(SgProject *, std::string, std::string, bool unparse = true);
-      ROSE_DLL_API SgClassDefinition *findJavaPackage(SgScopeStatement *, std::string);
-      ROSE_DLL_API SgClassDefinition *findOrInsertJavaPackage(SgProject *, std::string, bool create_directory = false);
-      ROSE_DLL_API SgClassDeclaration *findOrImportJavaClass(SgProject *, SgClassDefinition *package_definition, std::string);
-      ROSE_DLL_API SgClassDeclaration *findOrImportJavaClass(SgProject *, std::string, std::string);
-      ROSE_DLL_API SgClassDeclaration *findOrImportJavaClass(SgProject *, SgClassType *);
-      ROSE_DLL_API SgMemberFunctionDeclaration *findJavaMain(SgClassDefinition *);
-      ROSE_DLL_API SgMemberFunctionDeclaration *findJavaMain(SgClassType *);
-#endif // ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
-
-
 
 // DQ (8/31/2016): Making this a template function so that we can have it work with user defined filters.
 //! This function detects template instantiations that are relevant when filters are used.
@@ -2945,8 +2878,6 @@ void checkForInitializers( SgNode* node );
 void clearSharedGlobalScopes(SgProject * project);
 
 }// end of namespace
-
-
 
 #endif
 

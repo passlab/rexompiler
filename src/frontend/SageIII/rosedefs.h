@@ -43,7 +43,6 @@ typedef uint64_t rose_addr_t; /* address and size (file and memory) */
 
 // DQ (10/29/2010): This must be included as a header file since the function 
 // declarations in SgAsmStatement require it in the generated Cxx_Grammar.h file.
-#include "virtualBinCFG.h" 
 
 #include "staticCFG.h"
 #else

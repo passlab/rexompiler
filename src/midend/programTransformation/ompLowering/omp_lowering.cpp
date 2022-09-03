@@ -5,6 +5,8 @@
 #include "Outliner.hh"
 #include "omp_lowering.h"
 #include "RoseAst.h"
+#include <sstream>
+#include "rex_llvm.h"
 
 using namespace std;
 using namespace Rose;
@@ -18,7 +20,7 @@ using namespace OmpSupport;
 // We think the number of CUDA threads is the iteration count of the parallelized CUDA loop (peeled off), assuming increment is always 1
 //TODO  Also, the incremental value should be irrevelvant?
 // The loop will be transformed away when we call transOmpTargtLoop since we use bottom-up translation
-// So the loop iteration count needs to be stored globally before transOmpTarget() is called. 
+// So the loop iteration count needs to be stored globally before transOmpTarget() is called.
 static SgExpression* cuda_loop_iter_count_1 = NULL;
 
 // this is another hack to pass the reduction variables for accelerator model directives
@@ -37,21 +39,43 @@ static std::map<string , std::vector<SgExpression*> > offload_array_size_map;
 
 // Liao 1/23/2015
 // when translating mapped variables using xomp_deviceDataEnvironmentPrepareVariable(), the original variable reference will be used as
-// a parameter. 
+// a parameter.
 // However, later replaceVariablesWithPointerDereference () will find it and replace it with a device version reference, which is not desired.
 // In order to avoid this, we keep track of these few references to the original Host CPU side variables and don't replace them later on.
 // This may not be elegant, but let's get something working first.
-static set<SgVarRefExp* > preservedHostVarRefs; 
+static set<SgVarRefExp* > preservedHostVarRefs;
+
+static SgVariableDeclaration* get_kmpc_global_tid(SgNode*, SgScopeStatement*);
+static void insert_function_parameter(std::string, SgType*, SgFunctionDeclaration*, bool);
+// move the outlined function to a separate file
+
+static SgFunctionDeclaration *move_outlined_function(SgFunctionDeclaration*, SgSourceFile*);
+std::vector<SgFunctionDeclaration* >* outlined_function_list = NULL;
+std::vector<SgDeclarationStatement *>* outlined_struct_list = NULL;
+
+static std::vector<SgFunctionDeclaration* >* target_outlined_function_list = NULL;
+static void post_processing(SgSourceFile*);
+static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration*, std::string);
+static void fix_storage_modifier(SgSourceFile*);
+static unsigned int kmpc_global_tid_counter = 0;
+static unsigned int kmpc_kernel_id_counter = 0;
+
+SgExprListExp* offloading_variable_list = NULL;
+SgExprListExp* offloading_variable_base_list = NULL;
+SgExprListExp* offloading_variable_size_list = NULL;
+SgExprListExp* offloading_variable_type_list = NULL;
+
+static SgSourceFile* cpu_outlined_file = NULL;
 
 #define ENABLE_XOMP 1  // Enable the middle layer (XOMP) of OpenMP runtime libraries
-  //! Generate a symbol set from an initialized name list, 
+  //! Generate a symbol set from an initialized name list,
   //filter out struct/class typed names
 static void convertAndFilter (const SgInitializedNamePtrList input, ASTtools::VarSymSet_t& output)
   {
     for (SgInitializedNamePtrList::const_iterator iter =  input.begin(); iter != input.end(); iter++)
     {
       const SgInitializedName * iname = *iter;
-      SgVariableSymbol* symbol = isSgVariableSymbol(iname->get_symbol_from_symbol_table ()); 
+      SgVariableSymbol* symbol = isSgVariableSymbol(iname->get_symbol_from_symbol_table ());
       ROSE_ASSERT (symbol != NULL);
       if (! isSgClassType(symbol->get_type()))
         output.insert(symbol);
@@ -59,14 +83,14 @@ static void convertAndFilter (const SgInitializedNamePtrList input, ASTtools::Va
   }
 
 namespace OmpSupport
-{ 
+{
   omp_rtl_enum rtl_type = e_gomp; /* default to  generate code targetting gcc's gomp */
   bool enable_accelerator = false; /* default is to not recognize and lowering OpenMP accelerator directives */
   bool enable_debugging = false; /* default is not to debug the process */
 
   // A flag to control if device data environment runtime functions are used to automatically manage data as much as possible.
-  // instead of generating explicit data allocation, copy, free functions. 
-  bool useDDE = true; 
+  // instead of generating explicit data allocation, copy, free functions.
+  bool useDDE = true;
 
   unsigned int nCounter = 0;
   //------------------------------------
@@ -74,12 +98,12 @@ namespace OmpSupport
   // Lazy approach: assume all files will contain OpenMP runtime library calls
   // TODO: (low priority) a better way is to only insert Headers when OpenMP is used.
   // 2/1/2008, try to use MiddleLevelRewrite to parse the content of the header, which
-  //  should generate function symbols used for runtime function calls 
+  //  should generate function symbols used for runtime function calls
   //  But it is not stable!
 
-  //! This makeDataSharingExplicit() is added by Hongyi on July/23/2012. 
+  //! This makeDataSharingExplicit() is added by Hongyi on July/23/2012.
   //! Consider private, firstprivate, lastprivate, shared, reduction  is it correct?@Leo
-  //TODO: consider the initialized name of variable in function call or definitions  
+  //TODO: consider the initialized name of variable in function call or definitions
 
   /** Algorithm for patchUpSharedVariables edited by Hongyi Ma on August 7th 2012
    *   1. find all variables references in  parallel region
@@ -88,7 +112,7 @@ namespace OmpSupport
    *   4. if not, add them into shared clause
    */
 
-  //! function prototypes for  patch up shared variables 
+  //! function prototypes for  patch up shared variables
 
   /*    Get name of varrefexp  */
   string getName( SgNode * n )
@@ -159,12 +183,12 @@ namespace OmpSupport
     /* then remove the duplicate variables */
     getUnique( vars );
 
-  } 
+  }
   /* the end of gatherReferences function*/
 
 
-  // Check if a variable is explicitly specified by clauses of omp_clause_body_stmt. Return e_unknown if not. 
-  static omp_construct_enum getExplicitDataSharingAttribute (SgInitializedName* iname, SgOmpClauseBodyStatement* omp_clause_body_stmt)
+  // Check if a variable is explicitly specified by clauses of omp_clause_body_stmt. Return e_unknown if not.
+  static omp_construct_enum getExplicitDataSharingAttribute (SgInitializedName* iname, SgUpirFieldBodyStatement* omp_clause_body_stmt)
   {
     ROSE_ASSERT  (iname != NULL);
     ROSE_ASSERT  (omp_clause_body_stmt != NULL);
@@ -182,6 +206,7 @@ namespace OmpSupport
     {
       rt_val = e_reduction;
     }
+
     else if (isInClauseVariableList( iname, omp_clause_body_stmt, V_SgOmpCopyinClause))
     {
       rt_val = e_copyin;
@@ -222,23 +247,31 @@ namespace OmpSupport
   // TODO: expose to header
  // From collapse(Integer), find all affected for loops of a 'omp for' or 'omp simd' directive
  // In this case, normalizing combined constructs like 'parallel for' is convenient, less directives to consider.
-  vector <SgForStatement* > getAffectedForLoops (SgOmpClauseBodyStatement* forOrSimd)
+  vector <SgForStatement* > getAffectedForLoops (SgUpirFieldBodyStatement* forOrSimd)
   {
-    vector <SgForStatement* > loops; 
+    vector <SgForStatement* > loops;
     ROSE_ASSERT (forOrSimd != NULL);
-    int loop_count = 1; // by default, only one loop is affected. 
-    SgExpression* exp = getClauseExpression (forOrSimd, V_SgOmpCollapseClause);
-    SgExpression* exp_ordered = getClauseExpression (forOrSimd, V_SgOmpOrderedClause);
+    int loop_count = 1; // by default, only one loop is affected.
+    SgExpression* exp = NULL;
+    SgExpression* exp_ordered = NULL;
+    if (isSgUpirLoopStatement(forOrSimd)) {
+        exp = getClauseExpression(forOrSimd->get_upir_parent(), V_SgOmpCollapseClause);
+        exp_ordered = getClauseExpression(forOrSimd->get_upir_parent(), V_SgOmpOrderedClause);
+    }
+    else {
+        exp = getClauseExpression (forOrSimd, V_SgOmpCollapseClause);
+        exp_ordered = getClauseExpression (forOrSimd, V_SgOmpOrderedClause);
+    };
     if (exp !=NULL)
     {
       SgIntVal * ival = isSgIntVal(exp);
       if (ival == NULL)
       {
         cerr<<"Error. Expecting SgIntVal of Collapse(exp), seeing "<<exp->class_name() << " instead."<<endl;
-        ROSE_ABORT ();
+        ROSE_ASSERT (false);
       }
       loop_count = ival->get_value();
-    } 
+    }
     else if (exp_ordered !=NULL)
     {
      SgIntVal * ival = isSgIntVal(exp_ordered);
@@ -252,56 +285,56 @@ namespace OmpSupport
     // Now obtain all loops within forOrSimd, up to loop_count
     RoseAst ast (forOrSimd);
     for(RoseAst::iterator i=ast.begin();i!=ast.end();++i) {
-      if (loop_count==0) 
-        break; 
-      if (SgForStatement* fs = isSgForStatement (*i)) 
+      if (loop_count==0)
+        break;
+      if (SgForStatement* fs = isSgForStatement (*i))
       {
         loops.push_back(fs);
         loop_count --;
       }
     }
-    return loops; 
+    return loops;
   }
 
   // TODO: expose to header
-  vector <SgInitializedName* > getAffectedForLoopIndexVars (SgOmpClauseBodyStatement* forOrSimd)
+  vector <SgInitializedName* > getAffectedForLoopIndexVars (SgUpirFieldBodyStatement* forOrSimd)
   {
-    vector <SgInitializedName* > result; 
+    vector <SgInitializedName* > result;
     // use a map to cache results, avoid repetitive analysis of OpenMP regions
-    static map <SgOmpClauseBodyStatement*, vector <SgInitializedName* > > Region2Index; 
-    static map <SgOmpClauseBodyStatement*, bool > RegionAnalyzed; 
-    
+    static map <SgUpirFieldBodyStatement*, vector <SgInitializedName* > > Region2Index;
+    static map <SgUpirFieldBodyStatement*, bool > RegionAnalyzed;
+
     if (!RegionAnalyzed[forOrSimd])
     {
-      RegionAnalyzed[forOrSimd] = true; 
+      RegionAnalyzed[forOrSimd] = true;
       vector <SgForStatement* > loops = getAffectedForLoops (forOrSimd);
       for (size_t i=0; i< loops.size(); i++)
         result.push_back(getLoopIndexVariable (loops[i]) );
-      Region2Index[forOrSimd] = result;   
+      Region2Index[forOrSimd] = result;
     }
     else
       result = Region2Index[forOrSimd];
 
-    return result; 
+    return result;
   }
-  
+
   // TODO: expose to header
   // Check if a variable is a loop index variable of a loop affected by OpenMP for or simd directives.
-  bool isAffectedForLoopIndexVariable (SgOmpClauseBodyStatement* forOrSimd, SgInitializedName* iname)
+  bool isAffectedForLoopIndexVariable (SgUpirFieldBodyStatement* forOrSimd, SgInitializedName* iname)
   {
-    vector <SgInitializedName* > loopIndexVars = getAffectedForLoopIndexVars (forOrSimd); 
+    vector <SgInitializedName* > loopIndexVars = getAffectedForLoopIndexVars (forOrSimd);
     vector <SgInitializedName* >::iterator where = find (loopIndexVars.begin(), loopIndexVars.end(), iname);
     return (where != loopIndexVars.end());
   }
 
   //! Return the data sharing attribute type of a variable within a context node (anchor_stmt indicates the start search location within AST)
   //! Possible values include: e_shared, e_private,  e_firstprivate,  e_lastprivate,  e_reduction, e_threadprivate, e_copyin, and e_copyprivate.
-  // The rules are defined in OpenMP 4.5 specification,  page 179, 
+  // The rules are defined in OpenMP 4.5 specification,  page 179,
   //    2.15.1 Data-sharing Attribute Rules
   omp_construct_enum getDataSharingAttribute (SgSymbol* sym, SgNode* anchor_node)
   {
-    omp_construct_enum rt_val = e_shared; // shared by default for now  
-    //TODO: if default() is present, we have to change this. 
+    omp_construct_enum rt_val = e_shared; // shared by default for now
+    //TODO: if default() is present, we have to change this.
     ROSE_ASSERT (sym != NULL);
     ROSE_ASSERT (anchor_node!= NULL);
     SgStatement* anchor_stmt = getEnclosingStatement (anchor_node);
@@ -310,18 +343,18 @@ namespace OmpSupport
     SgVariableSymbol * var_sym = isSgVariableSymbol (sym);
     ROSE_ASSERT (var_sym!= NULL);
 
-    SgInitializedName* iname = isSgInitializedName( var_sym->get_declaration() );                                                  
-    //TODO: what to do with SgOmpWorkshareStatement ?  it is a region/SgOmpBodyStatement, but it does not belong to OmpClauseBodyStatement
+    SgInitializedName* iname = isSgInitializedName( var_sym->get_declaration() );
+    //TODO: what to do with SgOmpWorkshareStatement ?  it is a region/SgUpirBodyStatement, but it does not belong to UpirFieldBodyStatement
 
-    // obtain the enclosing OpenMP clause body statement: SgOmpForStatement, parallel, sections, single, target, target data, task, etc. 
-    // TODO: this may not be reliable:  region {stmtlist ;  loop; stmtlist; } 
-    SgOmpClauseBodyStatement* omp_clause_body_stmt = findEnclosingOmpClauseBodyStatement (anchor_stmt);
+    // obtain the enclosing OpenMP clause body statement: SgUpirWorksharingStatement, parallel, sections, single, target, target data, task, etc.
+    // TODO: this may not be reliable:  region {stmtlist ;  loop; stmtlist; }
+    SgUpirFieldBodyStatement* omp_clause_body_stmt = findEnclosingUpirFieldBodyStatement (anchor_stmt);
 
     if (omp_clause_body_stmt != NULL)
     {
       omp_construct_enum temp_val = getExplicitDataSharingAttribute (iname, omp_clause_body_stmt);
-      // We assume the input code is correct. So all predetermined variables listed in clauses are conforming to the spec. 
-      if (temp_val != e_unknown) 
+      // We assume the input code is correct. So all predetermined variables listed in clauses are conforming to the spec.
+      if (temp_val != e_unknown)
       {
         rt_val = temp_val ;
         return rt_val;  // use direct return to avoid messy if-else logic
@@ -329,12 +362,12 @@ namespace OmpSupport
       // not explicitly specified, using the rules for predetermined and implicitly determined
       else
       {
-        //Not in explicit data-sharing attribute clause at this level, 
-        
-        // Apply implicit rules : 
+        //Not in explicit data-sharing attribute clause at this level,
+
+        // Apply implicit rules :
         // check if it is locally declared  (the declaration is inside of the omp_clause_body_stmt )
-        SgVariableDeclaration* var_decl = isSgVariableDeclaration(iname->get_declaration()); 
-         // ROSE_ASSERT (var_decl != NULL); 
+        SgVariableDeclaration* var_decl = isSgVariableDeclaration(iname->get_declaration());
+         // ROSE_ASSERT (var_decl != NULL);
          // it could also be SgFunctionParameterList or other declarations
          // if declared at function parameters, the scope is outside, it should be shared by default if no other rules apply.
         if (var_decl && isAncestor (omp_clause_body_stmt, var_decl))
@@ -346,7 +379,7 @@ namespace OmpSupport
             rt_val = e_shared;
           else
             rt_val = e_private;
-          return rt_val;   
+          return rt_val;
         }
 
         if (isThreadprivate (sym))
@@ -356,8 +389,8 @@ namespace OmpSupport
           return rt_val;
         }
 
-        // Check if a SgInitializedName is used as a loop index within a AST subtree. 
-        // This function will use a bottom-up traverse starting from the subtree_root to find 
+        // Check if a SgInitializedName is used as a loop index within a AST subtree.
+        // This function will use a bottom-up traverse starting from the subtree_root to find
         // all enclosing loops and check if ivar is used as an index for either of them.
 //        if (isLoopIndexVariable (iname, anchor_stmt)) // TODO: need more work here
         //  not just any loop variables, but these affected by the OpenMP directives
@@ -365,43 +398,44 @@ namespace OmpSupport
         {
           /*  loop iteration variable
             private: The loop iteration variable(s) in the associated for-loop(s) of a for, parallel for,
-            taskloop, or distribute construct. 
+            taskloop, or distribute construct.
 
             linear: The loop iteration variable in the associated for-loop of a simd construct with just one
             associated for-loop is linear with a linear-step that is the increment of the associated for-loop.
-            
+
             lastprivate: The loop iteration variables in the associated for-loops of a simd construct with multiple
             associated for-loops are lastprivate.
-          */  
-          if (isSgOmpForStatement(omp_clause_body_stmt))  
+          */
+          SgUpirLoopStatement* upir_loop = isSgUpirLoopStatement(omp_clause_body_stmt);
+          if (upir_loop != NULL && ((SgUpirLoopParallelStatement*)(upir_loop->get_upir_parent()))->get_worksharing())
           // TODO: check other types of constructs here: taskloop, distribute construct
           {
             rt_val = e_private;
             return rt_val;
           }
-          else if (SgOmpSimdStatement* simd_stmt = isSgOmpSimdStatement(omp_clause_body_stmt))
+          else if (upir_loop != NULL && ((SgUpirLoopParallelStatement*)(upir_loop->get_upir_parent()))->get_simd())
           {
-            // if simd+ multiple affected loops:  lastprivate().  We check collapse() to see if multiple loops are affected. 
+            // if simd+ multiple affected loops:  lastprivate().  We check collapse() to see if multiple loops are affected.
             // TODO: we need to check if collapse(val) val >=1
-            if (hasClause(simd_stmt, V_SgOmpCollapseClause))
+            if (hasClause(upir_loop->get_upir_parent(), V_SgOmpCollapseClause))
             {
               rt_val = e_lastprivate;
             }
             else
               rt_val = e_linear;
-            return rt_val; 
+            return rt_val;
           }
           else
           {
             //cerr<<"found a loop index, but enclosing body statement is not omp for, but "<<omp_clause_body_stmt->class_name() <<endl;
           }
         }
-        // Important algorithm step here: 
+        // Important algorithm step here:
         // No this logic in the specification, but I split the combined parallel for into two constructs, need to double check this
-        // another case is parallel region + single region, we need to get the parallel region's attribute 
-        // Similar handling for simd directives, going after parent omp parallel or omp for if there is any, to find out the attributes. 
+        // another case is parallel region + single region, we need to get the parallel region's attribute
+        // Similar handling for simd directives, going after parent omp parallel or omp for if there is any, to find out the attributes.
         //   parallel+ for + simd: three levels
-       //  
+       //
        //    #pragma omp parallel private(i,j)
        //      {
        //        for (i = 0; i < LOOPCOUNT; i++)
@@ -411,40 +445,40 @@ namespace OmpSupport
        //              nr_iterations++;
        //              j = i;   // i should be private, based on enclosing parallel region's info.
        //            }
-       //       }   
-       //   
+       //       }
+       //
         // If implicit rules do not apply at this level (worksharing regions like single), Go to find higher level: most omp parallel
-        if  (SgOmpClauseBodyStatement * parent_clause_body_stmt = findEnclosingOmpClauseBodyStatement (getEnclosingStatement(omp_clause_body_stmt->get_parent())))
-        { 
-          //if (isSgOmpParallelStatement (parent_clause_body_stmt) && ( isSgOmpForStatement(omp_clause_body_stmt)|| isSgOmpSingleStatement(omp_clause_body_stmt)  ) )
-          //if (isSgOmpParallelStatement (parent_clause_body_stmt) &&  isSgOmpSingleStatement(omp_clause_body_stmt))
+        if  (SgUpirFieldBodyStatement * parent_clause_body_stmt = findEnclosingUpirFieldBodyStatement (getEnclosingStatement(omp_clause_body_stmt->get_parent())))
+        {
+          //if (isSgUpirSpmdStatement (parent_clause_body_stmt) && ( isSgUpirWorksharingStatement(omp_clause_body_stmt)|| isSgOmpSingleStatement(omp_clause_body_stmt)  ) )
+          //if (isSgUpirSpmdStatement (parent_clause_body_stmt) &&  isSgOmpSingleStatement(omp_clause_body_stmt))
           // TODO: add other directives which may be nested within others
-          if (isSgOmpForStatement (omp_clause_body_stmt) ||
-              isSgOmpSimdStatement (omp_clause_body_stmt) || 
+          if (isSgUpirWorksharingStatement (omp_clause_body_stmt) ||
+              isSgUpirSimdStatement (omp_clause_body_stmt) ||
               isSgOmpSingleStatement(omp_clause_body_stmt))
           {
-            // we need to consider the variable's data sharing attribute in the new context   
-            // the body of parallel can be the single region again, causing infinite recursive calls. 
+            // we need to consider the variable's data sharing attribute in the new context
+            // the body of parallel can be the single region again, causing infinite recursive calls.
             //rt_val = getDataSharingAttribute (sym, parent_clause_body_stmt->get_body());
             rt_val = getDataSharingAttribute (sym, parent_clause_body_stmt);
             return rt_val;
           }
-        } 
-     
+        }
+
     // TODO: If an array section is a list item in a map clause on the target construct and the array section is
     // derived from a variable for which the type is pointer then that variable is firstprivate.
      } // end explicit unknown
 
-    // the rest is shared by default  
+    // the rest is shared by default
     // TODO Objects with dynamic storage duration are shared.
-    // TODO Static data members are shared. 
-       
+    // TODO Static data members are shared.
+
     } // end of has an OpenMP enclosing clause body statement
     else //orphaned code segments
     {
 /*
     For the data race detection project, we choose to inline everything. So the implementation of orphaned segs is lower priority.
-  //TODO: handle more cases as needed. 
+  //TODO: handle more cases as needed.
   Variables with static storage duration that are declared in called routines in the region are shared.
 
   File-scope or namespace-scope variables referenced in called routines in the region are shared
@@ -457,7 +491,7 @@ namespace OmpSupport
    In C++, formal arguments of called routines in the region that are passed by reference have the
     same data-sharing attributes as the associated actual arguments.
 
-   Other variables declared in called routines in the region are private. 
+   Other variables declared in called routines in the region are private.
 */
       if (isThreadprivate (sym))
       {
@@ -467,7 +501,7 @@ namespace OmpSupport
       else
       {
         //find locally declared variables
-        SgDeclarationStatement* var_decl = iname->get_declaration(); 
+        SgDeclarationStatement* var_decl = iname->get_declaration();
         SgFunctionDefinition* func_def = getEnclosingFunctionDefinition (anchor_stmt);
         ROSE_ASSERT (func_def != NULL);
         if (isAncestor (func_def, var_decl))
@@ -475,7 +509,7 @@ namespace OmpSupport
           rt_val = e_private;
           return rt_val;
         }
-        // if it is within a main function, it should be private no matter what. Single sequential region, not shared with others. 
+        // if it is within a main function, it should be private no matter what. Single sequential region, not shared with others.
         if (isMain (func_def->get_declaration()))
         {
           rt_val = e_private;
@@ -484,12 +518,12 @@ namespace OmpSupport
       }
     } // end of orphaned code segments
 
-    return  rt_val; 
-  } 
+    return  rt_val;
+  }
 
    bool isThreadprivate(SgSymbol* sym)
    {
-     bool rt_val = false; 
+     bool rt_val = false;
 
      ROSE_ASSERT (sym != NULL);
      SgVariableSymbol* var_sym = isSgVariableSymbol (sym);
@@ -499,18 +533,18 @@ namespace OmpSupport
      ROSE_ASSERT (iname != NULL);
 
      if (var_set.find (iname) != var_set.end())
-       rt_val = true; 
-     return rt_val;  
+       rt_val = true;
+     return rt_val;
    }
 
-  //! Patch up all variables to make them explicit in data-sharing explicit 
+  //! Patch up all variables to make them explicit in data-sharing explicit
   int patchUpSharedVariables(SgFile* file)
   {
 
     int result = 0; // record for the number of shared variables added
 
     ROSE_ASSERT( file != NULL );
-    Rose_STL_Container< SgNode* > allParallelRegion = NodeQuery::querySubTree( file, V_SgOmpParallelStatement );
+    Rose_STL_Container< SgNode* > allParallelRegion = NodeQuery::querySubTree( file, V_SgUpirSpmdStatement );
     Rose_STL_Container< SgNode* >::iterator  allParallelRegionItr = allParallelRegion.begin();
 
     for( ; allParallelRegionItr != allParallelRegion.end(); allParallelRegionItr++ )
@@ -519,10 +553,10 @@ namespace OmpSupport
       Rose_STL_Container< SgNode* > expressions = NodeQuery::querySubTree( *allParallelRegionItr, V_SgExprStatement );
       //! Store all variable references
       //TODO: this may miss the constant variables referenced in data type declaration. e.g. int a[length];
-      Rose_STL_Container< SgNode* > allRef;   
+      Rose_STL_Container< SgNode* > allRef;
       gatherReferences(expressions, allRef );
 
-      //!Find all local variable declarations in the parallel region 
+      //!Find all local variable declarations in the parallel region
       Rose_STL_Container< SgNode* > localVariables = NodeQuery::querySubTree( *allParallelRegionItr, V_SgVariableDeclaration );
 
       //! Check variables are not local, not variables in clauses already
@@ -544,7 +578,7 @@ namespace OmpSupport
           if( varName == localName )
           {
             isLocal = true;
-          }             
+          }
           localVariablesItr++;
 
         }
@@ -552,77 +586,76 @@ namespace OmpSupport
         bool isInPrivate = false;
         SgInitializedName* reg = isSgInitializedName( item->get_symbol()->get_declaration() );
 
-        isInPrivate = isInClauseVariableList( reg, isSgOmpClauseBodyStatement( *allParallelRegionItr ), V_SgOmpPrivateClause);
+        isInPrivate = isInClauseVariableList( reg, isSgUpirFieldBodyStatement( *allParallelRegionItr ), V_SgOmpPrivateClause);
 
         bool isInShared = false;
 
-        isInShared = isInClauseVariableList( reg, isSgOmpClauseBodyStatement( *allParallelRegionItr ), V_SgOmpSharedClause );
+        isInShared = isInClauseVariableList( reg, isSgUpirFieldBodyStatement( *allParallelRegionItr ), V_SgOmpSharedClause );
 
         bool isInFirstprivate = false;
 
-        isInFirstprivate = isInClauseVariableList( reg, isSgOmpClauseBodyStatement( *allParallelRegionItr ), V_SgOmpFirstprivateClause );
+        isInFirstprivate = isInClauseVariableList( reg, isSgUpirFieldBodyStatement( *allParallelRegionItr ), V_SgOmpFirstprivateClause );
 
         bool isInReduction = false;
 
-        isInReduction = isInClauseVariableList( reg, isSgOmpClauseBodyStatement( *allParallelRegionItr ), V_SgOmpReductionClause );
+        isInReduction = isInClauseVariableList( reg, isSgUpirFieldBodyStatement( *allParallelRegionItr ), V_SgOmpReductionClause );
 
         if( !isLocal && !isInShared && !isInPrivate && !isInFirstprivate && ! isInReduction )
         {
           std::cout<<" the insert variable is: "<<item->unparseToString()<<std::endl;
-          addClauseVariable( reg, isSgOmpClauseBodyStatement( * allParallelRegionItr ), V_SgOmpSharedClause );
-          result++; 
+          addClauseVariable( reg, isSgUpirFieldBodyStatement( * allParallelRegionItr ), V_SgOmpSharedClause );
+          result++;
           std::cout<<" successfully !"<<std::endl;
         }
-        allRefItr++;                 
-      }          
+        allRefItr++;
+      }
 
 
-    } // end of all parallel region  
+    } // end of all parallel region
 
     return result;
   } // the end of patchUpSharedVariables()
 
 
-  //! make all data-sharing attribute explicit 
+  //! make all data-sharing attribute explicit
 
   int makeDataSharingExplicit(SgFile* file)
   {
-    int result = 0; // to record the number of varbaile added 
+    int result = 0; // to record the number of varbaile added
     ROSE_ASSERT(file != NULL );
 
     int p = patchUpPrivateVariables(file); // private variable first
 
     int f = patchUpFirstprivateVariables(file);// then firstprivate variable
 
-    int s = patchUpSharedVariables(file);// consider shared variables 
+    int s = patchUpSharedVariables(file);// consider shared variables
 
 
-    //TODO:  patchUpDefaultVariables(file);  
+    //TODO:  patchUpDefaultVariables(file);
 
 
     result = p + f  + s;
     return result;
 
-  }  //! the end of makeDataSharingExplicit() 
+  }  //! the end of makeDataSharingExplicit()
 
 
   void insertRTLHeaders(SgSourceFile* file)
   {
-    ROSE_ASSERT(file != NULL);    
+    ROSE_ASSERT(file != NULL);
     SgGlobal* globalscope = file->get_globalScope() ; //isSgGlobal(*i);
     ROSE_ASSERT (globalscope != NULL);
 #ifdef ENABLE_XOMP
-    SageInterface::insertHeader("libxomp.h",PreprocessingInfo::after,false,globalscope);
     if (enable_accelerator)  // include inlined CUDA device codes
       SageInterface::insertHeader("xomp_cuda_lib_inlined.cu",PreprocessingInfo::after,false,globalscope);
-#else    
+#else
     if (rtl_type == e_omni)
       SageInterface::insertHeader("ompcLib.h",PreprocessingInfo::after,false,globalscope);
     else if (rtl_type == e_gomp)
       SageInterface::insertHeader("libgomp_g.h",PreprocessingInfo::after,false,globalscope);
     else
-      ROSE_ABORT();
-#endif      
+      ROSE_ASSERT(false);
+#endif
   }
 
   void insertAcceleratorInit(SgSourceFile* sgfile)
@@ -646,7 +679,7 @@ namespace OmpSupport
     //addGlobalOmpDeclarations(ompfrontend, sgfile->get_globalScope(), hasMain );
 
     if (! hasMain) return ;
-    ROSE_ASSERT (mainDef!= NULL); // Liao, at this point, we expect a defining declaration of main() is 
+    ROSE_ASSERT (mainDef!= NULL); // Liao, at this point, we expect a defining declaration of main() is
     // look up symbol tables for symbols
     SgScopeStatement * currentscope = mainDef->get_body();
 
@@ -662,7 +695,7 @@ namespace OmpSupport
   //tasks:
   // * find the main entry for the application
   // * add (int argc, char *argv[]) if not exist(?)
-  // * add runtime system init code at the begin 
+  // * add runtime system init code at the begin
   // * find all return points and append cleanup code
   // * add global declarations for threadprivate variables
   // * add global declarations for lock variables
@@ -719,7 +752,7 @@ namespace OmpSupport
     SgIntVal * intVal = buildIntVal(0);
 
     SgAssignInitializer * init2=buildAssignInitializer(intVal);
-    SgName *name1 = new SgName("status"); 
+    SgName *name1 = new SgName("status");
     SgVariableDeclaration* varDecl1 = buildVariableDeclaration(*name1, SgTypeInt::createType(),init2, mainDef->get_body());
 
     // cout<<"debug:"<<varDecl1->unparseToString()<<endl;
@@ -747,14 +780,6 @@ namespace OmpSupport
       appendExpression(exp_list_exp,var2);
     }
 
-    SgExprStatement * expStmt=  buildFunctionCallStmt (SgName("XOMP_init"),
-        buildVoidType(), exp_list_exp,currentscope);
-    //  cout<<"debug:"<<expStmt->unparseToString()<<endl;
-    //prepend to main body
-    // Liao 1/5/2011
-    // This is not safe since it cannot be prepended to an implicit none statement in fortran
-    //prependStatement(expStmt,currentscope);
-    //prependStatement(varDecl1,currentscope);
     if (SageInterface::is_Fortran_language())
     {
       SgStatement *l_stmt = findLastDeclarationStatement(currentscope);
@@ -766,7 +791,6 @@ namespace OmpSupport
     else // C/C++, we can always prepend it.
       prependStatement(varDecl1,currentscope);
 
-    insertStatementAfter (varDecl1, expStmt);
     //---------------------- termination part
 
     //  cout<<"debug:"<<mainDef->unparseToString()<<endl;
@@ -775,7 +799,7 @@ namespace OmpSupport
     //the body of this function is empty in the runtime library
     // _ompc_terminate(status);
 
-    //SgExprListExp, 1 parameters (status) 
+    //SgExprListExp, 1 parameters (status)
     SgInitializedName *initName1= varDecl1->get_decl_item(*name1);
     ROSE_ASSERT(initName1);
 
@@ -783,30 +807,6 @@ namespace OmpSupport
     SgExprListExp * exp_list_exp2 = buildExprListExp();
     appendExpression(exp_list_exp2,var3);
 
-    //build call exp stmt
-    SgExprStatement * expStmt2= buildFunctionCallStmt (SgName("XOMP_terminate"),
-        buildVoidType(),exp_list_exp2,mainDef->get_body());
-    // find return statement, insert before it
-    Rose_STL_Container<SgNode*> rtList = NodeQuery::querySubTree(mainDef, V_SgReturnStmt);
-    if (rtList.size()>0)
-    {
-      for(Rose_STL_Container<SgNode*>::iterator i= rtList.begin();i!=rtList.end();i++)
-      {
-        SgStatement *targetBB= isSgStatement((*i)->get_parent());
-        ROSE_ASSERT(targetBB != NULL);
-        if (i!=rtList.begin()) // for 2nd, 3rd, etc occurrences. We should always build a new statement instead of sharing a statement! 
-        {
-          expStmt2= buildFunctionCallStmt (SgName("XOMP_terminate"),
-              buildVoidType(),exp_list_exp2,mainDef->get_body());
-        }
-        insertStatement(isSgStatement(*i),expStmt2);
-      }
-    }
-    else //if not found append to function body
-    {
-      appendStatement(expStmt2,currentscope);
-    }
-    // cout<<"debug terminate:"<<expStmt2->unparseToString()<<endl;
     //   AstPostProcessing(mainDef->get_declaration());
 #endif  // ENABLE_XOMP
 
@@ -826,8 +826,8 @@ namespace OmpSupport
 
   //! Replace variable references within root based on a map from old symbols to new symbols
   /* This function is mostly used by transOmpVariables() to handle private, firstprivate, reduction, etc.
-   *  
-   *   
+   *
+   *
    */
   int replaceVariableReferences(SgNode* root, VariableSymbolMap_t varRemap)
   {
@@ -838,17 +838,17 @@ namespace OmpSupport
     {
       SgVarRefExp* ref_orig = isSgVarRefExp (*i);
       ROSE_ASSERT (ref_orig);
-#if 0 // Liao 6/9/2010  , 
+#if 0 // Liao 6/9/2010  ,
       if (SageInterface::isUseByAddressVariableRef(ref_orig))
       {
         //  cout<<"Skipping a variable replacement because the variable is used by its address:"<< ref_orig->unparseToString()<<endl;
         continue; //skip the replacement for variable used by addresses
       }
-#endif      
-      VariableSymbolMap_t::const_iterator iter = varRemap.find(ref_orig->get_symbol()); 
+#endif
+      VariableSymbolMap_t::const_iterator iter = varRemap.find(ref_orig->get_symbol());
       if (iter != varRemap.end())
       {
-        SgVariableSymbol* newSym = iter->second; 
+        SgVariableSymbol* newSym = iter->second;
         ref_orig->set_symbol( newSym);
         result ++;
       }
@@ -888,7 +888,7 @@ namespace OmpSupport
     else
     {
       /*  I changed the normalization phase to generate consistent incremental expressions
-       *  it should be i+= -1  for decremental loops 
+       *  it should be i+= -1  for decremental loops
        *   no need to adjust it anymore.
        *  */
       //      printf("Found a decremental case: orig_stride is\n");
@@ -899,21 +899,21 @@ namespace OmpSupport
   }
 
   //! check if an omp for/do loop use static schedule or not
-  // Static schedule include: default schedule, or schedule(static[,chunk_size]) 
-  bool useStaticSchedule(SgOmpClauseBodyStatement* omp_loop)
+  // Static schedule include: default schedule, or schedule(static[,chunk_size])
+  bool useStaticSchedule(SgUpirFieldBodyStatement* omp_loop)
   {
     ROSE_ASSERT(omp_loop);
-    bool result= false; 
+    bool result= false;
     Rose_STL_Container<SgOmpClause*> clauses = getClause(omp_loop, V_SgOmpScheduleClause);
     if (clauses.size()==0)
     {
       result = true; // default schedule is static
     }else
     {
-      ROSE_ASSERT(clauses.size() ==1); 
+      ROSE_ASSERT(clauses.size() ==1);
       SgOmpScheduleClause* s_clause = isSgOmpScheduleClause(clauses[0]);
       ROSE_ASSERT(s_clause);
-      if (s_clause->get_kind() == SgOmpClause::e_omp_schedule_static)
+      if (s_clause->get_kind() == SgOmpClause::e_omp_schedule_kind_static)
         result = true;
     }
     return result;
@@ -927,46 +927,46 @@ namespace OmpSupport
       result = copyExpression(orig_chunk_size);
     else
       result = buildIntVal(1);
-    ROSE_ASSERT(result != NULL);  
+    ROSE_ASSERT(result != NULL);
     return result;
   }
   // Convert a schedule kind enum value to a small case string
   string toString(SgOmpClause::omp_schedule_kind_enum s_kind)
   {
     string result ;
-    if (s_kind == SgOmpClause::e_omp_schedule_static)
+    if (s_kind == SgOmpClause::e_omp_schedule_kind_static)
     {
       result = "static";
-    } else if (s_kind == SgOmpClause::e_omp_schedule_dynamic)
+    } else if (s_kind == SgOmpClause::e_omp_schedule_kind_dynamic)
     {
       result = "dynamic";
     }
-    else if (s_kind == SgOmpClause::e_omp_schedule_guided)
+    else if (s_kind == SgOmpClause::e_omp_schedule_kind_guided)
     {
       result = "guided";
     }
-    else if (s_kind == SgOmpClause::e_omp_schedule_runtime)
+    else if (s_kind == SgOmpClause::e_omp_schedule_kind_runtime)
     {
       result = "runtime";
     }
-    else if (s_kind == SgOmpClause::e_omp_schedule_auto)
+    else if (s_kind == SgOmpClause::e_omp_schedule_kind_auto)
     {
       //      cerr<<"GOMP does not provide an implementation for schedule(auto)....."<<endl;
       result = "auto";
     } else
     {
       cerr<<"Error: illegal or unhandled schedule kind:"<< s_kind<<endl;
-      ROSE_ABORT();
+      ROSE_ASSERT(false);
     }
     return result;
   }
-#ifdef ENABLE_XOMP 
-  //! Generate XOMP loop schedule init function's name, union from OMNI's 
+#ifdef ENABLE_XOMP
+  //! Generate XOMP loop schedule init function's name, union from OMNI's
   string generateGOMPLoopInitFuncName (bool isOrdered, SgOmpClause::omp_schedule_kind_enum s_kind)
   {
-    // XOMP_loop_static_init() 
+    // XOMP_loop_static_init()
     // XOMP_loop_ordered_static_init ()
-    // XOMP_loop_dynamic_init () 
+    // XOMP_loop_dynamic_init ()
     // XOMP_loop_ordered_dynamic_init ()
     // .....
     string result;
@@ -974,8 +974,8 @@ namespace OmpSupport
     //Handled ordered
     if (isOrdered)
       result +="ordered_";
-    result += toString(s_kind);  
-    result += "_init"; 
+    result += toString(s_kind);
+    result += "_init";
     return result;
   }
 #endif
@@ -983,22 +983,22 @@ namespace OmpSupport
   //! Generate GOMP loop schedule start function's name
   string generateGOMPLoopStartFuncName (bool isOrdered, SgOmpClause::omp_schedule_kind_enum s_kind)
   {
-    // GOMP_loop_static_start () 
+    // GOMP_loop_static_start ()
     // GOMP_loop_ordered_static_start ()
-    // GOMP_loop_dynamic_start () 
+    // GOMP_loop_dynamic_start ()
     // GOMP_loop_ordered_dynamic_start ()
     // .....
     string result;
-#ifdef ENABLE_XOMP 
+#ifdef ENABLE_XOMP
     result = "XOMP_loop_";
-#else    
+#else
     result = "GOMP_loop_";
-#endif    
+#endif
     // Handled ordered
     if (isOrdered)
       result +="ordered_";
-    result += toString(s_kind);  
-    result += "_start"; 
+    result += toString(s_kind);
+    result += "_start";
     return result;
   }
 
@@ -1006,21 +1006,21 @@ namespace OmpSupport
   string generateGOMPLoopNextFuncName (bool isOrdered, SgOmpClause::omp_schedule_kind_enum s_kind)
   {
     string result;
-    // GOMP_loop_static_next() 
+    // GOMP_loop_static_next()
     // GOMP_loop_ordered_static_next ()
-    // GOMP_loop_dynamic_next () 
+    // GOMP_loop_dynamic_next ()
     // GOMP_loop_ordered_dynamic_next()
     // .....
 
-#ifdef ENABLE_XOMP 
+#ifdef ENABLE_XOMP
     result = "XOMP_loop_";
 #else
     result = "GOMP_loop_";
-#endif    
+#endif
     if (isOrdered)
       result +="ordered_";
-    result += toString(s_kind);  
-    result += "_next"; 
+    result += toString(s_kind);
+    result += "_next";
     return result;
   }
 
@@ -1039,7 +1039,7 @@ namespace OmpSupport
 #if 0
     //find enclosing parallel region's body
     SgBasicBlock * omp_body = NULL;
-    SgOmpParallelStatement * omp_stmt = isSgOmpParallelStatement(getEnclosingNode<SgOmpParallelStatement>(startNode));
+    SgUpirSpmdStatement * omp_stmt = isSgUpirSpmdStatement(getEnclosingNode<SgUpirSpmdStatement>(startNode));
     if (omp_stmt)
     {
       omp_body= isSgBasicBlock(omp_stmt->get_body());
@@ -1052,14 +1052,14 @@ namespace OmpSupport
     SgBasicBlock * f_body = func_def->get_body();
 
     SgBasicBlock* t_body = (omp_body!=NULL)?omp_body:f_body;
-#endif  
+#endif
     SgBasicBlock* t_body = getEnclosingRegionOrFuncDefinition (startNode);
     ROSE_ASSERT (t_body != NULL);
     // Try to find an existing include 'libxompf.h'
-    // Assumptions: 
+    // Assumptions:
     //   1. It only shows up at the top level, not within other SgBasicBlock
     //   2. The startNode is after the include line
-    SgStatement * s_include = NULL ; // existing include 
+    SgStatement * s_include = NULL ; // existing include
     SgStatementPtrList stmt_list = t_body->get_statements();
     SgStatementPtrList::iterator iter;
     for (iter = stmt_list.begin(); iter != stmt_list.end(); iter ++)
@@ -1075,7 +1075,7 @@ namespace OmpSupport
           s_include = f_inc;
           break;
         }
-      } 
+      }
     }
     if (s_include == NULL)
     {
@@ -1085,31 +1085,31 @@ namespace OmpSupport
         insertStatementAfter(l_stmt,s_include);
       else
         prependStatement(s_include, t_body);
-    } 
+    }
   }
   //! Translate an omp for loop with non-static scheduling clause or with ordered clause ()
   // bb1 is the basic block to insert the translated loop
   // bb1 already has compiler-generated variable declarations for new loop control variables
   /*
-   * start, end, incremental, chunk_size, own_start, own_end            
+   * start, end, incremental, chunk_size, own_start, own_end
    XOMP_loop_static_init(int lower, int upper, int stride, int chunk_size);
 
-   if (GOMP_loop_dynamic_start (orig_lower, orig_upper, adj_stride, orig_chunk, &_p_lower, &_p_upper)) 
-  //  if (GOMP_loop_ordered_dynamic_start (S, E, INCR, CHUNK, &_p_lower, &_p_upper))  
-  { 
-  do                                                       
-  {                                                      
+   if (GOMP_loop_dynamic_start (orig_lower, orig_upper, adj_stride, orig_chunk, &_p_lower, &_p_upper))
+  //  if (GOMP_loop_ordered_dynamic_start (S, E, INCR, CHUNK, &_p_lower, &_p_upper))
+  {
+  do
+  {
   for (_p_index = _p_lower; _p_index < _p_upper; _p_index += orig_stride)
-  set_data (_p_index, iam);                                 
-  }                                                      
-  while (GOMP_loop_dynamic_next (&_p_lower, &_p_upper));                
-  // while (GOMP_loop_ordered_dynamic_next (&_p_lower, &_p_upper));     
+  set_data (_p_index, iam);
   }
-  GOMP_loop_end ();                                          
-  //  GOMP_loop_end_nowait (); 
+  while (GOMP_loop_dynamic_next (&_p_lower, &_p_upper));
+  // while (GOMP_loop_ordered_dynamic_next (&_p_lower, &_p_upper));
+  }
+  GOMP_loop_end ();
+  //  GOMP_loop_end_nowait ();
   //
   // More explanation: -------------------------------------------
-  // Omni uses the following translation 
+  // Omni uses the following translation
   _ompc_dynamic_sched_init(_p_loop_lower,_p_loop_upper,_p_loop_stride,5);
   while(_ompc_dynamic_sched_next(&_p_loop_lower,&_p_loop_upper)){
   for (_p_loop_index = _p_loop_lower; (_p_loop_index) < _p_loop_upper; _p_loop_index += _p_loop_stride) {
@@ -1117,14 +1117,14 @@ namespace OmpSupport
   }
   }
   // In order to merge two kinds of translations into one scheme.
-  // we split 
+  // we split
   while(_ompc_dynamic_sched_next(&_p_loop_lower,&_p_loop_upper)){
   for (_p_loop_index = _p_loop_lower; (_p_loop_index) < _p_loop_upper; _p_loop_index += _p_loop_stride) {
   k_3++;
   }
   }
 
-  // to 
+  // to
   if (_ompc_dynamic_sched_next(&_p_loop_lower,&_p_loop_upper)){
   do {
   for (_p_loop_index = _p_loop_lower; (_p_loop_index) < _p_loop_upper; _p_loop_index += _p_loop_stride) {
@@ -1134,9 +1134,7 @@ namespace OmpSupport
   }
   // and XOMP layer will compensate for the difference.
   */
-  static void transOmpLoop_others(SgOmpClauseBodyStatement* target,  
-      SgVariableDeclaration* index_decl, SgVariableDeclaration* lower_decl,  SgVariableDeclaration* upper_decl, 
-      SgBasicBlock* bb1)
+  static void transOmpLoop_others(SgUpirFieldBodyStatement* target, SgVariableDeclaration* index_decl, SgVariableDeclaration* lower_decl, SgVariableDeclaration* upper_decl, SgVariableDeclaration* stride_decl, SgVariableDeclaration* last_iter_decl, SgBasicBlock* bb1)
   {
     ROSE_ASSERT (target != NULL);
     ROSE_ASSERT (index_decl != NULL);
@@ -1153,8 +1151,14 @@ namespace OmpSupport
     SgFortranDo* do_loop = isSgFortranDo(body);
     SgStatement * loop = for_loop!=NULL? (SgStatement*)for_loop:(SgStatement*)do_loop;
 
-    SgInitializedName* orig_index; 
-    SgExpression* orig_lower, * orig_upper, * orig_stride; 
+    SgExprListExp* parameters = NULL;
+    SgVariableDeclaration* kmpc_global_tid_declaration = get_kmpc_global_tid(target, bb1);
+    SgExpression* thread_global_tid = buildVarRefExp(getFirstVariable(*kmpc_global_tid_declaration).get_name(), bb1);
+    appendStatement(kmpc_global_tid_declaration, bb1);
+    SgExpression* source_location_info = buildIntVal(0);
+
+    SgInitializedName* orig_index;
+    SgExpression* orig_lower, * orig_upper, * orig_stride;
     bool isIncremental = true; // if the loop iteration space is incremental
     // grab the original loop 's controlling information
     bool is_canonical = false;
@@ -1168,7 +1172,7 @@ namespace OmpSupport
     else
     {
       cerr<<"error! transOmpLoop_others(). loop is neither for_loop nor do_loop. Aborting.."<<endl;
-      ROSE_ABORT ();
+      ROSE_ASSERT (false);
     }
     ROSE_ASSERT(is_canonical == true);
 
@@ -1176,72 +1180,95 @@ namespace OmpSupport
 
     // the case of with the ordered schedule, but without any schedule policy specified
     // treat it as (static, 0) based on GCC's translation
-    SgOmpClause::omp_schedule_kind_enum s_kind = SgOmpClause::e_omp_schedule_static;
+    SgOmpClause::omp_schedule_kind_enum s_kind = SgOmpClause::e_omp_schedule_kind_static;
     SgExpression* orig_chunk_size = NULL;
+    string func_init_name = "__kmpc_for_static_init_4";
+    int32_t schedule_type = 0;
     bool hasOrder = false;
     if (hasClause(target, V_SgOmpOrderedClause))
       hasOrder = true;
     ROSE_ASSERT(hasOrder || clauses.size() !=0);
     // Most cases: with schedule(kind,chunk_size)
-    if (clauses.size() !=0)
-    {  
-      ROSE_ASSERT(clauses.size() ==1);
+    if (clauses.size() != 0)
+    {
+      ROSE_ASSERT(clauses.size() == 1);
       SgOmpScheduleClause* s_clause = isSgOmpScheduleClause(clauses[0]);
       ROSE_ASSERT(s_clause);
       s_kind = s_clause->get_kind();
       orig_chunk_size = s_clause->get_chunk_size();
+      SgOmpClause::omp_schedule_modifier_enum schedule_modifier = s_clause->get_modifier();
+      if ((hasOrder || s_kind == SgOmpClause::e_omp_schedule_kind_static) && schedule_modifier != SgOmpClause::e_omp_schedule_modifier_nonmonotonic) {
+          schedule_type = kmp_sched_modifier_monotonic;
+      }
+      else {
+          schedule_type = kmp_sched_modifier_nonmonotonic;
+      };
 
-      // chunk size is 1 for dynamic and guided schedule, if not specified. 
-      if (s_kind == SgOmpClause::e_omp_schedule_dynamic|| s_kind == SgOmpClause::e_omp_schedule_guided)
+      // chunk size is 1 for dynamic and guided schedule, if not specified.
+      if (s_kind == SgOmpClause::e_omp_schedule_kind_dynamic || s_kind == SgOmpClause::e_omp_schedule_kind_guided)
       {
         orig_chunk_size = createAdjustedChunkSize(orig_chunk_size);
+        func_init_name = "__kmpc_dispatch_init_4";
+        if (s_kind == SgOmpClause::e_omp_schedule_kind_dynamic) {
+            schedule_type += kmp_sched_dynamic;
+        }
+        else {
+            schedule_type += kmp_sched_guided;
+        };
+        parameters = buildExprListExp(source_location_info, thread_global_tid, buildIntVal(schedule_type), buildVarRefExp(lower_decl), buildVarRefExp(upper_decl), buildVarRefExp(stride_decl), orig_chunk_size);
+
+      }
+      else if (s_kind == SgOmpClause::e_omp_schedule_kind_auto || s_kind == SgOmpClause::e_omp_schedule_kind_runtime)
+      {
+        orig_chunk_size = buildIntVal(1);
+        func_init_name = "__kmpc_dispatch_init_4";
+        if (s_kind == SgOmpClause::e_omp_schedule_kind_auto) {
+            schedule_type += kmp_sched_auto;
+        }
+        else {
+            schedule_type += kmp_sched_runtime;
+        };
+        parameters = buildExprListExp(source_location_info, thread_global_tid, buildIntVal(schedule_type), buildVarRefExp(lower_decl), buildVarRefExp(upper_decl), buildVarRefExp(stride_decl), orig_chunk_size);
+
+      }
+      else
+      {
+        schedule_type += kmp_sched_static_chunk;
+        parameters = buildExprListExp(source_location_info, thread_global_tid, buildIntVal(schedule_type), buildAddressOfOp(buildVarRefExp(last_iter_decl)), buildAddressOfOp(buildVarRefExp(lower_decl)), buildAddressOfOp(buildVarRefExp(upper_decl)), buildAddressOfOp(buildVarRefExp(stride_decl)), copyExpression(orig_stride), orig_chunk_size);
       }
     }
     else
       orig_chunk_size = buildIntVal(0);
 
-    // schedule(auto) does not have chunk size 
-    if (s_kind != SgOmpClause::e_omp_schedule_auto  && s_kind != SgOmpClause::e_omp_schedule_runtime)
+    // schedule(auto) does not have chunk size
+    if (s_kind != SgOmpClause::e_omp_schedule_kind_auto && s_kind != SgOmpClause::e_omp_schedule_kind_runtime)
       ROSE_ASSERT(orig_chunk_size != NULL);
-    // (GOMP_loop_static_start (orig_lower, orig_upper, adj_stride, orig_chunk, &_p_lower, &_p_upper)) 
-    // (GOMP_loop_ordered_static_start (orig_lower, orig_upper, adj_stride, orig_chunk, &_p_lower, &_p_upper)) 
     string func_start_name= generateGOMPLoopStartFuncName(hasOrder, s_kind);
     // Assembling function call expression's parameters
-    // first three are identical for all cases: 
+    // first three are identical for all cases:
     // we generate inclusive upper (-1) bounds after loop normalization, gomp runtime calls expect exclusive upper bounds
     // so we +1 to adjust it back to exclusive.
 
-#if 0 // Liao 1/11/2011. I changed XOMP loop functions to use inclusive upper bounds. All adjustments are done within XOMP from now on
-    int upper_adjust = 1;  // we use inclusive bounds, adjust them accordingly 
-    if (!isIncremental) 
-      upper_adjust = -1;
-#endif 
-
 #ifdef ENABLE_XOMP
     // build function init stmt
-    //  _ompc_dynamic_sched_init(_p_loop_lower,_p_loop_upper,_p_loop_stride,5);
-    SgExprListExp* para_list_i = buildExprListExp(copyExpression(orig_lower), 
-        //buildAddOp(copyExpression(orig_upper), buildIntVal(upper_adjust)),
-        copyExpression(orig_upper), 
-        createAdjustedStride(orig_stride, isIncremental)); 
-    if (s_kind != SgOmpClause::e_omp_schedule_auto && s_kind != SgOmpClause::e_omp_schedule_runtime)
+    SgExprListExp* para_list_i = buildExprListExp(copyExpression(orig_lower),
+        copyExpression(orig_upper),
+        createAdjustedStride(orig_stride, isIncremental));
+    if (s_kind != SgOmpClause::e_omp_schedule_kind_auto && s_kind != SgOmpClause::e_omp_schedule_kind_runtime)
     {
       appendExpression(para_list_i, copyExpression(orig_chunk_size));
     }
 
-    string func_init_name= generateGOMPLoopInitFuncName(hasOrder, s_kind);
-    SgExprStatement* func_init_stmt = buildFunctionCallStmt(func_init_name, buildVoidType(), para_list_i, bb1);
+    SgExprStatement* func_init_stmt = buildFunctionCallStmt(func_init_name, buildVoidType(), parameters, bb1);
     appendStatement(func_init_stmt, bb1);
-#endif    
+#endif
     //build function start
-    SgExprListExp* para_list = buildExprListExp(copyExpression(orig_lower), 
-        //buildAddOp(copyExpression(orig_upper), buildIntVal(upper_adjust)),
+    SgExprListExp* para_list = buildExprListExp(copyExpression(orig_lower),
         copyExpression(orig_upper),
-        createAdjustedStride(orig_stride, isIncremental)); 
-    if (s_kind != SgOmpClause::e_omp_schedule_auto && s_kind != SgOmpClause::e_omp_schedule_runtime)
+        createAdjustedStride(orig_stride, isIncremental));
+    if (s_kind != SgOmpClause::e_omp_schedule_kind_auto && s_kind != SgOmpClause::e_omp_schedule_kind_runtime)
     {
       appendExpression(para_list, orig_chunk_size);
-      //appendExpression(para_list, copyExpression(orig_chunk_size));
     }
     if (for_loop)
     {
@@ -1255,23 +1282,20 @@ namespace OmpSupport
     }
     SgFunctionCallExp* func_start_exp = NULL;
     SgBasicBlock * true_body = buildBasicBlock();
-    SgIfStmt* if_stmt = NULL; 
+    SgIfStmt* if_stmt = NULL;
     if (SageInterface::is_Fortran_language())
     {
       // Note for Fortran, we treat the function as returning integer, same type as the rhs of .eq.
       // Otherwise, unparser will complain.
       func_start_exp  = buildFunctionCallExp(func_start_name, buildIntType(), para_list, bb1);
       if_stmt = buildIfStmt(buildEqualityOp(func_start_exp,buildIntVal(1)), true_body, NULL);
-      // if_stmt->set_use_then_keyword(true); 
-      // if_stmt->set_has_end_statement(true); 
+      appendStatement(if_stmt, bb1);
     }
-    else 
+    else
     {
-      func_start_exp  = buildFunctionCallExp(func_start_name, buildBoolType(), para_list, bb1);
-      if_stmt = buildIfStmt(func_start_exp, true_body, NULL);
+      appendStatement(true_body, bb1);
     }
 
-    appendStatement(if_stmt, bb1);
     SgExprListExp * n_exp_list = NULL;
     if (for_loop)
     {
@@ -1282,26 +1306,53 @@ namespace OmpSupport
       n_exp_list = buildExprListExp(buildVarRefExp(lower_decl), buildVarRefExp(upper_decl));
     }
     ROSE_ASSERT (n_exp_list!=NULL);
-    SgExpression* func_next_exp = NULL; 
+    SgExpression* func_next_exp = NULL;
 
     // do {} while (GOMP_loop_static_next (&_p_lower, &_p_upper))
     if (for_loop)
-    { 
-
-      func_next_exp =buildFunctionCallExp(generateGOMPLoopNextFuncName(hasOrder, s_kind), buildBoolType(),
-          n_exp_list, bb1);
+    { // for schedule(dynamic), the next-fetching call controls the while loop
+      if (s_kind == SgOmpClause::e_omp_schedule_kind_dynamic) {
+          parameters = buildExprListExp(source_location_info, thread_global_tid, buildAddressOfOp(buildVarRefExp(last_iter_decl)), buildAddressOfOp(buildVarRefExp(lower_decl)), buildAddressOfOp(buildVarRefExp(upper_decl)), buildAddressOfOp(buildVarRefExp(stride_decl)));
+          func_next_exp = buildFunctionCallExp("__kmpc_dispatch_next_4", buildIntType(), parameters, bb1);
+      }
+      else { // for schedule(static, n), lower_bound <= upper_bound controls the while loop
+          func_next_exp = buildLessOrEqualOp(buildVarRefExp(lower_decl), buildVarRefExp(upper_decl));
+      };
       SgBasicBlock * do_body = buildBasicBlock();
-      SgDoWhileStmt * do_while_stmt = buildDoWhileStmt(do_body, func_next_exp);
-      appendStatement(do_while_stmt, true_body);
+      SgWhileStmt * while_do_stmt = buildWhileStmt(func_next_exp, do_body);
+      appendStatement(while_do_stmt, true_body);
+
+      // insert the upper bound checking
+      SgExpression* if_condition = NULL;
+      if (isIncremental) {
+        if_condition = buildGreaterThanOp(buildVarRefExp(upper_decl), copyExpression(orig_upper));
+      }
+      else {
+        if_condition = buildLessThanOp(buildVarRefExp(upper_decl), copyExpression(orig_upper));
+      };
+      SgExprStatement* update_upper_bound_stmt = buildAssignStatement(buildVarRefExp(upper_decl), copyExpression(orig_upper));
+      SgIfStmt* if_statement = buildIfStmt(if_condition, update_upper_bound_stmt, NULL);
+      appendStatement(if_statement, do_body);
+
       // insert the loop into do-while
       appendStatement(loop, do_body);
-    } 
+      if (s_kind != SgOmpClause::e_omp_schedule_kind_dynamic) {
+          SgExpression* increase_lower_bound = buildPlusAssignOp(buildVarRefExp(lower_decl), buildVarRefExp(stride_decl));
+          SgExprStatement* increase_lower_bound_stmt = buildExprStatement(increase_lower_bound);
+          appendStatement(increase_lower_bound_stmt, do_body);
+          SgExpression* increase_upper_bound = buildPlusAssignOp(buildVarRefExp(upper_decl), buildVarRefExp(stride_decl));
+          SgExprStatement* increase_upper_bound_stmt = buildExprStatement(increase_upper_bound);
+          appendStatement(increase_upper_bound_stmt, do_body);
+          parameters = buildExprListExp(buildIntVal(0), thread_global_tid);
+          appendStatement(buildFunctionCallStmt("__kmpc_for_static_fini", buildVoidType(), parameters, bb1), bb1);
+      };
+    }
     // Liao 1/7/2011, Fortran does not support SgDoWhileStmt
-    // We use the following control flow as an alternative:  
+    // We use the following control flow as an alternative:
     //   label  continue
-    //          loop_here 
-    //          if (GOMP_loop_static_next (&_p_lower, &_p_upper)) 
-    //             goto label  
+    //          loop_here
+    //          if (GOMP_loop_static_next (&_p_lower, &_p_upper))
+    //             goto label
     else if (do_loop)
     {
       SgFunctionDefinition * funcDef = getEnclosingFunctionDefinition(bb1);
@@ -1314,8 +1365,7 @@ namespace OmpSupport
       // loop here
       appendStatement(loop, true_body);
       // if () goto label
-      func_next_exp =buildFunctionCallExp(generateGOMPLoopNextFuncName(hasOrder, s_kind), buildIntType(),
-          n_exp_list, bb1);
+      func_next_exp = buildFunctionCallExp(generateGOMPLoopNextFuncName(hasOrder, s_kind), buildIntType(), n_exp_list, bb1);
       SgIfStmt * if_stmt_2 = buildIfStmt(buildEqualityOp(func_next_exp,buildIntVal(1)), buildBasicBlock(), buildBasicBlock());
       SgGotoStatement* gt_stmt = buildGotoStatement(label_stmt_1->get_numeric_label()->get_symbol());
       appendStatement (gt_stmt, isSgScopeStatement(if_stmt_2->get_true_body()));
@@ -1326,63 +1376,65 @@ namespace OmpSupport
     }
 
     // Rewrite loop control variables
-    replaceVariableReferences(loop,isSgVariableSymbol(orig_index->get_symbol_from_symbol_table ()), 
-        getFirstVarSym(index_decl));
-#if 0 // Liao 1/11/2011. I changed XOMP loop functions to use inclusive upper bounds. All adjustments are done within XOMP from now on
-    int upperAdjust;
-    if (isIncremental)  // adjust the bounds again, inclusive bound so -1 for incremental loop
-      upperAdjust = -1;
-    else 
-      upperAdjust = 1;
-#endif      
+    replaceVariableReferences(loop,isSgVariableSymbol(orig_index->get_symbol_from_symbol_table ()), getFirstVarSym(index_decl));
     SageInterface::setLoopLowerBound(loop, buildVarRefExp(lower_decl));
-    //SageInterface::setLoopUpperBound(loop, buildAddOp(buildVarRefExp(upper_decl),buildIntVal(upperAdjust)));
     SageInterface::setLoopUpperBound(loop, buildVarRefExp(upper_decl));
     ROSE_ASSERT (orig_upper != NULL);
     transOmpVariables(target, bb1, orig_upper); // This should happen before the barrier is inserted.
-    // GOMP_loop_end ();  or GOMP_loop_end_nowait (); 
-#ifdef ENABLE_XOMP
-    string func_loop_end_name = "XOMP_loop_end"; 
-#else    
-    string func_loop_end_name = "GOMP_loop_end"; 
-#endif    
-    if (hasClause(target, V_SgOmpNowaitClause)) 
+    if (!hasClause(target, V_SgOmpNowaitClause))
     {
-      func_loop_end_name+= "_nowait";
+      parameters = buildExprListExp(buildIntVal(0), thread_global_tid);
+      appendStatement(buildFunctionCallStmt("__kmpc_barrier", buildVoidType(), parameters, bb1), bb1);
     }
-    SgExprStatement* end_func_stmt = buildFunctionCallStmt(func_loop_end_name, buildVoidType(), NULL, bb1);
-    appendStatement(end_func_stmt, bb1);
+  }
+
+  void transUpirLoopParallel(SgNode* node) {
+    SgUpirLoopParallelStatement* target = isSgUpirLoopParallelStatement(node);
+    ROSE_ASSERT(target != NULL);
+
+    //TODO: for simd combined directive
+    SgUpirWorksharingStatement* worksharing = isSgUpirWorksharingStatement(target->get_worksharing());
+    SgUpirSimdStatement* simd = isSgUpirSimdStatement(target->get_simd());
+    if (worksharing != NULL) {
+        transOmpLoop(target);
+    }
+    else if (simd != NULL) {
+        transOmpSimd(target);
+    }
+    else {
+        ROSE_ASSERT(0);
+    };
   }
 
   // Expected AST
-  // * SgOmpForStatement
+  // * SgUpirWorksharingStatement
   // ** SgForStatement
   // Algorithm:
   // Loop normalization first  for stop condition expressions
   //   <: for (i= 0;i <20; i++) --> for (i= 0;i <20; i+=1)  [0,20, +1] to pass to runtime calls
-  //  <=: for (i= 0;i<=20; i++) --> for (i= 0;i <21; i+=1) 
+  //  <=: for (i= 0;i<=20; i++) --> for (i= 0;i <21; i+=1)
   //   >: for (i=20;i >-1; i--) --> for (i=20;i >-1; i-=1) [20, -1, -1]
   //  >=: for (i=20;i>= 0; i--) --> for (i=20;i >-1; i-=1)
   // We have a SageInterface::forLoopNormalization() which does the opposite (normalizing a C loop to a Fortran style loop)
-  // < --> <= and > --> >=, 
+  // < --> <= and > --> >=,
   // GCC-GOMP use compiler-generated statements to schedule loop iterations using static schedule
   // All other schedule policies use runtime calls instead.
   // We translate static schedule here and non-static ones in transOmpLoop_others()
-  // 
+  //
   // Static schedule, including:
   //1. default (static even) case
   //2. schedule(static[, chunk_size]): == static even if chunk_size is not specified
-  // gomp does not provide a runtime call to calculate loop control values 
+  // gomp does not provide a runtime call to calculate loop control values
   // for the default (static even) scheduling
   // compilers have to generate the statements to do this. I HATE THIS!!!
   // the loop scheduling algorithm for the default case is
   /*
   // calculate loop iteration count from lower, upper and stride , no -1 if upper is an inclusive bound
-  int _p_iter_count = (stride + -1 + upper - lower )/stride;  
+  int _p_iter_count = (stride + -1 + upper - lower )/stride;
   // calculate a proper chunk size
   // two cases: evenly divisible  20/5 =4
   //   not evenly divisible 20/3= 6
-  // Initial candidate  
+  // Initial candidate
 
   int _p_num_threads = omp_get_num_threads ();
   _p_chunk_size = _p_iter_count / _p_num_threads;
@@ -1398,26 +1450,25 @@ namespace OmpSupport
 
   // adjust the upper bound
   _p_upper = MIN_EXPR <_p_upper, upper>;
-  // _p_upper = _p_upper<upper? _p_upper: upper; 
+  // _p_upper = _p_upper<upper? _p_upper: upper;
   // Note: decremental iteration space needs some minor changes to the algorithm above.
-  // stride should be negated 
+  // stride should be negated
   // MIN_EXP should be MAX_EXP
   // upper bound adjustment should be +1 instead of -1
   */
   void transOmpLoop(SgNode* node)
-    //void transOmpFor(SgNode* node)
   {
     ROSE_ASSERT(node != NULL);
-    SgOmpForStatement* target1 = isSgOmpForStatement(node);
-    SgOmpDoStatement* target2 = isSgOmpDoStatement(node);
+    SgUpirLoopStatement* target = NULL;
+    SgUpirLoopParallelStatement* loop_parallel = isSgUpirLoopParallelStatement(node);
+    target = isSgUpirLoopStatement(loop_parallel->get_loop());
 
-    SgOmpClauseBodyStatement* target = (target1!=NULL?(SgOmpClauseBodyStatement*)target1:(SgOmpClauseBodyStatement*)target2);
     ROSE_ASSERT (target != NULL);
 
     SgScopeStatement* p_scope = target->get_scope();
     ROSE_ASSERT (p_scope != NULL);
 
-    SgStatement * body =  target->get_body();
+    SgStatement* body = target->get_body();
     ROSE_ASSERT(body != NULL);
     // The OpenMP syntax requires that the omp for pragma is immediately followed by the for loop.
     SgForStatement * for_loop = isSgForStatement(body);
@@ -1425,17 +1476,21 @@ namespace OmpSupport
 
     SgStatement* loop = (for_loop!=NULL?(SgStatement*)for_loop:(SgStatement*)do_loop);
     ROSE_ASSERT (loop != NULL);
+
+    SgExprListExp* parameters = NULL;
+    SgExpression* source_location_info = buildIntVal(0);
+
     // Step 1. Loop normalization
     // we reuse the normalization from SageInterface, though it is different from what gomp expects.
     // the point is to have a consistent loop form. We can adjust the difference later on.
-    if (for_loop) 
+    if (for_loop)
       SageInterface::forLoopNormalization(for_loop);
     else if (do_loop)
       SageInterface::doLoopNormalization(do_loop);
     else
     {
       cerr<<"error! transOmpLoop(). loop is neither for_loop nor do_loop. Aborting.."<<endl;
-      ROSE_ABORT ();
+      ROSE_ASSERT (false);
     }
 
     SgInitializedName * orig_index = NULL;
@@ -1451,64 +1506,61 @@ namespace OmpSupport
       is_canonical = isCanonicalDoLoop (do_loop, &orig_index, & orig_lower, &orig_upper, &orig_stride, NULL, &isIncremental, NULL);
     ROSE_ASSERT(is_canonical == true);
 
-    // step 2. Insert a basic block to replace SgOmpForStatement
+    // step 2. Insert a basic block to replace SgUpirWorksharingStatement
     // This newly introduced scope is used to hold loop variables, private variables ,etc
-    SgBasicBlock * bb1 = SageBuilder::buildBasicBlock(); 
+    SgBasicBlock * bb1 = SageBuilder::buildBasicBlock();
 
-
-    //   fprintf(stderr, "target: %s\n", target->unparseToString().c_str() );
-
-    replaceStatement(target, bb1, true);
+    replaceStatement(loop_parallel, bb1, true);
 
     //TODO handle preprocessing information
-    // Save some preprocessing information for later restoration. 
+    // Save some preprocessing information for later restoration.
     //  AttachedPreprocessingInfoType ppi_before, ppi_after;
     //  ASTtools::cutPreprocInfo (s, PreprocessingInfo::before, ppi_before);
     //  ASTtools::cutPreprocInfo (s, PreprocessingInfo::after, ppi_after);
 
     // Declare local loop control variables: _p_loop_index _p_loop_lower _p_loop_upper , no change to the original stride
     SgType* loop_var_type  = NULL ;
-#if 0    
-    if (sizeof(void*) ==8 ) // xomp interface expects long* for some runtime calls. 
-      loop_var_type = buildLongType();
-    else 
-      loop_var_type = buildIntType();
-#endif
     // xomp interface expects long for some runtime calls now, 6/9/2010
-    if (for_loop) 
+    if (for_loop)
       loop_var_type = buildLongType();
     else if (do_loop)  // No long integer in Fortran
       loop_var_type = buildIntType();
-    SgVariableDeclaration* index_decl =  NULL; 
-    SgVariableDeclaration* lower_decl =  NULL; 
-    SgVariableDeclaration* upper_decl =  NULL;
+    SgVariableDeclaration* index_decl = NULL;
+    SgVariableDeclaration* lower_decl = NULL;
+    SgVariableDeclaration* upper_decl = NULL;
+    SgVariableDeclaration* last_iter_decl = NULL;
+    SgVariableDeclaration* stride_decl = NULL;
 
     if (SageInterface::is_Fortran_language() )
     {// special rules to insert variable declarations in Fortran
       // They have to be inserted to enclosing function body or enclosing parallel region body
       // and after existing declaration statement sequence, if any.
       nCounter ++;
-      index_decl = buildAndInsertDeclarationForOmp("p_index_"+StringUtility::numberToString(nCounter), loop_var_type , NULL,bb1); 
-      lower_decl = buildAndInsertDeclarationForOmp("p_lower_"+StringUtility::numberToString(nCounter), loop_var_type , NULL,bb1); 
-      upper_decl = buildAndInsertDeclarationForOmp("p_upper_"+StringUtility::numberToString(nCounter), loop_var_type , NULL,bb1); 
+      index_decl = buildAndInsertDeclarationForOmp("p_index_"+StringUtility::numberToString(nCounter), loop_var_type , NULL,bb1);
+      lower_decl = buildAndInsertDeclarationForOmp("p_lower_"+StringUtility::numberToString(nCounter), loop_var_type , NULL,bb1);
+      upper_decl = buildAndInsertDeclarationForOmp("p_upper_"+StringUtility::numberToString(nCounter), loop_var_type , NULL,bb1);
     }
     else
-    {  
-      index_decl = buildVariableDeclaration("p_index_", loop_var_type , NULL,bb1); 
-      lower_decl = buildVariableDeclaration("p_lower_", loop_var_type , NULL,bb1); 
-      upper_decl = buildVariableDeclaration("p_upper_", loop_var_type , NULL,bb1); 
+    {
+      index_decl = buildVariableDeclaration("__index_", buildIntType(), NULL, bb1);
+      lower_decl = buildVariableDeclaration("__lower_", buildIntType(), buildAssignInitializer(orig_lower), bb1);
+      upper_decl = buildVariableDeclaration("__upper_", buildIntType(), buildAssignInitializer(orig_upper), bb1);
+      stride_decl = buildVariableDeclaration("__stride_", buildIntType(), buildAssignInitializer(orig_stride), bb1);
+      last_iter_decl = buildVariableDeclaration("__last_iter_", buildIntType(), buildAssignInitializer(buildIntVal(0)), bb1);
 
       appendStatement(index_decl, bb1);
       appendStatement(lower_decl, bb1);
       appendStatement(upper_decl, bb1);
-    } 
+      appendStatement(stride_decl, bb1);
+      appendStatement(last_iter_decl, bb1);
+    }
 
     bool hasOrder = false;
     if (hasClause(target, V_SgOmpOrderedClause))
       hasOrder = true;
 
     // Grab or calculate chunk_size
-//    SgExpression* my_chunk_size = NULL; 
+//    SgExpression* my_chunk_size = NULL;
     bool hasSpecifiedSize = false;
     Rose_STL_Container<SgOmpClause*> clauses = getClause(target, V_SgOmpScheduleClause);
     if (clauses.size() !=0)
@@ -1517,7 +1569,7 @@ namespace OmpSupport
       ROSE_ASSERT(s_clause);
       //SgOmpClause::omp_schedule_kind_enum s_kind = s_clause->get_kind();
       // ROSE_ASSERT(s_kind == SgOmpClause::e_omp_schedule_static);
-      SgExpression* orig_chunk_size = s_clause->get_chunk_size();  
+      SgExpression* orig_chunk_size = s_clause->get_chunk_size();
       //  ROSE_ASSERT(orig_chunk_size->get_parent() != NULL);
       if (orig_chunk_size)
       {
@@ -1526,14 +1578,17 @@ namespace OmpSupport
       }
     }
 
-    //  step 3. Translation for omp for 
-    //if (hasClause(target, V_SgOmpScheduleClause)) 
-    if (!useStaticSchedule(target) || hasOrder || hasSpecifiedSize) 
+    //  step 3. Translation for omp for
+    if (!useStaticSchedule(target) || hasOrder || hasSpecifiedSize)
     {
-      transOmpLoop_others( target,   index_decl, lower_decl,   upper_decl, bb1);
+      transOmpLoop_others(target, index_decl, lower_decl, upper_decl, stride_decl, last_iter_decl, bb1);
     }
-    else 
+    else
     {
+      SgVariableDeclaration* kmpc_global_tid_declaration = get_kmpc_global_tid(node, bb1);
+      SgExpression* thread_global_tid = buildVarRefExp(getFirstVariable(*kmpc_global_tid_declaration).get_name(), bb1);
+      appendStatement(kmpc_global_tid_declaration, bb1);
+
       //void XOMP_loop_default(int lower, int upper, int stride, long *n_lower, long * n_upper)
       // XOMP_loop_default (lower, upper, stride, &_p_lower, &_p_upper );
       // lower:  copyExpression(orig_lower)
@@ -1541,8 +1596,8 @@ namespace OmpSupport
       // stride: copyExpression(orig_stride)
       // n_lower: buildVarRefExp(lower_decl)
       // n_upper: buildVarRefExp(upper_decl)
-      SgExpression* e4 = NULL; 
-      SgExpression* e5 = NULL; 
+      SgExpression* e4 = NULL;
+      SgExpression* e5 = NULL;
       if (for_loop)
       {
         e4= buildAddressOfOp(buildVarRefExp(lower_decl));
@@ -1554,46 +1609,56 @@ namespace OmpSupport
         e5= buildVarRefExp(upper_decl);
       }
       ROSE_ASSERT (e4&&e5);
-      SgExprListExp* call_parameters = buildExprListExp(copyExpression(orig_lower), copyExpression(orig_upper), copyExpression(orig_stride), 
-          e4, e5);
-      SgStatement * call_stmt =  buildFunctionCallStmt ("XOMP_loop_default", buildVoidType(), call_parameters, bb1);
+      // by default, LLVM uses 34 as the scheduling policy enum
+      SgExpression* schedule_type = buildIntVal(kmp_sched_static_nochunk);
+      parameters = buildExprListExp(source_location_info, thread_global_tid, schedule_type, buildAddressOfOp(buildVarRefExp(last_iter_decl)), e4, e5, buildAddressOfOp(buildVarRefExp(stride_decl)), copyExpression(orig_stride), buildIntVal(1));
+      SgStatement* call_stmt = buildFunctionCallStmt ("__kmpc_for_static_init_4", buildVoidType(), parameters, bb1);
       appendStatement(call_stmt, bb1);
 
-      // add loop here
-      appendStatement(loop, bb1); 
-      // replace loop index with the new one
-      replaceVariableReferences(loop,
-          isSgVariableSymbol(orig_index->get_symbol_from_symbol_table()), getFirstVarSym(index_decl))    ; 
-      // rewrite the lower and upper bounds
-      SageInterface::setLoopLowerBound(loop, buildVarRefExp(lower_decl)); 
-      SageInterface::setLoopUpperBound(loop, buildVarRefExp(upper_decl)); 
+      // insert the upper bound checking
+      SgExpression* if_condition = NULL;
+      if (isIncremental) {
+        if_condition = buildGreaterThanOp(buildVarRefExp(upper_decl), copyExpression(orig_upper));
+      }
+      else {
+        if_condition = buildLessThanOp(buildVarRefExp(upper_decl), copyExpression(orig_upper));
+      };
+      SgExprStatement* update_upper_bound_stmt = buildAssignStatement(buildVarRefExp(upper_decl), copyExpression(orig_upper));
+      SgIfStmt* if_statement = buildIfStmt(if_condition, update_upper_bound_stmt, NULL);
+      appendStatement(if_statement, bb1);
 
+      // add loop here
+      SgStatement* new_loop = deepCopy(loop);
+      appendStatement(new_loop, bb1);
+      // replace loop index with the new one
+      replaceVariableReferences(new_loop,
+          isSgVariableSymbol(orig_index->get_symbol_from_symbol_table()), getFirstVarSym(index_decl))    ;
+      // rewrite the lower and upper bounds
+      SageInterface::setLoopLowerBound(new_loop, buildVarRefExp(lower_decl));
+      SageInterface::setLoopUpperBound(new_loop, buildVarRefExp(upper_decl));
+
+      // TODO: implement UPIR: transUpirVariables(loop_parallel, bb1, orig_upper);
       transOmpVariables(target, bb1,orig_upper); // This should happen before the barrier is inserted.
+      parameters = buildExprListExp(buildIntVal(0), thread_global_tid);
+      appendStatement(buildFunctionCallStmt("__kmpc_for_static_fini", buildVoidType(), parameters, bb1), bb1);
       // insert barrier if there is no nowait clause
-      if (!hasClause(target, V_SgOmpNowaitClause)) 
+      if (!hasClause(target, V_SgOmpNowaitClause))
       {
-        //insertStatementAfter(for_loop, buildFunctionCallStmt("GOMP_barrier", buildVoidType(), NULL, bb1));
-#ifdef ENABLE_XOMP
-        appendStatement(buildFunctionCallStmt("XOMP_barrier", buildVoidType(), NULL, bb1), bb1);
-#else   
-        appendStatement(buildFunctionCallStmt("GOMP_barrier", buildVoidType(), NULL, bb1), bb1);
-#endif  
+        appendStatement(buildFunctionCallStmt("__kmpc_barrier", buildVoidType(), parameters, bb1), bb1);
       }
     }
 
-    // handle variables 
-    // transOmpVariables(target, bb1); // This should happen before the barrier is inserted.
   } // end trans omp for
 
 
   //! Translate omp for or omp do loops affected by the "omp target" directive, Liao 1/28/2013
   /*
 
-Example: 
+Example:
   // for (i = 0; i < N; i++)
   { // top level block, prepare to be outlined.
   // int i ; // = blockDim.x * blockIdx.x + threadIdx.x; // this CUDA declaration can be inserted later
-  i = getLoopIndexFromCUDAVariables(1); 
+  i = getLoopIndexFromCUDAVariables(1);
 
   if (i<SIZE)  // boundary checking to avoid invalid memory accesses
   {
@@ -1606,7 +1671,7 @@ Example:
 Algorithm:
    * check if it is a OmpTargetLoop
    * loop normalization
-   * replace OmpForStatement with a block: bb1
+   * replace UpirWorksharingStatement with a block: bb1
    * declare int _dev_i within bb1;  replace for loop body’s loop index with _dev_i;
    * build if stmt with correct condition
    * move loop body to if-stmt’s true body
@@ -1616,10 +1681,10 @@ Algorithm:
   {
     //step 0: Sanity check
     ROSE_ASSERT(node != NULL);
-    SgOmpForStatement* target1 = isSgOmpForStatement(node);
+    SgUpirWorksharingStatement* target1 = isSgUpirWorksharingStatement(node);
     SgOmpDoStatement* target2 = isSgOmpDoStatement(node);
 
-    SgOmpClauseBodyStatement* target = (target1!=NULL?(SgOmpClauseBodyStatement*)target1:(SgOmpClauseBodyStatement*)target2);
+    SgUpirFieldBodyStatement* target = (target1!=NULL?(SgUpirFieldBodyStatement*)target1:(SgUpirFieldBodyStatement*)target2);
     ROSE_ASSERT (target != NULL);
 
     SgScopeStatement* p_scope = target->get_scope();
@@ -1642,15 +1707,15 @@ Algorithm:
       parent = parent->get_parent();
     SgNode* grand_parent = parent->get_parent();
     ROSE_ASSERT (grand_parent != NULL);
-    SgOmpParallelStatement* parent_parallel = isSgOmpParallelStatement (parent) ;
-    SgOmpTargetStatement* grand_target = isSgOmpTargetStatement(grand_parent);
-    ROSE_ASSERT (parent_parallel !=NULL); 
-    ROSE_ASSERT (grand_target !=NULL); 
+    SgUpirSpmdStatement* parent_parallel = isSgUpirSpmdStatement (parent) ;
+    SgUpirTaskStatement* grand_target = isSgUpirTaskStatement(grand_parent);
+    ROSE_ASSERT (parent_parallel !=NULL);
+    ROSE_ASSERT (grand_target !=NULL);
 
     // Step 1. Loop normalization
-    // For the init statement: for (int i=0;... ) becomes int i; for (i=0;..) 
-    // For test expression: i<x is normalized to i<= (x-1) and i>x is normalized to i>= (x+1) 
-    // For increment expression: i++ is normalized to i+=1 and i-- is normalized to i+=-1 i-=s is normalized to i+= -s 
+    // For the init statement: for (int i=0;... ) becomes int i; for (i=0;..)
+    // For test expression: i<x is normalized to i<= (x-1) and i>x is normalized to i>= (x+1)
+    // For increment expression: i++ is normalized to i+=1 and i-- is normalized to i+=-1 i-=s is normalized to i+= -s
     if (for_loop)
       SageInterface::forLoopNormalization(for_loop);
     else if (do_loop)
@@ -1658,7 +1723,7 @@ Algorithm:
     else
     {
       cerr<<"error! transOmpLoop(). loop is neither for_loop nor do_loop. Aborting.."<<endl;
-      ROSE_ABORT ();
+      ROSE_ASSERT (false);
     }
 
     SgInitializedName * orig_index = NULL;
@@ -1686,7 +1751,7 @@ Algorithm:
     SgBasicBlock* loop_body = ensureBasicBlockAsBodyOfFor (for_loop);
 
 
-    //Step 2. Insert a basic block to replace SgOmpForStatement
+    //Step 2. Insert a basic block to replace SgUpirWorksharingStatement
     // This newly introduced scope is used to hold loop variables ,etc
     SgBasicBlock * bb1 = SageBuilder::buildBasicBlock();
     replaceStatement(target, bb1, true);
@@ -1694,14 +1759,14 @@ Algorithm:
     //Step 3. Using device thread id and replace reference of original loop index with the thread index
     // Declare device thread id variable
     //int i = blockDim.x * blockIdx.x + threadIdx.x;
-    //SgAssignInitializer* init_idx =  buildAssignInitializer( 
-    //                                     buildAddOp( buildMultiplyOp (buildVarRefExp("blockDim.x"), buildVarRefExp("blockIdx.x")) , 
+    //SgAssignInitializer* init_idx =  buildAssignInitializer(
+    //                                     buildAddOp( buildMultiplyOp (buildVarRefExp("blockDim.x"), buildVarRefExp("blockIdx.x")) ,
     //                                      buildVarRefExp("threadIdx.x", bb1)));
     //Better build of CUDA variables within a runtime library call so these variables are hidden from the translation
     //  getLoopIndexFromCUDAVariables(1)
     SgAssignInitializer* init_idx =  buildAssignInitializer(buildFunctionCallExp(SgName("getLoopIndexFromCUDAVariables"), buildIntType(),buildExprListExp(buildIntVal(1)),bb1), buildIntType());
 
-    SgVariableDeclaration* dev_i_decl = buildVariableDeclaration("_dev_i", buildIntType(), init_idx, bb1); 
+    SgVariableDeclaration* dev_i_decl = buildVariableDeclaration("_dev_i", buildIntType(), init_idx, bb1);
     prependStatement (dev_i_decl, bb1);
     SgVariableSymbol* dev_i_symbol = getFirstVarSym (dev_i_decl);
     ROSE_ASSERT (dev_i_symbol != NULL);
@@ -1719,7 +1784,7 @@ Algorithm:
       if (vRef->get_symbol() == orig_symbol)
         vRef->set_symbol(dev_i_symbol);
     }
-#endif 
+#endif
 
     // Step 4. build the if () condition statement, move the loop body into the true body
     // Liao, 2/21/2013. We must be accurate about the range of iterations or the computation may result in WRONG results!!
@@ -1737,11 +1802,11 @@ Algorithm:
     else
     {
       cerr<<"error. transOmpTargetLoop(): decremental case is not yet handled !"<<endl;
-      ROSE_ABORT ();
+      ROSE_ASSERT (false);
     }
     SgIfStmt * if_stmt = buildIfStmt(cond_stmt, true_body, NULL);
     appendStatement(if_stmt, bb1);
-    moveStatementsBetweenBlocks (loop_body, true_body);  
+    moveStatementsBetweenBlocks (loop_body, true_body);
     // Peel off the original loop
     removeStatement (for_loop);
 
@@ -1758,7 +1823,7 @@ Algorithm:
   // original loop info. grab from the loop structure
   int orig_start =0;
   int orig_end = n-1; // inclusive upper bound
-  int orig_step = 1; 
+  int orig_step = 1;
   int orig_chunk_size = 1;// fixed at 1
 
   // new lower and upper bound, to be filled out by the loop scheduler
@@ -1766,11 +1831,11 @@ Algorithm:
   int _dev_upper;
   int _dev_loop_chunk_size;
   int _dev_loop_sched_index;
-  int _dev_loop_stride;  
+  int _dev_loop_stride;
 
   // CUDA thread count and ID for the 1-D block
   int _dev_thread_num = getCUDABlockThreadCount(1);
-  int _dev_thread_id = getLoopIndexFromCUDAVariables(1); 
+  int _dev_thread_id = getLoopIndexFromCUDAVariables(1);
 
   //initialize scheduler
   XOMP_static_sched_init (orig_start, orig_end, orig_step, orig_chunk_size, _dev_thread_num, _dev_thread_id, \
@@ -1790,11 +1855,11 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
 {
   //step 0: Sanity check
   ROSE_ASSERT(node != NULL);
-  SgOmpForStatement* target1 = isSgOmpForStatement(node);
+  SgUpirWorksharingStatement* target1 = isSgUpirWorksharingStatement(node);
   SgOmpDoStatement* target2 = isSgOmpDoStatement(node);
 
-  // the target of the translation is a SgOmpForStatement
-  SgOmpClauseBodyStatement* target = (target1!=NULL?(SgOmpClauseBodyStatement*)target1:(SgOmpClauseBodyStatement*)target2);
+  // the target of the translation is a SgUpirWorksharingStatement
+  SgUpirFieldBodyStatement* target = (target1!=NULL?(SgUpirFieldBodyStatement*)target1:(SgUpirFieldBodyStatement*)target2);
   ROSE_ASSERT (target != NULL);
 
   SgScopeStatement* p_scope = target->get_scope();
@@ -1816,16 +1881,18 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
   if (isSgBasicBlock(parent)) // skip one possible BB between omp parallel and omp for.
     parent = parent->get_parent();
   SgNode* grand_parent = parent->get_parent();
+  if (isSgBasicBlock(grand_parent)) // skip one possible BB between omp target and omp parallel.
+    grand_parent = grand_parent->get_parent();
   ROSE_ASSERT (grand_parent != NULL);
-  SgOmpParallelStatement* parent_parallel = isSgOmpParallelStatement (parent) ;
-  SgOmpTargetStatement* grand_target = isSgOmpTargetStatement(grand_parent);
+  SgUpirSpmdStatement* parent_parallel = isSgUpirSpmdStatement (parent) ;
+  SgUpirTaskStatement* grand_target = isSgUpirTaskStatement(grand_parent);
   ROSE_ASSERT (parent_parallel !=NULL);
   ROSE_ASSERT (grand_target !=NULL);
 
   // Step 1. Loop normalization
-  // For the init statement: for (int i=0;... ) becomes int i; for (i=0;..) 
-  // For test expression: i<x is normalized to i<= (x-1) and i>x is normalized to i>= (x+1) 
-  // For increment expression: i++ is normalized to i+=1 and i-- is normalized to i+=-1 i-=s is normalized to i+= -s 
+  // For the init statement: for (int i=0;... ) becomes int i; for (i=0;..)
+  // For test expression: i<x is normalized to i<= (x-1) and i>x is normalized to i>= (x+1)
+  // For increment expression: i++ is normalized to i+=1 and i-- is normalized to i+=-1 i-=s is normalized to i+= -s
   if (for_loop)
     SageInterface::forLoopNormalization(for_loop);
   else if (do_loop)
@@ -1833,7 +1900,7 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
   else
   {
     cerr<<"error! transOmpLoop(). loop is neither for_loop nor do_loop. Aborting.."<<endl;
-    ROSE_ABORT ();
+    ROSE_ASSERT (false);
   }
 
   SgInitializedName * orig_index = NULL;
@@ -1858,7 +1925,7 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
   ROSE_ASSERT (for_loop != NULL);
   //SgBasicBlock* loop_body = ensureBasicBlockAsBodyOfFor (for_loop);
 
-  //Step 2. Insert a basic block to replace SgOmpForStatement
+  //Step 2. Insert a basic block to replace SgUpirWorksharingStatement
   // This newly introduced scope is used to hold loop variables ,etc
   SgBasicBlock * bb1 = SageBuilder::buildBasicBlock();
   replaceStatement(target, bb1, true);
@@ -1868,17 +1935,17 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
      int _dev_upper;
      int _dev_loop_chunk_size;
      int _dev_loop_sched_index;
-     int _dev_loop_stride;  
+     int _dev_loop_stride;
   */
-  SgVariableDeclaration* dev_lower_decl = buildVariableDeclaration ("_dev_lower", buildIntType(), NULL, bb1); 
+  SgVariableDeclaration* dev_lower_decl = buildVariableDeclaration ("_dev_lower", buildIntType(), NULL, bb1);
   appendStatement (dev_lower_decl, bb1);
-  SgVariableDeclaration* dev_upper_decl = buildVariableDeclaration ("_dev_upper", buildIntType(), NULL, bb1); 
+  SgVariableDeclaration* dev_upper_decl = buildVariableDeclaration ("_dev_upper", buildIntType(), NULL, bb1);
   appendStatement (dev_upper_decl, bb1);
-  SgVariableDeclaration* dev_loop_chunk_size_decl = buildVariableDeclaration ("_dev_loop_chunk_size", buildIntType(), NULL, bb1); 
+  SgVariableDeclaration* dev_loop_chunk_size_decl = buildVariableDeclaration ("_dev_loop_chunk_size", buildIntType(), NULL, bb1);
   appendStatement (dev_loop_chunk_size_decl, bb1);
-  SgVariableDeclaration* dev_loop_sched_index_decl = buildVariableDeclaration ("_dev_loop_sched_index", buildIntType(), NULL, bb1); 
+  SgVariableDeclaration* dev_loop_sched_index_decl = buildVariableDeclaration ("_dev_loop_sched_index", buildIntType(), NULL, bb1);
   appendStatement (dev_loop_sched_index_decl , bb1);
-  SgVariableDeclaration* dev_loop_stride_decl = buildVariableDeclaration ("_dev_loop_stride", buildIntType(), NULL, bb1); 
+  SgVariableDeclaration* dev_loop_stride_decl = buildVariableDeclaration ("_dev_loop_stride", buildIntType(), NULL, bb1);
   appendStatement (dev_loop_stride_decl, bb1);
 
   // Insert CUDA thread id and count declarations
@@ -1888,32 +1955,32 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
   appendStatement (dev_thread_num_decl, bb1);
   SgVariableSymbol* dev_thread_num_symbol = getFirstVarSym (dev_thread_num_decl);
   ROSE_ASSERT (dev_thread_num_symbol!= NULL);
- 
-  // int _dev_thread_id = getLoopIndexFromCUDAVariables(1); 
+
+  // int _dev_thread_id = getLoopIndexFromCUDAVariables(1);
   init_idx =  buildAssignInitializer(buildFunctionCallExp(SgName("getLoopIndexFromCUDAVariables"), buildIntType(),buildExprListExp(buildIntVal(1)),bb1), buildIntType());
   SgVariableDeclaration* dev_thread_id_decl = buildVariableDeclaration("_dev_thread_id", buildIntType(), init_idx, bb1);
   appendStatement (dev_thread_id_decl, bb1);
   SgVariableSymbol* dev_thread_id_symbol = getFirstVarSym (dev_thread_id_decl);
   ROSE_ASSERT (dev_thread_id_symbol!= NULL);
-  
+
   // initialize scheduler
-  // XOMP_static_sched_init (orig_start, orig_end, orig_step, orig_chunk_size, _dev_thread_num, _dev_thread_id, 
+  // XOMP_static_sched_init (orig_start, orig_end, orig_step, orig_chunk_size, _dev_thread_num, _dev_thread_id,
   //                       & _dev_loop_chunk_size , & _dev_loop_sched_index, & _dev_loop_stride);
   SgExprListExp* parameters  = buildExprListExp(copyExpression (orig_lower), copyExpression (orig_upper), copyExpression(orig_stride), buildIntVal(1), buildVarRefExp(dev_thread_num_symbol), buildVarRefExp (dev_thread_id_symbol) );
-  appendExpression (parameters, buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_loop_chunk_size_decl))) ); 
-  appendExpression (parameters, buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_loop_sched_index_decl))) ); 
-  appendExpression (parameters, buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_loop_stride_decl))) ); 
+  appendExpression (parameters, buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_loop_chunk_size_decl))) );
+  appendExpression (parameters, buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_loop_sched_index_decl))) );
+  appendExpression (parameters, buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_loop_stride_decl))) );
   SgStatement* call_stmt = buildFunctionCallStmt ("XOMP_static_sched_init", buildVoidType(), parameters, bb1);
   appendStatement (call_stmt, bb1);
 
   // function call exp as while (condition)
-  // XOMP_static_sched_next (&_dev_loop_sched_index, orig_end, orig_step,_dev_loop_stride, _dev_loop_chunk_size, 
+  // XOMP_static_sched_next (&_dev_loop_sched_index, orig_end, orig_step,_dev_loop_stride, _dev_loop_chunk_size,
   //                       _dev_thread_num, _dev_thread_id, & _dev_lower , & _dev_upper)
   parameters = buildExprListExp (buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_loop_sched_index_decl))), copyExpression (orig_upper), copyExpression(orig_stride),buildVarRefExp (getFirstVarSym(dev_loop_stride_decl)),  buildVarRefExp (getFirstVarSym(dev_loop_chunk_size_decl)));
   appendExpression (parameters,buildVarRefExp(dev_thread_num_symbol));
   appendExpression (parameters,buildVarRefExp(dev_thread_id_symbol));
-  appendExpression (parameters, buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_lower_decl))) ); 
-  appendExpression (parameters, buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_upper_decl))) ); 
+  appendExpression (parameters, buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_lower_decl))) );
+  appendExpression (parameters, buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_upper_decl))) );
   SgExpression* func_call_exp = buildFunctionCallExp ("XOMP_static_sched_next", buildBoolType(), parameters, bb1);
 
   SgStatement* new_loop = deepCopy (for_loop);
@@ -1925,72 +1992,79 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
   setLoopLowerBound (new_loop, buildVarRefExp (getFirstVarSym(dev_lower_decl)));
   setLoopUpperBound (new_loop, buildVarRefExp (getFirstVarSym(dev_upper_decl)));
   removeStatement (for_loop);
-  
-
 
   // handle private variables at this loop level, mostly loop index variables.
   // TODO: this is not very elegant since the outer most loop's loop variable is still translated.
   //for reduction
   per_block_declarations.clear(); // must reset to empty or wrong reference to stale content generated previously
   transOmpVariables(target, bb1,NULL, true);
-  
+
   // Liao, 11/11/2014, clean up copied OmpAttribute
   if (new_loop->attributeExists("OmpAttributeList"))
      new_loop->removeAttribute("OmpAttributeList");
-#if 0
-  AstAttributeMechanism* astAttributeContainer = new_loop ->get_attributeMechanism();
-  if (astAttributeContainer != NULL)
-  {
-    for (AstAttributeMechanism::iterator i = astAttributeContainer->begin(); i != astAttributeContainer->end(); i++)
-    {
-      AstAttribute* attribute = i->second;
-      ROSE_ASSERT(attribute != NULL);
-    }
-  }
-#endif
-
 }
 
 
-
   //! Check if an OpenMP statement has a clause of type vt
-  Rose_STL_Container<SgOmpClause*> getClause(SgOmpClauseBodyStatement* clause_stmt, const VariantT & vt)
+  Rose_STL_Container<SgOmpClause*> getClause(SgStatement* clause_stmt, const VariantT & vt)
   {
     ROSE_ASSERT(clause_stmt != NULL);
+    SgOmpClausePtrList clauses;
+    if (isSgUpirFieldBodyStatement(clause_stmt)) {
+        clauses = (isSgUpirFieldBodyStatement(clause_stmt))->get_clauses();
+    }
+    else if (isSgUpirFieldStatement(clause_stmt)) {
+        clauses = (isSgUpirFieldStatement(clause_stmt))->get_clauses();
+    }
+    else {
+        ROSE_ASSERT(0);
+    };
     Rose_STL_Container<SgOmpClause*> p_clause =
-      NodeQuery::queryNodeList<SgOmpClause>(clause_stmt->get_clauses(),vt);
-    return  p_clause;
+      NodeQuery::queryNodeList<SgOmpClause>(clauses,vt);
+    return p_clause;
   }
 
   //! Check if an OpenMP statement has a clause of type vt
-  bool hasClause(SgOmpClauseBodyStatement* clause_stmt, const VariantT & vt)
+  bool hasClause(SgStatement* clause_stmt, const VariantT & vt)
   {
     ROSE_ASSERT(clause_stmt != NULL);
+    SgOmpClausePtrList clauses;
+    if (isSgUpirFieldBodyStatement(clause_stmt)) {
+        clauses = (isSgUpirFieldBodyStatement(clause_stmt))->get_clauses();
+    }
+    else if (isSgUpirFieldStatement(clause_stmt)) {
+        clauses = (isSgUpirFieldStatement(clause_stmt))->get_clauses();
+    }
+    else {
+        ROSE_ASSERT(0);
+    };
     Rose_STL_Container<SgOmpClause*> p_clause =
-      NodeQuery::queryNodeList<SgOmpClause>(clause_stmt->get_clauses(),vt);
-    return  (p_clause.size()!= 0) ;
+      NodeQuery::queryNodeList<SgOmpClause>(clauses,vt);
+    return (p_clause.size()!= 0);
   }
 
 //! A helper function to generate implicit or explicit task for either omp parallel or omp task
 //  Parameters:  SgNode* node: the OMP Parallel or OMP Parallel
 //               std::string& wrapper_name: for C/C++, structure wrapper is used to wrap all parameters. This is to return the struct name
 //               ASTtools::VarSymSet_t& syms :  all variables to be passed in/out the outlined function
-//               ASTtools::VarSymSet_t&pdSyms3 : variables which must be passed by references, used to guide the creation of struct wrapper: member using base type vs. using pointer type.  The algorithm to generate this set is already very conservative: after transOmpVariables() , the only exclude firstprivate. In the context of OpenMP, it is equivalent to say this is a set of variables which are to be passed by references. 
+//               ASTtools::VarSymSet_t&pdSyms3 : variables which must be passed by references, used to guide the creation of struct wrapper: member using base type vs. using pointer type.  The algorithm to generate this set is already very conservative: after transOmpVariables() , the only exclude firstprivate. In the context of OpenMP, it is equivalent to say this is a set of variables which are to be passed by references.
 // Algorithms:
 //    Set flags of the outliner to indicate desired behaviors: parameter wrapping or not?
 //    translate OpenMP variables (first private, private, reduction, etc) so the code to be outlined is already as simple as possible (without OpenMP-specific semantics)
 //
-// It calls the ROSE AST outliner internally. 
-SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_name, ASTtools::VarSymSet_t& syms, ASTtools::VarSymSet_t&pdSyms3)
-//SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_name, ASTtools::VarSymSet_t& syms, std::set<SgInitializedName*>& readOnlyVars, ASTtools::VarSymSet_t&pdSyms3)
+// It calls the ROSE AST outliner internally.
+SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_name,
+                                            ASTtools::VarSymSet_t& syms,
+                                            ASTtools::VarSymSet_t&pdSyms3,
+                                            bool use_task_param)
 {
   ROSE_ASSERT(node != NULL);
-  SgOmpClauseBodyStatement* target = isSgOmpClauseBodyStatement(node);  
+  SgUpirFieldBodyStatement* target = isSgUpirFieldBodyStatement(node);
   ROSE_ASSERT (target != NULL);
 
   // must be either omp task or omp parallel
   SgOmpTaskStatement* target1 = isSgOmpTaskStatement(node);
-  SgOmpParallelStatement* target2 = isSgOmpParallelStatement(node);
+  SgUpirSpmdStatement* target2 = isSgUpirSpmdStatement(node);
   ROSE_ASSERT (target1 != NULL || target2 != NULL);
 
   SgStatement * body =  target->get_body();
@@ -1998,18 +2072,9 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
   SgFunctionDeclaration* result= NULL;
   //Initialize outliner
   Outliner::enable_classic = false; // we need use parameter wrapping, which is not classic behavior of outlining
-  if (SageInterface::is_Fortran_language())
-  {
-    //We pass one variable per parameter, at least for Fortran 77
-    Outliner::useParameterWrapper = false;
-//    Outliner::enable_classic = true; // use subroutine's parameters directly
-  }
-  else 
-  {
-    // C/C++ : always wrap parameters into a structure for outlining used during OpenMP translation
-    Outliner::useParameterWrapper = true; 
-    Outliner::useStructureWrapper = true;
-  }
+  // We pass one variable per parameter, at least for Fortran 77.
+  // For both C/C++ and Fortran, we use the same method to pass parameters separately instead of a struct or array wrapper.
+  Outliner::useParameterWrapper = false;
 
   //TODO there should be some semantics check for the regions to be outlined
   //for example, multiple entries or exists are not allowed for OpenMP
@@ -2019,15 +2084,25 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
   //---------------------------------------------------------------
   //  Key step: handling special variables BEFORE actual outlining is done!!
   // Variable handling is done after Outliner::preprocess() to ensure a basic block for the body,
-  // but before calling the actual outlining 
-  // This simplifies the outlining since firstprivate, private variables are replaced 
-  //with their local copies before outliner is used 
-  transOmpVariables (target, body_block); 
+  // but before calling the actual outlining
+  // This simplifies the outlining since firstprivate, private variables are replaced
+  //with their local copies before outliner is used
+  transOmpVariables (target, body_block);
 
   // variable sets for private, firstprivate, reduction, and pointer dereferencing (pd)
   ASTtools::VarSymSet_t pSyms, fpSyms,reductionSyms, pdSyms;
 
   string func_name = Outliner::generateFuncName(target);
+
+  // add a meaningful suffix to the generated unique outlined function name
+  // the suffix is "<enclosing function name>__<line number of the original statement>__"
+  const Sg_File_Info* info = target->get_startOfConstruct();
+  SgFunctionDeclaration * enclosing_function = getEnclosingFunctionDeclaration(target);
+  std::string enclosing_function_name = enclosing_function->get_name().getString();
+  std::stringstream statement_line_number;
+  statement_line_number << info->get_line();
+  func_name += enclosing_function_name + "__" + statement_line_number.str() + "__";
+
   SgGlobal* g_scope = SageInterface::getGlobalScope(body_block);
   ROSE_ASSERT(g_scope != NULL);
 
@@ -2037,17 +2112,17 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
   Outliner::collectVars(body_block, syms);
 
    // Now decide on the parameter convention for all the parameters: pass-by-value vs. pass-by-reference (pointer dereferencing)
-   
+
   //     SageInterface::collectReadOnlyVariables(body_block,readOnlyVars);
   // We choose to be conservative about the variables needing pointer dereferencing first
-  // AllParameters - readOnlyVars  - private -firstprivate 
-  // Union ASTtools::collectPointerDereferencingVarSyms(body_block, pdSyms) 
+  // AllParameters - readOnlyVars  - private -firstprivate
+  // Union ASTtools::collectPointerDereferencingVarSyms(body_block, pdSyms)
 
   // Assume all parameters need to be passed by reference/pointers first
   std::copy(syms.begin(), syms.end(), std::inserter(pdSyms,pdSyms.begin()));
 
   //exclude firstprivate variables: they are read only in fact
-  //TODO keep class typed variables!!!  even if they are firstprivate or private!! 
+  //TODO keep class typed variables!!!  even if they are firstprivate or private!!
   SgInitializedNamePtrList fp_vars = collectClauseVariables (target, V_SgOmpFirstprivateClause);
   ASTtools::VarSymSet_t fp_syms, pdSyms2;
   convertAndFilter (fp_vars, fp_syms);
@@ -2055,14 +2130,14 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
       fp_syms.begin(), fp_syms.end(),
       std::inserter(pdSyms2, pdSyms2.begin()));
  //  ROSE_ASSERT (pdSyms.size() == pdSyms2.size());  this means the previous set_difference is neccesary !
- 
+
 #if 0
   // Similarly , exclude private variable, also read only
   // TODO: is this necessary? private variables should  be handled already in transOmpVariables(). So Outliner::collectVars() will not collect them at all!
   SgInitializedNamePtrList p_vars = collectClauseVariables (target, V_SgOmpPrivateClause);
   ASTtools::VarSymSet_t p_syms; //, pdSyms3;
   convertAndFilter (p_vars, p_syms);
-  //TODO keep class typed variables!!!  even if they are firstprivate or private!! 
+  //TODO keep class typed variables!!!  even if they are firstprivate or private!!
   set_difference (pdSyms2.begin(), pdSyms2.end(),
       p_syms.begin(), p_syms.end(),
       std::inserter(pdSyms3, pdSyms3.begin()));
@@ -2105,7 +2180,7 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
         const SgVariableSymbol* s = *j;
         new_syms.insert(s);   // If the symbol is not in the symbol list, it is added
       }
-      
+
       // Advance over the type
       i_type = ((SgArrayType*) i_type)->get_base_type();
     }
@@ -2117,14 +2192,8 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
     syms.insert(s);
   }
 
-  
   // a data structure used to wrap parameters
-  SgClassDeclaration* struct_decl = NULL; 
-  if (SageInterface::is_Fortran_language())
-    struct_decl = NULL;  // We cannot use structure for Fortran
-  else  
-     struct_decl = Outliner::generateParameterStructureDeclaration (body_block, func_name, syms, pdSyms3, g_scope);
-  // ROSE_ASSERT (struct_decl != NULL); // can be NULL if no parameters to be passed
+  SgClassDeclaration* struct_decl = NULL;
 
   //Generate the outlined function
   /* Parameter list
@@ -2138,11 +2207,11 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
   */
   std::set< SgInitializedName *> restoreVars;
   result = Outliner::generateFunction(body_block, func_name, syms, pdSyms3, restoreVars, struct_decl, g_scope);
-  
+
 #if 0
   // special handling for empty variables to be passed: test case helloNested.cpp
   // TODO: move this portion from GenerateFunc.cc variableHandling()
-  //For OpenMP lowering, we have to have a void * parameter even if there is no need to pass any parameters 
+  //For OpenMP lowering, we have to have a void * parameter even if there is no need to pass any parameters
   //in order to match the gomp runtime lib 's function prototype for function pointers
   SgFile* cur_file = getEnclosingFileNode(result);
   ROSE_ASSERT (cur_file != NULL);
@@ -2159,7 +2228,7 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
       ROSE_ASSERT (body);
 
       SgName var1_name = "__out_argv";
-      SgType* ptype= NULL; 
+      SgType* ptype= NULL;
       // A dummy integer parameter for Fortran outlined function
       if (SageInterface::is_Fortran_language() )
       {
@@ -2178,12 +2247,24 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
       appendArg(params,parameter1);
     }
   }
-  else 
+  else
   {
-   ROSE_ABORT ();
+   ROSE_ASSERT (false);
   }
 #endif
 
+  SgPointerType* int_pointer_type = buildPointerType(SgTypeInt::createType());
+  // insert the kmpc ids as the first two parameters
+  if (use_task_param) {
+      auto *taskType = buildOpaqueType("ptask", g_scope);
+      insert_function_parameter("task", taskType, result, false);
+  } else {
+      insert_function_parameter("__bound_tid", int_pointer_type, result, false);
+  }
+  
+  insert_function_parameter("__global_tid", int_pointer_type, result, false);
+
+  // insert the forward declaration
   Outliner::insert(result, g_scope, body_block);
 
 #if 0 //Liao 12/20/2012 this logic is moved into outliner since using static function is generally a good idea.
@@ -2197,12 +2278,12 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
 #endif
   // Generate packing statements
   // must pass target , not body_block to get the right scope in which the declarations are inserted
-  if (!SageInterface::is_Fortran_language()) 
+  if (!SageInterface::is_Fortran_language())
     wrapper_name= Outliner::generatePackingStatements(target,syms,pdSyms3, struct_decl);
   ROSE_ASSERT (result != NULL);
 
   // 12/7/2010
-  // For Fortran outlined subroutines, 
+  // For Fortran outlined subroutines,
   // add INCLUDE 'omp_lib.h' in case OpenMP runtime routines are called within the outlined subroutines
   if (SageInterface::is_Fortran_language() )
   {
@@ -2215,8 +2296,8 @@ SgFunctionDeclaration* generateOutlinedTask(SgNode* node, std::string& wrapper_n
 }
 
 #if 0 // Moved to SageInterface
-//! iterate through the statement within a scope, find the last declaration statement (if any) after which 
-//  another declaration statement can be inserted.  
+//! iterate through the statement within a scope, find the last declaration statement (if any) after which
+//  another declaration statement can be inserted.
 // This is useful to find a safe place to insert a declaration statement with special requirements about where it can be inserted.
 // e.g. a variable declaration statement should not be inserted before IMPLICIT none in Fortran
 // If it returns NULL, a declaration statement should be able to be prepended to the scope
@@ -2238,9 +2319,11 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
   return rt;
 }
 #endif
-  /* GCC's libomp uses the following translation method: 
-   * 
-   * 
+
+
+  /* GCC's libomp uses the following translation method:
+   *
+   *
 #include "libgomp_g.h"
 #include <stdio.h>
 #include "omp.h"
@@ -2281,18 +2364,15 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
    printf("Hello,world! I am thread %d\n", *i);
    }
    */
+
   void transOmpParallel (SgNode* node)
   {
     ROSE_ASSERT(node != NULL);
-    SgOmpParallelStatement* target = isSgOmpParallelStatement(node);
+    SgUpirSpmdStatement* target = isSgUpirSpmdStatement(node);
     ROSE_ASSERT (target != NULL);
 
-// Test if the file info has been corrected transferred to SgOmpParallelStatement
-//    target->get_startOfConstruct()->display();
-//    target->get_endOfConstruct()->display();
-     
     // Liao 12/7/2010
-    // For Fortran code, we have to insert EXTERNAL OUTLINED_FUNC into 
+    // For Fortran code, we have to insert EXTERNAL OUTLINED_FUNC into
     // the function body containing the parallel region
     SgFunctionDefinition * func_def = NULL;
     if (SageInterface::is_Fortran_language() )
@@ -2306,7 +2386,7 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
     AttachedPreprocessingInfoType save_buf1, save_buf2, save_buf_inside;
     cutPreprocessingInfo(target, PreprocessingInfo::before, save_buf1) ;
     cutPreprocessingInfo(target, PreprocessingInfo::after, save_buf2) ;
-   
+
     // some #endif may be attached to the body, we should not move it with the body into
     // the outlined funcion!!
      // cutPreprocessingInfo(body, PreprocessingInfo::before, save_buf_body) ;
@@ -2319,7 +2399,7 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
     std::string wrapper_name;
     ASTtools::VarSymSet_t syms; // store all variables in the outlined task ???
     ASTtools::VarSymSet_t pdSyms3; // store all variables which should be passed by references (pd means pointer dereferencing)
-    std::set<SgInitializedName*> readOnlyVars; // not used since OpenMP provides all variable controlling details already. side effect analysis is essentially not being used. 
+    std::set<SgInitializedName*> readOnlyVars; // not used since OpenMP provides all variable controlling details already. side effect analysis is essentially not being used.
     SgFunctionDeclaration* outlined_func = generateOutlinedTask (node, wrapper_name, syms, pdSyms3);
 
     if (SageInterface::is_Fortran_language() )
@@ -2327,15 +2407,15 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
       ROSE_ASSERT (func_def != NULL);
       SgBasicBlock * func_body = func_def->get_body();
       ROSE_ASSERT (func_body != NULL);
-      SgAttributeSpecificationStatement* external_stmt1 = buildAttributeSpecificationStatement(SgAttributeSpecificationStatement::e_externalStatement); 
-      SgFunctionRefExp *func_ref1 = buildFunctionRefExp (outlined_func); 
+      SgAttributeSpecificationStatement* external_stmt1 = buildAttributeSpecificationStatement(SgAttributeSpecificationStatement::e_externalStatement);
+      SgFunctionRefExp *func_ref1 = buildFunctionRefExp (outlined_func);
       external_stmt1->get_parameter_list()->prepend_expression(func_ref1);
       func_ref1->set_parent(external_stmt1->get_parameter_list());
       // must put it into the declaration statement part, after possible implicit/include statements, if any
-      SgStatement* l_stmt = findLastDeclarationStatement (func_body); 
+      SgStatement* l_stmt = findLastDeclarationStatement (func_body);
       if (l_stmt)
         insertStatementAfter(l_stmt,external_stmt1);
-      else  
+      else
         prependStatement(external_stmt1, func_body);
     }
 
@@ -2347,7 +2427,7 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
 #ifndef ENABLE_XOMP  // direct use of gomp needs an explicit call to the task in the original sequential process
     // generate a function call to it
     SgStatement* func_call = Outliner::generateCall (outlined_func, syms, readOnlyVars, wrapper_name,p_scope);
-    ROSE_ASSERT(func_call != NULL);  
+    ROSE_ASSERT(func_call != NULL);
 
     // Replace the parallel region with the function call statement
     // TODO should we introduce another level of scope here?
@@ -2356,58 +2436,22 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
 
     // Generate the parameter list for the call to the XOMP runtime function
     SgExprListExp* parameters  = NULL;
-    // pass ifClauseValue: set to the expression of if-clause, otherwise set to 1
-    SgExpression* ifClauseValue = NULL; 
-    if (hasClause(target, V_SgOmpIfClause))
-    {
-      Rose_STL_Container<SgOmpClause*> clauses = getClause(target, V_SgOmpIfClause);
-      ROSE_ASSERT (clauses.size() ==1); // should only have one if ()
-      SgOmpIfClause * if_clause = isSgOmpIfClause (clauses[0]);
-      ROSE_ASSERT (if_clause->get_expression() != NULL);
-      ifClauseValue = copyExpression(if_clause->get_expression());
-    }
-    else
-      ifClauseValue = buildIntVal(1);  
-    // pass num_threads_specified: 0 if not, otherwise set to the expression of num_threads clause  
-    SgExpression* numThreadsSpecified = NULL;
-    if (hasClause(target, V_SgOmpNumThreadsClause))
-    {
-      Rose_STL_Container<SgOmpClause*> clauses = getClause(target, V_SgOmpNumThreadsClause);
-      ROSE_ASSERT (clauses.size() ==1); // should only have one if ()
-      SgOmpNumThreadsClause * numThreads_clause = isSgOmpNumThreadsClause (clauses[0]);
-      ROSE_ASSERT (numThreads_clause->get_expression() != NULL);
-      numThreadsSpecified = copyExpression(numThreads_clause->get_expression());
-    }
-    else
-      numThreadsSpecified = buildIntVal(0);  
+    SgVariableDeclaration* kmpc_global_tid_declaration = NULL;
+    SgExpression* thread_global_tid = NULL;
 
-    if (SageInterface::is_Fortran_language())
-    { // The parameter list for Fortran is little bit different from C/C++'s XOMP interface 
-      // since we are forced to pass variables one by one in the parameter list to support Fortran 77
-       // void xomp_parallel_start (void (*func) (void *), unsigned * ifClauseValue, unsigned* numThread, int * argcount, ...)
-      //e.g. xomp_parallel_start(OUT__1__1527__,0,2,S,K)
-      SgExpression * parameter4 = buildIntVal (pdSyms3.size()); //TODO double check if pdSyms3 is the right set of variables to be passed
-      parameters = buildExprListExp(buildFunctionRefExp(outlined_func), ifClauseValue, numThreadsSpecified, parameter4);
-
-      ASTtools::VarSymSet_t::iterator iter = pdSyms3.begin();
-      for (; iter!=pdSyms3.end(); iter++)
-      {
-        const SgVariableSymbol * sb = *iter;
-        appendExpression (parameters, buildVarRefExp(const_cast<SgVariableSymbol *>(sb)));
-      }
+    // add __kmpc_fork_call (0, 2, OUT_func_xxx, &a, &sum);
+    // or __kmpc_fork_call (0, 0, OUT_func_xxx, 0); // if no variables need to be passed
+    SgExpression* source_location_info = buildIntVal(0);
+    SgExpression* outlined_function_parameter_amount = buildIntVal(pdSyms3.size());
+    parameters = buildExprListExp(source_location_info, outlined_function_parameter_amount, buildFunctionRefExp(outlined_func));
+    ASTtools::VarSymSet_t::iterator iter;
+    for (iter = pdSyms3.begin(); iter!=pdSyms3.end(); iter++) {
+        const SgVariableSymbol* sb = *iter;
+        appendExpression(parameters, buildAddressOfOp(buildVarRefExp(const_cast<SgVariableSymbol* >(sb))));
     }
-    else 
-    { 
-      // C/C++ case: 
-      //add GOMP_parallel_start (OUT_func_xxx, &__out_argv1__5876__, 0);
-      // or GOMP_parallel_start (OUT_func_xxx, 0, 0); // if no variables need to be passed
-      SgExpression * parameter2 = NULL;
-      if (syms.size()==0)
-        parameter2 = buildIntVal(0);
-      else
-        parameter2 =  buildAddressOfOp(buildVarRefExp(wrapper_name, p_scope));
-     parameters = buildExprListExp(buildFunctionRefExp(outlined_func), parameter2, ifClauseValue, numThreadsSpecified); 
-    }
+    if (pdSyms3.size() == 0) {
+        appendExpression(parameters, buildIntVal(0));
+    };
 
     ROSE_ASSERT (parameters != NULL);
 
@@ -2417,29 +2461,85 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
   // * data: pointer to a data segment which will be used as the arguments of func
   // * ifClauseValue: set to if-clause-expression if if-clause exists, or default is 1.
   // * numThreadsSpecified: set to the expression of num_threads clause if the clause exists, or default is 0
-  // Liao 3/11/2013, additional file location info, at least for C/C++  for now
-  if (!SageInterface::is_Fortran_language())
-  {
-    string file_name = target->get_startOfConstruct()->get_filenameString();
-    int line = target->get_startOfConstruct()->get_line();
-    parameters->append_expression(buildStringVal(file_name));
-    parameters->append_expression(buildIntVal(line));
-  }
 
-    SgExprStatement * s1 = buildFunctionCallStmt("XOMP_parallel_start", buildVoidType(), parameters, p_scope); 
-    SageInterface::replaceStatement(target, s1 , true);
-#else
-   ROSE_ABORT (); //This portion of code should never be used anymore. Kept for reference only.
-//    SgExprStatement * s1 = buildFunctionCallStmt("GOMP_parallel_start", buildVoidType(), parameters, p_scope); 
-//    SageInterface::insertStatementBefore(func_call, s1); 
+    SgStatement* outlined_function_call = buildFunctionCallStmt("__kmpc_fork_call", buildVoidType(), parameters, p_scope);
+    // the head of transformed code
+    SgStatement* s1 = outlined_function_call;
+    // the tail of transformed code
+    SgStatement* s2 = s1;
+
+    // if num_threads clause exists, we need to set up the omp number of threads first.
+    // therefore, the head will be the function call of setting up num_threads.
+    SgExprStatement* set_num_threads_statement = NULL;
+    SgExpression* omp_num_threads = NULL;
+    if (hasClause(target, V_SgUpirNumUnitsField)) {
+      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgUpirNumUnitsField);
+      ROSE_ASSERT (num_threads_clauses.size() == 1); // should only have one num_threads()
+      SgUpirNumUnitsField * num_threads_clause = isSgUpirNumUnitsField(num_threads_clauses[0]);
+      ROSE_ASSERT (num_threads_clause->get_expression() != NULL);
+      omp_num_threads = copyExpression(num_threads_clause->get_expression());
+    }
+    if (omp_num_threads != NULL) {
+        kmpc_global_tid_declaration = get_kmpc_global_tid(target, p_scope);
+        thread_global_tid = buildVarRefExp(getFirstVariable(*kmpc_global_tid_declaration).get_name(), p_scope);
+        insertStatement(target, kmpc_global_tid_declaration);
+        kmpc_global_tid_declaration->set_parent(target->get_parent());
+        parameters = buildExprListExp(buildIntVal(0), thread_global_tid, omp_num_threads);
+        set_num_threads_statement = buildFunctionCallStmt("__kmpc_push_num_threads", buildVoidType(), parameters, p_scope);
+        // set up the head of transformed code to num_threads setter
+        // the tail is still the outlined function call
+        s1 = set_num_threads_statement;
+    };
+
+    // transform the if clause
+    // the head of transformed code will be the if statement in this case
+    SgExpression* if_condition = NULL;
+    if (hasClause(target, V_SgOmpIfClause)) {
+        Rose_STL_Container<SgOmpClause*> if_clauses = getClause(target, V_SgOmpIfClause);
+        ROSE_ASSERT (if_clauses.size() == 1); // should only have one if ()
+        SgOmpIfClause * if_clause = isSgOmpIfClause(if_clauses[0]);
+        ROSE_ASSERT (if_clause->get_expression() != NULL);
+        if_condition = copyExpression(if_clause->get_expression());
+    }
+    if (if_condition != NULL) {
+        if (omp_num_threads == NULL) {
+            kmpc_global_tid_declaration = get_kmpc_global_tid(target, p_scope);
+            thread_global_tid = buildVarRefExp(getFirstVariable(*kmpc_global_tid_declaration).get_name(), p_scope);
+            insertStatement(target, kmpc_global_tid_declaration);
+            kmpc_global_tid_declaration->set_parent(target->get_parent());
+        };
+        SgIfStmt* if_statement = buildIfStmt(if_condition, s1, NULL);
+        SgExprStatement* else_stmt = NULL;
+        SgBasicBlock* false_body = buildBasicBlock();
+        parameters = buildExprListExp(buildAddressOfOp(thread_global_tid), buildIntVal(0));
+        ASTtools::VarSymSet_t::iterator iter;
+        for (iter = pdSyms3.begin(); iter!=pdSyms3.end(); iter++) {
+            const SgVariableSymbol* sb = *iter;
+            appendExpression(parameters, buildAddressOfOp(buildVarRefExp(const_cast<SgVariableSymbol* >(sb))));
+        }
+        else_stmt = buildFunctionCallStmt(outlined_func->get_name(), buildVoidType(), parameters, p_scope);
+        false_body->append_statement(else_stmt);
+        if_statement->set_false_body(false_body);
+        false_body->set_parent(if_statement);
+
+        // the head and tail are both changed to the if statement because all the other transformed code are included as children of if statement
+        s1 = if_statement;
+        s2 = s1;
+    };
+
+    SageInterface::replaceStatement(target, s1, true);
 #endif
     // Keep preprocessing information
-    // I have to use cut-paste instead of direct move since 
+    // I have to use cut-paste instead of direct move since
     // the preprocessing information may be moved to a wrong place during outlining
     // while the destination node is unknown until the outlining is done.
-   // SageInterface::moveUpPreprocessingInfo(s1, target, PreprocessingInfo::before); 
-   pastePreprocessingInfo(s1, PreprocessingInfo::before, save_buf1); 
-    // add GOMP_parallel_end ();
+    pastePreprocessingInfo(s1, PreprocessingInfo::before, save_buf1);
+
+    // we can only set up the relationship between these two statements now,
+    // because ROSE requires that the targeting location must have the parent info, which is not available until "pastePreprocessingInfo" right above.
+    if (set_num_threads_statement != NULL) {
+        SageInterface::insertStatementAfter(set_num_threads_statement, outlined_function_call);
+    };
 #ifdef ENABLE_XOMP
 
     SgExprListExp*  parameters2 = buildExprListExp();
@@ -2451,26 +2551,25 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
       parameters2->append_expression(buildIntVal(line));
     }
 
-    //SgExprStatement * s2 = buildFunctionCallStmt("XOMP_parallel_end", buildVoidType(), NULL, p_scope); 
-    SgExprStatement * s2 = buildFunctionCallStmt("XOMP_parallel_end", buildVoidType(), parameters2, p_scope); 
-    SageInterface::insertStatementAfter(s1, s2);  // insert s2 after s1
-#else
-    SgExprStatement * s2 = buildFunctionCallStmt("GOMP_parallel_end", buildVoidType(), NULL, p_scope); 
-    SageInterface::insertStatementAfter(func_call, s2); 
 #endif
-   // SageInterface::moveUpPreprocessingInfo(s2, target, PreprocessingInfo::after); 
-   pastePreprocessingInfo(s2, PreprocessingInfo::after, save_buf2); 
+   pastePreprocessingInfo(s2, PreprocessingInfo::after, save_buf2);
    // paste the preprocessing info with inside position to the outlined function's body
-   pastePreprocessingInfo(outlined_func->get_definition()->get_body(), PreprocessingInfo::inside, save_buf_inside); 
+   pastePreprocessingInfo(outlined_func->get_definition()->get_body(), PreprocessingInfo::inside, save_buf_inside);
 
     // some #endif may be attached to the body, we should not move it with the body into
     // the outlined funcion!!
    // move dangling #endif etc from the body to the end of s2
-   movePreprocessingInfo(body,s2,PreprocessingInfo::before, PreprocessingInfo::after); 
+   movePreprocessingInfo(body, s2, PreprocessingInfo::before, PreprocessingInfo::after);
 
-   // SageInterface::deepDelete(target);
+   // Generate a new source file for the outlined function if necessary
+   if (cpu_outlined_file == NULL) {
+       cpu_outlined_file = generate_outlined_function_file(outlined_func, "");
+   }
+   // Move the outlined function to the new source file
+   move_outlined_function(outlined_func, cpu_outlined_file);
   }
-  
+
+
 //! A helper function to categorize variables collected from map clauses
 
 void categorizeMapClauseVariables( const SgInitializedNamePtrList & all_vars, // all variables collected from map clauses
@@ -2484,7 +2583,7 @@ void categorizeMapClauseVariables( const SgInitializedNamePtrList & all_vars, //
       SgInitializedName* i_name = *iter;
       ROSE_ASSERT (i_name != NULL);
 
-      // In C/C++, an array can have a pointer type or SgArrayType. 
+      // In C/C++, an array can have a pointer type or SgArrayType.
       // We collect SgArrayType for sure. But for pointer type, we consult the array_dimension to decide.
       SgSymbol* sym = i_name ->get_symbol_from_symbol_table ();
       ROSE_ASSERT (sym != NULL);
@@ -2527,7 +2626,7 @@ void categorizeMapClauseVariables( const SgInitializedNamePtrList & all_vars, //
   {
     for (std::vector < std::pair <SgExpression*, SgExpression*> >::const_iterator iter = dimensions.begin(); iter != dimensions.end(); iter++)
     {
-      std::pair <SgExpression*, SgExpression*> bound_pair = *iter; 
+      std::pair <SgExpression*, SgExpression*> bound_pair = *iter;
       //     SgExpression* lower_exp = bound_pair.first;
       SgExpression* length_exp = bound_pair.second;
       //result = buildMultiplyOp(result,  buildSubtractOp (deepCopy(upper_bound), deepCopy(lower_bound)));
@@ -2543,22 +2642,22 @@ void categorizeMapClauseVariables( const SgInitializedNamePtrList & all_vars, //
     std::vector< SgExpression * > dims = get_C_array_dimensions (a_type);
     for (std::vector < SgExpression* >::const_iterator iter = dims.begin(); iter != dims.end(); iter++)
     {
-      SgExpression* length_exp  = *iter; 
+      SgExpression* length_exp  = *iter;
       //TODO: get_C_array_dimensions returns one extra null expression somehow.
       if (!isSgNullExpression(length_exp))
         result = buildMultiplyOp(result, deepCopy(length_exp));
     }
   }
 
-  return result; 
-}                    
+  return result;
+}
 #endif
   // Check if a variable is in the clause's variable list
 bool isInClauseVariableList(SgOmpClause* cls, SgSymbol* var)
 {
-  ROSE_ASSERT (cls && var); 
+  ROSE_ASSERT (cls && var);
   SgOmpVariablesClause* var_cls = isSgOmpVariablesClause(cls);
-  ROSE_ASSERT (var_cls); 
+  ROSE_ASSERT (var_cls);
   SgExpressionPtrList refs = isSgOmpVariablesClause(var_cls)->get_variables()->get_expressions();
 
   std::vector<SgSymbol*> var_list;
@@ -2571,8 +2670,92 @@ bool isInClauseVariableList(SgOmpClause* cls, SgSymbol* var)
     return false;
 }
 
+  // Check if a variable with given sharing attribute is in the UPIR data field's item list
+bool isInUpirDataSharingList(SgUpirFieldBodyStatement* target, SgSymbol* variable, SgOmpClause::upir_data_sharing_enum sharing_property)
+{
+  SgUpirFieldBodyStatement* upir_statement = isSgUpirFieldBodyStatement(target);
+  ROSE_ASSERT(upir_statement);
+  Rose_STL_Container<SgOmpClause *> data_fields = getClause(upir_statement, V_SgUpirDataField);
+  SgVariableSymbol* variable_symbol = isSgVariableSymbol(variable);
+  for (size_t i = 0; i < data_fields.size(); i++) {
+      SgUpirDataField* data_field = (SgUpirDataField*)data_fields[i];
+      ROSE_ASSERT(data_field);
+      return isInUpirDataSharingList(data_field, variable, sharing_property);
+  };
+  return false;
+}
+
+  // Check if a variable with given sharing attribute is in the UPIR data field's item list
+bool isInUpirDataSharingList(SgUpirFieldBodyStatement* target, SgSymbol* variable, std::set<SgOmpClause::upir_data_sharing_enum> sharing_property_set)
+{
+  SgUpirFieldBodyStatement* upir_statement = isSgUpirFieldBodyStatement(target);
+  ROSE_ASSERT(upir_statement);
+  Rose_STL_Container<SgOmpClause *> data_fields = getClause(upir_statement, V_SgUpirDataField);
+  SgVariableSymbol* variable_symbol = isSgVariableSymbol(variable);
+  std::vector<SgSymbol*> variable_list;
+
+  for (size_t i = 0; i < data_fields.size(); i++) {
+      SgUpirDataField* data_field = (SgUpirDataField*)data_fields[i];
+      ROSE_ASSERT(data_field);
+      std::list<SgUpirDataItemField *> data_items = data_field->get_data();
+      for (std::list<SgUpirDataItemField*>::iterator iter = data_items.begin(); iter != data_items.end(); iter++) {
+          SgUpirDataItemField* data_item = *iter;
+          if (sharing_property_set.find(data_item->get_sharing_property()) != sharing_property_set.end()) {
+              variable_list.push_back(data_item->get_symbol());
+          }
+      }
+  };
+
+  if (find(variable_list.begin(), variable_list.end(), variable_symbol) != variable_list.end())
+    return true;
+  else
+    return false;
+}
+
+  // Check if a variable with given sharing attribute is in the UPIR data field's item list
+bool isInUpirDataSharingList(SgOmpClause* data, SgSymbol* variable, SgOmpClause::upir_data_sharing_enum sharing_property)
+{
+  SgUpirDataField* data_field = isSgUpirDataField(data);
+  SgVariableSymbol* variable_symbol = isSgVariableSymbol(variable);
+  ROSE_ASSERT(data_field);
+
+  std::vector<SgSymbol*> variable_list;
+  std::list<SgUpirDataItemField *> data_items = data_field->get_data();
+  for (std::list<SgUpirDataItemField*>::iterator iter = data_items.begin(); iter != data_items.end(); iter++) {
+      SgUpirDataItemField* data_item = *iter;
+      if (data_item->get_sharing_property() == sharing_property) {
+          variable_list.push_back(data_item->get_symbol());
+      }
+  }
+
+  if (find(variable_list.begin(), variable_list.end(), variable_symbol) != variable_list.end())
+    return true;
+  else
+    return false;
+}
+
+  // Check if a variable is in the UPIR data field's item list
+bool isInUpirDataList(SgOmpClause* data, SgSymbol* variable)
+{
+  SgUpirDataField* data_field = isSgUpirDataField(data);
+  SgVariableSymbol* variable_symbol = isSgVariableSymbol(variable);
+  ROSE_ASSERT(data_field);
+
+  std::vector<SgSymbol*> variable_list;
+  std::list<SgUpirDataItemField *> data_items = data_field->get_data();
+  for (std::list<SgUpirDataItemField*>::iterator iter = data_items.begin(); iter != data_items.end(); iter++) {
+      SgUpirDataItemField* data_item = *iter;
+      variable_list.push_back(data_item->get_symbol());
+  }
+
+  if (find(variable_list.begin(), variable_list.end(), variable_symbol) != variable_list.end())
+    return true;
+  else
+    return false;
+}
+
  // ! Replace all references to original symbol with references to new symbol
-// return the number of references being replaced. 
+// return the number of references being replaced.
 // TODO: move to SageInterface
 //static int replaceVariableReferences(SgNode* subtree, const SgVariableSymbol* origin_sym, SgVariableSymbol* new_sym )
 static int replaceVariableReferences(SgNode* subtree, std::map <SgVariableSymbol*, SgVariableSymbol*> symbol_map)
@@ -2585,7 +2768,7 @@ static int replaceVariableReferences(SgNode* subtree, std::map <SgVariableSymbol
     // skip compiler generated references to the original variables which meant to be kept.
     // TODO: maybe a better way is to match a pattern: if it is the first parameter of xomp_deviceDataEnvironmentPrepareVariable()
     if (preservedHostVarRefs.find(vRef) != preservedHostVarRefs.end())
-      continue; 
+      continue;
     SgVariableSymbol * orig_sym = vRef->get_symbol();
     if (symbol_map[orig_sym] != NULL)
     {
@@ -2619,7 +2802,7 @@ static void getArrayDimensionSizes(const SgArrayType*  array_type, std::vector<S
 // rewrite array reference using multiple-dimension subscripts to a reference using one-dimension subscripts
 // e.g. a[i][j] is changed to a[i*col_size +j]
 //      a [i][j][k]  is changed to a [(i*col_size + j)*K_size +k]
-// The parameter is the array reference expression to be changed     
+// The parameter is the array reference expression to be changed
 // Note the array reference expression must be the top one since there will be inner ones for a multi-dimensional array references in AST.
 static void linearizeArrayAccess(SgPntrArrRefExp* top_array_ref)
 {
@@ -2643,7 +2826,7 @@ static void linearizeArrayAccess(SgPntrArrRefExp* top_array_ref)
   // pointer type can also be used as pointer[i], which is represented as SgPntrArrRefExp.
   // In this case, we don't need to linearized it any more
   if (pointer_type != NULL)
-     return; 
+     return;
   if (array_type == NULL)
   {
     cerr<<"Error. linearizeArrayAccess() found unhandled variable type:"<<var_type->class_name()<<endl;
@@ -2651,25 +2834,25 @@ static void linearizeArrayAccess(SgPntrArrRefExp* top_array_ref)
 
   ROSE_ASSERT (array_type!= NULL);
 
-  std::vector <SgExpression*> dimensions ; 
+  std::vector <SgExpression*> dimensions ;
   getArrayDimensionSizes (array_type, dimensions);
-  
+
   ROSE_ASSERT ((*subscripts).size() == dimensions.size());
   ROSE_ASSERT ((*subscripts).size()>1); // we only accept 2-D or above for processing. Caller should check this in advance
 
   // left hand operand
   SgExpression* new_lhs = buildVarRefExp(i_name);
-  SgExpression* new_rhs = deepCopy((*subscripts)[0]); //initialized to be i; 
+  SgExpression* new_rhs = deepCopy((*subscripts)[0]); //initialized to be i;
 
   // build rhs, like (i*col_size + j)*K_size +k
   for (size_t i =1; i<dimensions.size(); i++) // only repeat dimension count -1 times
   {
-     new_rhs = buildAddOp( buildMultiplyOp(new_rhs, deepCopy(dimensions[i]) ) , deepCopy((*subscripts)[i]) ) ; 
+     new_rhs = buildAddOp( buildMultiplyOp(new_rhs, deepCopy(dimensions[i]) ) , deepCopy((*subscripts)[i]) ) ;
   }
 
   // set new lhs and rhs for the top ref
-  deepDelete(top_array_ref->get_lhs_operand_i()) ;  
-  deepDelete(top_array_ref->get_rhs_operand_i()) ;  
+  deepDelete(top_array_ref->get_lhs_operand_i()) ;
+  deepDelete(top_array_ref->get_rhs_operand_i()) ;
 
   top_array_ref->set_lhs_operand_i(new_lhs);
   new_lhs->set_parent(top_array_ref);
@@ -2680,14 +2863,14 @@ static void linearizeArrayAccess(SgPntrArrRefExp* top_array_ref)
 }
 
 
-// Find all top level array references within the body block, 
+// Find all top level array references within the body block,
 // we do the following:
 //   if it is within the set of arrays (array_syms) to be rewritten: arrays on map() clause,
 //   if it is more than 1-D
 //   change it to be linearized subscript access
 static void rewriteArraySubscripts(SgBasicBlock* body_block, const std::set<SgSymbol*> mapped_array_syms)
 {
-  std::vector<SgPntrArrRefExp* > candidate_refs; // store eligible references 
+  std::vector<SgPntrArrRefExp* > candidate_refs; // store eligible references
   Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(body_block, V_SgPntrArrRefExp);
   for (Rose_STL_Container<SgNode *>::iterator i = nodeList.begin(); i != nodeList.end(); i++)
   {
@@ -2697,27 +2880,32 @@ static void rewriteArraySubscripts(SgBasicBlock* body_block, const std::set<SgSy
     // if it is top level ref?
     if (isSgPntrArrRefExp(parent)) // has a higher level array ref, skip it
       continue;
-   //TODO: move this logic into a function in SageInterface   
+   //TODO: move this logic into a function in SageInterface
     // If it is a canonical array reference we can handle?
     vector<SgExpression *>  *subscripts = new vector<SgExpression*>;
     SgExpression* array_name_exp = NULL;
     isArrayReference(vRef, &array_name_exp, &subscripts);
     SgInitializedName* a_name = convertRefToInitializedName (array_name_exp);
     if  (a_name == NULL)
-      continue; 
-    // if it is within the mapped array set?  
+      continue;
+    // if it is within the mapped array set?
     ROSE_ASSERT (a_name != NULL);
     SgSymbol* array_sym = a_name->get_symbol_from_symbol_table ();
     ROSE_ASSERT (array_sym != NULL);
 
-    if (mapped_array_syms.find(array_sym)!= mapped_array_syms.end()) 
+    if (mapped_array_syms.find(array_sym)!= mapped_array_syms.end())
       candidate_refs.push_back(vRef);
-  } 
+  }
 
   // To be safe, we use reverse order iteration when changing them
   for (std::vector<SgPntrArrRefExp* >::reverse_iterator riter = candidate_refs.rbegin(); riter != candidate_refs.rend(); riter ++)
-  { 
-    linearizeArrayAccess (*riter);
+  {
+    SgExpression* arrayNameExp = NULL;
+    std::vector<SgExpression*>* subscripts = new vector<SgExpression*>;
+    bool is_array_ref = isArrayReference(*riter, &arrayNameExp, &subscripts);
+    ROSE_ASSERT (is_array_ref);
+    if ((*subscripts).size() > 1)
+      linearizeArrayAccess (*riter);
   }
 }
 
@@ -2727,7 +2915,7 @@ static void rewriteArraySubscripts(SgBasicBlock* body_block, const std::set<SgSy
 // TODO : move to SageInterface ?
 std::map <SgVariableSymbol *, bool> collectVariableAppearance (SgNode* root)
 {
-  std::map <SgVariableSymbol *, bool> result; 
+  std::map <SgVariableSymbol *, bool> result;
   ROSE_ASSERT (root != NULL);
   Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(root, V_SgVarRefExp);
   for (Rose_STL_Container<SgNode *>::iterator i = nodeList.begin(); i != nodeList.end(); i++)
@@ -2742,7 +2930,7 @@ std::map <SgVariableSymbol *, bool> collectVariableAppearance (SgNode* root)
 
 // find different map clauses from the clause list, and all array information
 // dimension map is the same for all the map clauses under the same omp target directive
-void extractMapClauses(Rose_STL_Container<SgOmpClause*> map_clauses, 
+void extractMapClauses(Rose_STL_Container<SgOmpClause*> map_clauses,
     std::map<SgSymbol*, std::vector< std::pair <SgExpression*, SgExpression*> > > & array_dimensions,
     std::map<SgSymbol*, std::vector< std::pair< SgOmpClause::omp_map_dist_data_enum, SgExpression * > > > &  dist_data_policies,
     SgOmpMapClause** map_alloc_clause, SgOmpMapClause** map_to_clause, SgOmpMapClause** map_from_clause, SgOmpMapClause** map_tofrom_clause
@@ -2750,17 +2938,6 @@ void extractMapClauses(Rose_STL_Container<SgOmpClause*> map_clauses,
 {
   if ( map_clauses.size() == 0) return; // stop if no map clauses at all
 
-#if 0
-  // a map between original symbol and its device version (replacement) 
-  std::map <SgVariableSymbol*, SgVariableSymbol*>  cpu_gpu_var_map; 
-
-  // store all variables showing up in any of the map clauses
-  SgInitializedNamePtrList all_vars ;
-  if (target_data_stmt != NULL)
-    all_vars = collectClauseVariables (target_data_stmt, VariantVector(V_SgOmpMapClause)); 
-  else 
-    all_vars = collectClauseVariables (target_directive_stmt, VariantVector(V_SgOmpMapClause));
-#endif 
   for (Rose_STL_Container<SgOmpClause*>::const_iterator iter = map_clauses.begin(); iter != map_clauses.end(); iter++)
   {
     SgOmpMapClause* m_cls = isSgOmpMapClause (*iter);
@@ -2770,44 +2947,78 @@ void extractMapClauses(Rose_STL_Container<SgOmpClause*> map_clauses,
       array_dimensions = m_cls->get_array_dimensions();
       dist_data_policies = m_cls->get_dist_data_policies ();
     }
+    else // array sections in other MAP clauses should be retrieved as well
+    {
+      std::map<SgSymbol*, std::vector<std::pair <SgExpression*, SgExpression*> > > new_array_dimensions = m_cls->get_array_dimensions();
+      array_dimensions.insert(new_array_dimensions.begin(), new_array_dimensions.end());
+    };
 
     SgOmpClause::omp_map_operator_enum map_operator = m_cls->get_operation();
     if (map_operator == SgOmpClause::e_omp_map_alloc)
       *map_alloc_clause = m_cls;
-    else if (map_operator == SgOmpClause::e_omp_map_to)  
+    else if (map_operator == SgOmpClause::e_omp_map_to)
       *map_to_clause = m_cls;
-    else if (map_operator == SgOmpClause::e_omp_map_from)  
+    else if (map_operator == SgOmpClause::e_omp_map_from)
       *map_from_clause = m_cls;
-    else if (map_operator == SgOmpClause::e_omp_map_tofrom)  
+    else if (map_operator == SgOmpClause::e_omp_map_tofrom)
       *map_tofrom_clause = m_cls;
-    else 
+    else
     {
       cerr<<"Error. transOmpMapVariables() from omp_lowering.cpp: found unacceptable map operator type:"<< map_operator <<endl;
-      ROSE_ABORT ();
+      ROSE_ASSERT (false);
     }
   }  // end for
 }
 
+static int generate_mapping_variable_type (
+    /* the array and the map information */
+    SgSymbol* sym,
+    SgOmpMapClause* map_alloc_clause, SgOmpMapClause* map_to_clause, SgOmpMapClause* map_from_clause, SgOmpMapClause* map_tofrom_clause,
+    std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > > & array_dimensions, SgExpression* device_expression,
+    /*Where to insert generated function calls*/
+    SgBasicBlock* insertion_scope, SgStatement* insertion_anchor_stmt) {
+    bool needCopyTo = false;
+    bool needCopyFrom = false;
+    if (((map_to_clause) && (isInClauseVariableList (map_to_clause,sym))) ||
+        ((map_tofrom_clause) && (isInClauseVariableList (map_tofrom_clause,sym))) )
+        needCopyTo = true;
 
-// Translated a single mapped array variable, knowing the map clauses , where to insert, etc. 
+    if (((map_from_clause) && (isInClauseVariableList (map_from_clause,sym))) ||
+      ( (map_tofrom_clause) && (isInClauseVariableList (map_tofrom_clause,sym))))
+        needCopyFrom = true;
+
+    int type_value = OMP_TGT_MAPTYPE_TARGET_PARAM;
+
+    if (needCopyTo) {
+        type_value = type_value | OMP_TGT_MAPTYPE_TO;
+    };
+
+    if (needCopyFrom) {
+        type_value = type_value | OMP_TGT_MAPTYPE_FROM;
+    };
+
+    return type_value;
+}
+
+// Translated a single mapped array variable, knowing the map clauses , where to insert, etc.
 // Only generate memory allocation, deallocation, copy, functions, not the declaration since decl involves too many variable bookkeeping.
-// This is intended to be called by a for loop going through all mapped array variables. 
+// This is intended to be called by a for loop going through all mapped array variables.
   //  Essentially, we have to decide if we need to do the following steps for each variable
   //
   //  Data handling: declaration, allocation, and copy
   //    1. declared a pointer type to the device copy : pass by pointer type vs. pass by value
   //    2. allocate device copy using the dimension bound info: for array types (pointers used for linearized arrays)
-  //    3. copy the data from CPU to the device (GPU) copy: 
-  //       
+  //    3. copy the data from CPU to the device (GPU) copy:
+  //
   //    4. replace references to the CPU copies with references to the GPU copy
-  //    5. replace original multidimensional element indexing with linearized address indexing (for 2-D and more dimension arrays) 
+  //    5. replace original multidimensional element indexing with linearized address indexing (for 2-D and more dimension arrays)
   //
   //  Data handling: copy back, de-allocation
   //    6. copy GPU_copy back to CPU variables
   //    7. de-allocate the GPU variables
   //
-  //   Step 1,2,3 and 6, 7 should generate statements before or after the SgOmpTargetStatement
-  //   Step 4 and 5 should change the body of the affected SgOmpParallelStatement
+  //   Step 1,2,3 and 6, 7 should generate statements before or after the SgUpirTaskStatement
+  //   Step 4 and 5 should change the body of the affected SgUpirSpmdStatement
   // Revised Algorithm (version 3)    1/23/2015, optionally use device data environment (DDE) functions to manage data automatically.
   // Instead of generate explicit data allocation, copy, free functions, using the following three DDE functions:
   //   1. xomp_deviceDataEnvironmentEnter()
@@ -2817,12 +3028,13 @@ void extractMapClauses(Rose_STL_Container<SgOmpClause*> map_clauses,
   // These DDE functions internally will keep track of data allocated and try to reuse enclosing data environment.
 static void generateMappedArrayMemoryHandling(
     /* the array and the map information */
-    SgSymbol* sym, 
-    SgOmpMapClause* map_alloc_clause, SgOmpMapClause* map_to_clause, SgOmpMapClause* map_from_clause, SgOmpMapClause* map_tofrom_clause, 
+    SgSymbol* sym,
+    SgOmpMapClause* map_alloc_clause, SgOmpMapClause* map_to_clause, SgOmpMapClause* map_from_clause, SgOmpMapClause* map_tofrom_clause,
     std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > > & array_dimensions, SgExpression* device_expression,
     /*Where to insert generated function calls*/
-    SgBasicBlock* insertion_scope, SgStatement* insertion_anchor_stmt, 
-    bool need_generate_data_stmt
+    SgBasicBlock* insertion_scope, SgStatement* insertion_anchor_stmt,
+    bool need_generate_data_stmt,
+    std::vector<SgExpression* >* map_variable_list, std::vector<SgExpression* >* map_variable_base_list, std::vector<SgExpression* >* map_variable_size_list, std::vector<SgExpression* >* map_variable_type_list
     )
 {
   ROSE_ASSERT (sym != NULL);
@@ -2830,19 +3042,19 @@ static void generateMappedArrayMemoryHandling(
   SgType* orig_type = sym->get_type();
 
   // Step 1: declare a pointer type to array variables in map clauses, we linearize all arrays to be a 1-D pointer
-  //   Element_type * _dev_var; 
-  //   e.g.: double* _dev_array; 
+  //   Element_type * _dev_var;
+  //   e.g.: double* _dev_array;
   // I believe that all array variables need allocations on GPUs, regardless their map operations (alloc, to, from, or tofrom)
 
   // TODO: is this a safe assumption here??
   SgType* element_type = orig_type->findBaseType(); // recursively strip away non-base type to get the bottom type
   string orig_name = (sym->get_name()).getString();
-  string dev_var_name = "_dev_"+ orig_name; 
+  string dev_var_name = "_dev_"+ orig_name;
 
   // Step 2.1  generate linear size calculation based on array dimension info
   // int dev_array_size = sizeof (double) *dim_size1 * dim_size2;
-  string dev_var_size_name = "_dev_" + orig_name + "_size";  
-  SgVariableDeclaration* dev_var_size_decl = NULL; 
+  string dev_var_size_name = "_dev_" + orig_name + "_size";
+  SgVariableDeclaration* dev_var_size_decl = NULL;
 
   SgVariableSymbol* dev_var_size_sym = insertion_scope->lookup_variable_symbol(dev_var_size_name);
   std::vector<SgExpression*> v_size;
@@ -2855,10 +3067,10 @@ static void generateMappedArrayMemoryHandling(
       dimSize = array_dimensions[sym].size();
       for (std::vector < std::pair <SgExpression*, SgExpression*> >::const_iterator iter = array_dimensions[sym].begin(); iter != array_dimensions[sym].end(); iter++)
       {
-        std::pair <SgExpression*, SgExpression*> bound_pair = *iter; 
+        std::pair <SgExpression*, SgExpression*> bound_pair = *iter;
         initializer->append_expression(deepCopy(bound_pair.second));
         v_size.push_back(deepCopy(bound_pair.second));
-      } 
+      }
     }
     else
     {
@@ -2868,7 +3080,7 @@ static void generateMappedArrayMemoryHandling(
       std::vector< SgExpression * > dims = get_C_array_dimensions (a_type);
       for (std::vector < SgExpression* >::const_iterator iter = dims.begin(); iter != dims.end(); iter++)
       {
-        SgExpression* length_exp  = *iter; 
+        SgExpression* length_exp  = *iter;
         //TODO: get_C_array_dimensions returns one extra null expression somehow.
         if (!isSgNullExpression(length_exp))
         {
@@ -2878,18 +3090,27 @@ static void generateMappedArrayMemoryHandling(
         }
       }
     }
-    dev_var_size_decl = buildVariableDeclaration (dev_var_size_name, buildArrayType(buildIntType(),buildIntVal(dimSize)), buildAggregateInitializer(initializer), insertion_scope); 
-    insertStatementBefore (insertion_anchor_stmt, dev_var_size_decl); 
+    dev_var_size_decl = buildVariableDeclaration (dev_var_size_name, buildArrayType(buildIntType(),buildIntVal(dimSize)), buildAggregateInitializer(initializer), insertion_scope);
+    insertStatementBefore (insertion_anchor_stmt, dev_var_size_decl);
   }
   else
     dev_var_size_decl = isSgVariableDeclaration(dev_var_size_sym->get_declaration()->get_declaration());
 
   ROSE_ASSERT (dev_var_size_decl != NULL);
 
+  SgExpression* mapping_array_size = NULL;
+  for (std::vector<SgExpression* >::const_iterator iter = v_size.begin(); iter != v_size.end(); iter++) {
+      if (mapping_array_size == NULL) {
+          mapping_array_size = *iter;
+      }
+      else {
+          mapping_array_size = buildMultAssignOp(mapping_array_size, *iter);
+      };
+  };
 
   // generate offset array
-  string dev_var_offset_name = "_dev_" + orig_name + "_offset";  
-  SgVariableDeclaration* dev_var_offset_decl = NULL; 
+  string dev_var_offset_name = "_dev_" + orig_name + "_offset";
+  SgVariableDeclaration* dev_var_offset_decl = NULL;
 
   SgVariableSymbol* dev_var_offset_sym = insertion_scope->lookup_variable_symbol(dev_var_offset_name);
   // vector to store all offset values
@@ -2900,10 +3121,10 @@ static void generateMappedArrayMemoryHandling(
     if(array_dimensions[sym].size() > 0){
       for (std::vector < std::pair <SgExpression*, SgExpression*> >::const_iterator iter = array_dimensions[sym].begin(); iter != array_dimensions[sym].end(); iter++)
       {
-        std::pair <SgExpression*, SgExpression*> bound_pair = *iter; 
+        std::pair <SgExpression*, SgExpression*> bound_pair = *iter;
         arrayInitializer->append_expression(deepCopy(bound_pair.first));
         v_offset.push_back(deepCopy(bound_pair.first));
-      } 
+      }
     }
     else
     {
@@ -2911,21 +3132,31 @@ static void generateMappedArrayMemoryHandling(
       {
         arrayInitializer->append_expression(buildIntVal(0));
         v_offset.push_back(buildIntVal(0));
-      } 
+      }
     }
-    dev_var_offset_decl = buildVariableDeclaration (dev_var_offset_name, buildArrayType(buildIntType(),buildIntVal(dimSize)), buildAggregateInitializer(arrayInitializer), insertion_scope); 
-    insertStatementBefore (insertion_anchor_stmt, dev_var_offset_decl); 
+    dev_var_offset_decl = buildVariableDeclaration (dev_var_offset_name, buildArrayType(buildIntType(),buildIntVal(dimSize)), buildAggregateInitializer(arrayInitializer), insertion_scope);
+    insertStatementBefore (insertion_anchor_stmt, dev_var_offset_decl);
   }
   else
     dev_var_offset_decl = isSgVariableDeclaration(dev_var_offset_sym->get_declaration()->get_declaration());
 
   ROSE_ASSERT (dev_var_offset_decl != NULL);
 
+  // for now, we take the first offset as the final offset.
+  // it only works for 1D array.
+  // TODO: implement an helper to determine the correct offset in general
+  SgExpression* mapping_array_offset = NULL;
+  for (std::vector<SgExpression* >::const_iterator iter = v_offset.begin(); iter != v_offset.end(); iter++) {
+      if (mapping_array_offset == NULL) {
+          mapping_array_offset = *iter;
+      };
+  };
+
   offload_array_offset_map[dev_var_name] = v_offset;
 
   // generate Dim array
-  string dev_var_Dim_name = "_dev_" + orig_name + "_Dim";  
-  SgVariableDeclaration* dev_var_Dim_decl = NULL; 
+  string dev_var_Dim_name = "_dev_" + orig_name + "_Dim";
+  SgVariableDeclaration* dev_var_Dim_decl = NULL;
 
   SgVariableSymbol* dev_var_Dim_sym = insertion_scope->lookup_variable_symbol(dev_var_Dim_name);
   std::vector<SgExpression*> v_dimSize;
@@ -2939,7 +3170,7 @@ static void generateMappedArrayMemoryHandling(
         std::vector< SgExpression * > dims = get_C_array_dimensions (a_type);
         for (std::vector < SgExpression* >::const_iterator iter = dims.begin(); iter != dims.end(); iter++)
         {
-          SgExpression* length_exp  = *iter; 
+          SgExpression* length_exp  = *iter;
           //TODO: get_C_array_dimensions returns one extra null expression somehow.
           if (!isSgNullExpression(length_exp))
           {
@@ -2954,11 +3185,11 @@ static void generateMappedArrayMemoryHandling(
         {
           arrayInitializer->append_expression(deepCopy(v_size[i]));
           v_dimSize.push_back(deepCopy(v_size[i]));
-        } 
+        }
       }
     }
-    dev_var_Dim_decl = buildVariableDeclaration (dev_var_Dim_name, buildArrayType(buildIntType(),buildIntVal(dimSize)), buildAggregateInitializer(arrayInitializer), insertion_scope); 
-    insertStatementBefore (insertion_anchor_stmt, dev_var_Dim_decl); 
+    dev_var_Dim_decl = buildVariableDeclaration (dev_var_Dim_name, buildArrayType(buildIntType(),buildIntVal(dimSize)), buildAggregateInitializer(arrayInitializer), insertion_scope);
+    insertStatementBefore (insertion_anchor_stmt, dev_var_Dim_decl);
   }
   else
     dev_var_Dim_decl = isSgVariableDeclaration(dev_var_Dim_sym->get_declaration()->get_declaration());
@@ -2968,24 +3199,24 @@ static void generateMappedArrayMemoryHandling(
 
   // Only if we are in the mode of inserting data handling statements
   if (!need_generate_data_stmt)
-    return; 
+    return;
 
   bool needCopyTo = false;
   bool needCopyFrom = false;
-  if ( ((map_to_clause) && (isInClauseVariableList (map_to_clause,sym))) || 
+  if ( ((map_to_clause) && (isInClauseVariableList (map_to_clause,sym))) ||
       ((map_tofrom_clause) && (isInClauseVariableList (map_tofrom_clause,sym))) )
-    needCopyTo = true;  
+    needCopyTo = true;
 
   if (( (map_from_clause) && (isInClauseVariableList (map_from_clause,sym))) ||
       ( (map_tofrom_clause) && (isInClauseVariableList (map_tofrom_clause,sym))))
-    needCopyFrom = true;  
+    needCopyFrom = true;
 
   if (useDDE)
-  { 
+  {
     // a single function call does all things transparently: reuse first, if not then allocation, copy data
     // e.g. float* _dev_u = (float*) xomp_deviceDataEnvironmentPrepareVariable ((void*)u, _dev_u_size, true, false);
-    SgExpression* copyToExp= NULL; 
-    SgExpression* copyFromExp = NULL; 
+    SgExpression* copyToExp= NULL;
+    SgExpression* copyFromExp = NULL;
     if (needCopyTo) copyToExp = buildBoolValExp(1);
     else copyToExp = buildBoolValExp(0);
 
@@ -2994,41 +3225,26 @@ static void generateMappedArrayMemoryHandling(
 
     SgVarRefExp* host_var_ref = buildVarRefExp(isSgVariableSymbol(sym));
     preservedHostVarRefs.insert (host_var_ref);
-//cout<<"Debug: inserting var ref to be preserved:"<<sym->get_name()<<"@"<<host_var_ref <<endl;    
-
-    SgExprListExp * parameters =
-      buildExprListExp(device_expression, buildCastExp( host_var_ref, buildPointerType(buildVoidType()) ),buildIntVal(dimSize),buildSizeOfOp(element_type), 
-          buildVarRefExp( dev_var_size_name, insertion_scope), buildVarRefExp( dev_var_offset_name, insertion_scope),
-          buildVarRefExp( dev_var_Dim_name, insertion_scope), copyToExp, copyFromExp
-          );
-
-    SgExprStatement* dde_prep_stmt = buildAssignStatement (buildVarRefExp(dev_var_name, insertion_scope),
-        buildCastExp ( buildFunctionCallExp(SgName("xomp_deviceDataEnvironmentPrepareVariable"),
-            buildPointerType(buildVoidType()),
-            parameters, 
-            insertion_scope),
-          buildPointerType(element_type)));
-    insertStatementBefore (insertion_anchor_stmt, dde_prep_stmt); 
-
+//cout<<"Debug: inserting var ref to be preserved:"<<sym->get_name()<<"@"<<host_var_ref <<endl;
     // should not be done here. Only one call for a whole device data environment
     // Now insert xomp_deviceDataEnvironmentEnter() before xomp_deviceDataEnvironmentPrepareVariable()
     //SgExprStatement* dde_enter_stmt = buildFunctionCallStmt (SgName("xomp_deviceDataEnvironmentEnter"), buildVoidType(), NULL, insertion_scope);
-   // insertStatementBefore (dde_prep_stmt, dde_enter_stmt); 
+   // insertStatementBefore (dde_prep_stmt, dde_enter_stmt);
   }
   else
   {
     // Step 2.5 generate memory allocation on GPUs
     // e.g.:  _dev_m1 = (double *)xomp_deviceMalloc (_dev_m1_size);
-    SgExprStatement* mem_alloc_stmt = buildAssignStatement(buildVarRefExp(dev_var_name, insertion_scope), 
-        buildCastExp ( buildFunctionCallExp(SgName("xomp_deviceMalloc"), 
-            buildPointerType(buildVoidType()), 
+    SgExprStatement* mem_alloc_stmt = buildAssignStatement(buildVarRefExp(dev_var_name, insertion_scope),
+        buildCastExp ( buildFunctionCallExp(SgName("xomp_deviceMalloc"),
+            buildPointerType(buildVoidType()),
             buildExprListExp(buildVarRefExp( dev_var_size_name, insertion_scope)),
-            insertion_scope), 
-          buildPointerType(element_type))); 
-    insertStatementBefore (insertion_anchor_stmt, mem_alloc_stmt); 
+            insertion_scope),
+          buildPointerType(element_type)));
+    insertStatementBefore (insertion_anchor_stmt, mem_alloc_stmt);
 
     // Step 3. copy the data from CPU to GPU
-    // Only for variable in map(to:), or map(tofrom:) 
+    // Only for variable in map(to:), or map(tofrom:)
     // e.g. xomp_memcpyHostToDevice ((void*)dev_m1, (const void*)a, array_size);
     if (needCopyTo)
     {
@@ -3037,21 +3253,21 @@ static void generateMappedArrayMemoryHandling(
           buildCastExp(buildVarRefExp(orig_name, insertion_scope), buildPointerType(buildConstType(buildVoidType())) ),
           buildVarRefExp(dev_var_size_name, insertion_scope)
           );
-      SgExprStatement* mem_copy_to_stmt = buildFunctionCallStmt (SgName("xomp_memcpyHostToDevice"), 
+      SgExprStatement* mem_copy_to_stmt = buildFunctionCallStmt (SgName("xomp_memcpyHostToDevice"),
           buildPointerType(buildVoidType()),
           parameters,
           insertion_scope);
-      insertStatementBefore (insertion_anchor_stmt, mem_copy_to_stmt); 
+      insertStatementBefore (insertion_anchor_stmt, mem_copy_to_stmt);
     }
   }
 
   if (useDDE)
   { // call xomp_deviceDataEnvironmentExit() and it will automatically copy back data and deallocate.
     //SgExprStatement* dde_exit_stmt = buildFunctionCallStmt (SgName("xomp_deviceDataEnvironmentExit"), buildVoidType(), NULL, insertion_scope);
-    // appendStatement(dde_exit_stmt , insertion_anchor_stmt->get_scope()); 
-    // do nothing here or we will get multiple exit() for a single DDE.  
+    // appendStatement(dde_exit_stmt , insertion_anchor_stmt->get_scope());
+    // do nothing here or we will get multiple exit() for a single DDE.
   }
-  else 
+  else
   { // or explicitly control copy back and deallocation
     // Step 6. copy back data from GPU to CPU, only for variable in map(out:var_list)
     // e.g. xomp_memcpyDeviceToHost ((void*)c, (const void*)dev_m3, array_size);
@@ -3064,71 +3280,84 @@ static void generateMappedArrayMemoryHandling(
           buildCastExp(buildVarRefExp(dev_var_name, insertion_scope), buildPointerType(buildConstType(buildVoidType()))),
           buildVarRefExp( dev_var_size_name, insertion_scope)
           );
-      SgExprStatement* mem_copy_back_stmt = buildFunctionCallStmt (SgName("xomp_memcpyDeviceToHost"), 
+      SgExprStatement* mem_copy_back_stmt = buildFunctionCallStmt (SgName("xomp_memcpyDeviceToHost"),
           buildPointerType(buildVoidType()),
-          parameters, 
+          parameters,
           insertion_scope);
-      appendStatement(mem_copy_back_stmt, insertion_anchor_stmt->get_scope()); 
+      appendStatement(mem_copy_back_stmt, insertion_anchor_stmt->get_scope());
       // prev_stmt = mem_copy_back_stmt;
     }
 
     // Step 7, de-allocate GPU memory
     // e.g. xomp_freeDevice(dev_m1);
     // Note: insert this AFTER the target directive stmt or the copy back stmt
-    SgExprStatement* mem_dealloc_stmt = 
+    SgExprStatement* mem_dealloc_stmt =
       buildFunctionCallStmt(SgName("xomp_freeDevice"),
           buildBoolType(),
           buildExprListExp(buildVarRefExp( dev_var_name,insertion_scope)),
           insertion_scope);
-    appendStatement(mem_dealloc_stmt, insertion_anchor_stmt->get_scope()); 
+    appendStatement(mem_dealloc_stmt, insertion_anchor_stmt->get_scope());
   }
+
+    // check the type of current array symbol and calculate the desired data size
+    SgExpression* mapping_variable_expression = NULL;
+    mapping_variable_expression = buildVarRefExp(sym->get_name(), sym->get_scope());
+    map_variable_list->push_back(buildAddOp(mapping_variable_expression, mapping_array_offset));
+    map_variable_base_list->push_back(mapping_variable_expression);
+    SgExpression* mapping_variable_total_size = buildCastExp(buildMultiplyOp(buildSizeOfOp(element_type), mapping_array_size), buildOpaqueType("int64_t", insertion_scope));
+    map_variable_size_list->push_back(mapping_variable_total_size);
+
+    int mapping_variable_type_enum = generate_mapping_variable_type(sym, map_alloc_clause, map_to_clause, map_from_clause, map_tofrom_clause,array_dimensions, device_expression,
+    insertion_scope, insertion_anchor_stmt);
+    SgExpression* mapping_variable_value = buildIntVal(mapping_variable_type_enum);
+    map_variable_type_list->push_back(mapping_variable_value);
 }
 
 // trans OpenMP map variables
-// return all generated or remaining variables to be passed to the outliner  
+// return all generated or remaining variables to be passed to the outliner
   // Liao, 2/4/2013
   // Translate the map clause variables associated with "omp target parallel"
   // We only support combined "target parallel" or "parallel" immediately following "target"
   // So we handle outlining and data handling for two directives at the same time
   // TODO: move to the header
-  // Input: 
+  // Input:
   //
   //  map(alloc|to|from|tofrom:var_list)
   //  array variable in var_list should have dimension bounds information like [0:N-1][0:K-1]
-  //  
+  //
   //  Essentially, we have to decide if we need to do the following steps for each variable
   //
   //  Data handling: declaration, allocation, and copy
   //    1. declared a pointer type to the device copy : pass by pointer type vs. pass by value
   //    2. allocate device copy using the dimension bound info: for array types (pointers used for linearized arrays)
-  //    3. copy the data from CPU to the device (GPU) copy: 
-  //       
+  //    3. copy the data from CPU to the device (GPU) copy:
+  //
   //    4. replace references to the CPU copies with references to the GPU copy
-  //    5. replace original multidimensional element indexing with linearized address indexing (for 2-D and more dimension arrays) 
+  //    5. replace original multidimensional element indexing with linearized address indexing (for 2-D and more dimension arrays)
   //
   //  Data handling: copy back, de-allocation
   //    6. copy GPU_copy back to CPU variables
   //    7. de-allocate the GPU variables
   //
-  //   Step 1,2,3 and 6, 7 should generate statements before or after the SgOmpTargetStatement
-  //   Step 4 and 5 should change the body of the affected SgOmpParallelStatement
+  //   Step 1,2,3 and 6, 7 should generate statements before or after the SgUpirTaskStatement
+  //   Step 4 and 5 should change the body of the affected SgUpirSpmdStatement
   //
-  //  Algorithm 1: 
+  //  Algorithm 1:
   //   collect all variables in map clauses: they should be either scalar or arrays with bound info.
-  //   For each array variable, 
+  //   For each array variable,
   //       we generate memory handling statements for them: declaration, allocation, copy back-forth, de-allocation
-  //   For the use of array variable, 
+  //   For the use of array variable,
   //       we replace the original references with references to new pointer typed variables
   //       Linearize the access when 2-D or more dimensions are used.
-  //                        
+  //
   //   Based on the mapped variables, we output the variables to be passed to the outlined function to be generated later on
   //         variables which will be passed by their original data types
-  //         variables which will be passed by their address of type: pointer type pointing to their original data type 
+  //         variables which will be passed by their address of type: pointer type pointing to their original data type
   //
   //  Revised Algorithm (version 2):  To translate "omp target" + "omp parallel for" enclosed within "omp target data" region:
   //  New facts:
   //        the map clauses are now associated with "omp target data" instead of "omp target"
-  //        Only a subset of all mapped variables at "omp target data" level will be used within "omp target": 
+  //        Only a subset of all mapped variables at "omp target data" level will be used within "omp target":
   //           a single data region contains multiple "omp target" regions
   //        When translating "omp target" + "omp parallel for", we don't need to generate data handling statements
   //            but we need to refer to the declarations for device variables.
@@ -3139,21 +3368,25 @@ static void generateMappedArrayMemoryHandling(
   //       To simplify the handling, we assume
   //         1. Both "target data"  and "target parallel for " should have map() clauses
   //         2. Using DDE, the translation is simplified as is identical for both directive
-ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_parallel_stmt  // either "target data" or "target parallel" statement
-                   ) 
+ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_parallel_stmt, SgExprListExp* map_variable_list, SgExprListExp* map_variable_base_list, SgExprListExp* map_variable_size_list, SgExprListExp* map_variable_type_list  // either "target data" or "target parallel" statement
+                   )
 {
   ASTtools::VarSymSet_t all_syms;
   ROSE_ASSERT  (target_data_or_target_parallel_stmt !=NULL);
   ROSE_ASSERT  (all_syms.size() == 0); // it should be empty
 
-  SgOmpParallelStatement* target_parallel_stmt = NULL; 
-  SgOmpTargetStatement* target_directive_stmt = NULL;
-  SgOmpTargetDataStatement * target_data_stmt = NULL; 
+  SgUpirSpmdStatement* target_parallel_stmt = NULL;
+  SgUpirTaskStatement* target_directive_stmt = NULL;
+  SgOmpTargetDataStatement * target_data_stmt = NULL;
+  SgOmpTargetParallelForStatement* target_parallel_for_stmt = NULL;
+  SgOmpTargetTeamsDistributeParallelForStatement* target_teams_distribute_parallel_for_stmt = NULL;
 
-
-  target_parallel_stmt = isSgOmpParallelStatement(target_data_or_target_parallel_stmt);
+  target_parallel_stmt = isSgUpirSpmdStatement(target_data_or_target_parallel_stmt);
   target_data_stmt = isSgOmpTargetDataStatement(target_data_or_target_parallel_stmt);
- 
+  target_parallel_for_stmt = isSgOmpTargetParallelForStatement(target_data_or_target_parallel_stmt);
+  target_directive_stmt = isSgUpirTaskStatement(target_data_or_target_parallel_stmt);
+  target_teams_distribute_parallel_for_stmt = isSgOmpTargetTeamsDistributeParallelForStatement(target_data_or_target_parallel_stmt);
+
   // the parallel directive must be combined with target directive
   if (target_parallel_stmt != NULL)
   {
@@ -3162,22 +3395,22 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     ROSE_ASSERT (parent != NULL);
    if (isSgBasicBlock(parent)) //skip the possible block in between
       parent = parent->get_parent();
-    target_directive_stmt = isSgOmpTargetStatement(parent);
+    target_directive_stmt = isSgUpirTaskStatement(parent);
     ROSE_ASSERT (target_directive_stmt != NULL);
   }
 
-  // collect map clauses and their variables 
+  // collect map clauses and their variables
   // ----------------------------------------------------------
-  // Some notes for the relevant AST input: 
+  // Some notes for the relevant AST input:
   // we store a map clause for each variant/operator (alloc, to, from, and tofrom), so there should be up to 4 SgOmpMapClause.
   //    SgOmpClause::omp_map_operator_enum
-  // each map clause has 
+  // each map clause has
   //   a variable list (SgVarRefExp), accessible through get_variables()
   //   a pointer to array_dimensions, accessible through get_array_dimensions(). the array_dimensions is identical among all map clause of a same "omp target"
   //     std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >  array_dimensions
 
-  Rose_STL_Container<SgOmpClause*> map_clauses; 
-  Rose_STL_Container<SgOmpClause*> device_clauses; 
+  Rose_STL_Container<SgOmpClause*> map_clauses;
+  Rose_STL_Container<SgOmpClause*> device_clauses;
   if (target_data_stmt)
   {
      map_clauses = getClause(target_data_stmt, V_SgOmpMapClause);
@@ -3188,10 +3421,18 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
      map_clauses = getClause(target_directive_stmt, V_SgOmpMapClause);
      device_clauses = getClause(target_directive_stmt, V_SgOmpDeviceClause);
   }
-  else
+  else if (target_parallel_for_stmt)
   {
-    ROSE_ABORT ();
+     map_clauses = getClause(target_parallel_for_stmt, V_SgOmpMapClause);
+     device_clauses = getClause(target_parallel_for_stmt, V_SgOmpDeviceClause);
   }
+  else if (target_teams_distribute_parallel_for_stmt)
+  {
+     map_clauses = getClause(target_teams_distribute_parallel_for_stmt, V_SgOmpMapClause);
+     device_clauses = getClause(target_teams_distribute_parallel_for_stmt, V_SgOmpDeviceClause);
+  }
+  else
+    ROSE_ASSERT (false);
 
   if ( map_clauses.size() == 0) return all_syms; // stop if no map clauses at all
 
@@ -3201,25 +3442,34 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
   SgOmpMapClause* map_from_clause = NULL;
   SgOmpMapClause* map_tofrom_clause = NULL;
   // dimension map is the same for all the map clauses under the same omp target directive
-  std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >  array_dimensions; 
+  std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >  array_dimensions;
   std::map<SgSymbol*, std::vector< std::pair< SgOmpClause::omp_map_dist_data_enum, SgExpression * > > > dist_data_policies; // no in use, for compatible reason
 
-  // a map between original symbol and its device version : used for variable replacement 
-  std::map <SgVariableSymbol*, SgVariableSymbol*>  cpu_gpu_var_map; 
+  // a map between original symbol and its device version : used for variable replacement
+  std::map <SgVariableSymbol*, SgVariableSymbol*>  cpu_gpu_var_map;
 
   // store all variables showing up in any of the map clauses
   SgInitializedNamePtrList all_mapped_vars ;
   if (target_data_stmt)
-    all_mapped_vars = collectClauseVariables (target_data_stmt, VariantVector(V_SgOmpMapClause)); 
+    all_mapped_vars = collectClauseVariables (target_data_stmt, VariantVector(V_SgOmpMapClause));
   else if (target_directive_stmt)
-    all_mapped_vars = collectClauseVariables (target_directive_stmt, VariantVector(V_SgOmpMapClause)); 
+    all_mapped_vars = collectClauseVariables (target_directive_stmt, VariantVector(V_SgOmpMapClause));
+  else if (target_parallel_for_stmt)
+    all_mapped_vars = collectClauseVariables (target_parallel_for_stmt, VariantVector(V_SgOmpMapClause));
+  else if (target_teams_distribute_parallel_for_stmt)
+    all_mapped_vars = collectClauseVariables (target_teams_distribute_parallel_for_stmt, VariantVector(V_SgOmpMapClause));
 
   // store all variables showing up in any of the device clauses
   SgExpression* device_expression = NULL;
   if (target_data_stmt)
-    device_expression = getClauseExpression (target_data_stmt, VariantVector(V_SgOmpDeviceClause)); 
+    device_expression = getClauseExpression (target_data_stmt, VariantVector(V_SgOmpDeviceClause));
   else if (target_directive_stmt)
     device_expression = getClauseExpression (target_directive_stmt, VariantVector(V_SgOmpDeviceClause));
+  else if (target_parallel_for_stmt)
+    device_expression = getClauseExpression (target_parallel_for_stmt, VariantVector(V_SgOmpDeviceClause));
+  else if (target_teams_distribute_parallel_for_stmt)
+    device_expression = getClauseExpression (target_teams_distribute_parallel_for_stmt, VariantVector(V_SgOmpDeviceClause));
+
 
   extractMapClauses (map_clauses, array_dimensions, dist_data_policies, &map_alloc_clause, &map_to_clause, &map_from_clause, &map_tofrom_clause);
   std::set<SgSymbol*> array_syms; // store clause variable symbols which are array types (explicit or as a pointer)
@@ -3229,7 +3479,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
   categorizeMapClauseVariables (all_mapped_vars, array_dimensions, array_syms, atom_syms);
 
   // set the scope and anchor statement we will focus on based on the availability of an enclosing target data region
-  SgBasicBlock* insertion_scope = NULL; // the body 
+  SgBasicBlock* insertion_scope = NULL; // the body
   SgStatement* insertion_anchor_stmt = NULL; // the single statement within the body
  if (target_data_stmt != NULL)
  {
@@ -3238,7 +3488,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
    ROSE_ASSERT (body_block!= NULL);
 
    SgStatement* target_data_child_stmt = NULL;
-   // We cannot assert this since the body of "omp target data" may already be expanded as part of a previous translation    
+   // We cannot assert this since the body of "omp target data" may already be expanded as part of a previous translation
    //    ROSE_ASSERT( (target_data_stmt_body->get_statements()).size() ==1);
    target_data_child_stmt = (body_block->get_statements())[0];
 
@@ -3247,51 +3497,71 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
  }
   else if (target_directive_stmt != NULL)
   {
-   insertion_scope= isSgBasicBlock(target_directive_stmt->get_body());
-   insertion_anchor_stmt = target_parallel_stmt;
+   insertion_scope = isSgBasicBlock(target_directive_stmt->get_scope());
+   insertion_anchor_stmt = target_directive_stmt;
   }
+  else if (target_parallel_for_stmt != NULL)
+  {
+   // at this point, the body should already be normalized to be a BB
+   SgBasicBlock * body_block = ensureBasicBlockAsBodyOfOmpBodyStmt(target_parallel_for_stmt);
+   ROSE_ASSERT (body_block!= NULL);
 
-  ROSE_ASSERT (insertion_scope!= NULL);
-  ROSE_ASSERT (insertion_anchor_stmt!= NULL);
+   SgStatement* target_data_child_stmt = NULL;
+   // We cannot assert this since the body of "omp target data" may already be expanded as part of a previous translation
+   //    ROSE_ASSERT( (target_data_stmt_body->get_statements()).size() ==1);
+   target_data_child_stmt = (body_block->get_statements())[0];
+
+   insertion_scope = body_block;
+   insertion_anchor_stmt = target_data_child_stmt;
+  }
+  else if (target_teams_distribute_parallel_for_stmt != NULL)
+  {
+   // at this point, the body should already be normalized to be a BB
+   SgBasicBlock * body_block = ensureBasicBlockAsBodyOfOmpBodyStmt(target_teams_distribute_parallel_for_stmt);
+   ROSE_ASSERT (body_block!= NULL);
+
+   SgStatement* target_data_child_stmt = NULL;
+   // We cannot assert this since the body of "omp target data" may already be expanded as part of a previous translation
+   //    ROSE_ASSERT( (target_data_stmt_body->get_statements()).size() ==1);
+   target_data_child_stmt = (body_block->get_statements())[0];
+
+   insertion_scope = body_block;
+   insertion_anchor_stmt = target_data_child_stmt;
+  }
+  ROSE_ASSERT (insertion_scope != NULL);
+  ROSE_ASSERT (insertion_anchor_stmt != NULL);
 
   // collect used variables in the insertion scope
   std::map <SgVariableSymbol *, bool> variable_map = collectVariableAppearance (insertion_scope);
 
-  // Now insert xomp_deviceDataEnvironmentEnter() before xomp_deviceDataEnvironmentPrepareVariable()
-  SgExprListExp* argumentList = NULL;
-  if(device_expression)
-  {
-    argumentList = buildExprListExp(deepCopy(device_expression)); 
-  }
-  else  // use default device ID 0 if device_expression is NULL
-  {
+  if (device_expression == NULL) {
     device_expression = buildIntVal(0);
-    argumentList = buildExprListExp(device_expression);
-  }
+  };
 
-  SgExprStatement* dde_enter_stmt = buildFunctionCallStmt (SgName("xomp_deviceDataEnvironmentEnter"), buildVoidType(), argumentList, insertion_scope);
-  prependStatement(dde_enter_stmt, insertion_scope); 
-
-  // handle array variables showing up in the map clauses:   
+  std::vector<SgExpression* >* mapping_array_list = new std::vector<SgExpression* >();
+  std::vector<SgExpression* >* mapping_array_base_list = new std::vector<SgExpression* >();
+  std::vector<SgExpression* >* mapping_array_size_list = new std::vector<SgExpression* >();
+  std::vector<SgExpression* >* mapping_array_type_list = new std::vector<SgExpression* >();
+  // handle array variables showing up in the map clauses:
   for (std::set<SgSymbol*>::const_iterator iter = array_syms.begin(); iter != array_syms.end(); iter ++)
   {
-    SgSymbol* sym = *iter; 
+    SgSymbol* sym = *iter;
     ROSE_ASSERT (sym != NULL);
     SgType* orig_type = sym->get_type();
 
     // Step 1: declare a pointer type to array variables in map clauses, we linearize all arrays to be a 1-D pointer
-    //   Element_type * _dev_var; 
-    //   e.g.: double* _dev_array; 
+    //   Element_type * _dev_var;
+    //   e.g.: double* _dev_array;
     // I believe that all array variables need allocations on GPUs, regardless their map operations (alloc, to, from, or tofrom)
 
     // TODO: is this a safe assumption here??
     SgType* element_type = orig_type->findBaseType(); // recursively strip away non-base type to get the bottom type
     string orig_name = (sym->get_name()).getString();
-    string dev_var_name = "_dev_"+ orig_name; 
+    string dev_var_name = "_dev_"+ orig_name;
 
-    SgVariableDeclaration* dev_var_decl = NULL; 
+    SgVariableDeclaration* dev_var_decl = NULL;
     dev_var_decl = buildVariableDeclaration(dev_var_name, buildPointerType(element_type), NULL, insertion_scope);
-    insertStatementBefore (insertion_anchor_stmt, dev_var_decl); 
+    insertStatementBefore (insertion_anchor_stmt, dev_var_decl);
     ROSE_ASSERT (dev_var_decl != NULL);
 
     SgVariableSymbol* orig_sym = isSgVariableSymbol(sym);
@@ -3308,19 +3578,15 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
         if (variable_map[orig_sym])
           all_syms.insert(new_sym);
     // generate memory allocation, copy, free function calls.
-    generateMappedArrayMemoryHandling (sym, map_alloc_clause, map_to_clause, map_from_clause, map_tofrom_clause,array_dimensions, device_expression, 
-        insertion_scope, insertion_anchor_stmt, true);
+    generateMappedArrayMemoryHandling (sym, map_alloc_clause, map_to_clause, map_from_clause, map_tofrom_clause,array_dimensions, device_expression,
+        insertion_scope, insertion_anchor_stmt, true, mapping_array_list, mapping_array_base_list, mapping_array_size_list, mapping_array_type_list);
   }  // end for
-
-  // Generate a single DDE enter() call
-  SgExprStatement* dde_exit_stmt = buildFunctionCallStmt (SgName("xomp_deviceDataEnvironmentExit"), buildVoidType(), argumentList, insertion_scope);
-  appendStatement(dde_exit_stmt , insertion_anchor_stmt->get_scope()); 
 
   // Step 5. TODO  replace indexing element access with address calculation (only needed for 2/3 -D)
   // We switch the order of 4 and 5 since we want to rewrite the subscripts before the arrays are replaced
-  rewriteArraySubscripts (insertion_scope, array_syms); 
+  rewriteArraySubscripts (insertion_scope, array_syms);
 
-  // Step 4. replace references to old with new variables, 
+  // Step 4. replace references to old with new variables,
   replaceVariableReferences (insertion_scope , cpu_gpu_var_map);
 
   // TODO handle scalar, separate or merged into previous loop ?
@@ -3329,11 +3595,11 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
   // for pointers to linearized arrays, they should passed by their original form, not using & operator, regardless the map operator types (to|from|alloc|tofrom)
   // for a scalar, two cases: to vs. from | tofrom
   // if in only, pass by value is good
-  // if either from or tofrom:  
+  // if either from or tofrom:
   // two possible solutions:
   // 1) we need to treat it as an array of size 1 or any other choices. TODO!!
   //  we also have to replace the reference to scalar to the array element access: be cautious about using by value (a) vs. using by address  (&a)
-  // 2) try to still pass by value, but copy the final value back to the CPU version 
+  // 2) try to still pass by value, but copy the final value back to the CPU version
   // right now we assume they are not on from|tofrom, until we face a real input applications with map(from:scalar_a)
   // For all scalars, we directly copy them into all_syms for now
   for (std::set<SgSymbol*> ::iterator iter = atom_syms.begin(); iter != atom_syms.end(); iter ++)
@@ -3341,7 +3607,34 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     SgVariableSymbol * var_sym = isSgVariableSymbol(*iter);
     if (variable_map[var_sym] == true) // we should only collect map variables which show up in the current parallel region
       all_syms.insert (var_sym);
+
+    // check the type of current variable symbol and calculate its size
+    if (variable_map[var_sym] == true) {
+        SgInitializedName* mapping_variable = var_sym->get_declaration();
+        SgType* mapping_variable_type = mapping_variable->get_type();
+        SgExpression* mapping_variable_expression = NULL;
+        if (isPointerType(mapping_variable_type)) {
+            mapping_variable_expression = buildVarRefExp(var_sym);
+        }
+        else {
+            mapping_variable_expression = buildAddressOfOp(buildVarRefExp(var_sym));
+        };
+        map_variable_list->append_expression(mapping_variable_expression);
+        map_variable_base_list->append_expression(mapping_variable_expression);
+        SgExpression* mapping_variable_size = buildCastExp(buildSizeOfOp(mapping_variable_type), buildOpaqueType("int64_t", insertion_scope));
+        map_variable_size_list->append_expression(mapping_variable_size);
+
+        int mapping_variable_type_enum = generate_mapping_variable_type(var_sym, map_alloc_clause, map_to_clause, map_from_clause, map_tofrom_clause,array_dimensions, device_expression,
+        insertion_scope, insertion_anchor_stmt);
+        SgExpression* mapping_variable_value = buildIntVal(mapping_variable_type_enum);
+        map_variable_type_list->append_expression(mapping_variable_value);
+    };
   }
+
+  appendExpressionList(map_variable_list, *mapping_array_list);
+  appendExpressionList(map_variable_base_list, *mapping_array_base_list);
+  appendExpressionList(map_variable_size_list, *mapping_array_size_list);
+  appendExpressionList(map_variable_type_list, *mapping_array_type_list);
 
   //Pei-Hung: subtract offset from the subscript in the offloaded array reference
   if(target_parallel_stmt)
@@ -3370,17 +3663,17 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
           for(std::vector<SgExpression*>::reverse_iterator ir = v_offset.rbegin(); ir != v_offset.rend(); ir++)
           {
             ROSE_ASSERT(pntrArrRef);
-            SgExpression* subscript = pntrArrRef->get_rhs_operand();  
+            SgExpression* subscript = pntrArrRef->get_rhs_operand();
             SgExpression* newsubscript = buildSubtractOp(deepCopy(subscript),deepCopy(*ir));
-            replaceExpression(subscript,newsubscript,true); 
-            pntrArrRef = isSgPntrArrRefExp(pntrArrRef->get_parent()); 
-          } 
+            replaceExpression(subscript,newsubscript,true);
+            pntrArrRef = isSgPntrArrRefExp(pntrArrRef->get_parent());
+          }
         }
         // collapsed case
         else
         {
           ROSE_ASSERT(pntrArrRef);
-          SgExpression* subscript = pntrArrRef->get_rhs_operand();  
+          SgExpression* subscript = pntrArrRef->get_rhs_operand();
           SgExpression* newsubscript = deepCopy(subscript);
           std::vector<SgExpression*>::reverse_iterator irsize = v_size.rbegin();
           for(std::vector<SgExpression*>::reverse_iterator ir = v_offset.rbegin(); ir != v_offset.rend(); ir++)
@@ -3388,17 +3681,17 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
             SgIntVal* intVal = isSgIntVal(*ir);
             if(intVal && intVal->get_value() == 0)
             {
-              irsize++;  
+              irsize++;
               continue;
             }
             if(ir ==v_offset.rbegin())
               newsubscript = buildSubtractOp(newsubscript,deepCopy(*ir));
             else
               newsubscript = buildSubtractOp(newsubscript,buildMultiplyOp(deepCopy(*ir),deepCopy(*irsize)));
-            irsize++;  
+            irsize++;
           }
-          replaceExpression(subscript,newsubscript,true); 
-          pntrArrRef = isSgPntrArrRefExp(pntrArrRef->get_parent()); 
+          replaceExpression(subscript,newsubscript,true);
+          pntrArrRef = isSgPntrArrRefExp(pntrArrRef->get_parent());
         }
       }
     }
@@ -3406,162 +3699,304 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
   return all_syms;
 } // end transOmpMapVariables() for omp target data's map clauses for now
 
+static void generateUpirMappedArrayMemoryHandling(
+    /* the array and the map information */
+    SgSymbol* sym,
+    std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > > & array_dimensions, SgExpression* device_expression,
+    /*Where to insert generated function calls*/
+    SgBasicBlock* insertion_scope, SgStatement* insertion_anchor_stmt,
+    bool need_generate_data_stmt
+    )
+{
+  ROSE_ASSERT (sym != NULL);
+  ROSE_ASSERT (device_expression!= NULL); // runtime now needs explicit device ID to work
+  SgType* orig_type = sym->get_type();
 
-// old version: kept to occasionally see previous translation results.
-// generating explicit data handling function calls
- void transOmpMapVariables_v1(
-                         SgOmpParallelStatement* target_parallel_stmt, //the "omp parallel" with enclosing "omp target", or combined "target parallel"
-                         ASTtools::VarSymSet_t & all_syms // collect all generated or remaining variables to be passed to the outliner
-                        )
+  // Step 1: declare a pointer type to array variables in map clauses, we linearize all arrays to be a 1-D pointer
+  //   Element_type * _dev_var;
+  //   e.g.: double* _dev_array;
+  // I believe that all array variables need allocations on GPUs, regardless their map operations (alloc, to, from, or tofrom)
+
+  // TODO: is this a safe assumption here??
+  SgType* element_type = orig_type->findBaseType(); // recursively strip away non-base type to get the bottom type
+  string orig_name = (sym->get_name()).getString();
+  string dev_var_name = "_dev_"+ orig_name;
+
+  // Step 2.1  generate linear size calculation based on array dimension info
+  // int dev_array_size = sizeof (double) *dim_size1 * dim_size2;
+  string dev_var_size_name = "_dev_" + orig_name + "_size";
+  SgVariableDeclaration* dev_var_size_decl = NULL;
+
+  SgVariableSymbol* dev_var_size_sym = insertion_scope->lookup_variable_symbol(dev_var_size_name);
+  std::vector<SgExpression*> v_size;
+  int dimSize = 0;
+  if (dev_var_size_sym == NULL)
   {
-    ROSE_ASSERT (target_parallel_stmt!= NULL);
-    
-   // must be a parallel region directly under "omp target"
-    SgNode* parent = target_parallel_stmt->get_parent();
-    ROSE_ASSERT (parent != NULL);
-   if (isSgBasicBlock(parent)) //skip the possible block in between
-      parent = parent->get_parent();
-    SgOmpTargetStatement* target_directive_stmt = isSgOmpTargetStatement(parent);
-    ROSE_ASSERT (target_directive_stmt != NULL);
-
-   // at this point, the body must be a BB now.
-   SgBasicBlock* body_block = isSgBasicBlock(target_parallel_stmt->get_body()); // the body of the affected "omp parallel"
-    ROSE_ASSERT (body_block!= NULL);
-   // we should use inner scope , instead of the scope of target-directive-stmt.
-   // this will avoid name collisions when there are multiple "omp target" within one big scope
-    SgScopeStatement* target_directive_body = isSgScopeStatement(target_directive_stmt->get_body()); 
-    ROSE_ASSERT (target_directive_body != NULL);
-    ROSE_ASSERT (isSgBasicBlock (target_directive_body));
-
-    std::map <SgVariableSymbol *, bool> variable_map = collectVariableAppearance (target_parallel_stmt);
-#if 1
-    // two cases: map variables are provided by 
-    // case 1: "omp target" 
-    // case 2: "omp target data"
-    // we have to figure which case is true for the current affected "omp parallel"
-    SgOmpTargetDataStatement* target_data_stmt = getEnclosingNode <SgOmpTargetDataStatement> (target_directive_stmt);
-    SgBasicBlock * target_data_stmt_body = NULL;
-    SgStatement* target_data_child_stmt = NULL;
-    if (!useDDE) // only in the old, explicit data management mode, we translate map variables differently depending on context
-      if (target_data_stmt != NULL)
+//    SgExpression* initializer = generateSizeCalculationExpression (sym, element_type, array_dimensions[sym]);
+    SgExprListExp* initializer = buildExprListExp();
+    if(array_dimensions[sym].size() > 0){
+      dimSize = array_dimensions[sym].size();
+      for (std::vector < std::pair <SgExpression*, SgExpression*> >::const_iterator iter = array_dimensions[sym].begin(); iter != array_dimensions[sym].end(); iter++)
       {
-        target_data_stmt_body = ensureBasicBlockAsBodyOfOmpBodyStmt (target_data_stmt);
-        ROSE_ASSERT (target_data_stmt_body != NULL);
-        // We cannot assert this since the body of "omp target data" may already be expanded as part of a previous translation    
-        //    ROSE_ASSERT( (target_data_stmt_body->get_statements()).size() ==1);
-        target_data_child_stmt = (target_data_stmt_body->get_statements())[0];
+        std::pair <SgExpression*, SgExpression*> bound_pair = *iter;
+        initializer->append_expression(deepCopy(bound_pair.second));
+        v_size.push_back(deepCopy(bound_pair.second));
       }
-#endif
-    // collect map clauses and their variables 
-    // ----------------------------------------------------------
-    // Some notes for the relevant AST input: 
-    // we store a map clause for each variant/operator (alloc, to, from, and tofrom), so there should be up to 4 SgOmpMapClause.
-    //    SgOmpClause::omp_map_operator_enum
-    // each map clause has 
-    //   a variable list (SgVarRefExp), accessible through get_variables()
-    //   a pointer to array_dimensions, accessible through get_array_dimensions(). the array_dimensions is identical among all map clause of a same "omp target"
-    //     std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >  array_dimensions
-    Rose_STL_Container<SgOmpClause*> map_clauses; 
-#if 1
-    if (target_data_stmt != NULL && !useDDE)
-    {
-      map_clauses = getClause(target_data_stmt, V_SgOmpMapClause);
     }
-    else   
-#endif
-     map_clauses = getClause(target_directive_stmt, V_SgOmpMapClause);
+    else
+    {
+      ROSE_ASSERT (sym!= NULL);
+      SgArrayType* a_type = isSgArrayType (orig_type);
+      ROSE_ASSERT (a_type!= NULL);
+      std::vector< SgExpression * > dims = get_C_array_dimensions (a_type);
+      for (std::vector < SgExpression* >::const_iterator iter = dims.begin(); iter != dims.end(); iter++)
+      {
+        SgExpression* length_exp  = *iter;
+        //TODO: get_C_array_dimensions returns one extra null expression somehow.
+        if (!isSgNullExpression(length_exp))
+        {
+          dimSize++;
+          initializer->append_expression(deepCopy(length_exp));
+          v_size.push_back(deepCopy(length_exp));
+        }
+      }
+    }
+    dev_var_size_decl = buildVariableDeclaration (dev_var_size_name, buildArrayType(buildIntType(),buildIntVal(dimSize)), buildAggregateInitializer(initializer), insertion_scope);
+    insertStatementBefore (insertion_anchor_stmt, dev_var_size_decl);
+  }
+  else
+    dev_var_size_decl = isSgVariableDeclaration(dev_var_size_sym->get_declaration()->get_declaration());
 
-    if ( map_clauses.size() == 0) return; // stop if no map clauses at all
+  ROSE_ASSERT (dev_var_size_decl != NULL);
 
-    // store each time of map clause explicitly
-    SgOmpMapClause* map_alloc_clause = NULL;
-    SgOmpMapClause* map_to_clause = NULL;
-    SgOmpMapClause* map_from_clause = NULL;
-    SgOmpMapClause* map_tofrom_clause = NULL;
-    // dimension map is the same for all the map clauses under the same omp target directive
-    std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >  array_dimensions; 
-    std::map<SgSymbol*, std::vector< std::pair< SgOmpClause::omp_map_dist_data_enum, SgExpression * > > > dist_data_policies; // no in use, for compatible reason
+  SgExpression* mapping_array_size = NULL;
+  for (std::vector<SgExpression* >::const_iterator iter = v_size.begin(); iter != v_size.end(); iter++) {
+      if (mapping_array_size == NULL) {
+          mapping_array_size = *iter;
+      }
+      else {
+          mapping_array_size = buildMultAssignOp(mapping_array_size, *iter);
+      };
+  };
 
-   // a map between original symbol and its device version (replacement) 
-   std::map <SgVariableSymbol*, SgVariableSymbol*>  cpu_gpu_var_map; 
-    
-    // store all variables showing up in any of the map clauses
-    SgInitializedNamePtrList all_mapped_vars ;
-#if 1
-    if (target_data_stmt != NULL && !useDDE)
-      all_mapped_vars = collectClauseVariables (target_data_stmt, VariantVector(V_SgOmpMapClause)); 
-    else 
-#endif
-  all_mapped_vars = collectClauseVariables (target_directive_stmt, VariantVector(V_SgOmpMapClause));
+  // generate offset array
+  string dev_var_offset_name = "_dev_" + orig_name + "_offset";
+  SgVariableDeclaration* dev_var_offset_decl = NULL;
 
-    extractMapClauses (map_clauses, array_dimensions, dist_data_policies, &map_alloc_clause, &map_to_clause, &map_from_clause, &map_tofrom_clause);
-    std::set<SgSymbol*> array_syms; // store clause variable symbols which are array types (explicit or as a pointer)
-    std::set<SgSymbol*> atom_syms; // store clause variable symbols which are non-aggregate types: scalar, pointer, etc
-
-   // categorize the variables:
-   categorizeMapClauseVariables (all_mapped_vars, array_dimensions, array_syms, atom_syms);
-
-   // set the scope and anchor statement we will focus on based on the availability of an enclosing target data region
-   SgBasicBlock* insertion_scope = NULL; // the body 
-   SgStatement* insertion_anchor_stmt = NULL; // the single statement within the body
-   bool need_generate_data_stmt  = false; // We don't always need to generate the declaration, allocation, copy, de-allocation of device data.
-#if 1
-   if (target_data_stmt != NULL && !useDDE)
-   {
-     insertion_scope = target_data_stmt_body;
-     insertion_anchor_stmt = target_data_child_stmt;
-   } 
-   else
-#endif
-   {
-     insertion_scope = isSgBasicBlock(target_directive_body);
-     insertion_anchor_stmt = target_parallel_stmt;
-   }
-   ROSE_ASSERT (insertion_scope!= NULL);
-   ROSE_ASSERT (insertion_anchor_stmt!= NULL);
-
-  if (useDDE)
+  SgVariableSymbol* dev_var_offset_sym = insertion_scope->lookup_variable_symbol(dev_var_offset_name);
+  // vector to store all offset values
+  std::vector<SgExpression*> v_offset;
+  if (dev_var_offset_sym == NULL)
   {
-    // Now insert xomp_deviceDataEnvironmentEnter() before xomp_deviceDataEnvironmentPrepareVariable()
-    SgExprStatement* dde_enter_stmt = buildFunctionCallStmt (SgName("xomp_deviceDataEnvironmentEnter"), buildVoidType(), NULL, insertion_scope);
-    prependStatement(dde_enter_stmt, insertion_scope); 
-   }
-  // handle array variables showing up in the map clauses:   
+    SgExprListExp* arrayInitializer = buildExprListExp();
+    if(array_dimensions[sym].size() > 0){
+      for (std::vector < std::pair <SgExpression*, SgExpression*> >::const_iterator iter = array_dimensions[sym].begin(); iter != array_dimensions[sym].end(); iter++)
+      {
+        std::pair <SgExpression*, SgExpression*> bound_pair = *iter;
+        arrayInitializer->append_expression(deepCopy(bound_pair.first));
+        v_offset.push_back(deepCopy(bound_pair.first));
+      }
+    }
+    else
+    {
+      for (int i=0; i < dimSize; ++i)
+      {
+        arrayInitializer->append_expression(buildIntVal(0));
+        v_offset.push_back(buildIntVal(0));
+      }
+    }
+    dev_var_offset_decl = buildVariableDeclaration (dev_var_offset_name, buildArrayType(buildIntType(),buildIntVal(dimSize)), buildAggregateInitializer(arrayInitializer), insertion_scope);
+    insertStatementBefore (insertion_anchor_stmt, dev_var_offset_decl);
+  }
+  else
+    dev_var_offset_decl = isSgVariableDeclaration(dev_var_offset_sym->get_declaration()->get_declaration());
+
+  ROSE_ASSERT (dev_var_offset_decl != NULL);
+
+  // for now, we take the first offset as the final offset.
+  // it only works for 1D array.
+  // TODO: implement an helper to determine the correct offset in general
+  SgExpression* mapping_array_offset = NULL;
+  for (std::vector<SgExpression* >::const_iterator iter = v_offset.begin(); iter != v_offset.end(); iter++) {
+      if (mapping_array_offset == NULL) {
+          mapping_array_offset = *iter;
+      };
+  };
+
+  offload_array_offset_map[dev_var_name] = v_offset;
+
+  // generate Dim array
+  string dev_var_Dim_name = "_dev_" + orig_name + "_Dim";
+  SgVariableDeclaration* dev_var_Dim_decl = NULL;
+
+  SgVariableSymbol* dev_var_Dim_sym = insertion_scope->lookup_variable_symbol(dev_var_Dim_name);
+  std::vector<SgExpression*> v_dimSize;
+  if (dev_var_Dim_sym == NULL)
+  {
+    SgExprListExp* arrayInitializer = buildExprListExp();
+    {
+      ROSE_ASSERT (sym!= NULL);
+      SgArrayType* a_type = isSgArrayType (orig_type);
+      if(a_type != NULL){
+        std::vector< SgExpression * > dims = get_C_array_dimensions (a_type);
+        for (std::vector < SgExpression* >::const_iterator iter = dims.begin(); iter != dims.end(); iter++)
+        {
+          SgExpression* length_exp  = *iter;
+          //TODO: get_C_array_dimensions returns one extra null expression somehow.
+          if (!isSgNullExpression(length_exp))
+          {
+            arrayInitializer->append_expression(deepCopy(length_exp));
+            v_dimSize.push_back(deepCopy(length_exp));
+          }
+        }
+      }
+      else
+      {
+        for (int i=0; i < dimSize; ++i)
+        {
+          arrayInitializer->append_expression(deepCopy(v_size[i]));
+          v_dimSize.push_back(deepCopy(v_size[i]));
+        }
+      }
+    }
+    dev_var_Dim_decl = buildVariableDeclaration (dev_var_Dim_name, buildArrayType(buildIntType(),buildIntVal(dimSize)), buildAggregateInitializer(arrayInitializer), insertion_scope);
+    insertStatementBefore (insertion_anchor_stmt, dev_var_Dim_decl);
+  }
+  else
+    dev_var_Dim_decl = isSgVariableDeclaration(dev_var_Dim_sym->get_declaration()->get_declaration());
+
+  ROSE_ASSERT (dev_var_Dim_decl != NULL);
+  offload_array_size_map[dev_var_name] = v_dimSize;
+}
+
+ASTtools::VarSymSet_t transUpirDataMappingVariables (SgStatement* target_directive, SgExprListExp* map_variable_list, SgExprListExp* map_variable_base_list, SgExprListExp* map_variable_size_list, SgExprListExp* map_variable_type_list) {
+  ASTtools::VarSymSet_t all_syms;
+  ROSE_ASSERT (all_syms.size() == 0); // it should be empty
+
+  SgUpirFieldBodyStatement* target = (SgUpirFieldBodyStatement*)target_directive;
+  if (isSgUpirSpmdStatement(target) != NULL) {
+      SgNode* parent = target->get_parent();
+      ROSE_ASSERT(parent != NULL);
+      if (isSgBasicBlock(parent)) { //skip the possible block in between
+          parent = parent->get_parent();
+      }
+      target = isSgUpirTaskStatement(parent);
+  }
+  ROSE_ASSERT (target != NULL);
+
+  // collect map clauses and their variables
+  // ----------------------------------------------------------
+  // Some notes for the relevant AST input:
+  // we store a map clause for each variant/operator (alloc, to, from, and tofrom), so there should be up to 4 SgOmpMapClause.
+  //    SgOmpClause::omp_map_operator_enum
+  // each map clause has
+  //   a variable list (SgVarRefExp), accessible through get_variables()
+  //   a pointer to array_dimensions, accessible through get_array_dimensions(). the array_dimensions is identical among all map clause of a same "omp target"
+  //     std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >  array_dimensions
+
+  Rose_STL_Container<SgOmpClause*> data_fields;
+  Rose_STL_Container<SgOmpClause*> device_clauses;
+  data_fields = getClause(target, V_SgUpirDataField);
+  device_clauses = getClause(target, V_SgOmpDeviceClause);
+
+  if ( data_fields.size() == 0) return all_syms; // stop if no map clauses at all
+
+  // store each time of map clause explicitly
+  SgOmpMapClause* map_alloc_clause = NULL;
+  SgOmpMapClause* map_to_clause = NULL;
+  SgOmpMapClause* map_from_clause = NULL;
+  SgOmpMapClause* map_tofrom_clause = NULL;
+  // dimension map is the same for all the map clauses under the same omp target directive
+  std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >  array_dimensions;
+  std::map<SgSymbol*, std::vector< std::pair< SgOmpClause::omp_map_dist_data_enum, SgExpression * > > > dist_data_policies; // no in use, for compatible reason
+
+  // a map between original symbol and its device version : used for variable replacement
+  std::map <SgVariableSymbol*, SgVariableSymbol*>  cpu_gpu_var_map;
+
+  // store all variables showing up in any of the map clauses
+  SgInitializedNamePtrList all_mapped_vars;
+  std::set<SgSymbol*> array_syms; // store clause variable symbols which are array types (explicit or as a pointer)
+  std::set<SgSymbol*> atom_syms; // store clause variable symbols which are non-aggregate types: scalar, pointer, etc
+  for (size_t i = 0; i < data_fields.size(); i++) {
+    std::list<SgUpirDataItemField*> data_items = ((SgUpirDataField*)data_fields[i])->get_data();
+    for (std::list<SgUpirDataItemField*>::iterator j = data_items.begin(); j != data_items.end(); j++) {
+        SgUpirDataItemField* data_item = *j;
+        SgVariableSymbol* variable_symbol = isSgVariableSymbol(data_item->get_symbol());
+        assert(variable_symbol != NULL);
+        SgInitializedName* mapping_variable = variable_symbol->get_declaration();
+        all_mapped_vars.push_back(mapping_variable);
+
+        std::list<std::list<SgExpression*>> sections = data_item->get_section();
+        if (sections.size() > 0) {
+            array_syms.insert(variable_symbol);
+            // TODO: assume the array is always 1D for now
+            // generate array dimensions that ROSE/REX can use
+            std::list<std::list<SgExpression*>>::iterator sections_iterator = sections.begin();
+            std::list<SgExpression*> array_section = *sections_iterator;
+            std::list<SgExpression*>::iterator array_section_iterator = array_section.begin();
+            SgExpression* lower_bound = *array_section_iterator;
+            array_section_iterator++;
+            SgExpression* length = *array_section_iterator;
+            std::pair<SgExpression*, SgExpression*> array_dimension = {lower_bound, length};
+            std::vector<std::pair<SgExpression*, SgExpression*>> array_dimension_list = {array_dimension};
+            array_dimensions[variable_symbol] = array_dimension_list;
+        }
+        else {
+            atom_syms.insert(variable_symbol);
+        }
+    }
+  }
+
+  // store all variables showing up in any of the device clauses
+  SgExpression* device_expression = NULL;
+  device_expression = getClauseExpression(target, VariantVector(V_SgOmpDeviceClause));
+
+  SgBasicBlock* insertion_scope = NULL;
+  SgStatement* insertion_anchor_stmt = NULL;
+  // set the scope and anchor statement we will focus on based on the availability of an enclosing target data region
+  if (isSgUpirTaskStatement(target)) {
+      insertion_scope = isSgBasicBlock(target->get_scope());
+      insertion_anchor_stmt = target;
+  }
+  else {
+      SgBasicBlock* body_block = ensureBasicBlockAsBodyOfOmpBodyStmt(target);
+      insertion_scope = body_block;
+      insertion_anchor_stmt = (body_block->get_statements())[0];
+  }
+  ROSE_ASSERT(insertion_scope != NULL);
+  ROSE_ASSERT(insertion_anchor_stmt != NULL);
+
+  // collect used variables in the insertion scope
+  std::map <SgVariableSymbol *, bool> variable_map = collectVariableAppearance (insertion_scope);
+
+  if (device_expression == NULL) {
+    device_expression = buildIntVal(0);
+  };
+
+  std::vector<SgExpression* >* mapping_array_list = new std::vector<SgExpression* >();
+  std::vector<SgExpression* >* mapping_array_base_list = new std::vector<SgExpression* >();
+  std::vector<SgExpression* >* mapping_array_size_list = new std::vector<SgExpression* >();
+  std::vector<SgExpression* >* mapping_array_type_list = new std::vector<SgExpression* >();
+  // handle array variables showing up in the map clauses:
   for (std::set<SgSymbol*>::const_iterator iter = array_syms.begin(); iter != array_syms.end(); iter ++)
   {
-    SgSymbol* sym = *iter; 
+    SgSymbol* sym = *iter;
     ROSE_ASSERT (sym != NULL);
     SgType* orig_type = sym->get_type();
 
     // Step 1: declare a pointer type to array variables in map clauses, we linearize all arrays to be a 1-D pointer
-    //   Element_type * _dev_var; 
-    //   e.g.: double* _dev_array; 
+    //   Element_type * _dev_var;
+    //   e.g.: double* _dev_array;
     // I believe that all array variables need allocations on GPUs, regardless their map operations (alloc, to, from, or tofrom)
 
     // TODO: is this a safe assumption here??
     SgType* element_type = orig_type->findBaseType(); // recursively strip away non-base type to get the bottom type
     string orig_name = (sym->get_name()).getString();
-    string dev_var_name = "_dev_"+ orig_name; 
+    string dev_var_name = "_dev_"+ orig_name;
 
-    // Again, two cases: map clauses come from 1) omp target vs. 2) omp target data 
-    // For the combined "omp target" + "omp parallel for " code portion
-    // We generate declarations within the body of "omp target". So we don't concerned about name conflicts. 
-    //
-    // For "omp target data", 
-    // It is possible that there are two consecutive "omp target"+"omp parallel for" regions.
-    // Blindly generate data handling statements will introduce redundant definition and handling. 
-    // So we have to check the existence of a declaration before creating a brand new one.
-    SgVariableDeclaration* dev_var_decl = NULL; 
-    SgVariableSymbol* dev_var_sym = insertion_scope ->lookup_variable_symbol(dev_var_name);
-    if (dev_var_sym == NULL)
-    {
-      need_generate_data_stmt = true; // this will trigger a set to data handling statements to be generated later on
-      dev_var_decl = buildVariableDeclaration(dev_var_name, buildPointerType(element_type), NULL, insertion_scope);
-      insertStatementBefore (insertion_anchor_stmt, dev_var_decl); 
-    }
-    else 
-      dev_var_decl = isSgVariableDeclaration(dev_var_sym->get_declaration()->get_declaration());
-
+    SgVariableDeclaration* dev_var_decl = NULL;
+    dev_var_decl = buildVariableDeclaration(dev_var_name, buildPointerType(element_type), NULL, insertion_scope);
+    insertStatementBefore (insertion_anchor_stmt, dev_var_decl);
     ROSE_ASSERT (dev_var_decl != NULL);
 
     SgVariableSymbol* orig_sym = isSgVariableSymbol(sym);
@@ -3571,65 +4006,138 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 
     // Not all map variables from "omp target data" will be used within the current parallel region
     // We only need to find out the used one only.
-#if 1
-    // linearized array pointers should be directly passed to the outliner later on, without adding & operator in front of them
-    if (target_data_stmt != NULL && !useDDE)
-    {
-      if (variable_map[orig_sym]) // this condition may miss out the temp variables generated for loop collapsing in DDE translation mode
-        all_syms.insert(new_sym);
-    }
-    else
-#endif
-    {
-      all_syms.insert(new_sym);
-      ROSE_ASSERT (variable_map[orig_sym] == true);// the map variable must show up within the parallel region
-    }
 
+    // linearized array pointers should be directly passed to the outliner later on, without adding & operator in front of them
+    // we assume AST is normalized and all target regions have explicit and correct map() clauses
+    // Still some transformation like loop collapse will change the variables
+    // [REX] TODO: check whether all the mapped symbols should be always passed as parameters
+        if (variable_map[orig_sym] || variable_map[new_sym])
+          all_syms.insert(new_sym);
     // generate memory allocation, copy, free function calls.
-    generateMappedArrayMemoryHandling (sym, map_alloc_clause, map_to_clause, map_from_clause, map_tofrom_clause,array_dimensions, NULL,  
-        insertion_scope, insertion_anchor_stmt, need_generate_data_stmt);
+    generateUpirMappedArrayMemoryHandling (sym, array_dimensions, device_expression, insertion_scope, insertion_anchor_stmt, true);
   }  // end for
 
-  // Generate a single DDE enter() call
-  if (useDDE)
+  // Step 5. TODO  replace indexing element access with address calculation (only needed for 2/3 -D)
+  // We switch the order of 4 and 5 since we want to rewrite the subscripts before the arrays are replaced
+  rewriteArraySubscripts (insertion_scope, array_syms);
+
+  // Step 4. replace references to old with new variables,
+  replaceVariableReferences (insertion_scope , cpu_gpu_var_map);
+
+  // TODO handle scalar, separate or merged into previous loop ?
+
+  // store remaining variables so outliner can readily use this information
+  // for pointers to linearized arrays, they should passed by their original form, not using & operator, regardless the map operator types (to|from|alloc|tofrom)
+  // for a scalar, two cases: to vs. from | tofrom
+  // if in only, pass by value is good
+  // if either from or tofrom:
+  // two possible solutions:
+  // 1) we need to treat it as an array of size 1 or any other choices. TODO!!
+  //  we also have to replace the reference to scalar to the array element access: be cautious about using by value (a) vs. using by address  (&a)
+  // 2) try to still pass by value, but copy the final value back to the CPU version
+  // right now we assume they are not on from|tofrom, until we face a real input applications with map(from:scalar_a)
+  // For all scalars, we directly copy them into all_syms for now
+  for (std::set<SgSymbol*> ::iterator iter = atom_syms.begin(); iter != atom_syms.end(); iter ++)
   {
-    SgExprStatement* dde_exit_stmt = buildFunctionCallStmt (SgName("xomp_deviceDataEnvironmentExit"), buildVoidType(), NULL, insertion_scope);
-    appendStatement(dde_exit_stmt , insertion_anchor_stmt->get_scope()); 
+    SgVariableSymbol * var_sym = isSgVariableSymbol(*iter);
+    if (variable_map[var_sym] == true) // we should only collect map variables which show up in the current parallel region
+      all_syms.insert (var_sym);
+
+    // check the type of current variable symbol and calculate its size
+    if (variable_map[var_sym] == true) {
+        SgInitializedName* mapping_variable = var_sym->get_declaration();
+        SgType* mapping_variable_type = mapping_variable->get_type();
+        SgExpression* mapping_variable_expression = NULL;
+        if (isPointerType(mapping_variable_type)) {
+            mapping_variable_expression = buildVarRefExp(var_sym);
+        }
+        else {
+            mapping_variable_expression = buildAddressOfOp(buildVarRefExp(var_sym));
+        };
+        map_variable_list->append_expression(mapping_variable_expression);
+        map_variable_base_list->append_expression(mapping_variable_expression);
+        SgExpression* mapping_variable_size = buildCastExp(buildSizeOfOp(mapping_variable_type), buildOpaqueType("int64_t", insertion_scope));
+        map_variable_size_list->append_expression(mapping_variable_size);
+
+        int mapping_variable_type_enum = generate_mapping_variable_type(var_sym, map_alloc_clause, map_to_clause, map_from_clause, map_tofrom_clause,array_dimensions, device_expression,
+        insertion_scope, insertion_anchor_stmt);
+        SgExpression* mapping_variable_value = buildIntVal(mapping_variable_type_enum);
+        map_variable_type_list->append_expression(mapping_variable_value);
+    };
   }
 
-   // Step 5. TODO  replace indexing element access with address calculation (only needed for 2/3 -D)
-   // We switch the order of 4 and 5 since we want to rewrite the subscripts before the arrays are replaced
-    rewriteArraySubscripts (body_block, array_syms); 
-   
-   // Step 4. replace references to old with new variables, 
-    replaceVariableReferences (body_block, cpu_gpu_var_map);
+  appendExpressionList(map_variable_list, *mapping_array_list);
+  appendExpressionList(map_variable_base_list, *mapping_array_base_list);
+  appendExpressionList(map_variable_size_list, *mapping_array_size_list);
+  appendExpressionList(map_variable_type_list, *mapping_array_type_list);
 
-   // TODO handle scalar, separate or merged into previous loop ?
-    
-   // prepare things  for outliner: 
-  // store remaining variables so outliner can readily use this information
-   // for pointers to linearized arrays, they should passed by their original form, not using & operator, regardless the map operator types (to|from|alloc|tofrom)
-   // for a scalar, two cases: to vs. from | tofrom
-   // if in only, pass by value is good
-   // if either from or tofrom:  
-   // two possible solutions:
-   // 1) we need to treat it as an array of size 1 or any other choices. TODO!!
-   //  we also have to replace the reference to scalar to the array element access: be cautious about using by value (a) vs. using by address  (&a)
-   // 2) try to still pass by value, but copy the final value back to the CPU version 
-   // right now we assume they are not on from|tofrom, until we face a real input applications with map(from:scalar_a)
-   // For all scalars, we directly copy them into all_syms for now
-   for (std::set<SgSymbol*> ::iterator iter = atom_syms.begin(); iter != atom_syms.end(); iter ++)
-   {
-     SgVariableSymbol * var_sym = isSgVariableSymbol(*iter);
-     if (variable_map[var_sym] == true) // we should only collect map variables which show up in the current parallel region
-     all_syms.insert (var_sym);
-   }
-
-  } // end transOmpMapVariables()
-
+  /*
+  //Pei-Hung: subtract offset from the subscript in the offloaded array reference
+  if(target_parallel_stmt)
+  {
+    // at this point, the body must be a BB now.
+    SgBasicBlock* body_block = isSgBasicBlock(target_parallel_stmt->get_body()); // the body of the affected "omp parallel"
+    ROSE_ASSERT (body_block!= NULL);
+    Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(body_block, V_SgVarRefExp);
+    for (Rose_STL_Container<SgNode *>::iterator i = nodeList.begin(); i != nodeList.end(); i++)
+    {
+      SgVarRefExp *vRef = isSgVarRefExp((*i));
+      SgVariableSymbol* sym = vRef->get_symbol();
+      SgType* type = sym->get_type();
+      if(offload_array_offset_map.find(vRef->get_symbol()->get_name().getString()) != offload_array_offset_map.end())
+      {
+        std::vector<SgExpression*> v_offset = offload_array_offset_map.find(vRef->get_symbol()->get_name().getString())->second;
+        std::vector<SgExpression*> v_size = offload_array_size_map.find(vRef->get_symbol()->get_name().getString())->second;
+        if(isSgPntrArrRefExp(vRef->get_parent()) == NULL)
+          continue;
+        //std::cout << "finding susbscript " << vRef->get_symbol()->get_name().getString() << " in " << offload_array_offset_map.size() << std::endl;
+        SgPntrArrRefExp* pntrArrRef = isSgPntrArrRefExp(vRef->get_parent());
+        std::vector<SgExpression*> arrayType =get_C_array_dimensions(type);
+        //std::cout << "vector size = " << v_offset.size() << " array dim= " << arrayType.size() << std::endl;
+        if(v_offset.size() == arrayType.size())
+        {
+          for(std::vector<SgExpression*>::reverse_iterator ir = v_offset.rbegin(); ir != v_offset.rend(); ir++)
+          {
+            ROSE_ASSERT(pntrArrRef);
+            SgExpression* subscript = pntrArrRef->get_rhs_operand();
+            SgExpression* newsubscript = buildSubtractOp(deepCopy(subscript),deepCopy(*ir));
+            replaceExpression(subscript,newsubscript,true);
+            pntrArrRef = isSgPntrArrRefExp(pntrArrRef->get_parent());
+          }
+        }
+        // collapsed case
+        else
+        {
+          ROSE_ASSERT(pntrArrRef);
+          SgExpression* subscript = pntrArrRef->get_rhs_operand();
+          SgExpression* newsubscript = deepCopy(subscript);
+          std::vector<SgExpression*>::reverse_iterator irsize = v_size.rbegin();
+          for(std::vector<SgExpression*>::reverse_iterator ir = v_offset.rbegin(); ir != v_offset.rend(); ir++)
+          {
+            SgIntVal* intVal = isSgIntVal(*ir);
+            if(intVal && intVal->get_value() == 0)
+            {
+              irsize++;
+              continue;
+            }
+            if(ir ==v_offset.rbegin())
+              newsubscript = buildSubtractOp(newsubscript,deepCopy(*ir));
+            else
+              newsubscript = buildSubtractOp(newsubscript,buildMultiplyOp(deepCopy(*ir),deepCopy(*irsize)));
+            irsize++;
+          }
+          replaceExpression(subscript,newsubscript,true);
+          pntrArrRef = isSgPntrArrRefExp(pntrArrRef->get_parent());
+        }
+      }
+    }
+  }
+  */
+  return all_syms;
+} // end transOmpMapVariables() for omp target data's map clauses for now
   // Translate a parallel region under "omp target"
   /*
-    
+
    call customized outlining, the generateTask() for omp task or regular omp parallel is not compatible
    since we want to use the classic outlining support: each variable is passed as a separate parameter.
 
@@ -3640,7 +4148,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
   {
     // Sanity check first
     ROSE_ASSERT(node != NULL);
-    SgOmpParallelStatement* target = isSgOmpParallelStatement(node);
+    SgUpirSpmdStatement* target = isSgUpirSpmdStatement(node);
     ROSE_ASSERT (target != NULL);
 
     // must be a parallel region directly under "omp target"
@@ -3648,15 +4156,15 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     ROSE_ASSERT (parent != NULL);
    if (isSgBasicBlock(parent)) //skip the possible block in between
       parent = parent->get_parent();
-    SgOmpTargetStatement* target_directive_stmt = isSgOmpTargetStatement(parent);
+    SgUpirTaskStatement* target_directive_stmt = isSgUpirTaskStatement(parent);
     ROSE_ASSERT (target_directive_stmt != NULL);
 
-    // device expression 
+    // device expression
     SgExpression* device_expression =NULL ;
     device_expression = getClauseExpression (target_directive_stmt, VariantVector(V_SgOmpDeviceClause));
     // If not found, use the default ID 0
     if (device_expression == NULL)
-      device_expression = buildIntVal(0); 
+      device_expression = buildIntVal(0);
 
     // Now we need to ensure that "omp target " has a basic block as its body
    // so we can insert declarations into an inner block, instead of colliding declarations within the scope of "omp target"
@@ -3668,13 +4176,13 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 
 //    SgFunctionDefinition * func_def = NULL;
 
-    // For Fortran code, we have to insert EXTERNAL OUTLINED_FUNC into 
+    // For Fortran code, we have to insert EXTERNAL OUTLINED_FUNC into
     // the function body containing the parallel region
 #if 0
     if (SageInterface::is_Fortran_language() )
     {
-      cerr<<"Error. transOmpTargetParallel() does not support Fortran yet. "<<endl; 
-      ROSE_ABORT ();
+      cerr<<"Error. transOmpTargetParallel() does not support Fortran yet. "<<endl;
+      ROSE_ASSERT (false);
       func_def = getEnclosingFunctionDefinition(target);
       ROSE_ASSERT (func_def != NULL);
     }
@@ -3691,7 +4199,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 
     //-----------------------------------------------------------------
     // step 1: generated an outlined function and make it a CUDA function
-    SgOmpClauseBodyStatement * target_parallel_stmt = isSgOmpClauseBodyStatement(node);
+    SgUpirFieldBodyStatement * target_parallel_stmt = isSgUpirFieldBodyStatement(node);
     ROSE_ASSERT (target_parallel_stmt);
 
     // Prepare the outliner
@@ -3703,20 +4211,35 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 
     ASTtools::VarSymSet_t all_syms; // all generated or remaining variables to be passed to the outliner
   // This addressOf_syms does not apply to CUDA kernel generation: since we cannot use pass-by-reference for CUDA kernel.
-  // If we want to copy back value, we have to use memory copy  since they are in two different memory spaces. 
+  // If we want to copy back value, we have to use memory copy  since they are in two different memory spaces.
     ASTtools::VarSymSet_t addressOf_syms; // generated or remaining variables should be passed by using their addresses
 
-    if (!useDDE)
-    {   
-      //transOmpMapVariables (target_directive_stmt, target, body_block, all_syms); //, addressOf_syms);
-      transOmpMapVariables_v1 (target, all_syms); //, addressOf_syms);
-    } else
-      all_syms = transOmpMapVariables (target); //, addressOf_syms);
+    SgExprListExp* map_variable_list = buildExprListExp();
+    SgExprListExp* map_variable_base_list = buildExprListExp();
+    SgExprListExp* map_variable_size_list = buildExprListExp();
+    SgExprListExp* map_variable_type_list = buildExprListExp();
+
+    //all_syms = transOmpMapVariables(target, map_variable_list, map_variable_base_list, map_variable_size_list, map_variable_type_list); //, addressOf_syms);
+    all_syms = transUpirDataMappingVariables(target, map_variable_list, map_variable_base_list, map_variable_size_list, map_variable_type_list); //, addressOf_syms);
+    /*
+    for (std::set<const SgVariableSymbol*>::iterator iter = all_syms.begin(); iter != all_syms.end(); iter++) {
+        std::cout << "TargetParallel variable: " << (*iter)->get_name() << "...\n";
+    };
+    */
+
+    // save mapping list
+    if (offloading_variable_list == NULL) {
+        offloading_variable_list = map_variable_list;
+        offloading_variable_base_list = map_variable_base_list;
+        offloading_variable_size_list = map_variable_size_list;
+        offloading_variable_type_list = map_variable_type_list;
+    }
+
 
     ASTtools::VarSymSet_t per_block_reduction_syms; // translation generated per block reduction symbols with name like _dev_per_block within the enclosed for loop
 
     // collect possible per block reduction variables introduced by transOmpTargetLoop()
-    // we rely on the pattern of such variables: _dev_per_block_*     
+    // we rely on the pattern of such variables: _dev_per_block_*
     // these variables are arrays already, we pass them by their original types, not addressOf types
     Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(body_block,V_SgVarRefExp);
     for (Rose_STL_Container<SgNode *>::iterator i = nodeList.begin(); i != nodeList.end(); i++)
@@ -3732,64 +4255,68 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     }
 
     string func_name = Outliner::generateFuncName(target);
+    // add a meaningful suffix to the generated unique outlined function name
+    // the suffix is "<enclosing function name>__<line number of the original statement>__"
+    const Sg_File_Info* info = target->get_startOfConstruct();
+    SgFunctionDeclaration * enclosing_function = getEnclosingFunctionDeclaration(target);
+    std::string enclosing_function_name = enclosing_function->get_name().getString();
+    std::stringstream statement_line_number;
+    statement_line_number << info->get_line();
+    func_name += enclosing_function_name + "__" + statement_line_number.str() + "__";
+
     SgGlobal* g_scope = SageInterface::getGlobalScope(body_block);
     ROSE_ASSERT(g_scope != NULL);
 
+    // pass all the parameters by reference
+    for (std::set<const SgVariableSymbol*>::iterator iter = all_syms.begin(); iter != all_syms.end(); iter++) {
+        if (!isPointerType((*iter)->get_type()) && !isSgArrayType((*iter)->get_type())) {
+            addressOf_syms.insert(*iter);
+        };
+    };
+
     std::set< SgInitializedName *> restoreVars;
-    SgFunctionDeclaration* result = Outliner::generateFunction(body_block, func_name, all_syms, addressOf_syms, restoreVars, NULL, g_scope);
+    SgFunctionDeclaration* result = Outliner::generateFunction(body_block, func_name + "kernel__", all_syms, addressOf_syms, restoreVars, NULL, g_scope);
     SgFunctionDeclaration* result_decl = isSgFunctionDeclaration(result->get_firstNondefiningDeclaration());
     ROSE_ASSERT (result_decl != NULL);
     result_decl->get_functionModifier().setCudaKernel(); // add __global__ modifier
 
     result->get_functionModifier().setCudaKernel();
 
-     // This one is not desired. It inserts the function to the end and prepend a prototype
-    // Outliner::insert(result, g_scope, body_block); 
+    // This one is not desired. It inserts the function to the end and prepend a prototype
+    // Outliner::insert(result, g_scope, body_block);
     // TODO: better interface to specify where exactly to insert the function!
     //Custom insertion:  insert right before the enclosing function of "omp target"
     SgFunctionDeclaration* target_func = const_cast<SgFunctionDeclaration *>
        (SageInterface::getEnclosingFunctionDeclaration (target));
      ROSE_ASSERT(target_func!= NULL);
-    insertStatementBefore (target_func, result);
+    insertStatementAfter(target_func, result);
     // TODO: this really should be done within Outliner::generateFunction()
     // TODO: we have to patch up first nondefining function declaration since custom insertion is used
     SgGlobal* glob_scope = getGlobalScope(target);
     ROSE_ASSERT (glob_scope!= NULL);
     SgFunctionSymbol * func_symbol = glob_scope->lookup_function_symbol(result->get_name());
     ROSE_ASSERT (func_symbol != NULL);
-    //SgFunctionDeclaration * proto_decl = func_symbol->get_declaration();
-    //ROSE_ASSERT (proto_decl != NULL);
-    //ROSE_ASSERT (proto_decl != result );
-    //result->set_firstNondefiningDeclaration(proto_decl);
 
-
-#if 0 // it turns out we don't need satic keyword for CUDA kernel
-    if (result->get_definingDeclaration() != NULL)
-      SageInterface::setStatic(result->get_definingDeclaration());
-    if (result->get_firstNondefiningDeclaration() != NULL)
-      SageInterface::setStatic(result->get_firstNondefiningDeclaration());
-#endif 
-
-    //SgScopeStatement * p_scope = target_directive_stmt ->get_scope(); // the scope of "omp parallel" will be destroyed later, so we use scope of "omp target"
     SgScopeStatement * p_scope = omp_target_stmt_body_block ; // the scope of "omp parallel" will be destroyed later, so we use scope of "omp target"
     ROSE_ASSERT(p_scope != NULL);
-   // insert dim3 threadsPerBlock(xomp_get_maxThreadsPerBlock()); 
-   // TODO: for 1-D mapping, int type is enough,  //TODO: a better interface accepting expression as initializer!!
-    SgVariableDeclaration* threads_per_block_decl = buildVariableDeclaration ("_threads_per_block_", buildIntType(), 
-                  buildAssignInitializer(buildFunctionCallExp("xomp_get_maxThreadsPerBlock",buildIntType(), buildExprListExp(device_expression), p_scope)), 
-                  p_scope);
-    //insertStatementBefore (target_directive_stmt, threads_per_block_decl);
-    insertStatementBefore (target, threads_per_block_decl);
+
+    // create the outlined driver for GPU offloading, which is empty at this point
+    SgBasicBlock* outlined_driver_body = buildBasicBlock();
+
+    // insert dim3 threadsPerBlock(xomp_get_maxThreadsPerBlock());
+    // TODO: for 1-D mapping, int type is enough,  //TODO: a better interface accepting expression as initializer!!
+    // the default number of threads per team is set to 1024
+    SgVariableDeclaration* threads_per_block_decl = buildVariableDeclaration ("_threads_per_block_", buildIntType(), buildAssignInitializer(buildIntVal(1024)), p_scope);
+    outlined_driver_body->append_statement(threads_per_block_decl);
     attachComment(threads_per_block_decl, string("Launch CUDA kernel ..."));
 
     // dim3 numBlocks (xomp_get_max1DBlock(VEC_LEN));
     // TODO: handle 2-D or 3-D using dim type
-    ROSE_ASSERT (cuda_loop_iter_count_1 != NULL);
-    SgVariableDeclaration* num_blocks_decl = buildVariableDeclaration ("_num_blocks_", buildIntType(), 
-                  buildAssignInitializer(buildFunctionCallExp("xomp_get_max1DBlock",buildIntType(), buildExprListExp(device_expression, cuda_loop_iter_count_1), p_scope)),
-                  p_scope);
-    //insertStatementBefore (target_directive_stmt, num_blocks_decl);
-    insertStatementBefore (target, num_blocks_decl);
+    // ROSE_ASSERT (cuda_loop_iter_count_1 != NULL);
+
+    // the default number of teams is set to 256
+    SgVariableDeclaration* num_blocks_decl = buildVariableDeclaration ("_num_blocks_", buildIntType(), buildAssignInitializer(buildIntVal(256)), p_scope);
+    outlined_driver_body->append_statement(num_blocks_decl);
 
     // Now we have num_block declaration, we can insert the per block declaration used for reduction variables
     SgExpression* shared_data = NULL; // shared data size expression for CUDA kernel execution configuration
@@ -3804,40 +4331,58 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
        if (per_block_declarations.size()>1)
        {
         cerr<<"Error. multiple reduction variables are not yet handled."<<endl;
-         ROSE_ABORT ();
-         // threadsPerBlock.x*sizeof(REAL)  //TODO: how to handle multiple shared data blocks, each for a reduction variable??   
+         ROSE_ASSERT (false);
+         // threadsPerBlock.x*sizeof(REAL)  //TODO: how to handle multiple shared data blocks, each for a reduction variable??
        }
        shared_data = buildMultiplyOp (buildVarRefExp(threads_per_block_decl), buildSizeOfOp (base_type) );
     }
 
     // generate the cuda kernel launch statement
     //e.g.  axpy_ompacc_cuda <<<numBlocks, threadsPerBlock>>>(dev_x,  dev_y, VEC_LEN, a);
-   
+
     //func_symbol = isSgFunctionSymbol(result->get_firstNondefiningDeclaration()->get_symbol_from_symbol_table ());
     ROSE_ASSERT (func_symbol != NULL);
     SgExprListExp* exp_list_exp = SageBuilder::buildExprListExp();
 
-    std::set<SgInitializedName*>  varsUsingOriginalForm; 
+    std::set<SgInitializedName*>  varsUsingOriginalForm;
     for (ASTtools::VarSymSet_t::const_iterator iter = all_syms.begin(); iter != all_syms.end(); iter ++)
     {
       const SgVariableSymbol * current_symbol = *iter;
   // this addressOf_syms does not apply to CUDA kernel generation: since we cannot use pass-by-reference for CUDA kernel.
-  // If we want to copy back value, we have to use memory copy  since they are in two different memory spaces. 
-  // So all variables should use original form in this context. 
+  // If we want to copy back value, we have to use memory copy  since they are in two different memory spaces.
+  // So all variables should use original form in this context.
       if (addressOf_syms.find(current_symbol) == addressOf_syms.end()) // not found in Address Of variable set
         varsUsingOriginalForm.insert (current_symbol->get_declaration());
     }
     // TODO: alternative mirror form using varUsingAddress as parameter
     Outliner::appendIndividualFunctionCallArgs (all_syms, varsUsingOriginalForm, exp_list_exp);
-    // TODO: builder interface without _nfi, and match function call exp builder interface convention: 
+    // TODO: builder interface without _nfi, and match function call exp builder interface convention:
 
-    SgCudaKernelExecConfig * cuda_exe_conf = buildCudaKernelExecConfig_nfi (buildVarRefExp(num_blocks_decl), buildVarRefExp(threads_per_block_decl), shared_data, NULL);
-    setOneSourcePositionForTransformation (cuda_exe_conf);
-    // SgExpression* is not clear, change to SgFunctionRefExp at least!!
-    SgExprStatement* cuda_call_stmt = buildExprStatement(buildCudaKernelCallExp_nfi (buildFunctionRefExp(result), exp_list_exp, cuda_exe_conf) );
-    setSourcePositionForTransformation (cuda_call_stmt);
-    //insertStatementBefore (target_directive_stmt, cuda_call_stmt);
-    insertStatementBefore (target, cuda_call_stmt);
+    // in the original function, we call the outlined driver and pass all the required variables by reference
+    // prepare all the parameters for using LLVM GPU offloading
+    SgClassDeclaration* tgt_offload_entry = buildStructDeclaration("__tgt_offload_entry", getGlobalScope(target));
+
+    kmpc_kernel_id_counter += 1;
+    SgVariableDeclaration* outlined_kernel_id_decl = buildVariableDeclaration (func_name + "id__", buildCharType(), buildAssignInitializer(buildIntVal(0)), g_scope);
+
+    // define the entry point
+    SgExprListExp* offload_entry_parameters = buildExprListExp(buildCastExp(buildAddressOfOp(buildVarRefExp(outlined_kernel_id_decl)), buildPointerType(buildVoidType())), buildStringVal(func_name + "kernel__"), buildIntVal(0), buildIntVal(0), buildIntVal(0));
+    SgBracedInitializer* offload_entry_initilization = buildBracedInitializer(offload_entry_parameters);
+    SgVariableDeclaration* offload_entry_decl = buildVariableDeclaration(func_name + "omp_offload_entry__", tgt_offload_entry->get_type(), buildAssignInitializer(offload_entry_initilization), g_scope);
+    offload_entry_decl->get_decl_item(SgName(func_name + "omp_offload_entry__"))->set_gnu_attribute_section_name("omp_offloading_entries");
+
+    prependStatement(offload_entry_decl, g_scope);
+    prependStatement(outlined_kernel_id_decl, g_scope);
+
+    SgInitializedNamePtrList func_args = result->get_args();
+    SgExprListExp* kernel_args = buildExprListExp();
+    for (SgInitializedNamePtrList::iterator i = func_args.begin(); i != func_args.end(); i++) {
+        kernel_args->append_expression(buildVarRefExp(*i));
+    };
+
+    SgCudaKernelExecConfig* cuda_kernel_config = buildCudaKernelExecConfig_nfi(buildVarRefExp(num_blocks_decl), buildVarRefExp(threads_per_block_decl));
+    SgCudaKernelCallExp* cuda_kernel_call_expression = buildCudaKernelCallExp_nfi(buildFunctionRefExp(result), kernel_args, cuda_kernel_config);
+    outlined_driver_body->append_statement(buildExprStatement(cuda_kernel_call_expression));
 
    // insert the beyond block level reduction statement
    // error = xomp_beyond_block_reduction_float (per_block_results, numBlocks.x, XOMP_REDUCTION_PLUS);
@@ -3855,37 +4400,948 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
       string orig_var_name = per_block_var_name.substr(leading_pattern.length(), per_block_var_name.length() - leading_pattern.length());
 //      cout<<"debug: "<<per_block_var_name <<" after "<< orig_var_name <<endl;
       SgExprListExp * parameter_list = buildExprListExp (buildVarRefExp(const_cast<SgVariableSymbol*>(current_symbol)), buildVarRefExp("_num_blocks_",target_directive_stmt->get_scope()), buildIntVal(per_block_reduction_map[const_cast<SgVariableSymbol*>(current_symbol)]) );
-      SgFunctionCallExp* func_call_exp = buildFunctionCallExp ("xomp_beyond_block_reduction_"+ orig_type->unparseToString(), buildVoidType(), parameter_list, target_directive_stmt->get_scope()); 
-     //insertStatementBefore (target_directive_stmt, buildExprStatement(func_call_exp));
+      SgFunctionCallExp* func_call_exp = buildFunctionCallExp ("xomp_beyond_block_reduction_"+ orig_type->unparseToString(), buildVoidType(), parameter_list, target_directive_stmt->get_scope());
       SgStatement* assign_stmt = buildAssignStatement (buildVarRefExp(orig_var_name, omp_target_stmt_body_block )  ,func_call_exp);
-     ROSE_ASSERT (target->get_scope () == target_directive_stmt->get_body()); // there is a block in between 
+     ROSE_ASSERT (target->get_scope () == target_directive_stmt->get_body()); // there is a block in between
      ROSE_ASSERT (omp_target_stmt_body_block  == target_directive_stmt->get_body()); // just to make sure
-     //insertStatementBefore (target_directive_stmt, buildExprStatement(func_call_exp2));
      insertStatementBefore (target, assign_stmt );
 
      // insert memory free for the _dev_per_block_variables
-     // TODO: need runtime support to automatically free memory 
+     // TODO: need runtime support to automatically free memory
       SgFunctionCallExp* func_call_exp2 = buildFunctionCallExp ("xomp_freeDevice", buildVoidType(), buildExprListExp(buildVarRefExp(const_cast<SgVariableSymbol*>(current_symbol))),  omp_target_stmt_body_block);
-     //insertStatementBefore (target_directive_stmt, buildExprStatement(func_call_exp2));
+     insertStatementBefore (target, buildExprStatement(func_call_exp2));
+    }
+
+    //------------now remove omp parallel since everything within it has been outlined to a function
+    replaceStatement(target, outlined_driver_body, true);
+
+    target_outlined_function_list->push_back(isSgFunctionDeclaration(result));
+
+  }
+
+  void transOmpTarget (SgNode* node)
+  {
+    // Sanity check first
+    ROSE_ASSERT(node != NULL);
+    SgUpirTaskStatement* target = isSgUpirTaskStatement(node);
+    ROSE_ASSERT (target != NULL);
+
+    // device expression
+    SgExpression* device_expression =NULL ;
+    device_expression = getClauseExpression (target, VariantVector(V_SgOmpDeviceClause));
+    // If not found, use the default ID 0
+    if (device_expression == NULL)
+      device_expression = buildIntVal(0);
+
+    // Now we need to ensure that "omp target " has a basic block as its body
+   // so we can insert declarations into an inner block, instead of colliding declarations within the scope of "omp target"
+   // This is important since we often have consecutive "omp target" regions within one big scope
+   // We cannot just insert things into that big scope.
+    SgBasicBlock* omp_target_stmt_body_block = ensureBasicBlockAsBodyOfOmpBodyStmt (target);
+    //ROSE_ASSERT (isSgBasicBlock(target_directive_stmt->get_body()));
+
+
+    SgStatement * body =  target->get_body();
+    ROSE_ASSERT(body != NULL);
+    // Save preprocessing info as early as possible, avoiding mess up from the outliner
+    AttachedPreprocessingInfoType save_buf1, save_buf2, save_buf_inside;
+    cutPreprocessingInfo(target, PreprocessingInfo::before, save_buf1) ;
+    cutPreprocessingInfo(target, PreprocessingInfo::after, save_buf2) ;
+
+    // 1/15/2009, Liao, also handle the last #endif, which is attached inside of the target
+    cutPreprocessingInfo(target, PreprocessingInfo::inside, save_buf_inside) ;
+
+    //-----------------------------------------------------------------
+    // step 1: generated an outlined function and make it a CUDA function
+    SgUpirFieldBodyStatement * target_parallel_stmt = isSgUpirFieldBodyStatement(node);
+    ROSE_ASSERT (target_parallel_stmt);
+
+    // Prepare the outliner
+    Outliner::enable_classic = true;
+//    Outliner::useParameterWrapper = false; //TODO: better handling of the dependence among flags
+    SgBasicBlock* body_block = Outliner::preprocess(body);
+    // translator OpenMP 3.0 and earlier variables.
+    transOmpVariables (target, body_block);
+
+    ASTtools::VarSymSet_t all_syms; // all generated or remaining variables to be passed to the outliner
+  // This addressOf_syms does not apply to CUDA kernel generation: since we cannot use pass-by-reference for CUDA kernel.
+  // If we want to copy back value, we have to use memory copy  since they are in two different memory spaces.
+    ASTtools::VarSymSet_t addressOf_syms; // generated or remaining variables should be passed by using their addresses
+
+    SgExprListExp* map_variable_list = buildExprListExp();
+    SgExprListExp* map_variable_base_list = buildExprListExp();
+    SgExprListExp* map_variable_size_list = buildExprListExp();
+    SgExprListExp* map_variable_type_list = buildExprListExp();
+
+    all_syms = transUpirDataMappingVariables(target, map_variable_list, map_variable_base_list, map_variable_size_list, map_variable_type_list); //, addressOf_syms);
+    /*
+    for (std::set<const SgVariableSymbol*>::iterator iter = all_syms.begin(); iter != all_syms.end(); iter++) {
+        std::cout << "Target variable: " << (*iter)->get_name() << "...\n";
+    };
+    */
+
+    //map_variable_list = offloading_variable_list;
+    //map_variable_base_list = offloading_variable_base_list;
+    //map_variable_size_list = offloading_variable_size_list;
+    //map_variable_type_list = offloading_variable_type_list;
+
+    // use UPIR data for transformation
+    ASTtools::VarSymSet_t atom_syms;
+    ASTtools::VarSymSet_t array_syms;
+    map_variable_list = buildExprListExp();
+    map_variable_base_list = buildExprListExp();
+    map_variable_size_list = buildExprListExp();
+    map_variable_type_list = buildExprListExp();
+    std::map<const SgVariableSymbol*, std::vector<SgExpression*>> mapping_parameters;
+    if (hasClause(target, V_SgUpirDataField)) {
+        Rose_STL_Container<SgOmpClause*> data_fields = getClause(target, V_SgUpirDataField);
+        for (size_t i = 0; i < data_fields.size(); i++) {
+            std::list<SgUpirDataItemField*> data_items = ((SgUpirDataField*)data_fields[i])->get_data();
+            for (std::list<SgUpirDataItemField*>::iterator j = data_items.begin(); j != data_items.end(); j++) {
+                SgUpirDataItemField* data_item = *j;
+                SgVariableSymbol* variable_symbol = isSgVariableSymbol(data_item->get_symbol());
+                assert(variable_symbol != NULL);
+                SgInitializedName* mapping_variable = variable_symbol->get_declaration();
+                SgType* mapping_variable_type = mapping_variable->get_type();
+                SgExpression* mapping_variable_base_expression = NULL;
+                // get the variable name
+                if (isPointerType(mapping_variable_type) || isSgArrayType(mapping_variable_type)) {
+                    mapping_variable_base_expression = buildVarRefExp(variable_symbol);
+                }
+                else {
+                    mapping_variable_base_expression = buildAddressOfOp(buildVarRefExp(variable_symbol));
+                };
+                // get the variable address and length
+                SgExpression* mapping_variable_address = NULL;
+                SgExpression* mapping_variable_length = NULL;
+                std::list<std::list<SgExpression*>> sections = data_item->get_section();
+                // assume the array is always 1D for now
+                if (sections.size() > 0) {
+                    std::list<std::list<SgExpression*>>::iterator sections_iterator = sections.begin();
+                    std::list<SgExpression*> array_section = *sections_iterator;
+                    std::list<SgExpression*>::iterator array_section_iterator = array_section.begin();
+                    SgExpression* lower_bound = *array_section_iterator;
+                    array_section_iterator++;
+                    SgExpression* length = *array_section_iterator;
+                    // stride cannot be handled by ROSE/REX yet, ignore it for now.
+                    SgExpression* mapping_array_offset = lower_bound;
+                    mapping_variable_address = buildAddOp(mapping_variable_base_expression, mapping_array_offset);
+                    mapping_variable_length = length;
+                    array_syms.insert(variable_symbol);
+                }
+                else {
+                    mapping_variable_address = mapping_variable_base_expression;
+                    mapping_variable_length = buildIntVal(1);
+                    atom_syms.insert(variable_symbol);
+                }
+                // get the data type of mapping variable
+                if (isPointerType(mapping_variable_type) || isSgArrayType(mapping_variable_type)) {
+                    mapping_variable_type = variable_symbol->get_type()->findBaseType();
+                }
+
+                // get the total size of mapping variable
+                SgExpression* mapping_variable_size = buildCastExp(buildMultiplyOp(buildSizeOfOp(mapping_variable_type), mapping_variable_length), buildOpaqueType("int64_t", target->get_scope()));;
+
+                // get the mapping type
+                int variable_mapping_type_enum = OMP_TGT_MAPTYPE_TARGET_PARAM;
+                SgOmpClause::upir_data_mapping_enum data_mapping_type = data_item->get_mapping_property();
+                switch (data_mapping_type) {
+                    case SgOmpClause::e_upir_data_mapping_to:
+                        variable_mapping_type_enum = variable_mapping_type_enum | OMP_TGT_MAPTYPE_TO;
+                        break;
+                    case SgOmpClause::e_upir_data_mapping_from:
+                    case SgOmpClause::e_upir_data_mapping_tofrom:
+                        variable_mapping_type_enum = variable_mapping_type_enum | OMP_TGT_MAPTYPE_FROM;
+                        break;
+                    default:
+                        ;
+                }
+                SgExpression* variable_mapping_type = buildIntVal(variable_mapping_type_enum);
+
+                // save all parameters
+                mapping_parameters[variable_symbol] = {mapping_variable_address, mapping_variable_base_expression, mapping_variable_size, variable_mapping_type};
+            };
+        };
+
+        // the order of variable parameters in LLVM runtime call must be the same as the outlined function.
+        assert(mapping_parameters.size() == atom_syms.size() + array_syms.size());
+        for (std::set<const SgVariableSymbol*>::iterator iter = atom_syms.begin(); iter != atom_syms.end(); iter++) {
+            if (mapping_parameters.count((*iter)) > 0) {
+                std::vector<SgExpression*> mapping_data_item = mapping_parameters[*iter];
+                map_variable_list->append_expression(mapping_data_item[0]);
+                map_variable_base_list->append_expression(mapping_data_item[1]);
+                map_variable_size_list->append_expression(mapping_data_item[2]);
+                map_variable_type_list->append_expression(mapping_data_item[3]);
+            }
+            else {
+                assert(0);
+            };
+        };
+        for (std::set<const SgVariableSymbol*>::iterator iter = array_syms.begin(); iter != array_syms.end(); iter++) {
+            if (mapping_parameters.count((*iter)) > 0) {
+                std::vector<SgExpression*> mapping_data_item = mapping_parameters[*iter];
+                map_variable_list->append_expression(mapping_data_item[0]);
+                map_variable_base_list->append_expression(mapping_data_item[1]);
+                map_variable_size_list->append_expression(mapping_data_item[2]);
+                map_variable_type_list->append_expression(mapping_data_item[3]);
+            }
+            else {
+                assert(0);
+            };
+        };
+    };
+    // use UPIR data end
+
+    ASTtools::VarSymSet_t per_block_reduction_syms; // translation generated per block reduction symbols with name like _dev_per_block within the enclosed for loop
+
+    // collect possible per block reduction variables introduced by transOmpTargetLoop()
+    // we rely on the pattern of such variables: _dev_per_block_*
+    // these variables are arrays already, we pass them by their original types, not addressOf types
+    Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(body_block,V_SgVarRefExp);
+    for (Rose_STL_Container<SgNode *>::iterator i = nodeList.begin(); i != nodeList.end(); i++)
+    {
+      SgVarRefExp *vRef = isSgVarRefExp((*i));
+      SgName var_name = vRef-> get_symbol()->get_name();
+      string var_name_str = var_name.getString();
+      if (var_name_str.find("_dev_per_block_",0) == 0)
+      {
+        all_syms.insert( vRef-> get_symbol());
+        per_block_reduction_syms.insert (vRef-> get_symbol());
+      }
+    }
+
+    string func_name = Outliner::generateFuncName(target);
+    // add a meaningful suffix to the generated unique outlined function name
+    // the suffix is "<enclosing function name>__<line number of the original statement>__"
+    const Sg_File_Info* info = target->get_startOfConstruct();
+    SgFunctionDeclaration * enclosing_function = getEnclosingFunctionDeclaration(target);
+    std::string enclosing_function_name = enclosing_function->get_name().getString();
+    std::stringstream statement_line_number;
+    statement_line_number << info->get_line();
+    func_name += enclosing_function_name + "__" + statement_line_number.str() + "__";
+
+    SgGlobal* g_scope = SageInterface::getGlobalScope(body_block);
+    ROSE_ASSERT(g_scope != NULL);
+
+    // pass all the parameters by reference
+    for (std::set<const SgVariableSymbol*>::iterator iter = all_syms.begin(); iter != all_syms.end(); iter++) {
+        if (!isPointerType((*iter)->get_type()) && !isSgArrayType((*iter)->get_type())) {
+            addressOf_syms.insert(*iter);
+        };
+    };
+
+    std::set< SgInitializedName *> restoreVars;
+    SgFunctionDeclaration* result = Outliner::generateFunction(body_block, func_name + "kernel__", all_syms, addressOf_syms, restoreVars, NULL, g_scope);
+    SgFunctionDeclaration* result_decl = isSgFunctionDeclaration(result->get_firstNondefiningDeclaration());
+    ROSE_ASSERT (result_decl != NULL);
+    result_decl->get_functionModifier().setCudaKernel(); // add __global__ modifier
+
+    result->get_functionModifier().setCudaKernel();
+
+    // This one is not desired. It inserts the function to the end and prepend a prototype
+    // Outliner::insert(result, g_scope, body_block);
+    // TODO: better interface to specify where exactly to insert the function!
+    //Custom insertion:  insert right before the enclosing function of "omp target"
+    SgFunctionDeclaration* target_func = const_cast<SgFunctionDeclaration *>
+       (SageInterface::getEnclosingFunctionDeclaration (target));
+     ROSE_ASSERT(target_func!= NULL);
+    insertStatementAfter(target_func, result);
+    // TODO: this really should be done within Outliner::generateFunction()
+    // TODO: we have to patch up first nondefining function declaration since custom insertion is used
+    SgGlobal* glob_scope = getGlobalScope(target);
+    ROSE_ASSERT (glob_scope!= NULL);
+    SgFunctionSymbol * func_symbol = glob_scope->lookup_function_symbol(result->get_name());
+    ROSE_ASSERT (func_symbol != NULL);
+
+    SgScopeStatement * p_scope = target->get_scope(); // the scope of "omp parallel" will be destroyed later, so we use scope of "omp target"
+    ROSE_ASSERT(p_scope != NULL);
+
+    // create the outlined driver for GPU offloading, which is empty at this point
+    SgBasicBlock* outlined_driver_body = buildBasicBlock();
+
+    // insert dim3 threadsPerBlock(xomp_get_maxThreadsPerBlock());
+    // TODO: for 1-D mapping, int type is enough,  //TODO: a better interface accepting expression as initializer!!
+    // the default number of threads per team is set to 1
+    SgVariableDeclaration* threads_per_block_decl = buildVariableDeclaration ("_threads_per_block_", buildIntType(), buildAssignInitializer(buildIntVal(1)), p_scope);
+    outlined_driver_body->append_statement(threads_per_block_decl);
+    attachComment(threads_per_block_decl, string("Launch CUDA kernel ..."));
+
+    // dim3 numBlocks (xomp_get_max1DBlock(VEC_LEN));
+    // TODO: handle 2-D or 3-D using dim type
+    // ROSE_ASSERT (cuda_loop_iter_count_1 != NULL);
+
+    // the default number of teams is set to 1
+    SgVariableDeclaration* num_blocks_decl = buildVariableDeclaration ("_num_blocks_", buildIntType(), buildAssignInitializer(buildIntVal(1)), p_scope);
+    outlined_driver_body->append_statement(num_blocks_decl);
+
+    // Now we have num_block declaration, we can insert the per block declaration used for reduction variables
+    SgExpression* shared_data = NULL; // shared data size expression for CUDA kernel execution configuration
+    for (std::vector<SgVariableDeclaration*>::iterator iter = per_block_declarations.begin(); iter != per_block_declarations.end(); iter++)
+    {
+       SgVariableDeclaration* decl = *iter;
+       insertStatementAfter (num_blocks_decl, decl);
+       SgVariableSymbol* sym = getFirstVarSym (decl);
+       SgPointerType * pointer_type = isSgPointerType(sym->get_type());
+       ROSE_ASSERT (pointer_type != NULL);
+       SgType* base_type = pointer_type->get_base_type();
+       if (per_block_declarations.size()>1)
+       {
+        cerr<<"Error. multiple reduction variables are not yet handled."<<endl;
+         ROSE_ASSERT (false);
+         // threadsPerBlock.x*sizeof(REAL)  //TODO: how to handle multiple shared data blocks, each for a reduction variable??
+       }
+       shared_data = buildMultiplyOp (buildVarRefExp(threads_per_block_decl), buildSizeOfOp (base_type) );
+    }
+
+    //func_symbol = isSgFunctionSymbol(result->get_firstNondefiningDeclaration()->get_symbol_from_symbol_table ());
+    ROSE_ASSERT (func_symbol != NULL);
+    SgExprListExp* exp_list_exp = SageBuilder::buildExprListExp();
+
+    std::set<SgInitializedName*>  varsUsingOriginalForm;
+    for (ASTtools::VarSymSet_t::const_iterator iter = all_syms.begin(); iter != all_syms.end(); iter ++)
+    {
+      const SgVariableSymbol * current_symbol = *iter;
+  // this addressOf_syms does not apply to CUDA kernel generation: since we cannot use pass-by-reference for CUDA kernel.
+  // If we want to copy back value, we have to use memory copy  since they are in two different memory spaces.
+  // So all variables should use original form in this context.
+      if (addressOf_syms.find(current_symbol) == addressOf_syms.end()) // not found in Address Of variable set
+        varsUsingOriginalForm.insert (current_symbol->get_declaration());
+    }
+    // TODO: alternative mirror form using varUsingAddress as parameter
+    Outliner::appendIndividualFunctionCallArgs (all_syms, varsUsingOriginalForm, exp_list_exp);
+    // TODO: builder interface without _nfi, and match function call exp builder interface convention:
+
+    // in the original function, we call the outlined driver and pass all the required variables by reference
+    // prepare all the parameters for using LLVM GPU offloading
+    SgClassDeclaration* tgt_offload_entry = buildStructDeclaration("__tgt_offload_entry", getGlobalScope(target));
+
+    kmpc_kernel_id_counter += 1;
+    SgVariableDeclaration* outlined_kernel_id_decl = buildVariableDeclaration (func_name + "id__", buildCharType(), buildAssignInitializer(buildIntVal(0)), g_scope);
+
+    // by default, the device id is set to 0
+    SgVariableDeclaration* device_id_decl = buildVariableDeclaration("__device_id", buildOpaqueType("int64_t", p_scope), buildAssignInitializer(buildIntVal(0)), p_scope);
+    outlined_driver_body->append_statement(device_id_decl);
+
+    // define the entry point
+    SgExprListExp* offload_entry_parameters = buildExprListExp(buildCastExp(buildAddressOfOp(buildVarRefExp(outlined_kernel_id_decl)), buildPointerType(buildVoidType())), buildStringVal(func_name + "kernel__"), buildIntVal(0), buildIntVal(0), buildIntVal(0));
+    SgBracedInitializer* offload_entry_initilization = buildBracedInitializer(offload_entry_parameters);
+    SgVariableDeclaration* offload_entry_decl = buildVariableDeclaration(func_name + "omp_offload_entry__", tgt_offload_entry->get_type(), buildAssignInitializer(offload_entry_initilization), g_scope);
+    offload_entry_decl->get_decl_item(SgName(func_name + "omp_offload_entry__"))->set_gnu_attribute_section_name("omp_offloading_entries");
+
+    prependStatement(offload_entry_decl, g_scope);
+    prependStatement(outlined_kernel_id_decl, g_scope);
+
+    SgVariableDeclaration* host_point_decl = buildVariableDeclaration("__host_ptr", buildPointerType(buildVoidType()), buildAssignInitializer(buildCastExp(buildAddressOfOp(buildVarRefExp(outlined_kernel_id_decl)), buildPointerType(buildVoidType()))), p_scope);
+    outlined_driver_body->append_statement(host_point_decl);
+
+    SgBracedInitializer* offloading_variables_base = buildBracedInitializer(map_variable_base_list);
+    SgVariableDeclaration* args_base_decl = buildVariableDeclaration ("__args_base", buildArrayType(buildPointerType(buildVoidType())), buildAssignInitializer(offloading_variables_base), p_scope);
+    outlined_driver_body->append_statement(args_base_decl);
+
+    SgBracedInitializer* offloading_variables = buildBracedInitializer(map_variable_list);
+    SgVariableDeclaration* args_decl = buildVariableDeclaration ("__args", buildArrayType(buildPointerType(buildVoidType())), buildAssignInitializer(offloading_variables), p_scope);
+    outlined_driver_body->append_statement(args_decl);
+
+    SgBracedInitializer* map_variable_sizes = buildBracedInitializer(map_variable_size_list);
+    SgVariableDeclaration* arg_sizes = buildVariableDeclaration ("__arg_sizes", buildArrayType(buildOpaqueType("int64_t", p_scope)), buildAssignInitializer(map_variable_sizes), p_scope);
+    outlined_driver_body->append_statement(arg_sizes);
+
+    SgBracedInitializer* map_variable_types = buildBracedInitializer(map_variable_type_list);
+    SgVariableDeclaration* arg_types = buildVariableDeclaration ("__arg_types", buildArrayType(buildOpaqueType("int64_t", p_scope)), buildAssignInitializer(map_variable_types), p_scope);
+    outlined_driver_body->append_statement(arg_types);
+
+    int kernel_arg_num = map_variable_base_list->get_expressions().size();
+    SgVariableDeclaration* arg_number_decl = buildVariableDeclaration("__arg_num", buildOpaqueType("int32_t", p_scope), buildAssignInitializer(buildIntVal(kernel_arg_num)), p_scope);
+    outlined_driver_body->append_statement(arg_number_decl);
+
+    // call __tgt_target_teams to execute the CUDA kernel
+    SgExprListExp* parameters = NULL;
+    parameters = buildExprListExp(buildVarRefExp(device_id_decl), buildVarRefExp(host_point_decl), buildVarRefExp(arg_number_decl), buildVarRefExp(args_base_decl), buildVarRefExp(args_decl), buildVarRefExp(arg_sizes), buildVarRefExp(arg_types), buildVarRefExp(num_blocks_decl), buildVarRefExp(threads_per_block_decl));
+    string func_offloading_name = "__tgt_target_teams";
+    SgExprStatement* func_offloading_stmt = buildFunctionCallStmt(func_offloading_name, buildIntType(), parameters, p_scope);
+    setSourcePositionForTransformation(func_offloading_stmt);
+    outlined_driver_body->append_statement(func_offloading_stmt);
+
+    SageInterface::fixStatement(outlined_driver_body, p_scope);
+    //------------now remove omp parallel since everything within it has been outlined to a function
+    replaceStatement(target, outlined_driver_body, true);
+
+    target_outlined_function_list->push_back(isSgFunctionDeclaration(result));
+
+  }
+
+void transOmpTargetLoopBlock(SgNode* node)
+{
+  //step 0: Sanity check
+  ROSE_ASSERT(node != NULL);
+  SgUpirFieldBodyStatement* target = isSgUpirFieldBodyStatement(node);
+  ROSE_ASSERT (target != NULL);
+
+  SgScopeStatement* p_scope = target->get_scope();
+  ROSE_ASSERT (p_scope != NULL);
+
+  SgStatement * body = target->get_body();
+  ROSE_ASSERT(body != NULL);
+
+  SgForStatement * for_loop = isSgForStatement(body);
+
+  SgStatement* loop = isSgStatement(body);
+  ROSE_ASSERT (loop != NULL);
+
+  // Step 1. Loop normalization
+  // For the init statement: for (int i=0;... ) becomes int i; for (i=0;..)
+  // For test expression: i<x is normalized to i<= (x-1) and i>x is normalized to i>= (x+1)
+  // For increment expression: i++ is normalized to i+=1 and i-- is normalized to i+=-1 i-=s is normalized to i+= -s
+  SageInterface::forLoopNormalization(for_loop);
+
+  SgInitializedName * orig_index = NULL;
+  SgExpression* orig_lower = NULL;
+  SgExpression* orig_upper= NULL;
+  SgExpression* orig_stride= NULL;
+  bool isIncremental = true; // if the loop iteration space is incremental
+  // grab the original loop 's controlling information
+  bool is_canonical = false;
+
+  is_canonical = isCanonicalForLoop (for_loop, &orig_index, & orig_lower, &orig_upper, &orig_stride, NULL, &isIncremental);
+  ROSE_ASSERT(is_canonical == true);
+
+  // loop iteration space: upper - lower + 1, not used within this function, but a global variable used later.
+  // This expression will be later used to help generate xomp_get_max1DBlock(VEC_LEN), which needs iteration count to calculate max thread block numbers
+  cuda_loop_iter_count_1 = buildAddOp(buildSubtractOp(deepCopy(orig_upper), deepCopy(orig_lower)), buildIntVal(1));
+
+  // TODO: Fortran support later on
+  ROSE_ASSERT (for_loop != NULL);
+  //SgBasicBlock* loop_body = ensureBasicBlockAsBodyOfFor (for_loop);
+
+  //Step 2. Insert a basic block to replace SgUpirWorksharingStatement
+  // This newly introduced scope is used to hold loop variables ,etc
+  SgBasicBlock * bb1 = SageBuilder::buildBasicBlock();
+  SgStatement* new_loop = deepCopy (for_loop);
+  replaceStatement(for_loop, bb1, true);
+
+  // Insert variables used by the two scheduler functions
+  /* int _dev_lower;
+     int _dev_upper;
+     int _dev_loop_chunk_size;
+     int _dev_loop_sched_index;
+     int _dev_loop_stride;
+  */
+  SgVariableDeclaration* dev_lower_decl = buildVariableDeclaration ("_dev_lower", buildIntType(), NULL, bb1);
+  appendStatement (dev_lower_decl, bb1);
+  SgVariableDeclaration* dev_upper_decl = buildVariableDeclaration ("_dev_upper", buildIntType(), NULL, bb1);
+  appendStatement (dev_upper_decl, bb1);
+  SgVariableDeclaration* dev_loop_chunk_size_decl = buildVariableDeclaration ("_dev_loop_chunk_size", buildIntType(), NULL, bb1);
+  appendStatement (dev_loop_chunk_size_decl, bb1);
+  SgVariableDeclaration* dev_loop_sched_index_decl = buildVariableDeclaration ("_dev_loop_sched_index", buildIntType(), NULL, bb1);
+  appendStatement (dev_loop_sched_index_decl , bb1);
+  SgVariableDeclaration* dev_loop_stride_decl = buildVariableDeclaration ("_dev_loop_stride", buildIntType(), NULL, bb1);
+  appendStatement (dev_loop_stride_decl, bb1);
+
+  // Insert CUDA thread id and count declarations
+  // int _dev_thread_num = getCUDABlockThreadCount(1);
+  SgAssignInitializer* init_idx =  buildAssignInitializer(buildFunctionCallExp(SgName("getCUDABlockThreadCount"), buildIntType(),buildExprListExp(buildIntVal(1)),bb1), buildIntType());
+  SgVariableDeclaration* dev_thread_num_decl = buildVariableDeclaration("_dev_thread_num", buildIntType(), init_idx, bb1);
+  appendStatement (dev_thread_num_decl, bb1);
+  SgVariableSymbol* dev_thread_num_symbol = getFirstVarSym (dev_thread_num_decl);
+  ROSE_ASSERT (dev_thread_num_symbol!= NULL);
+
+  // int _dev_thread_id = getLoopIndexFromCUDAVariables(1);
+  init_idx =  buildAssignInitializer(buildFunctionCallExp(SgName("getLoopIndexFromCUDAVariables"), buildIntType(),buildExprListExp(buildIntVal(1)),bb1), buildIntType());
+  SgVariableDeclaration* dev_thread_id_decl = buildVariableDeclaration("_dev_thread_id", buildIntType(), init_idx, bb1);
+  appendStatement (dev_thread_id_decl, bb1);
+  SgVariableSymbol* dev_thread_id_symbol = getFirstVarSym (dev_thread_id_decl);
+  ROSE_ASSERT (dev_thread_id_symbol!= NULL);
+
+  // initialize scheduler
+  // XOMP_static_sched_init (orig_start, orig_end, orig_step, orig_chunk_size, _dev_thread_num, _dev_thread_id,
+  //                       & _dev_loop_chunk_size , & _dev_loop_sched_index, & _dev_loop_stride);
+  SgExprListExp* parameters  = buildExprListExp(copyExpression (orig_lower), copyExpression (orig_upper), copyExpression(orig_stride), buildIntVal(1), buildVarRefExp(dev_thread_num_symbol), buildVarRefExp (dev_thread_id_symbol) );
+  appendExpression (parameters, buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_loop_chunk_size_decl))) );
+  appendExpression (parameters, buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_loop_sched_index_decl))) );
+  appendExpression (parameters, buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_loop_stride_decl))) );
+  SgStatement* call_stmt = buildFunctionCallStmt ("XOMP_static_sched_init", buildVoidType(), parameters, bb1);
+  appendStatement (call_stmt, bb1);
+
+  // function call exp as while (condition)
+  // XOMP_static_sched_next (&_dev_loop_sched_index, orig_end, orig_step,_dev_loop_stride, _dev_loop_chunk_size,
+  //                       _dev_thread_num, _dev_thread_id, & _dev_lower , & _dev_upper)
+  parameters = buildExprListExp (buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_loop_sched_index_decl))), copyExpression (orig_upper), copyExpression(orig_stride),buildVarRefExp (getFirstVarSym(dev_loop_stride_decl)),  buildVarRefExp (getFirstVarSym(dev_loop_chunk_size_decl)));
+  appendExpression (parameters,buildVarRefExp(dev_thread_num_symbol));
+  appendExpression (parameters,buildVarRefExp(dev_thread_id_symbol));
+  appendExpression (parameters, buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_lower_decl))) );
+  appendExpression (parameters, buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_upper_decl))) );
+  SgExpression* func_call_exp = buildFunctionCallExp ("XOMP_static_sched_next", buildBoolType(), parameters, bb1);
+
+  //SgStatement* new_loop = deepCopy (for_loop);
+  SgWhileStmt* w_stmt = buildWhileStmt (func_call_exp, new_loop);
+  appendStatement (w_stmt, bb1);
+//  moveStatementsBetweenBlocks (loop_body, isSgBasicBlock(w_stmt->get_body()));
+
+  // rewrite upper, lower bounds, TODO how about step? normalized to 1 already ?
+  setLoopLowerBound (new_loop, buildVarRefExp (getFirstVarSym(dev_lower_decl)));
+  setLoopUpperBound (new_loop, buildVarRefExp (getFirstVarSym(dev_upper_decl)));
+  //replaceStatement(for_loop, bb1, true);
+  removeStatement (for_loop);
+
+  // handle private variables at this loop level, mostly loop index variables.
+  // TODO: this is not very elegant since the outer most loop's loop variable is still translated.
+  //for reduction
+  per_block_declarations.clear(); // must reset to empty or wrong reference to stale content generated previously
+  transOmpVariables(target, bb1, NULL, true);
+
+  // Liao, 11/11/2014, clean up copied OmpAttribute
+  if (new_loop->attributeExists("OmpAttributeList"))
+     new_loop->removeAttribute("OmpAttributeList");
+}
+
+  // transformation for combined directive
+  // omp target parallel for
+  // omp target teams distribute parallel for
+  void transOmpSpmdWorksharing (SgNode* node, SgExpression* omp_num_teams, SgExpression* omp_num_threads)
+  {
+    // Sanity check first
+    ROSE_ASSERT(node != NULL);
+    SgUpirFieldBodyStatement* target = isSgUpirFieldBodyStatement(node);
+    ROSE_ASSERT (target != NULL);
+
+    transOmpTargetLoopBlock(target);
+
+    // device expression
+    SgExpression* device_expression =NULL ;
+    device_expression = getClauseExpression(target, VariantVector(V_SgOmpDeviceClause));
+    // If not found, use the default ID 0
+    if (device_expression == NULL)
+      device_expression = buildIntVal(0);
+
+    // Now we need to ensure that "omp target " has a basic block as its body
+   // so we can insert declarations into an inner block, instead of colliding declarations within the scope of "omp target"
+   // This is important since we often have consecutive "omp target" regions within one big scope
+   // We cannot just insert things into that big scope.
+    SgBasicBlock* omp_target_stmt_body_block = ensureBasicBlockAsBodyOfOmpBodyStmt(target);
+    ROSE_ASSERT (isSgBasicBlock(target->get_body()));
+
+    SgStatement * body = target->get_body();
+    ROSE_ASSERT(body != NULL);
+    // Save preprocessing info as early as possible, avoiding mess up from the outliner
+    AttachedPreprocessingInfoType save_buf1, save_buf2, save_buf_inside;
+    cutPreprocessingInfo(target, PreprocessingInfo::before, save_buf1) ;
+    cutPreprocessingInfo(target, PreprocessingInfo::after, save_buf2) ;
+
+    // 1/15/2009, Liao, also handle the last #endif, which is attached inside of the target
+    cutPreprocessingInfo(target, PreprocessingInfo::inside, save_buf_inside) ;
+
+    //-----------------------------------------------------------------
+    // step 1: generated an outlined function and make it a CUDA function
+    SgUpirFieldBodyStatement * target_parallel_stmt = isSgUpirFieldBodyStatement(node);
+    ROSE_ASSERT (target_parallel_stmt);
+
+    // Prepare the outliner
+    Outliner::enable_classic = true;
+//    Outliner::useParameterWrapper = false; //TODO: better handling of the dependence among flags
+    SgBasicBlock* body_block = Outliner::preprocess(body);
+
+    // The combined directive only has one code block and should only process omp variables once
+    //transOmpVariables (target, body_block);
+
+    ASTtools::VarSymSet_t all_syms; // all generated or remaining variables to be passed to the outliner
+  // This addressOf_syms does not apply to CUDA kernel generation: since we cannot use pass-by-reference for CUDA kernel.
+  // If we want to copy back value, we have to use memory copy  since they are in two different memory spaces.
+    ASTtools::VarSymSet_t addressOf_syms; // generated or remaining variables should be passed by using their addresses
+
+    SgExprListExp* map_variable_list = buildExprListExp();
+    SgExprListExp* map_variable_base_list = buildExprListExp();
+    SgExprListExp* map_variable_size_list = buildExprListExp();
+    SgExprListExp* map_variable_type_list = buildExprListExp();
+
+    all_syms = transUpirDataMappingVariables(target, map_variable_list, map_variable_base_list, map_variable_size_list, map_variable_type_list); //, addressOf_syms);
+    /*
+    for (std::set<const SgVariableSymbol*>::iterator iter = all_syms.begin(); iter != all_syms.end(); iter++) {
+        std::cout << "SPMD worksharing variable: " << (*iter)->get_name() << "...\n";
+    };
+    */
+
+    // use UPIR data for transformation
+    ASTtools::VarSymSet_t atom_syms;
+    ASTtools::VarSymSet_t array_syms;
+    map_variable_list = buildExprListExp();
+    map_variable_base_list = buildExprListExp();
+    map_variable_size_list = buildExprListExp();
+    map_variable_type_list = buildExprListExp();
+    std::map<const SgVariableSymbol*, std::vector<SgExpression*>> mapping_parameters;
+    if (hasClause(target, V_SgUpirDataField)) {
+        Rose_STL_Container<SgOmpClause*> data_fields = getClause(target, V_SgUpirDataField);
+        for (size_t i = 0; i < data_fields.size(); i++) {
+            std::list<SgUpirDataItemField*> data_items = ((SgUpirDataField*)data_fields[i])->get_data();
+            for (std::list<SgUpirDataItemField*>::iterator j = data_items.begin(); j != data_items.end(); j++) {
+                SgUpirDataItemField* data_item = *j;
+                SgVariableSymbol* variable_symbol = isSgVariableSymbol(data_item->get_symbol());
+                assert(variable_symbol != NULL);
+                SgInitializedName* mapping_variable = variable_symbol->get_declaration();
+                SgType* mapping_variable_type = mapping_variable->get_type();
+                SgExpression* mapping_variable_base_expression = NULL;
+                // get the variable name
+                if (isPointerType(mapping_variable_type) || isSgArrayType(mapping_variable_type)) {
+                    mapping_variable_base_expression = buildVarRefExp(variable_symbol);
+                }
+                else {
+                    mapping_variable_base_expression = buildAddressOfOp(buildVarRefExp(variable_symbol));
+                };
+                // get the variable address and length
+                SgExpression* mapping_variable_address = NULL;
+                SgExpression* mapping_variable_length = NULL;
+                std::list<std::list<SgExpression*>> sections = data_item->get_section();
+                // assume the array is always 1D for now
+                if (sections.size() > 0) {
+                    std::list<std::list<SgExpression*>>::iterator sections_iterator = sections.begin();
+                    std::list<SgExpression*> array_section = *sections_iterator;
+                    std::list<SgExpression*>::iterator array_section_iterator = array_section.begin();
+                    SgExpression* lower_bound = *array_section_iterator;
+                    array_section_iterator++;
+                    SgExpression* length = *array_section_iterator;
+                    // stride cannot be handled by ROSE/REX yet, ignore it for now.
+                    SgExpression* mapping_array_offset = lower_bound;
+                    mapping_variable_address = buildAddOp(mapping_variable_base_expression, mapping_array_offset);
+                    mapping_variable_length = length;
+                    array_syms.insert(variable_symbol);
+                }
+                else {
+                    mapping_variable_address = mapping_variable_base_expression;
+                    mapping_variable_length = buildIntVal(1);
+                    atom_syms.insert(variable_symbol);
+                }
+                // get the data type of mapping variable
+                if (isPointerType(mapping_variable_type) || isSgArrayType(mapping_variable_type)) {
+                    mapping_variable_type = variable_symbol->get_type()->findBaseType();
+                }
+
+                // get the total size of mapping variable
+                SgExpression* mapping_variable_size = buildCastExp(buildMultiplyOp(buildSizeOfOp(mapping_variable_type), mapping_variable_length), buildOpaqueType("int64_t", target->get_scope()));;
+
+                // get the mapping type
+                int variable_mapping_type_enum = OMP_TGT_MAPTYPE_TARGET_PARAM;
+                SgOmpClause::upir_data_mapping_enum data_mapping_type = data_item->get_mapping_property();
+                switch (data_mapping_type) {
+                    case SgOmpClause::e_upir_data_mapping_to:
+                        variable_mapping_type_enum = variable_mapping_type_enum | OMP_TGT_MAPTYPE_TO;
+                        break;
+                    case SgOmpClause::e_upir_data_mapping_from:
+                    case SgOmpClause::e_upir_data_mapping_tofrom:
+                        variable_mapping_type_enum = variable_mapping_type_enum | OMP_TGT_MAPTYPE_FROM;
+                        break;
+                    default:
+                        ;
+                }
+                SgExpression* variable_mapping_type = buildIntVal(variable_mapping_type_enum);
+
+                // save all parameters
+                mapping_parameters[variable_symbol] = {mapping_variable_address, mapping_variable_base_expression, mapping_variable_size, variable_mapping_type};
+            };
+        };
+
+        // the order of variable parameters in LLVM runtime call must be the same as the outlined function.
+        assert(mapping_parameters.size() == atom_syms.size() + array_syms.size());
+        for (std::set<const SgVariableSymbol*>::iterator iter = atom_syms.begin(); iter != atom_syms.end(); iter++) {
+            if (mapping_parameters.count((*iter)) > 0) {
+                std::vector<SgExpression*> mapping_data_item = mapping_parameters[*iter];
+                map_variable_list->append_expression(mapping_data_item[0]);
+                map_variable_base_list->append_expression(mapping_data_item[1]);
+                map_variable_size_list->append_expression(mapping_data_item[2]);
+                map_variable_type_list->append_expression(mapping_data_item[3]);
+            }
+            else {
+                assert(0);
+            };
+        };
+        for (std::set<const SgVariableSymbol*>::iterator iter = array_syms.begin(); iter != array_syms.end(); iter++) {
+            if (mapping_parameters.count((*iter)) > 0) {
+                std::vector<SgExpression*> mapping_data_item = mapping_parameters[*iter];
+                map_variable_list->append_expression(mapping_data_item[0]);
+                map_variable_base_list->append_expression(mapping_data_item[1]);
+                map_variable_size_list->append_expression(mapping_data_item[2]);
+                map_variable_type_list->append_expression(mapping_data_item[3]);
+            }
+            else {
+                assert(0);
+            };
+        };
+    };
+    // use UPIR data end
+
+    ASTtools::VarSymSet_t per_block_reduction_syms; // translation generated per block reduction symbols with name like _dev_per_block within the enclosed for loop
+
+    // collect possible per block reduction variables introduced by transOmpTargetLoop()
+    // we rely on the pattern of such variables: _dev_per_block_*
+    // these variables are arrays already, we pass them by their original types, not addressOf types
+    Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(body_block,V_SgVarRefExp);
+    for (Rose_STL_Container<SgNode *>::iterator i = nodeList.begin(); i != nodeList.end(); i++)
+    {
+      SgVarRefExp *vRef = isSgVarRefExp((*i));
+      SgName var_name = vRef-> get_symbol()->get_name();
+      string var_name_str = var_name.getString();
+      if (var_name_str.find("_dev_per_block_",0) == 0)
+      {
+        all_syms.insert( vRef-> get_symbol());
+        per_block_reduction_syms.insert (vRef-> get_symbol());
+      }
+    }
+
+    string func_name = Outliner::generateFuncName(target);
+    // add a meaningful suffix to the generated unique outlined function name
+    // the suffix is "<enclosing function name>__<line number of the original statement>__"
+    const Sg_File_Info* info = target->get_startOfConstruct();
+    SgFunctionDeclaration * enclosing_function = getEnclosingFunctionDeclaration(target);
+    std::string enclosing_function_name = enclosing_function->get_name().getString();
+    std::stringstream statement_line_number;
+    statement_line_number << info->get_line();
+    func_name += enclosing_function_name + "__" + statement_line_number.str() + "__";
+
+    SgGlobal* g_scope = SageInterface::getGlobalScope(body_block);
+    ROSE_ASSERT(g_scope != NULL);
+
+    // pass all the parameters by reference
+    for (std::set<const SgVariableSymbol*>::iterator iter = all_syms.begin(); iter != all_syms.end(); iter++) {
+        if (!isPointerType((*iter)->get_type()) && !isSgArrayType((*iter)->get_type())) {
+            addressOf_syms.insert(*iter);
+        };
+    };
+
+    std::set< SgInitializedName *> restoreVars;
+    SgFunctionDeclaration* result = Outliner::generateFunction(body_block, func_name + "kernel__", all_syms, addressOf_syms, restoreVars, NULL, g_scope);
+    SgFunctionDeclaration* result_decl = isSgFunctionDeclaration(result->get_firstNondefiningDeclaration());
+    ROSE_ASSERT (result_decl != NULL);
+    result_decl->get_functionModifier().setCudaKernel(); // add __global__ modifier
+
+    result->get_functionModifier().setCudaKernel();
+
+    // This one is not desired. It inserts the function to the end and prepend a prototype
+    // Outliner::insert(result, g_scope, body_block);
+    // TODO: better interface to specify where exactly to insert the function!
+    //Custom insertion:  insert right before the enclosing function of "omp target"
+    SgFunctionDeclaration* target_func = const_cast<SgFunctionDeclaration *>
+       (SageInterface::getEnclosingFunctionDeclaration (target));
+     ROSE_ASSERT(target_func!= NULL);
+    insertStatementAfter(target_func, result);
+    // TODO: this really should be done within Outliner::generateFunction()
+    // TODO: we have to patch up first nondefining function declaration since custom insertion is used
+    SgGlobal* glob_scope = getGlobalScope(target);
+    ROSE_ASSERT (glob_scope!= NULL);
+    SgFunctionSymbol * func_symbol = glob_scope->lookup_function_symbol(result->get_name());
+    ROSE_ASSERT (func_symbol != NULL);
+
+    SgScopeStatement * p_scope = omp_target_stmt_body_block ; // the scope of "omp parallel" will be destroyed later, so we use scope of "omp target"
+    ROSE_ASSERT(p_scope != NULL);
+
+    // create the outlined driver for GPU offloading, which is empty at this point
+    SgBasicBlock* outlined_driver_body = omp_target_stmt_body_block;
+
+    // insert dim3 threadsPerBlock(xomp_get_maxThreadsPerBlock());
+    // TODO: for 1-D mapping, int type is enough,  //TODO: a better interface accepting expression as initializer!!
+    // the default number of threads per team is set to 1024
+    SgVariableDeclaration* threads_per_block_decl = buildVariableDeclaration ("_threads_per_block_", buildIntType(), buildAssignInitializer(omp_num_threads), p_scope);
+    outlined_driver_body->append_statement(threads_per_block_decl);
+    attachComment(threads_per_block_decl, string("Launch CUDA kernel ..."));
+
+    // dim3 numBlocks (xomp_get_max1DBlock(VEC_LEN));
+    // TODO: handle 2-D or 3-D using dim type
+    ROSE_ASSERT (cuda_loop_iter_count_1 != NULL);
+    // the default number of teams is set to 256
+    SgVariableDeclaration* num_blocks_decl = buildVariableDeclaration ("_num_blocks_", buildIntType(), buildAssignInitializer(omp_num_teams), p_scope);
+    outlined_driver_body->append_statement(num_blocks_decl);
+
+    // Now we have num_block declaration, we can insert the per block declaration used for reduction variables
+    SgExpression* shared_data = NULL; // shared data size expression for CUDA kernel execution configuration
+    for (std::vector<SgVariableDeclaration*>::iterator iter = per_block_declarations.begin(); iter != per_block_declarations.end(); iter++)
+    {
+       SgVariableDeclaration* decl = *iter;
+       insertStatementAfter (num_blocks_decl, decl);
+       SgVariableSymbol* sym = getFirstVarSym (decl);
+       SgPointerType * pointer_type = isSgPointerType(sym->get_type());
+       ROSE_ASSERT (pointer_type != NULL);
+       SgType* base_type = pointer_type->get_base_type();
+       if (per_block_declarations.size()>1)
+       {
+        cerr<<"Error. multiple reduction variables are not yet handled."<<endl;
+         ROSE_ASSERT (false);
+         // threadsPerBlock.x*sizeof(REAL)  //TODO: how to handle multiple shared data blocks, each for a reduction variable??
+       }
+       shared_data = buildMultiplyOp (buildVarRefExp(threads_per_block_decl), buildSizeOfOp (base_type) );
+    }
+
+    // generate the cuda kernel launch statement
+    //e.g.  axpy_ompacc_cuda <<<numBlocks, threadsPerBlock>>>(dev_x,  dev_y, VEC_LEN, a);
+
+    //func_symbol = isSgFunctionSymbol(result->get_firstNondefiningDeclaration()->get_symbol_from_symbol_table ());
+    ROSE_ASSERT (func_symbol != NULL);
+    SgExprListExp* exp_list_exp = SageBuilder::buildExprListExp();
+
+    std::set<SgInitializedName*>  varsUsingOriginalForm;
+    for (ASTtools::VarSymSet_t::const_iterator iter = all_syms.begin(); iter != all_syms.end(); iter ++)
+    {
+      const SgVariableSymbol * current_symbol = *iter;
+  // this addressOf_syms does not apply to CUDA kernel generation: since we cannot use pass-by-reference for CUDA kernel.
+  // If we want to copy back value, we have to use memory copy  since they are in two different memory spaces.
+  // So all variables should use original form in this context.
+      if (addressOf_syms.find(current_symbol) == addressOf_syms.end()) // not found in Address Of variable set
+        varsUsingOriginalForm.insert (current_symbol->get_declaration());
+    }
+    // TODO: alternative mirror form using varUsingAddress as parameter
+    Outliner::appendIndividualFunctionCallArgs (all_syms, varsUsingOriginalForm, exp_list_exp);
+    // TODO: builder interface without _nfi, and match function call exp builder interface convention:
+
+    // in the original function, we call the outlined driver and pass all the required variables by reference
+    // prepare all the parameters for using LLVM GPU offloading
+    SgClassDeclaration* tgt_offload_entry = buildStructDeclaration("__tgt_offload_entry", getGlobalScope(target));
+
+    kmpc_kernel_id_counter += 1;
+    SgVariableDeclaration* outlined_kernel_id_decl = buildVariableDeclaration (func_name + "id__", buildCharType(), buildAssignInitializer(buildIntVal(0)), g_scope);
+
+    // by default, the device id is set to 0
+    SgVariableDeclaration* device_id_decl = buildVariableDeclaration("__device_id", buildOpaqueType("int64_t", p_scope), buildAssignInitializer(buildIntVal(0)), p_scope);
+    outlined_driver_body->append_statement(device_id_decl);
+
+    // define the entry point
+    SgExprListExp* offload_entry_parameters = buildExprListExp(buildCastExp(buildAddressOfOp(buildVarRefExp(outlined_kernel_id_decl)), buildPointerType(buildVoidType())), buildStringVal(func_name + "kernel__"), buildIntVal(0), buildIntVal(0), buildIntVal(0));
+    SgBracedInitializer* offload_entry_initilization = buildBracedInitializer(offload_entry_parameters);
+    SgVariableDeclaration* offload_entry_decl = buildVariableDeclaration(func_name + "omp_offload_entry__", tgt_offload_entry->get_type(), buildAssignInitializer(offload_entry_initilization), g_scope);
+    offload_entry_decl->get_decl_item(SgName(func_name + "omp_offload_entry__"))->set_gnu_attribute_section_name("omp_offloading_entries");
+
+    prependStatement(offload_entry_decl, g_scope);
+    prependStatement(outlined_kernel_id_decl, g_scope);
+
+    SgVariableDeclaration* host_point_decl = buildVariableDeclaration("__host_ptr", buildPointerType(buildVoidType()), buildAssignInitializer(buildCastExp(buildAddressOfOp(buildVarRefExp(outlined_kernel_id_decl)), buildPointerType(buildVoidType()))), p_scope);
+    outlined_driver_body->append_statement(host_point_decl);
+
+    SgBracedInitializer* offloading_variables_base = buildBracedInitializer(map_variable_base_list);
+    SgVariableDeclaration* args_base_decl = buildVariableDeclaration ("__args_base", buildArrayType(buildPointerType(buildVoidType())), buildAssignInitializer(offloading_variables_base), p_scope);
+    outlined_driver_body->append_statement(args_base_decl);
+
+    SgBracedInitializer* offloading_variables = buildBracedInitializer(map_variable_list);
+    SgVariableDeclaration* args_decl = buildVariableDeclaration ("__args", buildArrayType(buildPointerType(buildVoidType())), buildAssignInitializer(offloading_variables), p_scope);
+    outlined_driver_body->append_statement(args_decl);
+
+    SgBracedInitializer* map_variable_sizes = buildBracedInitializer(map_variable_size_list);
+    SgVariableDeclaration* arg_sizes = buildVariableDeclaration ("__arg_sizes", buildArrayType(buildOpaqueType("int64_t", p_scope)), buildAssignInitializer(map_variable_sizes), p_scope);
+    outlined_driver_body->append_statement(arg_sizes);
+
+    SgBracedInitializer* map_variable_types = buildBracedInitializer(map_variable_type_list);
+    SgVariableDeclaration* arg_types = buildVariableDeclaration ("__arg_types", buildArrayType(buildOpaqueType("int64_t", p_scope)), buildAssignInitializer(map_variable_types), p_scope);
+    outlined_driver_body->append_statement(arg_types);
+
+    int kernel_arg_num = map_variable_base_list->get_expressions().size();
+    SgVariableDeclaration* arg_number_decl = buildVariableDeclaration("__arg_num", buildOpaqueType("int32_t", p_scope), buildAssignInitializer(buildIntVal(kernel_arg_num)), p_scope);
+    outlined_driver_body->append_statement(arg_number_decl);
+
+    // call __tgt_target_teams to execute the CUDA kernel
+    SgExprListExp* parameters = NULL;
+    parameters = buildExprListExp(buildVarRefExp(device_id_decl), buildVarRefExp(host_point_decl), buildVarRefExp(arg_number_decl), buildVarRefExp(args_base_decl), buildVarRefExp(args_decl), buildVarRefExp(arg_sizes), buildVarRefExp(arg_types), buildVarRefExp(num_blocks_decl), buildVarRefExp(threads_per_block_decl));
+    string func_offloading_name = "__tgt_target_teams";
+    SgExprStatement* func_offloading_stmt = buildFunctionCallStmt(func_offloading_name, buildIntType(), parameters, p_scope);
+    setSourcePositionForTransformation(func_offloading_stmt);
+    outlined_driver_body->append_statement(func_offloading_stmt);
+
+    for (ASTtools::VarSymSet_t::const_iterator iter = per_block_reduction_syms.begin(); iter != per_block_reduction_syms.end(); iter ++)
+    {
+      const SgVariableSymbol * current_symbol = *iter;
+      SgPointerType* pointer_type = isSgPointerType(current_symbol->get_type());// must be a pointer to simple type
+      ROSE_ASSERT (pointer_type != NULL);
+      SgType * orig_type = pointer_type->get_base_type();
+      ROSE_ASSERT (orig_type != NULL);
+
+      string per_block_var_name = (current_symbol->get_name()).getString();
+      // get the original var name by stripping of the leading "_dev_per_block_"
+      string leading_pattern = string("_dev_per_block_");
+      string orig_var_name = per_block_var_name.substr(leading_pattern.length(), per_block_var_name.length() - leading_pattern.length());
+//      cout<<"debug: "<<per_block_var_name <<" after "<< orig_var_name <<endl;
+      SgExprListExp * parameter_list = buildExprListExp (buildVarRefExp(const_cast<SgVariableSymbol*>(current_symbol)), buildVarRefExp("_num_blocks_",target->get_scope()), buildIntVal(per_block_reduction_map[const_cast<SgVariableSymbol*>(current_symbol)]) );
+      SgFunctionCallExp* func_call_exp = buildFunctionCallExp ("xomp_beyond_block_reduction_"+ orig_type->unparseToString(), buildVoidType(), parameter_list, target->get_scope());
+      SgStatement* assign_stmt = buildAssignStatement (buildVarRefExp(orig_var_name, omp_target_stmt_body_block )  ,func_call_exp);
+     ROSE_ASSERT (target->get_scope () == target->get_body()); // there is a block in between
+     ROSE_ASSERT (omp_target_stmt_body_block  == target->get_body()); // just to make sure
+     insertStatementBefore (target, assign_stmt );
+
+     // insert memory free for the _dev_per_block_variables
+     // TODO: need runtime support to automatically free memory
+      SgFunctionCallExp* func_call_exp2 = buildFunctionCallExp ("xomp_freeDevice", buildVoidType(), buildExprListExp(buildVarRefExp(const_cast<SgVariableSymbol*>(current_symbol))),  omp_target_stmt_body_block);
      insertStatementBefore (target, buildExprStatement(func_call_exp2));
     }
 
     // num_blocks is referenced before the declaration is inserted. So we must fix it, otherwise the symbol of unkown type will be cleaned up later.
     SageInterface::fixVariableReferences(num_blocks_decl->get_scope());
     //------------now remove omp parallel since everything within it has been outlined to a function
-    removeStatement (target);
+    replaceStatement(target, outlined_driver_body, true);
+
+    target_outlined_function_list->push_back(isSgFunctionDeclaration(result));
   }
 
+  // transformation for combined directive omp target parallel for
+  void transOmpTargetParallelFor (SgNode* node)
+  {
+    // Sanity check first
+    ROSE_ASSERT(node != NULL);
+    SgOmpTargetParallelForStatement* target = isSgOmpTargetParallelForStatement(node);
+    ROSE_ASSERT(target != NULL);
+
+    SgExpression* omp_num_teams = buildIntVal(1);
+
+    SgExpression* omp_num_threads = NULL;
+    if (hasClause(target, V_SgUpirNumUnitsField)) {
+      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgUpirNumUnitsField);
+      ROSE_ASSERT (num_threads_clauses.size() == 1); // should only have one num_threads()
+      SgUpirNumUnitsField * num_threads_clause = isSgUpirNumUnitsField(num_threads_clauses[0]);
+      ROSE_ASSERT (num_threads_clause->get_expression() != NULL);
+      omp_num_threads = copyExpression(num_threads_clause->get_expression());
+    }
+    else {
+      omp_num_threads = buildIntVal(1024);
+    }
+
+    transOmpSpmdWorksharing(target, omp_num_teams, omp_num_threads);
+  }
+
+  // transformation for combined directive omp target teams distribute parallel for
+  void transOmpTargetTeamsDistributeParallelFor (SgNode* node)
+  {
+    // Sanity check first
+    ROSE_ASSERT(node != NULL);
+    SgOmpTargetTeamsDistributeParallelForStatement* target = isSgOmpTargetTeamsDistributeParallelForStatement(node);
+    ROSE_ASSERT(target != NULL);
+
+    SgExpression* omp_num_teams = NULL;
+    if (hasClause(target, V_SgOmpNumTeamsClause)) {
+      Rose_STL_Container<SgOmpClause*> num_teams_clauses = getClause(target, V_SgOmpNumTeamsClause);
+      ROSE_ASSERT (num_teams_clauses.size() == 1); // should only have one num_teams()
+      SgOmpNumTeamsClause * num_teams_clause = isSgOmpNumTeamsClause(num_teams_clauses[0]);
+      ROSE_ASSERT (num_teams_clause->get_expression() != NULL);
+      omp_num_teams = copyExpression(num_teams_clause->get_expression());
+    }
+    else {
+      omp_num_teams = buildIntVal(256);
+    }
+
+    SgExpression* omp_num_threads = NULL;
+    if (hasClause(target, V_SgUpirNumUnitsField)) {
+      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgUpirNumUnitsField);
+      ROSE_ASSERT (num_threads_clauses.size() == 1); // should only have one num_threads()
+      SgUpirNumUnitsField * num_threads_clause = isSgUpirNumUnitsField(num_threads_clauses[0]);
+      ROSE_ASSERT (num_threads_clause->get_expression() != NULL);
+      omp_num_threads = copyExpression(num_threads_clause->get_expression());
+    }
+    else {
+      omp_num_threads = buildIntVal(1024);
+    }
+
+    transOmpSpmdWorksharing(target, omp_num_teams, omp_num_threads);
+  }
 
   /*
-   * Expected AST layout: 
+   * Expected AST layout:
    *  SgOmpSectionsStatement
    *    SgBasicBlock
    *      SgOmpSectionStatement (1 or more section statements here)
    *        SgBasicBlock
-   *          SgStatement 
+   *          SgStatement
    *
-   * Example translated code: 
+   * Example translated code:
       int _section_1 = XOMP_sections_init_next (3);
       while (_section_1 >=0) // This while loop is a must
       {
@@ -3905,15 +5361,15 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
         }
         _section_1 = XOMP_sections_next ();  // next round for the current thread: deal with possible number of threads < number of sections
      }
-    
-      XOMP_sections_end();   // Or  XOMP_sections_end_nowait ();    
+
+      XOMP_sections_end();   // Or  XOMP_sections_end_nowait ();
    * */
   void transOmpSections(SgNode* node)
   {
 //    cout<<"Entering transOmpSections() ..."<<endl;
     ROSE_ASSERT(node != NULL );
     // verify the AST is expected
-    SgOmpSectionsStatement * target = isSgOmpSectionsStatement(node); 
+    SgOmpSectionsStatement * target = isSgOmpSectionsStatement(node);
     ROSE_ASSERT(target != NULL );
     SgScopeStatement * scope = target->get_scope();
     ROSE_ASSERT(scope != NULL );
@@ -3921,7 +5377,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     ROSE_ASSERT(body != NULL);
 
     SgBasicBlock *  bb1 = buildBasicBlock();
-   
+
     SgBasicBlock * sections_block = isSgBasicBlock(body);
     ROSE_ASSERT (sections_block != NULL);
        // verify each statement under sections is SgOmpSectionStatement
@@ -3932,18 +5388,18 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
       SgStatement* stmt = section_list[i];
       ROSE_ASSERT (isSgOmpSectionStatement(stmt));
     }
-   
+
     // int _section_1 = XOMP_sections_init_next (3);
     std::string sec_var_name;
     if (SageInterface::is_Fortran_language() )
       sec_var_name ="_section_";
-    else  
+    else
       sec_var_name ="xomp_section_";
 
     sec_var_name += StringUtility::numberToString(++gensym_counter);
-    
+
     SgAssignInitializer* initializer = buildAssignInitializer (
-                         buildFunctionCallExp("XOMP_sections_init_next", buildIntType(),buildExprListExp(buildIntVal(section_count)), scope), 
+                         buildFunctionCallExp("XOMP_sections_init_next", buildIntType(),buildExprListExp(buildIntVal(section_count)), scope),
                                         buildIntType());
     replaceStatement(target, bb1, true);
     //Declare a variable to store the current section id
@@ -3959,10 +5415,10 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     appendStatement(sec_var_decl, bb1);
 
     // while (_section_1 >=0) {}
-    SgWhileStmt * while_stmt = buildWhileStmt(buildGreaterOrEqualOp(buildVarRefExp(sec_var_decl), buildIntVal(0)), buildBasicBlock()); 
+    SgWhileStmt * while_stmt = buildWhileStmt(buildGreaterOrEqualOp(buildVarRefExp(sec_var_decl), buildIntVal(0)), buildBasicBlock());
     insertStatementAfter(sec_var_decl, while_stmt);
     // switch () {}
-    SgSwitchStatement* switch_stmt = buildSwitchStatement (buildExprStatement(buildVarRefExp(sec_var_decl)) , buildBasicBlock()); 
+    SgSwitchStatement* switch_stmt = buildSwitchStatement (buildExprStatement(buildVarRefExp(sec_var_decl)) , buildBasicBlock());
     appendStatement(switch_stmt, isSgBasicBlock(while_stmt->get_body()));
     // case 0, case 1, ...
     for (int i= 0; i<section_count; i++)
@@ -3984,33 +5440,33 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 
       // cout<<"source BB address:"<<isSgBasicBlock(isSgOmpSectionStatement(section_list[i])->get_body())<<endl;
       // Now we have to delete the source BB since its symbol table is moved into the target BB.
-      SgBasicBlock * fake_src_bb = buildBasicBlock(); 
-      isSgOmpSectionStatement(section_list[i])->set_body(fake_src_bb); 
+      SgBasicBlock * fake_src_bb = buildBasicBlock();
+      isSgOmpSectionStatement(section_list[i])->set_body(fake_src_bb);
       fake_src_bb->set_parent(section_list[i]);
       delete (src_bb);
 
       appendStatement (option_stmt,  isSgBasicBlock(switch_stmt->get_body()));
-    } // end case 0, 1, ...  
-    // default option: 
-    SgDefaultOptionStmt* default_stmt = buildDefaultOptionStmt(buildBasicBlock(buildFunctionCallStmt("abort", buildVoidType(), NULL, scope))); 
+    } // end case 0, 1, ...
+    // default option:
+    SgDefaultOptionStmt* default_stmt = buildDefaultOptionStmt(buildBasicBlock(buildFunctionCallStmt("abort", buildVoidType(), NULL, scope)));
     appendStatement (default_stmt,  isSgBasicBlock(switch_stmt->get_body()));
 
     // save the current section id before checking for next available one
     // This is only useful to support lastprivate clause
     if (hasClause(target, V_SgOmpLastprivateClause))
     {
-      SgStatement* save_stmt = buildAssignStatement (buildVarRefExp(sec_var_decl_save), buildVarRefExp(sec_var_decl)); 
+      SgStatement* save_stmt = buildAssignStatement (buildVarRefExp(sec_var_decl_save), buildVarRefExp(sec_var_decl));
       appendStatement(save_stmt , isSgBasicBlock(while_stmt->get_body()));
     }
     // _section_1 = XOMP_sections_next ();
-    SgStatement* assign_stmt = buildAssignStatement(buildVarRefExp(sec_var_decl), 
-                                 buildFunctionCallExp("XOMP_sections_next", buildIntType(), buildExprListExp(), scope) ); 
+    SgStatement* assign_stmt = buildAssignStatement(buildVarRefExp(sec_var_decl),
+                                 buildFunctionCallExp("XOMP_sections_next", buildIntType(), buildExprListExp(), scope) );
     appendStatement(assign_stmt, isSgBasicBlock(while_stmt->get_body()));
 
     transOmpVariables(target, bb1, buildIntVal(section_count - 1)); // This should happen before the barrier is inserted.
 
     // XOMP_sections_end() or XOMP_sections_end_nowait ();
-    SgExprStatement* end_call = NULL; 
+    SgExprStatement* end_call = NULL;
     if (hasClause(target, V_SgOmpNowaitClause))
       end_call = buildFunctionCallStmt("XOMP_sections_end_nowait", buildVoidType(), NULL, scope);
     else
@@ -4020,13 +5476,13 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 //    removeStatement(target);
   }
 
-  // Two ways 
+  // Two ways
   //1. builtin function TODO
   //    __sync_fetch_and_add_4(&shared, (unsigned int)local);
-  //2. using atomic runtime call: 
-  //    GOMP_atomic_start (); // void GOMP_atomic_start (void); 
+  //2. using atomic runtime call:
+  //    GOMP_atomic_start (); // void GOMP_atomic_start (void);
   //    shared = shared op local;
-  //    GOMP_atomic_end (); // void GOMP_atomic_end (void); 
+  //    GOMP_atomic_end (); // void GOMP_atomic_end (void);
   // We use the 2nd method only for now, for simplicity and portability
   void transOmpAtomic(SgNode* node)
   {
@@ -4037,11 +5493,11 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     ROSE_ASSERT(scope != NULL );
     SgStatement * body = target->get_body();
     ROSE_ASSERT(body != NULL);
-    
+
     replaceStatement(target, body, true);
 #ifdef ENABLE_XOMP
-    SgExprStatement* func_call_stmt1 = buildFunctionCallStmt("XOMP_atomic_start", buildVoidType(), NULL, scope);
-    SgExprStatement* func_call_stmt2 = buildFunctionCallStmt("XOMP_atomic_end", buildVoidType(), NULL, scope);
+    SgExprStatement* func_call_stmt1 = buildFunctionCallStmt("__kmpc_atomic_start", buildVoidType(), NULL, scope);
+    SgExprStatement* func_call_stmt2 = buildFunctionCallStmt("__kmpc_atomic_end", buildVoidType(), NULL, scope);
 #else
     SgExprStatement* func_call_stmt1 = buildFunctionCallStmt("GOMP_atomic_start", buildVoidType(), NULL, scope);
     SgExprStatement* func_call_stmt2 = buildFunctionCallStmt("GOMP_atomic_end", buildVoidType(), NULL, scope);
@@ -4049,247 +5505,8 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     insertStatementBefore(body, func_call_stmt1);
     // this is actually sensitive to the type of preprocessing Info
     // In most cases, we want to move up them (such as #ifdef etc)
-    moveUpPreprocessingInfo (func_call_stmt1, body, PreprocessingInfo::before); 
+    moveUpPreprocessingInfo (func_call_stmt1, body, PreprocessingInfo::before);
     insertStatementAfter(body, func_call_stmt2);
-  }
-
-
-  //! Translate omp task
-  /*
-  The translation of omp task is similar to the one for omp parallel
-  Please remember to call patchUpFirstprivateVariables() before this function to make implicit firstprivate
-  variables explicit. 
-  
-  The gomp runtime function for omp task is:
-  extern void GOMP_task (void (*fn) (void *), void *data, void (*cpyfn) (void *, void *), long arg_size, long arg_align, bool if_clause, unsigned flags) 
-      1. void (*fn) (void *): the generated outlined function for the task body
-      2. void *data: the parameters for the outlined function
-      3. void (*cpyfn) (void *, void *): copy function to replace the default memcpy() from function data to each task's data
-      4. long arg_size: specify the size of data
-      5. long arg_align: alignment of the data
-      6. bool if_clause: the value of if_clause. true --> 1, false -->0; default is set to 1 by GCC
-      7. unsigned flags: untied (1) or not (0) 
-
-   Since we use the ROSE outliner to generate the outlined function. The parameters are wrapped into an array of pointers to them
-  So the calculation of data(parameter) size/align is simplified . They are all pointer types.
-  */
-  void transOmpTask(SgNode* node)
-  {
-    ROSE_ASSERT(node != NULL);
-    SgOmpTaskStatement* target = isSgOmpTaskStatement(node);
-    ROSE_ASSERT (target != NULL);
-
-    // Liao 1/24/2011
-    // For Fortran code, we have to insert EXTERNAL OUTLINED_FUNC into 
-    // the function body containing the parallel region
-    // TODO verify this is also necessary for OMP TASK
-    SgFunctionDefinition * func_def = NULL;
-    if (SageInterface::is_Fortran_language() )
-    {
-      func_def = getEnclosingFunctionDefinition(target);
-      ROSE_ASSERT (func_def != NULL);
-    }
-
-    SgStatement * body =  target->get_body();
-    ROSE_ASSERT(body != NULL);
-    // Save preprocessing info as early as possible, avoiding mess up from the outliner
-    AttachedPreprocessingInfoType save_buf1, save_buf2;
-    cutPreprocessingInfo(target, PreprocessingInfo::before, save_buf1) ;
-    cutPreprocessingInfo(target, PreprocessingInfo::after, save_buf2) ;
-
-    // generate and insert an outlined function as a task
-    std::string wrapper_name;
-    ASTtools::VarSymSet_t syms;
-    ASTtools::VarSymSet_t pdSyms3; // store all variables which should be passed by reference
-    std::set<SgInitializedName*> readOnlyVars;
-    SgFunctionDeclaration* outlined_func = generateOutlinedTask (node, wrapper_name, syms, pdSyms3);
-
-    if (SageInterface::is_Fortran_language() )
-    { // EXTERNAL outlined_function , otherwise the function name will be interpreted as a integer/real variable
-      ROSE_ASSERT (func_def != NULL);
-      // There could be an enclosing parallel region
-      //SgBasicBlock * func_body = func_def->get_body();
-      SgBasicBlock * enclosing_body = getEnclosingRegionOrFuncDefinition (target);
-      ROSE_ASSERT (enclosing_body != NULL);
-      SgAttributeSpecificationStatement* external_stmt1 = buildAttributeSpecificationStatement(SgAttributeSpecificationStatement::e_externalStatement)
-;
-      SgFunctionRefExp *func_ref1 = buildFunctionRefExp (outlined_func);
-      external_stmt1->get_parameter_list()->prepend_expression(func_ref1);
-      func_ref1->set_parent(external_stmt1->get_parameter_list());
-      // must put it into the declaration statement part, after possible implicit/include statements, if any
-      SgStatement* l_stmt = findLastDeclarationStatement (enclosing_body);
-      if (l_stmt)
-        insertStatementAfter(l_stmt,external_stmt1);
-      else
-        prependStatement(external_stmt1, enclosing_body);
-    }
-
-
-    SgScopeStatement * p_scope = target->get_scope();
-    ROSE_ASSERT(p_scope != NULL);
-    // Generate a call to it
-   
-    SgExprListExp* parameters =  NULL;
-    //SgStatement* func_call = Outliner::generateCall (outlined_func, syms, readOnlyVars, wrapper_name,p_scope);
-    //ROSE_ASSERT(func_call != NULL);
-
-    // Replace the parallel region with the function call statement
-    // TODO should we introduce another level of scope here?
-    // SageInterface::replaceStatement(target,func_call, true);
-    // hide this from the unparser TODO this call statement is not really necessary, only the call expression is needed
-    //  Sg_File_Info* file_info = type_decl->get_file_info();
-    //      file_info->unsetOutputInCodeGeneration ();
-    //
-    //func_call->get_file_info()->unsetOutputInCodeGeneration (); 
-    SgExpression * parameter_data = NULL;
-    SgExpression * parameter_cpyfn = NULL;
-    SgExpression * parameter_arg_size = NULL;
-    SgExpression * parameter_arg_align = NULL;
-    SgExpression * parameter_if_clause =  NULL;
-    SgExpression * parameter_untied = NULL;
-    SgExpression * parameter_argcount = NULL;
-    size_t parameter_count = syms.size();
-   
-    if (SageInterface::is_Fortran_language())
-    { // Fortran case
-    //  void xomp_task (void (*fn) (void *), void (*cpyfn) (void *, void *), int * arg_size, int * arg_align, 
-    //                  int * if_clause, int * untied, int * argcount, ...)
-      
-        parameter_cpyfn=buildIntVal(0); // no special copy function for array of pointers
-        parameter_arg_size = buildIntVal( parameter_count * sizeof(void*) );
-        //  TODO get right alignment
-        parameter_arg_align = buildIntVal(4);
-    }
-    else // C/C++ case
-    //  void GOMP_task (void (*fn) (void *), void *data, void (*cpyfn) (void *, void *), long arg_size, long arg_align, 
-    //                  bool if_clause, unsigned flags)
-    { 
-      if ( parameter_count == 0) // No parameters to be passed at all
-      {
-        parameter_data = buildIntVal(0);
-        parameter_cpyfn=buildIntVal(0); // no copy function is needed
-        parameter_arg_size = buildIntVal(0);
-        parameter_arg_align = buildIntVal(0);
-      }
-      else
-      {
-        SgVarRefExp * data_ref = buildVarRefExp(wrapper_name, p_scope);
-        ROSE_ASSERT (data_ref != NULL);
-        SgType * data_type = data_ref->get_type();
-        parameter_data =  buildAddressOfOp(data_ref);
-        parameter_cpyfn=buildIntVal(0); // no special copy function for array of pointers
-        // arg size of array of pointers = pointer_count * pointer_size
-        // ROSE does not support cross compilation so sizeof(void*) can use as a workaround for now
-        //we now use a structure containing pointers or non-pointer typed members to wrap parameters
-        parameter_arg_size =  buildSizeOfOp(data_type);
-        //  parameter_arg_size = buildIntVal( parameter_count* sizeof(void*));
-        //  TODO get right alignment
-        parameter_arg_align = buildIntVal(4);
-        //parameter_arg_align = buildIntVal(sizeof(void*));
-      }
-
-    }
-
-    if (hasClause(target, V_SgOmpIfClause))
-    {
-      Rose_STL_Container<SgOmpClause*> clauses = getClause(target, V_SgOmpIfClause);
-      ROSE_ASSERT (clauses.size() ==1); // should only have one if ()
-      SgOmpIfClause * if_clause = isSgOmpIfClause (clauses[0]);
-      ROSE_ASSERT (if_clause->get_expression() != NULL);
-      parameter_if_clause = copyExpression(if_clause->get_expression());
-    }
-    else
-      parameter_if_clause = buildIntVal(1);
-
-    if (hasClause(target, V_SgOmpUntiedClause))
-      parameter_untied = buildIntVal(1);
-    else  
-      parameter_untied = buildIntVal(0);
-
-    
-   // parameters are different between Fortran and C/C++
-   // To support pass-by-value and pass-by-reference in the XOMP runtime
-   // We use a triplet for each parameter to be passed to XOMP
-   // <pass_by_value-ref, value-size, parameter-address>
-   // e.g. if a integer i is intended to be passed by value in the task
-   //   we generate three argument for it: 1, sizeof(int), i
-    // similarly, for an array item[10], passed by reference in the task
-    //   we generate: 0, sizeof(void*), item
-    //   As a result, the variable length argument list is 3 times the count of original parameters long
-    if (SageInterface::is_Fortran_language())
-    {
-      parameters = buildExprListExp(buildFunctionRefExp(outlined_func),
-        parameter_cpyfn, parameter_arg_size, parameter_arg_align, parameter_if_clause, parameter_untied);
-
-      parameter_argcount =  buildIntVal (syms.size()*3);
-      appendExpression (parameters,parameter_argcount);
-      ASTtools::VarSymSet_t::iterator iter = syms.begin();
-      for (; iter!=syms.end(); iter++)
-      {
-        const SgVariableSymbol * sb = *iter;
-        bool b_pass_value = true;
-        // Assumption: 
-        //   transOmpVariables() should already handled most private, reduction variables
-        //    Anything left should be passed by reference by default , except for loop index variables. 
-        // We check if a variable is a loop index, and pass it by value. 
-        //   
-        // TODO more accurate way to decide on pass-by-value or pass-by-reference in patchUpPrivateVariables()
-        //    and patchUpFirstprivateVariables()
-        if (isLoopIndexVariable (sb->get_declaration(), target))
-        {
-          b_pass_value = true;
-          appendExpression (parameters,buildIntVal(1));
-        }
-        else
-        { // all other should be treated as shared variables ( pass-by-reference )
-          b_pass_value = false;
-          appendExpression (parameters,buildIntVal(0));
-        }
-
-        //2nd of the triplet, the size of the parameter type, 
-        // if pass-by-value, the actual size
-        // if pass-by-reference, the pointer size
-        if (b_pass_value)
-        { //TODO accurate calculation of type size for Fortran, assume integer for now
-           // Provide an interface function for this.
-          // Is it feasible to calculate all sizes during compilation time ??
-          SgType * s_type = sb->get_type();
-          if (isSgTypeInt(s_type))
-            appendExpression (parameters,buildIntVal(sizeof(int)));
-          else
-          {
-            printf("Error. transOmpTask(): unhandled Fortran type  (%s) for pass-by-value.\n",s_type->class_name().c_str());
-            ROSE_ABORT ();
-          }
-        }
-        else  
-        { // get target platform's pointer size 
-          appendExpression (parameters,buildIntVal(sizeof(void*)));
-        }
-        
-        // the third of the triplet
-        appendExpression (parameters, buildVarRefExp(const_cast<SgVariableSymbol *>(sb)));
-      }
-    }  
-    else
-    {
-      parameters = buildExprListExp(buildFunctionRefExp(outlined_func),
-        parameter_data, parameter_cpyfn, parameter_arg_size, parameter_arg_align, parameter_if_clause, parameter_untied);
-    }
-
-#ifdef ENABLE_XOMP
-    SgExprStatement * s1 = buildFunctionCallStmt("XOMP_task", buildVoidType(), parameters, p_scope);
-#else    
-    SgExprStatement * s1 = buildFunctionCallStmt("GOMP_task", buildVoidType(), parameters, p_scope);
-#endif
-    SageInterface::replaceStatement(target,s1, true);
-
-    // Keep preprocessing information
-    // I have to use cut-paste instead of direct move since 
-    // the preprocessing information may be moved to a wrong place during outlining
-    // while the destination node is unknown until the outlining is done.
-    pastePreprocessingInfo(s1, PreprocessingInfo::before, save_buf1);
-    pastePreprocessingInfo(s1, PreprocessingInfo::after, save_buf2);
   }
 
   //! Translate the ordered directive, (not the ordered clause)
@@ -4321,7 +5538,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
   //   work()
   //   GOMP_critical_end ();
   //
-  // named one: 
+  // named one:
   //  static gomp_mutex_t  &gomp_critical_user_aaa;
   //  GOMP_critical_name_start (&gomp_critical_user_aaa);
   //  work()
@@ -4342,7 +5559,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 
     SgExprStatement* func_call_stmt1=NULL, * func_call_stmt2 =NULL;
     string c_name = target->get_name().getString();
-#ifdef ENABLE_XOMP    
+#ifdef ENABLE_XOMP
     // assign a default name for the unnamed critical to simplify the translation
     // GOMP actually have a dedicated function to support unnamed critical
     // We generate a default name for it and use the named critical support function instead to
@@ -4351,7 +5568,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
       SgGlobal* global = getGlobalScope(target);
       ROSE_ASSERT(global!=NULL);
       // the lock variable may already be declared.
-      SgVariableSymbol* sym = lookupVariableSymbolInParentScopes(SgName(g_lock_name),global); 
+      SgVariableSymbol* sym = lookupVariableSymbolInParentScopes(SgName(g_lock_name),global);
       if (sym == NULL)
       {
         SgVariableDeclaration* vardecl = buildVariableDeclaration(g_lock_name, buildPointerType(buildVoidType()), NULL, global);
@@ -4365,7 +5582,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 
       func_call_stmt1 = buildFunctionCallStmt("XOMP_critical_start", buildVoidType(), param1, scope);
       func_call_stmt2 = buildFunctionCallStmt("XOMP_critical_end", buildVoidType(), param2, scope);
-#else    
+#else
     if (c_name.length()==0)
     {
       func_call_stmt1 = buildFunctionCallStmt("GOMP_critical_start", buildVoidType(), NULL, scope);
@@ -4386,13 +5603,13 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
       func_call_stmt1 = buildFunctionCallStmt("GOMP_critical_name_start", buildVoidType(), param1, scope);
       func_call_stmt2 = buildFunctionCallStmt("GOMP_critical_name_end", buildVoidType(), param2, scope);
     }
-#endif    
+#endif
 
     insertStatementBefore(body, func_call_stmt1);
     insertStatementAfter(body, func_call_stmt2);
   }
 
-  //! Simply replace the pragma with a function call to void GOMP_taskwait(void); 
+  //! Simply replace the pragma with a function call to void GOMP_taskwait(void);
   void transOmpTaskwait(SgNode * node)
   {
     ROSE_ASSERT(node != NULL );
@@ -4402,13 +5619,13 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     ROSE_ASSERT(scope != NULL );
 #ifdef ENABLE_XOMP
     SgExprStatement* func_call_stmt = buildFunctionCallStmt("XOMP_taskwait", buildVoidType(), NULL, scope);
-#else    
+#else
     SgExprStatement* func_call_stmt = buildFunctionCallStmt("GOMP_taskwait", buildVoidType(), NULL, scope);
 #endif
     replaceStatement(target, func_call_stmt, true);
   }
 
-  //! Simply replace the pragma with a function call to void GOMP_barrier (void); 
+  //! Simply replace the pragma with a function call to void GOMP_barrier (void);
   void transOmpBarrier(SgNode * node)
   {
     ROSE_ASSERT(node != NULL );
@@ -4421,7 +5638,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     SgExprStatement* func_call_stmt = buildFunctionCallStmt("XOMP_barrier", buildVoidType(), NULL, scope);
 #else
     SgExprStatement* func_call_stmt = buildFunctionCallStmt("GOMP_barrier", buildVoidType(), NULL, scope);
-#endif    
+#endif
     replaceStatement(target, func_call_stmt, true);
   }
 
@@ -4442,29 +5659,6 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     replaceStatement(target, func_call_stmt, true);
   }
 
-  //! Simply move the body up and remove omp target directive since nothing to be done at this level
-  // We essentially only support combined omp target parallel .... , even the code uses separated styles
-  // outlining and data handling are handled by transOmpTargetParallel()
-  void transOmpTarget(SgNode * node)
-  {
-    ROSE_ASSERT(node != NULL );
-    SgOmpTargetStatement* target = isSgOmpTargetStatement(node);
-    ROSE_ASSERT(target != NULL );
-
-    SgScopeStatement * scope = target->get_scope();
-    ROSE_ASSERT(scope != NULL );
-
-    SgBasicBlock* body = isSgBasicBlock(target->get_body());
-    ROSE_ASSERT(body != NULL );
-    body->set_parent(NULL);
-    target->set_body(NULL);
-
-    replaceStatement (target, body, true); 
-   // removeStatement(target);
-  }
-
-  //! Simply move the body up and remove omp target data directive since nothing to be done at this level for now
-  //  all map() clauses should already be handled when translating the inner "omp parallel" region
   // TODO: translate if() and device() clauses
   void transOmpTargetData(SgNode * node)
   {
@@ -4472,25 +5666,67 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     SgOmpTargetDataStatement* target = isSgOmpTargetDataStatement(node);
     ROSE_ASSERT(target != NULL );
 
-    SgScopeStatement * scope = target->get_scope();
-    ROSE_ASSERT(scope != NULL );
+    SgScopeStatement * p_scope = target->get_scope();
+    ROSE_ASSERT(p_scope != NULL);
 
-    if (useDDE)
-      transOmpMapVariables (target);
+    SgExprListExp* map_variable_list = buildExprListExp();
+    SgExprListExp* map_variable_base_list = buildExprListExp();
+    SgExprListExp* map_variable_size_list = buildExprListExp();
+    SgExprListExp* map_variable_type_list = buildExprListExp();
+
+    transOmpMapVariables(target, map_variable_list, map_variable_base_list, map_variable_size_list, map_variable_type_list);
 
     SgBasicBlock* body = isSgBasicBlock(target->get_body());
     ROSE_ASSERT(body != NULL );
+
+    SgBasicBlock* target_data_begin_block = body;
+
+    // by default, the device id is set to 0
+    SgVariableDeclaration* device_id_decl = buildVariableDeclaration("__device_id", buildOpaqueType("int64_t", p_scope), buildAssignInitializer(buildIntVal(0)), p_scope);
+    target_data_begin_block->prepend_statement(device_id_decl);
+
+    SgBracedInitializer* offloading_variables_base = buildBracedInitializer(map_variable_base_list);
+    SgVariableDeclaration* args_base_decl = buildVariableDeclaration ("__args_base", buildArrayType(buildPointerType(buildVoidType())), buildAssignInitializer(offloading_variables_base), p_scope);
+    target_data_begin_block->prepend_statement(args_base_decl);
+
+    SgBracedInitializer* offloading_variables = buildBracedInitializer(map_variable_list);
+    SgVariableDeclaration* args_decl = buildVariableDeclaration ("__args", buildArrayType(buildPointerType(buildVoidType())), buildAssignInitializer(offloading_variables), p_scope);
+    target_data_begin_block->prepend_statement(args_decl);
+
+    SgBracedInitializer* map_variable_sizes = buildBracedInitializer(map_variable_size_list);
+    SgVariableDeclaration* arg_sizes = buildVariableDeclaration ("__arg_sizes", buildArrayType(buildOpaqueType("int64_t", p_scope)), buildAssignInitializer(map_variable_sizes), p_scope);
+    target_data_begin_block->prepend_statement(arg_sizes);
+
+    SgBracedInitializer* map_variable_types = buildBracedInitializer(map_variable_type_list);
+    SgVariableDeclaration* arg_types = buildVariableDeclaration ("__arg_types", buildArrayType(buildOpaqueType("int64_t", p_scope)), buildAssignInitializer(map_variable_types), p_scope);
+    target_data_begin_block->prepend_statement(arg_types);
+
+    int kernel_arg_num = map_variable_base_list->get_expressions().size();
+    SgVariableDeclaration* arg_number_decl = buildVariableDeclaration("__arg_num", buildOpaqueType("int32_t", p_scope), buildAssignInitializer(buildIntVal(kernel_arg_num)), p_scope);
+    target_data_begin_block->prepend_statement(arg_number_decl);
+
+    // call __tgt_target_data_begin to start the data mapping region for GPU
+    SgExprListExp* parameters = NULL;
+    parameters = buildExprListExp(buildVarRefExp(device_id_decl), buildVarRefExp(arg_number_decl), buildVarRefExp(args_base_decl), buildVarRefExp(args_decl), buildVarRefExp(arg_sizes), buildVarRefExp(arg_types));
+    string func_offloading_name = "__tgt_target_data_begin";
+    SgExprStatement* func_offloading_stmt = buildFunctionCallStmt(func_offloading_name, buildIntType(), parameters, p_scope);
+    setSourcePositionForTransformation(func_offloading_stmt);
+    insertStatementAfter(device_id_decl, func_offloading_stmt);
+
+    // call __tgt_target_data_end to end the data mapping region for GPU
+    func_offloading_name = "__tgt_target_data_end";
+    func_offloading_stmt = buildFunctionCallStmt(func_offloading_name, buildIntType(), parameters, p_scope);
+    setSourcePositionForTransformation(func_offloading_stmt);
+    body->append_statement(func_offloading_stmt);
     body->set_parent(NULL);
     target->set_body(NULL);
 
-
-    replaceStatement (target, body, true); 
+    replaceStatement (target, body, true);
     attachComment (body, "Translated from #pragma omp target data ...");
-   // removeStatement(target);
   }
 
 
-  //! Add __thread for each threadprivate variable's declaration statement and remove the #pragma omp threadprivate(...) 
+  //! Add __thread for each threadprivate variable's declaration statement and remove the #pragma omp threadprivate(...)
   void transOmpThreadprivate(SgNode * node)
   {
     ROSE_ASSERT(node != NULL );
@@ -4507,12 +5743,12 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
      // cout<<"setting TLS for decl:"<<decl->unparseToString()<< endl;
       decl->get_declarationModifier().get_storageModifier().set_thread_local_storage(true);
       // choice between set TLS to declaration or init_name (not working) ?
-     // init_name-> get_storageModifier ().set_thread_local_storage (true); 
+     // init_name-> get_storageModifier ().set_thread_local_storage (true);
     }
 
     // 6/8/2010, handling #if attached to #pragma omp threadprivate
     SgStatement* n_stmt = SageInterface::getNextStatement(target);
-    if (n_stmt == NULL) 
+    if (n_stmt == NULL)
     {
       cerr<<"Warning: found an omp threadprivate directive without a following statement."<<endl;
       cerr<<"Warning: the attached preprocessing information to the directive may get lost during translation!"<<endl;
@@ -4529,46 +5765,56 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
 
 
   //! Collect variables from OpenMP clauses: including private, firstprivate, lastprivate, reduction, etc.
-  SgInitializedNamePtrList collectClauseVariables (SgOmpClauseBodyStatement * clause_stmt, const VariantT & vt)
+  SgInitializedNamePtrList collectClauseVariables (SgUpirFieldBodyStatement * clause_stmt, const VariantT & vt)
   {
     return collectClauseVariables(clause_stmt, VariantVector(vt));
   }
 
   // Collect variables from an OpenMP clause: including private, firstprivate, lastprivate, reduction, etc.
-  SgInitializedNamePtrList collectClauseVariables (SgOmpClauseBodyStatement * clause_stmt, const VariantVector & vvt)
+  SgInitializedNamePtrList collectClauseVariables (SgUpirFieldBodyStatement * clause_stmt, const VariantVector & vvt)
   {
     SgInitializedNamePtrList result, result2;
     ROSE_ASSERT(clause_stmt != NULL);
     Rose_STL_Container<SgOmpClause*> p_clause =
       NodeQuery::queryNodeList<SgOmpClause>(clause_stmt->get_clauses(),vvt);
     for (size_t i =0; i< p_clause.size(); i++) // can have multiple reduction clauses of different reduction operations
-    {  
-      //result2 = isSgOmpVariablesClause(p_clause[i])->get_variables();  
+    {
+      //result2 = isSgOmpVariablesClause(p_clause[i])->get_variables();
       // get initialized name from varRefExp
       SgExpressionPtrList refs = isSgOmpVariablesClause(p_clause[i])->get_variables()->get_expressions();
       result2.clear();
       for (size_t j =0; j< refs.size(); j++)
-         result2.push_back(isSgVarRefExp(refs[j])->get_symbol()->get_declaration()); 
+         result2.push_back(isSgVarRefExp(refs[j])->get_symbol()->get_declaration());
       std::copy(result2.begin(), result2.end(), back_inserter(result));
     }
     return result;
   }
 
-  SgExpression* getClauseExpression(SgOmpClauseBodyStatement * clause_stmt, const VariantVector & vvt)
+  SgExpression* getClauseExpression(SgStatement * clause_stmt, const VariantVector & vvt)
   {
      SgExpression* expr = NULL;
      ROSE_ASSERT(clause_stmt != NULL);
-     Rose_STL_Container<SgOmpClause*> p_clause = 
-       NodeQuery::queryNodeList<SgOmpClause>(clause_stmt->get_clauses(),vvt);
-     //It is possible that the requested clauses are not found. We allow returning NULL expression.  
+     SgOmpClausePtrList clauses;
+     if (isSgUpirFieldBodyStatement(clause_stmt)) {
+         clauses = (isSgUpirFieldBodyStatement(clause_stmt))->get_clauses();
+     }
+     else if (isSgUpirFieldStatement(clause_stmt)) {
+         clauses = (isSgUpirFieldStatement(clause_stmt))->get_clauses();
+     }
+     else {
+         ROSE_ASSERT(0);
+     }
+     Rose_STL_Container<SgOmpClause*> p_clause =
+       NodeQuery::queryNodeList<SgOmpClause>(clauses, vvt);
+     //It is possible that the requested clauses are not found. We allow returning NULL expression.
      //Liao, 6/16/2015
      if (p_clause.size()>=1)
        expr = isSgOmpExpressionClause(p_clause[0])->get_expression();
-     return expr; 
+     return expr;
   }
 
-  //! Collect all variables from OpenMP clauses associated with an omp statement: private, reduction, etc 
-  SgInitializedNamePtrList collectAllClauseVariables (SgOmpClauseBodyStatement * clause_stmt)
+  //! Collect all variables from OpenMP clauses associated with an omp statement: private, reduction, etc
+  SgInitializedNamePtrList collectAllClauseVariables (SgUpirFieldBodyStatement * clause_stmt)
   {
     ROSE_ASSERT(clause_stmt != NULL);
 
@@ -4583,7 +5829,28 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     return collectClauseVariables(clause_stmt, vvt);
   }
 
-  bool isInClauseVariableList(SgInitializedName* var, SgOmpClauseBodyStatement * clause_stmt, const VariantVector& vvt)
+  //! Collect all variables from UPIR data fields associated with an omp statement: private, reduction, etc
+  SgInitializedNamePtrList collectAllDataVariables (SgUpirFieldBodyStatement * target)
+  {
+    SgUpirFieldBodyStatement* upir_statement = isSgUpirFieldBodyStatement(target);
+    ROSE_ASSERT(upir_statement);
+    Rose_STL_Container<SgOmpClause *> data_fields = getClause(upir_statement, V_SgUpirDataField);
+    SgInitializedNamePtrList result;
+
+    for (size_t i = 0; i < data_fields.size(); i++) {
+        SgUpirDataField* data_field = (SgUpirDataField*)data_fields[i];
+        ROSE_ASSERT(data_field);
+        std::list<SgUpirDataItemField *> data_items = data_field->get_data();
+        for (std::list<SgUpirDataItemField*>::iterator iter = data_items.begin(); iter != data_items.end(); iter++) {
+            SgUpirDataItemField* data_item = *iter;
+            result.push_back(isSgVariableSymbol(data_item->get_symbol())->get_declaration());
+        }
+    }
+
+    return result;
+  }
+
+  bool isInClauseVariableList(SgInitializedName* var, SgUpirFieldBodyStatement * clause_stmt, const VariantVector& vvt)
   {
     SgInitializedNamePtrList var_list = collectClauseVariables (clause_stmt, vvt);
     if (find(var_list.begin(), var_list.end(), var) != var_list.end() )
@@ -4593,9 +5860,9 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
   }
 
    //! Return a reduction variable's reduction operation type
-   SgOmpClause::omp_reduction_operator_enum getReductionOperationType(SgInitializedName* init_name, SgOmpClauseBodyStatement* clause_stmt)
+   SgOmpClause::omp_reduction_identifier_enum getReductionOperationType(SgInitializedName* init_name, SgUpirFieldBodyStatement* clause_stmt)
    {
-     SgOmpClause::omp_reduction_operator_enum result = SgOmpClause::e_omp_reduction_unknown;
+     SgOmpClause::omp_reduction_identifier_enum result = SgOmpClause::e_omp_reduction_unknown;
      bool found = false;
      ROSE_ASSERT(init_name != NULL);
      ROSE_ASSERT(clause_stmt!= NULL);
@@ -4614,7 +5881,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
        SgInitializedNamePtrList::const_iterator iter = find (var_list.begin(), var_list.end(), init_name);
        if (iter != var_list.end())
        {
-         result = r_clause->get_operation();
+         result = r_clause->get_identifier();
          found = true;
          break;
        }
@@ -4622,10 +5889,10 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
      // Must have a hit
      ROSE_ASSERT(found == true);
      return result;
-   }  
+   }
 
    //! Create an initial value according to reduction operator type
-   SgExpression* createInitialValueExp(SgOmpClause::omp_reduction_operator_enum r_operator)
+   SgExpression* createInitialValueExp(SgOmpClause::omp_reduction_identifier_enum r_operator)
    {
      SgExpression * result = NULL;
      switch (r_operator )
@@ -4654,19 +5921,19 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
        case SgOmpClause::e_omp_reduction_max:
        case SgOmpClause::e_omp_reduction_min:
        case SgOmpClause::e_omp_reduction_iand:
-          
+
        case SgOmpClause::e_omp_reduction_unknown:
        case SgOmpClause::e_omp_reduction_last:
        default:
          cerr<<"Illegal or unhandled reduction operator kind: "<< r_operator <<endl;
-         ROSE_ABORT();
+         ROSE_ASSERT(false);
      }
 
-     return result; 
+     return result;
    }
 
   //! Check if a variable is in a variable list of a given clause type
-  bool isInClauseVariableList(SgInitializedName* var, SgOmpClauseBodyStatement * clause_stmt, const VariantT& vt)
+  bool isInClauseVariableList(SgInitializedName* var, SgUpirFieldBodyStatement * clause_stmt, const VariantT& vt)
   {
     return isInClauseVariableList(var, clause_stmt, VariantVector(vt));
   }
@@ -4679,17 +5946,17 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
    * Incremental loops
    *      < upper:   last iteration ==> i >= upper
    *      <=     :                      i> upper
-   * Decremental loops     
+   * Decremental loops
    *      > upper:   last iteration ==> i <= upper
    *      >=     :                      i < upper
-   * AST: Orphaned worksharing OmpStatement is SgOmpForStatement->get_body() is SgForStatement
-   *     
+   * AST: Orphaned worksharing OmpStatement is SgUpirWorksharingStatement->get_body() is SgForStatement
+   *
    *  We use bottom up traversal, the inner omp for loop has already been translated, so we have to get the original upper bound via parameter
    *
-   *  Another tricky case is that when some threads don't get any iterations to work on, the initial _p_index may still trigger the lastprivate 's 
+   *  Another tricky case is that when some threads don't get any iterations to work on, the initial _p_index may still trigger the lastprivate 's
    *     if (_p_index>orig_bound) statement
    *  We add a condition to test if the thread really worked on at least on iteration before compare the _p_index and the original boundary
-   *     if (_p_index != p_lower_ && _p_index>orig_bound) 
+   *     if (_p_index != p_lower_ && _p_index>orig_bound)
    *       statement
    *
    *  Parameters:
@@ -4698,20 +5965,20 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
    *    bb1: the basic block affected by the lastprivate clause
    *    orig_var: the initialized name for the original lastprivate variable. Necessary since transOmpLoop will replace loop index with changed one
    *    local_decl: the variable declaration for the local copy of the lastprivate variable
-   *    orig_loop_upper: the worksharing construct's upper limit: 
-   *       for-loop: the loop upper value, 
+   *    orig_loop_upper: the worksharing construct's upper limit:
+   *       for-loop: the loop upper value,
    *       sections: the section count - 1
    *
    * */
-static void insertOmpLastprivateCopyBackStmts(SgStatement* ompStmt, vector <SgStatement* >& end_stmt_list,  SgBasicBlock* bb1, 
+static void insertOmpLastprivateCopyBackStmts(SgStatement* ompStmt, vector <SgStatement* >& end_stmt_list,  SgBasicBlock* bb1,
                               SgInitializedName* orig_var, SgVariableDeclaration* local_decl, SgExpression* orig_loop_upper)
 {
   SgStatement* save_stmt = NULL;
-  if (isSgOmpForStatement(ompStmt))
+  if (isSgUpirWorksharingStatement(ompStmt))
   {
     ROSE_ASSERT (orig_loop_upper != NULL);
     Rose_STL_Container <SgNode*> loops = NodeQuery::querySubTree (bb1, V_SgForStatement);
-    ROSE_ASSERT (loops.size() != 0); // there must be 1 for loop under SgOmpForStatement
+    ROSE_ASSERT (loops.size() != 0); // there must be 1 for loop under SgUpirWorksharingStatement
     SgForStatement* top_loop = isSgForStatement(loops[0]);
     ROSE_ASSERT (top_loop != NULL);
     //Get essential loop information
@@ -4766,7 +6033,7 @@ static void insertOmpLastprivateCopyBackStmts(SgStatement* ompStmt, vector <SgSt
     ROSE_ASSERT (exp_stmt != NULL);
     SgGreaterOrEqualOp* ge_op = isSgGreaterOrEqualOp(exp_stmt->get_expression());
     ROSE_ASSERT (ge_op != NULL);
-    SgVarRefExp* var_ref = isSgVarRefExp(ge_op->get_lhs_operand()); 
+    SgVarRefExp* var_ref = isSgVarRefExp(ge_op->get_lhs_operand());
     ROSE_ASSERT (var_ref != NULL);
     string switch_index_name = (var_ref->get_symbol()->get_name()).getString();
     SgExpression* if_cond= NULL;
@@ -4776,11 +6043,11 @@ static void insertOmpLastprivateCopyBackStmts(SgStatement* ompStmt, vector <SgSt
     SgStatement* true_body = buildAssignStatement(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl));
     save_stmt = buildIfStmt(if_cond_stmt, true_body, NULL);
   }
-  else  
+  else
   {
     cerr<<"Illegal SgOmpxx for lastprivate variable: \nOmpStatement is:"<< ompStmt->class_name()<<endl;
     cerr<<"lastprivate variable is:"<<orig_var->get_name().getString()<<endl;
-    ROSE_ABORT ();
+    ROSE_ASSERT (false);
   }
   end_stmt_list.push_back(save_stmt);
 
@@ -4791,80 +6058,80 @@ static void insertOmpLastprivateCopyBackStmts(SgStatement* ompStmt, vector <SgSt
   // bb1: the affected code block by the reduction clause
   // orig_var: the reduction variable's original copy
   // local_decl: the local copy of the reduction variable
-  // Two ways to do the reduction operation: 
+  // Two ways to do the reduction operation:
   //1. builtin function TODO
   //    __sync_fetch_and_add_4(&shared, (unsigned int)local);
-  //2. using atomic runtime call: 
+  //2. using atomic runtime call:
   //    GOMP_atomic_start ();
   //    shared = shared op local;
   //    GOMP_atomic_end ();
   // We use the 2nd method only for now for simplicity and portability
-static void insertOmpReductionCopyBackStmts (SgOmpClause::omp_reduction_operator_enum r_operator, vector <SgStatement* >& end_stmt_list,  SgBasicBlock* bb1, SgInitializedName* orig_var, SgVariableDeclaration* local_decl)
+static void insertOmpReductionCopyBackStmts (SgOmpClause::omp_reduction_identifier_enum r_operator, vector <SgStatement* >& end_stmt_list,  SgBasicBlock* bb1, SgInitializedName* orig_var, SgVariableDeclaration* local_decl)
 {
 #ifdef ENABLE_XOMP
-  SgExprStatement* atomic_start_stmt = buildFunctionCallStmt("XOMP_atomic_start", buildVoidType(), NULL, bb1); 
-#else  
-  SgExprStatement* atomic_start_stmt = buildFunctionCallStmt("GOMP_atomic_start", buildVoidType(), NULL, bb1); 
-#endif  
-  end_stmt_list.push_back(atomic_start_stmt);   
+  SgExprStatement* atomic_start_stmt = buildFunctionCallStmt("__kmpc_atomic_start", buildVoidType(), NULL, bb1);
+#else
+  SgExprStatement* atomic_start_stmt = buildFunctionCallStmt("GOMP_atomic_start", buildVoidType(), NULL, bb1);
+#endif
+  end_stmt_list.push_back(atomic_start_stmt);
   SgExpression* r_exp = NULL;
-  switch (r_operator) 
+  switch (r_operator)
   {
     case SgOmpClause::e_omp_reduction_plus:
-      r_exp = buildAddOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl)); 
+      r_exp = buildAddOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl));
       break;
     case SgOmpClause::e_omp_reduction_mul:
-      r_exp = buildMultiplyOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl)); 
+      r_exp = buildMultiplyOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl));
       break;
     case SgOmpClause::e_omp_reduction_minus:
-      r_exp = buildSubtractOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl)); 
+      r_exp = buildSubtractOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl));
       break;
     case SgOmpClause::e_omp_reduction_bitand:
-      r_exp = buildBitAndOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl)); 
+      r_exp = buildBitAndOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl));
       break;
     case SgOmpClause::e_omp_reduction_bitor:
-      r_exp = buildBitOrOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl)); 
+      r_exp = buildBitOrOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl));
       break;
-    case SgOmpClause::e_omp_reduction_bitxor: 
-      r_exp = buildBitXorOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl)); 
+    case SgOmpClause::e_omp_reduction_bitxor:
+      r_exp = buildBitXorOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl));
       break;
     case SgOmpClause::e_omp_reduction_logand:
-      r_exp = buildAndOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl)); 
+      r_exp = buildAndOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl));
       break;
     case SgOmpClause::e_omp_reduction_logor:
-      r_exp = buildOrOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl)); 
+      r_exp = buildOrOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl));
       break;
-      // TODO Fortran operators.   
+      // TODO Fortran operators.
     case SgOmpClause::e_omp_reduction_and: // Fortran .and.
     case SgOmpClause::e_omp_reduction_or: // Fortran .or.
-    case SgOmpClause::e_omp_reduction_eqv: 
+    case SgOmpClause::e_omp_reduction_eqv:
     case SgOmpClause::e_omp_reduction_neqv:
     case SgOmpClause::e_omp_reduction_max:
     case SgOmpClause::e_omp_reduction_min:
     case SgOmpClause::e_omp_reduction_iand:
     case SgOmpClause::e_omp_reduction_ior:
     case SgOmpClause::e_omp_reduction_ieor:
-    case SgOmpClause::e_omp_reduction_unknown: 
+    case SgOmpClause::e_omp_reduction_unknown:
     case SgOmpClause::e_omp_reduction_last:
     default:
         cerr<<"Illegal or unhandled reduction operator type:"<< r_operator<<endl;
     }
     SgStatement* reduction_stmt = buildAssignStatement(buildVarRefExp(orig_var, bb1), r_exp);
-    end_stmt_list.push_back(reduction_stmt);   
+    end_stmt_list.push_back(reduction_stmt);
 #ifdef ENABLE_XOMP
-    SgExprStatement* atomic_end_stmt = buildFunctionCallStmt("XOMP_atomic_end", buildVoidType(), NULL, bb1);  
-#else    
-    SgExprStatement* atomic_end_stmt = buildFunctionCallStmt("GOMP_atomic_end", buildVoidType(), NULL, bb1);  
-#endif    
-    end_stmt_list.push_back(atomic_end_stmt);   
+    SgExprStatement* atomic_end_stmt = buildFunctionCallStmt("__kmpc_atomic_end", buildVoidType(), NULL, bb1);
+#else
+    SgExprStatement* atomic_end_stmt = buildFunctionCallStmt("GOMP_atomic_end", buildVoidType(), NULL, bb1);
+#endif
+    end_stmt_list.push_back(atomic_end_stmt);
   }
 
 //! Liao 2/12/2013. Insert the thread-block inner level reduction statement into the end of the end_stmt_list
 // e.g.  xomp_inner_block_reduction_float (local_error, per_block_error, XOMP_REDUCTION_PLUS);
-static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_enum r_operator, vector <SgStatement* >& end_stmt_list,  SgBasicBlock* bb1
+static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifier_enum r_operator, vector <SgStatement* >& end_stmt_list,  SgBasicBlock* bb1
 , SgInitializedName* orig_var, SgVariableDeclaration* local_decl, SgVariableDeclaration* per_block_decl)
 {
-   ROSE_ASSERT (bb1 && orig_var && local_decl && per_block_decl);  
+   ROSE_ASSERT (bb1 && orig_var && local_decl && per_block_decl);
    // the integer value representing different reduction operations, defined within libxomp.h for accelerator model
    // TODO refactor the code to have a function converting operand types to integers
   int op_value = -1;
@@ -4916,14 +6183,14 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
   ROSE_ASSERT (var_type != NULL);
   //TODO: this could be risky. It is better to have our own conversion function to have full control over it.
   string type_str = var_type->get_base_type()->unparseToString();
-  per_block_reduction_map[var_sym] = op_value; // save the per block symbol and its corresponding reduction integer value defined in the libxomp.h 
+  per_block_reduction_map[var_sym] = op_value; // save the per block symbol and its corresponding reduction integer value defined in the libxomp.h
   SgIntVal* reduction_op = buildIntVal (op_value);
   SgExprListExp * parameter_list = buildExprListExp (buildVarRefExp(local_decl), buildVarRefExp(per_block_decl), reduction_op);
   SgStatement* func_call_stmt = buildFunctionCallStmt("xomp_inner_block_reduction_"+type_str, buildVoidType(),parameter_list ,bb1);
   end_stmt_list.push_back(func_call_stmt);
 }
    //TODO move to sageInterface advanced transformation ???
-   //! Generate element-by-element assignment from a right-hand array to left_hand array variable. 
+   //! Generate element-by-element assignment from a right-hand array to left_hand array variable.
    //
    //e.g.  for int a[M][N], b[M][N],  a=b is implemented as follows:
    //
@@ -4931,7 +6198,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
    //  int *a_ap = (int *)a;
    //  int *b_ap = (int *)b;
    //  int i;
-   //  for (i=0;i<element_count; i++) 
+   //  for (i=0;i<element_count; i++)
    //    *(b_ap+i) = *(a_ap+i);
    //
    static  SgBasicBlock* generateArrayAssignmentStatements
@@ -4953,36 +6220,36 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
       ROSE_ASSERT (getElementType(left_array_type) == getElementType(right_array_type));
       int dim_count = getDimensionCount(left_array_type);
       ROSE_ASSERT (dim_count == getDimensionCount(right_array_type));
-      int element_count = getArrayElementCount (left_array_type); 
+      int element_count = getArrayElementCount (left_array_type);
       ROSE_ASSERT (element_count == (int) getArrayElementCount (right_array_type));
 
      SgBasicBlock* bb = buildBasicBlock();
        // front_stmt_list.push_back() will handle this later on.
        // Keep this will cause duplicated appendStatement()
       // appendStatement(bb, scope);
-     
+
          // int *a_ap = (int*) a;
-      string right_name = right_operand->get_name().getString(); 
+      string right_name = right_operand->get_name().getString();
       string right_name_p = right_name+"_ap"; // array pointer (ap)
       SgType* elementPointerType = buildPointerType(buildIntType());
       SgAssignInitializer * initor = buildAssignInitializer
              (buildCastExp(buildVarRefExp(right_operand,scope),elementPointerType),elementPointerType);
       SgVariableDeclaration* decl_right = buildVariableDeclaration (right_name_p, elementPointerType, initor, bb );
      appendStatement(decl_right, bb);
-      
+
       // int *b_ap = (int*) b;
-      string left_name = left_operand->get_name().getString(); 
+      string left_name = left_operand->get_name().getString();
       string left_name_p = left_name+"_ap";
       SgAssignInitializer * initor2 = buildAssignInitializer
              (buildCastExp(buildVarRefExp(left_operand,scope),elementPointerType),elementPointerType);
       SgVariableDeclaration* decl_left = buildVariableDeclaration (left_name_p, elementPointerType, initor2, bb );
      appendStatement(decl_left, bb);
-   
+
      // int i;
      SgVariableDeclaration* decl_i = buildVariableDeclaration("_p_i", buildIntType(), NULL, bb);
      appendStatement(decl_i, bb);
 
-   //  for (i=0;i<element_count; i++) 
+   //  for (i=0;i<element_count; i++)
    //    *(b_ap+i) = *(a_ap+i);
     SgStatement* init_stmt = buildAssignStatement(buildVarRefExp(decl_i), buildIntVal(0));
     SgStatement* test_stmt = buildExprStatement(buildLessThanOp(buildVarRefExp(decl_i),buildIntVal(element_count)));
@@ -5003,9 +6270,9 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
     ROSE_ASSERT (SageInterface::is_Fortran_language() == true);
     // find the right scope (target body) to insert the declaration, start from the original scope
     SgBasicBlock* t_body = NULL;
-  
+
     //find enclosing parallel region's body
-    SgOmpParallelStatement * omp_stmt = isSgOmpParallelStatement(getEnclosingNode<SgOmpParallelStatement>(orig_scope));
+    SgUpirSpmdStatement * omp_stmt = isSgUpirSpmdStatement(getEnclosingNode<SgUpirSpmdStatement>(orig_scope));
     if (omp_stmt)
     {
       SgBasicBlock * omp_body = isSgBasicBlock(omp_stmt->get_body());
@@ -5054,7 +6321,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
       ROSE_ASSERT (prev_stmt != NULL);
       insertStatementAfter (prev_stmt, *iter);
     }
-    prev_stmt = *iter; 
+    prev_stmt = *iter;
   }
 }
 #endif
@@ -5062,16 +6329,16 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
 //! This is a highly specialized operation which can find the right place to insert a Fortran variable declaration
 //  during OpenMP lowering.
 //
-//  The reasons are: 
+//  The reasons are:
 //    1)Fortran (at least F77) requires declaration statements to be consecutive within an enclosing function definition.
 //    The C99-style generation of 'int loop_index' within a SgBasicBlock in the middle of some executable statement is illegal
-//     for Fortran. We have to find the enclosing function body, located the declaration sequence, and add the new declaration 
-//     after it. 
+//     for Fortran. We have to find the enclosing function body, located the declaration sequence, and add the new declaration
+//     after it.
 //
-//    2) When translating OpenMP constructs within a parallel region, the declaration (such as those for private variables of the construct ) 
+//    2) When translating OpenMP constructs within a parallel region, the declaration (such as those for private variables of the construct )
 //       should be inserted into the declaration part of the body of the parallel region, which will become function body of the outlined
 //       function when translating the region later on.
-//       Insert the declaration to the current enclosing function definition is not correct. 
+//       Insert the declaration to the current enclosing function definition is not correct.
 //
 // Liao 1/12/2011
   SgVariableDeclaration * buildAndInsertDeclarationForOmp(const std::string &name, SgType *type, SgInitializer *varInit, SgBasicBlock *orig_scope)
@@ -5081,16 +6348,16 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
 
   // find the right scope (target body) to insert the declaration, start from the original scope
 
-  SgBasicBlock* t_body = NULL; 
+  SgBasicBlock* t_body = NULL;
 
 #if 0
   //find enclosing parallel region's body
-  SgOmpParallelStatement * omp_stmt = isSgOmpParallelStatement(getEnclosingNode<SgOmpParallelStatement>(orig_scope));
+  SgUpirSpmdStatement * omp_stmt = isSgUpirSpmdStatement(getEnclosingNode<SgUpirSpmdStatement>(orig_scope));
   if (omp_stmt)
   {
     SgBasicBlock * omp_body = isSgBasicBlock(omp_stmt->get_body());
     ROSE_ASSERT(omp_body != NULL);
-    t_body = omp_body; 
+    t_body = omp_body;
   }
   else
   {
@@ -5099,9 +6366,9 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
     ROSE_ASSERT (func_def != NULL);
     SgBasicBlock * f_body = func_def->get_body();
     ROSE_ASSERT(f_body!= NULL);
-    t_body = f_body; 
+    t_body = f_body;
   }
-  ROSE_ASSERT (t_body != NULL);  
+  ROSE_ASSERT (t_body != NULL);
 #else
    t_body = getEnclosingRegionOrFuncDefinition(orig_scope);
 #endif
@@ -5109,7 +6376,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
   result = buildVariableDeclaration (name, type, varInit, t_body);
 
   // Insert to be the declaration after current declaration sequence, if any
-#if 0 
+#if 0
   SgStatement* l_stmt = findLastDeclarationStatement (t_body);
   if (l_stmt)
     insertStatementAfter(l_stmt,result);
@@ -5117,7 +6384,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
     prependStatement(result, t_body);
 #else
     insertStatementAfterLastDeclaration (result, t_body);
-#endif    
+#endif
   ROSE_ASSERT (result != NULL);
   return result;
 }
@@ -5127,11 +6394,11 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
     //                   initialize the local declaration:(firstprivate, reduction)
     //                   variable substitution for the variables:(all)
     //                   save local copy back to its global one:(reduction, lastprivate)
-    // Note that a variable could be both firstprivate and lastprivate                  
+    // Note that a variable could be both firstprivate and lastprivate
     // Parameters:
     //     ompStmt: the OpenMP statement node with variable clauses
     //     bb1: the translation-generated basic block to implement ompStmt
-    //     orig_loop_upper: 
+    //     orig_loop_upper:
     //       if ompStmt is loop construct, pass the original loop upper bound
     //       if ompStmt is omp sections, pass the section count - 1
     // This function is later extended to support OpenMP accelerator model. In this model,
@@ -5141,21 +6408,21 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
     {
       ROSE_ASSERT( ompStmt != NULL);
       ROSE_ASSERT( bb1 != NULL);
-      SgOmpClauseBodyStatement* clause_stmt = isSgOmpClauseBodyStatement(ompStmt);
+      SgUpirFieldBodyStatement* clause_stmt = isSgUpirFieldBodyStatement(ompStmt);
       ROSE_ASSERT( clause_stmt!= NULL);
 
-      // collect variables 
-     SgInitializedNamePtrList var_list = collectAllClauseVariables(clause_stmt);
+      // collect variables
+     SgInitializedNamePtrList var_list = collectAllDataVariables(clause_stmt);
      // Only keep the unique ones
      sort (var_list.begin(), var_list.end());;
      SgInitializedNamePtrList:: iterator new_end = unique (var_list.begin(), var_list.end());
      var_list.erase(new_end, var_list.end());
-     VariableSymbolMap_t var_map; 
+     VariableSymbolMap_t var_map;
      ASTtools::VarSymSet_t var_set;
-     
-     vector <SgStatement* > front_stmt_list, end_stmt_list, front_init_list;  
-    
-// this is call by both transOmpTargetParallel and transOmpTargetLoop, we should move this to the correct caller place 
+
+     vector <SgStatement* > front_stmt_list, end_stmt_list, front_init_list;
+
+// this is call by both transOmpTargetParallel and transOmpTargetLoop, we should move this to the correct caller place
 //      per_block_declarations.clear(); // must reset to empty or wrong reference to stale content generated previously
      for (size_t i=0; i< var_list.size(); i++)
      {
@@ -5168,26 +6435,34 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
 
        VariantVector vvt (V_SgOmpPrivateClause);
        vvt.push_back(V_SgOmpReductionClause);
+       vvt.push_back(V_SgOmpFirstprivateClause);
+
+       // create a set of UPIR data sharing property
+       std::set<SgOmpClause::upir_data_sharing_enum> searching_variants;
+       searching_variants.insert(SgOmpClause::e_upir_data_sharing_private);
+       searching_variants.insert(SgOmpClause::e_upir_data_sharing_firstprivate);
+       searching_variants.insert(SgOmpClause::e_upir_data_sharing_reduction);
 
       //TODO: No such concept of firstprivate and lastprivate in accelerator model??
        if (!isAcceleratorModel) // we actually already has enable_accelerator, but it is too global for handling both CPU and GPU translation
        {
-         vvt.push_back(V_SgOmpFirstprivateClause);
          vvt.push_back(V_SgOmpLastprivateClause);
+         searching_variants.insert(SgOmpClause::e_upir_data_sharing_lastprivate);
        }
-   
+
+      // TODO: add the UPIR version of this code
       // a local private copy
       SgVariableDeclaration* local_decl = NULL;
-      SgOmpClause::omp_reduction_operator_enum r_operator = SgOmpClause::e_omp_reduction_unknown  ;
+      SgOmpClause::omp_reduction_identifier_enum r_operator = SgOmpClause::e_omp_reduction_unknown  ;
       bool isReductionVar = isInClauseVariableList(orig_var, clause_stmt,V_SgOmpReductionClause);
 
       // step 1. Insert local declaration for private, firstprivate, lastprivate and reduction
-      // Sara, 5/31/2013: if variable is in Function Scope ( a parameter ) and array, 
+      // Sara, 5/31/2013: if variable is in Function Scope ( a parameter ) and array,
       // we don't want a private copy, since the only thing private is the pointer, not the pointed data
       // We had a variable passed as private that has to be used as shared
       // We create a pointer to the variable and replace all the occurrences of the variable by the pointer
       // Example:
-      // source code: 
+      // source code:
       // void outlining( int M[10][10] ) {
       //   #pragma omp task firstprivate( M )
       //   M[0][0] = 4;
@@ -5201,7 +6476,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
       //   int (**M)[10UL] = (int (**)[10UL])(&(((struct OUT__17__7038___data *)__out_argv) -> M));
       //   (*M)[0][0] = 4;
       // }
-      if (isInClauseVariableList(orig_var, clause_stmt, vvt))
+      if (isInUpirDataSharingList(clause_stmt, orig_symbol, searching_variants))
       {
         if( !(isSgArrayType(orig_type) && isSgFunctionDefinition (orig_var->get_scope ())) )
         {
@@ -5212,11 +6487,11 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
           // But here is one exception: an array type firstprivate variable should
           // be initialized element-by-element
           // Liao, 4/12/2010
-          if (isInClauseVariableList(orig_var, clause_stmt,V_SgOmpFirstprivateClause) && !isSgArrayType(orig_type) )
-          {  
+          if (isInUpirDataSharingList(clause_stmt, orig_symbol, SgOmpClause::e_upir_data_sharing_firstprivate) && !isSgArrayType(orig_type) )
+          {
             init = buildAssignInitializer(buildVarRefExp(orig_var, bb1));
           }
-          
+
           string private_name;
           if (SageInterface::is_Fortran_language() )
           {
@@ -5236,10 +6511,10 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
             local_decl = buildVariableDeclaration(private_name, orig_type, init, bb1);
             //ROSE_ASSERT (getFirst);isSgFunctionDefinition (orig_var->get_scope (
             //   prependStatement(local_decl, bb1);
-            front_stmt_list.push_back(local_decl);   
+            front_stmt_list.push_back(local_decl);
           }
           // record the map from old to new symbol
-          var_map.insert( VariableSymbolMap_t::value_type( orig_symbol, getFirstVarSym(local_decl)) ); 
+          var_map.insert( VariableSymbolMap_t::value_type( orig_symbol, getFirstVarSym(local_decl)) );
         }
         else
         {
@@ -5248,15 +6523,16 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
       }
       // step 2. Initialize the local copy for array-type firstprivate variables TODO copyin, copyprivate
 #if 1
-      if (isInClauseVariableList(orig_var, clause_stmt,V_SgOmpFirstprivateClause) && 
+      if (isInUpirDataSharingList(clause_stmt, orig_symbol, SgOmpClause::e_upir_data_sharing_firstprivate) &&
           isSgArrayType(orig_type) && !isSgFunctionDefinition (orig_var->get_scope ()))
       {
         // SgExprStatement* init_stmt = buildAssignStatement(buildVarRefExp(local_decl), buildVarRefExp(orig_var, bb1));
-        SgInitializedName* leftArray = getFirstInitializedName(local_decl); 
-        SgBasicBlock* arrayAssign = generateArrayAssignmentStatements (leftArray, orig_var, bb1); 
-       front_stmt_list.push_back(arrayAssign);   
-      } 
-#endif    
+        SgInitializedName* leftArray = getFirstInitializedName(local_decl);
+        SgBasicBlock* arrayAssign = generateArrayAssignmentStatements (leftArray, orig_var, bb1);
+       front_stmt_list.push_back(arrayAssign);
+      }
+#endif
+      // TODO: add UPIR version of this code
       if (isReductionVar) // create initial value assignment for the local reduction variable
       {
         r_operator = getReductionOperationType(orig_var, clause_stmt);
@@ -5269,21 +6545,21 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
         }
         else
         {
-          front_stmt_list.push_back(init_stmt);   
+          front_stmt_list.push_back(init_stmt);
         }
      }
 
-      // Liao, 2/12/2013. For an omp for loop within "omp target". We translate its reduction variable by using 
+      // Liao, 2/12/2013. For an omp for loop within "omp target". We translate its reduction variable by using
       // a two-level reduction method: thread-block level (within kernel) and beyond-block level (done on CPU side).
       // So we have to insert a pointer to the array of per-block reduction results right before its enclosing "omp target" directive
       // The insertion point is decided so that the outliner invoked by transOmpTargetParallel() can later catch this newly introduced variable
-      // and handle it in the parameter list properly. 
+      // and handle it in the parameter list properly.
       //
       // e.g. REAL* per_block_results = (REAL *)xomp_deviceMalloc (numBlocks.x* sizeof(REAL));
-       SgVariableDeclaration* per_block_decl = NULL; 
+       SgVariableDeclaration* per_block_decl = NULL;
       if (isReductionVar && isAcceleratorModel)
       {
-        SgOmpParallelStatement* enclosing_omp_parallel = getEnclosingNode<SgOmpParallelStatement> (ompStmt);
+        SgUpirSpmdStatement* enclosing_omp_parallel = getEnclosingNode<SgUpirSpmdStatement> (ompStmt);
         ROSE_ASSERT (enclosing_omp_parallel!= NULL);
         //SgScopeStatement* scope_for_insertion = enclosing_omp_target->get_scope();
         SgScopeStatement* scope_for_insertion = isSgScopeStatement(enclosing_omp_parallel->get_scope());
@@ -5291,39 +6567,40 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
         SgVarRefExp* blk_ref = buildVarRefExp("_num_blocks_", scope_for_insertion);
         SgExpression* multi_exp = buildMultiplyOp( blk_ref, buildSizeOfOp(orig_type) );
         SgExprListExp* parameter_list = buildExprListExp(multi_exp);
-        SgExpression* init_exp = buildCastExp(buildFunctionCallExp(SgName("xomp_deviceMalloc"), buildPointerType(buildVoidType()), parameter_list, scope_for_insertion),  
+        SgExpression* init_exp = buildCastExp(buildFunctionCallExp(SgName("xomp_deviceMalloc"), buildPointerType(buildVoidType()), parameter_list, scope_for_insertion),
                                               buildPointerType(orig_type));
        // the prefix of "_dev_per_block_" is important for later handling when calling outliner: add them into the parameter list
         per_block_decl = buildVariableDeclaration ("_dev_per_block_"+orig_name, buildPointerType(orig_type), buildAssignInitializer(init_exp), scope_for_insertion);
         // this statement refers to _num_blocks_, which will be declared later on when translating "omp parallel" enclosed in "omp target"
-        // so we insert it  later when the kernel launch statement is inserted. 
+        // so we insert it  later when the kernel launch statement is inserted.
         // insertStatementAfter(enclosing_omp_parallel, per_block_decl);
         per_block_declarations.push_back(per_block_decl);
         // store all reduction variables at the loop level, they will be used later when translating the enclosing "omp target" to help decide on the variables being passed
       }
 
+      // TODO: add UPIR version of this code
       // step 3. Save the value back for lastprivate and reduction
       if (isInClauseVariableList(orig_var, clause_stmt,V_SgOmpLastprivateClause))
       {
         insertOmpLastprivateCopyBackStmts (ompStmt, end_stmt_list, bb1, orig_var, local_decl, orig_loop_upper);
       } else if (isReductionVar)
       {
-        // two-level reduction is used for accelerator model 
+        // two-level reduction is used for accelerator model
         if (isAcceleratorModel)
-          insertInnerThreadBlockReduction (r_operator, end_stmt_list, bb1, orig_var, local_decl, per_block_decl); 
-        else 
+          insertInnerThreadBlockReduction (r_operator, end_stmt_list, bb1, orig_var, local_decl, per_block_decl);
+        else
           insertOmpReductionCopyBackStmts(r_operator, end_stmt_list, bb1, orig_var, local_decl);
       }
 
      } // end for (each variable)
 
    // step 4. Variable replacement for all original bb1
-   replaceVariableReferences(bb1, var_map); 
+   replaceVariableReferences(bb1, var_map);
    replaceVariablesWithPointerDereference(bb1, var_set); // Variables that must be replaced by a pointer to the variable
 
    // We delay the insertion of declaration, initialization , and save-back statements until variable replacement is done
    // in order to avoid replacing variables of these newly generated statements.
-   prependStatementList(front_stmt_list, bb1); 
+   prependStatementList(front_stmt_list, bb1);
    // Fortran: add initialization statements after all front statements are inserted
   if (SageInterface::is_Fortran_language() )
   {
@@ -5334,10 +6611,10 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
    {
      ROSE_ASSERT (front_init_list.size() ==0);
    }
-   appendStatementList(end_stmt_list, bb1); 
+   appendStatementList(end_stmt_list, bb1);
 #if 1
    // Liao 1/7/2010 , add assertion here, useful when generating outlined functions by moving statements to a function body
-   SgStatementPtrList & srcStmts = bb1->get_statements(); 
+   SgStatementPtrList & srcStmts = bb1->get_statements();
    for (SgStatementPtrList::iterator i = srcStmts.begin(); i != srcStmts.end(); i++)
    {
      SgDeclarationStatement* declaration = isSgDeclarationStatement(*i);
@@ -5364,12 +6641,12 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
        }
 
    } // end for
-#endif    
+#endif
   } // end void transOmpVariables()
 
-  //  if (omp_get_thread_num () == 0) 
+  //  if (omp_get_thread_num () == 0)
   //     { ... }
-  //  Or if (XOMP_master())   
+  //  Or if (XOMP_master())
   //     { ...  }
   void transOmpMaster(SgNode * node)
   {
@@ -5384,15 +6661,15 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
     ROSE_ASSERT(body!= NULL );
 
 #ifdef ENABLE_XOMP
-   SgFunctionCallExp * func_call = buildFunctionCallExp("XOMP_master", buildIntType(), NULL, scope); 
-   SgIfStmt* if_stmt = NULL; 
+   SgFunctionCallExp * func_call = buildFunctionCallExp("XOMP_master", buildIntType(), NULL, scope);
+   SgIfStmt* if_stmt = NULL;
    if (SageInterface::is_Fortran_language())
-      if_stmt = buildIfStmt(buildEqualityOp(func_call,buildIntVal(1)), body, NULL); 
-   else   
-      if_stmt = buildIfStmt(func_call, body, NULL); 
+      if_stmt = buildIfStmt(buildEqualityOp(func_call,buildIntVal(1)), body, NULL);
+   else
+      if_stmt = buildIfStmt(func_call, body, NULL);
 #else
     SgExpression* func_exp = buildFunctionCallExp("omp_get_thread_num", buildIntType(), NULL, scope);
-    SgIfStmt* if_stmt = buildIfStmt(buildEqualityOp(func_exp,buildIntVal(0)), body, NULL); 
+    SgIfStmt* if_stmt = buildIfStmt(buildEqualityOp(func_exp,buildIntVal(0)), body, NULL);
 #endif
     replaceStatement(target, if_stmt,true);
     moveUpPreprocessingInfo (if_stmt, target, PreprocessingInfo::before);
@@ -5400,14 +6677,14 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
     {
   //    cout<<"Found a last stmt. scope is: "<<scope->class_name()<<endl;
   //    dumpPreprocInfo(scope);
-  // move preprecessing info. from inside position to an after position    
+  // move preprecessing info. from inside position to an after position
       moveUpPreprocessingInfo (if_stmt, scope, PreprocessingInfo::inside, PreprocessingInfo::after);
     }
   }
 
 
   // Two cases: without or with copyprivate clause
-  // without it: 
+  // without it:
   //  if (GOMP_single_start ()) //bool GOMP_single_start (void)
   //     { ...       }
   // with it: TODO
@@ -5423,7 +6700,14 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
     SgStatement* body = target->get_body();
     ROSE_ASSERT(body!= NULL );
 
-   SgIfStmt* if_stmt = NULL; 
+    SgIfStmt* if_stmt = NULL;
+
+    SgExprListExp* parameters = NULL;
+    SgVariableDeclaration* kmpc_global_tid_declaration = get_kmpc_global_tid(node, scope);
+    SgExpression* thread_global_tid = buildVarRefExp(getFirstVariable(*kmpc_global_tid_declaration).get_name(), scope);
+    insertStatement(target, kmpc_global_tid_declaration);
+    kmpc_global_tid_declaration->set_parent(target->get_parent());
+    parameters = buildExprListExp(buildIntVal(0), thread_global_tid);
 
    if (SageInterface::is_Fortran_language())
    {
@@ -5432,20 +6716,19 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
 #else
      //     SgExpression* func_exp = buildFunctionCallExp("GOMP_single_start", buildIntType(), NULL, scope);
      cerr<<"Fortran with Omni runtime is not yet implemented!"<<endl;
-     ROSE_ABORT ();
+     ROSE_ASSERT (false);
 #endif
 
-     if_stmt = buildIfStmt(buildEqualityOp(func_exp,buildIntVal(1)), body, NULL); 
+     if_stmt = buildIfStmt(buildEqualityOp(func_exp,buildIntVal(1)), body, NULL);
    }
    else // C/C++
    {
 #ifdef ENABLE_XOMP
-     SgExpression* func_exp = buildFunctionCallExp("XOMP_single", buildBoolType(), NULL, scope);
+     SgExpression* func_exp = buildFunctionCallExp("__kmpc_single", buildBoolType(), parameters, scope);
 #else
      SgExpression* func_exp = buildFunctionCallExp("GOMP_single_start", buildBoolType(), NULL, scope);
 #endif
-
-     if_stmt = buildIfStmt(func_exp, body, NULL); 
+     if_stmt = buildIfStmt(func_exp, body, NULL);
    }
 
    replaceStatement(target, if_stmt,true);
@@ -5453,11 +6736,15 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
    if (SageInterface::is_Fortran_language())
      insert_libxompf_h (if_stmt); // need prototype for xomp runtime function
     transOmpVariables(target, true_body);
-    // handle nowait 
+
+    SgExprStatement* end_single_call = buildFunctionCallStmt("__kmpc_end_single", buildVoidType(), parameters, scope);
+    insertStatementAfter(body, end_single_call);
+
+    // handle nowait
     if (!hasClause(target, V_SgOmpNowaitClause))
     {
 #ifdef ENABLE_XOMP
-      SgExprStatement* barrier_call= buildFunctionCallStmt("XOMP_barrier", buildVoidType(), NULL, scope);
+      SgExprStatement* barrier_call = buildFunctionCallStmt("__kmpc_barrier", buildVoidType(), parameters, scope);
 #else
       SgExprStatement* barrier_call= buildFunctionCallStmt("GOMP_barrier", buildVoidType(), NULL, scope);
 #endif
@@ -5466,10 +6753,10 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
   }
 
   // two cases: omp parallel and  omp task
-  // Reused Outliner for this. 
+  // Reused Outliner for this.
   // void SgFunctionDeclaration* generateOutlinedFunction(SgNode* node)
   // {
-  //   
+  //
   // }
   //
   //! Translation driver
@@ -5478,12 +6765,12 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
 #if 0 // not in use
     switch (node->variantT())
     {
-      case V_SgOmpParallelStatement:
+      case V_SgUpirSpmdStatement:
         {
           transOmpParallel(node);
           break;
         }
-      case V_SgOmpForStatement:
+      case V_SgUpirWorksharingStatement:
         {
           transOmpFor(node);
           break;
@@ -5501,7 +6788,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
 
       default:
         {
-          // do nothing here    
+          // do nothing here
         }
     }// switch
 #endif
@@ -5509,7 +6796,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
   }//translationDriver::visit()
 
  //! Build a non-reduction variable clause for a given OpenMP directive. It directly returns the clause if the clause already exists
-  SgOmpVariablesClause* buildOmpVariableClause(SgOmpClauseBodyStatement * clause_stmt, const VariantT& vt)
+  SgOmpVariablesClause* buildOmpVariableClause(SgUpirFieldBodyStatement * clause_stmt, const VariantT& vt)
   {
     SgOmpVariablesClause* result = NULL;
     ROSE_ASSERT(clause_stmt != NULL);
@@ -5530,7 +6817,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
           result = new SgOmpFirstprivateClause(buildExprListExp());
           break;
         case V_SgOmpLastprivateClause:
-          result = new SgOmpLastprivateClause(buildExprListExp());
+          result = new SgOmpLastprivateClause(buildExprListExp(), SgOmpClause::e_omp_lastprivate_modifier_unspecified);
           break;
         case V_SgOmpPrivateClause:
           result = new SgOmpPrivateClause(buildExprListExp());
@@ -5541,14 +6828,14 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
         case V_SgOmpReductionClause:
         default:
           cerr<<"Unacceptable clause type in OmpSupport::buildOmpVariableClause(): "<<vt<<endl;
-          ROSE_ABORT();
+          ROSE_ASSERT(false);
       }
     }
     else
     {
       result = isSgOmpVariablesClause(clauses[0]);
     }
-    ROSE_ASSERT(result != NULL); 
+    ROSE_ASSERT(result != NULL);
     setOneSourcePositionForTransformation(result);
 
     clause_stmt->get_clauses().push_back(result);
@@ -5558,11 +6845,15 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
   }
 
   //! Remove one or more clauses of type vt
-  int removeClause (SgOmpClauseBodyStatement * clause_stmt, const VariantT& vt)
+  int removeClause(SgStatement* clause_stmt, const VariantT& vt)
   {
     ROSE_ASSERT(clause_stmt != NULL);
-    SgOmpClausePtrList& clause_list= clause_stmt->get_clauses ();  
-    std::vector< Rose_STL_Container<SgOmpClause*>::iterator > iter_vec; 
+    ROSE_ASSERT(isSgUpirFieldBodyStatement(clause_stmt) || isSgUpirFieldStatement(clause_stmt));
+    SgOmpClausePtrList& clause_list
+        = (isSgUpirFieldBodyStatement(clause_stmt))
+        ? (isSgUpirFieldBodyStatement(clause_stmt))->get_clauses()
+        : (isSgUpirFieldStatement(clause_stmt))->get_clauses();
+    std::vector< Rose_STL_Container<SgOmpClause*>::iterator > iter_vec;
     Rose_STL_Container<SgOmpClause*>::iterator iter ;
     // collect iterators pointing the matching clauses
     for (iter = clause_list.begin(); iter != clause_list.end(); iter ++)
@@ -5576,11 +6867,11 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
    std::vector< Rose_STL_Container<SgOmpClause*>::iterator >::reverse_iterator r_iter;
    for (r_iter = iter_vec.rbegin(); r_iter!= iter_vec.rend();r_iter ++)
      clause_list.erase (*r_iter);
-   return iter_vec.size();  
+   return iter_vec.size();
   }
-   
+
   //! Add a variable into a non-reduction clause of an OpenMP statement, create the clause transparently if it does not exist
-    void addClauseVariable(SgInitializedName* var, SgOmpClauseBodyStatement * clause_stmt, const VariantT& vt)
+    void addClauseVariable(SgInitializedName* var, SgUpirFieldBodyStatement * clause_stmt, const VariantT& vt)
     {
       ROSE_ASSERT(var != NULL);
       ROSE_ASSERT(clause_stmt!= NULL);
@@ -5599,25 +6890,70 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_operator_
       ROSE_ASSERT(target_clause != NULL);
 
       // Insert only if the variable is not in the list
-      if (!isInClauseVariableList(var, clause_stmt, vt)) 
+      if (!isInClauseVariableList(var, clause_stmt, vt))
       {
         target_clause->get_variables()->get_expressions().push_back(buildVarRefExp(var));
       }
     }
-// Patch up private variables for a single OpenMP For or DO loop    
+
+  //! Add a variable into a non-reduction clause of an OpenMP statement, create the clause transparently if it does not exist
+    void addUpirDataVariable(SgUpirFieldBodyStatement* target, SgUpirDataItemField* data_item)
+    {
+      ROSE_ASSERT(target != NULL);
+      ROSE_ASSERT(data_item != NULL);
+      SgUpirFieldBodyStatement* upir_statement = isSgUpirFieldBodyStatement(target);
+      ROSE_ASSERT(upir_statement);
+      Rose_STL_Container<SgOmpClause *> data_fields = getClause(upir_statement, V_SgUpirDataField);
+
+      SgUpirDataField *upir_data = NULL;
+      if (data_fields.size() == 0) {
+          upir_data = new SgUpirDataField();
+          std::list<SgUpirDataItemField *> data_items = upir_data->get_data();
+          setOneSourcePositionForTransformation(upir_data);
+          target->get_clauses().push_back(upir_data);
+          upir_data->set_parent(target);
+      }
+      else {
+          ROSE_ASSERT(data_fields.size() == 1);
+          upir_data = isSgUpirDataField(data_fields[0]);
+          if (isInUpirDataList(upir_data, data_item->get_symbol())) {
+              return;
+          }
+      };
+
+      ROSE_ASSERT(upir_data);
+      std::list<SgUpirDataItemField *> data_items = upir_data->get_data();
+      data_items.push_back(data_item);
+      setOneSourcePositionForTransformation(data_item);
+      data_item->set_parent(upir_data);
+      upir_data->set_data(data_items);
+    }
+
+// Patch up private variables for a single OpenMP For or DO loop
 // return the number of private variables added.
 int patchUpPrivateVariables(SgStatement* omp_loop)
 {
   int result = 0;
-  ROSE_ASSERT ( omp_loop != NULL);
-  SgOmpForStatement* for_node = isSgOmpForStatement(omp_loop);
+  ROSE_ASSERT(omp_loop != NULL);
+
+  SgUpirLoopStatement* for_node = NULL;
+  SgUpirLoopParallelStatement* loop_parallel = isSgUpirLoopParallelStatement(omp_loop);
+  if (loop_parallel != NULL) {
+    for_node = isSgUpirLoopStatement(loop_parallel->get_loop());
+  };
   SgOmpDoStatement* do_node = isSgOmpDoStatement(omp_loop);
+  SgOmpTargetParallelForStatement *target_parallel_for_node = isSgOmpTargetParallelForStatement(omp_loop);
+  SgOmpTargetTeamsDistributeParallelForStatement *target_teams_distribute_parallel_for_node = isSgOmpTargetTeamsDistributeParallelForStatement(omp_loop);
   if (for_node)
     omp_loop = for_node;
   else if (do_node)
     omp_loop = do_node;
+  else if (target_parallel_for_node)
+    omp_loop = target_parallel_for_node;
+  else if (target_teams_distribute_parallel_for_node)
+    omp_loop = target_teams_distribute_parallel_for_node;
   else
-    ROSE_ABORT ();
+    ROSE_ASSERT (false);
 
   SgScopeStatement* directive_scope = omp_loop->get_scope();
   ROSE_ASSERT(directive_scope != NULL);
@@ -5628,338 +6964,48 @@ int patchUpPrivateVariables(SgStatement* omp_loop)
     loops = NodeQuery::querySubTree(for_node->get_body(), V_SgForStatement);
   else if (do_node)
     loops = NodeQuery::querySubTree(do_node->get_body(), V_SgFortranDo);
+  else if (target_parallel_for_node)
+    loops = NodeQuery::querySubTree(target_parallel_for_node->get_body(), V_SgForStatement);
+  else if (target_teams_distribute_parallel_for_node)
+    loops = NodeQuery::querySubTree(target_teams_distribute_parallel_for_node->get_body(), V_SgForStatement);
   else
-    ROSE_ABORT ();
+    ROSE_ASSERT (false);
   // For all loops within the OpenMP loop
   Rose_STL_Container<SgNode*>::iterator loopIter = loops.begin();
   for (; loopIter!= loops.end(); loopIter++)
   {
     SgInitializedName* index_var = getLoopIndexVariable(*loopIter);
     ROSE_ASSERT (index_var != NULL);
+    SgVariableSymbol* variable_symbol = isSgVariableSymbol(index_var->get_symbol_from_symbol_table());
+    ROSE_ASSERT (variable_symbol != NULL);
     SgScopeStatement* var_scope = index_var->get_scope();
-    // Only loop index variables declared in higher  or the same scopes matter
+    // Only loop index variables declared in higher or the same scopes matter
     if (isAncestor(var_scope, directive_scope) || var_scope==directive_scope)
     {
       // Grab possible enclosing parallel region
       bool isPrivateInRegion = false;
-      SgOmpParallelStatement * omp_stmt = isSgOmpParallelStatement(getEnclosingNode<SgOmpParallelStatement>(omp_loop));
+      SgUpirFieldBodyStatement *omp_stmt = NULL;
+      omp_stmt = isSgUpirSpmdStatement(getEnclosingNode<SgUpirSpmdStatement>(omp_loop));
+      if (omp_stmt == NULL) {
+        omp_stmt = isSgOmpTargetParallelForStatement(omp_loop);
+      }
       if (omp_stmt)
       {
-        isPrivateInRegion = isInClauseVariableList(index_var, isSgOmpClauseBodyStatement(omp_stmt), V_SgOmpPrivateClause);
+        isPrivateInRegion = isInUpirDataSharingList(isSgUpirFieldBodyStatement(omp_stmt), variable_symbol, SgOmpClause::e_upir_data_sharing_private);
       }
-      // add it into the private variable list only if it is not specified as private in both the loop and region levels. 
-      if (! isPrivateInRegion && !isInClauseVariableList(index_var, isSgOmpClauseBodyStatement(omp_loop), V_SgOmpPrivateClause))
+      // add it into the private variable list only if it is not specified as private in both the loop and region levels.
+      if (!isPrivateInRegion && !isInUpirDataSharingList(isSgUpirFieldBodyStatement(omp_loop), variable_symbol, SgOmpClause::e_upir_data_sharing_private))
       {
-        result ++;
-        addClauseVariable(index_var,isSgOmpClauseBodyStatement(omp_loop), V_SgOmpPrivateClause);
+        result++;
+        SgUpirDataItemField *upir_data_item = new SgUpirDataItemField(variable_symbol);
+        upir_data_item->set_sharing_property(SgOmpClause::e_upir_data_sharing_private);
+        addUpirDataVariable(isSgUpirFieldBodyStatement(omp_loop), upir_data_item);
       }
     }
 
   } // end for loops
   return result;
-} 
-  //! Patch up private variables for omp for. The reason is that loop indices should be private by default and this function will make this explicit. This should happen before the actual translation is done.
-  int patchUpPrivateVariables(SgFile* file)
-  {
-    int result = 0;
-    ROSE_ASSERT(file != NULL);
-    Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(file, V_SgOmpForStatement);
-    Rose_STL_Container<SgNode*> nodeList2 = NodeQuery::querySubTree(file, V_SgOmpDoStatement);
-    
-    Rose_STL_Container<SgNode*> nodeList_merged (nodeList.size() + nodeList2.size()) ;
-    
-    std::sort(nodeList.begin(), nodeList.end());
-    std::sort(nodeList2.begin(), nodeList2.end());
-    std::merge (nodeList.begin(), nodeList.end(), nodeList2.begin(), nodeList2.end(), nodeList_merged.begin());
-
-    Rose_STL_Container<SgNode*>::iterator nodeListIterator = nodeList_merged.begin();
-    // For each omp for/do statement
-    for ( ;nodeListIterator !=nodeList_merged.end();  ++nodeListIterator)
-    {
-      SgStatement * omp_loop = NULL;
-      SgOmpForStatement* for_node = isSgOmpForStatement(*nodeListIterator);
-      SgOmpDoStatement* do_node = isSgOmpDoStatement(*nodeListIterator);
-      if (for_node)
-        omp_loop = for_node;
-      else if (do_node)
-        omp_loop = do_node;
-      else
-        ROSE_ABORT ();
-      result +=  patchUpPrivateVariables (omp_loop);
-    }// end for omp for statments
-   return result;
-  } // end patchUpPrivateVariables()
-
-   //! Collect threadprivate variables within the current project, return a set to avoid duplicated elements
-   std::set<SgInitializedName*> collectThreadprivateVariables()
-   {
-     // Do the actual collection only once
-     static bool calledOnce = false;
-     static set<SgInitializedName*> result;
-
-     if (calledOnce)
-       return result;
-     calledOnce = true;
-     std::vector<SgOmpThreadprivateStatement*> tp_stmts = getSgNodeListFromMemoryPool<SgOmpThreadprivateStatement> ();
-     std::vector<SgOmpThreadprivateStatement*>::const_iterator c_iter;
-     for (c_iter = tp_stmts.begin(); c_iter != tp_stmts.end(); c_iter ++)
-     {
-       SgVarRefExpPtrList refs = (*c_iter)->get_variables();
-       SgInitializedNamePtrList var_list; // = (*c_iter)->get_variables();
-       for (size_t j =0; j<refs.size(); j++)
-         var_list.push_back(refs[j]->get_symbol()->get_declaration());
-       std::copy(var_list.begin(), var_list.end(), std::inserter(result, result.end()));
-     }
-     return result;
-   }
-     
-//Check if a variable that is determined to be shared in all enclosing constructs, up to and including the innermost enclosing
-//parallel construct, is shared
-// start_stmt is the start point to find enclosing OpenMP constructs. It is excluded as an enclosing construct for itself.
-// TODO: we only check if it is shared to the innermost enclosing parallel construct for now
-  static bool isSharedInEnclosingConstructs (SgInitializedName* init_var, SgStatement* start_stmt) 
-  {
-    bool result = false;
-    ROSE_ASSERT(init_var != NULL);
-    ROSE_ASSERT(start_stmt != NULL);
-    SgScopeStatement* var_scope = init_var->get_scope();
-//    SgScopeStatement* directive_scope = start_stmt->get_scope();
-    // locally declared variables are private to the start_stmt
-    // We should not do this here. It is irrelevant to this function.
-   // if (isAncestor(start_stmt, init_var))
-   //   return false;
-
-//   cout<<"Debug omp_lowering.cpp isSharedInEnclosingConstructs() SgInitializedName name = "<<init_var->get_name().getString()<<endl;
-    SgOmpParallelStatement* enclosing_par_stmt  = getEnclosingNode<SgOmpParallelStatement> (start_stmt, false);
-    // Lexically nested within a parallel region
-    if (enclosing_par_stmt)
-    {
-      // locally declared variables are private to enclosing_par_stmt
-      SgScopeStatement* enclosing_construct_scope = enclosing_par_stmt->get_scope();
-      ROSE_ASSERT(enclosing_construct_scope != NULL);
-      if (isAncestor(enclosing_construct_scope, var_scope))
-        return false;
-
-      // Explicitly declared as a shared variable
-      if (isInClauseVariableList(init_var, enclosing_par_stmt, V_SgOmpSharedClause))
-        result = true;
-      else
-      {// shared by default
-        VariantVector vv(V_SgOmpPrivateClause);
-        vv.push_back(V_SgOmpFirstprivateClause);
-        vv.push_back(V_SgOmpCopyinClause);
-        vv.push_back(V_SgOmpReductionClause);
-        if (isInClauseVariableList(init_var, enclosing_par_stmt,vv))
-          result = false;
-        else
-          result = true;
-      }
-    }
-    else 
-     //the variable is in an orphaned construct
-     // The variable could be
-     // 1. a function parameter: it is private to its enclosing parallel region
-     // 2. a global variable: either a threadprivate variable or shared by default
-     // 3. is a variable declared within an orphaned function: it is private to its enclosing parallel region
-     // ?? any other cases?? TODO
-    {
-      SgFunctionDefinition* func_def = getEnclosingFunctionDefinition(start_stmt);
-      ROSE_ASSERT (func_def != NULL);
-      if (isSgGlobal(var_scope))
-      {
-        set<SgInitializedName*> tp_vars = collectThreadprivateVariables();
-        if (tp_vars.find(init_var)!= tp_vars.end())
-          result = false; // is threadprivate
-        else 
-          result = true; // otherwise
-      }
-      else if (isSgFunctionParameterList(init_var->get_parent()))
-      {
-        // function parameters are private to its dynamically (non-lexically) nested parallel regions.
-        result = false;
-      }
-      else if (isAncestor(func_def,var_scope))
-      {
-         // declared within an orphaned function, should be private
-          result = false;
-      } else
-      {
-#if 1
-        cerr<<"Error: OmpSupport::isSharedInEnclosingConstructs() \n Unhandled variables within an orphaned construct:"<<endl;
-        cerr<<"SgInitializedName name = "<<init_var->get_name().getString()<<endl;
-        dumpInfo(init_var);
-        init_var->get_file_info()->display("tttt");
-        ROSE_ABORT();
-#endif        
-      }
-    }
-    return result;
-  } // end isSharedInEnclosingConstructs()
-
-//! Patch up firstprivate variables for omp task. The reason is that the specification 3.0 defines rules for implicitly determined data-sharing attributes and this function will make the implicit firstprivate variable of omp task explicit.
-/*
-variables used in task block: 
-
-2.9.1.1 Data-sharing Attribute Rules for Variables Referenced in a Construct
-Ref. OMP 3.0 page 79 
-A variable is firstprivate to the task (default) , if
-** not explicitly specified by default(), shared(),private(), firstprivate() clauses
-** not shared in enclosing constructs
-
-It should also satisfy the restriction defined in specification 3.0 page 93  TODO
-* cannot be a variable which is part of another variable (as an array or structure element)
-* cannot be private, reduction
-* must have an accessible, unambiguous copy constructor for the class type
-* must not have a const-qualified type unless it is of class type with a mutable member
-* must not have an incomplete C/C++ type or a reference type
-*
-I decided to exclude variables which are used by addresses when recognizing firstprivate variables 
-      The reason is that in real code, it is often to have private variables first then use their
-      address later.   Skipping the replacement will result in wrong semantics.
-       e.g. from Allan Porterfield
-          void    create_seq( double seed, double a )
-      {
-             double x, s;
-             int    i, k;
-     
-      #pragma omp parallel private(x,s,i,k)
-         { 
-              // ..... 
-             // here s is private 
-             s = find_my_seed( myid, num_procs,
-                               (long)4*NUM_KEYS, seed, a );
-     
-             for (i=k1; i<k2; i++)
-             {
-                 x = randlc(&s, &a); // here s is used by its address
-     
-             }
-         }
-      }   
-If not, wrong code will be generated later on. The reason follows:
-   * Considering nested omp tasks: 
-         #pragma omp task untied
-            {
-              int j =100;
-              // i is firstprivate, item is shared
-              {
-                for (i = 0; i < LARGE_NUMBER; i++)
-                {
-      #pragma omp task if(1) 
-                  process (item[i],&j);
-                }
-              }
-            }
-   * the variable j will be firstprivate by default 
-   * however, it is used by its address within a nested task (&j)
-   * replacing it with its local copy will not get the right, original address.
-   *
-   * Even worse: the replacement will cause some later translation (outlining) to 
-   * access the address of a parent task's local variable. 
-   * It seems (not 100% certain!!!) that GOMP implements tasks as independent entities.
-   * As a result a parent task's local stack will not be always accessible to its nested tasks.
-   * A segmentation fault will occur when the lexically nested task tries to obtain the address of
-   * its parent task's local variable. 
-   * An example mistaken translation is shown below
-       int main()
-      {
-        GOMP_parallel_start(OUT__3__1527__,0,0);
-        OUT__3__1527__();
-        GOMP_parallel_end();
-        return 0;
-      }
-      
-      void OUT__3__1527__()
-      {
-        if (GOMP_single_start()) {
-          int i;
-          printf(("Using %d threads.\n"),omp_get_num_threads());
-          void *__out_argv2__1527__[1];
-          __out_argv2__1527__[0] = ((void *)(&i));
-          GOMP_task(OUT__2__1527__,&__out_argv2__1527__,0,4,4,1,1);
-          //GOMP_task(OUT__2__1527__,&__out_argv2__1527__,0,4,4,1,0); //untied or not, no difference
-        }
-      }
-      
-      void OUT__2__1527__(void **__out_argv)
-{
-  int *i = (int *)(__out_argv[0]);
-  //  int _p_i;
-  //  _p_i =  *i;
-  //  for (_p_i = 0; _p_i < 1000; _p_i++) {
-  for (*i = 0; *i < 1000; (*i)++) {
-    void *__out_argv1__1527__[1];
-    // cannot access auto variable from the stack of another task instance!!
-    //__out_argv1__1527__[0] = ((void *)(&_p_i));
-    __out_argv1__1527__[0] = ((void *)(&(*i)));// this is the right translation
-    GOMP_task(OUT__1__1527__,&__out_argv1__1527__,0,4,4,1,0);
-  }
 }
-void OUT__1__1527__(void **__out_argv)
-{
-  int *i = (int *)(__out_argv[0]);
-  int _p_i;
-  _p_i =  *i;
-  assert(_p_i>=0);
-  assert(_p_i<10000);
-
-  process((item[_p_i]));
-}
-*
-  */
-int patchUpFirstprivateVariables(SgFile*  file)
-{
-  int result = 0;
-  ROSE_ASSERT(file != NULL);
-  Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(file, V_SgOmpTaskStatement);
-  Rose_STL_Container<SgNode*>::iterator iter = nodeList.begin();
-  for (; iter != nodeList.end(); iter ++)
-  {
-    SgOmpTaskStatement * target = isSgOmpTaskStatement(*iter);
-    SgScopeStatement* directive_scope = target->get_scope();
-    SgStatement* body = target->get_body();
-    ROSE_ASSERT(body != NULL);
-
-    // Find all variable references from the task's body
-    Rose_STL_Container<SgNode*> refList = NodeQuery::querySubTree(body, V_SgVarRefExp);
-    Rose_STL_Container<SgNode*>::iterator var_iter = refList.begin();
-    for (; var_iter != refList.end(); var_iter ++)
-    {
-      SgVarRefExp * var_ref = isSgVarRefExp(*var_iter);
-      ROSE_ASSERT(var_ref->get_symbol() != NULL);
-      SgInitializedName* init_var = var_ref->get_symbol()->get_declaration();
-      ROSE_ASSERT(init_var != NULL);
-      SgScopeStatement* var_scope = init_var->get_scope();
-      ROSE_ASSERT(var_scope != NULL);
-
-      // Variables with automatic storage duration that are declared in 
-      // a scope inside the construct are private. Skip them
-      if (isAncestor(directive_scope, var_scope))
-        continue;
-
-      if (SageInterface::isUseByAddressVariableRef(var_ref))
-        continue;
-      // Skip variables already with explicit data-sharing attributes
-      VariantVector vv (V_SgOmpDefaultClause);
-      vv.push_back(V_SgOmpPrivateClause);
-      vv.push_back(V_SgOmpSharedClause);
-      vv.push_back(V_SgOmpFirstprivateClause);
-      if (isInClauseVariableList(init_var, target ,vv)) 
-        continue;
-      // Skip variables which are class/structure members: part of another variable
-      if (isSgClassDefinition(init_var->get_scope()))
-        continue;
-      // Skip variables which are shared in enclosing constructs  
-      if(isSharedInEnclosingConstructs(init_var, target))
-        continue;
-      // Now it should be a firstprivate variable   
-      addClauseVariable(init_var, target, V_SgOmpFirstprivateClause);
-      result ++;
-    } // end for each variable reference
-  } // end for each SgOmpTaskStatement
-  return result;
-} // end patchUpFirstprivateVariables()
-
 
 /*
  * Winnie, Handle collapse clause before openmp and openmp accelerator
@@ -5970,15 +7016,16 @@ int patchUpFirstprivateVariables(SgFile*  file)
  * or map tofrom clause, if the collapse clause comes with target directive.
  *
  */
-void transOmpCollapse(SgOmpClauseBodyStatement * node)
+void transOmpCollapse(SgStatement* node)
 {
 
-  SgStatement * body =  node->get_body();
+  SgUpirLoopParallelStatement* target = isSgUpirLoopParallelStatement(node);
+  ROSE_ASSERT(target != NULL);
+  SgStatement* body = ((SgUpirLoopStatement*)target->get_loop())->get_body();;
   ROSE_ASSERT(body != NULL);
 
   // The OpenMP syntax requires that the omp for pragma is immediately followed by the for loop.
   SgForStatement * for_loop = isSgForStatement(body);
-  //SgStatement * loop = for_loop;
 
   if(for_loop == NULL)
     return;
@@ -5992,11 +7039,11 @@ void transOmpCollapse(SgOmpClauseBodyStatement * node)
 
   // remove the collapse clause
   removeClause(node,V_SgOmpCollapseClause);
-  // we need to insert the loop index variable of the collapsed loop into the private() clause 
+  // we need to insert the loop index variable of the collapsed loop into the private() clause
   patchUpPrivateVariables (node);
 
   /*
-   *Winnie, we need to add the new variables into the map in list, if there is a SgOmpTargetStatement
+   *Winnie, we need to add the new variables into the map in list, if there is a SgUpirTaskStatement
    */
   /*For OmpTarget, we need to create SgOmpMapClause if there is no such clause in the original code.
    *   target_stmt, #pragma omp target
@@ -6004,23 +7051,23 @@ void transOmpCollapse(SgOmpClauseBodyStatement * node)
    *   inside this if condition, ompacc=false means there is no map clause, we need to create one
    *   outside this if condition, ompacc=false means, no need to add new variables in the map in clause
    *   TODO: adding the variables into the map() clause is not sufficient.
-   *         we have to move the corresponding variable declarations to be in front of the directive containing map(). 
+   *         we have to move the corresponding variable declarations to be in front of the directive containing map().
    */
   SgStatement * target_stmt = isSgStatement(node->get_parent()->get_parent());
-  if(isSgOmpTargetStatement(target_stmt))
+  if(isSgUpirTaskStatement(target_stmt))
   {
     Rose_STL_Container<SgOmpClause*> map_clauses;
     SgOmpMapClause * map_to = NULL;
 
     /*get the data clause of this target statement*/
-    SgOmpClauseBodyStatement * target_clause_body = isSgOmpClauseBodyStatement(target_stmt); 
+    SgUpirFieldBodyStatement * target_clause_body = isSgUpirFieldBodyStatement(target_stmt);
 
     map_clauses = target_clause_body->get_clauses();
-    if(map_clauses.size() == 0 ) 
+    if(map_clauses.size() == 0 )
     {
       SgOmpTargetDataStatement * target_data_stmt = getEnclosingNode<SgOmpTargetDataStatement>(target_stmt);
 
-      target_clause_body = isSgOmpClauseBodyStatement(target_data_stmt);
+      target_clause_body = isSgUpirFieldBodyStatement(target_data_stmt);
       map_clauses = target_clause_body->get_clauses();
     }
 
@@ -6069,19 +7116,17 @@ void transOmpCollapse(SgOmpClauseBodyStatement * node)
 //    SgBasicBlock
 //      /                   #
 //     /                    #
-// SgOmpParallelStatement   #
+// SgUpirSpmdStatement   #
 //          \               #
 //           \              #
 //           SgBasicBlock   #
 //               \          #
 //                \         #
-//                SgOmpParallelStatement
+//                SgUpirSpmdStatement
 void lower_omp(SgSourceFile* file)
 {
   ROSE_ASSERT(file != NULL);
 
-  patchUpPrivateVariables(file); // the order of these two functions matter! We want to patch up private variable first!
-  patchUpFirstprivateVariables(file);
   // Liao 12/2/2010, Fortran does not require function prototypes
   if (!SageInterface::is_Fortran_language() )
     insertRTLHeaders(file);
@@ -6089,39 +7134,64 @@ void lower_omp(SgSourceFile* file)
     insertRTLinitAndCleanCode(file);
   else
     insertAcceleratorInit(file);
-  //    translationDriver driver;
-  // SgOmpXXXStatment is compiler-generated and has no file info
-  //driver.traverseWithinFile(file,postorder);
-  //  driver.traverse(file,postorder);
-  // AST manipulation with postorder traversal is not reliable,
-  // We record nodes first then do changes to them
 
-  Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(file, V_SgStatement);
-  Rose_STL_Container<SgNode*>::reverse_iterator nodeListIterator = nodeList.rbegin();
-  for ( ;nodeListIterator !=nodeList.rend();  ++nodeListIterator)
+
+  target_outlined_function_list = new std::vector<SgFunctionDeclaration* >();
+
+  Rose_STL_Container<SgNode*> upir_nodes;
+  do {
+    upir_nodes.clear();
+    // Fix the parent-children relationship between UPIR nodes
+    OmpSupport::createUpirStatementTree(file);
+    if (cpu_outlined_file != NULL) {
+        OmpSupport::createUpirStatementTree(cpu_outlined_file);
+    }
+    Rose_STL_Container<SgNode*>::iterator iter;
+    // Collect all the UPIR nodes
+    Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(file, V_SgUpirBaseStatement);
+    if (cpu_outlined_file != NULL) {
+        nodeList = mergeSgNodeList(nodeList, NodeQuery::querySubTree(cpu_outlined_file, V_SgUpirBaseStatement));
+    }
+    // Collect all the UPIR nodes without UPIR parent
+    for (iter = nodeList.begin(); iter != nodeList.end(); iter++) {
+        SgUpirBaseStatement* upir_node = isSgUpirBaseStatement(*iter);
+        ROSE_ASSERT(upir_node != NULL);
+        SgUpirBaseStatement *upir_parent = isSgUpirBaseStatement(upir_node->get_upir_parent());
+        if (upir_parent == NULL) {
+            upir_nodes.push_back(upir_node);
+        }
+    }
+
+  for (iter = upir_nodes.begin(); iter != upir_nodes.end(); iter++)
   {
-    SgStatement* node = isSgStatement(*nodeListIterator);
+    SgStatement* node = isSgStatement(*iter);
     ROSE_ASSERT(node != NULL);
-    //debug the order of the statements
-    //    cout<<"Debug lower_omp(). stmt:"<<node<<" "<<node->class_name() <<" "<< node->get_file_info()->get_line()<<endl;
 
+    // check if it is a variant
+    bool isVariant = isSgOmpWhenClause(node->get_parent()) || isSgOmpDefaultClause(node->get_parent());
+    if (isVariant)
+    {
+      std::cout << "It is a variant.\n";
+      //continue;
+    } //else
 
     /*Winnie, handle Collapse clause.*/
-    if(  isSgOmpClauseBodyStatement(node) != NULL && hasClause(isSgOmpClauseBodyStatement(node), V_SgOmpCollapseClause))
-      transOmpCollapse(isSgOmpClauseBodyStatement(node));
-#if 1 // debugging code after collapsing the loops     
+    if(hasClause(node, V_SgOmpCollapseClause))
+      transOmpCollapse(node);
+#if 1 // debugging code after collapsing the loops
+    if (!isVariant)
     switch (node->variantT())
     {
-      case V_SgOmpParallelStatement:
+      case V_SgUpirSpmdStatement:
         {
           // check if this parallel region is under "omp target"
           SgNode* parent = node->get_parent();
           ROSE_ASSERT (parent != NULL);
           if (isSgBasicBlock(parent)) // skip the padding block in between.
             parent= parent->get_parent();
-          if (isSgOmpTargetStatement(parent))
+          if (isSgUpirTaskStatement(parent))
             transOmpTargetParallel(node);
-          else  
+          else
             transOmpParallel(node);
           break;
         }
@@ -6136,7 +7206,7 @@ void lower_omp(SgSourceFile* file)
           transOmpTask(node);
           break;
         }
-      case V_SgOmpForStatement:
+      case V_SgUpirLoopParallelStatement:
       case V_SgOmpDoStatement:
         {
           // check if the loop is part of the combined "omp parallel for" under the "omp target" directive
@@ -6144,13 +7214,15 @@ void lower_omp(SgSourceFile* file)
           bool is_target_loop = false;
           SgNode* parent = node->get_parent();
           ROSE_ASSERT (parent != NULL);
-          // skip a possible BB between omp parallel and omp for, especially when the omp parallel has multiple omp for loops 
+          // skip a possible BB between omp parallel and omp for, especially when the omp parallel has multiple omp for loops
           if (isSgBasicBlock(parent))
             parent = parent->get_parent();
           SgNode* grand_parent = parent->get_parent();
+          if (isSgBasicBlock(grand_parent))
+            grand_parent = grand_parent->get_parent();
           ROSE_ASSERT (grand_parent != NULL);
 
-          if (isSgOmpParallelStatement (parent) && isSgOmpTargetStatement(grand_parent) ) 
+          if (isSgUpirSpmdStatement (parent) && isSgUpirTaskStatement(grand_parent) )
             is_target_loop = true;
 
           if (is_target_loop)
@@ -6159,9 +7231,9 @@ void lower_omp(SgSourceFile* file)
             // use round-robin scheduler for larger iteration space and better performance
             transOmpTargetLoop_RoundRobin(node);
           }
-          else  
-          { 
-            transOmpLoop(node);
+          else
+          {
+            transUpirLoopParallel(node);
           }
           break;
         }
@@ -6215,7 +7287,7 @@ void lower_omp(SgSourceFile* file)
           transOmpCritical(node);
           break;
         }
-      case V_SgOmpTargetStatement:
+      case V_SgUpirTaskStatement:
         {
           transOmpTarget(node);
           break;
@@ -6225,27 +7297,212 @@ void lower_omp(SgSourceFile* file)
           transOmpTargetData(node);
           break;
         }
-
+      case V_SgOmpTargetParallelForStatement:
+        {
+          transOmpTargetParallelFor(node);
+          break;
+        }
+      case V_SgOmpTargetTeamsDistributeParallelForStatement:
+        {
+          transOmpTargetTeamsDistributeParallelFor(node);
+          break;
+        }
       default:
         {
-          // do nothing here    
+          //std::cout << "Nothing happened.\n";
+          // do nothing here
         }
     }// switch
 
 #endif
 
-  } 
-
-#if 0
-  //3. Special handling for files with main() 
-  // rename main() to user_main()
-  SgFunctionDeclaration * mainFunc = findMain(cur_file);
-  if (mainFunc) 
-  {
-    renameMainToUserMain(mainFunc);
   }
-#endif
+  } while (upir_nodes.size() != 0);
+
+  // post processing
+  post_processing(file);
 
 }
 
 } // end namespace
+
+// global_tid is required as a parameter in many kmpc function calls
+// we always use the function "__kmpc_global_thread_num" to get the global_tid.
+// each OpenMP statement has such an id with unique name "__global_tid_<enclosing function name>_<original statement line number>_<tid index>"
+static SgVariableDeclaration* get_kmpc_global_tid(SgNode* target, SgScopeStatement* scope) {
+
+    const Sg_File_Info* info = target->get_startOfConstruct();
+    SgFunctionDeclaration * enclosing_function = getEnclosingFunctionDeclaration(target);
+    std::string enclosing_function_name = enclosing_function->get_name().getString();
+    std::stringstream statement_line_number;
+    statement_line_number << info->get_line();
+    std::stringstream kmpc_global_tid_number;
+    kmpc_global_tid_number << kmpc_global_tid_counter;
+    kmpc_global_tid_counter += 1;
+    std::string kmpc_tid_name = "__global_tid_" + enclosing_function_name + "_" + statement_line_number.str() + "_" + kmpc_global_tid_number.str();
+    SgExprStatement* global_tid_statement = buildFunctionCallStmt("__kmpc_global_thread_num", buildIntType(), buildExprListExp(buildIntVal(0)), scope);
+    SgExpression* get_thread_global_tid = global_tid_statement->get_expression();
+    SgVariableDeclaration* kmpc_tid_declaration = buildVariableDeclaration(SgName(kmpc_tid_name), buildIntType(), buildAssignInitializer(get_thread_global_tid), scope);
+
+    return kmpc_tid_declaration;
+}
+
+// insert a parameter to the outlined function
+// it doesn't affect the forward declaration but the definition itself
+// please use it before inserting the forward declaration
+static void insert_function_parameter(std::string name, SgType* parameter_type, SgFunctionDeclaration* function, bool to_append) {
+
+    // prepare the parameter
+    SgName parameter_name(name);
+    SgFunctionParameterList* params = function->get_parameterList();
+    SgFunctionDefinition* function_definition = function->get_definition();
+    SgInitializedName* parameter = new SgInitializedName(NULL, parameter_name, parameter_type, 0, function, function_definition, 0);
+    setOneSourcePositionForTransformation(parameter);
+    SgVariableSymbol* parameter_symbol = new SgVariableSymbol(parameter);
+    function_definition->insert_symbol(parameter_name, parameter_symbol);
+
+    // insert the parameter at the end or the beginning
+    if (to_append) {
+        appendArg(params, parameter);
+    }
+    else {
+        prependArg(params, parameter);
+    };
+
+    // update the function metadata
+    SgType* stale_func_type = function->get_type();
+    function->set_type(buildFunctionType(function->get_type()->get_return_type(), buildFunctionParameterTypeList(function->get_parameterList())));
+    SgFunctionDeclaration* non_def_func = isSgFunctionDeclaration(function->get_firstNondefiningDeclaration());
+    ROSE_ASSERT(non_def_func != NULL);
+    ROSE_ASSERT(stale_func_type == non_def_func->get_type());
+    non_def_func->set_type(function->get_type());
+}
+
+static SgFunctionDeclaration* move_outlined_function(SgFunctionDeclaration* outlined_func, SgSourceFile* new_file) {
+
+    // prepare the required information of original file
+    SgGlobal* original_scope = getGlobalScope(outlined_func);
+    std::string original_name = outlined_func->get_name().getString();
+    SgFile* cur_file = getEnclosingNode<SgFile>(outlined_func);
+    std::string original_file_name = StringUtility::stripFileSuffixFromFileName(StringUtility::stripPathFromFileName(cur_file->get_file_info()->get_filenameString()));
+
+    // prepare the required information of new file
+    SgGlobal* new_scope = new_file->get_globalScope();
+
+    // copy the outlined function to the new file and remove the static modifier
+    SgFunctionDeclaration* new_outlined_function = isSgFunctionDeclaration(deepCopy(outlined_func));
+    new_outlined_function->get_declarationModifier().get_storageModifier().setUnspecified();
+    new_outlined_function->set_scope(new_scope);
+    SageInterface::fixVariableReferences(new_file, false);
+    appendStatement(new_outlined_function, new_scope);
+
+    // set the function declaration in the original file as extern
+    SgFunctionDeclaration* extern_header = isSgFunctionDeclaration(findFunctionDeclaration(original_scope->get_parent(), original_name, original_scope, false));
+    extern_header->get_declarationModifier().get_storageModifier().setExtern();
+
+    // remove the outlined function in the original file and perform post processing in the new file
+    removeStatement(outlined_func);
+
+    AstPostProcessing(new_file);
+    return new_outlined_function;
+}
+
+static SgSourceFile* generate_outlined_function_file(SgFunctionDeclaration* outlined_func, std::string file_extension) {
+
+    // prepare the required information of original file
+    std::string original_name = outlined_func->get_name().getString();
+    SgBasicBlock* function_block = outlined_func->get_definition()->get_body();
+    SgSourceFile* new_file = NULL;
+    SgFile* cur_file = getEnclosingNode<SgFile>(outlined_func);
+    std::string original_file_name = StringUtility::stripFileSuffixFromFileName(StringUtility::stripPathFromFileName(cur_file->get_file_info()->get_filenameString()));
+    if (file_extension == "") {
+        file_extension = StringUtility::fileNameSuffix(cur_file->get_file_info()->get_filenameString());
+    };
+
+    // create a new file with all the function declaration and preprocessing information of the original file
+    new_file = Outliner::getLibSourceFile(function_block);
+    ROSE_ASSERT(new_file != NULL);
+    // reset the name of new outlined function file
+    std::string new_file_name = "rex_lib_" + original_file_name + "." + file_extension;
+    new_file->get_file_info()->set_filenameString(new_file_name);
+    new_file->set_unparse_output_filename(new_file_name);
+
+    // insert REX runtime header to the new file
+    SgGlobal* new_scope = new_file->get_globalScope();
+    if (file_extension == "cu") {
+        SageInterface::insertHeader("rex_nvidia.h", PreprocessingInfo::after, false, new_scope);
+    }
+    else {
+        SageInterface::insertHeader("rex_kmp.h", PreprocessingInfo::after, false, new_scope);
+    };
+    new_file->set_processedToIncludeCppDirectivesAndComments(true);
+
+    fix_storage_modifier(new_file);
+    AstPostProcessing(new_file);
+
+    return new_file;
+}
+
+static void fix_storage_modifier(SgSourceFile* new_file) {
+    // set the regular global variables in the new file to extern and remove their definition
+    Rose_STL_Container<SgNode*> global_variable_list = NodeQuery::querySubTree(new_file, V_SgVariableDeclaration);
+    Rose_STL_Container<SgNode*>::iterator global_variable_list_iterator;
+    for (global_variable_list_iterator = global_variable_list.begin(); global_variable_list_iterator != global_variable_list.end(); global_variable_list_iterator++) {
+        SgVariableDeclaration* global_variable = isSgVariableDeclaration(*global_variable_list_iterator);
+        if (isSgGlobal(global_variable->get_scope())) {
+            SgStorageModifier& variable_modifier = global_variable->get_declarationModifier().get_storageModifier();
+            if (!variable_modifier.isStatic()) {
+                variable_modifier.setExtern();
+                global_variable->reset_initializer(NULL);
+            };
+        };
+    };
+};
+
+static void post_processing(SgSourceFile* file) {
+
+    SgGlobal* g_scope = file->get_globalScope();
+    ROSE_ASSERT(g_scope != NULL);
+
+    SgSourceFile* new_file = NULL;
+
+
+    // handle the outlined functions for NVIDIA GPU
+    if (target_outlined_function_list->size() > 0) {
+        // create a new file
+        new_file = generate_outlined_function_file(target_outlined_function_list->at(0), "cu");
+        SgGlobal* new_scope = new_file->get_globalScope();
+        SgFile* cur_file = getEnclosingNode<SgFile>(target_outlined_function_list->at(0));
+        std::string file_extension = StringUtility::fileNameSuffix(cur_file->get_file_info()->get_filenameString());
+
+        if (file_extension == "c" || file_extension == "C") {
+            PreprocessingInfo* c_linkage_start = new PreprocessingInfo(PreprocessingInfo::ClinkageSpecificationStart, "#ifdef __cplusplus\nextern \"C\" {\n#endif", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
+            SageInterface::insertHeader(new_scope->lastStatement(), c_linkage_start, 1);
+        };
+
+        // move the outlined functions
+        std::vector<SgFunctionDeclaration* >::reverse_iterator i;
+        for (i = target_outlined_function_list->rbegin(); i != target_outlined_function_list->rend(); i++) {
+            // set up an omp target parameter for each generated CUDA kernel
+            // the naming pattern is "<kernel name>_exec_mode"
+            SgVariableDeclaration* kernel_exec_mode_decl = buildVariableDeclaration ((*i)->get_name().getString() + "_exec_mode", buildCharType(), buildAssignInitializer(buildIntVal(0)), new_scope);
+            SgStorageModifier& kernel_exec_mode_modifier = kernel_exec_mode_decl->get_declarationModifier().get_storageModifier();
+            kernel_exec_mode_modifier.setCudaGlobal();
+            appendStatement(kernel_exec_mode_decl, new_scope);
+
+            move_outlined_function(*i, new_file);
+        };
+
+        if (file_extension == "c" || file_extension == "C") {
+            PreprocessingInfo* c_linkage_end = new PreprocessingInfo(PreprocessingInfo::ClinkageSpecificationEnd, "#ifdef __cplusplus\n}\n#endif", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
+            SageInterface::insertHeader(new_scope->lastStatement(), c_linkage_end, 1);
+        };
+    };
+
+    SageInterface::insertHeader("rex_kmp.h", PreprocessingInfo::before, false, g_scope);
+    if (new_file != NULL) {
+        AstPostProcessing(new_file);
+    };
+    AstPostProcessing(file);
+};
+

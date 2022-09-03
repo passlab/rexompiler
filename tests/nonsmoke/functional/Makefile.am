@@ -42,20 +42,6 @@ endif
 
 SUBDIRS += Utility
 
-########################################################################################################################
-# Rose::BinaryAnalysis
-
-if ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-if !ROSE_USE_INSURE
-# There are failing tests here (94 tests pass and 55 tests fail).
-if !ROSE_USE_SANITIZER
-SUBDIRS += BinaryAnalysis
-endif
-endif
-endif
-
-########################################################################################################################
-
 # Three phases (levels) of test programs:
 #  Phase 1) Analysis only, compiles the original code
 #  Phase 2) Analysis and code generation, compiles the original code
@@ -79,16 +65,13 @@ noinst_PROGRAMS = \
    testBackend \
    readFileTwice
 
-if ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-   noinst_PROGRAMS += testLinearDisassembler3
-endif
-
 if ROSE_WITH_LIBHARU
    noinst_PROGRAMS += testPDFGeneration
 endif
 
-if ROSE_WITH_ATERM
-   noinst_PROGRAMS += testAtermGraphGeneration
+# DQ (1/16/2012): This test code is not supported when compiling for simple front-end testing (smallest subset of ROSE that can be built).
+if !ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
+   noinst_PROGRAMS += testAstFileIO
 endif
 
 # Phase 0 tests code:
@@ -135,11 +118,6 @@ endif
 # generation of patches to define transformations of large scale applications.
 testTokenGeneration_SOURCES = testTokenGeneration.C
 
-if ROSE_WITH_ATERM
-# DQ (9/28/2013): Added support for Aterm graph generation.
-testAtermGraphGeneration_SOURCES = testAtermGraphGeneration.C
-endif
-
 # Ignores internal ROSE failures, see `rose --help` for info on `-rose:keep_going`
 #KeepGoingTranslator_SOURCES = KeepGoingTranslator.cpp
 
@@ -150,26 +128,11 @@ testBackend_SOURCES = testBackend.C
 
 readFileTwice_SOURCES = readFileTwice.C
 
-if ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-testLinearDisassembler3_SOURCES = testLinearDisassembler3.C
-endif
-
 # DQ (7/3/2013): Added support to output some pre-defined macro values.
 # Program to output predefined relevant macros.
 # predefinedMacros_SOURCES = predefinedMacros.C
 
-if ROSE_WITH_ATERM
-# The Stratego and A-Term support is outside of ROSE
-# This needs a configure flag so that the location outside
-# of ROSE can be easily specificed at configure time.
-# ATERM_INCLUDE = -I$(ATERM_INSTALL_PATH)/include
-# ATERM_LIB_DIR = $(ATERM_INSTALL_PATH)/lib
-# ATERM_INCLUDE = $(ROSE_ATERM_INCLUDE)
-# ATERM_LIB_DIR = $(ROSE_ATERM_LIBS)
-endif
-
 # Use names set in ROSE/config/Makefile.for.ROSE.includes.and.libs
-# AM_CPPFLAGS = $(ROSE_INCLUDES) $(ATERM_INCLUDE)
 AM_CPPFLAGS = $(ROSE_INCLUDES)
 # AM_CPPFLAGS = $(ROSE_INCLUDES) --Wl,--no-undefined
 # AM_LDFLAGS  = $(ROSE_RPATHS)

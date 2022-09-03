@@ -3354,7 +3354,7 @@ Unparse_MOD_SAGE::printColorCodes ( SgNode* node, bool openState, vector< pair<b
 void Unparse_MOD_SAGE::outputTemplateSpecializationSpecifier2 ( SgDeclarationStatement* decl_stmt ) 
    {
      if (isSgTemplateInstantiationDecl(decl_stmt)
-      // DQ (1/3/2015): Added support for template variables (instantiations are represented similarly to non-instantiations (but we might have to fix this).   
+      // DQ (1/3/2015): Added support for template variables (instantiations are represented similarly to non-instantiations (but we might have to fix this).
       // || isSgTemplateVariableDeclaration(decl_stmt)
 
          || isSgTemplateInstantiationFunctionDecl(decl_stmt)

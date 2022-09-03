@@ -28,12 +28,10 @@ add_custom_target(
 include_directories(
   ${Boost_INCLUDE_DIRS}
   ${CMAKE_BINARY_DIR}/src/roseSupport
-  ${CMAKE_SOURCE_DIR}/src/roseExtensions/failSafe
   ${CMAKE_SOURCE_DIR}/src/midend/programTransformation/transformationTracking
   ${CMAKE_BINARY_DIR}/src/3rdPartyLibraries/fortran-parser
   ${JAVA_INCLUDE_PATH}
   ${JAVA_INCLUDE_PATH2}
-  ${CMAKE_SOURCE_DIR}/src/frontend/ECJ_ROSE_Connection
   ${CMAKE_SOURCE_DIR}/src/midend/astMatching
   ${CMAKE_SOURCE_DIR}/src/util
   ${CMAKE_SOURCE_DIR}/src/frontend
@@ -87,7 +85,6 @@ add_subdirectory(util)
 add_subdirectory(ROSETTA)
 add_subdirectory(roseSupport)
 add_subdirectory(3rdPartyLibraries)
-add_subdirectory(roseIndependentSupport)
 
 add_definitions(-DROSE_DLL_EXPORTS)
 
@@ -95,7 +92,6 @@ add_subdirectory(roseExtensions)
 add_subdirectory(frontend)
 add_subdirectory(midend)
 add_subdirectory(backend)
-add_subdirectory(Rose)
 
 ########################################################################################################################
 # The ROSE library
@@ -115,9 +111,6 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:virtualCFG>
   $<TARGET_OBJECTS:astFromString>
   $<TARGET_OBJECTS:roseSupport>
-  $<TARGET_OBJECTS:roseDisassemblers>
-  $<TARGET_OBJECTS:roseBinaryFormats>
-  $<TARGET_OBJECTS:roseAsmUnparser>
   $<TARGET_OBJECTS:astFixup>
   $<TARGET_OBJECTS:midend>
   $<TARGET_OBJECTS:abstractHandle>
@@ -126,57 +119,23 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:astProcessing>
   $<TARGET_OBJECTS:astMatching>
   $<TARGET_OBJECTS:midend_util>
-  $<TARGET_OBJECTS:midend_binary>
   $<TARGET_OBJECTS:midend_pt>
+  $<TARGET_OBJECTS:ompparser>
+  $<TARGET_OBJECTS:accparser>
   $<TARGET_OBJECTS:sageInterface>
   $<TARGET_OBJECTS:astTokenStream>
   $<TARGET_OBJECTS:astHiddenTypeAndDeclarationLists>
   $<TARGET_OBJECTS:astVisualization>
   $<TARGET_OBJECTS:includeDirectivesProcessing>
   $<TARGET_OBJECTS:astPostProcessing>
-  $<TARGET_OBJECTS:failsafe>
   $<TARGET_OBJECTS:trans_tracking>
   $<TARGET_OBJECTS:astRewriteMechanism>
-  $<TARGET_OBJECTS:roseNamespace>
-  $<TARGET_OBJECTS:roseBinaryAnalysis>
-  $<TARGET_OBJECTS:roseBinaryAnalysisByteCode>
-  $<TARGET_OBJECTS:roseBinaryAnalysisConcolic>
-  $<TARGET_OBJECTS:roseBinaryAnalysisDisassembler>
-  $<TARGET_OBJECTS:roseBinaryAnalysisInstructionSemantics>
-  $<TARGET_OBJECTS:roseBinaryAnalysisInstructionSemanticsBaseSemantics>
-  $<TARGET_OBJECTS:roseBinaryAnalysisModelChecker>
-  $<TARGET_OBJECTS:roseBinaryAnalysisPartitioner2>
-  $<TARGET_OBJECTS:roseBinaryAnalysisUnparser>
-  $<TARGET_OBJECTS:roseColor>
-  $<TARGET_OBJECTS:roseCommandLine>
-  $<TARGET_OBJECTS:roseDiagnostics>
-  $<TARGET_OBJECTS:roseFileSystem>
-  $<TARGET_OBJECTS:roseStringUtility>
-  $<TARGET_OBJECTS:RoseAST>
-  $<TARGET_OBJECTS:RoseCodeGen>
   $<TARGET_OBJECTS:mstl>)
-
-if(enable-java)
-  list(APPEND rose_LIB_SRCS $<TARGET_OBJECTS:roseJava>)
-endif()
-
-if (enable-php)
-  list(APPEND rose_LIB_SRCS $<TARGET_OBJECTS:phpFrontend>)
-endif()
 
 if(NOT enable-internalFrontendDevelopment)
   list(APPEND rose_LIB_SRCS
     $<TARGET_OBJECTS:midend_pa>
     $<TARGET_OBJECTS:midend_loopproc>)
-endif()
-
-if(enable-rosehpct)
-  list(APPEND rose_LIB_SRCS $<TARGET_OBJECTS:roseExtensions>)
-endif()
-
-# TODO Conditional either EDG or CLang or nothing
-if(enable-cpp)
-  list(APPEND rose_LIB_SRCS $<TARGET_OBJECTS:edg_internal> $<TARGET_OBJECTS:newsage>)
 endif()
 
 ########################################################################################################################
@@ -214,26 +173,6 @@ if(Z3_FOUND_LIB)
   target_link_libraries(ROSE_DLL ${Z3_LIBRARY})
 endif()
 
-# YAML-cpp is for parsing YAML and JSON files.
-if(YAMLCPP_FOUND)
-  target_link_libraries(ROSE_DLL ${YAMLCPP_LIBRARY})
-endif()
-
-# Dlib is a C++ support library. ROSE uses matrices and some graph algorithms currently.
-if(DLIB_FOUND)
-  target_link_libraries(ROSE_DLL ${DLIB_LIBRARY})
-endif()
-
-# Capstone is used to disassemble ARM.
-if(CAPSTONE_FOUND)
-  target_link_libraries(ROSE_DLL ${CAPSTONE_LIBRARY})
-endif()
-
-# If readline was found.
-if(READLINE_FOUND)
-  target_link_libraries(ROSE_DLL ${READLINE_LIBRARY})
-endif()
-
 # The GNU GCrypt library is used for computing a wide variety of hashes. It needs the GPG-Error library.
 if(GCRYPT_FOUND AND GPGERROR_FOUND)
   target_link_libraries(ROSE_DLL ${GCRYPT_LIBRARY})
@@ -245,20 +184,9 @@ if(ZLIB_FOUND)
   target_link_libraries(ROSE_DLL ${ZLIB_LIBRARY})
 endif()
 
-# If POET is enabled in ROSE, we need to link in some additional dependencies.
-if(enable-poet)
-  set(LINK_FILES
-    poet
-    libhpdf
-    ${CMAKE_DL_LIBS}
-    libX10Traversal)
-  add_dependencies(ROSE_DLL poet)
-else()
-  set(LINK_FILES
-    libhpdf
-    ${CMAKE_DL_LIBS}
-    libX10Traversal)
-endif()
+set(LINK_FILES
+  libhpdf
+  ${CMAKE_DL_LIBS})
 
 # ???
 if(NOT BINARY_EDG)
@@ -274,13 +202,9 @@ if (enable-java)
   list(APPEND LINK_FILES ${JAVA_JVM_LIBRARY})
 endif()
 
-if(enable-python)
-  list(APPEND LINK_FILES unparsePython rosePythonFrontend)
-endif()
-
-if(enable-rosehpct)
-  list(APPEND LINK_FILES ${LIBXML2_LIBRARIES})
-endif()
+# link ANTLR 4 C++ runtime
+# On Ubuntu 20.04, it is installed to /usr/lib
+list(APPEND LINK_FILES antlr4-runtime)
 
 # This was an experiment to generate smaller files from ROSETTA. (I'm not sure of the status [Matzke 2019-02-02].)
 if(enable-smaller-generated-files )
@@ -296,7 +220,9 @@ endif ()
 
 # If the C preprocessor is enabled, ROSE has some additional depenendencies
 if(enable-cpp)
-  add_dependencies(ROSE_DLL OMPPARSER ROSE_PREPROCESSOR libhpdf generate_rosePublicConfig)
+  add_dependencies(ROSE_DLL
+    ROSE_PREPROCESSOR ${edg_lib} libhpdf
+    generate_rosePublicConfig)
 endif()
 
 # SQLite3 has an executable component and a development (library and headers) component that can be installed
@@ -342,58 +268,6 @@ install(TARGETS rose-compiler DESTINATION bin)
 ########################################################################################################################
 # rose-config.cfg -- text file that contains various settings for user-level makefiles.
 ########################################################################################################################
-
-#Build LDFLAGS for ROSE tools
-set(rose_config_installed_cppflags "-I${CMAKE_INSTALL_PREFIX}/include/rose")
-
-set(rose_library_dir_list "${CMAKE_INSTALL_PREFIX}/${ROSE_LIB_DIR_NAME}")
-set(rose_library_dir_list "${rose_library_dir_list};${Boost_LIBRARY_DIRS}")
-if(NOT ${ATERM_LIBRARY} STREQUAL "ATERM_LIBRARY-NOTFOUND")
-  if(NOT ${ATERM_LIBRARY} STREQUAL "")
-    get_filename_component(ATERM_LIBRARY_DIR ${ATERM_LIBRARY} DIRECTORY)
-    set(rose_library_dir_list "${rose_library_dir_list};${ATERM_LIBRARY_DIR}")
-    set(rose_config_installed_cppflags "${rose_config_installed_cppflags} -I${ATERM_LIBRARY_DIR}/../include")
-  endif()
-endif()
-foreach(X IN LISTS rose_library_dir_list)
-  set(rose_config_installed_ldflags "${rose_config_installed_ldflags} -L${X}")
-endforeach()
-set(rose_config_installed_cppflags "${rose_config_installed_cppflags} -I/usr/include")
-
-
-set(rose_library_list "rose")
-set(rose_library_list "${rose_library_list};${Boost_LIBRARIES}")
-set(rose_library_list "${rose_library_list};m;quadmath")
-if(NOT ${ATERM_LIBRARY} STREQUAL "ATERM_LIBRARY-NOTFOUND")
-  if(NOT ${ATERM_LIBRARY} STREQUAL "")
-    set(rose_library_list "${rose_library_list};${ATERM_LIBRARY}")
-  endif()
-endif()
-
-foreach(X IN LISTS rose_library_list)
-  get_filename_component(Y ${X} NAME_WE)
-  if(${Y} MATCHES "-l.*")
-    string(SUBSTRING ${Y} 2 -1 Y)
-  endif()
-  if(${Y} MATCHES "lib.*")
-    string(SUBSTRING ${Y} 3 -1 Y)
-  endif()
-  set(rose_config_installed_ldflags "${rose_config_installed_ldflags} -l${Y}")
-endforeach()
-
-#Need to update config ldflags with the following potential values
-   #     $(JAVA_JVM_LINK) \
-   #     $(SQLITE_DATABASE_LIBS) $(RT_LIBS) \
-   #     $(ROSE_YICES_LIBS_WITH_PATH) $(ROSE_Z3_LIBS_WITH_PATH) \
-   #     $(ROSE_PHP_LIBS_WITH_PATH) $(ROSE_ELF_LIBS_WITH_PATH) \
-   #     $(ROSE_DWARF_LIBS_WITH_PATH) $(ROSE_QT_LIBS_WITH_PATH) \
-   #     $(ROSE_SSL_LIBS) $(ROSE_ETHER_LIBS) \
-   #     $(ROSE_INTEL_COMPILER_MATH_LIBS) $(ROSE_ATERM_LIBS) \
-   #     $(ROSE_FLANG_LIBS) $(ROSE_COBOL_PT_LIBS_WITH_PATH) \
-   #     $(ROSE_YAMLCPP_LIBS_WITH_PATH) $(ROSE_LIBMAGIC_LIBS_WITH_PATH) \
-   #     $(ROSE_DLIB_LIBS_WITH_PATH) $(ROSE_GCRYPT_LIBS_WITH_PATH) \
-   #     $(ROSE_CAPSTONE_LIBS_WITH_PATH) -lm $(am__append_18) \
-   #     $(am__append_19)
 
 file(REMOVE ${ROSE_TOP_BINARY_DIR}/src/rose-config.cfg)
 file(WRITE  ${ROSE_TOP_BINARY_DIR}/src/rose-config.cfg "# Things that the 'rose-config' tool can report\n")

@@ -200,12 +200,6 @@ Unparse_ExprStmt::unparseLanguageSpecificExpression(SgExpression* expr, SgUnpars
        // DQ (4/27/2014): This case appears in a snippet test code (testJava3a) as a result 
        // of something added to support the new shared memory DSL.  Not clear what this is,
        // I will ignore it for the moment as part of debugging this larger issue.
-          case JAVA_TYPE_EXPRESSION: 
-             {
-               printf ("Warning: unparseLanguageSpecificExpression(): case SgJavaTypeExpression ignored \n");
-               break;
-             }
-
           case LAMBDA_EXP:  { unparseLambdaExpression(expr, info); break; }
 
        // DQ (11/21/2017): Adding support for GNU C/C++ extension for computed goto 

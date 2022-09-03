@@ -121,7 +121,6 @@ dnl also require.
 ROSE_SUPPORT_ROSE_PART_1
 
 ROSE_SUPPORT_ROSE_BUILD_INCLUDE_FILES
-CONFIGURE_POET
 
 # Rasmussen (11/19//2019): This is a strange bug. I can't figure out where
 # the bug actually occurs in the m4 macros. However the symptom is that
@@ -140,7 +139,6 @@ ROSE_SUPPORT_ROSE_PART_2
 ROSE_SUPPORT_ROSE_PART_3
 ROSE_SUPPORT_ROSE_PART_4
 ROSE_SUPPORT_ROSE_PART_5
-ROSE_OPTIONAL_PROJECTS
 ROSE_SUPPORT_ROSE_PART_6
 ROSE_SUPPORT_ROSE_PART_7
 

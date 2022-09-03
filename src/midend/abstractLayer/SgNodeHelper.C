@@ -1572,7 +1572,7 @@ bool SgNodeHelper::isLastChildOf(SgNode* elem, SgNode* parent) {
 }
 
 #if __cplusplus > 199711L
-bool SgNodeHelper::hasOmpNoWait(SgOmpClauseBodyStatement *ompNode) {
+bool SgNodeHelper::hasOmpNoWait(SgUpirFieldBodyStatement *ompNode) {
   for (auto c : ompNode->get_clauses()) {
     if (isSgOmpNowaitClause(c)) {
       return true;

@@ -20,18 +20,14 @@ libvirtualCFG_la_SOURCES      = \
      memberFunctions.C \
      staticCFG.C \
      customFilteredCFG.C \
-     interproceduralCFG.C \
-     virtualBinCFG.C
+     interproceduralCFG.C
 endif
 
 libvirtualCFG_la_LIBADD       = 
 libvirtualCFG_la_DEPENDENCIES = $(GENERATED_SOURCE)
 
-# DQ (10/29/2010): virtualBinCFG.h must be released as a header file since the function 
-# declarations in SgAsmStatement require it in the generated Cxx_Grammar.h file.
 pkginclude_HEADERS = \
      virtualCFG.h \
-     virtualBinCFG.h \
      cfgToDot.h \
      filteredCFG.h \
      customFilteredCFG.h \

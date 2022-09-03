@@ -2105,14 +2105,8 @@ Unparse_ExprStmt::unparseLanguageSpecificStatement(SgStatement* stmt, SgUnparse_
           case V_SgUpcForAllStatement:                  unparseUpcForAllStatement(stmt, info);    break; 
 
        // Liao, 5/31/2009, add OpenMP support, TODO refactor some code to language independent part
-          case V_SgOmpForStatement:                      unparseOmpForStatement(stmt, info); break;
+          case V_SgUpirLoopParallelStatement:           unparseUpirLoopParallelStatement(stmt, info); break;
           case V_SgOmpForSimdStatement:                  unparseOmpForSimdStatement(stmt, info); break;
-
-       // DQ (4/16/2011): Added Java specific IR node until we support the Java specific unparsing.
-          case V_SgJavaImportStatement:
-               printf ("Unsupported Java specific unparsing for import statement \n");
-            // unparseForStmt(stmt, info);
-               break;
 
        // DQ (7/25/2014): Adding support for C11 static assertions.
           case V_SgStaticAssertionDeclaration:          unparseStaticAssertionDeclaration (stmt, info);    break;
@@ -9653,6 +9647,8 @@ Unparse_ExprStmt::unparseClassDefnStmt(SgStatement* stmt, SgUnparse_Info& info)
 
 #error "DEAD CODE!"
 
+#error "DEAD CODE!"
+
                  curprint(nameQualifier.str());
                  curprint(nr_decl->get_name().str());
                } else {
@@ -12966,10 +12962,10 @@ void Unparse_ExprStmt::unparseOmpPrefix(SgUnparse_Info& info)
 }
 
 
-void Unparse_ExprStmt::unparseOmpForStatement (SgStatement* stmt,     SgUnparse_Info& info)
+void Unparse_ExprStmt::unparseUpirLoopParallelStatement (SgStatement* stmt,     SgUnparse_Info& info)
 {
   ASSERT_not_null(stmt);
-  SgOmpForStatement * f_stmt = isSgOmpForStatement (stmt);
+  SgUpirLoopParallelStatement * f_stmt = isSgUpirLoopParallelStatement (stmt);
   ASSERT_not_null(f_stmt);
 
   unparseOmpDirectivePrefixAndName(stmt, info);
@@ -12978,10 +12974,11 @@ void Unparse_ExprStmt::unparseOmpForStatement (SgStatement* stmt,     SgUnparse_
   // TODO a better way to new line? and add indentation 
   curprint (string ("\n"));
 
+  SgStatement* body = ((SgUpirLoopStatement*)f_stmt->get_loop())->get_body();
   SgUnparse_Info ninfo(info);
-  if (f_stmt->get_body())
+  if (body)
   {
-    unparseStatement(f_stmt->get_body(), ninfo);
+    unparseStatement(body, ninfo);
   }
   else
   {
@@ -13020,11 +13017,34 @@ Unparse_ExprStmt::unparseOmpBeginDirectiveClauses (SgStatement* stmt,     SgUnpa
 {
   ASSERT_not_null(stmt);
   // optional clauses
-  SgOmpClauseBodyStatement* bodystmt= isSgOmpClauseBodyStatement(stmt);
+  SgUpirFieldBodyStatement* bodystmt= isSgUpirFieldBodyStatement(stmt);
   SgOmpDeclareSimdStatement* simdstmt= isSgOmpDeclareSimdStatement(stmt);
-  if (bodystmt||simdstmt)
+  SgOmpRequiresStatement* requires_stmt= isSgOmpRequiresStatement(stmt);
+  SgOmpTaskwaitStatement* taskwait_stmt= isSgOmpTaskwaitStatement(stmt);
+  SgOmpFlushStatement* flush_stmt= isSgOmpFlushStatement(stmt);
+  SgOmpAllocateStatement* allocate_stmt= isSgOmpAllocateStatement(stmt);
+  //if (bodystmt||simdstmt)
+  SgUpirFieldStatement* clausestmt= isSgUpirFieldStatement(stmt);
+  if (bodystmt||simdstmt||clausestmt||requires_stmt||taskwait_stmt||allocate_stmt)
   {
-    const SgOmpClausePtrList& clause_ptr_list = bodystmt?bodystmt->get_clauses():simdstmt->get_clauses();
+    //const SgOmpClausePtrList& clause_ptr_list = bodystmt?bodystmt->get_clauses():simdstmt->get_clauses();
+    SgOmpClausePtrList clause_ptr_list; 
+    if(clausestmt){
+      clause_ptr_list = clausestmt->get_clauses();
+    }
+    else if (requires_stmt) {
+      clause_ptr_list = requires_stmt->get_clauses();
+    }
+    else if (taskwait_stmt) {
+      clause_ptr_list = taskwait_stmt->get_clauses();
+    }
+    
+    else if (allocate_stmt) {
+      clause_ptr_list = allocate_stmt->get_clauses();
+    }
+    else{
+      clause_ptr_list = bodystmt?bodystmt->get_clauses():simdstmt->get_clauses();
+    }
     SgOmpClausePtrList::const_iterator i;
     for (i= clause_ptr_list.begin(); i!= clause_ptr_list.end(); i++)
     {

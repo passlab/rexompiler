@@ -1,5 +1,69 @@
 //Variable examples of using simd directives
-// Mixed with omp for, how to respond to reduce/reduce conflicts
+void foo (int n, double *a, double* b)
+{
+#pragma omp simd
+  for (int i=0; i<n; i++)
+    a[i]=b[i];
+}
+
+void foo2 (int n, double *a, double* b)
+{
+#pragma omp simd safelen(16)
+  for (int i=0; i<n; i++)
+    a[i]=b[i];
+}
+
+void foo3 (int n, double *a, double* b)
+{
+  int j=0;
+#pragma omp simd simdlen(16)
+  for (int i=0; i<n; i++,j++)
+  {
+    a[i]=b[i]+j;
+  }
+}
+
+void foo32 (int n, double *a, double* b)
+{
+  int j=0, k=0;
+#pragma omp simd linear(j,k)
+  for (int i=0; i<n; i++,j++,k++)
+  {
+    a[i]=b[i]+j+k;
+  }
+}
+
+void foo33 (int n, double *a, double* b)
+{
+  int j=0, k=0;
+#pragma omp simd linear(j,k:1)
+  for (int i=0; i<n; i++,j++,k++)
+  {
+    a[i]=b[i]+j+k;
+  }
+}
+
+void fooAligned (int n, double *a, double* b)
+{
+  int j=0, k=0;
+#pragma omp simd aligned(j,k)
+  for (int i=0; i<n; i++,j++,k++)
+  {
+    a[i]=b[i]+j+k;
+  }
+}
+
+
+void fooAligned2 (int n, double *a, double* b)
+{
+  int j=0, k=0;
+#pragma omp simd aligned(j,k:1)
+  for (int i=0; i<n; i++,j++,k++)
+  {
+    a[i]=b[i]+j+k;
+  }
+}
+
 double work( double *a, double *b, int n )
 {
    int i; 
@@ -10,13 +74,6 @@ double work( double *a, double *b, int n )
       tmp = a[i] + b[i];
       sum += tmp;
    }
-
-   #pragma omp for private(tmp) reduction(+:sum)
-   for (i = 0; i < n; i++) {
-      tmp = a[i] + b[i];
-      sum += tmp;
-   }
- 
    return sum;
 }
 
@@ -24,17 +81,13 @@ double work( double *a, double *b, int n )
 #define N 45
 int a[N], b[N], c[N];
 
-void work2( double **a, double **b, double **c, int n )
+void foo4(int i, double* P)
 {
-  int i, j;
-  double tmp;
-#pragma omp for simd collapse(2) private(tmp)
-  for (i = 0; i < n; i++) {
-    for (j = 0; j < n; j++) {
-      tmp = a[i][j] + b[i][j];
-      c[i][j] = tmp;
-    }
-  }  
+  int j; 
+#pragma omp simd lastprivate(j)
+  for (i = 0; i < 999; ++i) {
+    j = P[i];
+  }
 }
 
-
+int main() { return 0; }
