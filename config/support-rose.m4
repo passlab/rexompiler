@@ -123,6 +123,9 @@ AC_MSG_NOTICE([GFORTRAN_PATH = "$GFORTRAN_PATH"])
   AC_CHECK_LIB([curl], [Curl_connect], [HAVE_CURL=yes], [HAVE_CURL=no])
   AM_CONDITIONAL([HAS_LIBRARY_CURL], [test "x$HAVE_CURL" = "xyes"])
 
+# Rasmussen (01/13/2021): Moved checking for Java until after language configuration
+# options are set.  Otherwise configure fails if jdk libraries aren't found even if not used.
+  ROSE_SUPPORT_JAVA # This macro uses JAVA_HOME
   ROSE_SUPPORT_GMP
   ROSE_SUPPORT_ISL
   ROSE_SUPPORT_SPOT

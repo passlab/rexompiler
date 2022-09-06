@@ -120,10 +120,6 @@ cf_TEST_NAMES = cf_1 cf_2 cf_3
 
 cf_TEST_TARGETS = $(addsuffix .passed, $(cf_TEST_NAMES))
 
-if ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION
-cf_TEST_TARGETS += rose-ada-output/rangev2.adb ada_diff
-endif
-
 TEST_TARGETS += $(cf_TEST_TARGETS)
 EXTRA_DIST += inputCode_constantFoldingTransformation.C inputCode_constantFoldingTransformation2.C
 
