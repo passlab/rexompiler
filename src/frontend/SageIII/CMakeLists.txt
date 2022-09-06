@@ -22,6 +22,7 @@ if(NOT enable-internalFrontendDevelopment)
 endif()
 
 set(SAGE3_SOURCES
+  accAstConstruction.cpp
   rose_attributes_list.C
   attachPreprocessingInfo.C
   attachPreprocessingInfoTraversal.C
