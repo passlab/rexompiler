@@ -108,7 +108,7 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:util_graphs>
   $<TARGET_OBJECTS:unparser>
   $<TARGET_OBJECTS:EDG>
-  $<TARGET_OBJECTS:edg_internal>
+  #$<TARGET_OBJECTS:edg_internal>
   $<TARGET_OBJECTS:sage3>
   $<TARGET_OBJECTS:virtualCFG>
   $<TARGET_OBJECTS:astFromString>

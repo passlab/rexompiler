@@ -21,11 +21,11 @@ endif()
 # Detect compiler by asking GCC what version it is
 set(compiler "")
 set(min_supported "4.4")
-set(max_supported "5.2")
+set(max_supported "14.0")
 execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion
                 OUTPUT_VARIABLE GCC_version)
 # strip patch version; we only care about major & minor
-string(REGEX MATCH "([0-9]\\.[0-9])" GCC_version ${GCC_version})
+#string(REGEX MATCH "([0-9]\\.[0-9])" GCC_version ${GCC_version})
 
 if(GCC_version VERSION_GREATER max_supported OR
    GCC_version VERSION_LESS min_supported)
@@ -51,11 +51,20 @@ elseif(GCC_version VERSION_EQUAL 4.5)
   set(compiler "gnu-4.5")
 elseif(GCC_version VERSION_EQUAL 4.4)
   set(compiler "gnu-4.4")
+elseif(GCC_version VERSION_EQUAL 9)
+  set(compiler "gnu-9")
+elseif(GCC_version VERSION_EQUAL 9.0)
+  set(compiler "gnu-9")
+elseif(GCC_version VERSION_EQUAL 9.4)
+  set(compiler "gnu-9")
+elseif(GCC_version VERSION_EQUAL 11)
+  set(compiler "gnu-9")
 endif()
 if(compiler STREQUAL "")
   message(FATAL_ERROR
     "Unable to detect a supported compiler when attempting to download EDG binary tarball")
 endif()
+#set(compiler "gnu-9")
 
 # Get binary compatibility signature
 set(EDG_SIG_OUTPUT
@@ -72,7 +81,7 @@ add_custom_target(get_EDG_name
 #    > ${EDG_SIG_OUTPUT}"
   COMMAND ${CMAKE_SOURCE_DIR}/scripts/edg-generate-sig ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR}
     > ${EDG_SIG_OUTPUT}
-  DEPENDS roseutil rosetta_generated)
+  DEPENDS roseUtil rosetta_generated)
 #set(signature "")
 
 add_custom_target( EDGSignature
