@@ -153,14 +153,7 @@ AC_ARG_ENABLE([fortran],
                   	[AC_MSG_FAILURE([--enable-fortran="$enableval" is not supported; use "yes" or "no"])]
                  	;;
                 esac
-               ,
-                if test "x$with_java" = "xno" ; then
-		  if test "$enable_fortran" != no; then
-                    enable_fortran=no
-                    LANGUAGES_TO_SUPPORT="`echo $LANGUAGES_TO_SUPPORT | sed 's/fortran//g'`"
-                    [echo "[[Fortran support]] disabling Fortran language support, which requires Java, because you specified --with-java='$with_java'"]
-		  fi
-                fi)
+                ,)
 AC_ARG_ENABLE([opencl],
                AS_HELP_STRING([--enable-opencl],[Enable OpenCL language support in ROSE (default=yes)]),
                 echo "$LANGUAGES_TO_SUPPORT" | grep --quiet "opencl"
@@ -243,17 +236,6 @@ fortran)
         if test "x$GFORTRAN_PATH" = "x" -o "x$GFORTRAN_PATH" = "xno"; then
           AC_MSG_FAILURE([[[Fortran support]] gfortran not found: required for syntax checking and semantic analysis.
                            Do you need to explicitly specify gfortran using the --with-gfortran=path/to/gfortran configure-switch? (See ./configure --help)])
-          else
-     	    support_fortran_frontend=yes
-	    AC_DEFINE([ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT], [], [Build ROSE to support the Fortran langauge])
-          fi
-        elif test "x$with_java" = "xno" ; then
-	  AC_MSG_FAILURE([[[Fortran support]] cannot support the Fortran language because you specified --with-java="$with_java". You can turn off Fortran support with --disable-fortran (See ./configure --help)]) 
-	else
-	  AC_MSG_FAILURE([[[Fortran support]] Java Virtual Machine (JVM) not found: required by the Open Fortran Parser (OFP).
-	                 Do you need to explicitly specify Java using the --with-java configure-switch? (See ./configure --help)])
-	fi
-	;;
         fi
         # Java (JDK and JVM) is required for Fortran OFP parser
         USE_JAVA=1
