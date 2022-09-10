@@ -681,10 +681,6 @@
 //AS Don't know what to do with this
 #undef USE_ROSE_WINDOWS_ANALYSIS_SUPPORT
 
-/* Controls use of ROSE support for Yices Satisfiability Modulo Theories (SMT)
-   Solver Package. */
-//AS Don't know what to do with this
-
 /* Support for PURIFY debugging software. */
 //AS Don't know what to do with this
 

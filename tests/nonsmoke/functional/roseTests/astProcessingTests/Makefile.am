@@ -365,27 +365,6 @@ check-bPTP: $(bPTP_TEST_TARGETS)
 EXTRA_DIST += $(bPTP_SPECIMENS)
 MOSTLYCLEANFILES += analysis.dot hotness0.dot
 
-#------------------------------------------------------------------------------------------------------------------------
-yicesParser_SOURCES = yicesParser.C
-yicesParser_LDADD = $(ROSE_SEPARATE_LIBS)
-yicesParser_SPECIMENS = efor1.C efor2.C efor3.C eif.C eif2.C eif3.C mf1.C mf10.C mf11.C mf12.C mf13.C mf2.C mf3.C    \
-	mf8.C mf9.C mfEx.C mfEx2.C mfEx3.C mfEx4.C mfEx6.C mfEx7.C mfEx8.C tf1.C tf2.C tf3.C tfif1.C tfif2.C tfif3.C \
-	tfif4.C whiletest.C whiletest2.C whiletest3.C
-yicesParser_TEST_TARGETS = $(addprefix yp_, $(addsuffix .passed, $(yicesParser_SPECIMENS)))
-
-$(yicesParser_TEST_TARGETS): yp_%.passed: % $(TEST_CONFIG) yicesParser
-	@$(RTH_RUN) CMD="./yicesParser $<" $(TEST_CONFIG) $@
-
-.PHONY: check-yicesParser
-check-yicesParser: $(yicesParser_TEST_TARGETS)
-
-if ROSE_HAVE_YICES
-noinst_PROGRAMS += yicesParser
-TEST_TARGETS += $(yicesParser_TEST_TARGETS)
-endif
-EXTRA_DIST += $(yicesParser_SPECIMENS)
-MOSTLYCLEANFILES += $(addsuffix .main.dot, $(yicesParser_SPECIMENS)) hotness0.dot pathsets yices.txt
-
 ########################################################################################################################
 # Automake rules
 ########################################################################################################################

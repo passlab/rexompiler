@@ -200,24 +200,5 @@ if (HAVE_SYS_TIME_H)
     endforeach()
   endif()
 
-  #-----------------------------------------------------------------------------
-  if (enable-yices)
-    add_executable(yicesParser yicesParser.C)
-    target_link_libraries(yicesParser ROSE_DLL EDG ${link_with_libraries})
-
-    set(yicesParser_SPECIMENS
-      efor1.C efor2.C efor3.C eif.C eif2.C eif3.C mf1.C mf10.C mf11.C mf12.C
-      mf13.C mf2.C mf3.C mf8.C mf9.C mfEx.C mfEx2.C mfEx3.C mfEx4.C mfEx6.C
-      mfEx7.C mfEx8.C tf1.C tf2.C tf3.C tfif1.C tfif2.C tfif3.C tfif4.C
-      whiletest.C whiletest2.C whiletest3.C
-    )
-    foreach(specimen ${yicesParser_SPECIMENS})
-      add_test(
-        NAME yp_${specimen}
-        COMMAND yicesParser ${CMAKE_CURRENT_SOURCE_DIR}/${specimen}
-      )
-    endforeach()
-  endif()
-
 endif()
 

@@ -1646,7 +1646,6 @@ INCLUDE_FILE_PATTERNS  =
 
 PREDEFINED             = HAVE_EXPLICIT_TEMPLATE_INSTANTIATION \
                          __EXTERN_C__ \
-                         ROSE_HAVE_LIBYICES \
                          ROSE_USE_NEW_GRAPH_NODES \
 			 DOCUMENTATION
 

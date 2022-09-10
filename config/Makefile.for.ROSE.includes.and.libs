@@ -59,13 +59,6 @@ RT_LIBS = @RT_LIBS@
 
 VALGRIND_BINARY = @VALGRIND_BINARY@
 
-# ROSE-YICES Package (destributed by SRI as a static library)
-if ROSE_HAVE_LIBYICES
-  ROSE_YICES_INCLUDES = -I@ROSE_YICES_PREFIX@/include
-  ROSE_YICES_LIBS = -lyices
-  ROSE_YICES_LIBS_WITH_PATH = @ROSE_YICES_PREFIX@/lib/libyices.a
-endif
-
 # PostgreSQL C++ API
 if ROSE_HAVE_LIBPQXX
   ROSE_LIBPQXX_INCLUDES = -I@ROSE_LIBPQXX_PREFIX@/include
@@ -268,7 +261,6 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/util/graphs \
      -I$(top_srcdir)/src/midend/astUtil/astInterface \
      -I$(top_srcdir)/libltdl \
-     $(ROSE_YICES_INCLUDES) \
      $(ROSE_LIBPQXX_INCLUDES) \
      $(ROSE_GCRYPT_INCLUDES) \
      $(VALGRIND_CFLAGS) \
@@ -332,7 +324,7 @@ ROSE_BOOST_LIBS=$(BOOST_LDFLAGS) $(BOOST_DATE_TIME_LIB) $(BOOST_CHRONO_LIB) \
 
 ROSE_LIBS = $(abspath $(top_builddir)/src/librose.la) -lm $(JAVA_JVM_LINK) \
   $(SQLITE_DATABASE_LIBS) $(ROSE_BOOST_LIBS) \
-  $(SQLITE3_LDFLAGS)  $(RT_LIBS) $(ROSE_YICES_LIBS_WITH_PATH) \
+  $(SQLITE3_LDFLAGS)  $(RT_LIBS) \
   $(ROSE_SSL_LIBS) \
   $(ROSE_INTEL_COMPILER_MATH_LIBS) \
   $(ROSE_GCRYPT_LIBS_WITH_PATH) $(ROSE_LIBPQXX_LIBS_WITH_PATH) \
