@@ -3414,8 +3414,6 @@ HEADER_PROCESS_CONTROL_STATEMENT_START
                e_error_stop,
                e_exit,
                e_pause,
-               e_requeue,
-               e_requeue_with_abort,
              };
 
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
@@ -4221,14 +4219,6 @@ SgStatement::get_scope(void) const
                  // DQ (2/12/2006): provide a consistent definition of the scope for SgFunctionParameterList
                  // instead of a definition that depends on if it is a defining or non-defining declaration.
                     returnScope = functionDeclaration->get_scope();
-                  }
-               else if (SgAdaAcceptStmt* adaAccept = isSgAdaAcceptStmt(stmt->get_parent()))
-                  {
-                    returnScope = adaAccept->get_parameterScope();
-                  }
-               else if (SgAdaSubroutineType* adaSubroutine = isSgAdaSubroutineType(stmt->get_parent()))
-                  {
-                    returnScope = adaSubroutine->get_functionParameterScope();
                   }
                else
                   {
@@ -19005,7 +18995,7 @@ SgUpirLoopStatement::post_construction_initialization()
 SOURCE_UPIR_LOOP_STATEMENT_END
 
 HEADER_UPIR_LOOP_PARALLEL_STATEMENT_START
-      virtual bool replace_child(SgStatement *,SgStatement *, bool extractListFromBasicBlock = false) $ROSE_OVERRIDE;
+      virtual bool replace_child(SgStatement *,SgStatement *, bool extractListFromBasicBlock = false) override;
 
       public:
 HEADER_UPIR_LOOP_PARALLEL_STATEMENT_END
@@ -19236,7 +19226,7 @@ SOURCE_OMP_TARGET_PARALLEL_FOR_STATEMENT_END
 
 HEADER_OMP_TASKWAIT_STATEMENT_START
 //! Required for any declaration statement
-     virtual SgName get_mangled_name(void) const $ROSE_OVERRIDE;
+     virtual SgName get_mangled_name(void) const override;
 HEADER_OMP_TASKWAIT_STATEMENT_END
 
 SOURCE_OMP_TASKWAIT_STATEMENT_START
@@ -19261,7 +19251,7 @@ SOURCE_OMP_TASKWAIT_STATEMENT_END
 
 HEADER_OMP_REQUIRES_STATEMENT_START
 //! Required for any declaration statement
-     virtual SgName get_mangled_name(void) const $ROSE_OVERRIDE;
+     virtual SgName get_mangled_name(void) const override;
 HEADER_OMP_REQUIRES_STATEMENT_END
 
 SOURCE_OMP_REQUIRES_STATEMENT_START

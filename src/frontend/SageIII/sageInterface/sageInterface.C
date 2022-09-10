@@ -11,7 +11,7 @@
 
 #include "SgNodeHelper.h" //Markus's helper functions
 
-#include "fixupTraversal.h"
+#include "Rose/AST/Utils.h"
 
 #include "sageInterface.h"
 
@@ -24390,14 +24390,8 @@ static void serialize(SgNode* node, string& prefix, bool hasRemaining, ostringst
   if (SgArrayType* v= isSgArrayType(node))
     out<<" base_type@"<< v->get_base_type();
 
-  if (SgAdaAccessType* v= isSgAdaAccessType(node))
-    out<<" base_type@"<< v->get_base_type();
-
   if (SgTypeExpression* v= isSgTypeExpression(node))
     out<<" type@"<< v->get_type();
-
-  if (SgAdaAttributeExp* v= isSgAdaAttributeExp(node))
-    out<<" attribute@"<< v->get_attribute();
 
   if (SgUsingDirectiveStatement* v= isSgUsingDirectiveStatement(node))
     out<<" namespaceDeclaration="<< v->get_namespaceDeclaration();

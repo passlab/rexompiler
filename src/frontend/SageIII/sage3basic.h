@@ -313,7 +313,7 @@ namespace boost {
 #include "rose_attributes_list.h"
 
 // Include ROSE common utility function library
-#include "StringUtility.h"
+#include <Rose/StringUtility.h>
 #include "FileUtility.h"
 #include "escape.h"
 
@@ -391,18 +391,8 @@ namespace boost {
    #define ROSE_USING_SMALL_GENERATED_HEADER_FILES 1
 #endif
 
-// DQ (10/4/2014): Added to support USE_ROSE_ATERM_SUPPORT macro.
-// Including rose_config.h is a problem, and is caught in any files that
-// also include rose.h.  Since ROSE source files in /src should not be 
-// including rose.h I have fixed many of these, but at least one fails
-// without rose.h (/src/midend/programAnalysis/genericDataflow/cfgUtils/CFGRewrite.C)
-// so maybe we should have it be an enforced policy instead of the kind of
-// error that is is if rose_config.h is included below.  The better solution 
-// for users is to include rosePublicConfig.h below (no in place).
-// Note also that some macros from ROSE may need to be added to the generated
-// rosePublicConfig.h file (in the script scripts/publicConfiguration.pl).
-// #include "rose_config.h"
-#include "rosePublicConfig.h"
+namespace Rose { namespace Traits { namespace generated { template <typename NodeT> struct describe_node_t; } } }
+namespace Rose { namespace Traits { namespace generated { template <typename NodeT, typename FieldT, FieldT NodeT::* fld_ptr> struct describe_field_t; } } }
 
 // DQ (3/7/2013): I think that we need to use "" instead of <> and this may make a difference for SWIG.
 // DQ (9/21/2005): This is the simplest way to include this here
@@ -464,7 +454,7 @@ namespace boost {
 // endif for ifndef ROSE_USE_SWIG_SUPPORT
 // #endif
 
-#include <initialize.h>                                 // defines Rose::initialize
+#include <Rose/Initialize.h>                                 // defines Rose::initialize
 
 // Liao, 2018/6/25, define the actual version value for OpenMP 4.5
 #define OMPVERSION 201511

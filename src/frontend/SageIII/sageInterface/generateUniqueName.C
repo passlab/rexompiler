@@ -80,7 +80,6 @@ SageInterface::generateUniqueName ( const SgNode* node, bool ignoreDifferenceBet
                case V_SgEnumType:
                case V_SgTypedefType:
                case V_SgNamedType:
-               case V_SgAdaDiscriminatedType:
                   {
                  // Handle case of named types which should be shared within the merged AST.
                  // These are multiply represented within the generated AST from EDG.

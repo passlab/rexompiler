@@ -8,10 +8,6 @@
 #include "transformationTracking.h"
 #include "wholeAST.h"
 
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "merge.h"
-#endif
-
 // **********************************************************
 // **********************************************************
 //       Source code which can be more later

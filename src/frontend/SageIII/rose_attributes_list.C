@@ -841,9 +841,6 @@ PreprocessingInfo::directiveTypeName ( const DirectiveType & directive )
           case F90StyleComment:
              returnString = "F90StyleComment";
              break;
-          case JovialStyleComment:
-             returnString = "JovialStyleComment";
-             break;
           case C_StyleComment:
              returnString = "C_StyleComment";
              break;
@@ -2040,40 +2037,6 @@ ROSEAttributesList::collectFixedFormatPreprocessorDirectivesAndCommentsForAST( c
 
 #define DEBUG_CPP_DIRECTIVE_COLLECTION 0
 
-namespace
-{
-  // PP: for gnatprep's Ada preprocessor
-  //     recognize "if" in "#end if"
-  void gnatprepHandling(const string& line, std::string& cppIndentifier, int& lastChar)
-  {
-    if (!SageInterface::is_Ada_language())
-      return;
-
-    boost::to_lower(cppIndentifier);
-
-    if (cppIndentifier != "end")
-      return;
-
-    const int len = line.size();
-    int       pos = lastChar+1;
-
-    // skip blanks
-    while ((pos < len) && (line[pos] == ' '))
-      ++pos;
-
-    if (  (pos < len-2)
-       && (line[pos]   == 'i' || line[pos]   == 'I')
-       && (line[pos+1] == 'f' || line[pos+1] == 'F')
-       )
-    {
-      pos += 2;
-
-      cppIndentifier.append(" if"); // note, only one blank
-      lastChar = pos-2;
-    }
-  }
-}
-
 bool
 ROSEAttributesList::isCppDirective( const string & line, PreprocessingInfo::DirectiveType & cppDeclarationKind, std::string & restOfTheLine )
    {
@@ -2195,8 +2158,6 @@ ROSEAttributesList::isCppDirective( const string & line, PreprocessingInfo::Dire
 #endif
           int cppIdentifierLength = (positionOfLastCharacterOfCppIdentifier - positionOfFirstCharacterOfCppIdentifier) + 1;
           string cppIndentifier = line.substr(positionOfFirstCharacterOfCppIdentifier,cppIdentifierLength);
-
-          gnatprepHandling(line, cppIndentifier, positionOfLastCharacterOfCppIdentifier);
 
        // Some names will convert to integer values
 #if DEBUG_CPP_DIRECTIVE_COLLECTION

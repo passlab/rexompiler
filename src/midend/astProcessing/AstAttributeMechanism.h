@@ -541,30 +541,4 @@ public:
     int getValue() { return get(); }
 };
 
-class ROSE_DLL_API AstParameterizedTypeAttribute: public AstAttribute {
-    SgNamedType *genericType;
-    std::list<SgJavaParameterizedType *> parameterizedTypes;
-
-public:
-    AstParameterizedTypeAttribute()
-        : genericType(NULL) {}
-    
-    explicit AstParameterizedTypeAttribute(SgNamedType *genericType);
-
-    AstParameterizedTypeAttribute(const AstParameterizedTypeAttribute &other)
-        : genericType(other.genericType), parameterizedTypes(other.parameterizedTypes) {}
-
-    virtual AstAttribute* copy() const override {
-        return new AstParameterizedTypeAttribute(*this);
-    }
-
-    virtual std::string attribute_class_name() const override {
-        return "AstParameterizedTypeAttribute";
-    }
-
-    bool argumentsMatch(SgTemplateParameterList *type_arg_list, std::vector<SgTemplateParameter *> *new_args);
-
-    SgJavaParameterizedType *findOrInsertParameterizedType(std::vector<SgTemplateParameter *> *new_args);
-};
-
 #endif

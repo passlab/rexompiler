@@ -304,8 +304,7 @@ FixupAstDefiningAndNondefiningDeclarations::visit ( SgNode* node )
                       // Only report this if it is not someting defined in a typedef.
                       // PP: (21/10/21) add EXPERIMENTAL exception for SgAdaDiscriminatedTypeDecl
                       //     alternatively, firstNondefiningDeclarationScope = isSgScopeStatement(SgAdaDiscriminatedTypeDecl::get_parent()) could be used
-                       if (  (!isSgTypedefDeclaration(firstNondefiningDeclaration->get_parent()))
-                          && (!isSgAdaDiscriminatedTypeDecl(firstNondefiningDeclaration->get_parent())) ) {
+                       if (  (!isSgTypedefDeclaration(firstNondefiningDeclaration->get_parent())) ) {
                           mfprintf(mlog[WARN]) ("Error: firstNondefiningDeclaration->get_parent() = %p \n",firstNondefiningDeclaration->get_parent());
                           mfprintf(mlog[WARN]) ("     firstNondefiningDeclaration = %p = %s \n",firstNondefiningDeclaration,firstNondefiningDeclaration->class_name().c_str());
                           SgNode* nonDefDclParent = firstNondefiningDeclaration->get_parent();

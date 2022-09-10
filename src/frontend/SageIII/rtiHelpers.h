@@ -342,23 +342,6 @@ static std::string toStringForRTI(const SgFunctionModifier::opencl_work_group_si
   return os.str();
 }
 
-// Rasmussen (6/4/2021): scoped enumerations from ROSETTA
-static std::string toStringForRTI(SgJovialTableStatement::WordsPerEntry &e) {
-  return std::to_string(static_cast<int>(e));
-}
-static std::string toStringForRTI(SgJovialTableType::StructureSpecifier &e) {
-  return std::to_string(static_cast<int>(e));
-}
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-static std::string toStringForRTI(Rose::BinaryAnalysis::JvmInstructionKind &e) {
-  std::ostringstream os;
-  Rose::BinaryAnalysis::JvmInstructionKind kind = Rose::BinaryAnalysis::JvmInstructionKind::nop;
-  int intKind = static_cast<int>(kind);
-  os << intKind;
-  return std::to_string(static_cast<int>(e));
-}
-#endif
-
 #if 0
 // None of these seem to be used
 

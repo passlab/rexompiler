@@ -3,6 +3,7 @@
 #include "sage3basic.h"
 
 #include "checkIsModifiedFlag.h"
+#include <Rose/CommandLine.h>
 
 #if ROSE_WITH_LIBHARU
 #include "AstPDFGeneration.h"
@@ -39,6 +40,9 @@
 
 // DQ (9/8/2017): Debugging ROSE_ASSERT. Call sighandler_t signal(int signum, sighandler_t handler);
 #include<signal.h>
+
+#include "Rose/AST/IO.h"
+#include "Rose/AST/cmdline.h"
 
 #include "AST_FILE_IO.h"
 // Note that this is required to define the Sg_File_Info_XXX symbols (need for file I/O)
@@ -372,8 +376,7 @@ std::string version_message() {
     ss <<"  --- Fortran analysis:           disabled\n";
 #endif
          "\n  --- using original build tree path: " + build_tree_path +
-         "\n  --- using instalation path: " + install_path +
-         "\n  --- using lib-yices version: " + yicesVersionString()
+         "\n  --- using instalation path: " + install_path
          ;
   }
 

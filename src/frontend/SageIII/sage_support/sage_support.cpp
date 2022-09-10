@@ -11,8 +11,8 @@
 #include "sage_support.h"
 #include "keep_going.h"
 #include "cmdline.h"
-#include "FileSystem.h"
-#include <CommandLine.h>
+#include <Rose/FileSystem.h>
+#include <Rose/CommandLine.h>
 
 #ifdef ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
 #   include "FortranModuleInfo.h"
@@ -3811,11 +3811,12 @@ SgSourceFile::build_Fortran_AST( vector<string> argv, vector<string> inputComman
              }
       // Pei-Hung (09/22/2020): Added openacc support for the preprocessing command line.
       // This is a tentative work and needs to be enhanced later.
-           if(get_openacc())
+#if 0
+	  if(get_openacc())
            {
              fortran_C_preprocessor_commandLine.push_back("-D_OPENACC="+ StringUtility::numberToString(3));
            }
-
+#endif
        // DQ (5/19/2008): Added support for include paths as required for relatively new Fortran specific include mechanism in OFP.
           const SgStringList & includeList = get_project()->get_includeDirectorySpecifierList();
           for (size_t i = 0; i < includeList.size(); i++)

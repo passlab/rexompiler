@@ -2196,13 +2196,13 @@ SageBuilder::buildTypedefDeclaration_nfi(const std::string& name, SgType* base_t
           // In Ada, discriminated type may not have been fully built yet.
           //   this is because a the discriminated type obtains the name of the underlying
           //   declaration.
-          if (declaration && !isSgAdaDiscriminatedTypeDecl(declaration))
+          if (declaration)
              {
 #if 1
                mprintf ("Found a valid declaration = %p = %s \n",declaration,declaration->class_name().c_str());
 #endif
 
-               ROSE_ASSERT(SageInterface::is_Ada_language() || declaration->get_firstNondefiningDeclaration() != NULL);
+               ROSE_ASSERT(declaration->get_firstNondefiningDeclaration() != NULL);
 
             // parent_scope = declaration->get_firstNondefiningDeclaration()->get_symbol_from_symbol_table();
                parent_scope = declaration->search_for_symbol_from_symbol_table();
@@ -7160,7 +7160,6 @@ BUILD_UNARY_DEF(MinusOp)
 BUILD_UNARY_DEF(NotOp)
 BUILD_UNARY_DEF(PointerDerefExp)
 BUILD_UNARY_DEF(UnaryAddOp)
-BUILD_UNARY_DEF(AbsOp)
 BUILD_UNARY_DEF(MinusMinusOp)
 BUILD_UNARY_DEF(PlusPlusOp)
 BUILD_UNARY_DEF(RealPartOp)
@@ -7368,7 +7367,6 @@ BUILD_BINARY_DEF(NonMembershipOp)
 BUILD_BINARY_DEF(OrOp)
 BUILD_BINARY_DEF(PlusAssignOp)
 BUILD_BINARY_DEF(PntrArrRefExp)
-BUILD_BINARY_DEF(RemOp)
 BUILD_BINARY_DEF(RshiftAssignOp)
 
 BUILD_BINARY_DEF(RshiftOp)

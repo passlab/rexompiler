@@ -11,7 +11,9 @@
 #include "cmdline.h"
 #include "keep_going.h"
 #include "FileUtility.h"
-#include "Diagnostics.h"                                // Rose::Diagnostics
+#include <Rose/Diagnostics.h>
+#include "Rose/AST/cmdline.h"
+
 #include "Outliner.hh"
 
 #include <boost/foreach.hpp>
@@ -494,7 +496,6 @@ CommandlineProcessing::isOptionTakingThirdParameter( string argument )
         }
 
   // printf ("In CommandlineProcessing::isOptionTakingFileName(): argument = %s result = %s \n",argument.c_str(),result ? "true" : "false");
-#include "Diagnostics.h"                                // R
      return result;
    }
 

@@ -612,13 +612,6 @@ HEADER_HEADER_FILE_BODY_START
 
 HEADER_HEADER_FILE_BODY_END
 
-// Rasmussen (08/25/2022): Removed all untyped Sage nodes. Ultimately it proved easier to
-// construct regular IR nodes from output of the Jovial parser. Using the untyped system just
-// led to an unnecessary step and wasted effort.
-
-HEADER_JAVA_MEMBER_VALUE_PAIR_START
-HEADER_JAVA_MEMBER_VALUE_PAIR_END
-
 HEADER_LAMBDA_CAPTURE_START
 // DQ (9/3/2014): Adding support for C++11 lambda expresions.
 HEADER_LAMBDA_CAPTURE_END
@@ -1627,10 +1620,6 @@ SOURCE_INTERFACE_BODY_END
 SOURCE_HEADER_FILE_BODY_START
 
 SOURCE_HEADER_FILE_BODY_END
-
-SOURCE_JAVA_MEMBER_VALUE_PAIR_START
-SOURCE_JAVA_MEMBER_VALUE_PAIR_END
-
 
 SOURCE_LAMBDA_CAPTURE_START
 // DQ (9/3/2014): Adding support for C++11 lambda expresions.

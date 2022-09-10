@@ -1,6 +1,5 @@
 SgAccessModifier
 SgActualArgumentExpression
-SgAbsOp
 SgAddOp
 SgAddressOfOp
 SgAggregateInitializer
@@ -485,7 +484,6 @@ SgReadStatement
 SgRealPartOp
 SgRefExp
 SgReferenceType
-SgRemOp
 SgRenamePair
 SgRenameSymbol
 SgReturnStmt
