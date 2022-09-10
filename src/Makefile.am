@@ -252,9 +252,7 @@ rose_config_LDFLAGS += -fno-rtti
 rose_config_installed_cppflags =		\
 	-I@includedir@/rose			\
 	$(ROSE_SQLITE_DATABASE_INCLUDE)		\
-	$(ROSE_YICES_INCLUDES)			\
 	$(ROSE_PCH_INCLUDE)			\
-	$(INTEL_PIN_INCLUDE_PATHS)		\
 	$(ROSE_GCRYPT_INCLUDES)			\
 	$(BOOST_CPPFLAGS)
 
@@ -274,7 +272,6 @@ rose_config_installed_ldflags =			\
 	$(JAVA_JVM_LINK)			\
 	$(SQLITE_DATABASE_LIBS)			\
 	$(RT_LIBS)				\
-	$(ROSE_YICES_LIBS_WITH_PATH)		\
 	$(ROSE_SSL_LIBS)			\
 	$(ROSE_INTEL_COMPILER_MATH_LIBS)	\
 	$(ROSE_GCRYPT_LIBS_WITH_PATH)		\

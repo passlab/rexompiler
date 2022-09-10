@@ -59,9 +59,6 @@ clean-local:
 distclean-local:
 	rm -rf Templates.DB
 
-if HAVE_YICES
-include_HEADERS += yicesParserLib.h
-endif
 # Removed AstTests.h AstStatistics.h 
 
 EXTRA_DIST = CMakeLists.txt AstProcessing.docs

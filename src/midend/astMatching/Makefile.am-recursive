@@ -24,10 +24,6 @@ distclean-local:
 include_HEADERS = \
    RoseAst.h matcherparser_decls.h AstMatching.h MatchOperation.h
 
-if HAVE_YICES
-include_HEADERS += yicesParserLib.h
-endif
-
 EXTRA_DIST = astmatching_documentation.txt CMakeLists.txt
 # AstMatching.docs
 
