@@ -13,7 +13,6 @@ ROSE_FLAGS = --edg:no_warnings -w
 noinst_HEADERS = \
    coverage_funcsC.h \
    inputCode_collectComments.h
-   #yices_c.h
 
 noinst_PROGRAMS =
 
@@ -26,10 +25,6 @@ bin_PROGRAMS = \
    loopProcessor \
    virtualCFG
 
-if ROSE_HAVE_YICES
-bin_PROGRAMS += \
-   yicesTutorialExample
-endif
    #traverseBinCFG \
    #traverseSourceCFG 
 
@@ -146,9 +141,6 @@ wholeASTGraphGenerator_SOURCES = wholeASTGraphGenerator.C
 
 identityTranslator_SOURCES = identityTranslator.C
 
-if ROSE_HAVE_YICES
-yicesTutorialExample_SOURCES = yicesTutorialExample.C
-endif
 lineReplacement_SOURCES = lineReplacement.C
 
 queryLibraryExample_SOURCES = queryLibraryExample.C
@@ -525,10 +517,6 @@ loopOptimizationOutputFiles = \
 
 testLoopOptimization: loopProcessor $(loopOptimizationOutputFiles)
 
-if ROSE_HAVE_YICES
-yicesTutorialExampleOutputFiles = \
-    yicesInputExample.C
-endif
 testInheritedAttributeTraversal: inheritedAttributeTraversal
 	$(VALGRIND) ./inheritedAttributeTraversal -c $(srcdir)/inputCode_ExampleTraversals_1.C
 
@@ -589,10 +577,6 @@ testAddArbitraryTextForUnparser:
 testCollectComments: collectComments
 	./collectComments -rose:collectAllCommentsAndDirectives -I$(srcdir) -c $(srcdir)/inputCode_collectComments.C
 
-if ROSE_HAVE_YICES
-testYicesTutorialExample: yicesTutorialExample
-	./yicesTutorialExample -I$(srcdir) -c $(srcdir)/yicesInputExample.C
-endif
 testCollectCommentsSkipHeaders: collectComments
 	./collectComments -I$(srcdir) -c $(srcdir)/inputCode_collectComments.C
 
@@ -1448,10 +1432,6 @@ EXTRA_DIST = \
    transformation_srcode.pdf \
    lattice_cpa.pdf \
    code_replacement_transformation.pdf
-
-if ROSE_HAVE_YICES
-    EXTRA_DIST += yicesInputExample.C
-endif
 
 # disabled this one due to problem with copy mechanism, Liao
 #   inputCode_varSubstCopy.C 

@@ -29,16 +29,6 @@ if CONVENIENCE_LTDL
 else
 	@echo "Automake conditional CONVENIENCE_LTDL: NOT defined"
 endif
-if ROSE_HAVE_LIBYICES
-	@echo "Automake conditional ROSE_HAVE_LIBYICES: DEFINED"
-else
-	@echo "Automake conditional ROSE_HAVE_LIBYICES: NOT defined"
-endif
-if ROSE_HAVE_YICES
-	@echo "Automake conditional ROSE_HAVE_YICES: DEFINED"
-else
-	@echo "Automake conditional ROSE_HAVE_YICES: NOT defined"
-endif
 if INSTALL_LTDL
 	@echo "Automake conditional INSTALL_LTDL: DEFINED"
 else

@@ -57,10 +57,6 @@ if(NOT disable-tutorial-directory)
   #install(TARGETS interproceduralCFGTutorial DESTINATION bin)
   #install(TARGETS virtualCFGTutorial DESTINATION bin)
 
-  #if ROSE_HAVE_YICES
-  #yicesTutorialExample yicesTutorialExample.C)
-  #endif
-
   if(HAVE_SYS_TIME_H)
     add_executable(codeCoverage codeCoverage.C coverageCodeFromShmuel.c)
     target_link_libraries(codeCoverage ROSE_DLL ${Boost_LIBRARIES})

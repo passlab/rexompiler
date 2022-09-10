@@ -685,8 +685,6 @@
    Solver Package. */
 //AS Don't know what to do with this
 
-#undef USE_ROSE_YICES_SUPPORT
-
 /* Support for PURIFY debugging software. */
 //AS Don't know what to do with this
 
