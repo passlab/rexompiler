@@ -6,8 +6,6 @@ add_library(sageInterface OBJECT
   generateUniqueName.C
   sageBuilder.C
   sageBuilder_fortran.C
-  SageBuilderAsm.C
-  sageBuilder_untypedNodes.C
   abiStuff.C)
 
 add_dependencies(sageInterface rosetta_generated)
