@@ -1493,6 +1493,10 @@ src/3rdPartyLibraries/Makefile
 src/3rdPartyLibraries/antlr-jars/Makefile
 src/3rdPartyLibraries/fortran-parser/Makefile
 src/Makefile
+src/Rose/Makefile
+src/Rose/AST/Makefile
+src/Rose/CodeGen/Makefile
+src/Rose/Traits/Makefile
 src/ROSETTA/Makefile
 src/ROSETTA/src/Makefile
 src/backend/Makefile

@@ -5,10 +5,10 @@ pkgdata_DATA =
 MOSTLYCLEANFILES =
 
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-SUBDIRS = util ROSETTA roseSupport frontend midend backend \
+SUBDIRS = util ROSETTA roseSupport Rose frontend midend backend \
           3rdPartyLibraries roseExtensions
 else
-SUBDIRS = util ROSETTA roseSupport frontend midend backend \
+SUBDIRS = util ROSETTA roseSupport Rose frontend midend backend \
           3rdPartyLibraries roseExtensions
 endif
 
@@ -86,6 +86,9 @@ libroseLibraries = \
    $(top_builddir)/src/util/graphs/libgraphs.la \
    $(top_builddir)/src/util/libroseutil.la \
    $(top_builddir)/src/util/Sawyer/libroseSawyer.la \
+   $(top_builddir)/src/Rose/librose_partial.la \
+   $(top_builddir)/src/Rose/AST/libRoseAST.la \
+   $(top_builddir)/src/Rose/CodeGen/libRoseCodeGen.la \
    $(libroseSqlite3xConnection)
 
 if ROSE_WITH_LIBHARU

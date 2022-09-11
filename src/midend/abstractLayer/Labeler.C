@@ -554,7 +554,7 @@ Label CLabeler::forkLabel(SgNode *node) {
   return lab;
 }
 
-Label Labeler::joinLabel(SgNode *node) {
+Label CLabeler::joinLabel(SgNode *node) {
   ROSE_ASSERT(isSgUpirSpmdStatement(node));
   Label lab = getLabel(node);
   return lab+1;

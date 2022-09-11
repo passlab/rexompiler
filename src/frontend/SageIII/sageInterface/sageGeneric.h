@@ -75,7 +75,8 @@ namespace sg
     return res;
   }
 
-  // \note implemented in SageInterfaceAda.h
+  // \note implemented originall in SageInterfaceAda.h. Now the implementations are moved to SageInterface.C since
+  // SageInterfaceAda.h is deleted when we remove Ada support for rexompiler
   // \{
   [[noreturn]]
   void report_error(std::string desc, const char* file = nullptr, size_t ln = 0);
@@ -83,7 +84,6 @@ namespace sg
   [[noreturn]]
   void unexpected_node(const SgNode& n, const char* file = nullptr, size_t ln = 0);
   /// \}
-
 
   static inline
   void report_error_if(bool iserror, const std::string& desc, const char* file = nullptr, size_t ln = 0)

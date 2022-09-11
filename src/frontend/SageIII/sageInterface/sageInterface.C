@@ -72,6 +72,49 @@ namespace EDG_ROSE_Translation
 #endif
   }
 
+namespace sg
+{
+  [[noreturn]]
+  void report_error(std::string desc, const char* file, size_t ln)
+  {
+    static const char* AT = " at ";
+    static const char* SEP = " : ";
+
+    if (file)
+    {
+      const std::string filename(file);
+      const std::string num(conv<std::string>(ln));
+
+      desc.reserve(desc.size() + num.size() + filename.size() + std::strlen(AT) + std::strlen(SEP)+1);
+
+      desc.append(AT);
+      desc.append(filename);
+      desc.append(SEP);
+      desc.append(num);
+    }
+
+    {
+      using namespace Rose::Diagnostics;
+
+      mlog[FATAL] << "[abort] " << desc << std::endl;
+      ROSE_ABORT();
+
+      //~ mlog[FATAL] << "[throw] " << desc << std::endl;
+      //~ throw std::runtime_error(desc);
+
+    //~ std::cerr << "[exit] [FATAL] " << desc << std::endl;
+    //~ std::exit(1);
+    }
+  }
+
+  [[noreturn]]
+  void unexpected_node(const SgNode& n, const char* file, size_t ln)
+  {
+    static const std::string msg = "assertion failed: unexpected node-type: ";
+
+    report_error(msg + typeid(n).name(), file, ln);
+  }
+}
 
 // DQ (12/1/2015): Added to support macro handling.
 #include "detectMacroOrIncludeFileExpansions.h"
@@ -79,7 +122,6 @@ namespace EDG_ROSE_Translation
 namespace SageInterface {
   template<class T> void setSourcePositionToDefault( T* node );
 }
-
 
 #ifdef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
    #include "transformationSupport.h"
