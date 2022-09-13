@@ -92,6 +92,7 @@ add_subdirectory(roseExtensions)
 add_subdirectory(frontend)
 add_subdirectory(midend)
 add_subdirectory(backend)
+add_subdirectory(Rose)
 
 ########################################################################################################################
 # The ROSE library
@@ -132,12 +133,25 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:astPostProcessing>
   $<TARGET_OBJECTS:trans_tracking>
   $<TARGET_OBJECTS:astRewriteMechanism>
+  $<TARGET_OBJECTS:roseNamespace>
+  $<TARGET_OBJECTS:roseColor>
+  $<TARGET_OBJECTS:roseCommandLine>
+  $<TARGET_OBJECTS:roseDiagnostics>
+  $<TARGET_OBJECTS:roseFileSystem>
+  $<TARGET_OBJECTS:roseStringUtility>
+  $<TARGET_OBJECTS:RoseAST>
+  $<TARGET_OBJECTS:RoseCodeGen>
   $<TARGET_OBJECTS:mstl>)
 
 if(NOT enable-internalFrontendDevelopment)
   list(APPEND rose_LIB_SRCS
     $<TARGET_OBJECTS:midend_pa>
     $<TARGET_OBJECTS:midend_loopproc>)
+endif()
+
+# TODO Conditional either EDG or CLang or nothing
+if(enable-cpp)
+  list(APPEND rose_LIB_SRCS $<TARGET_OBJECTS:edg_internal> $<TARGET_OBJECTS:newsage>)
 endif()
 
 ########################################################################################################################
@@ -222,9 +236,7 @@ endif ()
 
 # If the C preprocessor is enabled, ROSE has some additional depenendencies
 if(enable-cpp)
-  add_dependencies(ROSE_DLL
-    ROSE_PREPROCESSOR ${edg_lib} libhpdf
-    generate_rosePublicConfig)
+  add_dependencies(ROSE_DLL ROSE_PREPROCESSOR ${edg_lib} libhpdf generate_rosePublicConfig)
 endif()
 
 # SQLite3 has an executable component and a development (library and headers) component that can be installed
@@ -270,6 +282,32 @@ install(TARGETS rose-compiler DESTINATION bin)
 ########################################################################################################################
 # rose-config.cfg -- text file that contains various settings for user-level makefiles.
 ########################################################################################################################
+
+#Build LDFLAGS for ROSE tools
+set(rose_config_installed_cppflags "-I${CMAKE_INSTALL_PREFIX}/include/rose")
+
+set(rose_library_dir_list "${CMAKE_INSTALL_PREFIX}/${ROSE_LIB_DIR_NAME}")
+set(rose_library_dir_list "${rose_library_dir_list};${Boost_LIBRARY_DIRS}")
+foreach(X IN LISTS rose_library_dir_list)
+  set(rose_config_installed_ldflags "${rose_config_installed_ldflags} -L${X}")
+endforeach()
+set(rose_config_installed_cppflags "${rose_config_installed_cppflags} -I/usr/include")
+
+
+set(rose_library_list "rose")
+set(rose_library_list "${rose_library_list};${Boost_LIBRARIES}")
+set(rose_library_list "${rose_library_list};m;quadmath")
+
+foreach(X IN LISTS rose_library_list)
+  get_filename_component(Y ${X} NAME_WE)
+  if(${Y} MATCHES "-l.*")
+    string(SUBSTRING ${Y} 2 -1 Y)
+  endif()
+  if(${Y} MATCHES "lib.*")
+    string(SUBSTRING ${Y} 3 -1 Y)
+  endif()
+  set(rose_config_installed_ldflags "${rose_config_installed_ldflags} -l${Y}")
+endforeach()
 
 file(REMOVE ${ROSE_TOP_BINARY_DIR}/src/rose-config.cfg)
 file(WRITE  ${ROSE_TOP_BINARY_DIR}/src/rose-config.cfg "# Things that the 'rose-config' tool can report\n")
