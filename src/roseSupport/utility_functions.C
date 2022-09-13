@@ -1,4 +1,3 @@
-
 // tps (01/14/2010) : Switching from rose.h to sage3.
 #include "sage3basic.h"
 
@@ -204,10 +203,8 @@ bool Rose::is_UPC_dynamic_threads = false;
 bool Rose::is_C99_language        = false;
 bool Rose::is_Cxx_language        = false;
 bool Rose::is_Fortran_language    = false;
-bool Rose::is_CAF_language        = false;
 bool Rose::is_Cuda_language       = false;
 bool Rose::is_OpenCL_language     = false;
-
 
 // DQ (3/24/2016): Adding Robb's message logging mechanism to contrl output debug message from the EDG/ROSE connection code.
 using namespace Rose::Diagnostics;
@@ -261,7 +258,6 @@ std::string ofpVersionString()
      return ofp_version;
    }
 
-
 // similar to rose_boost_version_id but intended for human consumption (i.e., "1.50.0" rather than 105000).
 static std::string
 boostVersionString() {
@@ -301,11 +297,6 @@ std::string version_message() {
 #endif
 
     ss <<"  --- boost library:              " <<boostVersionString() <<" (" <<rose_boost_version_path() <<")\n";
-#ifdef ROSE_HAVE_LIBREADLINE
-    ss <<"  --- readline library:           " <<readlineVersionString() <<"\n";
-#else
-    ss <<"  --- readline library:           unused\n";
-#endif
 
     //-----------------------------------------------------------------------
     // Information related to any source language analysis (not binary analysis).
@@ -375,10 +366,45 @@ std::string version_message() {
 #else
     ss <<"  --- Fortran analysis:           disabled\n";
 #endif
-         "\n  --- using original build tree path: " + build_tree_path +
-         "\n  --- using instalation path: " + install_path
-         ;
-  }
+
+    //-----------------------------------------------------------------------
+    // Information related to binary analysis.
+    //-----------------------------------------------------------------------
+
+#ifdef ROSE_HAVE_LIBGCRYPT
+    ss <<"  --- gcrypt library:             " <<GCRYPT_VERSION <<"\n";
+#else
+    ss <<"  --- gcrypt library:             unused\n";
+#endif
+
+#ifdef ROSE_HAVE_SQLITE3
+    ss <<"  --- sqilte library:             " <<SQLITE_VERSION <<"\n";
+#else
+    ss <<"  --- sqilte library:             unused\n";
+#endif
+
+    //-----------------------------------------------------------------------
+    // Information related to other language analysis, alphabetically. These
+    // CPP symbols with weird and inconsistent names come from ROSE's Autotools
+    // configuration system. If you remove them from this list because they're
+    // not supported anymore, then kindly also remove them from the rest of the
+    // ROSE library source code and tests!
+    //-----------------------------------------------------------------------
+
+#ifdef ROSE_BUILD_CUDA_LANGUAGE_SUPPORT
+    ss <<"  --- CUDA analysis:              enabled\n";
+#else
+    ss <<"  --- CUDA analysis:              disabled\n";
+#endif
+
+#ifdef ROSE_BUILD_OPENCL_LANGUAGE_SUPPORT
+    ss <<"  --- OpenCL analysis:            enabled\n";
+#else
+    ss <<"  --- OpenCL analysis:            disabled\n";
+#endif
+
+    return ss.str();
+}
 
 // DQ (11/1/2009): replaced "version()" with separate "version_number()" and "version_message()" functions.
 std::string version_number()
@@ -656,11 +682,14 @@ backend ( SgProject* project, UnparseFormatHelp *unparseFormatHelp, UnparseDeleg
           printf ("Inside of backend(SgProject*) \n");
         }
 
+     Rose::AST::cmdline::graphviz.backend.exec(project);
+     Rose::AST::cmdline::checker.backend.exec(project);
+
      std::string const & astfile_out = project->get_astfile_out();
      if (astfile_out != "") {
        std::list<std::string> empty_file_list;
        project->set_astfiles_in(empty_file_list);
-       project->get_astfile_out() == "";
+       project->get_astfile_out() = "";
        AST_FILE_IO::reset();
        AST_FILE_IO::startUp(project);
        AST_FILE_IO::writeASTToFile(astfile_out);
@@ -1892,3 +1921,10 @@ Rose::getPreviousStatement ( SgStatement *targetStatement , bool climbOutScope /
 
      return previousStatement;
    }
+
+
+
+
+
+
+
