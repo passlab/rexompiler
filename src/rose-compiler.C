@@ -20,7 +20,6 @@ int main( int argc, char * argv[] ) {
   }
 #endif
 
-<<<<<<< HEAD
   SgProject * project = args.size() > 1 ? frontend(args) : new SgProject(); // TODO this behavior should be part of ::frontend(std::vector<std::string> const &)
 
   auto status = backend(project);
@@ -30,9 +29,6 @@ int main( int argc, char * argv[] ) {
 #endif
 
   return status;
-=======
-  auto proj = frontend(args);
-  return backend(proj);
->>>>>>> patrick/simd
+
 }
 
