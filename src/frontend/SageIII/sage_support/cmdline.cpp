@@ -13,6 +13,7 @@
 #include "FileUtility.h"
 #include <Rose/Diagnostics.h>
 #include "Rose/AST/cmdline.h"
+#include "omp_simd.h"
 
 #include "Outliner.hh"
 
@@ -3760,6 +3761,15 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
            argv.push_back(ompmacro);
        }
      }
+     
+     // Patrick, 9/22/2022
+     if (CommandlineProcessing::isOption(argv, "-rose:simd:", "(intel-avx)", true) == true) {
+        simd_arch = Intel_AVX512;    
+     } else if (CommandlineProcessing::isOption(argv, "-rose:simd:", "(arm-sve)", true) == true) {
+        simd_arch = Arm_SVE2;
+     } else if (CommandlineProcessing::isOption(argv, "-rose:simd:", "(addr3)", true) == true) {
+        simd_arch = Addr3;
+     }
 
   // Liao, 1/30/2014
   // recognize -rose:failsafe option to turn on handling of failsafe directives for resilience work
@@ -4423,6 +4433,10 @@ SgFile::stripRoseCommandLineOptions ( vector<string> & argv )
      optionCount = sla(argv, "-rose:", "($)", "(output_parser_actions)",1);
 
      optionCount = sla(argv, "-rose:", "($)", "(unparse_tokens)",1);
+     
+     optionCount = sla(argv, "-rose:simd:", "($)", "(intel-avx)", 1);
+     optionCount = sla(argv, "-rose:simd:", "($)", "(arm-sve)", 1);
+     optionCount = sla(argv, "-rose:simd:", "($)", "(addr3)", 1);
 
   // DQ (9/7/2016): remove this from the backend compiler command line (adding more support for it's use).
   // optionCount = sla(argv, "-rose:", "($)", "(unparse_headers)",1);
