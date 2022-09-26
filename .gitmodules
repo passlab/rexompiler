@@ -6,4 +6,4 @@
 	url = git@github.com:passlab/ompparser.git
 [submodule "src/frontend/SageIII/accparser"]
 	path = src/frontend/SageIII/accparser
-	url = https://github.com/passlab/accparser.git
+	url = git@github.com:passlab/accparser.git
