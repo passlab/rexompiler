@@ -226,6 +226,52 @@ SgAssignInitializer *intel_write_broadcast(SgBinaryOp *op, SgUpirLoopParallelSta
 }
 
 // ===========================================================================================================
+// Generates a SIMD explicit gather statement
+//
+SgAssignInitializer *intel_write_exp_gather(SgBinaryOp *op, SgUpirLoopParallelStatement *target, SgBasicBlock *new_block) {
+    SgExpression *lval = op->get_lhs_operand();
+    SgExpression *rval = op->get_rhs_operand();
+    
+    printAST(lval);
+    puts("-----------");
+    printAST(rval);
+    
+    // First, break down the pointer expression
+    // TODO: This only works with 2D at the moment
+    SgPntrArrRefExp *pntr1 = isSgPntrArrRefExp(rval);
+    SgPntrArrRefExp *pntr2 = isSgPntrArrRefExp(pntr1->get_lhs_operand());
+    SgVarRefExp *i_var = isSgVarRefExp(pntr1->get_rhs_operand());
+    SgVarRefExp *j_var = isSgVarRefExp(pntr2->get_rhs_operand());
+    SgVarRefExp *base_var = isSgVarRefExp(pntr2->get_lhs_operand());
+    
+    // Second, create the index array
+    std::string name = intel_gen_buf();
+    SgIntVal *length = buildIntVal(16);
+    SgType *type = buildArrayType(buildIntType(), length);
+    
+    SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
+    appendStatement(vd, new_block);
+    
+    // Now, generate the for loop
+    SgBasicBlock *block2 = buildBasicBlock();
+    SgVariableDeclaration *loop_inc_vd = buildVariableDeclaration("__i", buildIntType(), buildAssignInitializer(buildIntVal(0)));
+    SgLessThanOp *loop_cmp = buildLessThanOp(buildVarRefExp("__i"), length);
+    SgPlusAssignOp *loop_inc = buildPlusAssignOp(buildVarRefExp("__i"), buildIntVal(1));
+    SgForStatement *loop2 = buildForStatement(loop_inc_vd, buildExprStatement(loop_cmp), loop_inc, block2);
+    appendStatement(loop2, new_block);
+    
+    // Generate the index generator
+    // indexes[i] = i * N + j; where N = 16
+    SgPntrArrRefExp *index_pntr = buildPntrArrRefExp(buildVarRefExp(name, new_block), buildVarRefExp("__i", new_block));
+    SgMultiplyOp *mul = buildMultiplyOp(buildVarRefExp("__i", new_block), length);
+    SgAddOp *add = buildAddOp(mul, buildIntVal(1));
+    SgAssignOp *assign = buildAssignOp(index_pntr, add);
+    appendStatement(buildExprStatement(assign), block2);
+    
+    return nullptr;
+}
+
+// ===========================================================================================================
 // Generates a SIMD gather statement
 //
 SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgUpirLoopParallelStatement *target, SgBasicBlock *new_block) {
@@ -658,6 +704,10 @@ void omp_simd_write_intel(SgUpirLoopParallelStatement *target, SgForStatement *f
             
             case V_SgSIMDGather: {
                 init = intel_write_gather(op, target, new_block);
+            } break;
+            
+            case V_SgSIMDExplicitGather: {
+                init = intel_write_exp_gather(op, target, new_block);
             } break;
             
             case V_SgSIMDStore: {

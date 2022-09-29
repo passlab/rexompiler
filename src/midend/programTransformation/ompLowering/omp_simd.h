@@ -14,6 +14,7 @@ enum OpType {
     Broadcast,
     BroadcastZero,
     Gather,
+    ExplicitGather,
     Scatter,
     ScalarStore,
     Store,
@@ -24,6 +25,23 @@ enum OpType {
     Div,
     Extract
 };
+
+//
+// A class to hold SIMD operations
+// The goal is to eventually migrate the SIMD compiler to this
+//
+struct OmpSimdCompiler {
+
+    // Functions
+    bool isStridedLoadStore(SgExpression *pntr_exp);
+
+    // Metadata variables
+    SgForStatement *for_loop = nullptr;
+};
+
+//
+// Final translation functions
+//
 
 extern SimdType simd_arch;
 

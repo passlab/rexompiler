@@ -513,6 +513,7 @@ SgSIMDStore
 SgSIMDPartialStore
 SgSIMDScalarStore
 SgSIMDGather
+SgSIMDExplicitGather
 SgSIMDScatter
 SgSizeOfOp
 SgAlignOfOp

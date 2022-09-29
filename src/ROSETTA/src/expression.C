@@ -360,6 +360,7 @@ Grammar::setUpExpressions ()
      //NEW_TERMINAL_MACRO (SIMDSVAddV, "SIMDSVAddV", "SIMD_SVADDV");
 
      NEW_TERMINAL_MACRO (SIMDGather, "SIMDGather", "SIMD_GATHER");
+     NEW_TERMINAL_MACRO (SIMDExplicitGather, "SIMDExplicitGather", "SIMD_EXPLICIT_GATHER");
      NEW_TERMINAL_MACRO (SIMDScatter, "SIMDScatter", "SIMD_SCATTER");
 
      NEW_TERMINAL_MACRO (SIMDAddOp, "SIMDAddOp", "SIMD_ADD_OP");
@@ -401,7 +402,7 @@ Grammar::setUpExpressions ()
           NonMembershipOp | IsOp            | IsNotOp             | ElementwiseOp        | PowerOp        |
           LeftDivideOp    |
           SIMDBinaryOp | SIMDLoad | SIMDBroadcast | SIMDStore | SIMDPartialStore | SIMDScalarStore |
-          SIMDGather | SIMDScatter,
+          SIMDGather | SIMDExplicitGather | SIMDScatter,
           "BinaryOp","BINARY_EXPRESSION", false);
 
      NEW_NONTERMINAL_MACRO (NaryOp,
@@ -1052,6 +1053,7 @@ Grammar::setUpExpressions ()
      SIMDPartialStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
      SIMDScalarStore.editSubstitute ( "PRECEDENCE_VALUE", "16" );
      SIMDGather.editSubstitute ( "PRECEDENCE_VALUE", "16" );
+     SIMDExplicitGather.editSubstitute ( "PRECEDENCE_VALUE", "16" );
      SIMDScatter.editSubstitute ( "PRECEDENCE_VALUE", "16" );
 
 #if USE_FORTRAN_IR_NODES
@@ -3404,6 +3406,9 @@ Grammar::setUpExpressions ()
 
      SIMDGather.setFunctionPrototype ( "HEADER_SIMD_GATHER", "../Grammar/Expression.code" );
      SIMDGather.setFunctionSource ( "SOURCE_SIMD_GATHER", "../Grammar/Expression.code" );
+     
+     SIMDExplicitGather.setFunctionPrototype ( "HEADER_SIMD_EXPLICIT_GATHER", "../Grammar/Expression.code" );
+     SIMDExplicitGather.setFunctionSource ( "SOURCE_SIMD_EXPLICIT_GATHER", "../Grammar/Expression.code" );
 
      SIMDScatter.setFunctionPrototype ( "HEADER_SIMD_SCATTER", "../Grammar/Expression.code" );
      SIMDScatter.setFunctionSource ( "SOURCE_SIMD_SCATTER", "../Grammar/Expression.code" );
