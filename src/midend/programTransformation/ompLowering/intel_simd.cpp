@@ -94,6 +94,7 @@ std::string intel_simd_func(OpType op_type, SgType *type, bool half_type = false
         case Broadcast: instr += "set1_"; break;
         case BroadcastZero: instr += "setzero_"; break;
         case Gather: instr += "mask_i32gather_"; break;
+        case ExplicitGather: instr += "i32gather_"; break;
         
         case ScalarStore:
         case Store: instr += "storeu_"; break;
@@ -228,9 +229,20 @@ SgAssignInitializer *intel_write_broadcast(SgBinaryOp *op, SgUpirLoopParallelSta
 // ===========================================================================================================
 // Generates a SIMD explicit gather statement
 //
-SgAssignInitializer *intel_write_exp_gather(SgBinaryOp *op, SgUpirLoopParallelStatement *target, SgBasicBlock *new_block) {
+SgAssignInitializer *intel_write_exp_gather(SgBinaryOp *op, SgUpirLoopParallelStatement *target,
+                                            SgBasicBlock *new_block, SgForStatement *for_loop) {
     SgExpression *lval = op->get_lhs_operand();
     SgExpression *rval = op->get_rhs_operand();
+    
+    // Get the loop condition of our outer for-loop to determine the stride
+    SgStatement *for_cond = for_loop->get_test();
+    SgExprStatement *for_cond2 = isSgExprStatement(for_cond);
+    SgBinaryOp *cond = isSgBinaryOp(for_cond2->get_expression());
+    SgExpression *stride = cond->get_rhs_operand();
+    if (cond->variantT() == V_SgGreaterOrEqualOp || cond->variantT() == V_SgLessOrEqualOp) {
+        SgAddOp *add = buildAddOp(stride, buildIntVal(1));
+        stride = add;
+    }
     
     // First, break down the pointer expression
     // TODO: This only works with 2D at the moment
@@ -242,9 +254,8 @@ SgAssignInitializer *intel_write_exp_gather(SgBinaryOp *op, SgUpirLoopParallelSt
     SgType *vector_type = intel_simd_type(lval->get_type(), target->get_scope());
     
     // Second, create the index array
-    // TODO: This probably shouldn't be hardcoded to 16
     std::string name = intel_gen_buf();
-    SgIntVal *length = buildIntVal(16);
+    SgIntVal *length = buildIntVal(simd_len);
     SgType *type = buildArrayType(buildIntType(), length);
     
     SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
@@ -260,10 +271,9 @@ SgAssignInitializer *intel_write_exp_gather(SgBinaryOp *op, SgUpirLoopParallelSt
     
     // Generate the index generator
     // indexes[i] = (k + __i) * N + j;  // N = loop condition
-    // TODO: Don't hardcode this
     SgAddOp *add1 = buildAddOp(i_var, buildVarRefExp("__i", new_block));
     SgPntrArrRefExp *index_pntr = buildPntrArrRefExp(buildVarRefExp(name, new_block), buildVarRefExp("__i", new_block));
-    SgMultiplyOp *mul = buildMultiplyOp(add1, buildIntVal(512));
+    SgMultiplyOp *mul = buildMultiplyOp(add1, stride);
     SgAddOp *add = buildAddOp(mul, j_var);
     SgAssignOp *assign = buildAssignOp(index_pntr, add);
     appendStatement(buildExprStatement(assign), block2);
@@ -286,11 +296,13 @@ SgAssignInitializer *intel_write_exp_gather(SgBinaryOp *op, SgUpirLoopParallelSt
     appendStatement(mask_vd, new_block);
     
     // Now, generate the actual gather statement
-    // TODO: Don't hardcode this
-    parameters = buildExprListExp(buildVarRefExp(vindex_name, new_block), pntr2->get_lhs_operand(), buildIntVal(4));
+    if (simd_len == 8) {
+        parameters = buildExprListExp(pntr2->get_lhs_operand(), buildVarRefExp(vindex_name, new_block), buildIntVal(4));
+    } else {
+        parameters = buildExprListExp(buildVarRefExp(vindex_name, new_block), pntr2->get_lhs_operand(), buildIntVal(4));
+    }
     
-    //func_name = intel_simd_func(Gather, dest->get_type());
-    func_name = "_mm512_i32gather_ps";
+    func_name = intel_simd_func(ExplicitGather, lval->get_type());
     ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
     return buildAssignInitializer(ld);
     
@@ -733,7 +745,7 @@ void omp_simd_write_intel(SgUpirLoopParallelStatement *target, SgForStatement *f
             } break;
             
             case V_SgSIMDExplicitGather: {
-                init = intel_write_exp_gather(op, target, new_block);
+                init = intel_write_exp_gather(op, target, new_block, for_loop);
             } break;
             
             case V_SgSIMDStore: {
