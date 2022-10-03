@@ -232,19 +232,17 @@ SgAssignInitializer *intel_write_exp_gather(SgBinaryOp *op, SgUpirLoopParallelSt
     SgExpression *lval = op->get_lhs_operand();
     SgExpression *rval = op->get_rhs_operand();
     
-    printAST(lval);
-    puts("-----------");
-    printAST(rval);
-    
     // First, break down the pointer expression
     // TODO: This only works with 2D at the moment
     SgPntrArrRefExp *pntr1 = isSgPntrArrRefExp(rval);
     SgPntrArrRefExp *pntr2 = isSgPntrArrRefExp(pntr1->get_lhs_operand());
-    SgVarRefExp *i_var = isSgVarRefExp(pntr1->get_rhs_operand());
-    SgVarRefExp *j_var = isSgVarRefExp(pntr2->get_rhs_operand());
+    SgVarRefExp *i_var = isSgVarRefExp(pntr2->get_rhs_operand());
+    SgVarRefExp *j_var = isSgVarRefExp(pntr1->get_rhs_operand());
     SgVarRefExp *base_var = isSgVarRefExp(pntr2->get_lhs_operand());
+    SgType *vector_type = intel_simd_type(lval->get_type(), target->get_scope());
     
     // Second, create the index array
+    // TODO: This probably shouldn't be hardcoded to 16
     std::string name = intel_gen_buf();
     SgIntVal *length = buildIntVal(16);
     SgType *type = buildArrayType(buildIntType(), length);
@@ -261,14 +259,42 @@ SgAssignInitializer *intel_write_exp_gather(SgBinaryOp *op, SgUpirLoopParallelSt
     appendStatement(loop2, new_block);
     
     // Generate the index generator
-    // indexes[i] = i * N + j; where N = 16
+    // indexes[i] = (k + __i) * N + j;  // N = loop condition
+    // TODO: Don't hardcode this
+    SgAddOp *add1 = buildAddOp(i_var, buildVarRefExp("__i", new_block));
     SgPntrArrRefExp *index_pntr = buildPntrArrRefExp(buildVarRefExp(name, new_block), buildVarRefExp("__i", new_block));
-    SgMultiplyOp *mul = buildMultiplyOp(buildVarRefExp("__i", new_block), length);
-    SgAddOp *add = buildAddOp(mul, buildIntVal(1));
+    SgMultiplyOp *mul = buildMultiplyOp(add1, buildIntVal(512));
+    SgAddOp *add = buildAddOp(mul, j_var);
     SgAssignOp *assign = buildAssignOp(index_pntr, add);
     appendStatement(buildExprStatement(assign), block2);
     
-    return nullptr;
+    // Generate the load statement for the array indicies
+    std::string vindex_name = intel_gen_vindex();
+    SgType *mask_type = intel_simd_type(buildIntType(), new_block);
+    
+    index_pntr = buildPntrArrRefExp(buildVarRefExp(name, new_block), buildIntVal(0));
+    SgAddressOfOp *addr = buildAddressOfOp(index_pntr);
+    SgPointerType *ptr_type = buildPointerType(mask_type);
+    SgCastExp *cast = buildCastExp(addr, ptr_type);
+    
+    std::string func_name = intel_simd_func(Load, index_pntr->get_type());
+    SgExprListExp *parameters = buildExprListExp(cast);
+    SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
+    SgAssignInitializer *local_init = buildAssignInitializer(ld);
+    
+    SgVariableDeclaration *mask_vd = buildVariableDeclaration(vindex_name, mask_type, local_init, new_block);
+    appendStatement(mask_vd, new_block);
+    
+    // Now, generate the actual gather statement
+    // TODO: Don't hardcode this
+    parameters = buildExprListExp(buildVarRefExp(vindex_name, new_block), pntr2->get_lhs_operand(), buildIntVal(4));
+    
+    //func_name = intel_simd_func(Gather, dest->get_type());
+    func_name = "_mm512_i32gather_ps";
+    ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
+    return buildAssignInitializer(ld);
+    
+    //return nullptr;
 }
 
 // ===========================================================================================================
