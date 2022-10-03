@@ -7,3 +7,4 @@
 [submodule "src/frontend/SageIII/accparser"]
 	path = src/frontend/SageIII/accparser
 	url = https://github.com/passlab/accparser.git
+

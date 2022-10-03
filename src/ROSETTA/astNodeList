@@ -353,6 +353,8 @@ SgOmpTeamsLoopStatement
 SgOmpParallelLoopStatement
 SgOmpParallelMasterStatement
 SgOmpMasterTaskloopStatement
+SgOmpUnrollStatement
+SgOmpTileStatement
 SgUpirSimdStatement
 SgUpirBaseStatement
 SgUpirLoopStatement
@@ -443,6 +445,9 @@ SgOmpNotinbranchClause
 SgOmpDependClause
 SgOmpAffinityClause
 SgOmpWhenClause
+SgOmpFullClause
+SgOmpPartialClause
+SgOmpSizesClause
 SgUpirBranchField
 SgUpirNestedLevelField
 SgUpirNestedParentField
@@ -507,8 +512,8 @@ SgSIMDBroadcast
 SgSIMDStore
 SgSIMDPartialStore
 SgSIMDScalarStore
-SgSIMDSVAddV
 SgSIMDGather
+SgSIMDExplicitGather
 SgSIMDScatter
 SgSizeOfOp
 SgAlignOfOp

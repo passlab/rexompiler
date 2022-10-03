@@ -1,6 +1,8 @@
 
 #include <iostream>
 #include <stack>
+#include <vector>
+#include <algorithm>
 
 #include "sage3basic.h"
 #include "sageBuilder.h"
@@ -21,6 +23,9 @@ int loop_increment = 16;
 int buf_pos = 0;
 int mask_pos = 0;
 int vindex_pos = 0;
+
+// For maintaining declarations
+std::vector<std::string> partial_broadcasts;
 
 std::string intel_gen_buf() {
     char str[5];
@@ -89,6 +94,7 @@ std::string intel_simd_func(OpType op_type, SgType *type, bool half_type = false
         case Broadcast: instr += "set1_"; break;
         case BroadcastZero: instr += "setzero_"; break;
         case Gather: instr += "mask_i32gather_"; break;
+        case ExplicitGather: instr += "i32gather_"; break;
         
         case ScalarStore:
         case Store: instr += "storeu_"; break;
@@ -137,6 +143,31 @@ std::string intel_simd_func(OpType op_type, SgType *type, bool half_type = false
     return instr;
 }
 
+//
+// This is specific to the loop unrolling.
+// If we find this specific sequence, we very likely have an index altered by the loopUnrolling
+// from an OMP unroll clause. In that case, we need to adjust the base with the proper loop
+// increment value.
+//
+void intel_normalize_offset(SgPntrArrRefExp *array) {
+    SgAddOp *add = isSgAddOp(array->get_rhs_operand());
+    if (!add) return;
+    
+    SgMultiplyOp *mul = isSgMultiplyOp(add->get_rhs_operand());
+    if (!mul) {
+        SgAddOp *add2 = isSgAddOp(add->get_rhs_operand());
+        if (!add2) return;
+        
+        mul = isSgMultiplyOp(add2->get_rhs_operand());
+        if (!mul) return;
+    }
+    
+    SgIntVal *inc = isSgIntVal(mul->get_lhs_operand());
+    if (!inc) return;
+    
+    inc->set_value(loop_increment);
+}
+
 // Generates a SIMD load statement for Intel
 SgAssignInitializer *intel_write_load(SgBinaryOp *op, SgUpirLoopParallelStatement *target, SgBasicBlock *new_block) {
     SgExpression *lval = op->get_lhs_operand();
@@ -151,6 +182,8 @@ SgAssignInitializer *intel_write_load(SgBinaryOp *op, SgUpirLoopParallelStatemen
     if (va->get_type()->variantT() == V_SgTypeDouble) {
         loop_increment = simd_len / 2;
     }
+    
+    intel_normalize_offset(array);
     
     // Build function call parameters
     SgExprListExp *parameters;
@@ -191,6 +224,89 @@ SgAssignInitializer *intel_write_broadcast(SgBinaryOp *op, SgUpirLoopParallelSta
     
     SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
     return buildAssignInitializer(ld);
+}
+
+// ===========================================================================================================
+// Generates a SIMD explicit gather statement
+//
+SgAssignInitializer *intel_write_exp_gather(SgBinaryOp *op, SgUpirLoopParallelStatement *target,
+                                            SgBasicBlock *new_block, SgForStatement *for_loop) {
+    SgExpression *lval = op->get_lhs_operand();
+    SgExpression *rval = op->get_rhs_operand();
+    
+    // Get the loop condition of our outer for-loop to determine the stride
+    SgStatement *for_cond = for_loop->get_test();
+    SgExprStatement *for_cond2 = isSgExprStatement(for_cond);
+    SgBinaryOp *cond = isSgBinaryOp(for_cond2->get_expression());
+    SgExpression *stride = cond->get_rhs_operand();
+    if (cond->variantT() == V_SgGreaterOrEqualOp || cond->variantT() == V_SgLessOrEqualOp) {
+        SgAddOp *add = buildAddOp(stride, buildIntVal(1));
+        stride = add;
+    }
+    
+    // First, break down the pointer expression
+    // TODO: This only works with 2D at the moment
+    SgPntrArrRefExp *pntr1 = isSgPntrArrRefExp(rval);
+    SgPntrArrRefExp *pntr2 = isSgPntrArrRefExp(pntr1->get_lhs_operand());
+    SgVarRefExp *i_var = isSgVarRefExp(pntr2->get_rhs_operand());
+    SgVarRefExp *j_var = isSgVarRefExp(pntr1->get_rhs_operand());
+    SgVarRefExp *base_var = isSgVarRefExp(pntr2->get_lhs_operand());
+    SgType *vector_type = intel_simd_type(lval->get_type(), target->get_scope());
+    
+    // Second, create the index array
+    std::string name = intel_gen_buf();
+    SgIntVal *length = buildIntVal(simd_len);
+    SgType *type = buildArrayType(buildIntType(), length);
+    
+    SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
+    appendStatement(vd, new_block);
+    
+    // Now, generate the for loop
+    SgBasicBlock *block2 = buildBasicBlock();
+    SgVariableDeclaration *loop_inc_vd = buildVariableDeclaration("__i", buildIntType(), buildAssignInitializer(buildIntVal(0)));
+    SgLessThanOp *loop_cmp = buildLessThanOp(buildVarRefExp("__i"), length);
+    SgPlusAssignOp *loop_inc = buildPlusAssignOp(buildVarRefExp("__i"), buildIntVal(1));
+    SgForStatement *loop2 = buildForStatement(loop_inc_vd, buildExprStatement(loop_cmp), loop_inc, block2);
+    appendStatement(loop2, new_block);
+    
+    // Generate the index generator
+    // indexes[i] = (k + __i) * N + j;  // N = loop condition
+    SgAddOp *add1 = buildAddOp(i_var, buildVarRefExp("__i", new_block));
+    SgPntrArrRefExp *index_pntr = buildPntrArrRefExp(buildVarRefExp(name, new_block), buildVarRefExp("__i", new_block));
+    SgMultiplyOp *mul = buildMultiplyOp(add1, stride);
+    SgAddOp *add = buildAddOp(mul, j_var);
+    SgAssignOp *assign = buildAssignOp(index_pntr, add);
+    appendStatement(buildExprStatement(assign), block2);
+    
+    // Generate the load statement for the array indicies
+    std::string vindex_name = intel_gen_vindex();
+    SgType *mask_type = intel_simd_type(buildIntType(), new_block);
+    
+    index_pntr = buildPntrArrRefExp(buildVarRefExp(name, new_block), buildIntVal(0));
+    SgAddressOfOp *addr = buildAddressOfOp(index_pntr);
+    SgPointerType *ptr_type = buildPointerType(mask_type);
+    SgCastExp *cast = buildCastExp(addr, ptr_type);
+    
+    std::string func_name = intel_simd_func(Load, index_pntr->get_type());
+    SgExprListExp *parameters = buildExprListExp(cast);
+    SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
+    SgAssignInitializer *local_init = buildAssignInitializer(ld);
+    
+    SgVariableDeclaration *mask_vd = buildVariableDeclaration(vindex_name, mask_type, local_init, new_block);
+    appendStatement(mask_vd, new_block);
+    
+    // Now, generate the actual gather statement
+    if (simd_len == 8) {
+        parameters = buildExprListExp(pntr2->get_lhs_operand(), buildVarRefExp(vindex_name, new_block), buildIntVal(4));
+    } else {
+        parameters = buildExprListExp(buildVarRefExp(vindex_name, new_block), pntr2->get_lhs_operand(), buildIntVal(4));
+    }
+    
+    func_name = intel_simd_func(ExplicitGather, lval->get_type());
+    ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
+    return buildAssignInitializer(ld);
+    
+    //return nullptr;
 }
 
 // ===========================================================================================================
@@ -303,6 +419,9 @@ void intel_write_store(SgBinaryOp *op, SgBasicBlock *new_block) {
     SgExpression *lval = op->get_lhs_operand();
     SgExpression *rval = op->get_rhs_operand();
     
+    SgPntrArrRefExp *array = isSgPntrArrRefExp(lval);
+    if (array) intel_normalize_offset(array);
+    
     SgVarRefExp *v_src = static_cast<SgVarRefExp *>(rval);
                 
     // Function call parameters
@@ -389,16 +508,25 @@ SgAssignInitializer *intel_write_partial_store(SgBinaryOp *op, SgUpirLoopParalle
     SgVarRefExp *srcVar = static_cast<SgVarRefExp *>(op->get_rhs_operand());
     
     // First, create the vector outside the loop and zero it
-    SgType *vector_type = intel_simd_type(var->get_type(), target->get_scope());
-    SgName name = var->get_symbol()->get_name();
+    std::string name = var->get_symbol()->get_name();
     
-    std::string func_name = intel_simd_func(BroadcastZero, var->get_type());
+    if (std::find(partial_broadcasts.begin(), partial_broadcasts.end(), name) != partial_broadcasts.end()) {
+        // Found
+    } else {
+        SgType *vector_type = intel_simd_type(var->get_type(), target->get_scope());
+        std::string func_name = intel_simd_func(BroadcastZero, var->get_type());
+        
+        SgExpression *ld = buildFunctionCallExp(func_name, vector_type, NULL, new_block);
+        SgAssignInitializer *local_init = buildAssignInitializer(ld);
+        
+        SgVariableDeclaration *vd = buildVariableDeclaration(name, vector_type, local_init, new_block);
+        //insertStatementBefore(target, vd);
+        prependStatement(vd, getEnclosingScope(target));
+        
+        partial_broadcasts.push_back(name);
+    }
     
-    SgExpression *ld = buildFunctionCallExp(func_name, vector_type, NULL, new_block);
-    SgAssignInitializer *local_init = buildAssignInitializer(ld);
     
-    SgVariableDeclaration *vd = buildVariableDeclaration(name, vector_type, local_init, new_block);
-    insertStatementBefore(target, vd);
     
     // Now set the local variable
     /*SgVarRefExp *varRef = buildVarRefExp(name, new_block);
@@ -526,7 +654,7 @@ void intel_write_scalar_store(SgBinaryOp *op, SgUpirLoopParallelStatement *targe
     SgPntrArrRefExp *pntr1 = buildPntrArrRefExp(vd_ref, buildIntVal(0));
     SgPntrArrRefExp *pntr2 = buildPntrArrRefExp(vd_ref, buildIntVal(pos2));
     SgAddOp *add = buildAddOp(pntr1, pntr2);
-    SgAssignOp *assign = buildAssignOp(scalar, add);
+    SgPlusAssignOp *assign = buildPlusAssignOp(scalar, add);
     
     expr = buildExprStatement(assign);
     to_insert.push_back(expr);
@@ -616,6 +744,10 @@ void omp_simd_write_intel(SgUpirLoopParallelStatement *target, SgForStatement *f
                 init = intel_write_gather(op, target, new_block);
             } break;
             
+            case V_SgSIMDExplicitGather: {
+                init = intel_write_exp_gather(op, target, new_block, for_loop);
+            } break;
+            
             case V_SgSIMDStore: {
                 intel_write_store(op, new_block);
             } break;
@@ -655,10 +787,12 @@ void omp_simd_write_intel(SgUpirLoopParallelStatement *target, SgForStatement *f
                 if (name.getString().rfind("__part", 0) != 0) {
                     SgVariableDeclaration *vd = buildVariableDeclaration(name, vector_type, init, new_block);
                     
-                    if ((*i)->variantT() == V_SgSIMDBroadcast)
-                        insertStatementBefore(target, vd);
-                    else
+                    if ((*i)->variantT() == V_SgSIMDBroadcast) {
+                        prependStatement(vd, getEnclosingScope(target));
+                        //insertStatementBefore(target, vd);
+                    } else {
                         appendStatement(vd, new_block);
+                    }
                 } else {
                     SgExprStatement *expr = buildAssignStatement(var, init);
                     appendStatement(expr, new_block);
@@ -667,12 +801,21 @@ void omp_simd_write_intel(SgUpirLoopParallelStatement *target, SgForStatement *f
         }
     }
     
+    // Check to see if the loop was tiled
+    SgFunctionDefinition *scope = getEnclosingFunctionDefinition(for_loop);
+    std::vector<SgVariableDeclaration *> loop_statements = SageInterface::querySubTree<SgVariableDeclaration>(scope, V_SgVariableDeclaration);
+    for (size_t i = 0; i<loop_statements.size(); i++) {
+        SgVariableDeclaration *var_dec = loop_statements.at(i);
+        SgInitializedName *var_name = var_dec->get_variables().front();
+        if (var_name->get_name() == "_lt_var_inc") {
+            SgAssignInitializer *init = buildAssignInitializer(buildIntVal(loop_increment));
+            var_dec->reset_initializer(init);
+        }
+    }
+    
     // Update the loop increment
-    SgExpression *inc = for_loop->get_increment();
-
-    Rose_STL_Container<SgNode*> nodeList = NodeQuery::querySubTree(inc, V_SgExpression);
-    SgIntVal *inc_amount = isSgIntVal(nodeList.at(2));
-    ROSE_ASSERT(inc_amount != NULL);
-    inc_amount->set_value(loop_increment);
+    SgBinaryOp *inc = static_cast<SgBinaryOp *>(for_loop->get_increment());
+    SgMultiplyOp *mul = buildMultiplyOp(inc->get_rhs_operand(), buildIntVal(loop_increment));
+    inc->set_rhs_operand(mul);
 }
 

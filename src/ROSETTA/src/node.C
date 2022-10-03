@@ -38,6 +38,7 @@ Grammar::setUpNodes ()
          Class hierarchy
            SgOmpClause  {define all enum types here}
              // simplest clause
+           * SgOmpFullClause
            * SgOmpOrderedClause
            * SgOmpNowaitClause
            * SgOmpUntiedClause
@@ -53,6 +54,7 @@ Grammar::setUpNodes ()
            ** SgOmpCollapseClause
            ** SgOmpIfClause
            ** SgUpirNumUnitsField
+           ** SgOmpPartialClause
              // with variable list
            * SgOmpVariablesClause
            ** SgOmpCopyprivateClause
@@ -122,6 +124,9 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpDeviceClause, "OmpDeviceClause", "OmpIfDeviceTag" );
      NEW_TERMINAL_MACRO (OmpSafelenClause, "OmpSafelenClause", "OmpSafelenTag" );
      NEW_TERMINAL_MACRO (OmpSimdlenClause, "OmpSimdlenClause", "OmpSimdlenTag" );
+     NEW_TERMINAL_MACRO (OmpPartialClause, "OmpPartialClause", "OmpPartialTag" );
+     NEW_TERMINAL_MACRO (OmpFullClause, "OmpFullClause", "OmpFullTag" );
+     NEW_TERMINAL_MACRO (OmpSizesClause, "OmpSizesClause", "OmpSizesTag" );
 
      NEW_TERMINAL_MACRO (UpirBranchField, "UpirBranchField", "UpirBranchFieldTag" );
      NEW_TERMINAL_MACRO (UpirNestedLevelField, "UpirNestedLevelField", "UpirNestedLevelFieldTag" );
@@ -133,7 +138,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (UpirDataItemField, "UpirDataItemField", "UpirDataItemFieldTag" );
 
      NEW_NONTERMINAL_MACRO (OmpExpressionClause, OmpOrderedClause | OmpCollapseClause | OmpIfClause | UpirNumUnitsField | OmpNumTeamsClause | OmpThreadLimitClause | OmpDeviceClause | OmpHintClause | OmpGrainsizeClause | OmpNumTasksClause | OmpDetachClause |
-                            OmpSafelenClause | OmpSimdlenClause | OmpFinalClause | OmpPriorityClause
+                            OmpSafelenClause | OmpSimdlenClause | OmpFinalClause | OmpPriorityClause | OmpPartialClause | OmpSizesClause
          ,"OmpExpressionClause", "OmpExpressionClauseTag",false );
 
 
@@ -171,7 +176,7 @@ Grammar::setUpNodes ()
      NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpReadClause | OmpThreadsClause | OmpSimdClause | OmpWriteClause | OmpUpdateClause | OmpDepobjUpdateClause | OmpDestroyClause | OmpCaptureClause | OmpBeginClause |OmpEndClause | OmpUntiedClause | OmpSeqCstClause | OmpAcqRelClause | OmpReleaseClause | OmpAcquireClause | OmpRelaxedClause | OmpReverseOffloadClause | OmpUnifiedAddressClause | OmpUnifiedSharedMemoryClause | OmpDynamicAllocatorsClause |
          OmpParallelClause | OmpSectionsClause | OmpForClause | OmpTaskgroupClause | OmpNogroupClause |
          OmpDefaultClause | OmpAllocatorClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpDistScheduleClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpDefaultmapClause | OmpAtomicDefaultMemOrderClause | OmpExtImplementationDefinedRequirementClause | OmpUsesAllocatorsDefination |
-         OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause | OmpUsesAllocatorsClause |
+         OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause | OmpUsesAllocatorsClause | OmpFullClause |
          UpirBranchField | UpirNestedLevelField | UpirNestedParentField | UpirNestedChildField | UpirSyncField | UpirDataField | UpirTargetField | UpirDataItemField,
          "OmpClause", "OmpClauseTag", false);
 #endif
