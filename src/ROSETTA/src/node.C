@@ -1212,6 +1212,25 @@ Grammar::setUpNodes ()
      // data(node1, node2, ...)
      UpirDataField.setDataPrototype("std::list<SgUpirDataItemField*>", "data", "",
                           NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     // store data items with certain attribute in a list for querying
+     UpirDataField.setDataPrototype("std::list<SgUpirDataItemField*>", "shared_data", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UpirDataField.setDataPrototype("std::list<SgUpirDataItemField*>", "private_data", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UpirDataField.setDataPrototype("std::list<SgUpirDataItemField*>", "firstprivate_data", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UpirDataField.setDataPrototype("std::list<SgUpirDataItemField*>", "lastprivate_data", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UpirDataField.setDataPrototype("std::list<SgUpirDataItemField*>", "reduction_data", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UpirDataField.setDataPrototype("std::list<SgUpirDataItemField*>", "map_to_data", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UpirDataField.setDataPrototype("std::list<SgUpirDataItemField*>", "map_from_data", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UpirDataField.setDataPrototype("std::list<SgUpirDataItemField*>", "map_tofrom_data", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+     UpirDataField.setDataPrototype("std::list<SgUpirDataItemField*>", "map_alloc_data", "",
+                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
      // symbol(sharing, mapping, access, distribution-list, allocator, deallocator, memcpy)
      // foo(shared(implicit), tofrom(explicit), read-write, section(0:20:2), allocator(default_mem_alloc), deallocator(default_mem_dealloc), memcpy(goo))

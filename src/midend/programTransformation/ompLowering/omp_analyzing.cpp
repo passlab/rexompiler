@@ -775,7 +775,7 @@ int createUpirDataFields(SgFile *file) {
       // TODO: FIX: set the data sharing attribute correctly instead of using
       // an assumption.
       upir_data_item->set_sharing_property(
-          SgOmpClause::e_upir_data_sharing_private);
+          SgOmpClause::e_upir_data_sharing_shared);
       data_items.push_back(upir_data_item);
       setOneSourcePositionForTransformation(upir_data_item);
       upir_data_item->set_parent(upir_data);
@@ -789,6 +789,98 @@ int createUpirDataFields(SgFile *file) {
 
   return result;
 } // end createUpirDataFields()
+
+// organize UPIR data information based on different attributes for queries.
+void collectUpirDataQueryInformation(SgFile *file) {
+  ROSE_ASSERT(file != NULL);
+  Rose_STL_Container<SgNode *> node_list =
+      NodeQuery::querySubTree(file, V_SgUpirDataField);
+  if (node_list.size() == 0)
+    return;
+  ROSE_ASSERT(node_list.size() == 1);
+  SgUpirDataField *data_field = isSgUpirDataField(node_list[0]);
+  std::list<SgUpirDataItemField *> data_items = data_field->get_data();
+
+  std::list<SgUpirDataItemField *> shared_data = data_field->get_shared_data();
+  std::list<SgUpirDataItemField *> private_data =
+      data_field->get_private_data();
+  std::list<SgUpirDataItemField *> firstprivate_data =
+      data_field->get_firstprivate_data();
+  std::list<SgUpirDataItemField *> lastprivate_data =
+      data_field->get_lastprivate_data();
+  std::list<SgUpirDataItemField *> reduction_data =
+      data_field->get_reduction_data();
+
+  std::list<SgUpirDataItemField *> map_to_data = data_field->get_map_to_data();
+  std::list<SgUpirDataItemField *> map_from_data =
+      data_field->get_map_from_data();
+  std::list<SgUpirDataItemField *> map_tofrom_data =
+      data_field->get_map_tofrom_data();
+  std::list<SgUpirDataItemField *> map_alloc_data =
+      data_field->get_map_alloc_data();
+
+  for (std::list<SgUpirDataItemField *>::iterator iter = data_items.begin();
+       iter != data_items.end(); iter++) {
+    SgUpirDataItemField *data_item = isSgUpirDataItemField(*iter);
+    ROSE_ASSERT(data_item != NULL);
+
+    // check data sharing property
+    SgOmpClause::upir_data_sharing_enum data_sharing_type =
+        data_item->get_sharing_property();
+    switch (data_sharing_type) {
+    case SgOmpClause::e_upir_data_sharing_shared:
+      shared_data.push_back(data_item);
+      break;
+    case SgOmpClause::e_upir_data_sharing_private:
+      private_data.push_back(data_item);
+      break;
+    case SgOmpClause::e_upir_data_sharing_firstprivate:
+      firstprivate_data.push_back(data_item);
+      break;
+    case SgOmpClause::e_upir_data_sharing_lastprivate:
+      lastprivate_data.push_back(data_item);
+      break;
+    case SgOmpClause::e_upir_data_sharing_reduction:
+      reduction_data.push_back(data_item);
+      break;
+    default:
+      ROSE_ASSERT(0 && "At this point, every data item should have a specified "
+                       "data sharing property.");
+    }
+
+    // check data mapping property
+    SgOmpClause::upir_data_mapping_enum data_mapping_type =
+        data_item->get_mapping_property();
+    switch (data_mapping_type) {
+    case SgOmpClause::e_upir_data_mapping_to:
+      map_to_data.push_back(data_item);
+      break;
+    case SgOmpClause::e_upir_data_mapping_from:
+      map_from_data.push_back(data_item);
+      break;
+    case SgOmpClause::e_upir_data_mapping_tofrom:
+      map_tofrom_data.push_back(data_item);
+      break;
+    case SgOmpClause::e_upir_data_mapping_allocate:
+      map_alloc_data.push_back(data_item);
+      break;
+    default:
+      ROSE_ASSERT(0 && "At this point, every data item should have a specified "
+                       "data mapping property.");
+    }
+  }
+
+  data_field->set_shared_data(shared_data);
+  data_field->set_private_data(private_data);
+  data_field->set_firstprivate_data(firstprivate_data);
+  data_field->set_lastprivate_data(lastprivate_data);
+  data_field->set_reduction_data(reduction_data);
+
+  data_field->set_map_to_data(map_to_data);
+  data_field->set_map_from_data(map_from_data);
+  data_field->set_map_tofrom_data(map_tofrom_data);
+  data_field->set_map_alloc_data(map_alloc_data);
+} // end collectUpirDataQueryInformation()
 
 // set the UPIR parent and children of a given UPIR node
 void setUpirRelationship(SgStatement *parent, SgStatement *child) {
@@ -853,6 +945,8 @@ void analyze_omp(SgSourceFile *file) {
 
   // Generate UPIR data fields based on map clauses
   createUpirDataFields(file);
+
+  collectUpirDataQueryInformation(file);
 
   Rose_STL_Container<SgNode *> node_list =
       NodeQuery::querySubTree(file, V_SgUpirBaseStatement);
