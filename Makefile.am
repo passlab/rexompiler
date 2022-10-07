@@ -73,6 +73,10 @@ tools:
 	$(MAKE) -C $(top_builddir)/exampleTranslators
 	$(MAKE) -C $(top_builddir)/tutorial
 
+rex:
+	$(MAKE) -C $(top_builddir)/src
+	$(MAKE) -C $(top_builddir)/exampleTranslators
+
 install-core: core rosePublicConfig.h
 	$(MAKE) install-data-local
 	$(MAKE) install -C $(top_builddir)/src
@@ -84,6 +88,9 @@ install-tools: install-core tools
 	$(MAKE) install -C $(top_builddir)/tests/nonsmoke/functional/roseTests/astInliningTests
 	$(MAKE) install -C $(top_builddir)/tests/nonsmoke/functional/roseTests/astOutliningTests
 	$(MAKE) install -C $(top_builddir)/tutorial
+
+install-rex: install-core rex
+	$(MAKE) install -C $(top_builddir)/exampleTranslators
 
 check-recursive:
 	@true
@@ -97,7 +104,8 @@ check-smoke:
 check-nonsmoke:
 	$(MAKE) check -C $(top_builddir)/tests/nonsmoke/functional
 
-check-openmp:
+check-rex: check-core
+	$(MAKE) check -C $(top_builddir)/exampleTranslators
 	$(MAKE) check -C $(top_builddir)/tests/nonsmoke/functional/CompileTests/OpenMP_tests
 	$(MAKE) check -C $(top_builddir)/tests/nonsmoke/functional/roseTests/astInterfaceTests
 
