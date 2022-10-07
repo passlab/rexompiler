@@ -73,8 +73,7 @@ tools:
 	$(MAKE) -C $(top_builddir)/exampleTranslators
 	$(MAKE) -C $(top_builddir)/tutorial
 
-rex:
-	$(MAKE) -C $(top_builddir)/src
+rex: core
 	$(MAKE) -C $(top_builddir)/exampleTranslators
 
 install-core: core rosePublicConfig.h
