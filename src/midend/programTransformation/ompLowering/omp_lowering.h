@@ -245,6 +245,7 @@ namespace OmpSupport
   ROSE_DLL_API bool isInUpirDataSharingList(SgUpirFieldBodyStatement* target, SgSymbol* variable, SgOmpClause::upir_data_sharing_enum sharing_property);
   ROSE_DLL_API bool isInUpirDataSharingList(SgUpirFieldBodyStatement* target, SgSymbol* variable, std::set<SgOmpClause::upir_data_sharing_enum> sharing_property);
   ROSE_DLL_API bool isInUpirDataList(SgUpirFieldBodyStatement* target, SgSymbol* variable);
+  ROSE_DLL_API SgUpirDataItemField* isInUpirDataList(SgOmpClause* target, SgSymbol* variable);
 
   //! Check if a variable is a threadprivate variable. It will search for all threadprivate directives to find the answer.
   ROSE_DLL_API bool isThreadprivate(SgSymbol* var);

@@ -713,8 +713,106 @@ int unifyUpirTaskMappingVariables(SgFile *file) {
   return result;
 } // end unifyUpirTaskMappingVariables()
 
+// Check if a variable is in the UPIR data field's item list
+SgUpirDataItemField *isInUpirDataList(SgOmpClause *target, SgSymbol *variable) {
+  SgUpirDataField *data_field = isSgUpirDataField(target);
+  SgVariableSymbol *variable_symbol = isSgVariableSymbol(variable);
+  ROSE_ASSERT(data_field);
+
+  std::vector<SgSymbol *> variable_list;
+  std::list<SgUpirDataItemField *> data_items = data_field->get_data();
+  for (std::list<SgUpirDataItemField *>::iterator iter = data_items.begin();
+       iter != data_items.end(); iter++) {
+    SgUpirDataItemField *data_item = *iter;
+    if (data_item->get_symbol() == variable)
+      return data_item;
+  }
+
+  return NULL;
+}
+
+SgUpirDataField *getUpirDataField(SgStatement *target) {
+  SgUpirFieldBodyStatement *target_directive =
+      isSgUpirFieldBodyStatement(target);
+  SgUpirDataField *data_field = NULL;
+  Rose_STL_Container<SgOmpClause *> data_fields =
+      getClause(target_directive, V_SgUpirDataField);
+  if (data_fields.size() == 0) {
+    data_field = new SgUpirDataField();
+    setOneSourcePositionForTransformation(data_field);
+    target_directive->get_clauses().push_back(data_field);
+    data_field->set_parent(target_directive);
+  } else {
+    ROSE_ASSERT(data_fields.size() == 1);
+    data_field = isSgUpirDataField(data_fields[0]);
+    ROSE_ASSERT(data_field != NULL);
+  }
+
+  return data_field;
+}
+
+void createUpirDataItems(
+    SgOmpVariablesClause *target,
+    SgOmpClause::upir_data_sharing_enum data_sharing_type) {
+  ROSE_ASSERT(target != NULL);
+  SgUpirDataField *data_field =
+      getUpirDataField(isSgStatement(target->get_parent()));
+
+  std::list<SgUpirDataItemField *> data_items = data_field->get_data();
+  SgExpressionPtrList variables = target->get_variables()->get_expressions();
+  for (size_t i = 0; i < variables.size(); i++) {
+
+    SgVarRefExp *variable_expression = isSgVarRefExp(variables[i]);
+    SgVariableSymbol *variable_symbol = variable_expression->get_symbol();
+    assert(variable_symbol != NULL);
+
+    if (!isInUpirDataList(data_field, variable_symbol))
+      ROSE_ASSERT(0 && "The symbol exists in the data field.");
+
+    SgUpirDataItemField *data_item = new SgUpirDataItemField(variable_symbol);
+
+    data_item->set_sharing_property(data_sharing_type);
+    data_items.push_back(data_item);
+    setOneSourcePositionForTransformation(data_item);
+    data_item->set_parent(data_field);
+  }
+
+  data_field->set_data(data_items);
+}
+
+// create data fields based on data sharing properties
+void createUpirDataFields(SgFile *file) {
+  ROSE_ASSERT(file != NULL);
+  Rose_STL_Container<SgNode *> node_list;
+  Rose_STL_Container<SgNode *>::iterator iter;
+
+  node_list = NodeQuery::querySubTree(file, V_SgOmpSharedClause);
+  for (iter = node_list.begin(); iter != node_list.end(); iter++) {
+    SgOmpVariablesClause *target = isSgOmpVariablesClause(*iter);
+    createUpirDataItems(target, SgOmpClause::e_upir_data_sharing_shared);
+  }
+
+  node_list = NodeQuery::querySubTree(file, V_SgOmpPrivateClause);
+  for (iter = node_list.begin(); iter != node_list.end(); iter++) {
+    SgOmpVariablesClause *target = isSgOmpVariablesClause(*iter);
+    createUpirDataItems(target, SgOmpClause::e_upir_data_sharing_private);
+  }
+
+  node_list = NodeQuery::querySubTree(file, V_SgOmpFirstprivateClause);
+  for (iter = node_list.begin(); iter != node_list.end(); iter++) {
+    SgOmpVariablesClause *target = isSgOmpVariablesClause(*iter);
+    createUpirDataItems(target, SgOmpClause::e_upir_data_sharing_firstprivate);
+  }
+
+  node_list = NodeQuery::querySubTree(file, V_SgOmpLastprivateClause);
+  for (iter = node_list.begin(); iter != node_list.end(); iter++) {
+    SgOmpVariablesClause *target = isSgOmpVariablesClause(*iter);
+    createUpirDataItems(target, SgOmpClause::e_upir_data_sharing_lastprivate);
+  }
+} // end createUpirDataFields()
+
 // create data fields
-int createUpirDataFields(SgFile *file) {
+int createUpirMappingDataFields(SgFile *file) {
   int result = 0;
   ROSE_ASSERT(file != NULL);
   Rose_STL_Container<SgNode *> node_list =
@@ -723,8 +821,6 @@ int createUpirDataFields(SgFile *file) {
   Rose_STL_Container<SgNode *>::iterator iter;
   for (iter = node_list.begin(); iter != node_list.end(); iter++) {
     SgOmpMapClause *target = isSgOmpMapClause(*iter);
-    SgUpirFieldBodyStatement *target_directive =
-        isSgUpirFieldBodyStatement(target->get_parent());
 
     SgOmpClause::upir_data_mapping_enum data_mapping_type =
         SgOmpClause::e_upir_data_mapping_unspecified;
@@ -746,7 +842,8 @@ int createUpirDataFields(SgFile *file) {
     std::map<SgSymbol *, std::vector<std::pair<SgExpression *, SgExpression *>>>
         array_dimensions = target->get_array_dimensions();
 
-    SgUpirDataField *upir_data = new SgUpirDataField();
+    SgUpirDataField *upir_data =
+        getUpirDataField(isSgStatement(target->get_parent()));
     std::list<SgUpirDataItemField *> data_items = upir_data->get_data();
     for (size_t i = 0; i < variables.size(); i++) {
 
@@ -755,7 +852,13 @@ int createUpirDataFields(SgFile *file) {
       assert(variable_symbol != NULL);
 
       SgUpirDataItemField *upir_data_item =
-          new SgUpirDataItemField(variable_symbol);
+          isInUpirDataList(upir_data, variable_symbol);
+      if (upir_data_item == NULL) {
+        upir_data_item = new SgUpirDataItemField(variable_symbol);
+        data_items.push_back(upir_data_item);
+        setOneSourcePositionForTransformation(upir_data_item);
+        upir_data_item->set_parent(upir_data);
+      }
 
       std::list<std::list<SgExpression *>> upir_section =
           upir_data_item->get_section();
@@ -772,23 +875,17 @@ int createUpirDataFields(SgFile *file) {
 
       upir_data_item->set_section(upir_section);
       upir_data_item->set_mapping_property(data_mapping_type);
-      // TODO: FIX: set the data sharing attribute correctly instead of using
-      // an assumption.
-      upir_data_item->set_sharing_property(
-          SgOmpClause::e_upir_data_sharing_shared);
-      data_items.push_back(upir_data_item);
-      setOneSourcePositionForTransformation(upir_data_item);
-      upir_data_item->set_parent(upir_data);
+      if (upir_data_item->get_sharing_property() ==
+          SgOmpClause::e_upir_data_sharing_unspecified)
+        upir_data_item->set_sharing_property(
+            SgOmpClause::e_upir_data_sharing_shared);
     }
 
     upir_data->set_data(data_items);
-    setOneSourcePositionForTransformation(upir_data);
-    target_directive->get_clauses().push_back(upir_data);
-    upir_data->set_parent(target_directive);
   }
 
   return result;
-} // end createUpirDataFields()
+} // end createUpirMappingDataFields()
 
 // organize UPIR data information based on different attributes for queries.
 void collectUpirDataQueryInformation(SgFile *file) {
@@ -943,8 +1040,11 @@ void analyze_omp(SgSourceFile *file) {
   // later only map clause will be lowered.
   unifyUpirTaskMappingVariables(file);
 
-  // Generate UPIR data fields based on map clauses
+  // Generate UPIR data fields based on data sharing properties
   createUpirDataFields(file);
+
+  // Generate UPIR data fields based on map clauses
+  createUpirMappingDataFields(file);
 
   collectUpirDataQueryInformation(file);
 

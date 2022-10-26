@@ -2734,27 +2734,7 @@ bool isInUpirDataSharingList(SgOmpClause* data, SgSymbol* variable, SgOmpClause:
     return false;
 }
 
-  // Check if a variable is in the UPIR data field's item list
-bool isInUpirDataList(SgOmpClause* data, SgSymbol* variable)
-{
-  SgUpirDataField* data_field = isSgUpirDataField(data);
-  SgVariableSymbol* variable_symbol = isSgVariableSymbol(variable);
-  ROSE_ASSERT(data_field);
-
-  std::vector<SgSymbol*> variable_list;
-  std::list<SgUpirDataItemField *> data_items = data_field->get_data();
-  for (std::list<SgUpirDataItemField*>::iterator iter = data_items.begin(); iter != data_items.end(); iter++) {
-      SgUpirDataItemField* data_item = *iter;
-      variable_list.push_back(data_item->get_symbol());
-  }
-
-  if (find(variable_list.begin(), variable_list.end(), variable_symbol) != variable_list.end())
-    return true;
-  else
-    return false;
-}
-
- // ! Replace all references to original symbol with references to new symbol
+// ! Replace all references to original symbol with references to new symbol
 // return the number of references being replaced.
 // TODO: move to SageInterface
 //static int replaceVariableReferences(SgNode* subtree, const SgVariableSymbol* origin_sym, SgVariableSymbol* new_sym )
@@ -6578,8 +6558,8 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
       // TODO: add the UPIR version of this code
       // a local private copy
       SgVariableDeclaration* local_decl = NULL;
-      SgOmpClause::omp_reduction_identifier_enum r_operator = SgOmpClause::e_omp_reduction_unknown  ;
-      bool isReductionVar = isInClauseVariableList(orig_var, clause_stmt,V_SgOmpReductionClause);
+      SgOmpClause::omp_reduction_identifier_enum r_operator = SgOmpClause::e_omp_reduction_unknown;
+      bool isReductionVar = isInUpirDataSharingList(clause_stmt, orig_symbol, SgOmpClause::e_upir_data_sharing_reduction);
 
       // step 1. Insert local declaration for private, firstprivate, lastprivate and reduction
       // Sara, 5/31/2013: if variable is in Function Scope ( a parameter ) and array,
