@@ -134,7 +134,68 @@ pkginclude_HEADERS = \
      frontend/SageIII/sage3basic.hhh \
      midend/astDiagnostics/AstConsistencyTests.h
 
-nobase_pkginclude_HEADERS=
+nobase_pkginclude_HEADERS=						\
+	Rose/AST.h							\
+	Rose/AST/Checker.h						\
+	Rose/AST/cmdline.h						\
+	Rose/AST/Defect.h						\
+	Rose/AST/IO.h							\
+	Rose/AST/Utils.h						\
+	Rose/BasicTypes.h						\
+	Rose/BitFlags.h							\
+	Rose/BitOps.h							\
+	Rose/CodeGen.h							\
+	Rose/CodeGen/API.h						\
+	Rose/CodeGen/API.txx						\
+	Rose/CodeGen/Driver.h						\
+	Rose/CodeGen/Factory.h						\
+	Rose/CodeGen/factory/classes.txx				\
+	Rose/CodeGen/factory/functions.txx				\
+	Rose/CodeGen/factory/namespaces.txx				\
+	Rose/CodeGen/factory/typedefs.txx				\
+	Rose/CodeGen/factory/variables.txx				\
+	Rose/CodeGen/Object.h						\
+	Rose/Color.h							\
+	Rose/CommandLine.h						\
+	Rose/CommandLine/DurationParser.h				\
+	Rose/CommandLine/IntervalParser.h				\
+	Rose/CommandLine/License.h					\
+	Rose/CommandLine/Parser.h					\
+	Rose/CommandLine/SelfTest.h					\
+	Rose/CommandLine/SuffixMultiplierParser.h			\
+	Rose/CommandLine/Version.h					\
+	Rose/Constants.h						\
+	Rose/Diagnostics.h						\
+	Rose/Exception.h						\
+	Rose/FileSystem.h						\
+	Rose/FormatRestorer.h						\
+	Rose/FormattedTable.h						\
+	Rose/GraphUtility.h						\
+	Rose/Initialize.h						\
+	Rose/Location.h							\
+	Rose/metaprog.h							\
+	Rose/Progress.h							\
+	Rose/RecursionCounter.h						\
+	Rose/SourceLocation.h						\
+	Rose/StringUtility.h						\
+	Rose/StringUtility/Convert.h					\
+	Rose/StringUtility/Diagnostics.h				\
+	Rose/StringUtility/Escape.h					\
+	Rose/StringUtility/NumberToString.h				\
+	Rose/StringUtility/Predicate.h					\
+	Rose/StringUtility/SplitJoin.h					\
+	Rose/StringUtility/StringToNumber.h				\
+	Rose/Traits.h							\
+	Rose/Traits/Describe.h						\
+	Rose/Traits/describe/declarations.h				\
+	Rose/Traits/describe/fields.h					\
+	Rose/Traits/describe/nodes.h					\
+	Rose/Traits/describe/predicates.h				\
+	Rose/Traits/grammar/lists.h					\
+	Rose/Traits/grammar/predicates.h				\
+	Rose/Traits/grammar/traversal.h					\
+	Rose/Traits/Traversal.h						\
+	Rose/Yaml.h
 
 ########################################################################################################################
 
