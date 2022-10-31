@@ -220,7 +220,6 @@ Grammar::setUpStatements ()
      NEW_TERMINAL_MACRO (RewindStatement,           "RewindStatement",           "REWIND_STATEMENT" );
      NEW_TERMINAL_MACRO (EndfileStatement,          "EndfileStatement",          "ENDFILE_STATEMENT" );
      NEW_TERMINAL_MACRO (WaitStatement,             "WaitStatement",             "WAIT_STATEMENT" );
-
   // FMZ (2/3/2009): Added co-array "withteam" stmt
   //  NEW_TERMINAL_MACRO (WithTeamStatement,         "WithTeamStatement",         "WITHTEAM_DECL_STMT" );
   // FMZ (2/17/2009): We re-defined "withteam" stmt
@@ -361,6 +360,7 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpFlushStatement,     "OmpFlushStatement",      "OMP_FLUSH_STMT" );
     NEW_TERMINAL_MACRO (OmpAllocateStatement,     "OmpAllocateStatement",      "OMP_ALLOCATE_STMT" );
     NEW_TERMINAL_MACRO (OmpOrderedDependStatement,     "OmpOrderedDependStatement",      "OMP_ORDERED_DEPEND_STMT" );
+    NEW_TERMINAL_MACRO (OmpDeclareMapperStatement,     "OmpDeclareMapperStatement",      "OMP_DECLARE_MAPPER_STMT" );
     // + stmt/block + name
 
     //NEW_TERMINAL_MACRO (OmpCriticalStatement,  "OmpCriticalStatement",   "OMP_CRITICAL_STMT" );
@@ -369,7 +369,7 @@ Grammar::setUpStatements ()
         | OmpSectionStatement | OmpWorkshareStatement  | UpirFieldBodyStatement,
         "UpirBodyStatement",      "UPIR_BODY_STMT", false );
 
-    NEW_NONTERMINAL_MACRO (UpirFieldStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement | OmpOrderedDependStatement | UpirSyncStatement | UpirLoopParallelStatement | UpirWorksharingStatement | UpirSimdStatement,
+    NEW_NONTERMINAL_MACRO (UpirFieldStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpDeclareMapperStatement | OmpAllocateStatement | OmpOrderedDependStatement | UpirSyncStatement | UpirLoopParallelStatement | UpirWorksharingStatement | UpirSimdStatement,
         "UpirFieldStatement",      "UPIR_FIELD_STMT", false );
 
 #endif
@@ -4320,6 +4320,7 @@ Grammar::setUpStatements ()
 
     OmpThreadprivateStatement.setFunctionSource            ("SOURCE_OMP_THREADPRIVATE_STATEMENT", "../Grammar/Statement.code" );
     OmpFlushStatement.setFunctionSource            ("SOURCE_OMP_FLUSH_STATEMENT", "../Grammar/Statement.code" );
+    OmpDeclareMapperStatement.setFunctionSource            ("SOURCE_OMP_DECLARE_MAPPER_STATEMENT", "../Grammar/Statement.code" );
     OmpAllocateStatement.setFunctionSource            ("SOURCE_OMP_ALLOCATE_STATEMENT", "../Grammar/Statement.code" );
     UpirWorksharingStatement.setFunctionSource            ("SOURCE_UPIR_WORKSHARING_STATEMENT", "../Grammar/Statement.code" );
     OmpForSimdStatement.setFunctionSource            ("SOURCE_OMP_FOR_SIMD_STATEMENT", "../Grammar/Statement.code" );
@@ -4373,7 +4374,7 @@ Grammar::setUpStatements ()
     // Liao 9/27/2010, per user's report, modeling the variable reference use SgVarRefExp
     OmpFlushStatement.setDataPrototype( "SgVarRefExpPtrList", "variables", "",
                                                 NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-
+         
     OmpAllocateStatement.setDataPrototype( "SgVarRefExpPtrList", "variables", "",
                                                 NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
@@ -4384,6 +4385,13 @@ Grammar::setUpStatements ()
     OmpTaskwaitStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
+    // omp declare mapper([mapper-identifier:]type var)
+    // Liao 9/27/2010, per user's report, modeling the variable reference use SgVarRefExp
+    OmpDeclareMapperStatement.setDataPrototype( "SgExpression*", "type", "",
+                                                NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    OmpDeclareMapperStatement.setDataPrototype( "SgExpression*", "var", "",
+                                                NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+                                                
    // omp threadprivate [(var-list)]
     OmpThreadprivateStatement.setDataPrototype( "SgVarRefExpPtrList", "variables", "",
                                                 NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);

@@ -282,6 +282,14 @@ HEADER_OMP_CLAUSE_START
 
             e_omp_uses_allocators_allocator_user_defined
         };
+        
+        enum omp_declare_mapper_identifier_enum
+        {
+            e_omp_declare_mapper_identifier_unknown,
+            e_omp_declare_mapper_identifier_default,
+
+            e_omp_declare_mapper_identifier_user_defined
+        };
 
         enum omp_to_kind_enum
          {

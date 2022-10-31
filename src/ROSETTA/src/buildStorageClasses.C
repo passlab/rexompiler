@@ -832,6 +832,7 @@ AstNodeClass::evaluateType(std::string& varTypeString)
                  ( varTypeString == "SgElaboratedTypeModifier::elaborated_type_modifier_enum" ) ||
                  ( varTypeString == "SgDeclarationStatement::template_specialization_enum" ) ||
                  ( varTypeString == "SgDeclarationModifier::gnu_declaration_visability_enum" ) ||
+                 ( varTypeString == "SgDeclareMapperIdentifier::" ) ||
                  ( varTypeString == "SgTemplateDeclaration::template_type_enum" ) ||
                  ( varTypeString == "SgBaseClassModifier::baseclass_modifier_enum" ) ||
                  ( varTypeString == "SgLinkageModifier::linkage_modifier_enum" ) ||
