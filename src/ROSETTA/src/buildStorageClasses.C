@@ -832,7 +832,6 @@ AstNodeClass::evaluateType(std::string& varTypeString)
                  ( varTypeString == "SgElaboratedTypeModifier::elaborated_type_modifier_enum" ) ||
                  ( varTypeString == "SgDeclarationStatement::template_specialization_enum" ) ||
                  ( varTypeString == "SgDeclarationModifier::gnu_declaration_visability_enum" ) ||
-                 ( varTypeString == "SgDeclareMapperIdentifier::" ) ||
                  ( varTypeString == "SgTemplateDeclaration::template_type_enum" ) ||
                  ( varTypeString == "SgBaseClassModifier::baseclass_modifier_enum" ) ||
                  ( varTypeString == "SgLinkageModifier::linkage_modifier_enum" ) ||
@@ -895,6 +894,7 @@ AstNodeClass::evaluateType(std::string& varTypeString)
                  ( varTypeString == "SgTypeModifier::gnu_extension_machine_mode_enum" ) ||
                  ( varTypeString == "SgDeclarationStatement::gnu_extension_visability_attribute_enum" ) ||
                  ( varTypeString == "SgVariableDeclaration::gnu_extension_declaration_attributes_enum" ) ||
+                 ( varTypeString == "SgDeclareMapperIdentifier::declare_mapper_identifier_enum" ) ||
               // Note that these enum names do not conform to the naming scheme used in ROSE.
                  ( varTypeString == "SgInterfaceStatement::generic_spec_enum" ) ||
                  ( varTypeString == "SgOpenclAccessModeModifier::access_mode_modifier_enum") ||

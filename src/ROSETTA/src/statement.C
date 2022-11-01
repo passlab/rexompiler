@@ -285,7 +285,6 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpDepobjStatement, "OmpDepobjStatement", "OMP_DEPOBJ_STMT" );
     NEW_TERMINAL_MACRO (OmpTeamsStatement,  "OmpTeamsStatement",   "OMP_TEAMS_STMT" );
     NEW_TERMINAL_MACRO (OmpCancellationPointStatement,  "OmpCancellationPointStatement",   "OMP_CANCELLATION_POINT_STMT" );
-    NEW_TERMINAL_MACRO (OmpDeclareMapperStatement,  "OmpDeclareMapperStatement",   "OMP_DECLARE_MAPPER_STMT" );
     NEW_TERMINAL_MACRO (OmpCancelStatement,  "OmpCancelStatement",   "OMP_CANCEL_STMT" );
     NEW_TERMINAL_MACRO (OmpDistributeStatement,  "OmpDistributeStatement",   "OMP_DISTRIBUTE_STMT" );
     NEW_TERMINAL_MACRO (OmpMetadirectiveStatement,  "OmpMetadirectiveStatement",   "OMP_METADIRECTIVE_STMT" );
@@ -4386,7 +4385,9 @@ Grammar::setUpStatements ()
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
     // omp declare mapper([mapper-identifier:]type var)
-    // Liao 9/27/2010, per user's report, modeling the variable reference use SgVarRefExp
+    OmpDeclareMapperStatement.setDataPrototype( "SgDeclareMapperIdentifier*", "identifier", "=e_omp_declare_mapper_identifier_unknown",
+                                                NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+                                                
     OmpDeclareMapperStatement.setDataPrototype( "SgExpression*", "type", "",
                                                 NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
     OmpDeclareMapperStatement.setDataPrototype( "SgExpression*", "var", "",

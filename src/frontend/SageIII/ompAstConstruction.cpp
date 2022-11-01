@@ -44,6 +44,7 @@ static SgUpirBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDecla
 static SgStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertOmpDeclareSimdDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertOmpFlushDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
+static SgStatement* convertOmpDeclareMapperDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertOmpAllocateDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertOmpThreadprivateStatement(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII);
 static SgStatement* getOpenMPBlockBody(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
@@ -1140,6 +1141,37 @@ namespace OmpSupport
     return result;
   }
   
+   //! A helper function to convert OpenMPIR declare mapper identifier to SgClause declare mapper identifier
+  static SgDeclareMapperIdentifier::declare_mapper_identifier_enum toSgOmpClauseDeclareMapperIdentifier(OpenMPDeclareMapperDirectiveIdentifier identifier)
+  {
+    SgOmpClause::omp_allocate_modifier_enum result;
+    switch (identifier)
+    {
+      case OMPD_DECLARE_MAPPER_IDENTIFIER__default:
+        {
+          result = SgOmpClause::e_omp_declare_mapper_identifier_default;
+          break;
+        }
+      case OMPD_DECLARE_MAPPER_IDENTIFIER_user:
+        {
+          result = SgOmpClause::e_omp_declare_mapper_identifier_user;
+          break;
+        }
+      case OMPD_DECLARE_MAPPER_IDENTIFIER_unspecified:
+        {
+          result = SgOmpClause::e_omp_declare_mapper_identifier_unknown;
+          break;
+        }
+      default:
+        {
+          printf("error: unacceptable omp construct enum for declare mapper identifier conversion:%d\n", identifier);
+          ROSE_ASSERT(false);
+          break;
+        }
+    }
+
+    return result;
+  }
   //! A helper function to convert OpenMPIR ALLOCATOR allocator to SgClause ALLOCATOR modifier
   static SgOmpClause::omp_allocator_modifier_enum toSgOmpClauseAllocatorAllocator(OpenMPAllocatorClauseAllocator allocator)
   {
@@ -2042,6 +2074,10 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
             result = convertOmpFlushDirective(current_OpenMPIR_to_SageIII);
             break;
         }
+        case OMPD_declare_mapper: {
+            result = convertOmpDeclareMapperDirective(current_OpenMPIR_to_SageIII);
+            break;
+        }
         case OMPD_allocate: {
             result = convertOmpAllocateDirective(current_OpenMPIR_to_SageIII);
             break;
@@ -2234,6 +2270,8 @@ SgOmpClause* convertSimpleClause(SgStatement* directive, std::pair<SgPragmaDecla
         ((SgOmpRequiresStatement*)directive)->get_clauses().push_back(sg_clause);
     } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_flush) {
         ((SgOmpFlushStatement*)directive)->get_clauses().push_back(sg_clause);
+    } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_declare_mapper) {
+        ((SgOmpDeclareMapperStatement*)directive)->get_clauses().push_back(sg_clause);
     } else {
         addUpirField(directive, sg_clause);
     }
@@ -2820,6 +2858,46 @@ SgStatement* convertOmpFlushDirective(std::pair<SgPragmaDeclaration*, OpenMPDire
     current_expressions->clear();
     omp_variable_list.clear();
     return statement;
+}
+
+// Convert an OpenMPIR declare mapper Directive to a ROSE node
+SgStatement* convertOmpDeclareMapperDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
+    SgOmpDeclareMapperStatement *result = new SgOmpDeclareMapperStatement();
+    result->set_firstNondefiningDeclaration(result);
+        
+    OpenMPDeclareMapperDirective *current_ir = static_cast<OpenMPDeclareMapperDirective *>(current_OpenMPIR_to_SageIII.second);
+    std::vector<OpenMPClause*>* all_clauses = current_OpenMPIR_to_SageIII.second->getClausesInOriginalOrder();
+    OpenMPClauseKind clause_kind;
+    std::vector<OpenMPClause*>::iterator clause_iter;
+    for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end(); clause_iter++) {
+        clause_kind = (*clause_iter)->getKind();
+        switch (clause_kind) {
+            case OMPC_map: {
+                convertMapClause(isSgUpirFieldBodyStatement(result), current_OpenMPIR_to_SageIII, *clause_iter);
+                break;
+            }
+        };
+    };
+    std::string type = current_ir->getType();
+    std::string var = current_ir->getVar();
+    
+    std::vector<std::string>* current_expressions = current_ir->getFlushList();
+    if (current_expressions->size() != 0) {
+        std::vector<std::string>::iterator iter;
+        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
+            std::string expr_string = std::string() + "varlist " + *iter + "\n";
+            omp_exprparser_parser_init(current_OpenMPIR_to_SageIII.first, expr_string.c_str());
+            omp_exprparser_parse();
+        }
+    }
+    result->set_type = type;
+    result->set_var = var;
+
+    OpenMPDeclareMapperDirectiveIdentifier identifier = current_ir->getIdentifier();
+    SgDeclareMapperIdentifier::declare_mapper_identifier_enum sg_identifier = toSgOmpClauseDeclareMapperIdentifier(identifier);
+        
+        
+    return result;
 }
 
 // Convert an OpenMPIR Allocate Directive to a ROSE node
@@ -4515,6 +4593,7 @@ bool checkOpenMPIR(OpenMPDirective* directive) {
         case OMPD_depobj:
         case OMPD_distribute:
         case OMPD_do:
+        case OMPD_declare_mapper
         case OMPD_flush:
         case OMPD_allocate:
         case OMPD_for:
