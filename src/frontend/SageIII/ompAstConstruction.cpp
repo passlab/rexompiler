@@ -197,29 +197,26 @@ namespace OmpSupport
   // an internal data structure to avoid redundant AST traversal to find OpenMP pragmas
   static std::list<SgPragmaDeclaration* > omp_pragma_list;
 
-    // the vector of pairs of OpenMP pragma and Ompparser IR.
-    static std::vector<std::pair<SgPragmaDeclaration*, OpenMPDirective*> > OpenMPIR_list;
+  // the vector of pairs of OpenMP pragma and Ompparser IR.
+  static std::vector<std::pair<SgPragmaDeclaration*, OpenMPDirective*> > OpenMPIR_list;
 
-  // find all SgPragmaDeclaration nodes within a file and parse OpenMP pragmas into OmpAttribute info.
-  void attachOmpAttributeInfo(SgSourceFile *sageFilePtr)
-  {
+  // find all SgPragmaDeclaration nodes within a file, parse OpenMP directives using ompparser, 
+  // and store the ompparser OpenMPIR in a map OpenMPIR_list. ompparser only parse OpenMP directive/clauses
+  // not the expressions that are used by the directives/clauses
+  void parseOpenMP_ompparser(SgSourceFile *sageFilePtr) {
     ROSE_ASSERT(sageFilePtr != NULL);
     if (sageFilePtr->get_openmp() == false)
       return;
     // For Fortran, search comments for OpenMP directives
     if (sageFilePtr->get_Fortran_only()||sageFilePtr->get_F77_only()||sageFilePtr->get_F90_only()||
-        sageFilePtr->get_F95_only() || sageFilePtr->get_F2003_only())
-    {
+        sageFilePtr->get_F95_only() || sageFilePtr->get_F2003_only()) {
         // use ompparser to process Fortran.
         parseOpenMPFortran(sageFilePtr);
-    } //end if (fortran)
-    else
-    {
+    } else { //end if (fortran)
       // For C/C++, search pragma declarations for OpenMP directives 
       std::vector <SgNode*> all_pragmas = NodeQuery::querySubTree (sageFilePtr, V_SgPragmaDeclaration);
       std::vector<SgNode*>::iterator iter;
-      for(iter=all_pragmas.begin();iter!=all_pragmas.end();iter++)
-      {
+      for(iter=all_pragmas.begin();iter!=all_pragmas.end();iter++) {
         SgPragmaDeclaration* pragmaDeclaration = isSgPragmaDeclaration(*iter);
         ROSE_ASSERT(pragmaDeclaration != NULL);
         SageInterface::replaceMacroCallsWithExpandedStrings(pragmaDeclaration);
@@ -227,36 +224,26 @@ namespace OmpSupport
         istringstream istr(pragmaString);
         std::string key;
         istr >> key;
-        if (key == "omp")
-        {
+        if (key == "omp") {
           // Liao, 3/12/2009
           // Outliner may move pragma statements to a new file
           // after the pragma has been attached OmpAttribute.
           // We have to skip generating the attribute again in the new file
-          OmpAttributeList* previous = getOmpAttributeList(pragmaDeclaration);
+          //OmpAttributeList* previous = getOmpAttributeList(pragmaDeclaration);
           // store them into a buffer, reused by build_OpenMP_AST()
           omp_pragma_list.push_back(pragmaDeclaration);
 
-          if (previous == NULL )
-          {
-            // Call parser
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-            // parse expression
-            // Get the object that ompparser IR.
-            ompparser_OpenMPIR = parseOpenMP(pragmaString.c_str(), NULL);
-            assert(ompparser_OpenMPIR != NULL);
-            use_ompparser = checkOpenMPIR(ompparser_OpenMPIR);
-            assert(use_ompparser == true);
-            OpenMPIR_list.push_back(std::make_pair(pragmaDeclaration, ompparser_OpenMPIR));
-#endif
-          }
-        }
-        else if (key == "acc")
-        {
+          // parse expression
+          // Get the object that ompparser IR.
+          ompparser_OpenMPIR = parseOpenMP(pragmaString.c_str(), NULL);
+          assert(ompparser_OpenMPIR != NULL);
+          use_ompparser = checkOpenMPIR(ompparser_OpenMPIR);
+          assert(use_ompparser == true);
+          OpenMPIR_list.push_back(std::make_pair(pragmaDeclaration, ompparser_OpenMPIR));
+        } else if (key == "acc") {
           // store them into a buffer, reused by build_OpenMP_AST()
           omp_pragma_list.push_back(pragmaDeclaration);
           // Call parser
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
           // Get the OpenMP IR converted from the OpenACC IR.
           pragmaString = "#pragma " + pragmaString;
           accparser_OpenACCIR = parseOpenACC(pragmaString);
@@ -264,7 +251,6 @@ namespace OmpSupport
           use_accparser = checkOpenACCIR(accparser_OpenACCIR);
           assert(use_accparser == true);
           OpenACCIR_list.push_back(std::make_pair(pragmaDeclaration, accparser_OpenACCIR));
-#endif
         }
       }// end for
     }
@@ -1885,8 +1871,8 @@ namespace OmpSupport
       return;
     }
 
-    // parse OpenMP directives and attach OmpAttributeList to relevant SgNode
-    attachOmpAttributeInfo(sageFilePtr);
+    // parse OpenMP directives using ompparser and store the ompparser's OpenMPIR nodes in a map
+    parseOpenMP_ompparser(sageFilePtr);
 
     // stop here if only OpenMP parsing is requested
     if (sageFilePtr->get_openmp_parse_only())

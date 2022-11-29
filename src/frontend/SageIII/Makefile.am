@@ -180,7 +180,7 @@ libsage3Sources = \
    rtiHelpers.C \
    rose_graph_support.C \
    $(fSageSupport_la_sources) \
-   OmpAttribute.C \
+   ompSupport.C \
    ompFortranParser.C \
    ompAstConstruction.cpp \
    accAstConstruction.cpp
@@ -304,7 +304,7 @@ pkginclude_HEADERS = \
    attach_all_info.h manglingSupport.h C++_include_files.h \
    fixupCopy.h \
    general_token_defs.h rtiHelpers.h \
-   OmpAttribute.h omp.h \
+   ompSupport.h omp.h \
    omp_lib_kinds.h omp_lib.h sage3basic.hhh rosedefs.h  fileoffsetbits.h rosedll.h \
    Cxx_GrammarSerialization.h \
    $(fSageSupport_includeHeaders)

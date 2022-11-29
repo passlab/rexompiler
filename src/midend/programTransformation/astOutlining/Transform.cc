@@ -406,7 +406,7 @@ Outliner::outlineBlock (SgBasicBlock* s, const string& func_name_str)
   {
     Rose_STL_Container <SgNode*>::iterator liter =loops.begin();
     SgForStatement* firstloop = isSgForStatement(*liter);
-    OmpSupport::generatePragmaFromOmpAttribute(firstloop);
+//    OmpSupport::generatePragmaFromOmpAttribute(firstloop);
   }
 #endif
 

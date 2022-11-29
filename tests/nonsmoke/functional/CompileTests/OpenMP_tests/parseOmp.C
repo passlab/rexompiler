@@ -7,7 +7,7 @@ Last Modified: 9/19/2008
 #include "RoseAst.h"
 #include <iostream>
 #include <string>
-#include "OmpAttribute.h"
+#include "ompSupport.h"
 using namespace std;
 using namespace OmpSupport;
 

@@ -4,7 +4,7 @@
 #ifndef OMP_LOWERING_H
 #define OMP_LOWERING_H 
 
-#include "OmpAttribute.h"
+#include "ompSupport.h"
 
 /*!
  * Translation (directive lowering) support for OpenMP 3.0 C/C++
