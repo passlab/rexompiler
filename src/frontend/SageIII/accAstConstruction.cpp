@@ -14,8 +14,6 @@ static void buildVariableList(SgOmpVariablesClause *);
 
 extern bool copyStartFileInfo(SgNode *, SgNode *);
 extern bool copyEndFileInfo(SgNode *, SgNode *);
-extern void replaceOmpPragmaWithOmpStatement(SgPragmaDeclaration *,
-                                             SgStatement *);
 extern SgExpression *checkOmpExpressionClause(SgExpression *, SgGlobal *,
                                               OmpSupport::omp_construct_enum);
 
@@ -58,10 +56,17 @@ convertOpenACCDirective(std::pair<SgPragmaDeclaration *, OpenACCDirective *>
     printf("Unknown directive is found.\n");
   }
   }
+
   SageInterface::setOneSourcePositionForTransformation(result);
-  copyStartFileInfo(current_OpenACCIR_to_SageIII.first, result);
-  copyEndFileInfo(current_OpenACCIR_to_SageIII.first, result);
-  replaceOmpPragmaWithOmpStatement(current_OpenACCIR_to_SageIII.first, result);
+  SgPragmaDeclaration* pdecl = current_OpenACCIR_to_SageIII.first;
+  copyStartFileInfo (pdecl, result);
+  copyEndFileInfo (pdecl, result);
+
+  //! For C/C++ replace OpenMP pragma declaration with an SgOmpxxStatement
+  SgScopeStatement* scope = pdecl ->get_scope();
+  ROSE_ASSERT(scope !=NULL);
+  SageInterface::moveUpPreprocessingInfo(result, pdecl); // keep #ifdef etc attached to the pragma
+  SageInterface::replaceStatement(pdecl, result);
 
   return result;
 }

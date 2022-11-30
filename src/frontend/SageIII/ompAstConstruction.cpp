@@ -200,64 +200,8 @@ namespace OmpSupport
   // the vector of pairs of OpenMP pragma and Ompparser IR.
   static std::vector<std::pair<SgPragmaDeclaration*, OpenMPDirective*> > OpenMPIR_list;
 
-  // find all SgPragmaDeclaration nodes within a file, parse OpenMP directives using ompparser, 
-  // and store the ompparser OpenMPIR in a map OpenMPIR_list. ompparser only parse OpenMP directive/clauses
-  // not the expressions that are used by the directives/clauses
-  void parseOpenMP_ompparser(SgSourceFile *sageFilePtr) {
-    ROSE_ASSERT(sageFilePtr != NULL);
-    if (sageFilePtr->get_openmp() == false)
-      return;
-    // For Fortran, search comments for OpenMP directives
-    if (sageFilePtr->get_Fortran_only()||sageFilePtr->get_F77_only()||sageFilePtr->get_F90_only()||
-        sageFilePtr->get_F95_only() || sageFilePtr->get_F2003_only()) {
-        // use ompparser to process Fortran.
-        parseOpenMPFortran(sageFilePtr);
-    } else { //end if (fortran)
-      // For C/C++, search pragma declarations for OpenMP directives 
-      std::vector <SgNode*> all_pragmas = NodeQuery::querySubTree (sageFilePtr, V_SgPragmaDeclaration);
-      std::vector<SgNode*>::iterator iter;
-      for(iter=all_pragmas.begin();iter!=all_pragmas.end();iter++) {
-        SgPragmaDeclaration* pragmaDeclaration = isSgPragmaDeclaration(*iter);
-        ROSE_ASSERT(pragmaDeclaration != NULL);
-        SageInterface::replaceMacroCallsWithExpandedStrings(pragmaDeclaration);
-        string pragmaString = pragmaDeclaration->get_pragma()->get_pragma();
-        istringstream istr(pragmaString);
-        std::string key;
-        istr >> key;
-        if (key == "omp") {
-          // Liao, 3/12/2009
-          // Outliner may move pragma statements to a new file
-          // after the pragma has been attached OmpAttribute.
-          // We have to skip generating the attribute again in the new file
-          //OmpAttributeList* previous = getOmpAttributeList(pragmaDeclaration);
-          // store them into a buffer, reused by build_OpenMP_AST()
-          omp_pragma_list.push_back(pragmaDeclaration);
-
-          // parse expression
-          // Get the object that ompparser IR.
-          ompparser_OpenMPIR = parseOpenMP(pragmaString.c_str(), NULL);
-          assert(ompparser_OpenMPIR != NULL);
-          use_ompparser = checkOpenMPIR(ompparser_OpenMPIR);
-          assert(use_ompparser == true);
-          OpenMPIR_list.push_back(std::make_pair(pragmaDeclaration, ompparser_OpenMPIR));
-        } else if (key == "acc") {
-          // store them into a buffer, reused by build_OpenMP_AST()
-          omp_pragma_list.push_back(pragmaDeclaration);
-          // Call parser
-          // Get the OpenMP IR converted from the OpenACC IR.
-          pragmaString = "#pragma " + pragmaString;
-          accparser_OpenACCIR = parseOpenACC(pragmaString);
-          assert(accparser_OpenACCIR != NULL);
-          use_accparser = checkOpenACCIR(accparser_OpenACCIR);
-          assert(use_accparser == true);
-          OpenACCIR_list.push_back(std::make_pair(pragmaDeclaration, accparser_OpenACCIR));
-        }
-      }// end for
-    }
-  }
   // Clause node builders
   //----------------------------------------------------------
-
   // Sara Royuela ( Nov 2, 2012 ): Check for clause parameters that can be defined in macros
   // This adds support for the use of macro definitions in OpenMP clauses
   // We need a traversal over SgExpression to support macros in any position of an "assignment_expr"
@@ -1528,23 +1472,6 @@ namespace OmpSupport
     return result;
   }*/
 
-
-  // Directive statement builders
-  //----------------------------------------------------------
-
-  //! For C/C++ replace OpenMP pragma declaration with an SgOmpxxStatement
-  void replaceOmpPragmaWithOmpStatement(SgPragmaDeclaration* pdecl, SgStatement* ompstmt)
-  {
-    ROSE_ASSERT(pdecl != NULL);
-    ROSE_ASSERT(ompstmt!= NULL);
-
-    SgScopeStatement* scope = pdecl ->get_scope();
-    ROSE_ASSERT(scope !=NULL);
-    // replace the pragma
-    moveUpPreprocessingInfo(ompstmt, pdecl); // keep #ifdef etc attached to the pragma
-    replaceStatement(pdecl, ompstmt);
-  }
-
   //! Convert omp_pragma_list to SgOmpxxx nodes
   void convert_OpenMP_pragma_to_AST (SgSourceFile *sageFilePtr)
   {
@@ -1823,30 +1750,6 @@ namespace OmpSupport
     convert_Fortran_Pragma_Pairs(sageFilePtr);
   } // end convert_Fortran_OMP_Comments_to_Pragmas ()
 
-
-  void build_OpenMP_AST(SgSourceFile *sageFilePtr)
-  {
-    // build AST for OpenMP directives and clauses 
-    // by converting OmpAttributeList to SgOmpxxx Nodes 
-    if (sageFilePtr->get_Fortran_only()||sageFilePtr->get_F77_only()||sageFilePtr->get_F90_only()||
-        sageFilePtr->get_F95_only() || sageFilePtr->get_F2003_only())
-    {
-      convert_Fortran_OMP_Comments_to_Pragmas (sageFilePtr);
-      // end if (fortran)
-    }
-    else
-    {
-      // for  C/C++ pragma's OmpAttributeList --> SgOmpxxx nodes
-      if (SgProject::get_verbose() > 1)
-      {
-        printf ("Calling convert_OpenMP_pragma_to_AST() \n");
-      }
-    }
-    // We can turn this off to debug the convert_Fortran_OMP_Comments_to_Pragmas()
-    convert_OpenMP_pragma_to_AST( sageFilePtr);
-  }
-
-
   // Liao, 5/31/2009 an entry point for OpenMP related processing
   // including parsing, AST construction, and later on translation
   void processOpenMP(SgSourceFile *sageFilePtr)
@@ -1856,36 +1759,83 @@ namespace OmpSupport
     // transformation (e.g. declaration of private variables will add variables
     // to the local scope).  So this function has side-effects for all languages.
 
-    if (SgProject::get_verbose() > 1)
-    {
-      printf ("Processing OpenMP directives \n");
+    if (SgProject::get_verbose() > 1) {
+      printf ("Processing OpenMP directives ... \n");
     }
 
     ROSE_ASSERT(sageFilePtr != NULL);
-    if (sageFilePtr->get_openmp() == false)
-    {
-      if (SgProject::get_verbose() > 1)
-      {
-        printf ("Skipping calls to lower OpenMP sageFilePtr->get_openmp() = %s \n",sageFilePtr->get_openmp() ? "true" : "false");
+    if (sageFilePtr->get_openmp() == false) {
+      if (SgProject::get_verbose() > 1) {
+        printf ("Stop processing OpenMP directives since no OpenMP found. \n");
       }
       return;
     }
 
-    // parse OpenMP directives using ompparser and store the ompparser's OpenMPIR nodes in a map
-    parseOpenMP_ompparser(sageFilePtr);
+    bool isFortran = sageFilePtr->get_Fortran_only()||sageFilePtr->get_F77_only()||sageFilePtr->get_F90_only()||
+            sageFilePtr->get_F95_only() || sageFilePtr->get_F2003_only();
+
+    // ==================================================================================================================//
+    // ====== Stage 1: parse OpenMP directives using ompparser and store the ompparser's OpenMPIR nodes in a map   ======
+    // ==================================================================================================================//
+    // find all SgPragmaDeclaration nodes within a file, parse OpenMP directives using ompparser,
+    // and store the ompparser OpenMPIR in a map OpenMPIR_list. ompparser only parse OpenMP directive/clauses
+    // not the expressions that are used by the directives/clauses
+    // For Fortran, search comments for OpenMP directives
+    if (isFortran) { // use ompparser to process Fortran.
+        parseOpenMPFortran(sageFilePtr);
+    } else { // For C/C++, search pragma declarations for OpenMP directives
+      std::vector <SgNode*> all_pragmas = NodeQuery::querySubTree (sageFilePtr, V_SgPragmaDeclaration);
+      std::vector<SgNode*>::iterator iter;
+      for(iter=all_pragmas.begin();iter!=all_pragmas.end();iter++) {
+        SgPragmaDeclaration* pragmaDeclaration = isSgPragmaDeclaration(*iter);
+        ROSE_ASSERT(pragmaDeclaration != NULL);
+        SageInterface::replaceMacroCallsWithExpandedStrings(pragmaDeclaration);
+        string pragmaString = pragmaDeclaration->get_pragma()->get_pragma();
+        istringstream istr(pragmaString);
+        std::string key;
+        istr >> key;
+        if (key == "omp") {
+          omp_pragma_list.push_back(pragmaDeclaration);
+
+          // parse expression
+          // Get the object that ompparser IR.
+          ompparser_OpenMPIR = parseOpenMP(pragmaString.c_str(), NULL);
+          assert(ompparser_OpenMPIR != NULL);
+          use_ompparser = checkOpenMPIR(ompparser_OpenMPIR);
+          assert(use_ompparser == true);
+          OpenMPIR_list.push_back(std::make_pair(pragmaDeclaration, ompparser_OpenMPIR));
+        } else if (key == "acc") {
+          // store them into a buffer, reused by build_OpenMP_AST()
+          omp_pragma_list.push_back(pragmaDeclaration);
+          // Call parser
+          // Get the OpenMP IR converted from the OpenACC IR.
+          pragmaString = "#pragma " + pragmaString;
+          accparser_OpenACCIR = parseOpenACC(pragmaString);
+          assert(accparser_OpenACCIR != NULL);
+          use_accparser = checkOpenACCIR(accparser_OpenACCIR);
+          assert(use_accparser == true);
+          OpenACCIR_list.push_back(std::make_pair(pragmaDeclaration, accparser_OpenACCIR));
+        }
+      }// end for
+    }
 
     // stop here if only OpenMP parsing is requested
-    if (sageFilePtr->get_openmp_parse_only())
-    {
-      if (SgProject::get_verbose() > 1)
-      {
+    if (sageFilePtr->get_openmp_parse_only()) {
+      if (SgProject::get_verbose() > 1) {
         printf ("Skipping calls to lower OpenMP sageFilePtr->get_openmp_parse_only() = %s \n",sageFilePtr->get_openmp_parse_only() ? "true" : "false");
       }
       return;
     }
 
     // Build OpenMP AST nodes based on parsing results
-    build_OpenMP_AST(sageFilePtr);
+    if (isFortran) {
+    	convert_Fortran_OMP_Comments_to_Pragmas (sageFilePtr); //TODO: need to fix not sure why we still need this here since Fortran is already parsed before.
+    }
+    if (SgProject::get_verbose() > 1) {
+            printf ("Calling convert_OpenMP_pragma_to_AST() \n");
+    }
+    // We can turn this off to debug the convert_Fortran_OMP_Comments_to_Pragmas()
+    convert_OpenMP_pragma_to_AST( sageFilePtr);
 
     // stop here if only OpenMP AST construction is requested
     if (sageFilePtr->get_openmp_ast_only())
@@ -2045,9 +1995,15 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
         }
     }
     setOneSourcePositionForTransformation(result);
-    copyStartFileInfo (current_OpenMPIR_to_SageIII.first, result);
-    copyEndFileInfo (current_OpenMPIR_to_SageIII.first, result);
-    replaceOmpPragmaWithOmpStatement(current_OpenMPIR_to_SageIII.first, result);
+    SgPragmaDeclaration* pdecl = current_OpenMPIR_to_SageIII.first;
+    copyStartFileInfo (pdecl, result);
+    copyEndFileInfo (pdecl, result);
+
+    //! For C/C++ replace OpenMP pragma declaration with an SgOmpxxStatement
+    SgScopeStatement* scope = pdecl ->get_scope();
+    ROSE_ASSERT(scope !=NULL);
+    moveUpPreprocessingInfo(result, pdecl); // keep #ifdef etc attached to the pragma
+    replaceStatement(pdecl, result);
 
     return result;
 }
@@ -4469,20 +4425,6 @@ SgUpirSpmdStatement* convertUpirSpmdStatementFromCombinedDirectives(std::pair<Sg
     movePreprocessingInfo(body, first_stmt, PreprocessingInfo::before, PreprocessingInfo::after, true);
     return first_stmt;
   }
-
-  //! For C/C++ replace OpenMP pragma declaration with an SgOmpxxStatement
-  void replaceOmpPragmaWithOmpStatement(SgPragmaDeclaration* pdecl, SgStatement* ompstmt)
-  {
-    ROSE_ASSERT(pdecl != NULL);
-    ROSE_ASSERT(ompstmt!= NULL);
-
-    SgScopeStatement* scope = pdecl ->get_scope();
-    ROSE_ASSERT(scope !=NULL);
-    // replace the pragma
-    moveUpPreprocessingInfo(ompstmt, pdecl); // keep #ifdef etc attached to the pragma
-    replaceStatement(pdecl, ompstmt);
-  }
-
 
 bool checkOpenMPIR(OpenMPDirective* directive) {
 
