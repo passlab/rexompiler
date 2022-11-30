@@ -1998,10 +1998,6 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
   //for reduction
   per_block_declarations.clear(); // must reset to empty or wrong reference to stale content generated previously
   transOmpVariables(target, bb1,NULL, true);
-
-  // Liao, 11/11/2014, clean up copied OmpAttribute
-  if (new_loop->attributeExists("OmpAttributeList"))
-     new_loop->removeAttribute("OmpAttributeList");
 }
 
 
@@ -4868,10 +4864,6 @@ void transOmpTargetLoopBlock(SgNode* node)
   //for reduction
   per_block_declarations.clear(); // must reset to empty or wrong reference to stale content generated previously
   transOmpVariables(target, bb1, NULL, true);
-
-  // Liao, 11/11/2014, clean up copied OmpAttribute
-  if (new_loop->attributeExists("OmpAttributeList"))
-     new_loop->removeAttribute("OmpAttributeList");
 }
 
   // transformation for combined directive

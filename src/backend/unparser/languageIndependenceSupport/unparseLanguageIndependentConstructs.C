@@ -3,7 +3,7 @@
 #include "unparser.h"
 #include <limits>
 
-#include "OmpAttribute.h" // to support unparsing OpenMP constructs
+#include "ompSupport.h" // to support unparsing OpenMP constructs
 
 // DQ (10/29/2013): Adding support for unparsing from the token stream.
 #include "tokenStreamMapping.h"

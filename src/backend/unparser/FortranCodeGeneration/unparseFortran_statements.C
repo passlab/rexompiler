@@ -4047,7 +4047,8 @@ FortranCodeGeneration_locatedNode::unparsePragmaDeclStmt (SgStatement* stmt, SgU
   ASSERT_not_null(pragma);
   
   string txt = pragma->get_pragma();
-  AstAttribute* att = stmt->getAttribute("OmpAttributeList");
+  AstAttribute* att = stmt->getAttribute("OmpAttributeList"); //TODO: we removed OmpAttribute and this need to be changed
+  //ASSERT_not_null(NULL);
   if (att)
     curprint("!$");
   else

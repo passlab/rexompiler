@@ -15,7 +15,6 @@
 #include "ASTtools.hh"
 #include "PreprocessingInfo.hh"
 #include "StmtRewrite.hh"
-#include "OmpAttribute.h" //regenerate pragma from omp attribute
 // =====================================================================
 
 using namespace std;

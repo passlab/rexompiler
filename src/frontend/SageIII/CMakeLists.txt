@@ -63,7 +63,7 @@ add_custom_command(
   DEPENDS  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/omp_exprparser_parser.yy)
 
 set(SAGE3_SOURCES ${SAGE3_SOURCES}
-  OmpAttribute.C
+  ompSupport.C
   ompAstConstruction.cpp ompFortranParser.C
         omp_exprparser_lexer.ll omp_exprparser_parser.yy
   ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.C
@@ -81,7 +81,7 @@ install(
     sage3.h sage3basic.h rose_attributes_list.h attachPreprocessingInfo.h
     attachPreprocessingInfoTraversal.h attach_all_info.h manglingSupport.h
     C++_include_files.h fixupCopy.h general_token_defs.h rtiHelpers.h
-    ompAstConstruction.h omp.h OmpAttribute.h
+    ompAstConstruction.h omp.h ompSupport.h
     omp_lib_kinds.h omp_lib.h rosedll.h fileoffsetbits.h rosedefs.h
     sage3basic.hhh sage_support/cmdline.h sage_support/sage_support.h
     ${CMAKE_CURRENT_BINARY_DIR}/Cxx_GrammarSerialization.h
