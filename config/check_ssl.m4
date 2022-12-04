@@ -62,7 +62,7 @@ AC_DEFUN([CHECK_SSL],
         HAVE_SSL=yes
     fi
     AC_SUBST(HAVE_SSL)
-    AC_DEFINE([HAVE_SSL], [], [Have the SQLITE3 library])
+    AC_DEFINE([HAVE_SSL], [], [Have the SSL library])
     AM_CONDITIONAL([HAVE_SSL], 'test x_$found_ssl = x_yes' )
 
 ])dnl

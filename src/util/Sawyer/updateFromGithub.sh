@@ -35,7 +35,7 @@ cp "$SAWYER_ROOT/LICENSE" LICENSE
 # should have been contributed back to the Sawyer project by now (besides, that's what Git is for)!
 for f in                                                                                                                                \
     Access AddressMap AddressSegment AllocatingBuffer Assert Attribute BiMap BitFlags BitVector BitVectorSupport Buffer Cached          \
-    Callbacks Clexer CommandLine CommandLineBoost Database DatabasePostgresql DatabaseSqlite DefaultAllocator DenseIntegerSet           \
+    Callbacks Clexer CommandLine CommandLineBoost DefaultAllocator DenseIntegerSet           \
     DistinctList DocumentBaseMarkup DocumentMarkup DocumentPodMarkup DocumentTextMarkup Exception FileSystem Graph GraphAlgorithm       \
     GraphBoost GraphIteratorBiMap GraphIteratorMap GraphIteratorSet GraphTraversal IndexedList Interval IntervalMap IntervalSet         \
     IntervalSetMap HashMap Lexer LineVector Map MappedBuffer Message NullBuffer Optional PoolAllocator ProgressBar Result Sawyer Set    \
@@ -76,7 +76,6 @@ for f in                                        \
     Container/resultUnitTests.C                 \
     Container/setUnitTests.C                    \
     Container/traceUnitTests.C                  \
-    Database/databaseUnitTests.C                \
     Markup/markupUnitTests.C                    \
     Message/mesgUnitTests.C                     \
     Pointers/ptrUnitTests.C                     \

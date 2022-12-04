@@ -39,7 +39,6 @@ if (NOT enable-internalFrontendDevelopment)
    variableRenaming/VariableRenaming.C
    OAWrap/OAWrap.C
    OAWrap/SAGE2OA.C
-   CallGraphAnalysis/CallGraphDB.C
    CallGraphAnalysis/CallGraph.C
    CallGraphAnalysis/ClassHierarchyGraph.C
    staticInterproceduralSlicing/MergedDependenceGraph.C

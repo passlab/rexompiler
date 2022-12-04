@@ -316,14 +316,8 @@
 /* Include path for backend C compiler. */
 #cmakedefine C_INCLUDE_STRING @C_INCLUDE_STRING@
 
-
-/* Controls use of ROSE support for Binary SQL. */
-#undef HASH_ROSE_USE_BINARYSQL
-
-
 /* Define to 1 if you have the `clock_gettime' function. */
 #cmakedefine HAVE_CLOCK_GETTIME 1
-
 
 /* Define to 1 if you have the `dl' library (-ldl). */
 #cmakedefine HAVE_LIBDL 1
@@ -354,13 +348,6 @@
 /* Define to 1 if you have a working `mmap' system call. */
 #cmakedefine HAVE_MMAP 1
 
-/* Define to 1 if MySQL libraries are available */
-#cmakedefine MYSQL_FOUND
-#ifdef MYSQL_FOUND
-  #define HAVE_MYSQL
-#endif
-
-
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #cmakedefine HAVE_NDIR_H 1
 
@@ -379,9 +366,6 @@
 
 /* Define if you have the shl_load function. */
 #cmakedefine HAVE_SHL_LOAD 1
-
-/* Have the SQLITE3 library */
-#cmakedefine HAVE_SQLITE3
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #cmakedefine HAVE_STDINT_H 1
@@ -663,14 +647,6 @@
 //AS don't know what to do with this
 #undef USE_ROSE_OPEN_FORTRAN_PARSER_SUPPORT
 
-/* Controls use of ROSE support for PHP. */
-//AS Don't know what to do with this
-#undef USE_ROSE_PHP_SUPPORT
-
-/* Controls use of ROSE support for RTED library. */
-//AS Don't know what to do with this
-#undef USE_ROSE_RTED_SUPPORT
-
 /* Controls use of ROSE support for SSL (libssl -- MD5) library (incompatable
    with Java, so disables Fortran support). */
 //AS Don't know what to do with this
@@ -680,11 +656,6 @@
    applications under Linux. */
 //AS Don't know what to do with this
 #undef USE_ROSE_WINDOWS_ANALYSIS_SUPPORT
-
-/* Support for PURIFY debugging software. */
-//AS Don't know what to do with this
-
-#undef USING_PURIFY
 
 /* Version number of package */
 //AS Don't know what to do with this

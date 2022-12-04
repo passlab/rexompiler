@@ -39,32 +39,12 @@ endif
 ROSE_BOOST_PREINCLUDE_PATH        = @ROSE_BOOST_PREINCLUDE_PATH@
 ROSE_BOOST_NORMAL_INCLUDE_PATH    = @ROSE_BOOST_NORMAL_INCLUDE_PATH@
 
-# SQLite is a simpler database to use than MySQL
-if ROSE_USE_SQLITE_DATABASE
-   ROSE_SQLITE_DATABASE_INCLUDE  = $(SQLITE3_CFLAGS)
-   SQLITE_DATABASE_INCLUDE       = $(SQLITE3_CFLAGS) -I$(top_srcdir)/src/roseExtensions/sqlite3x
-   SQLITE_DATABASE_LIBS          = $(SQLITE3_LDFLAGS)
-#   ROSE_SQLITE_DATABASE_OBJS     = $(top_builddir)/src/roseExtensions/sqlite3x/*o
-   ROSE_SQLITE_DATABASE_LIB_NAME = RoseSQLite3xDatabase
-   ROSE_SQLITE_DATABASE_LIB_FILE = lib$(ROSE_SQLITE_DATABASE_LIB_NAME).la
-   ROSE_SQLITE_DATABASE_LIBS     = -l$(ROSE_SQLITE_DATABASE_LIB_NAME)
-
-   ROSE_SIDEEFFECT_INCLUDE						 = -I$(top_srcdir)/src/midend/programAnalysis/sideEffectAnalysis
-endif
+ROSE_SIDEEFFECT_INCLUDE = -I$(top_srcdir)/src/midend/programAnalysis/sideEffectAnalysis
 
 # This is properly handled by automake even when specified in an include file
 EDG_LIBS = @EDG_LIBS@
 
 RT_LIBS = @RT_LIBS@
-
-VALGRIND_BINARY = @VALGRIND_BINARY@
-
-# PostgreSQL C++ API
-if ROSE_HAVE_LIBPQXX
-  ROSE_LIBPQXX_INCLUDES = -I@ROSE_LIBPQXX_PREFIX@/include
-  ROSE_LIBPQXX_LIBS = -lpqxx -lpq
-  ROSE_LIBPQXX_LIBS_WITH_PATH = -L@ROSE_LIBPQXX_PREFIX@/lib -lpqxx -lpq
-endif
 
 # DQ (11/4/2016): Adding support for use of Address Sanitizer (for where the ROSE Test Handler (RTH) is used.
 # Note the quotes and escapes that are required:
@@ -162,7 +142,6 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/3rdPartyLibraries/MSTL \
      -I$(top_srcdir)/src/3rdPartyLibraries/json \
      -I$(top_srcdir)/src/util/graphs \
-     $(ROSE_ATERM_INCLUDE) \
      $(ROSE_FLANG_INCLUDES) \
      $(ROSE_BOOST_NORMAL_INCLUDE_PATH)
 else
@@ -244,10 +223,7 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/midend/programAnalysis/valuePropagation \
      -I$(top_srcdir)/src/midend/programAnalysis/variableRenaming \
       $(ROSE_SIDEEFFECTS_INCLUDE) \
-      $(ROSE_DATABASE_INCLUDE) \
-      $(ROSE_SQLITE_DATABASE_INCLUDE) \
-			$(ROSE_SIDEEFFECT_INCLUDE) \
-      $(SQLITE_DATABASE_INCLUDE) \
+      $(ROSE_SIDEEFFECT_INCLUDE) \
      -I$(top_srcdir)/src/midend/programTransformation/partialRedundancyElimination \
      -I$(top_srcdir)/src/midend/programTransformation/finiteDifferencing \
      -I$(top_srcdir)/src/midend/programTransformation/functionCallNormalization \
@@ -261,10 +237,8 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/util/graphs \
      -I$(top_srcdir)/src/midend/astUtil/astInterface \
      -I$(top_srcdir)/libltdl \
-     $(ROSE_LIBPQXX_INCLUDES) \
      $(ROSE_GCRYPT_INCLUDES) \
      $(VALGRIND_CFLAGS) \
-     $(SQLITE3_CFLAGS) \
      $(ROSE_BOOST_NORMAL_INCLUDE_PATH) \
      $(ROSE_PCH_INCLUDE) \
      $(BOOST_CPPFLAGS)
@@ -313,7 +287,7 @@ ROSE_INCLUDES = -I$(top_builddir) -I$(top_builddir)/src $(ROSE_BOOST_PREINCLUDE_
 # JJW 7/25/2008: This should probably just be the same as ROSE_LIBS
 ROSE_LIBS_WITH_PATH = $(ROSE_LIBS)
 
-# ROSE_LIBS = $(top_builddir)/src/librose.la -lm $(LEXLIB) $(SQLITE_DATABASE_LIBS) $(LIB_QT) $(WAVE_LDFLAGS) $(WAVE_LIBRARIES) $(WAVE_LIBS) $(JAVA_JVM_LIB) $(RT_LIBS)
+# ROSE_LIBS = $(top_builddir)/src/librose.la -lm $(LEXLIB) $(WAVE_LDFLAGS) $(WAVE_LIBRARIES) $(WAVE_LIBS) $(JAVA_JVM_LIB) $(RT_LIBS)
 
 # MS 10/19/2015: added ROSE_BOOST_LIBS variable to share exact same
 # boost libs list in ROSE an in the ROSTTA Makefiles.
@@ -323,11 +297,11 @@ ROSE_BOOST_LIBS=$(BOOST_LDFLAGS) $(BOOST_DATE_TIME_LIB) $(BOOST_CHRONO_LIB) \
   $(BOOST_WAVE_LIB) $(BOOST_IOSTREAMS_LIB) $(BOOST_ATOMIC_LIB)
 
 ROSE_LIBS = $(abspath $(top_builddir)/src/librose.la) -lm $(JAVA_JVM_LINK) \
-  $(SQLITE_DATABASE_LIBS) $(ROSE_BOOST_LIBS) \
-  $(SQLITE3_LDFLAGS)  $(RT_LIBS) \
+  $(ROSE_BOOST_LIBS) \
+  $(RT_LIBS) \
   $(ROSE_SSL_LIBS) \
   $(ROSE_INTEL_COMPILER_MATH_LIBS) \
-  $(ROSE_GCRYPT_LIBS_WITH_PATH) $(ROSE_LIBPQXX_LIBS_WITH_PATH) \
+  $(ROSE_GCRYPT_LIBS_WITH_PATH) \
   $(ROSE_QUAD_FLOAT_MATH)
 
 if ROSE_USE_CLANG_FRONTEND

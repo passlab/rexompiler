@@ -25,9 +25,6 @@
 #ifdef ROSE_HAVE_LIBGCRYPT
 #   include <gcrypt.h>
 #endif
-#ifdef ROSE_HAVE_SQLITE3
-#   include <sqlite3.h>
-#endif
 
 // DQ (10/11/2007): This is commented out to avoid use of this mechanism.
 // #include <copy_unparser.h>
@@ -375,12 +372,6 @@ std::string version_message() {
     ss <<"  --- gcrypt library:             " <<GCRYPT_VERSION <<"\n";
 #else
     ss <<"  --- gcrypt library:             unused\n";
-#endif
-
-#ifdef ROSE_HAVE_SQLITE3
-    ss <<"  --- sqilte library:             " <<SQLITE_VERSION <<"\n";
-#else
-    ss <<"  --- sqilte library:             unused\n";
 #endif
 
     //-----------------------------------------------------------------------

@@ -16,12 +16,6 @@
 using namespace std;
 using namespace Rose;
 
-// Rasmussen (04/17/2019): Support for ATerms has been deprecated as it is no longer needed
-// and likely never fully implemented nor tested.  Files remain in the src tree but are no
-// longer built.  Macro BUILD_ATERM_SUPPORT primarily used to turn off ATerm support for Sage nodes.
-// If this is going to be turned back on it should be completed and thoroughly tested.
-#define BUILD_ATERM_SUPPORT 0
-
 // MS: temporary (TODO: move to processing class)
 static string RTIContainerName = "rtiContainer";  // put this into the respective processing class as private member
 static string RTIreturnType    = "RTIReturnType"; // typedef in Grammar/Common.code
@@ -1702,24 +1696,6 @@ Grammar::buildMemberAccessFunctionPrototypesAndConstuctorPrototype ( AstNodeClas
         } else {
        // Rasmussen (08/25/2022): Removed all untyped Sage IR nodes.
         }
-
-#if BUILD_ATERM_SUPPORT
-  // DQ (10/7/2014): Adding support for Aterm specific function to build ROSE IR nodes (we want it generated independent of if (node.generateConstructor() == true)).
-  // if (node.generateConstructor() == true)
-        {
-          bool complete = false;
-          ConstructParamEnum cur = CONSTRUCTOR_PARAMETER;
-          bool withInitializers = true;
-          bool withTypes        = true;
-          string constructorPrototype = "\n     public: \n";
-
-          string constructorParameterString = buildConstructorParameterListString(node,withInitializers,withTypes, cur, &complete);
-
-          constructorPrototype = constructorPrototype + "         static " + string(className) + "* build_node_from_nonlist_children(" + constructorParameterString + "); \n";
-
-          dataAccessFunctionPrototypeString.push_back(StringUtility::StringWithLineNumber(constructorPrototype, "" /* "<aterm support>" */, 1));
-        }
-#endif
 
      return dataAccessFunctionPrototypeString;
    }

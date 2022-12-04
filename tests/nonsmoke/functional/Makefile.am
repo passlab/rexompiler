@@ -146,8 +146,6 @@ LDADD       = $(ROSE_LIBS)
 # LDADD       = $(ROSE_LIBS) --Wl,--no-undefined
 # LDADD       = $(ROSE_LIBS) --no-undefined
 
-testAtermGraphGeneration_LDADD = $(ROSE_LIBS)
-
 EXTRA_DIST = CMakeLists.txt input_codes inputFile.C tests.tex
 
 # ********************************

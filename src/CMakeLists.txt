@@ -88,7 +88,6 @@ add_subdirectory(3rdPartyLibraries)
 
 add_definitions(-DROSE_DLL_EXPORTS)
 
-add_subdirectory(roseExtensions)
 add_subdirectory(frontend)
 add_subdirectory(midend)
 add_subdirectory(backend)
@@ -237,20 +236,6 @@ endif ()
 # If the C preprocessor is enabled, ROSE has some additional depenendencies
 if(enable-cpp)
   add_dependencies(ROSE_DLL ROSE_PREPROCESSOR ${edg_lib} libhpdf generate_rosePublicConfig)
-endif()
-
-# SQLite3 has an executable component and a development (library and headers) component that can be installed
-# independently of each other. Therfore SQLITE3_FOUND_EXE says whether the executable component was found, and
-# SQLITE3_FOUND_LIB says whether the development component was found; SQLITE3_FOUND is set if either component is found.
-if(SQLITE3_FOUND_LIB)
-  # CORY: Maybe you can help. When sqlite is enabled, I get errors from cmake (when run in a clean build directory) that
-  #       say "Cannot find source file /home/matzke/junk/_build-cmake/src/util/CMakeFiles/util_main.dir/rose_paths.C.o;
-  #       Tried extensions .c .C .c++ .cc .cpp .cxx .m .M .mm .h .hh .h++ .hm .hpp .hxx .in .txx". I'm not sure why
-  #       cmake things "rose_paths.C.o" should be a source file. The $ROSE/src/util/CMakeLists.txt has the CMake
-  #       commands for creating rose_paths.C and rose_paths.h, and is the only CMakeLists.txt file that mentions
-  #       "rose_paths". The error goes away if I comment out the following line (but then of course there's linking
-  #       problems later).
-  target_link_libraries(ROSE_DLL RoseSQLite3xDatabase)
 endif()
 
 ########################################################################################################################

@@ -2206,9 +2206,7 @@ SgFile::usage ( int status )
        // it would be nice to insert the version of ROSE being used (using the VERSION macro)
           fputs(
 "\n"
-"This ROSE translator provides a means for operating on C, C++, Fortran and Java\n"
-"source code; as well as on x86, ARM, and PowerPC executable code (plus object files \n"
-"and libraries).\n"
+"This ROSE translator provides a means for operating on C, C++, and Fortran source code.\n"
 "\n"
 "Usage: rose [OPTION]... FILENAME...\n"
 "\n"
@@ -2524,8 +2522,6 @@ SgFile::usage ( int status )
 "     -rose:Promela_output_language\n"
 "                             force use of Promela as output language (not\n"
 "                               supported)\n"
-"     -rose:PHP_output_language\n"
-"                             force use of PHP as output language\n"
 "     -rose:outputFormat      generate code in either fixed/free format (fortran only)\n"
 "                               options are: fixedOutput|fixedFormatOutput or \n"
 "                                            freeOutput|freeFormatOutput\n"
@@ -4474,7 +4470,7 @@ SgFile::stripRoseCommandLineOptions ( vector<string> & argv )
      optionCount = sla(argv, "-rose:", "($)", "(compileFixed|backendCompileFixedFormat)",1);
      optionCount = sla(argv, "-rose:", "($)", "(compileFree|backendCompileFreeFormat)",1);
 
-     optionCount = sla(argv, "-rose:", "($)", "(C_output_language|Cxx_output_language|Fortran_output_language|Promela_output_language|PHP_output_language)",1);
+     optionCount = sla(argv, "-rose:", "($)", "(C_output_language|Cxx_output_language|Fortran_output_language)",1);
 
   // DQ (5/19/2005): The output file name is constructed from the input source name (as I recall)
   // optionCount = sla(argv, "-rose:", "($)^", "(o|output)", &p_unparse_output_filename ,1);

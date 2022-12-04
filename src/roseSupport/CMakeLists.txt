@@ -20,7 +20,6 @@ install(FILES  transformationSupport.h
                roseTranslators.h
                utility_functions.h
                IncludeDirective.h
-               callbacks.h
                utility_functionsImpl.C
                stringify.h
 	       Combinatorics.h

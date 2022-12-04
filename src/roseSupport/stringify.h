@@ -28,7 +28,7 @@ public:
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/roseSupport/utility_functions.C line 820
+// /src/roseSupport/utility_functions.C line 840
 namespace stringify {
     /** Convert language_enum enum constant to a string. */
     const char* language_enum(int64_t);
@@ -61,24 +61,6 @@ namespace stringify { namespace TransformationSupport {
 namespace Rose {
     std::string stringifyTransformationSupport_operatorCodeType(int64_t n, const char *strip=NULL, bool canonic=false);
     const std::vector<int64_t>& stringifyTransformationSupport_operatorCodeType();
-}
-
-// DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/roseSupport/callbacks.h line 14
-namespace stringify { namespace Rose { namespace Callbacks {
-    /** Convert Rose::Callbacks::Direction enum constant to a string. */
-    const char* Direction(int64_t);
-
-    /** Convert Rose::Callbacks::Direction enum constant to a string. */
-    std::string Direction(int64_t, const std::string &strip);
-
-    /** Return all Rose::Callbacks::Direction member values as a vector. */
-    const std::vector<int64_t>& Direction();
-}}}
-
-namespace Rose {
-    std::string stringifyCallbacksDirection(int64_t n, const char *strip=NULL, bool canonic=false);
-    const std::vector<int64_t>& stringifyCallbacksDirection();
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
@@ -2386,7 +2368,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 120
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 122
 namespace stringify {
     /** Convert OpenMPClauseKind enum constant to a string. */
     const char* OpenMPClauseKind(int64_t);
@@ -2404,7 +2386,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 230
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 237
 namespace stringify {
     /** Convert OpenMPWhenClauseSelectorSet enum constant to a string. */
     const char* OpenMPWhenClauseSelectorSet(int64_t);
@@ -2422,7 +2404,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 241
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 248
 namespace stringify {
     /** Convert OpenMPWhenClauseSelectorParameter enum constant to a string. */
     const char* OpenMPWhenClauseSelectorParameter(int64_t);
@@ -2440,7 +2422,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 250
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 257
 namespace stringify {
     /** Convert OpenMPClauseContextKind enum constant to a string. */
     const char* OpenMPClauseContextKind(int64_t);
@@ -2458,7 +2440,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 263
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 270
 namespace stringify {
     /** Convert OpenMPClauseContextVendor enum constant to a string. */
     const char* OpenMPClauseContextVendor(int64_t);
@@ -2476,7 +2458,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 284
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 291
 namespace stringify {
     /** Convert OpenMPIfClauseModifier enum constant to a string. */
     const char* OpenMPIfClauseModifier(int64_t);
@@ -2494,7 +2476,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 304
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 311
 namespace stringify {
     /** Convert OpenMPDefaultClauseKind enum constant to a string. */
     const char* OpenMPDefaultClauseKind(int64_t);
@@ -2512,7 +2494,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 318
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 325
 namespace stringify {
     /** Convert OpenMPOrderClauseKind enum constant to a string. */
     const char* OpenMPOrderClauseKind(int64_t);
@@ -2530,7 +2512,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 328
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 335
 namespace stringify {
     /** Convert OpenMPProcBindClauseKind enum constant to a string. */
     const char* OpenMPProcBindClauseKind(int64_t);
@@ -2548,7 +2530,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 339
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 346
 namespace stringify {
     /** Convert OpenMPAllocateClauseAllocator enum constant to a string. */
     const char* OpenMPAllocateClauseAllocator(int64_t);
@@ -2566,7 +2548,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 356
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 363
 namespace stringify {
     /** Convert OpenMPAllocatorClauseAllocator enum constant to a string. */
     const char* OpenMPAllocatorClauseAllocator(int64_t);
@@ -2584,7 +2566,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 372
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 379
 namespace stringify {
     /** Convert OpenMPReductionClauseModifier enum constant to a string. */
     const char* OpenMPReductionClauseModifier(int64_t);
@@ -2602,7 +2584,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 383
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 390
 namespace stringify {
     /** Convert OpenMPReductionClauseIdentifier enum constant to a string. */
     const char* OpenMPReductionClauseIdentifier(int64_t);
@@ -2620,7 +2602,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 404
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 411
 namespace stringify {
     /** Convert OpenMPLastprivateClauseModifier enum constant to a string. */
     const char* OpenMPLastprivateClauseModifier(int64_t);
@@ -2638,7 +2620,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 412
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 419
 namespace stringify {
     /** Convert OpenMPLinearClauseStep enum constant to a string. */
     const char* OpenMPLinearClauseStep(int64_t);
@@ -2656,7 +2638,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 423
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 430
 namespace stringify {
     /** Convert OpenMPLinearClauseModifier enum constant to a string. */
     const char* OpenMPLinearClauseModifier(int64_t);
@@ -2674,7 +2656,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 437
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 444
 namespace stringify {
     /** Convert OpenMPScheduleClauseModifier enum constant to a string. */
     const char* OpenMPScheduleClauseModifier(int64_t);
@@ -2692,7 +2674,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 450
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 457
 namespace stringify {
     /** Convert OpenMPScheduleClauseKind enum constant to a string. */
     const char* OpenMPScheduleClauseKind(int64_t);
@@ -2710,7 +2692,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 465
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 472
 namespace stringify {
     /** Convert OpenMPDistScheduleClauseKind enum constant to a string. */
     const char* OpenMPDistScheduleClauseKind(int64_t);
@@ -2728,7 +2710,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 476
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 483
 namespace stringify {
     /** Convert OpenMPBindClauseBinding enum constant to a string. */
     const char* OpenMPBindClauseBinding(int64_t);
@@ -2746,7 +2728,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 489
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 496
 namespace stringify {
     /** Convert OpenMPInitializerClausePriv enum constant to a string. */
     const char* OpenMPInitializerClausePriv(int64_t);
@@ -2764,7 +2746,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 500
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 507
 namespace stringify {
     /** Convert OpenMPAtomicDefaultMemOrderClauseKind enum constant to a string. */
     const char* OpenMPAtomicDefaultMemOrderClauseKind(int64_t);
@@ -2782,7 +2764,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 511
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 518
 namespace stringify {
     /** Convert OpenMPUsesAllocatorsClauseAllocator enum constant to a string. */
     const char* OpenMPUsesAllocatorsClauseAllocator(int64_t);
@@ -2800,7 +2782,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 528
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 535
 namespace stringify {
     /** Convert OpenMPDeviceClauseModifier enum constant to a string. */
     const char* OpenMPDeviceClauseModifier(int64_t);
@@ -2818,7 +2800,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 537
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 544
 namespace stringify {
     /** Convert OpenMPInReductionClauseIdentifier enum constant to a string. */
     const char* OpenMPInReductionClauseIdentifier(int64_t);
@@ -2836,7 +2818,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 557
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 564
 namespace stringify {
     /** Convert OpenMPDependClauseModifier enum constant to a string. */
     const char* OpenMPDependClauseModifier(int64_t);
@@ -2854,7 +2836,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 565
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 572
 namespace stringify {
     /** Convert OpenMPDeclareMapperDirectiveIdentifier enum constant to a string. */
     const char* OpenMPDeclareMapperDirectiveIdentifier(int64_t);
@@ -2872,7 +2854,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 573
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 580
 namespace stringify {
     /** Convert OpenMPDependClauseType enum constant to a string. */
     const char* OpenMPDependClauseType(int64_t);
@@ -2890,7 +2872,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 586
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 593
 namespace stringify {
     /** Convert OpenMPAffinityClauseModifier enum constant to a string. */
     const char* OpenMPAffinityClauseModifier(int64_t);
@@ -2908,7 +2890,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 593
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 600
 namespace stringify {
     /** Convert OpenMPToClauseKind enum constant to a string. */
     const char* OpenMPToClauseKind(int64_t);
@@ -2926,7 +2908,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 600
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 607
 namespace stringify {
     /** Convert OpenMPFromClauseKind enum constant to a string. */
     const char* OpenMPFromClauseKind(int64_t);
@@ -2944,7 +2926,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 607
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 614
 namespace stringify {
     /** Convert OpenMPDefaultmapClauseBehavior enum constant to a string. */
     const char* OpenMPDefaultmapClauseBehavior(int64_t);
@@ -2962,7 +2944,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 622
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 629
 namespace stringify {
     /** Convert OpenMPDefaultmapClauseCategory enum constant to a string. */
     const char* OpenMPDefaultmapClauseCategory(int64_t);
@@ -2980,7 +2962,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 634
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 641
 namespace stringify {
     /** Convert OpenMPDeviceTypeClauseKind enum constant to a string. */
     const char* OpenMPDeviceTypeClauseKind(int64_t);
@@ -2998,7 +2980,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 643
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 650
 namespace stringify {
     /** Convert OpenMPMapClauseModifier enum constant to a string. */
     const char* OpenMPMapClauseModifier(int64_t);
@@ -3016,7 +2998,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 651
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 658
 namespace stringify {
     /** Convert OpenMPMapClauseType enum constant to a string. */
     const char* OpenMPMapClauseType(int64_t);
@@ -3034,7 +3016,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 663
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 670
 namespace stringify {
     /** Convert OpenMPTaskReductionClauseIdentifier enum constant to a string. */
     const char* OpenMPTaskReductionClauseIdentifier(int64_t);
@@ -3052,7 +3034,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 682
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 689
 namespace stringify {
     /** Convert OpenMPDepobjUpdateClauseDependeceType enum constant to a string. */
     const char* OpenMPDepobjUpdateClauseDependeceType(int64_t);
@@ -3358,7 +3340,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/sageInterface/sageInterface.h line 1827
+// /src/frontend/SageIII/sageInterface/sageInterface.h line 1826
 namespace stringify { namespace SageInterface { namespace DeferredTransformation {
     /** Convert SageInterface::DeferredTransformation::TransformationKind enum constant to a string. */
     const char* TransformationKind(int64_t);
@@ -3502,7 +3484,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/OmpAttribute.h line 32
+// /src/frontend/SageIII/ompSupport.h line 32
 namespace stringify { namespace OmpSupport {
     /** Convert OmpSupport::omp_construct_enum enum constant to a string. */
     const char* omp_construct_enum(int64_t);
@@ -4111,24 +4093,6 @@ namespace stringify { namespace Sawyer { namespace Container { namespace Algorit
 namespace Rose {
     std::string stringifySawyerContainerAlgorithmTraversalEvent(int64_t n, const char *strip=NULL, bool canonic=false);
     const std::vector<int64_t>& stringifySawyerContainerAlgorithmTraversalEvent();
-}
-
-// DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/util/Sawyer/Database.h line 293
-namespace stringify { namespace Sawyer { namespace Database { namespace Statement {
-    /** Convert Sawyer::Database::Statement::State enum constant to a string. */
-    const char* State(int64_t);
-
-    /** Convert Sawyer::Database::Statement::State enum constant to a string. */
-    std::string State(int64_t, const std::string &strip);
-
-    /** Return all Sawyer::Database::Statement::State member values as a vector. */
-    const std::vector<int64_t>& State();
-}}}}
-
-namespace Rose {
-    std::string stringifySawyerDatabaseStatementState(int64_t n, const char *strip=NULL, bool canonic=false);
-    const std::vector<int64_t>& stringifySawyerDatabaseStatementState();
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
@@ -6400,7 +6364,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 17
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 17
 namespace stringify {
     /** Convert Cxx_GrammarVariants enum constant to a string. */
     const char* Cxx_GrammarVariants(int64_t);
@@ -6418,7 +6382,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 698
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 703
 namespace stringify {
     /** Convert VariantT enum constant to a string. */
     const char* VariantT(int64_t);
@@ -6436,7 +6400,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 9026
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 9066
 namespace stringify { namespace SgConstVolatileModifier {
     /** Convert SgConstVolatileModifier::cv_modifier_enum enum constant to a string. */
     const char* cv_modifier_enum(int64_t);
@@ -6454,7 +6418,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 9531
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 9571
 namespace stringify { namespace SgStorageModifier {
     /** Convert SgStorageModifier::storage_modifier_enum enum constant to a string. */
     const char* storage_modifier_enum(int64_t);
@@ -6472,7 +6436,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 10133
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 10173
 namespace stringify { namespace SgAccessModifier {
     /** Convert SgAccessModifier::access_modifier_enum enum constant to a string. */
     const char* access_modifier_enum(int64_t);
@@ -6490,7 +6454,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 10636
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 10676
 namespace stringify { namespace SgFunctionModifier {
     /** Convert SgFunctionModifier::function_modifier_enum enum constant to a string. */
     const char* function_modifier_enum(int64_t);
@@ -6508,7 +6472,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 11375
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 11415
 namespace stringify { namespace SgUPC_AccessModifier {
     /** Convert SgUPC_AccessModifier::upc_access_modifier_enum enum constant to a string. */
     const char* upc_access_modifier_enum(int64_t);
@@ -6526,7 +6490,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 11888
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 11928
 namespace stringify { namespace SgSpecialFunctionModifier {
     /** Convert SgSpecialFunctionModifier::special_function_modifier_enum enum constant to a string. */
     const char* special_function_modifier_enum(int64_t);
@@ -6544,7 +6508,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 12406
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 12446
 namespace stringify { namespace SgElaboratedTypeModifier {
     /** Convert SgElaboratedTypeModifier::elaborated_type_modifier_enum enum constant to a string. */
     const char* elaborated_type_modifier_enum(int64_t);
@@ -6562,7 +6526,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 12909
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 12949
 namespace stringify { namespace SgLinkageModifier {
     /** Convert SgLinkageModifier::linkage_modifier_enum enum constant to a string. */
     const char* linkage_modifier_enum(int64_t);
@@ -6580,7 +6544,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 13403
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 13443
 namespace stringify { namespace SgBaseClassModifier {
     /** Convert SgBaseClassModifier::baseclass_modifier_enum enum constant to a string. */
     const char* baseclass_modifier_enum(int64_t);
@@ -6598,7 +6562,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 13898
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 13938
 namespace stringify { namespace SgStructureModifier {
     /** Convert SgStructureModifier::jovial_structure_modifier_enum enum constant to a string. */
     const char* jovial_structure_modifier_enum(int64_t);
@@ -6616,7 +6580,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 14400
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 14440
 namespace stringify { namespace SgTypeModifier {
     /** Convert SgTypeModifier::type_modifier_enum enum constant to a string. */
     const char* type_modifier_enum(int64_t);
@@ -6634,7 +6598,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 14492
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 14532
 namespace stringify { namespace SgTypeModifier {
     /** Convert SgTypeModifier::gnu_extension_machine_mode_enum enum constant to a string. */
     const char* gnu_extension_machine_mode_enum(int64_t);
@@ -6652,7 +6616,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 15279
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 15319
 namespace stringify { namespace SgDeclarationModifier {
     /** Convert SgDeclarationModifier::declaration_modifier_enum enum constant to a string. */
     const char* declaration_modifier_enum(int64_t);
@@ -6670,7 +6634,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 15323
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 15363
 namespace stringify { namespace SgDeclarationModifier {
     /** Convert SgDeclarationModifier::gnu_declaration_visability_enum enum constant to a string. */
     const char* gnu_declaration_visability_enum(int64_t);
@@ -6688,7 +6652,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 16012
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 16052
 namespace stringify { namespace SgOpenclAccessModeModifier {
     /** Convert SgOpenclAccessModeModifier::access_mode_modifier_enum enum constant to a string. */
     const char* access_mode_modifier_enum(int64_t);
@@ -6706,7 +6670,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 20394
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 20434
 namespace stringify { namespace Sg_File_Info {
     /** Convert Sg_File_Info::classifier enum constant to a string. */
     const char* classifier(int64_t);
@@ -6724,7 +6688,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 20659
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 20699
 namespace stringify { namespace Sg_File_Info {
     /** Convert Sg_File_Info::p_fileflags enum constant to a string. */
     const char* p_fileflags(int64_t);
@@ -6742,7 +6706,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 21220
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 21260
 namespace stringify { namespace SgFile {
     /** Convert SgFile::outputFormatOption_enum enum constant to a string. */
     const char* outputFormatOption_enum(int64_t);
@@ -6760,7 +6724,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 21235
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 21275
 namespace stringify { namespace SgFile {
     /** Convert SgFile::languageOption_enum enum constant to a string. */
     const char* languageOption_enum(int64_t);
@@ -6778,7 +6742,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 21246
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 21286
 namespace stringify { namespace SgFile {
     /** Convert SgFile::standard_enum enum constant to a string. */
     const char* standard_enum(int64_t);
@@ -6796,7 +6760,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 24250
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 24290
 namespace stringify { namespace SgProject {
     /** Convert SgProject::template_instantiation_enum enum constant to a string. */
     const char* template_instantiation_enum(int64_t);
@@ -6814,7 +6778,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 26151
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 26182
 namespace stringify { namespace SgUnparse_Info {
     /** Convert SgUnparse_Info::unparse_type_num enum constant to a string. */
     const char* unparse_type_num(int64_t);
@@ -6832,7 +6796,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 26328
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 26359
 namespace stringify { namespace SgUnparse_Info {
     /** Convert SgUnparse_Info::access_attr_enum enum constant to a string. */
     const char* access_attr_enum(int64_t);
@@ -6850,7 +6814,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 29268
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 29299
 namespace stringify { namespace SgTemplateParameter {
     /** Convert SgTemplateParameter::template_parameter_enum enum constant to a string. */
     const char* template_parameter_enum(int64_t);
@@ -6868,7 +6832,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 29804
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 29835
 namespace stringify { namespace SgTemplateArgument {
     /** Convert SgTemplateArgument::template_argument_enum enum constant to a string. */
     const char* template_argument_enum(int64_t);
@@ -6886,7 +6850,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 33782
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 33813
 namespace stringify { namespace SgGraph {
     /** Convert SgGraph::GraphEdgeType enum constant to a string. */
     const char* GraphEdgeType(int64_t);
@@ -6904,7 +6868,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 33796
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 33827
 namespace stringify { namespace SgGraph {
     /** Convert SgGraph::GraphProperties enum constant to a string. */
     const char* GraphProperties(int64_t);
@@ -6922,7 +6886,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 43433
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 43464
 namespace stringify { namespace SgDataStatementValue {
     /** Convert SgDataStatementValue::data_statement_value_enum enum constant to a string. */
     const char* data_statement_value_enum(int64_t);
@@ -6940,7 +6904,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 44524
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 44555
 namespace stringify { namespace SgType {
     /** Convert SgType::useWithinDeclarationEnum enum constant to a string. */
     const char* useWithinDeclarationEnum(int64_t);
@@ -6958,7 +6922,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 44542
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 44573
 namespace stringify { namespace SgType {
     /** Convert SgType::fortran_attribute_specifiers_enum enum constant to a string. */
     const char* fortran_attribute_specifiers_enum(int64_t);
@@ -6976,7 +6940,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 61960
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 61991
 namespace stringify { namespace SgModifierType {
     /** Convert SgModifierType::modifiers enum constant to a string. */
     const char* modifiers(int64_t);
@@ -6994,7 +6958,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 62014
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 62045
 namespace stringify { namespace SgModifierType {
     /** Convert SgModifierType::type_modifier_enum enum constant to a string. */
     const char* type_modifier_enum(int64_t);
@@ -7012,7 +6976,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 62031
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 62062
 namespace stringify { namespace SgModifierType {
     /** Convert SgModifierType::storage_modifier_enum enum constant to a string. */
     const char* storage_modifier_enum(int64_t);
@@ -7030,7 +6994,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 62053
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 62084
 namespace stringify { namespace SgModifierType {
     /** Convert SgModifierType::access_modifier_enum enum constant to a string. */
     const char* access_modifier_enum(int64_t);
@@ -7048,7 +7012,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 63231
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 63262
 namespace stringify { namespace SgMemberFunctionType {
     /** Convert SgMemberFunctionType::mfunc_specifier_enum enum constant to a string. */
     const char* mfunc_specifier_enum(int64_t);
@@ -7066,7 +7030,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 74876
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 74907
 namespace stringify { namespace SgLocatedNode {
     /** Convert SgLocatedNode::PositionOfPreprocessingInfoInListType enum constant to a string. */
     const char* PositionOfPreprocessingInfoInListType(int64_t);
@@ -7084,7 +7048,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 75639
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 75670
 namespace stringify { namespace SgToken {
     /** Convert SgToken::ROSE_Fortran_Keywords enum constant to a string. */
     const char* ROSE_Fortran_Keywords(int64_t);
@@ -7102,7 +7066,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 75806
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 75837
 namespace stringify { namespace SgToken {
     /** Convert SgToken::ROSE_C_CXX_keywords enum constant to a string. */
     const char* ROSE_C_CXX_keywords(int64_t);
@@ -7120,7 +7084,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 75875
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 75906
 namespace stringify { namespace SgToken {
     /** Convert SgToken::ROSE_Fortran_Operators enum constant to a string. */
     const char* ROSE_Fortran_Operators(int64_t);
@@ -7138,7 +7102,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 75902
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 75933
 namespace stringify { namespace SgToken {
     /** Convert SgToken::ROSE_C_CXX_Operators enum constant to a string. */
     const char* ROSE_C_CXX_Operators(int64_t);
@@ -7156,7 +7120,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 75982
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 76013
 namespace stringify { namespace SgToken {
     /** Convert SgToken::ROSE_Fortran_Additional_Info enum constant to a string. */
     const char* ROSE_Fortran_Additional_Info(int64_t);
@@ -7174,7 +7138,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 77348
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 77379
 namespace stringify { namespace SgInitializedName {
     /** Convert SgInitializedName::preinitialization_enum enum constant to a string. */
     const char* preinitialization_enum(int64_t);
@@ -7192,7 +7156,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 77363
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 77394
 namespace stringify { namespace SgInitializedName {
     /** Convert SgInitializedName::asm_register_name_enum enum constant to a string. */
     const char* asm_register_name_enum(int64_t);
@@ -7210,7 +7174,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 77430
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 77461
 namespace stringify { namespace SgInitializedName {
     /** Convert SgInitializedName::gnu_variable_attribute_enum enum constant to a string. */
     const char* gnu_variable_attribute_enum(int64_t);
@@ -7228,7 +7192,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 77465
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 77496
 namespace stringify { namespace SgInitializedName {
     /** Convert SgInitializedName::excess_specifier_enum enum constant to a string. */
     const char* excess_specifier_enum(int64_t);
@@ -7246,7 +7210,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 79945
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 79976
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_default_option_enum enum constant to a string. */
     const char* omp_default_option_enum(int64_t);
@@ -7264,7 +7228,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 79958
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 79989
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_schedule_kind_enum enum constant to a string. */
     const char* omp_schedule_kind_enum(int64_t);
@@ -7282,7 +7246,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 79967
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 79998
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_schedule_modifier_enum enum constant to a string. */
     const char* omp_schedule_modifier_enum(int64_t);
@@ -7300,7 +7264,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 79974
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80005
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_in_reduction_identifier_enum enum constant to a string. */
     const char* omp_in_reduction_identifier_enum(int64_t);
@@ -7318,7 +7282,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80001
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80032
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_task_reduction_identifier_enum enum constant to a string. */
     const char* omp_task_reduction_identifier_enum(int64_t);
@@ -7336,7 +7300,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80028
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80059
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_defaultmap_behavior_enum enum constant to a string. */
     const char* omp_defaultmap_behavior_enum(int64_t);
@@ -7354,7 +7318,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80040
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80071
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_defaultmap_category_enum enum constant to a string. */
     const char* omp_defaultmap_category_enum(int64_t);
@@ -7372,7 +7336,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80049
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80080
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_reduction_identifier_enum enum constant to a string. */
     const char* omp_reduction_identifier_enum(int64_t);
@@ -7390,7 +7354,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80079
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80110
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_reduction_modifier_enum enum constant to a string. */
     const char* omp_reduction_modifier_enum(int64_t);
@@ -7408,7 +7372,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80087
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80118
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_linear_modifier_enum enum constant to a string. */
     const char* omp_linear_modifier_enum(int64_t);
@@ -7426,7 +7390,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80095
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80126
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_device_modifier_enum enum constant to a string. */
     const char* omp_device_modifier_enum(int64_t);
@@ -7444,7 +7408,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80102
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80133
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_lastprivate_modifier_enum enum constant to a string. */
     const char* omp_lastprivate_modifier_enum(int64_t);
@@ -7462,7 +7426,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80108
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80139
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_when_context_kind_enum enum constant to a string. */
     const char* omp_when_context_kind_enum(int64_t);
@@ -7480,7 +7444,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80119
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80150
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_when_context_vendor_enum enum constant to a string. */
     const char* omp_when_context_vendor_enum(int64_t);
@@ -7498,7 +7462,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80136
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80167
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_allocate_modifier_enum enum constant to a string. */
     const char* omp_allocate_modifier_enum(int64_t);
@@ -7516,7 +7480,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80152
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80183
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_allocator_modifier_enum enum constant to a string. */
     const char* omp_allocator_modifier_enum(int64_t);
@@ -7534,7 +7498,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80168
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80199
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_uses_allocators_allocator_enum enum constant to a string. */
     const char* omp_uses_allocators_allocator_enum(int64_t);
@@ -7552,7 +7516,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80184
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80215
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_to_kind_enum enum constant to a string. */
     const char* omp_to_kind_enum(int64_t);
@@ -7570,7 +7534,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80190
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80221
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_from_kind_enum enum constant to a string. */
     const char* omp_from_kind_enum(int64_t);
@@ -7588,7 +7552,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80196
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80227
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_dependence_type_enum enum constant to a string. */
     const char* omp_dependence_type_enum(int64_t);
@@ -7606,7 +7570,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80208
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80239
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_depend_modifier_enum enum constant to a string. */
     const char* omp_depend_modifier_enum(int64_t);
@@ -7624,7 +7588,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80214
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80245
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_affinity_modifier_enum enum constant to a string. */
     const char* omp_affinity_modifier_enum(int64_t);
@@ -7642,7 +7606,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80220
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80251
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::upir_target_type_enum enum constant to a string. */
     const char* upir_target_type_enum(int64_t);
@@ -7660,7 +7624,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80228
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80259
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::upir_data_sharing_enum enum constant to a string. */
     const char* upir_data_sharing_enum(int64_t);
@@ -7678,7 +7642,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80238
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80269
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::upir_data_mapping_enum enum constant to a string. */
     const char* upir_data_mapping_enum(int64_t);
@@ -7696,7 +7660,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80248
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80279
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::upir_property_visibility_enum enum constant to a string. */
     const char* upir_property_visibility_enum(int64_t);
@@ -7714,7 +7678,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80255
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80286
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::upir_data_access_enum enum constant to a string. */
     const char* upir_data_access_enum(int64_t);
@@ -7732,7 +7696,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80263
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80294
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::upir_data_distribution_pattern_enum enum constant to a string. */
     const char* upir_data_distribution_pattern_enum(int64_t);
@@ -7750,7 +7714,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80272
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80303
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::upir_data_allocator_enum enum constant to a string. */
     const char* upir_data_allocator_enum(int64_t);
@@ -7768,7 +7732,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80279
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80310
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::upir_data_deallocator_enum enum constant to a string. */
     const char* upir_data_deallocator_enum(int64_t);
@@ -7786,7 +7750,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80287
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80318
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_map_operator_enum enum constant to a string. */
     const char* omp_map_operator_enum(int64_t);
@@ -7804,7 +7768,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80298
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80329
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_map_dist_data_enum enum constant to a string. */
     const char* omp_map_dist_data_enum(int64_t);
@@ -7822,7 +7786,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80308
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80339
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_proc_bind_policy_enum enum constant to a string. */
     const char* omp_proc_bind_policy_enum(int64_t);
@@ -7840,7 +7804,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80317
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80348
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_bind_binding_enum enum constant to a string. */
     const char* omp_bind_binding_enum(int64_t);
@@ -7858,7 +7822,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80325
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80356
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_atomic_default_mem_order_kind_enum enum constant to a string. */
     const char* omp_atomic_default_mem_order_kind_enum(int64_t);
@@ -7876,7 +7840,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80333
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80364
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_order_kind_enum enum constant to a string. */
     const char* omp_order_kind_enum(int64_t);
@@ -7894,7 +7858,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80339
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80370
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_dist_schedule_kind_enum enum constant to a string. */
     const char* omp_dist_schedule_kind_enum(int64_t);
@@ -7912,7 +7876,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80345
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80376
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_atomic_clause_enum enum constant to a string. */
     const char* omp_atomic_clause_enum(int64_t);
@@ -7930,7 +7894,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80354
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80385
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_if_modifier_enum enum constant to a string. */
     const char* omp_if_modifier_enum(int64_t);
@@ -7948,7 +7912,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80369
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80400
 namespace stringify { namespace SgOmpClause {
     /** Convert SgOmpClause::omp_depobj_modifier_enum enum constant to a string. */
     const char* omp_depobj_modifier_enum(int64_t);
@@ -7966,7 +7930,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 132782
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 134181
 namespace stringify { namespace SgForAllStatement {
     /** Convert SgForAllStatement::forall_statement_kind_enum enum constant to a string. */
     const char* forall_statement_kind_enum(int64_t);
@@ -7984,7 +7948,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 136235
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 137634
 namespace stringify { namespace SgDeclarationStatement {
     /** Convert SgDeclarationStatement::template_specialization_enum enum constant to a string. */
     const char* template_specialization_enum(int64_t);
@@ -8002,7 +7966,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 136250
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 137649
 namespace stringify { namespace SgDeclarationStatement {
     /** Convert SgDeclarationStatement::gnu_extension_visability_attribute_enum enum constant to a string. */
     const char* gnu_extension_visability_attribute_enum(int64_t);
@@ -8020,7 +7984,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 137663
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 139062
 namespace stringify { namespace SgVariableDeclaration {
     /** Convert SgVariableDeclaration::gnu_extension_declaration_attributes_enum enum constant to a string. */
     const char* gnu_extension_declaration_attributes_enum(int64_t);
@@ -8038,7 +8002,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 141898
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 143297
 namespace stringify { namespace SgAttributeSpecificationStatement {
     /** Convert SgAttributeSpecificationStatement::attribute_spec_enum enum constant to a string. */
     const char* attribute_spec_enum(int64_t);
@@ -8056,7 +8020,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 142900
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 144299
 namespace stringify { namespace SgTemplateDeclaration {
     /** Convert SgTemplateDeclaration::template_type_enum enum constant to a string. */
     const char* template_type_enum(int64_t);
@@ -8074,7 +8038,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 145814
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 147213
 namespace stringify { namespace SgInterfaceStatement {
     /** Convert SgInterfaceStatement::generic_spec_enum enum constant to a string. */
     const char* generic_spec_enum(int64_t);
@@ -8092,7 +8056,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 150818
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 152217
 namespace stringify { namespace SgClassDeclaration {
     /** Convert SgClassDeclaration::class_types enum constant to a string. */
     const char* class_types(int64_t);
@@ -8110,7 +8074,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 151506
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 152905
 namespace stringify { namespace SgTemplateClassDeclaration {
     /** Convert SgTemplateClassDeclaration::class_types enum constant to a string. */
     const char* class_types(int64_t);
@@ -8128,7 +8092,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 153451
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 154850
 namespace stringify { namespace SgImplicitStatement {
     /** Convert SgImplicitStatement::implicit_spec_enum enum constant to a string. */
     const char* implicit_spec_enum(int64_t);
@@ -8146,7 +8110,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 159290
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 160689
 namespace stringify { namespace SgProcedureHeaderStatement {
     /** Convert SgProcedureHeaderStatement::subprogram_kind_enum enum constant to a string. */
     const char* subprogram_kind_enum(int64_t);
@@ -8164,7 +8128,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 179991
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 181390
 namespace stringify { namespace SgProcessControlStatement {
     /** Convert SgProcessControlStatement::control_enum enum constant to a string. */
     const char* control_enum(int64_t);
@@ -8182,7 +8146,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 180481
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 181880
 namespace stringify { namespace SgIOStatement {
     /** Convert SgIOStatement::io_statement_enum enum constant to a string. */
     const char* io_statement_enum(int64_t);
@@ -8200,7 +8164,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 224760
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 227031
 namespace stringify { namespace SgImageControlStatement {
     /** Convert SgImageControlStatement::image_control_statement_enum enum constant to a string. */
     const char* image_control_statement_enum(int64_t);
@@ -8218,7 +8182,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 228621
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 230892
 namespace stringify { namespace SgUnaryOp {
     /** Convert SgUnaryOp::Sgop_mode enum constant to a string. */
     const char* Sgop_mode(int64_t);
@@ -8236,7 +8200,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 233190
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 235461
 namespace stringify { namespace SgCastExp {
     /** Convert SgCastExp::cast_type_enum enum constant to a string. */
     const char* cast_type_enum(int64_t);
@@ -8254,7 +8218,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 233769
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 236040
 namespace stringify { namespace SgThrowOp {
     /** Convert SgThrowOp::e_throw_kind enum constant to a string. */
     const char* e_throw_kind(int64_t);
@@ -8272,7 +8236,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 303464
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 305735
 namespace stringify { namespace SgAsmOp {
     /** Convert SgAsmOp::asm_operand_modifier_enum enum constant to a string. */
     const char* asm_operand_modifier_enum(int64_t);
@@ -8290,7 +8254,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 303483
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 305754
 namespace stringify { namespace SgAsmOp {
     /** Convert SgAsmOp::asm_operand_constraint_enum enum constant to a string. */
     const char* asm_operand_constraint_enum(int64_t);
@@ -8308,7 +8272,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 328020
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 330291
 namespace stringify { namespace SgLabelSymbol {
     /** Convert SgLabelSymbol::label_type_enum enum constant to a string. */
     const char* label_type_enum(int64_t);
@@ -8326,7 +8290,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 3
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 3
 namespace stringify {
     /** Convert E_SgSourceFile enum constant to a string. */
     const char* E_SgSourceFile(int64_t);
@@ -8344,7 +8308,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 6
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 6
 namespace stringify {
     /** Convert E_SgUnknownFile enum constant to a string. */
     const char* E_SgUnknownFile(int64_t);
@@ -8362,7 +8326,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 9
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 9
 namespace stringify {
     /** Convert E_SgProject enum constant to a string. */
     const char* E_SgProject(int64_t);
@@ -8380,7 +8344,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 12
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 12
 namespace stringify {
     /** Convert E_SgExpBaseClass enum constant to a string. */
     const char* E_SgExpBaseClass(int64_t);
@@ -8398,7 +8362,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 15
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 15
 namespace stringify {
     /** Convert E_SgNonrealBaseClass enum constant to a string. */
     const char* E_SgNonrealBaseClass(int64_t);
@@ -8416,7 +8380,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 18
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 18
 namespace stringify {
     /** Convert E_SgBaseClass enum constant to a string. */
     const char* E_SgBaseClass(int64_t);
@@ -8434,7 +8398,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 21
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 21
 namespace stringify {
     /** Convert E_SgTemplateParameter enum constant to a string. */
     const char* E_SgTemplateParameter(int64_t);
@@ -8452,7 +8416,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 24
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 24
 namespace stringify {
     /** Convert E_SgTemplateArgument enum constant to a string. */
     const char* E_SgTemplateArgument(int64_t);
@@ -8470,7 +8434,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 27
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 27
 namespace stringify {
     /** Convert E_SgDirectory enum constant to a string. */
     const char* E_SgDirectory(int64_t);
@@ -8488,7 +8452,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 30
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 30
 namespace stringify {
     /** Convert E_SgFileList enum constant to a string. */
     const char* E_SgFileList(int64_t);
@@ -8506,7 +8470,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 33
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 33
 namespace stringify {
     /** Convert E_SgDirectoryList enum constant to a string. */
     const char* E_SgDirectoryList(int64_t);
@@ -8524,7 +8488,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 36
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 36
 namespace stringify {
     /** Convert E_SgTemplateArgumentList enum constant to a string. */
     const char* E_SgTemplateArgumentList(int64_t);
@@ -8542,7 +8506,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 39
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 39
 namespace stringify {
     /** Convert E_SgTemplateParameterList enum constant to a string. */
     const char* E_SgTemplateParameterList(int64_t);
@@ -8560,7 +8524,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 42
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 42
 namespace stringify {
     /** Convert E_SgIncludeFile enum constant to a string. */
     const char* E_SgIncludeFile(int64_t);
@@ -8578,7 +8542,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 45
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 45
 namespace stringify {
     /** Convert E_SgTypeUnknown enum constant to a string. */
     const char* E_SgTypeUnknown(int64_t);
@@ -8596,7 +8560,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 48
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 48
 namespace stringify {
     /** Convert E_SgTypeChar enum constant to a string. */
     const char* E_SgTypeChar(int64_t);
@@ -8614,7 +8578,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 51
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 51
 namespace stringify {
     /** Convert E_SgTypeSignedChar enum constant to a string. */
     const char* E_SgTypeSignedChar(int64_t);
@@ -8632,7 +8596,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 54
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 54
 namespace stringify {
     /** Convert E_SgTypeUnsignedChar enum constant to a string. */
     const char* E_SgTypeUnsignedChar(int64_t);
@@ -8650,7 +8614,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 57
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 57
 namespace stringify {
     /** Convert E_SgTypeShort enum constant to a string. */
     const char* E_SgTypeShort(int64_t);
@@ -8668,7 +8632,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 60
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 60
 namespace stringify {
     /** Convert E_SgTypeSignedShort enum constant to a string. */
     const char* E_SgTypeSignedShort(int64_t);
@@ -8686,7 +8650,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 63
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 63
 namespace stringify {
     /** Convert E_SgTypeUnsignedShort enum constant to a string. */
     const char* E_SgTypeUnsignedShort(int64_t);
@@ -8704,7 +8668,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 66
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 66
 namespace stringify {
     /** Convert E_SgTypeInt enum constant to a string. */
     const char* E_SgTypeInt(int64_t);
@@ -8722,7 +8686,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 69
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 69
 namespace stringify {
     /** Convert E_SgTypeSignedInt enum constant to a string. */
     const char* E_SgTypeSignedInt(int64_t);
@@ -8740,7 +8704,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 72
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 72
 namespace stringify {
     /** Convert E_SgTypeUnsignedInt enum constant to a string. */
     const char* E_SgTypeUnsignedInt(int64_t);
@@ -8758,7 +8722,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 75
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 75
 namespace stringify {
     /** Convert E_SgTypeLong enum constant to a string. */
     const char* E_SgTypeLong(int64_t);
@@ -8776,7 +8740,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 78
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 78
 namespace stringify {
     /** Convert E_SgTypeSignedLong enum constant to a string. */
     const char* E_SgTypeSignedLong(int64_t);
@@ -8794,7 +8758,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 81
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 81
 namespace stringify {
     /** Convert E_SgTypeUnsignedLong enum constant to a string. */
     const char* E_SgTypeUnsignedLong(int64_t);
@@ -8812,7 +8776,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 84
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 84
 namespace stringify {
     /** Convert E_SgTypeVoid enum constant to a string. */
     const char* E_SgTypeVoid(int64_t);
@@ -8830,7 +8794,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 87
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 87
 namespace stringify {
     /** Convert E_SgTypeGlobalVoid enum constant to a string. */
     const char* E_SgTypeGlobalVoid(int64_t);
@@ -8848,7 +8812,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 90
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 90
 namespace stringify {
     /** Convert E_SgTypeWchar enum constant to a string. */
     const char* E_SgTypeWchar(int64_t);
@@ -8866,7 +8830,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 93
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 93
 namespace stringify {
     /** Convert E_SgTypeFloat enum constant to a string. */
     const char* E_SgTypeFloat(int64_t);
@@ -8884,7 +8848,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 96
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 96
 namespace stringify {
     /** Convert E_SgTypeDouble enum constant to a string. */
     const char* E_SgTypeDouble(int64_t);
@@ -8902,7 +8866,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 99
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 99
 namespace stringify {
     /** Convert E_SgTypeLongLong enum constant to a string. */
     const char* E_SgTypeLongLong(int64_t);
@@ -8920,7 +8884,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 102
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 102
 namespace stringify {
     /** Convert E_SgTypeSignedLongLong enum constant to a string. */
     const char* E_SgTypeSignedLongLong(int64_t);
@@ -8938,7 +8902,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 105
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 105
 namespace stringify {
     /** Convert E_SgTypeUnsignedLongLong enum constant to a string. */
     const char* E_SgTypeUnsignedLongLong(int64_t);
@@ -8956,7 +8920,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 108
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 108
 namespace stringify {
     /** Convert E_SgTypeSigned128bitInteger enum constant to a string. */
     const char* E_SgTypeSigned128bitInteger(int64_t);
@@ -8974,7 +8938,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 111
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 111
 namespace stringify {
     /** Convert E_SgTypeUnsigned128bitInteger enum constant to a string. */
     const char* E_SgTypeUnsigned128bitInteger(int64_t);
@@ -8992,7 +8956,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 114
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 114
 namespace stringify {
     /** Convert E_SgTypeFloat80 enum constant to a string. */
     const char* E_SgTypeFloat80(int64_t);
@@ -9010,7 +8974,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 117
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 117
 namespace stringify {
     /** Convert E_SgTypeLongDouble enum constant to a string. */
     const char* E_SgTypeLongDouble(int64_t);
@@ -9028,7 +8992,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 120
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 120
 namespace stringify {
     /** Convert E_SgTypeString enum constant to a string. */
     const char* E_SgTypeString(int64_t);
@@ -9046,7 +9010,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 123
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 123
 namespace stringify {
     /** Convert E_SgTypeBool enum constant to a string. */
     const char* E_SgTypeBool(int64_t);
@@ -9064,7 +9028,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 126
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 126
 namespace stringify {
     /** Convert E_SgPointerMemberType enum constant to a string. */
     const char* E_SgPointerMemberType(int64_t);
@@ -9082,7 +9046,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 129
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 129
 namespace stringify {
     /** Convert E_SgPointerType enum constant to a string. */
     const char* E_SgPointerType(int64_t);
@@ -9100,7 +9064,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 132
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 132
 namespace stringify {
     /** Convert E_SgReferenceType enum constant to a string. */
     const char* E_SgReferenceType(int64_t);
@@ -9118,7 +9082,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 135
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 135
 namespace stringify {
     /** Convert E_SgClassType enum constant to a string. */
     const char* E_SgClassType(int64_t);
@@ -9136,7 +9100,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 138
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 138
 namespace stringify {
     /** Convert E_SgEnumType enum constant to a string. */
     const char* E_SgEnumType(int64_t);
@@ -9154,7 +9118,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 141
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 141
 namespace stringify {
     /** Convert E_SgTypedefType enum constant to a string. */
     const char* E_SgTypedefType(int64_t);
@@ -9172,7 +9136,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 144
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 144
 namespace stringify {
     /** Convert E_SgNonrealType enum constant to a string. */
     const char* E_SgNonrealType(int64_t);
@@ -9190,7 +9154,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 147
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 147
 namespace stringify {
     /** Convert E_SgNamedType enum constant to a string. */
     const char* E_SgNamedType(int64_t);
@@ -9208,7 +9172,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 150
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 150
 namespace stringify {
     /** Convert E_SgModifierType enum constant to a string. */
     const char* E_SgModifierType(int64_t);
@@ -9226,7 +9190,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 153
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 153
 namespace stringify {
     /** Convert E_SgPartialFunctionModifierType enum constant to a string. */
     const char* E_SgPartialFunctionModifierType(int64_t);
@@ -9244,7 +9208,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 156
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 156
 namespace stringify {
     /** Convert E_SgPartialFunctionType enum constant to a string. */
     const char* E_SgPartialFunctionType(int64_t);
@@ -9262,7 +9226,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 159
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 159
 namespace stringify {
     /** Convert E_SgMemberFunctionType enum constant to a string. */
     const char* E_SgMemberFunctionType(int64_t);
@@ -9280,7 +9244,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 162
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 162
 namespace stringify {
     /** Convert E_SgFunctionType enum constant to a string. */
     const char* E_SgFunctionType(int64_t);
@@ -9298,7 +9262,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 165
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 165
 namespace stringify {
     /** Convert E_SgArrayType enum constant to a string. */
     const char* E_SgArrayType(int64_t);
@@ -9316,7 +9280,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 168
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 168
 namespace stringify {
     /** Convert E_SgTypeEllipse enum constant to a string. */
     const char* E_SgTypeEllipse(int64_t);
@@ -9334,7 +9298,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 171
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 171
 namespace stringify {
     /** Convert E_SgTemplateType enum constant to a string. */
     const char* E_SgTemplateType(int64_t);
@@ -9352,7 +9316,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 174
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 174
 namespace stringify {
     /** Convert E_SgQualifiedNameType enum constant to a string. */
     const char* E_SgQualifiedNameType(int64_t);
@@ -9370,7 +9334,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 177
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 177
 namespace stringify {
     /** Convert E_SgTypeComplex enum constant to a string. */
     const char* E_SgTypeComplex(int64_t);
@@ -9388,7 +9352,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 180
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 180
 namespace stringify {
     /** Convert E_SgTypeImaginary enum constant to a string. */
     const char* E_SgTypeImaginary(int64_t);
@@ -9406,7 +9370,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 183
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 183
 namespace stringify {
     /** Convert E_SgTypeDefault enum constant to a string. */
     const char* E_SgTypeDefault(int64_t);
@@ -9424,7 +9388,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 186
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 186
 namespace stringify {
     /** Convert E_SgTypeCAFTeam enum constant to a string. */
     const char* E_SgTypeCAFTeam(int64_t);
@@ -9442,7 +9406,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 189
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 189
 namespace stringify {
     /** Convert E_SgTypeCrayPointer enum constant to a string. */
     const char* E_SgTypeCrayPointer(int64_t);
@@ -9460,7 +9424,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 192
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 192
 namespace stringify {
     /** Convert E_SgTypeLabel enum constant to a string. */
     const char* E_SgTypeLabel(int64_t);
@@ -9478,7 +9442,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 195
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 195
 namespace stringify {
     /** Convert E_SgRvalueReferenceType enum constant to a string. */
     const char* E_SgRvalueReferenceType(int64_t);
@@ -9496,7 +9460,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 198
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 198
 namespace stringify {
     /** Convert E_SgTypeNullptr enum constant to a string. */
     const char* E_SgTypeNullptr(int64_t);
@@ -9514,7 +9478,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 201
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 201
 namespace stringify {
     /** Convert E_SgDeclType enum constant to a string. */
     const char* E_SgDeclType(int64_t);
@@ -9532,7 +9496,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 204
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 204
 namespace stringify {
     /** Convert E_SgTypeOfType enum constant to a string. */
     const char* E_SgTypeOfType(int64_t);
@@ -9550,7 +9514,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 207
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 207
 namespace stringify {
     /** Convert E_SgTypeMatrix enum constant to a string. */
     const char* E_SgTypeMatrix(int64_t);
@@ -9568,7 +9532,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 210
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 210
 namespace stringify {
     /** Convert E_SgTypeTuple enum constant to a string. */
     const char* E_SgTypeTuple(int64_t);
@@ -9586,7 +9550,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 213
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 213
 namespace stringify {
     /** Convert E_SgTypeChar16 enum constant to a string. */
     const char* E_SgTypeChar16(int64_t);
@@ -9604,7 +9568,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 216
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 216
 namespace stringify {
     /** Convert E_SgTypeChar32 enum constant to a string. */
     const char* E_SgTypeChar32(int64_t);
@@ -9622,7 +9586,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 219
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 219
 namespace stringify {
     /** Convert E_SgTypeFloat128 enum constant to a string. */
     const char* E_SgTypeFloat128(int64_t);
@@ -9640,7 +9604,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 222
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 222
 namespace stringify {
     /** Convert E_SgTypeFixed enum constant to a string. */
     const char* E_SgTypeFixed(int64_t);
@@ -9658,7 +9622,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 225
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 225
 namespace stringify {
     /** Convert E_SgAutoType enum constant to a string. */
     const char* E_SgAutoType(int64_t);
@@ -9676,7 +9640,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 228
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 228
 namespace stringify {
     /** Convert E_SgType enum constant to a string. */
     const char* E_SgType(int64_t);
@@ -9694,7 +9658,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 231
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 231
 namespace stringify {
     /** Convert E_SgCommonBlockObject enum constant to a string. */
     const char* E_SgCommonBlockObject(int64_t);
@@ -9712,7 +9676,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 234
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 234
 namespace stringify {
     /** Convert E_SgInitializedName enum constant to a string. */
     const char* E_SgInitializedName(int64_t);
@@ -9730,7 +9694,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 237
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 237
 namespace stringify {
     /** Convert E_SgOmpDefaultClause enum constant to a string. */
     const char* E_SgOmpDefaultClause(int64_t);
@@ -9748,7 +9712,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 240
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 240
 namespace stringify {
     /** Convert E_SgOmpDistScheduleClause enum constant to a string. */
     const char* E_SgOmpDistScheduleClause(int64_t);
@@ -9766,7 +9730,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 243
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 243
 namespace stringify {
     /** Convert E_SgOmpOrderedClause enum constant to a string. */
     const char* E_SgOmpOrderedClause(int64_t);
@@ -9784,7 +9748,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 246
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 246
 namespace stringify {
     /** Convert E_SgOmpCollapseClause enum constant to a string. */
     const char* E_SgOmpCollapseClause(int64_t);
@@ -9802,7 +9766,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 249
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 249
 namespace stringify {
     /** Convert E_SgOmpIfClause enum constant to a string. */
     const char* E_SgOmpIfClause(int64_t);
@@ -9820,7 +9784,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 252
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 252
 namespace stringify {
     /** Convert E_SgUpirNumUnitsField enum constant to a string. */
     const char* E_SgUpirNumUnitsField(int64_t);
@@ -9838,7 +9802,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 255
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 255
 namespace stringify {
     /** Convert E_SgOmpNumTeamsClause enum constant to a string. */
     const char* E_SgOmpNumTeamsClause(int64_t);
@@ -9856,7 +9820,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 258
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 258
 namespace stringify {
     /** Convert E_SgOmpThreadLimitClause enum constant to a string. */
     const char* E_SgOmpThreadLimitClause(int64_t);
@@ -9874,7 +9838,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 261
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 261
 namespace stringify {
     /** Convert E_SgOmpDeviceClause enum constant to a string. */
     const char* E_SgOmpDeviceClause(int64_t);
@@ -9892,7 +9856,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 264
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 264
 namespace stringify {
     /** Convert E_SgOmpHintClause enum constant to a string. */
     const char* E_SgOmpHintClause(int64_t);
@@ -9910,7 +9874,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 267
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 267
 namespace stringify {
     /** Convert E_SgOmpGrainsizeClause enum constant to a string. */
     const char* E_SgOmpGrainsizeClause(int64_t);
@@ -9928,7 +9892,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 270
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 270
 namespace stringify {
     /** Convert E_SgOmpNumTasksClause enum constant to a string. */
     const char* E_SgOmpNumTasksClause(int64_t);
@@ -9946,7 +9910,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 273
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 273
 namespace stringify {
     /** Convert E_SgOmpDetachClause enum constant to a string. */
     const char* E_SgOmpDetachClause(int64_t);
@@ -9964,7 +9928,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 276
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 276
 namespace stringify {
     /** Convert E_SgOmpSafelenClause enum constant to a string. */
     const char* E_SgOmpSafelenClause(int64_t);
@@ -9982,7 +9946,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 279
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 279
 namespace stringify {
     /** Convert E_SgOmpSimdlenClause enum constant to a string. */
     const char* E_SgOmpSimdlenClause(int64_t);
@@ -10000,7 +9964,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 282
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 282
 namespace stringify {
     /** Convert E_SgOmpFinalClause enum constant to a string. */
     const char* E_SgOmpFinalClause(int64_t);
@@ -10018,7 +9982,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 285
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 285
 namespace stringify {
     /** Convert E_SgOmpPriorityClause enum constant to a string. */
     const char* E_SgOmpPriorityClause(int64_t);
@@ -10036,7 +10000,43 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 288
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 288
+namespace stringify {
+    /** Convert E_SgOmpPartialClause enum constant to a string. */
+    const char* E_SgOmpPartialClause(int64_t);
+
+    /** Convert E_SgOmpPartialClause enum constant to a string. */
+    std::string E_SgOmpPartialClause(int64_t, const std::string &strip);
+
+    /** Return all E_SgOmpPartialClause member values as a vector. */
+    const std::vector<int64_t>& E_SgOmpPartialClause();
+}
+
+namespace Rose {
+    std::string stringifyE_SgOmpPartialClause(int64_t n, const char *strip=NULL, bool canonic=false);
+    const std::vector<int64_t>& stringifyE_SgOmpPartialClause();
+}
+
+// DO NOT EDIT -- This implementation was automatically generated for the enum defined at
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 291
+namespace stringify {
+    /** Convert E_SgOmpSizesClause enum constant to a string. */
+    const char* E_SgOmpSizesClause(int64_t);
+
+    /** Convert E_SgOmpSizesClause enum constant to a string. */
+    std::string E_SgOmpSizesClause(int64_t, const std::string &strip);
+
+    /** Return all E_SgOmpSizesClause member values as a vector. */
+    const std::vector<int64_t>& E_SgOmpSizesClause();
+}
+
+namespace Rose {
+    std::string stringifyE_SgOmpSizesClause(int64_t n, const char *strip=NULL, bool canonic=false);
+    const std::vector<int64_t>& stringifyE_SgOmpSizesClause();
+}
+
+// DO NOT EDIT -- This implementation was automatically generated for the enum defined at
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 294
 namespace stringify {
     /** Convert E_SgOmpExpressionClause enum constant to a string. */
     const char* E_SgOmpExpressionClause(int64_t);
@@ -10054,7 +10054,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 291
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 297
 namespace stringify {
     /** Convert E_SgOmpExtImplementationDefinedRequirementClause enum constant to a string. */
     const char* E_SgOmpExtImplementationDefinedRequirementClause(int64_t);
@@ -10072,7 +10072,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 294
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 300
 namespace stringify {
     /** Convert E_SgOmpCopyprivateClause enum constant to a string. */
     const char* E_SgOmpCopyprivateClause(int64_t);
@@ -10090,7 +10090,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 297
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 303
 namespace stringify {
     /** Convert E_SgOmpPrivateClause enum constant to a string. */
     const char* E_SgOmpPrivateClause(int64_t);
@@ -10108,7 +10108,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 300
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 306
 namespace stringify {
     /** Convert E_SgOmpFirstprivateClause enum constant to a string. */
     const char* E_SgOmpFirstprivateClause(int64_t);
@@ -10126,7 +10126,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 303
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 309
 namespace stringify {
     /** Convert E_SgOmpNontemporalClause enum constant to a string. */
     const char* E_SgOmpNontemporalClause(int64_t);
@@ -10144,7 +10144,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 306
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 312
 namespace stringify {
     /** Convert E_SgOmpInclusiveClause enum constant to a string. */
     const char* E_SgOmpInclusiveClause(int64_t);
@@ -10162,7 +10162,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 309
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 315
 namespace stringify {
     /** Convert E_SgOmpExclusiveClause enum constant to a string. */
     const char* E_SgOmpExclusiveClause(int64_t);
@@ -10180,7 +10180,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 312
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 318
 namespace stringify {
     /** Convert E_SgOmpIsDevicePtrClause enum constant to a string. */
     const char* E_SgOmpIsDevicePtrClause(int64_t);
@@ -10198,7 +10198,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 315
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 321
 namespace stringify {
     /** Convert E_SgOmpUseDevicePtrClause enum constant to a string. */
     const char* E_SgOmpUseDevicePtrClause(int64_t);
@@ -10216,7 +10216,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 318
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 324
 namespace stringify {
     /** Convert E_SgOmpUseDeviceAddrClause enum constant to a string. */
     const char* E_SgOmpUseDeviceAddrClause(int64_t);
@@ -10234,7 +10234,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 321
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 327
 namespace stringify {
     /** Convert E_SgOmpSharedClause enum constant to a string. */
     const char* E_SgOmpSharedClause(int64_t);
@@ -10252,7 +10252,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 324
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 330
 namespace stringify {
     /** Convert E_SgOmpCopyinClause enum constant to a string. */
     const char* E_SgOmpCopyinClause(int64_t);
@@ -10270,7 +10270,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 327
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 333
 namespace stringify {
     /** Convert E_SgOmpLastprivateClause enum constant to a string. */
     const char* E_SgOmpLastprivateClause(int64_t);
@@ -10288,7 +10288,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 330
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 336
 namespace stringify {
     /** Convert E_SgOmpReductionClause enum constant to a string. */
     const char* E_SgOmpReductionClause(int64_t);
@@ -10306,7 +10306,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 333
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 339
 namespace stringify {
     /** Convert E_SgOmpInReductionClause enum constant to a string. */
     const char* E_SgOmpInReductionClause(int64_t);
@@ -10324,7 +10324,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 336
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 342
 namespace stringify {
     /** Convert E_SgOmpTaskReductionClause enum constant to a string. */
     const char* E_SgOmpTaskReductionClause(int64_t);
@@ -10342,7 +10342,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 339
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 345
 namespace stringify {
     /** Convert E_SgOmpMapClause enum constant to a string. */
     const char* E_SgOmpMapClause(int64_t);
@@ -10360,7 +10360,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 342
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 348
 namespace stringify {
     /** Convert E_SgOmpAllocateClause enum constant to a string. */
     const char* E_SgOmpAllocateClause(int64_t);
@@ -10378,7 +10378,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 345
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 351
 namespace stringify {
     /** Convert E_SgOmpUniformClause enum constant to a string. */
     const char* E_SgOmpUniformClause(int64_t);
@@ -10396,7 +10396,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 348
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 354
 namespace stringify {
     /** Convert E_SgOmpAlignedClause enum constant to a string. */
     const char* E_SgOmpAlignedClause(int64_t);
@@ -10414,7 +10414,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 351
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 357
 namespace stringify {
     /** Convert E_SgOmpLinearClause enum constant to a string. */
     const char* E_SgOmpLinearClause(int64_t);
@@ -10432,7 +10432,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 354
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 360
 namespace stringify {
     /** Convert E_SgOmpDependClause enum constant to a string. */
     const char* E_SgOmpDependClause(int64_t);
@@ -10450,7 +10450,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 357
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 363
 namespace stringify {
     /** Convert E_SgOmpAffinityClause enum constant to a string. */
     const char* E_SgOmpAffinityClause(int64_t);
@@ -10468,7 +10468,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 360
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 366
 namespace stringify {
     /** Convert E_SgOmpToClause enum constant to a string. */
     const char* E_SgOmpToClause(int64_t);
@@ -10486,7 +10486,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 363
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 369
 namespace stringify {
     /** Convert E_SgOmpFromClause enum constant to a string. */
     const char* E_SgOmpFromClause(int64_t);
@@ -10504,7 +10504,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 366
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 372
 namespace stringify {
     /** Convert E_SgOmpVariablesClause enum constant to a string. */
     const char* E_SgOmpVariablesClause(int64_t);
@@ -10522,7 +10522,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 369
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 375
 namespace stringify {
     /** Convert E_SgOmpScheduleClause enum constant to a string. */
     const char* E_SgOmpScheduleClause(int64_t);
@@ -10540,7 +10540,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 372
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 378
 namespace stringify {
     /** Convert E_SgOmpWhenClause enum constant to a string. */
     const char* E_SgOmpWhenClause(int64_t);
@@ -10558,7 +10558,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 375
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 381
 namespace stringify {
     /** Convert E_SgUpirDataItemField enum constant to a string. */
     const char* E_SgUpirDataItemField(int64_t);
@@ -10576,7 +10576,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 378
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 384
 namespace stringify {
     /** Convert E_SgLambdaCapture enum constant to a string. */
     const char* E_SgLambdaCapture(int64_t);
@@ -10594,7 +10594,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 381
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 387
 namespace stringify {
     /** Convert E_SgLambdaCaptureList enum constant to a string. */
     const char* E_SgLambdaCaptureList(int64_t);
@@ -10612,7 +10612,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 384
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 390
 namespace stringify {
     /** Convert E_SgGlobal enum constant to a string. */
     const char* E_SgGlobal(int64_t);
@@ -10630,7 +10630,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 387
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 393
 namespace stringify {
     /** Convert E_SgBasicBlock enum constant to a string. */
     const char* E_SgBasicBlock(int64_t);
@@ -10648,7 +10648,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 390
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 396
 namespace stringify {
     /** Convert E_SgIfStmt enum constant to a string. */
     const char* E_SgIfStmt(int64_t);
@@ -10666,7 +10666,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 393
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 399
 namespace stringify {
     /** Convert E_SgForStatement enum constant to a string. */
     const char* E_SgForStatement(int64_t);
@@ -10684,7 +10684,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 396
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 402
 namespace stringify {
     /** Convert E_SgTemplateFunctionDefinition enum constant to a string. */
     const char* E_SgTemplateFunctionDefinition(int64_t);
@@ -10702,7 +10702,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 399
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 405
 namespace stringify {
     /** Convert E_SgFunctionDefinition enum constant to a string. */
     const char* E_SgFunctionDefinition(int64_t);
@@ -10720,7 +10720,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 402
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 408
 namespace stringify {
     /** Convert E_SgTemplateInstantiationDefn enum constant to a string. */
     const char* E_SgTemplateInstantiationDefn(int64_t);
@@ -10738,7 +10738,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 405
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 411
 namespace stringify {
     /** Convert E_SgTemplateClassDefinition enum constant to a string. */
     const char* E_SgTemplateClassDefinition(int64_t);
@@ -10756,7 +10756,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 408
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 414
 namespace stringify {
     /** Convert E_SgClassDefinition enum constant to a string. */
     const char* E_SgClassDefinition(int64_t);
@@ -10774,7 +10774,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 411
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 417
 namespace stringify {
     /** Convert E_SgWhileStmt enum constant to a string. */
     const char* E_SgWhileStmt(int64_t);
@@ -10792,7 +10792,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 414
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 420
 namespace stringify {
     /** Convert E_SgDoWhileStmt enum constant to a string. */
     const char* E_SgDoWhileStmt(int64_t);
@@ -10810,7 +10810,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 417
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 423
 namespace stringify {
     /** Convert E_SgSwitchStatement enum constant to a string. */
     const char* E_SgSwitchStatement(int64_t);
@@ -10828,7 +10828,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 420
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 426
 namespace stringify {
     /** Convert E_SgCatchOptionStmt enum constant to a string. */
     const char* E_SgCatchOptionStmt(int64_t);
@@ -10846,7 +10846,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 423
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 429
 namespace stringify {
     /** Convert E_SgNamespaceDefinitionStatement enum constant to a string. */
     const char* E_SgNamespaceDefinitionStatement(int64_t);
@@ -10864,7 +10864,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 426
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 432
 namespace stringify {
     /** Convert E_SgAssociateStatement enum constant to a string. */
     const char* E_SgAssociateStatement(int64_t);
@@ -10882,7 +10882,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 429
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 435
 namespace stringify {
     /** Convert E_SgFortranNonblockedDo enum constant to a string. */
     const char* E_SgFortranNonblockedDo(int64_t);
@@ -10900,7 +10900,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 432
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 438
 namespace stringify {
     /** Convert E_SgFortranDo enum constant to a string. */
     const char* E_SgFortranDo(int64_t);
@@ -10918,7 +10918,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 435
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 441
 namespace stringify {
     /** Convert E_SgForAllStatement enum constant to a string. */
     const char* E_SgForAllStatement(int64_t);
@@ -10936,7 +10936,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 438
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 444
 namespace stringify {
     /** Convert E_SgUpcForAllStatement enum constant to a string. */
     const char* E_SgUpcForAllStatement(int64_t);
@@ -10954,7 +10954,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 441
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 447
 namespace stringify {
     /** Convert E_SgCAFWithTeamStatement enum constant to a string. */
     const char* E_SgCAFWithTeamStatement(int64_t);
@@ -10972,7 +10972,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 444
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 450
 namespace stringify {
     /** Convert E_SgFunctionParameterScope enum constant to a string. */
     const char* E_SgFunctionParameterScope(int64_t);
@@ -10990,7 +10990,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 447
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 453
 namespace stringify {
     /** Convert E_SgRangeBasedForStatement enum constant to a string. */
     const char* E_SgRangeBasedForStatement(int64_t);
@@ -11008,7 +11008,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 450
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 456
 namespace stringify {
     /** Convert E_SgFunctionParameterList enum constant to a string. */
     const char* E_SgFunctionParameterList(int64_t);
@@ -11026,7 +11026,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 453
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 459
 namespace stringify {
     /** Convert E_SgTemplateVariableDeclaration enum constant to a string. */
     const char* E_SgTemplateVariableDeclaration(int64_t);
@@ -11044,7 +11044,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 456
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 462
 namespace stringify {
     /** Convert E_SgVariableDeclaration enum constant to a string. */
     const char* E_SgVariableDeclaration(int64_t);
@@ -11062,7 +11062,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 459
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 465
 namespace stringify {
     /** Convert E_SgVariableDefinition enum constant to a string. */
     const char* E_SgVariableDefinition(int64_t);
@@ -11080,7 +11080,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 462
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 468
 namespace stringify {
     /** Convert E_SgEnumDeclaration enum constant to a string. */
     const char* E_SgEnumDeclaration(int64_t);
@@ -11098,7 +11098,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 465
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 471
 namespace stringify {
     /** Convert E_SgAsmStmt enum constant to a string. */
     const char* E_SgAsmStmt(int64_t);
@@ -11116,7 +11116,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 468
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 474
 namespace stringify {
     /** Convert E_SgTemplateInstantiationDirectiveStatement enum constant to a string. */
     const char* E_SgTemplateInstantiationDirectiveStatement(int64_t);
@@ -11134,7 +11134,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 471
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 477
 namespace stringify {
     /** Convert E_SgUseStatement enum constant to a string. */
     const char* E_SgUseStatement(int64_t);
@@ -11152,7 +11152,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 474
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 480
 namespace stringify {
     /** Convert E_SgNamespaceDeclarationStatement enum constant to a string. */
     const char* E_SgNamespaceDeclarationStatement(int64_t);
@@ -11170,7 +11170,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 477
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 483
 namespace stringify {
     /** Convert E_SgInterfaceStatement enum constant to a string. */
     const char* E_SgInterfaceStatement(int64_t);
@@ -11188,7 +11188,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 480
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 486
 namespace stringify {
     /** Convert E_SgCommonBlock enum constant to a string. */
     const char* E_SgCommonBlock(int64_t);
@@ -11206,7 +11206,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 483
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 489
 namespace stringify {
     /** Convert E_SgTemplateTypedefDeclaration enum constant to a string. */
     const char* E_SgTemplateTypedefDeclaration(int64_t);
@@ -11224,7 +11224,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 486
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 492
 namespace stringify {
     /** Convert E_SgTemplateInstantiationTypedefDeclaration enum constant to a string. */
     const char* E_SgTemplateInstantiationTypedefDeclaration(int64_t);
@@ -11242,7 +11242,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 489
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 495
 namespace stringify {
     /** Convert E_SgTypedefDeclaration enum constant to a string. */
     const char* E_SgTypedefDeclaration(int64_t);
@@ -11260,7 +11260,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 492
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 498
 namespace stringify {
     /** Convert E_SgStatementFunctionStatement enum constant to a string. */
     const char* E_SgStatementFunctionStatement(int64_t);
@@ -11278,7 +11278,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 495
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 501
 namespace stringify {
     /** Convert E_SgCtorInitializerList enum constant to a string. */
     const char* E_SgCtorInitializerList(int64_t);
@@ -11296,7 +11296,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 498
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 504
 namespace stringify {
     /** Convert E_SgPragmaDeclaration enum constant to a string. */
     const char* E_SgPragmaDeclaration(int64_t);
@@ -11314,7 +11314,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 501
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 507
 namespace stringify {
     /** Convert E_SgTemplateClassDeclaration enum constant to a string. */
     const char* E_SgTemplateClassDeclaration(int64_t);
@@ -11332,7 +11332,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 504
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 510
 namespace stringify {
     /** Convert E_SgTemplateInstantiationDecl enum constant to a string. */
     const char* E_SgTemplateInstantiationDecl(int64_t);
@@ -11350,7 +11350,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 507
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 513
 namespace stringify {
     /** Convert E_SgDerivedTypeStatement enum constant to a string. */
     const char* E_SgDerivedTypeStatement(int64_t);
@@ -11368,7 +11368,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 510
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 516
 namespace stringify {
     /** Convert E_SgModuleStatement enum constant to a string. */
     const char* E_SgModuleStatement(int64_t);
@@ -11386,7 +11386,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 513
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 519
 namespace stringify {
     /** Convert E_SgClassDeclaration enum constant to a string. */
     const char* E_SgClassDeclaration(int64_t);
@@ -11404,7 +11404,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 516
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 522
 namespace stringify {
     /** Convert E_SgImplicitStatement enum constant to a string. */
     const char* E_SgImplicitStatement(int64_t);
@@ -11422,7 +11422,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 519
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 525
 namespace stringify {
     /** Convert E_SgTemplateFunctionDeclaration enum constant to a string. */
     const char* E_SgTemplateFunctionDeclaration(int64_t);
@@ -11440,7 +11440,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 522
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 528
 namespace stringify {
     /** Convert E_SgTemplateMemberFunctionDeclaration enum constant to a string. */
     const char* E_SgTemplateMemberFunctionDeclaration(int64_t);
@@ -11458,7 +11458,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 525
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 531
 namespace stringify {
     /** Convert E_SgTemplateInstantiationMemberFunctionDecl enum constant to a string. */
     const char* E_SgTemplateInstantiationMemberFunctionDecl(int64_t);
@@ -11476,7 +11476,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 528
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 534
 namespace stringify {
     /** Convert E_SgMemberFunctionDeclaration enum constant to a string. */
     const char* E_SgMemberFunctionDeclaration(int64_t);
@@ -11494,7 +11494,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 531
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 537
 namespace stringify {
     /** Convert E_SgTemplateInstantiationFunctionDecl enum constant to a string. */
     const char* E_SgTemplateInstantiationFunctionDecl(int64_t);
@@ -11512,7 +11512,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 534
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 540
 namespace stringify {
     /** Convert E_SgProgramHeaderStatement enum constant to a string. */
     const char* E_SgProgramHeaderStatement(int64_t);
@@ -11530,7 +11530,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 537
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 543
 namespace stringify {
     /** Convert E_SgProcedureHeaderStatement enum constant to a string. */
     const char* E_SgProcedureHeaderStatement(int64_t);
@@ -11548,7 +11548,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 540
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 546
 namespace stringify {
     /** Convert E_SgEntryStatement enum constant to a string. */
     const char* E_SgEntryStatement(int64_t);
@@ -11566,7 +11566,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 543
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 549
 namespace stringify {
     /** Convert E_SgFunctionDeclaration enum constant to a string. */
     const char* E_SgFunctionDeclaration(int64_t);
@@ -11584,7 +11584,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 546
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 552
 namespace stringify {
     /** Convert E_SgIncludeDirectiveStatement enum constant to a string. */
     const char* E_SgIncludeDirectiveStatement(int64_t);
@@ -11602,7 +11602,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 549
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 555
 namespace stringify {
     /** Convert E_SgOmpThreadprivateStatement enum constant to a string. */
     const char* E_SgOmpThreadprivateStatement(int64_t);
@@ -11620,7 +11620,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 552
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 558
 namespace stringify {
     /** Convert E_SgOmpRequiresStatement enum constant to a string. */
     const char* E_SgOmpRequiresStatement(int64_t);
@@ -11638,7 +11638,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 555
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 561
 namespace stringify {
     /** Convert E_SgOmpTaskwaitStatement enum constant to a string. */
     const char* E_SgOmpTaskwaitStatement(int64_t);
@@ -11656,7 +11656,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 558
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 564
 namespace stringify {
     /** Convert E_SgStmtDeclarationStatement enum constant to a string. */
     const char* E_SgStmtDeclarationStatement(int64_t);
@@ -11674,7 +11674,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 561
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 567
 namespace stringify {
     /** Convert E_SgStaticAssertionDeclaration enum constant to a string. */
     const char* E_SgStaticAssertionDeclaration(int64_t);
@@ -11692,7 +11692,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 564
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 570
 namespace stringify {
     /** Convert E_SgOmpDeclareSimdStatement enum constant to a string. */
     const char* E_SgOmpDeclareSimdStatement(int64_t);
@@ -11710,7 +11710,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 567
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 573
 namespace stringify {
     /** Convert E_SgExprStatement enum constant to a string. */
     const char* E_SgExprStatement(int64_t);
@@ -11728,7 +11728,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 570
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 576
 namespace stringify {
     /** Convert E_SgLabelStatement enum constant to a string. */
     const char* E_SgLabelStatement(int64_t);
@@ -11746,7 +11746,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 573
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 579
 namespace stringify {
     /** Convert E_SgCaseOptionStmt enum constant to a string. */
     const char* E_SgCaseOptionStmt(int64_t);
@@ -11764,7 +11764,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 576
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 582
 namespace stringify {
     /** Convert E_SgTryStmt enum constant to a string. */
     const char* E_SgTryStmt(int64_t);
@@ -11782,7 +11782,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 579
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 585
 namespace stringify {
     /** Convert E_SgDefaultOptionStmt enum constant to a string. */
     const char* E_SgDefaultOptionStmt(int64_t);
@@ -11800,7 +11800,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 582
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 588
 namespace stringify {
     /** Convert E_SgReturnStmt enum constant to a string. */
     const char* E_SgReturnStmt(int64_t);
@@ -11818,7 +11818,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 585
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 591
 namespace stringify {
     /** Convert E_SgSpawnStmt enum constant to a string. */
     const char* E_SgSpawnStmt(int64_t);
@@ -11836,7 +11836,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 588
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 594
 namespace stringify {
     /** Convert E_SgForInitStatement enum constant to a string. */
     const char* E_SgForInitStatement(int64_t);
@@ -11854,7 +11854,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 591
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 597
 namespace stringify {
     /** Convert E_SgCatchStatementSeq enum constant to a string. */
     const char* E_SgCatchStatementSeq(int64_t);
@@ -11872,7 +11872,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 594
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 600
 namespace stringify {
     /** Convert E_SgProcessControlStatement enum constant to a string. */
     const char* E_SgProcessControlStatement(int64_t);
@@ -11890,7 +11890,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 597
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 603
 namespace stringify {
     /** Convert E_SgPrintStatement enum constant to a string. */
     const char* E_SgPrintStatement(int64_t);
@@ -11908,7 +11908,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 600
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 606
 namespace stringify {
     /** Convert E_SgReadStatement enum constant to a string. */
     const char* E_SgReadStatement(int64_t);
@@ -11926,7 +11926,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 603
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 609
 namespace stringify {
     /** Convert E_SgWriteStatement enum constant to a string. */
     const char* E_SgWriteStatement(int64_t);
@@ -11944,7 +11944,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 606
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 612
 namespace stringify {
     /** Convert E_SgOpenStatement enum constant to a string. */
     const char* E_SgOpenStatement(int64_t);
@@ -11962,7 +11962,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 609
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 615
 namespace stringify {
     /** Convert E_SgCloseStatement enum constant to a string. */
     const char* E_SgCloseStatement(int64_t);
@@ -11980,7 +11980,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 612
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 618
 namespace stringify {
     /** Convert E_SgInquireStatement enum constant to a string. */
     const char* E_SgInquireStatement(int64_t);
@@ -11998,7 +11998,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 615
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 621
 namespace stringify {
     /** Convert E_SgFlushStatement enum constant to a string. */
     const char* E_SgFlushStatement(int64_t);
@@ -12016,7 +12016,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 618
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 624
 namespace stringify {
     /** Convert E_SgBackspaceStatement enum constant to a string. */
     const char* E_SgBackspaceStatement(int64_t);
@@ -12034,7 +12034,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 621
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 627
 namespace stringify {
     /** Convert E_SgRewindStatement enum constant to a string. */
     const char* E_SgRewindStatement(int64_t);
@@ -12052,7 +12052,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 624
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 630
 namespace stringify {
     /** Convert E_SgEndfileStatement enum constant to a string. */
     const char* E_SgEndfileStatement(int64_t);
@@ -12070,7 +12070,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 627
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 633
 namespace stringify {
     /** Convert E_SgWaitStatement enum constant to a string. */
     const char* E_SgWaitStatement(int64_t);
@@ -12088,7 +12088,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 630
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 636
 namespace stringify {
     /** Convert E_SgIOStatement enum constant to a string. */
     const char* E_SgIOStatement(int64_t);
@@ -12106,7 +12106,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 633
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 639
 namespace stringify {
     /** Convert E_SgWhereStatement enum constant to a string. */
     const char* E_SgWhereStatement(int64_t);
@@ -12124,7 +12124,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 636
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 642
 namespace stringify {
     /** Convert E_SgElseWhereStatement enum constant to a string. */
     const char* E_SgElseWhereStatement(int64_t);
@@ -12142,7 +12142,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 639
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 645
 namespace stringify {
     /** Convert E_SgNullifyStatement enum constant to a string. */
     const char* E_SgNullifyStatement(int64_t);
@@ -12160,7 +12160,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 642
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 648
 namespace stringify {
     /** Convert E_SgArithmeticIfStatement enum constant to a string. */
     const char* E_SgArithmeticIfStatement(int64_t);
@@ -12178,7 +12178,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 645
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 651
 namespace stringify {
     /** Convert E_SgAssignStatement enum constant to a string. */
     const char* E_SgAssignStatement(int64_t);
@@ -12196,7 +12196,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 648
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 654
 namespace stringify {
     /** Convert E_SgComputedGotoStatement enum constant to a string. */
     const char* E_SgComputedGotoStatement(int64_t);
@@ -12214,7 +12214,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 651
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 657
 namespace stringify {
     /** Convert E_SgAssignedGotoStatement enum constant to a string. */
     const char* E_SgAssignedGotoStatement(int64_t);
@@ -12232,7 +12232,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 654
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 660
 namespace stringify {
     /** Convert E_SgAllocateStatement enum constant to a string. */
     const char* E_SgAllocateStatement(int64_t);
@@ -12250,7 +12250,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 657
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 663
 namespace stringify {
     /** Convert E_SgDeallocateStatement enum constant to a string. */
     const char* E_SgDeallocateStatement(int64_t);
@@ -12268,7 +12268,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 660
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 666
 namespace stringify {
     /** Convert E_SgUpcNotifyStatement enum constant to a string. */
     const char* E_SgUpcNotifyStatement(int64_t);
@@ -12286,7 +12286,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 663
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 669
 namespace stringify {
     /** Convert E_SgUpcWaitStatement enum constant to a string. */
     const char* E_SgUpcWaitStatement(int64_t);
@@ -12304,7 +12304,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 666
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 672
 namespace stringify {
     /** Convert E_SgUpcBarrierStatement enum constant to a string. */
     const char* E_SgUpcBarrierStatement(int64_t);
@@ -12322,7 +12322,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 669
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 675
 namespace stringify {
     /** Convert E_SgOmpMasterStatement enum constant to a string. */
     const char* E_SgOmpMasterStatement(int64_t);
@@ -12340,7 +12340,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 672
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 678
 namespace stringify {
     /** Convert E_SgOmpSectionStatement enum constant to a string. */
     const char* E_SgOmpSectionStatement(int64_t);
@@ -12358,7 +12358,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 675
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 681
 namespace stringify {
     /** Convert E_SgOmpWorkshareStatement enum constant to a string. */
     const char* E_SgOmpWorkshareStatement(int64_t);
@@ -12376,7 +12376,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 678
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 684
 namespace stringify {
     /** Convert E_SgUpirSpmdStatement enum constant to a string. */
     const char* E_SgUpirSpmdStatement(int64_t);
@@ -12394,7 +12394,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 681
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 687
 namespace stringify {
     /** Convert E_SgOmpTeamsStatement enum constant to a string. */
     const char* E_SgOmpTeamsStatement(int64_t);
@@ -12412,7 +12412,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 684
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 690
 namespace stringify {
     /** Convert E_SgOmpSingleStatement enum constant to a string. */
     const char* E_SgOmpSingleStatement(int64_t);
@@ -12430,7 +12430,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 687
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 693
 namespace stringify {
     /** Convert E_SgOmpAtomicStatement enum constant to a string. */
     const char* E_SgOmpAtomicStatement(int64_t);
@@ -12448,7 +12448,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 690
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 696
 namespace stringify {
     /** Convert E_SgOmpScanStatement enum constant to a string. */
     const char* E_SgOmpScanStatement(int64_t);
@@ -12466,7 +12466,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 693
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 699
 namespace stringify {
     /** Convert E_SgOmpMetadirectiveStatement enum constant to a string. */
     const char* E_SgOmpMetadirectiveStatement(int64_t);
@@ -12484,7 +12484,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 696
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 702
 namespace stringify {
     /** Convert E_SgOmpLoopStatement enum constant to a string. */
     const char* E_SgOmpLoopStatement(int64_t);
@@ -12502,7 +12502,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 699
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 705
 namespace stringify {
     /** Convert E_SgOmpOrderedStatement enum constant to a string. */
     const char* E_SgOmpOrderedStatement(int64_t);
@@ -12520,7 +12520,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 702
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 708
 namespace stringify {
     /** Convert E_SgOmpTaskgroupStatement enum constant to a string. */
     const char* E_SgOmpTaskgroupStatement(int64_t);
@@ -12538,7 +12538,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 705
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 711
 namespace stringify {
     /** Convert E_SgOmpTaskloopStatement enum constant to a string. */
     const char* E_SgOmpTaskloopStatement(int64_t);
@@ -12556,7 +12556,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 708
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 714
 namespace stringify {
     /** Convert E_SgOmpDepobjStatement enum constant to a string. */
     const char* E_SgOmpDepobjStatement(int64_t);
@@ -12574,7 +12574,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 711
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 717
 namespace stringify {
     /** Convert E_SgOmpTargetEnterDataStatement enum constant to a string. */
     const char* E_SgOmpTargetEnterDataStatement(int64_t);
@@ -12592,7 +12592,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 714
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 720
 namespace stringify {
     /** Convert E_SgOmpTargetExitDataStatement enum constant to a string. */
     const char* E_SgOmpTargetExitDataStatement(int64_t);
@@ -12610,7 +12610,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 717
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 723
 namespace stringify {
     /** Convert E_SgOmpParallelMasterStatement enum constant to a string. */
     const char* E_SgOmpParallelMasterStatement(int64_t);
@@ -12628,7 +12628,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 720
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 726
 namespace stringify {
     /** Convert E_SgOmpMasterTaskloopStatement enum constant to a string. */
     const char* E_SgOmpMasterTaskloopStatement(int64_t);
@@ -12646,7 +12646,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 723
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 729
 namespace stringify {
     /** Convert E_SgOmpTaskStatement enum constant to a string. */
     const char* E_SgOmpTaskStatement(int64_t);
@@ -12664,7 +12664,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 726
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 732
 namespace stringify {
     /** Convert E_SgOmpDoStatement enum constant to a string. */
     const char* E_SgOmpDoStatement(int64_t);
@@ -12682,7 +12682,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 729
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 735
 namespace stringify {
     /** Convert E_SgOmpSectionsStatement enum constant to a string. */
     const char* E_SgOmpSectionsStatement(int64_t);
@@ -12700,7 +12700,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 732
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 738
 namespace stringify {
     /** Convert E_SgUpirTaskStatement enum constant to a string. */
     const char* E_SgUpirTaskStatement(int64_t);
@@ -12718,7 +12718,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 735
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 741
 namespace stringify {
     /** Convert E_SgOmpTargetDataStatement enum constant to a string. */
     const char* E_SgOmpTargetDataStatement(int64_t);
@@ -12736,7 +12736,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 738
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 744
 namespace stringify {
     /** Convert E_SgOmpTargetParallelForStatement enum constant to a string. */
     const char* E_SgOmpTargetParallelForStatement(int64_t);
@@ -12754,7 +12754,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 741
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 747
 namespace stringify {
     /** Convert E_SgOmpParallelLoopStatement enum constant to a string. */
     const char* E_SgOmpParallelLoopStatement(int64_t);
@@ -12772,7 +12772,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 744
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 750
 namespace stringify {
     /** Convert E_SgOmpTargetParallelStatement enum constant to a string. */
     const char* E_SgOmpTargetParallelStatement(int64_t);
@@ -12790,7 +12790,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 747
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 753
 namespace stringify {
     /** Convert E_SgOmpTargetParallelForSimdStatement enum constant to a string. */
     const char* E_SgOmpTargetParallelForSimdStatement(int64_t);
@@ -12808,7 +12808,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 750
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 756
 namespace stringify {
     /** Convert E_SgOmpTargetParallelLoopStatement enum constant to a string. */
     const char* E_SgOmpTargetParallelLoopStatement(int64_t);
@@ -12826,7 +12826,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 753
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 759
 namespace stringify {
     /** Convert E_SgOmpTargetSimdStatement enum constant to a string. */
     const char* E_SgOmpTargetSimdStatement(int64_t);
@@ -12844,7 +12844,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 756
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 762
 namespace stringify {
     /** Convert E_SgOmpTargetTeamsStatement enum constant to a string. */
     const char* E_SgOmpTargetTeamsStatement(int64_t);
@@ -12862,7 +12862,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 759
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 765
 namespace stringify {
     /** Convert E_SgOmpTargetTeamsDistributeStatement enum constant to a string. */
     const char* E_SgOmpTargetTeamsDistributeStatement(int64_t);
@@ -12880,7 +12880,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 762
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 768
 namespace stringify {
     /** Convert E_SgOmpTargetTeamsDistributeSimdStatement enum constant to a string. */
     const char* E_SgOmpTargetTeamsDistributeSimdStatement(int64_t);
@@ -12898,7 +12898,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 765
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 771
 namespace stringify {
     /** Convert E_SgOmpTargetTeamsLoopStatement enum constant to a string. */
     const char* E_SgOmpTargetTeamsLoopStatement(int64_t);
@@ -12916,7 +12916,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 768
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 774
 namespace stringify {
     /** Convert E_SgOmpTargetTeamsDistributeParallelForStatement enum constant to a string. */
     const char* E_SgOmpTargetTeamsDistributeParallelForStatement(int64_t);
@@ -12934,7 +12934,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 771
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 777
 namespace stringify {
     /** Convert E_SgOmpTargetTeamsDistributeParallelForSimdStatement enum constant to a string. */
     const char* E_SgOmpTargetTeamsDistributeParallelForSimdStatement(int64_t);
@@ -12952,7 +12952,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 774
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 780
 namespace stringify {
     /** Convert E_SgOmpDistributeSimdStatement enum constant to a string. */
     const char* E_SgOmpDistributeSimdStatement(int64_t);
@@ -12970,7 +12970,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 777
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 783
 namespace stringify {
     /** Convert E_SgOmpDistributeParallelForStatement enum constant to a string. */
     const char* E_SgOmpDistributeParallelForStatement(int64_t);
@@ -12988,7 +12988,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 780
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 786
 namespace stringify {
     /** Convert E_SgOmpDistributeParallelForSimdStatement enum constant to a string. */
     const char* E_SgOmpDistributeParallelForSimdStatement(int64_t);
@@ -13006,7 +13006,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 783
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 789
 namespace stringify {
     /** Convert E_SgOmpTaskloopSimdStatement enum constant to a string. */
     const char* E_SgOmpTaskloopSimdStatement(int64_t);
@@ -13024,7 +13024,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 786
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 792
 namespace stringify {
     /** Convert E_SgOmpMasterTaskloopSimdStatement enum constant to a string. */
     const char* E_SgOmpMasterTaskloopSimdStatement(int64_t);
@@ -13042,7 +13042,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 789
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 795
 namespace stringify {
     /** Convert E_SgOmpParallelMasterTaskloopStatement enum constant to a string. */
     const char* E_SgOmpParallelMasterTaskloopStatement(int64_t);
@@ -13060,7 +13060,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 792
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 798
 namespace stringify {
     /** Convert E_SgOmpParallelMasterTaskloopSimdStatement enum constant to a string. */
     const char* E_SgOmpParallelMasterTaskloopSimdStatement(int64_t);
@@ -13078,7 +13078,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 795
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 801
 namespace stringify {
     /** Convert E_SgOmpTeamsDistributeStatement enum constant to a string. */
     const char* E_SgOmpTeamsDistributeStatement(int64_t);
@@ -13096,7 +13096,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 798
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 804
 namespace stringify {
     /** Convert E_SgOmpTeamsDistributeSimdStatement enum constant to a string. */
     const char* E_SgOmpTeamsDistributeSimdStatement(int64_t);
@@ -13114,7 +13114,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 801
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 807
 namespace stringify {
     /** Convert E_SgOmpTeamsDistributeParallelForStatement enum constant to a string. */
     const char* E_SgOmpTeamsDistributeParallelForStatement(int64_t);
@@ -13132,7 +13132,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 804
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 810
 namespace stringify {
     /** Convert E_SgOmpTeamsDistributeParallelForSimdStatement enum constant to a string. */
     const char* E_SgOmpTeamsDistributeParallelForSimdStatement(int64_t);
@@ -13150,7 +13150,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 807
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 813
 namespace stringify {
     /** Convert E_SgOmpTeamsLoopStatement enum constant to a string. */
     const char* E_SgOmpTeamsLoopStatement(int64_t);
@@ -13168,7 +13168,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 810
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 816
 namespace stringify {
     /** Convert E_SgOmpForSimdStatement enum constant to a string. */
     const char* E_SgOmpForSimdStatement(int64_t);
@@ -13186,7 +13186,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 813
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 819
 namespace stringify {
     /** Convert E_SgOmpCriticalStatement enum constant to a string. */
     const char* E_SgOmpCriticalStatement(int64_t);
@@ -13204,7 +13204,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 816
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 822
 namespace stringify {
     /** Convert E_SgOmpDistributeStatement enum constant to a string. */
     const char* E_SgOmpDistributeStatement(int64_t);
@@ -13222,7 +13222,43 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 819
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 825
+namespace stringify {
+    /** Convert E_SgOmpUnrollStatement enum constant to a string. */
+    const char* E_SgOmpUnrollStatement(int64_t);
+
+    /** Convert E_SgOmpUnrollStatement enum constant to a string. */
+    std::string E_SgOmpUnrollStatement(int64_t, const std::string &strip);
+
+    /** Return all E_SgOmpUnrollStatement member values as a vector. */
+    const std::vector<int64_t>& E_SgOmpUnrollStatement();
+}
+
+namespace Rose {
+    std::string stringifyE_SgOmpUnrollStatement(int64_t n, const char *strip=NULL, bool canonic=false);
+    const std::vector<int64_t>& stringifyE_SgOmpUnrollStatement();
+}
+
+// DO NOT EDIT -- This implementation was automatically generated for the enum defined at
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 828
+namespace stringify {
+    /** Convert E_SgOmpTileStatement enum constant to a string. */
+    const char* E_SgOmpTileStatement(int64_t);
+
+    /** Convert E_SgOmpTileStatement enum constant to a string. */
+    std::string E_SgOmpTileStatement(int64_t, const std::string &strip);
+
+    /** Return all E_SgOmpTileStatement member values as a vector. */
+    const std::vector<int64_t>& E_SgOmpTileStatement();
+}
+
+namespace Rose {
+    std::string stringifyE_SgOmpTileStatement(int64_t n, const char *strip=NULL, bool canonic=false);
+    const std::vector<int64_t>& stringifyE_SgOmpTileStatement();
+}
+
+// DO NOT EDIT -- This implementation was automatically generated for the enum defined at
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 831
 namespace stringify {
     /** Convert E_SgUpirLoopStatement enum constant to a string. */
     const char* E_SgUpirLoopStatement(int64_t);
@@ -13240,7 +13276,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 822
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 834
 namespace stringify {
     /** Convert E_SgUpirFieldBodyStatement enum constant to a string. */
     const char* E_SgUpirFieldBodyStatement(int64_t);
@@ -13258,7 +13294,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 825
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 837
 namespace stringify {
     /** Convert E_SgUpirBodyStatement enum constant to a string. */
     const char* E_SgUpirBodyStatement(int64_t);
@@ -13276,7 +13312,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 828
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 840
 namespace stringify {
     /** Convert E_SgOmpFlushStatement enum constant to a string. */
     const char* E_SgOmpFlushStatement(int64_t);
@@ -13294,7 +13330,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 831
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 843
 namespace stringify {
     /** Convert E_SgOmpAllocateStatement enum constant to a string. */
     const char* E_SgOmpAllocateStatement(int64_t);
@@ -13312,7 +13348,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 834
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 846
 namespace stringify {
     /** Convert E_SgWithStatement enum constant to a string. */
     const char* E_SgWithStatement(int64_t);
@@ -13330,7 +13366,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 837
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 849
 namespace stringify {
     /** Convert E_SgAssertStmt enum constant to a string. */
     const char* E_SgAssertStmt(int64_t);
@@ -13348,7 +13384,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 840
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 852
 namespace stringify {
     /** Convert E_SgExecStatement enum constant to a string. */
     const char* E_SgExecStatement(int64_t);
@@ -13366,7 +13402,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 843
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 855
 namespace stringify {
     /** Convert E_SgSyncAllStatement enum constant to a string. */
     const char* E_SgSyncAllStatement(int64_t);
@@ -13384,7 +13420,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 846
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 858
 namespace stringify {
     /** Convert E_SgSyncImagesStatement enum constant to a string. */
     const char* E_SgSyncImagesStatement(int64_t);
@@ -13402,7 +13438,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 849
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 861
 namespace stringify {
     /** Convert E_SgSyncMemoryStatement enum constant to a string. */
     const char* E_SgSyncMemoryStatement(int64_t);
@@ -13420,7 +13456,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 852
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 864
 namespace stringify {
     /** Convert E_SgSyncTeamStatement enum constant to a string. */
     const char* E_SgSyncTeamStatement(int64_t);
@@ -13438,7 +13474,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 855
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 867
 namespace stringify {
     /** Convert E_SgLockStatement enum constant to a string. */
     const char* E_SgLockStatement(int64_t);
@@ -13456,7 +13492,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 858
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 870
 namespace stringify {
     /** Convert E_SgUnlockStatement enum constant to a string. */
     const char* E_SgUnlockStatement(int64_t);
@@ -13474,7 +13510,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 861
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 873
 namespace stringify {
     /** Convert E_SgImageControlStatement enum constant to a string. */
     const char* E_SgImageControlStatement(int64_t);
@@ -13492,7 +13528,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 864
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 876
 namespace stringify {
     /** Convert E_SgExpressionRoot enum constant to a string. */
     const char* E_SgExpressionRoot(int64_t);
@@ -13510,7 +13546,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 867
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 879
 namespace stringify {
     /** Convert E_SgMinusOp enum constant to a string. */
     const char* E_SgMinusOp(int64_t);
@@ -13528,7 +13564,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 870
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 882
 namespace stringify {
     /** Convert E_SgUnaryAddOp enum constant to a string. */
     const char* E_SgUnaryAddOp(int64_t);
@@ -13546,7 +13582,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 873
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 885
 namespace stringify {
     /** Convert E_SgNotOp enum constant to a string. */
     const char* E_SgNotOp(int64_t);
@@ -13564,7 +13600,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 876
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 888
 namespace stringify {
     /** Convert E_SgPointerDerefExp enum constant to a string. */
     const char* E_SgPointerDerefExp(int64_t);
@@ -13582,7 +13618,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 879
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 891
 namespace stringify {
     /** Convert E_SgAddressOfOp enum constant to a string. */
     const char* E_SgAddressOfOp(int64_t);
@@ -13600,7 +13636,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 882
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 894
 namespace stringify {
     /** Convert E_SgMinusMinusOp enum constant to a string. */
     const char* E_SgMinusMinusOp(int64_t);
@@ -13618,7 +13654,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 885
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 897
 namespace stringify {
     /** Convert E_SgPlusPlusOp enum constant to a string. */
     const char* E_SgPlusPlusOp(int64_t);
@@ -13636,7 +13672,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 888
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 900
 namespace stringify {
     /** Convert E_SgBitComplementOp enum constant to a string. */
     const char* E_SgBitComplementOp(int64_t);
@@ -13654,7 +13690,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 891
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 903
 namespace stringify {
     /** Convert E_SgCastExp enum constant to a string. */
     const char* E_SgCastExp(int64_t);
@@ -13672,7 +13708,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 894
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 906
 namespace stringify {
     /** Convert E_SgThrowOp enum constant to a string. */
     const char* E_SgThrowOp(int64_t);
@@ -13690,7 +13726,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 897
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 909
 namespace stringify {
     /** Convert E_SgRealPartOp enum constant to a string. */
     const char* E_SgRealPartOp(int64_t);
@@ -13708,7 +13744,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 900
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 912
 namespace stringify {
     /** Convert E_SgImagPartOp enum constant to a string. */
     const char* E_SgImagPartOp(int64_t);
@@ -13726,7 +13762,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 903
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 915
 namespace stringify {
     /** Convert E_SgConjugateOp enum constant to a string. */
     const char* E_SgConjugateOp(int64_t);
@@ -13744,7 +13780,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 906
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 918
 namespace stringify {
     /** Convert E_SgUserDefinedUnaryOp enum constant to a string. */
     const char* E_SgUserDefinedUnaryOp(int64_t);
@@ -13762,7 +13798,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 909
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 921
 namespace stringify {
     /** Convert E_SgMatrixTransposeOp enum constant to a string. */
     const char* E_SgMatrixTransposeOp(int64_t);
@@ -13780,7 +13816,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 912
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 924
 namespace stringify {
     /** Convert E_SgUnaryOp enum constant to a string. */
     const char* E_SgUnaryOp(int64_t);
@@ -13798,7 +13834,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 915
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 927
 namespace stringify {
     /** Convert E_SgArrowExp enum constant to a string. */
     const char* E_SgArrowExp(int64_t);
@@ -13816,7 +13852,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 918
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 930
 namespace stringify {
     /** Convert E_SgDotExp enum constant to a string. */
     const char* E_SgDotExp(int64_t);
@@ -13834,7 +13870,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 921
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 933
 namespace stringify {
     /** Convert E_SgDotStarOp enum constant to a string. */
     const char* E_SgDotStarOp(int64_t);
@@ -13852,7 +13888,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 924
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 936
 namespace stringify {
     /** Convert E_SgArrowStarOp enum constant to a string. */
     const char* E_SgArrowStarOp(int64_t);
@@ -13870,7 +13906,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 927
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 939
 namespace stringify {
     /** Convert E_SgEqualityOp enum constant to a string. */
     const char* E_SgEqualityOp(int64_t);
@@ -13888,7 +13924,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 930
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 942
 namespace stringify {
     /** Convert E_SgLessThanOp enum constant to a string. */
     const char* E_SgLessThanOp(int64_t);
@@ -13906,7 +13942,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 933
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 945
 namespace stringify {
     /** Convert E_SgGreaterThanOp enum constant to a string. */
     const char* E_SgGreaterThanOp(int64_t);
@@ -13924,7 +13960,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 936
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 948
 namespace stringify {
     /** Convert E_SgNotEqualOp enum constant to a string. */
     const char* E_SgNotEqualOp(int64_t);
@@ -13942,7 +13978,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 939
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 951
 namespace stringify {
     /** Convert E_SgLessOrEqualOp enum constant to a string. */
     const char* E_SgLessOrEqualOp(int64_t);
@@ -13960,7 +13996,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 942
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 954
 namespace stringify {
     /** Convert E_SgGreaterOrEqualOp enum constant to a string. */
     const char* E_SgGreaterOrEqualOp(int64_t);
@@ -13978,7 +14014,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 945
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 957
 namespace stringify {
     /** Convert E_SgAddOp enum constant to a string. */
     const char* E_SgAddOp(int64_t);
@@ -13996,7 +14032,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 948
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 960
 namespace stringify {
     /** Convert E_SgSubtractOp enum constant to a string. */
     const char* E_SgSubtractOp(int64_t);
@@ -14014,7 +14050,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 951
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 963
 namespace stringify {
     /** Convert E_SgMultiplyOp enum constant to a string. */
     const char* E_SgMultiplyOp(int64_t);
@@ -14032,7 +14068,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 954
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 966
 namespace stringify {
     /** Convert E_SgDivideOp enum constant to a string. */
     const char* E_SgDivideOp(int64_t);
@@ -14050,7 +14086,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 957
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 969
 namespace stringify {
     /** Convert E_SgIntegerDivideOp enum constant to a string. */
     const char* E_SgIntegerDivideOp(int64_t);
@@ -14068,7 +14104,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 960
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 972
 namespace stringify {
     /** Convert E_SgModOp enum constant to a string. */
     const char* E_SgModOp(int64_t);
@@ -14086,7 +14122,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 963
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 975
 namespace stringify {
     /** Convert E_SgAndOp enum constant to a string. */
     const char* E_SgAndOp(int64_t);
@@ -14104,7 +14140,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 966
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 978
 namespace stringify {
     /** Convert E_SgOrOp enum constant to a string. */
     const char* E_SgOrOp(int64_t);
@@ -14122,7 +14158,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 969
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 981
 namespace stringify {
     /** Convert E_SgBitXorOp enum constant to a string. */
     const char* E_SgBitXorOp(int64_t);
@@ -14140,7 +14176,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 972
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 984
 namespace stringify {
     /** Convert E_SgBitAndOp enum constant to a string. */
     const char* E_SgBitAndOp(int64_t);
@@ -14158,7 +14194,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 975
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 987
 namespace stringify {
     /** Convert E_SgBitOrOp enum constant to a string. */
     const char* E_SgBitOrOp(int64_t);
@@ -14176,7 +14212,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 978
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 990
 namespace stringify {
     /** Convert E_SgBitEqvOp enum constant to a string. */
     const char* E_SgBitEqvOp(int64_t);
@@ -14194,7 +14230,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 981
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 993
 namespace stringify {
     /** Convert E_SgCommaOpExp enum constant to a string. */
     const char* E_SgCommaOpExp(int64_t);
@@ -14212,7 +14248,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 984
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 996
 namespace stringify {
     /** Convert E_SgLshiftOp enum constant to a string. */
     const char* E_SgLshiftOp(int64_t);
@@ -14230,7 +14266,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 987
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 999
 namespace stringify {
     /** Convert E_SgRshiftOp enum constant to a string. */
     const char* E_SgRshiftOp(int64_t);
@@ -14248,7 +14284,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 990
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1002
 namespace stringify {
     /** Convert E_SgPntrArrRefExp enum constant to a string. */
     const char* E_SgPntrArrRefExp(int64_t);
@@ -14266,7 +14302,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 993
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1005
 namespace stringify {
     /** Convert E_SgScopeOp enum constant to a string. */
     const char* E_SgScopeOp(int64_t);
@@ -14284,7 +14320,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 996
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1008
 namespace stringify {
     /** Convert E_SgAssignOp enum constant to a string. */
     const char* E_SgAssignOp(int64_t);
@@ -14302,7 +14338,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 999
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1011
 namespace stringify {
     /** Convert E_SgExponentiationOp enum constant to a string. */
     const char* E_SgExponentiationOp(int64_t);
@@ -14320,7 +14356,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1002
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1014
 namespace stringify {
     /** Convert E_SgConcatenationOp enum constant to a string. */
     const char* E_SgConcatenationOp(int64_t);
@@ -14338,7 +14374,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1005
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1017
 namespace stringify {
     /** Convert E_SgPointerAssignOp enum constant to a string. */
     const char* E_SgPointerAssignOp(int64_t);
@@ -14356,7 +14392,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1008
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1020
 namespace stringify {
     /** Convert E_SgUserDefinedBinaryOp enum constant to a string. */
     const char* E_SgUserDefinedBinaryOp(int64_t);
@@ -14374,7 +14410,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1011
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1023
 namespace stringify {
     /** Convert E_SgPlusAssignOp enum constant to a string. */
     const char* E_SgPlusAssignOp(int64_t);
@@ -14392,7 +14428,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1014
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1026
 namespace stringify {
     /** Convert E_SgMinusAssignOp enum constant to a string. */
     const char* E_SgMinusAssignOp(int64_t);
@@ -14410,7 +14446,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1017
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1029
 namespace stringify {
     /** Convert E_SgAndAssignOp enum constant to a string. */
     const char* E_SgAndAssignOp(int64_t);
@@ -14428,7 +14464,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1020
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1032
 namespace stringify {
     /** Convert E_SgIorAssignOp enum constant to a string. */
     const char* E_SgIorAssignOp(int64_t);
@@ -14446,7 +14482,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1023
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1035
 namespace stringify {
     /** Convert E_SgMultAssignOp enum constant to a string. */
     const char* E_SgMultAssignOp(int64_t);
@@ -14464,7 +14500,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1026
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1038
 namespace stringify {
     /** Convert E_SgDivAssignOp enum constant to a string. */
     const char* E_SgDivAssignOp(int64_t);
@@ -14482,7 +14518,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1029
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1041
 namespace stringify {
     /** Convert E_SgModAssignOp enum constant to a string. */
     const char* E_SgModAssignOp(int64_t);
@@ -14500,7 +14536,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1032
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1044
 namespace stringify {
     /** Convert E_SgXorAssignOp enum constant to a string. */
     const char* E_SgXorAssignOp(int64_t);
@@ -14518,7 +14554,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1035
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1047
 namespace stringify {
     /** Convert E_SgLshiftAssignOp enum constant to a string. */
     const char* E_SgLshiftAssignOp(int64_t);
@@ -14536,7 +14572,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1038
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1050
 namespace stringify {
     /** Convert E_SgRshiftAssignOp enum constant to a string. */
     const char* E_SgRshiftAssignOp(int64_t);
@@ -14554,7 +14590,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1041
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1053
 namespace stringify {
     /** Convert E_SgIntegerDivideAssignOp enum constant to a string. */
     const char* E_SgIntegerDivideAssignOp(int64_t);
@@ -14572,7 +14608,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1044
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1056
 namespace stringify {
     /** Convert E_SgExponentiationAssignOp enum constant to a string. */
     const char* E_SgExponentiationAssignOp(int64_t);
@@ -14590,7 +14626,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1047
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1059
 namespace stringify {
     /** Convert E_SgCompoundAssignOp enum constant to a string. */
     const char* E_SgCompoundAssignOp(int64_t);
@@ -14608,7 +14644,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1050
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1062
 namespace stringify {
     /** Convert E_SgMembershipOp enum constant to a string. */
     const char* E_SgMembershipOp(int64_t);
@@ -14626,7 +14662,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1053
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1065
 namespace stringify {
     /** Convert E_SgSpaceshipOp enum constant to a string. */
     const char* E_SgSpaceshipOp(int64_t);
@@ -14644,7 +14680,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1056
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1068
 namespace stringify {
     /** Convert E_SgNonMembershipOp enum constant to a string. */
     const char* E_SgNonMembershipOp(int64_t);
@@ -14662,7 +14698,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1059
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1071
 namespace stringify {
     /** Convert E_SgIsOp enum constant to a string. */
     const char* E_SgIsOp(int64_t);
@@ -14680,7 +14716,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1062
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1074
 namespace stringify {
     /** Convert E_SgIsNotOp enum constant to a string. */
     const char* E_SgIsNotOp(int64_t);
@@ -14698,7 +14734,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1065
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1077
 namespace stringify {
     /** Convert E_SgElementwiseMultiplyOp enum constant to a string. */
     const char* E_SgElementwiseMultiplyOp(int64_t);
@@ -14716,7 +14752,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1068
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1080
 namespace stringify {
     /** Convert E_SgElementwisePowerOp enum constant to a string. */
     const char* E_SgElementwisePowerOp(int64_t);
@@ -14734,7 +14770,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1071
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1083
 namespace stringify {
     /** Convert E_SgElementwiseLeftDivideOp enum constant to a string. */
     const char* E_SgElementwiseLeftDivideOp(int64_t);
@@ -14752,7 +14788,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1074
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1086
 namespace stringify {
     /** Convert E_SgElementwiseDivideOp enum constant to a string. */
     const char* E_SgElementwiseDivideOp(int64_t);
@@ -14770,7 +14806,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1077
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1089
 namespace stringify {
     /** Convert E_SgElementwiseAddOp enum constant to a string. */
     const char* E_SgElementwiseAddOp(int64_t);
@@ -14788,7 +14824,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1080
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1092
 namespace stringify {
     /** Convert E_SgElementwiseSubtractOp enum constant to a string. */
     const char* E_SgElementwiseSubtractOp(int64_t);
@@ -14806,7 +14842,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1083
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1095
 namespace stringify {
     /** Convert E_SgElementwiseOp enum constant to a string. */
     const char* E_SgElementwiseOp(int64_t);
@@ -14824,7 +14860,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1086
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1098
 namespace stringify {
     /** Convert E_SgPowerOp enum constant to a string. */
     const char* E_SgPowerOp(int64_t);
@@ -14842,7 +14878,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1089
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1101
 namespace stringify {
     /** Convert E_SgLeftDivideOp enum constant to a string. */
     const char* E_SgLeftDivideOp(int64_t);
@@ -14860,7 +14896,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1092
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1104
 namespace stringify {
     /** Convert E_SgSIMDAddOp enum constant to a string. */
     const char* E_SgSIMDAddOp(int64_t);
@@ -14878,7 +14914,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1095
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1107
 namespace stringify {
     /** Convert E_SgSIMDSubOp enum constant to a string. */
     const char* E_SgSIMDSubOp(int64_t);
@@ -14896,7 +14932,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1098
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1110
 namespace stringify {
     /** Convert E_SgSIMDMulOp enum constant to a string. */
     const char* E_SgSIMDMulOp(int64_t);
@@ -14914,7 +14950,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1101
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1113
 namespace stringify {
     /** Convert E_SgSIMDDivOp enum constant to a string. */
     const char* E_SgSIMDDivOp(int64_t);
@@ -14932,7 +14968,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1104
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1116
 namespace stringify {
     /** Convert E_SgSIMDFmaOp enum constant to a string. */
     const char* E_SgSIMDFmaOp(int64_t);
@@ -14950,7 +14986,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1107
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1119
 namespace stringify {
     /** Convert E_SgSIMDBinaryOp enum constant to a string. */
     const char* E_SgSIMDBinaryOp(int64_t);
@@ -14968,7 +15004,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1110
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1122
 namespace stringify {
     /** Convert E_SgSIMDLoad enum constant to a string. */
     const char* E_SgSIMDLoad(int64_t);
@@ -14986,7 +15022,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1113
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1125
 namespace stringify {
     /** Convert E_SgSIMDBroadcast enum constant to a string. */
     const char* E_SgSIMDBroadcast(int64_t);
@@ -15004,7 +15040,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1116
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1128
 namespace stringify {
     /** Convert E_SgSIMDStore enum constant to a string. */
     const char* E_SgSIMDStore(int64_t);
@@ -15022,7 +15058,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1119
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1131
 namespace stringify {
     /** Convert E_SgSIMDPartialStore enum constant to a string. */
     const char* E_SgSIMDPartialStore(int64_t);
@@ -15040,7 +15076,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1122
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1134
 namespace stringify {
     /** Convert E_SgSIMDScalarStore enum constant to a string. */
     const char* E_SgSIMDScalarStore(int64_t);
@@ -15058,25 +15094,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1125
-namespace stringify {
-    /** Convert E_SgSIMDSVAddV enum constant to a string. */
-    const char* E_SgSIMDSVAddV(int64_t);
-
-    /** Convert E_SgSIMDSVAddV enum constant to a string. */
-    std::string E_SgSIMDSVAddV(int64_t, const std::string &strip);
-
-    /** Return all E_SgSIMDSVAddV member values as a vector. */
-    const std::vector<int64_t>& E_SgSIMDSVAddV();
-}
-
-namespace Rose {
-    std::string stringifyE_SgSIMDSVAddV(int64_t n, const char *strip=NULL, bool canonic=false);
-    const std::vector<int64_t>& stringifyE_SgSIMDSVAddV();
-}
-
-// DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1128
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1137
 namespace stringify {
     /** Convert E_SgSIMDGather enum constant to a string. */
     const char* E_SgSIMDGather(int64_t);
@@ -15094,7 +15112,25 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1131
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1140
+namespace stringify {
+    /** Convert E_SgSIMDExplicitGather enum constant to a string. */
+    const char* E_SgSIMDExplicitGather(int64_t);
+
+    /** Convert E_SgSIMDExplicitGather enum constant to a string. */
+    std::string E_SgSIMDExplicitGather(int64_t, const std::string &strip);
+
+    /** Return all E_SgSIMDExplicitGather member values as a vector. */
+    const std::vector<int64_t>& E_SgSIMDExplicitGather();
+}
+
+namespace Rose {
+    std::string stringifyE_SgSIMDExplicitGather(int64_t n, const char *strip=NULL, bool canonic=false);
+    const std::vector<int64_t>& stringifyE_SgSIMDExplicitGather();
+}
+
+// DO NOT EDIT -- This implementation was automatically generated for the enum defined at
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1143
 namespace stringify {
     /** Convert E_SgSIMDScatter enum constant to a string. */
     const char* E_SgSIMDScatter(int64_t);
@@ -15112,7 +15148,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1134
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1146
 namespace stringify {
     /** Convert E_SgBinaryOp enum constant to a string. */
     const char* E_SgBinaryOp(int64_t);
@@ -15130,7 +15166,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1137
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1149
 namespace stringify {
     /** Convert E_SgListExp enum constant to a string. */
     const char* E_SgListExp(int64_t);
@@ -15148,7 +15184,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1140
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1152
 namespace stringify {
     /** Convert E_SgTupleExp enum constant to a string. */
     const char* E_SgTupleExp(int64_t);
@@ -15166,7 +15202,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1143
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1155
 namespace stringify {
     /** Convert E_SgMatrixExp enum constant to a string. */
     const char* E_SgMatrixExp(int64_t);
@@ -15184,7 +15220,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1146
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1158
 namespace stringify {
     /** Convert E_SgExprListExp enum constant to a string. */
     const char* E_SgExprListExp(int64_t);
@@ -15202,7 +15238,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1149
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1161
 namespace stringify {
     /** Convert E_SgComplexVal enum constant to a string. */
     const char* E_SgComplexVal(int64_t);
@@ -15220,7 +15256,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1152
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1164
 namespace stringify {
     /** Convert E_SgCudaKernelCallExp enum constant to a string. */
     const char* E_SgCudaKernelCallExp(int64_t);
@@ -15238,7 +15274,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1155
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1167
 namespace stringify {
     /** Convert E_SgFunctionCallExp enum constant to a string. */
     const char* E_SgFunctionCallExp(int64_t);
@@ -15256,7 +15292,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1158
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1170
 namespace stringify {
     /** Convert E_SgCallExpression enum constant to a string. */
     const char* E_SgCallExpression(int64_t);
@@ -15274,7 +15310,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1161
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1173
 namespace stringify {
     /** Convert E_SgSizeOfOp enum constant to a string. */
     const char* E_SgSizeOfOp(int64_t);
@@ -15292,7 +15328,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1164
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1176
 namespace stringify {
     /** Convert E_SgUpcLocalsizeofExpression enum constant to a string. */
     const char* E_SgUpcLocalsizeofExpression(int64_t);
@@ -15310,7 +15346,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1167
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1179
 namespace stringify {
     /** Convert E_SgUpcBlocksizeofExpression enum constant to a string. */
     const char* E_SgUpcBlocksizeofExpression(int64_t);
@@ -15328,7 +15364,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1170
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1182
 namespace stringify {
     /** Convert E_SgUpcElemsizeofExpression enum constant to a string. */
     const char* E_SgUpcElemsizeofExpression(int64_t);
@@ -15346,7 +15382,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1173
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1185
 namespace stringify {
     /** Convert E_SgTypeIdOp enum constant to a string. */
     const char* E_SgTypeIdOp(int64_t);
@@ -15364,7 +15400,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1176
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1188
 namespace stringify {
     /** Convert E_SgConditionalExp enum constant to a string. */
     const char* E_SgConditionalExp(int64_t);
@@ -15382,7 +15418,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1179
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1191
 namespace stringify {
     /** Convert E_SgNewExp enum constant to a string. */
     const char* E_SgNewExp(int64_t);
@@ -15400,7 +15436,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1182
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1194
 namespace stringify {
     /** Convert E_SgDeleteExp enum constant to a string. */
     const char* E_SgDeleteExp(int64_t);
@@ -15418,7 +15454,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1185
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1197
 namespace stringify {
     /** Convert E_SgAggregateInitializer enum constant to a string. */
     const char* E_SgAggregateInitializer(int64_t);
@@ -15436,7 +15472,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1188
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1200
 namespace stringify {
     /** Convert E_SgCompoundInitializer enum constant to a string. */
     const char* E_SgCompoundInitializer(int64_t);
@@ -15454,7 +15490,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1191
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1203
 namespace stringify {
     /** Convert E_SgConstructorInitializer enum constant to a string. */
     const char* E_SgConstructorInitializer(int64_t);
@@ -15472,7 +15508,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1194
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1206
 namespace stringify {
     /** Convert E_SgAssignInitializer enum constant to a string. */
     const char* E_SgAssignInitializer(int64_t);
@@ -15490,7 +15526,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1197
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1209
 namespace stringify {
     /** Convert E_SgDesignatedInitializer enum constant to a string. */
     const char* E_SgDesignatedInitializer(int64_t);
@@ -15508,7 +15544,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1200
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1212
 namespace stringify {
     /** Convert E_SgBracedInitializer enum constant to a string. */
     const char* E_SgBracedInitializer(int64_t);
@@ -15526,7 +15562,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1203
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1215
 namespace stringify {
     /** Convert E_SgVarArgStartOp enum constant to a string. */
     const char* E_SgVarArgStartOp(int64_t);
@@ -15544,7 +15580,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1206
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1218
 namespace stringify {
     /** Convert E_SgVarArgOp enum constant to a string. */
     const char* E_SgVarArgOp(int64_t);
@@ -15562,7 +15598,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1209
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1221
 namespace stringify {
     /** Convert E_SgVarArgEndOp enum constant to a string. */
     const char* E_SgVarArgEndOp(int64_t);
@@ -15580,7 +15616,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1212
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1224
 namespace stringify {
     /** Convert E_SgVarArgCopyOp enum constant to a string. */
     const char* E_SgVarArgCopyOp(int64_t);
@@ -15598,7 +15634,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1215
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1227
 namespace stringify {
     /** Convert E_SgVarArgStartOneOperandOp enum constant to a string. */
     const char* E_SgVarArgStartOneOperandOp(int64_t);
@@ -15616,7 +15652,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1218
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1230
 namespace stringify {
     /** Convert E_SgSubscriptExpression enum constant to a string. */
     const char* E_SgSubscriptExpression(int64_t);
@@ -15634,7 +15670,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1221
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1233
 namespace stringify {
     /** Convert E_SgImpliedDo enum constant to a string. */
     const char* E_SgImpliedDo(int64_t);
@@ -15652,7 +15688,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1224
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1236
 namespace stringify {
     /** Convert E_SgIOItemExpression enum constant to a string. */
     const char* E_SgIOItemExpression(int64_t);
@@ -15670,7 +15706,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1227
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1239
 namespace stringify {
     /** Convert E_SgStatementExpression enum constant to a string. */
     const char* E_SgStatementExpression(int64_t);
@@ -15688,7 +15724,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1230
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1242
 namespace stringify {
     /** Convert E_SgAsmOp enum constant to a string. */
     const char* E_SgAsmOp(int64_t);
@@ -15706,7 +15742,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1233
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1245
 namespace stringify {
     /** Convert E_SgActualArgumentExpression enum constant to a string. */
     const char* E_SgActualArgumentExpression(int64_t);
@@ -15724,7 +15760,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1236
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1248
 namespace stringify {
     /** Convert E_SgUnknownArrayOrFunctionReference enum constant to a string. */
     const char* E_SgUnknownArrayOrFunctionReference(int64_t);
@@ -15742,7 +15778,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1239
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1251
 namespace stringify {
     /** Convert E_SgCAFCoExpression enum constant to a string. */
     const char* E_SgCAFCoExpression(int64_t);
@@ -15760,7 +15796,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1242
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1254
 namespace stringify {
     /** Convert E_SgCudaKernelExecConfig enum constant to a string. */
     const char* E_SgCudaKernelExecConfig(int64_t);
@@ -15778,7 +15814,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1245
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1257
 namespace stringify {
     /** Convert E_SgLambdaRefExp enum constant to a string. */
     const char* E_SgLambdaRefExp(int64_t);
@@ -15796,7 +15832,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1248
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1260
 namespace stringify {
     /** Convert E_SgDictionaryExp enum constant to a string. */
     const char* E_SgDictionaryExp(int64_t);
@@ -15814,7 +15850,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1251
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1263
 namespace stringify {
     /** Convert E_SgKeyDatumPair enum constant to a string. */
     const char* E_SgKeyDatumPair(int64_t);
@@ -15832,7 +15868,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1254
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1266
 namespace stringify {
     /** Convert E_SgComprehension enum constant to a string. */
     const char* E_SgComprehension(int64_t);
@@ -15850,7 +15886,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1257
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1269
 namespace stringify {
     /** Convert E_SgListComprehension enum constant to a string. */
     const char* E_SgListComprehension(int64_t);
@@ -15868,7 +15904,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1260
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1272
 namespace stringify {
     /** Convert E_SgSetComprehension enum constant to a string. */
     const char* E_SgSetComprehension(int64_t);
@@ -15886,7 +15922,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1263
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1275
 namespace stringify {
     /** Convert E_SgDictionaryComprehension enum constant to a string. */
     const char* E_SgDictionaryComprehension(int64_t);
@@ -15904,7 +15940,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1266
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1278
 namespace stringify {
     /** Convert E_SgNaryBooleanOp enum constant to a string. */
     const char* E_SgNaryBooleanOp(int64_t);
@@ -15922,7 +15958,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1269
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1281
 namespace stringify {
     /** Convert E_SgNaryComparisonOp enum constant to a string. */
     const char* E_SgNaryComparisonOp(int64_t);
@@ -15940,7 +15976,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1272
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1284
 namespace stringify {
     /** Convert E_SgNaryOp enum constant to a string. */
     const char* E_SgNaryOp(int64_t);
@@ -15958,7 +15994,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1275
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1287
 namespace stringify {
     /** Convert E_SgStringConversion enum constant to a string. */
     const char* E_SgStringConversion(int64_t);
@@ -15976,7 +16012,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1278
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1290
 namespace stringify {
     /** Convert E_SgYieldExpression enum constant to a string. */
     const char* E_SgYieldExpression(int64_t);
@@ -15994,7 +16030,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1281
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1293
 namespace stringify {
     /** Convert E_SgAlignOfOp enum constant to a string. */
     const char* E_SgAlignOfOp(int64_t);
@@ -16012,7 +16048,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1284
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1296
 namespace stringify {
     /** Convert E_SgRangeExp enum constant to a string. */
     const char* E_SgRangeExp(int64_t);
@@ -16030,7 +16066,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1287
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1299
 namespace stringify {
     /** Convert E_SgFunctionParameterRefExp enum constant to a string. */
     const char* E_SgFunctionParameterRefExp(int64_t);
@@ -16048,7 +16084,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1290
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1302
 namespace stringify {
     /** Convert E_SgLambdaExp enum constant to a string. */
     const char* E_SgLambdaExp(int64_t);
@@ -16066,7 +16102,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1293
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1305
 namespace stringify {
     /** Convert E_SgNoexceptOp enum constant to a string. */
     const char* E_SgNoexceptOp(int64_t);
@@ -16084,7 +16120,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1296
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1308
 namespace stringify {
     /** Convert E_SgFoldExpression enum constant to a string. */
     const char* E_SgFoldExpression(int64_t);
@@ -16102,7 +16138,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1299
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1311
 namespace stringify {
     /** Convert E_SgAwaitExpression enum constant to a string. */
     const char* E_SgAwaitExpression(int64_t);
@@ -16120,7 +16156,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1302
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1314
 namespace stringify {
     /** Convert E_SgChooseExpression enum constant to a string. */
     const char* E_SgChooseExpression(int64_t);
@@ -16138,7 +16174,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1305
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1317
 namespace stringify {
     /** Convert E_SgNonrealSymbol enum constant to a string. */
     const char* E_SgNonrealSymbol(int64_t);
@@ -16156,7 +16192,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1308
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1320
 namespace stringify {
     /** Convert E_SgTemplateMemberFunctionSymbol enum constant to a string. */
     const char* E_SgTemplateMemberFunctionSymbol(int64_t);
@@ -16174,7 +16210,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1311
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1323
 namespace stringify {
     /** Convert E_SgMemberFunctionSymbol enum constant to a string. */
     const char* E_SgMemberFunctionSymbol(int64_t);
@@ -16192,7 +16228,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1314
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1326
 namespace stringify {
     /** Convert E_SgTemplateFunctionSymbol enum constant to a string. */
     const char* E_SgTemplateFunctionSymbol(int64_t);
@@ -16210,7 +16246,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1317
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1329
 namespace stringify {
     /** Convert E_SgRenameSymbol enum constant to a string. */
     const char* E_SgRenameSymbol(int64_t);
@@ -16228,7 +16264,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1320
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1332
 namespace stringify {
     /** Convert E_SgFunctionSymbol enum constant to a string. */
     const char* E_SgFunctionSymbol(int64_t);
@@ -16246,7 +16282,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1323
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1335
 namespace stringify {
     /** Convert E_SgTemplateClassSymbol enum constant to a string. */
     const char* E_SgTemplateClassSymbol(int64_t);
@@ -16264,7 +16300,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1326
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1338
 namespace stringify {
     /** Convert E_SgClassSymbol enum constant to a string. */
     const char* E_SgClassSymbol(int64_t);
@@ -16282,7 +16318,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1329
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1341
 namespace stringify {
     /** Convert E_SgTemplateSymbol enum constant to a string. */
     const char* E_SgTemplateSymbol(int64_t);
@@ -16300,7 +16336,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1332
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1344
 namespace stringify {
     /** Convert E_SgEnumSymbol enum constant to a string. */
     const char* E_SgEnumSymbol(int64_t);
@@ -16318,7 +16354,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1335
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1347
 namespace stringify {
     /** Convert E_SgTemplateTypedefSymbol enum constant to a string. */
     const char* E_SgTemplateTypedefSymbol(int64_t);
@@ -16336,7 +16372,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1338
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1350
 namespace stringify {
     /** Convert E_SgTypedefSymbol enum constant to a string. */
     const char* E_SgTypedefSymbol(int64_t);
@@ -16354,7 +16390,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1341
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1353
 namespace stringify {
     /** Convert E_SgLabelSymbol enum constant to a string. */
     const char* E_SgLabelSymbol(int64_t);
@@ -16372,7 +16408,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1344
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1356
 namespace stringify {
     /** Convert E_SgNamespaceSymbol enum constant to a string. */
     const char* E_SgNamespaceSymbol(int64_t);
@@ -16390,7 +16426,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1347
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1359
 namespace stringify {
     /** Convert E_SgModuleSymbol enum constant to a string. */
     const char* E_SgModuleSymbol(int64_t);
@@ -16408,7 +16444,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1350
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1362
 namespace stringify {
     /** Convert E_SgAliasSymbol enum constant to a string. */
     const char* E_SgAliasSymbol(int64_t);
@@ -16432,9 +16468,6 @@ namespace stringify {
     }
     /** Stringification. */
     namespace Rose {
-        /** Stringification. */
-        namespace Callbacks {
-        }
         /** Stringification. */
         namespace CommandLine {
             /** Stringification. */
@@ -16634,12 +16667,6 @@ namespace stringify {
         namespace Message {
             /** Stringification. */
             namespace Prefix {
-            }
-        }
-        /** Stringification. */
-        namespace Database {
-            /** Stringification. */
-            namespace Statement {
             }
         }
         /** Stringification. */

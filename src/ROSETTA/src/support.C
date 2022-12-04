@@ -2016,11 +2016,6 @@ Grammar::setUpSupport ()
             NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 #endif
 
-  // DQ (5/1/2009): Requested feature by Andreas (controls use of SQLite database for analysis).
-  // This permits multiple files to be handled separately in that program analysis which supports it.
-     Project.setDataPrototype("std::string","dataBaseFilename", "= \"\"",
-            NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
 #if 1
   // DQ (1/20/2010): Added list of directories to the SgProject to represent large scale projects
   // (as can be useful for code generation).

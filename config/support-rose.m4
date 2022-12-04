@@ -459,10 +459,6 @@ ROSE_SUPPORT_BISON
 # DQ (11/5/2009): Added test for GraphViz's ``dot'' program
 ROSE_SUPPORT_GRAPHVIZ
 
-AX_LIB_SQLITE3
-AX_LIB_MYSQL
-AM_CONDITIONAL(ROSE_USE_MYSQL,test "$found_mysql" = yes)
-
 # DQ (9/15/2009): I have moved this to before the backend compiler selection so that
 # we can make the backend selection a bit more compiler dependent. Actually we likely
 # don't need this!
@@ -765,7 +761,6 @@ AC_MSG_NOTICE([testing the value of CPPFLAGS: (CPPFLAGS = "$CPPFLAGS")])
 
 AX_BOOST_IOSTREAMS
 ROSE_SUPPORT_LIBGCRYPT
-ROSE_SUPPORT_LIBPQXX
 
 ROSE_SUPPORT_VECTORIZATION
 
@@ -1481,7 +1476,6 @@ exampleTranslators/PDFGenerator/Makefile
 exampleTranslators/defaultTranslator/Makefile
 exampleTranslators/documentedExamples/AstRewriteExamples/Makefile
 exampleTranslators/documentedExamples/Makefile
-exampleTranslators/documentedExamples/dataBaseExamples/Makefile
 exampleTranslators/documentedExamples/simpleTranslatorExamples/Makefile
 exampleTranslators/documentedExamples/simpleTranslatorExamples/exampleMakefile
 LicenseInformation/Makefile
@@ -1528,8 +1522,6 @@ src/midend/programAnalysis/systemDependenceGraph/Makefile
 src/midend/programTransformation/extractFunctionArgumentsNormalization/Makefile
 src/midend/programTransformation/loopProcessing/Makefile
 src/midend/programTransformation/singleStatementToBlockNormalization/Makefile
-src/roseExtensions/Makefile
-src/roseExtensions/sqlite3x/Makefile
 src/roseSupport/Makefile
 src/util/Makefile
 src/util/commandlineProcessing/Makefile

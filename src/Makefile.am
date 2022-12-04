@@ -4,13 +4,8 @@ bin_SCRIPTS =
 pkgdata_DATA =
 MOSTLYCLEANFILES =
 
-if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 SUBDIRS = util ROSETTA roseSupport Rose frontend midend backend \
-          3rdPartyLibraries roseExtensions
-else
-SUBDIRS = util ROSETTA roseSupport Rose frontend midend backend \
-          3rdPartyLibraries roseExtensions
-endif
+          3rdPartyLibraries
 
 # This lists a large number of directories.  If "make install"
 # is run then we only need a single directory
@@ -40,16 +35,6 @@ if ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
 else
    libroseOpenFortranParserlibraries =
 #   libroseExperimentalGeneralLanguagelibraries =
-endif
-
-if ROSE_USE_SQLITE_DATABASE
-   libroseSqlite3xConnection = \
-		$(top_builddir)/src/roseExtensions/sqlite3x/libRoseSQLite3xDatabase.la
-   OPT_SQLITE3_LDFLAGS       = $(SQLITE3_LDFLAGS)
-
-else
-   libroseSqlite3xConnection =
-   OPT_SQLITE3_LDFLAGS =
 endif
 
 # TOO (11/22/2011): flattening midend Makefiles => TODO: move conditional compilation to Makefile.
@@ -235,8 +220,7 @@ librose_la_LIBADD = $(BOOST_LDFLAGS) $(libroseLibraries) $(JAVA_JVM_FLAGS) $(LIB
           $(BOOST_THREAD_LIB) $(BOOST_FILESYSTEM_LIB) \
           $(BOOST_PROGRAM_OPTIONS_LIB) $(BOOST_REGEX_LIB) \
           $(BOOST_SYSTEM_LIB) $(BOOST_SERIALIZATION_LIB) \
-          $(BOOST_WAVE_LIB) $(BOOST_IOSTREAMS_LIB) \
-          $(OPT_SQLITE3_LDFLAGS)
+          $(BOOST_WAVE_LIB) $(BOOST_IOSTREAMS_LIB)
 
 # DQ (6/9/2017): Removed because it failes for "make install" rule on my machine.
 # This was located after the BOOST_WAVE_LIB line in the librose_la_LIBADD rule above.
@@ -315,7 +299,6 @@ rose_config_LDFLAGS += -fno-rtti
 
 rose_config_installed_cppflags =		\
 	-I@includedir@/rose			\
-	$(ROSE_SQLITE_DATABASE_INCLUDE)		\
 	$(ROSE_PCH_INCLUDE)			\
 	$(ROSE_GCRYPT_INCLUDES)			\
 	$(BOOST_CPPFLAGS)
@@ -334,7 +317,6 @@ rose_config_installed_ldflags =			\
 	$(BOOST_IOSTREAMS_LIB)			\
 	$(BOOST_CHRONO_LIB)			\
 	$(JAVA_JVM_LINK)			\
-	$(SQLITE_DATABASE_LIBS)			\
 	$(RT_LIBS)				\
 	$(ROSE_SSL_LIBS)			\
 	$(ROSE_INTEL_COMPILER_MATH_LIBS)	\

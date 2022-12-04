@@ -634,8 +634,6 @@ endif()
 
 if(NOT WIN32)
   include(FindOpenSSL)
-  include(FindSqlite3)
-  find_sqlite3()
 endif()
 
 find_package(FLEX)
@@ -970,10 +968,6 @@ set(ROSE_INCLUDES
 
 if(WIN32)
   list(APPEND ROSE_INCLUDES ${ROSE_TOP_SRC_DIR}/winspecific)
-endif()
-
-if(SQLITE3_FOUND_LIB)
-  list(APPEND ROSE_INCLUDES ${ROSE_TOP_SRC_DIR}/src/roseExtensions/sqlite3x)
 endif()
 
 ########################################################################################################################

@@ -4,7 +4,7 @@
 #include <vector>
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/roseSupport/utility_functions.C line 820
+// /src/roseSupport/utility_functions.C line 840
 namespace stringify {
     const char* language_enum(int64_t i) {
         switch (i) {
@@ -184,56 +184,6 @@ namespace Rose {
 
     const std::vector<int64_t>& stringifyTransformationSupport_operatorCodeType() {
         return stringify::TransformationSupport::operatorCodeType();
-    }
-}
-
-// DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/roseSupport/callbacks.h line 14
-namespace stringify { namespace Rose { namespace Callbacks {
-    const char* Direction(int64_t i) {
-        switch (i) {
-            case 0L: return "FORWARD";
-            case 1L: return "BACKWARD";
-            default: return "";
-        }
-    }
-
-    std::string Direction(int64_t i, const std::string &strip) {
-        std::string s = Direction(i);
-        if (s.empty())
-            s = "(Rose::Callbacks::Direction)" + boost::lexical_cast<std::string>(i);
-        if (boost::starts_with(s, strip))
-            s = s.substr(strip.size());
-        return s;
-    }
-
-    const std::vector<int64_t>& Direction() {
-        static const int64_t values[] = {
-            0L,
-            1L
-        };
-        static const std::vector<int64_t> retval(values, values + 2);
-        return retval;
-    }
-
-}}}
-
-namespace Rose {
-    std::string stringifyCallbacksDirection(int64_t i, const char *strip, bool canonic) {
-        std::string retval = stringify::Rose::Callbacks::Direction(i);
-        if (retval.empty()) {
-            retval = "(Rose::Callbacks::Direction)" + boost::lexical_cast<std::string>(i);
-        } else {
-            if (strip && !strncmp(strip, retval.c_str(), strlen(strip)))
-                retval = retval.substr(strlen(strip));
-            if (canonic)
-                retval = "Rose::Callbacks::Direction::" + retval;
-        }
-        return retval;
-    }
-
-    const std::vector<int64_t>& stringifyCallbacksDirection() {
-        return stringify::Rose::Callbacks::Direction();
     }
 }
 
@@ -26376,7 +26326,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 120
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 122
 namespace stringify {
     const char* OpenMPClauseKind(int64_t i) {
         switch (i) {
@@ -26420,7 +26370,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 230
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 237
 namespace stringify {
     const char* OpenMPWhenClauseSelectorSet(int64_t i) {
         switch (i) {
@@ -26464,7 +26414,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 241
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 248
 namespace stringify {
     const char* OpenMPWhenClauseSelectorParameter(int64_t i) {
         switch (i) {
@@ -26508,7 +26458,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 250
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 257
 namespace stringify {
     const char* OpenMPClauseContextKind(int64_t i) {
         switch (i) {
@@ -26552,7 +26502,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 263
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 270
 namespace stringify {
     const char* OpenMPClauseContextVendor(int64_t i) {
         switch (i) {
@@ -26596,7 +26546,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 284
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 291
 namespace stringify {
     const char* OpenMPIfClauseModifier(int64_t i) {
         switch (i) {
@@ -26640,7 +26590,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 304
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 311
 namespace stringify {
     const char* OpenMPDefaultClauseKind(int64_t i) {
         switch (i) {
@@ -26684,7 +26634,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 318
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 325
 namespace stringify {
     const char* OpenMPOrderClauseKind(int64_t i) {
         switch (i) {
@@ -26728,7 +26678,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 328
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 335
 namespace stringify {
     const char* OpenMPProcBindClauseKind(int64_t i) {
         switch (i) {
@@ -26772,7 +26722,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 339
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 346
 namespace stringify {
     const char* OpenMPAllocateClauseAllocator(int64_t i) {
         switch (i) {
@@ -26816,7 +26766,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 356
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 363
 namespace stringify {
     const char* OpenMPAllocatorClauseAllocator(int64_t i) {
         switch (i) {
@@ -26860,7 +26810,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 372
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 379
 namespace stringify {
     const char* OpenMPReductionClauseModifier(int64_t i) {
         switch (i) {
@@ -26904,7 +26854,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 383
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 390
 namespace stringify {
     const char* OpenMPReductionClauseIdentifier(int64_t i) {
         switch (i) {
@@ -26948,7 +26898,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 404
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 411
 namespace stringify {
     const char* OpenMPLastprivateClauseModifier(int64_t i) {
         switch (i) {
@@ -26992,7 +26942,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 412
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 419
 namespace stringify {
     const char* OpenMPLinearClauseStep(int64_t i) {
         switch (i) {
@@ -27036,7 +26986,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 423
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 430
 namespace stringify {
     const char* OpenMPLinearClauseModifier(int64_t i) {
         switch (i) {
@@ -27080,7 +27030,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 437
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 444
 namespace stringify {
     const char* OpenMPScheduleClauseModifier(int64_t i) {
         switch (i) {
@@ -27124,7 +27074,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 450
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 457
 namespace stringify {
     const char* OpenMPScheduleClauseKind(int64_t i) {
         switch (i) {
@@ -27168,7 +27118,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 465
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 472
 namespace stringify {
     const char* OpenMPDistScheduleClauseKind(int64_t i) {
         switch (i) {
@@ -27212,7 +27162,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 476
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 483
 namespace stringify {
     const char* OpenMPBindClauseBinding(int64_t i) {
         switch (i) {
@@ -27256,7 +27206,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 489
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 496
 namespace stringify {
     const char* OpenMPInitializerClausePriv(int64_t i) {
         switch (i) {
@@ -27300,7 +27250,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 500
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 507
 namespace stringify {
     const char* OpenMPAtomicDefaultMemOrderClauseKind(int64_t i) {
         switch (i) {
@@ -27344,7 +27294,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 511
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 518
 namespace stringify {
     const char* OpenMPUsesAllocatorsClauseAllocator(int64_t i) {
         switch (i) {
@@ -27388,7 +27338,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 528
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 535
 namespace stringify {
     const char* OpenMPDeviceClauseModifier(int64_t i) {
         switch (i) {
@@ -27432,7 +27382,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 537
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 544
 namespace stringify {
     const char* OpenMPInReductionClauseIdentifier(int64_t i) {
         switch (i) {
@@ -27476,7 +27426,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 557
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 564
 namespace stringify {
     const char* OpenMPDependClauseModifier(int64_t i) {
         switch (i) {
@@ -27520,7 +27470,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 565
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 572
 namespace stringify {
     const char* OpenMPDeclareMapperDirectiveIdentifier(int64_t i) {
         switch (i) {
@@ -27564,7 +27514,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 573
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 580
 namespace stringify {
     const char* OpenMPDependClauseType(int64_t i) {
         switch (i) {
@@ -27608,7 +27558,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 586
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 593
 namespace stringify {
     const char* OpenMPAffinityClauseModifier(int64_t i) {
         switch (i) {
@@ -27652,7 +27602,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 593
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 600
 namespace stringify {
     const char* OpenMPToClauseKind(int64_t i) {
         switch (i) {
@@ -27696,7 +27646,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 600
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 607
 namespace stringify {
     const char* OpenMPFromClauseKind(int64_t i) {
         switch (i) {
@@ -27740,7 +27690,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 607
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 614
 namespace stringify {
     const char* OpenMPDefaultmapClauseBehavior(int64_t i) {
         switch (i) {
@@ -27784,7 +27734,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 622
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 629
 namespace stringify {
     const char* OpenMPDefaultmapClauseCategory(int64_t i) {
         switch (i) {
@@ -27828,7 +27778,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 634
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 641
 namespace stringify {
     const char* OpenMPDeviceTypeClauseKind(int64_t i) {
         switch (i) {
@@ -27872,7 +27822,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 643
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 650
 namespace stringify {
     const char* OpenMPMapClauseModifier(int64_t i) {
         switch (i) {
@@ -27916,7 +27866,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 651
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 658
 namespace stringify {
     const char* OpenMPMapClauseType(int64_t i) {
         switch (i) {
@@ -27960,7 +27910,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 663
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 670
 namespace stringify {
     const char* OpenMPTaskReductionClauseIdentifier(int64_t i) {
         switch (i) {
@@ -28004,7 +27954,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 682
+// /src/frontend/SageIII/ompparser/src/OpenMPKinds.h line 689
 namespace stringify {
     const char* OpenMPDepobjUpdateClauseDependeceType(int64_t i) {
         switch (i) {
@@ -28822,7 +28772,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/sageInterface/sageInterface.h line 1827
+// /src/frontend/SageIII/sageInterface/sageInterface.h line 1826
 namespace stringify { namespace SageInterface { namespace DeferredTransformation {
     const char* TransformationKind(int64_t i) {
         switch (i) {
@@ -29326,7 +29276,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/frontend/SageIII/OmpAttribute.h line 32
+// /src/frontend/SageIII/ompSupport.h line 32
 namespace stringify { namespace OmpSupport {
     const char* omp_construct_enum(int64_t i) {
         switch (i) {
@@ -31616,62 +31566,6 @@ namespace Rose {
 
     const std::vector<int64_t>& stringifySawyerContainerAlgorithmTraversalEvent() {
         return stringify::Sawyer::Container::Algorithm::TraversalEvent();
-    }
-}
-
-// DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /src/util/Sawyer/Database.h line 293
-namespace stringify { namespace Sawyer { namespace Database { namespace Statement {
-    const char* State(int64_t i) {
-        switch (i) {
-            case 0L: return "UNBOUND";
-            case 1L: return "READY";
-            case 2L: return "EXECUTING";
-            case 3L: return "FINISHED";
-            case 4L: return "DEAD";
-            default: return "";
-        }
-    }
-
-    std::string State(int64_t i, const std::string &strip) {
-        std::string s = State(i);
-        if (s.empty())
-            s = "(Sawyer::Database::Statement::State)" + boost::lexical_cast<std::string>(i);
-        if (boost::starts_with(s, strip))
-            s = s.substr(strip.size());
-        return s;
-    }
-
-    const std::vector<int64_t>& State() {
-        static const int64_t values[] = {
-            0L,
-            1L,
-            2L,
-            3L,
-            4L
-        };
-        static const std::vector<int64_t> retval(values, values + 5);
-        return retval;
-    }
-
-}}}}
-
-namespace Rose {
-    std::string stringifySawyerDatabaseStatementState(int64_t i, const char *strip, bool canonic) {
-        std::string retval = stringify::Sawyer::Database::Statement::State(i);
-        if (retval.empty()) {
-            retval = "(Sawyer::Database::Statement::State)" + boost::lexical_cast<std::string>(i);
-        } else {
-            if (strip && !strncmp(strip, retval.c_str(), strlen(strip)))
-                retval = retval.substr(strlen(strip));
-            if (canonic)
-                retval = "Sawyer::Database::Statement::State::" + retval;
-        }
-        return retval;
-    }
-
-    const std::vector<int64_t>& stringifySawyerDatabaseStatementState() {
-        return stringify::Sawyer::Database::Statement::State();
     }
 }
 
@@ -35729,15 +35623,16 @@ namespace stringify {
             case 2L: return "Broadcast";
             case 3L: return "BroadcastZero";
             case 4L: return "Gather";
-            case 5L: return "Scatter";
-            case 6L: return "ScalarStore";
-            case 7L: return "Store";
-            case 8L: return "HAdd";
-            case 9L: return "Add";
-            case 10L: return "Sub";
-            case 11L: return "Mul";
-            case 12L: return "Div";
-            case 13L: return "Extract";
+            case 5L: return "ExplicitGather";
+            case 6L: return "Scatter";
+            case 7L: return "ScalarStore";
+            case 8L: return "Store";
+            case 9L: return "HAdd";
+            case 10L: return "Add";
+            case 11L: return "Sub";
+            case 12L: return "Mul";
+            case 13L: return "Div";
+            case 14L: return "Extract";
             default: return "";
         }
     }
@@ -35766,9 +35661,10 @@ namespace stringify {
             10L,
             11L,
             12L,
-            13L
+            13L,
+            14L
         };
-        static const std::vector<int64_t> retval(values, values + 14);
+        static const std::vector<int64_t> retval(values, values + 15);
         return retval;
     }
 
@@ -38936,7 +38832,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 17
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 17
 namespace stringify {
     const char* Cxx_GrammarVariants(int64_t i) {
         switch (i) {
@@ -39291,332 +39187,337 @@ namespace stringify {
             case 353L: return "OMP_PARALLEL_LOOP_STMT";
             case 354L: return "OMP_PARALLEL_MASTER_STMT";
             case 355L: return "OMP_MASTER_TASKLOOP_STMT";
-            case 356L: return "UPIR_SIMD_STMT";
-            case 357L: return "UpirBaseStatementTag";
-            case 358L: return "UPIR_LOOP_STMT";
-            case 359L: return "UPIR_LOOP_PARALLEL_STMT";
-            case 360L: return "UPIR_SYNC_STMT";
-            case 361L: return "OmpClauseTag";
-            case 362L: return "OmpAllocateClauseTag";
-            case 363L: return "OmpAllocatorClauseTag";
-            case 364L: return "OmpUsesAllocatorsClauseTag";
-            case 365L: return "OmpUsesAllocatorsDefinationTag";
-            case 366L: return "OmpToClauseTag";
-            case 367L: return "OmpFromClauseTag";
-            case 368L: return "OmpThreadsClauseTag";
-            case 369L: return "OmpSimdClauseTag";
-            case 370L: return "OmpBeginClauseTag";
-            case 371L: return "OmpCollapseClauseTag";
-            case 372L: return "OmpCopyinClauseTag";
-            case 373L: return "OmpCopyprivateClauseTag";
-            case 374L: return "OmpDefaultClauseTag";
-            case 375L: return "OmpEndClauseTag";
-            case 376L: return "OmpExpressionClauseTag";
-            case 377L: return "OmpFirstprivateClauseTag";
-            case 378L: return "OmpIfClauseTag";
-            case 379L: return "OmpFinalClauseTag";
-            case 380L: return "OmpPriorityClauseTag";
-            case 381L: return "OmpIfDeviceTag";
-            case 382L: return "OmpLastprivateClauseTag";
-            case 383L: return "OmpNowaitClauseTag";
-            case 384L: return "OmpReadClauseTag";
-            case 385L: return "OmpWriteClauseTag";
-            case 386L: return "OmpUpdateClauseTag";
-            case 387L: return "OmpDepobjUpdateClauseTag";
-            case 388L: return "OmpDestroyClauseTag";
-            case 389L: return "OmpCaptureClauseTag";
-            case 390L: return "OmpSeqCstClauseTag";
-            case 391L: return "OmpAcqRelClauseTag";
-            case 392L: return "OmpReleaseClauseTag";
-            case 393L: return "OmpAcquireClauseTag";
-            case 394L: return "OmpReverseOffloadClauseTag";
-            case 395L: return "OmpUnifiedAddressClauseTag";
-            case 396L: return "OmpUnifiedSharedMemoryClauseTag";
-            case 397L: return "OmpDynamicAllocatorsClauseTag";
-            case 398L: return "OmpAtomicDefaultMemOrderClauseTag";
-            case 399L: return "OmpExtImplementationDefinedRequirementClauseTag";
-            case 400L: return "OmpRelaxedClauseTag";
-            case 401L: return "OmpParallelClauseTag";
-            case 402L: return "OmpSectionsClauseTag";
-            case 403L: return "OmpForClauseTag";
-            case 404L: return "OmpTaskgroupClauseTag";
-            case 405L: return "UpirNumUnitsFieldTag";
-            case 406L: return "OmpNumTeamsClauseTag";
-            case 407L: return "OmpGrainsizeClauseTag";
-            case 408L: return "OmpDetachClauseTag";
-            case 409L: return "OmpNumTasksClauseTag";
-            case 410L: return "OmpNogroupClauseTag";
-            case 411L: return "OmpHintClauseTag";
-            case 412L: return "OmpOrderClauseTag";
-            case 413L: return "OmpDistScheduleClauseTag";
-            case 414L: return "OmpBindClauseTag";
-            case 415L: return "OmpNontemporalClauseTag";
-            case 416L: return "OmpInclusiveClauseTag";
-            case 417L: return "OmpExclusiveClauseTag";
-            case 418L: return "OmpIsDevicePtrClauseTag";
-            case 419L: return "OmpUseDevicePtrClauseTag";
-            case 420L: return "OmpUseDeviceAddrClauseTag";
-            case 421L: return "OmpThreadLimitClauseTag";
-            case 422L: return "OmpOrderedClauseTag";
-            case 423L: return "OmpPrivateClauseTag";
-            case 424L: return "OmpReductionClauseTag";
-            case 425L: return "OmpInReductionClauseTag";
-            case 426L: return "OmpTaskReductionClauseTag";
-            case 427L: return "OmpDefaultmapClauseTag";
-            case 428L: return "OmpScheduleClauseTag";
-            case 429L: return "OmpSharedClauseTag";
-            case 430L: return "OmpUntiedClauseTag";
-            case 431L: return "OmpMergeableClauseTag";
-            case 432L: return "OmpVariablesClauseTag";
-            case 433L: return "OmpMapClauseTag";
-            case 434L: return "OmpSafelenTag";
-            case 435L: return "OmpSimdlenTag";
-            case 436L: return "OmpLinearClauseTag";
-            case 437L: return "OmpUniformClauseTag";
-            case 438L: return "OmpAlignedClauseTag";
-            case 439L: return "OmpProcBindClauseTag";
-            case 440L: return "OmpAtomicClauseTag";
-            case 441L: return "OmpInbranchClauseTag";
-            case 442L: return "OmpNotinbranchClauseTag";
-            case 443L: return "OmpDependClauseTag";
-            case 444L: return "OmpAffinityClauseTag";
-            case 445L: return "OmpWhenClauseTag";
-            case 446L: return "UpirBranchFieldTag";
-            case 447L: return "UpirNestedLevelFieldTag";
-            case 448L: return "UpirNestedParentFieldTag";
-            case 449L: return "UpirNestedChildFieldTag";
-            case 450L: return "UpirSyncFieldTag";
-            case 451L: return "UpirDataFieldTag";
-            case 452L: return "UpirDataItemFieldTag";
-            case 453L: return "UpirTargetFieldTag";
-            case 454L: return "OPENCL_ACCESS_MODE";
-            case 455L: return "OPEN_STATEMENT";
-            case 456L: return "OptionsTag";
-            case 457L: return "OR_OP";
-            case 458L: return "PARAMETER_STATEMENT";
-            case 459L: return "T_PARTIAL_FUNCTION_MODIFIER";
-            case 460L: return "T_PARTIAL_FUNCTION";
-            case 461L: return "PASS_STATEMENT";
-            case 462L: return "PLUS_ASSIGN_OP";
-            case 463L: return "PLUSPLUS_OP";
-            case 464L: return "ARRAY_OP";
-            case 465L: return "POINTER_ASSIGN_OP";
-            case 466L: return "DEREF_OP";
-            case 467L: return "T_MEMBER_POINTER";
-            case 468L: return "T_POINTER";
-            case 469L: return "POWER_OP";
-            case 470L: return "PragmaTag";
-            case 471L: return "PRAGMA_DECL";
-            case 472L: return "PRINT_STATEMENT";
-            case 473L: return "PROCEDURE_HEADER_STMT";
-            case 474L: return "PROGRAM_HEADER_STMT";
-            case 475L: return "ProjectTag";
-            case 476L: return "PSEUDO_DESTRUCTOR_REF";
-            case 479L: return "QualifiedNameTag";
-            case 480L: return "T_QUALIFIED_NAME";
-            case 481L: return "RANGE_EXP";
-            case 482L: return "RANGE_BASED_FOR_STMT";
-            case 483L: return "READ_STATEMENT";
-            case 484L: return "REAL_PART_OP";
-            case 485L: return "TYPE_REF";
-            case 486L: return "T_REFERENCE";
-            case 487L: return "TEMP_Rename_Pair";
-            case 488L: return "RENAME_SYMBOL";
-            case 489L: return "RETURN_STMT";
-            case 490L: return "REWIND_STATEMENT";
-            case 491L: return "RSHIFT_ASSIGN_OP";
-            case 492L: return "RSHIFT_OP";
-            case 493L: return "T_RVALUE_REFERENCE";
-            case 494L: return "SCOPE_OP";
-            case 495L: return "SCOPE_STMT";
-            case 496L: return "TEMP_Sequence_Statement";
-            case 497L: return "SET_COMPREHENSION";
-            case 498L: return "SHORT_VAL";
-            case 499L: return "SIMD_BINARY_OP";
-            case 500L: return "SIMD_ADD_OP";
-            case 501L: return "SIMD_SUB_OP";
-            case 502L: return "SIMD_MUL_OP";
-            case 503L: return "SIMD_DIV_OP";
-            case 504L: return "SIMD_FMA_OP";
-            case 505L: return "SIMD_LOAD";
-            case 506L: return "SIMD_BROADCAST";
-            case 507L: return "SIMD_STORE";
-            case 508L: return "SIMD_PARTIAL_STORE";
-            case 509L: return "SIMD_SCALAR_STORE";
-            case 510L: return "SIMD_SVADDV";
-            case 511L: return "SIMD_GATHER";
-            case 512L: return "SIMD_SCATTER";
-            case 513L: return "SIZEOF_OP";
-            case 514L: return "ALIGNOF_OP";
-            case 515L: return "SourceFileTag";
-            case 516L: return "SPACESHIP_OP";
-            case 517L: return "SPAWN_STMT";
-            case 518L: return "SYNC_ALL_STATEMENT";
-            case 519L: return "SYNC_IMAGES_STATEMENT";
-            case 520L: return "SYNC_MEMORY_STATEMENT";
-            case 521L: return "SYNC_TEAM_STATEMENT";
-            case 522L: return "LOCK_STATEMENT";
-            case 523L: return "UNLOCK_STATEMENT";
-            case 524L: return "PROCESS_CONTROL_STATEMENT";
-            case 525L: return "SpecialFunctionModifierTag";
-            case 526L: return "StatementTag";
-            case 527L: return "STATIC_ASSERTION_DECLARATION";
-            case 528L: return "STMT_DECL_STMT";
-            case 529L: return "STMT_EXPR";
-            case 530L: return "TEMP_Statement_Function_Statement";
-            case 532L: return "StorageModifierTag";
-            case 533L: return "STR_CONV";
-            case 534L: return "StringKeyedBidirectionalGraphTag";
-            case 535L: return "STRING_VAL";
-            case 536L: return "StructureModifierTag";
-            case 537L: return "SUBSCRIPT_EXPR";
-            case 538L: return "SUBT_OP";
-            case 539L: return "SupportTag";
-            case 540L: return "SWITCH_STMT";
-            case 541L: return "SymbolTag";
-            case 542L: return "SymbolTableTag";
-            case 543L: return "TemplateArgumentTag";
-            case 544L: return "TemplateArgumentListTag";
-            case 545L: return "TEMPLATE_DECL_STMT";
-            case 546L: return "TEMPLATE_CLASS_DECL_STMT";
-            case 547L: return "TEMPLATE_CLASS_NAME";
-            case 548L: return "TEMPLATE_FUNCTION_DECL_STMT";
-            case 549L: return "TEMPLATE_FUNCTION_REF";
-            case 550L: return "TEMPLATE_FUNC_NAME";
-            case 551L: return "TEMPLATE_MEMBER_FUNCTION_DECL_STMT";
-            case 552L: return "TEMPLATE_MEMBER_FUNCTION_REF";
-            case 553L: return "TEMPLATE_MEMBER_FUNC_NAME";
-            case 554L: return "TEMPLATE_TYPEDEF_DECL_STMT";
-            case 555L: return "TEMPLATE_TYPEDEF_NAME";
-            case 556L: return "TEMPLATE_VARIABLE_DECL_STMT";
-            case 557L: return "TEMPLATE_VARIABLE_NAME";
-            case 558L: return "TEMPLATE_CLASS_DEF_STMT";
-            case 559L: return "TEMPLATE_FUNCTION_DEF_STMT";
-            case 560L: return "TEMPLATE_INST_DECL_STMT";
-            case 561L: return "TEMPLATE_INST_DEFN_STMT";
-            case 562L: return "TEMPLATE_INST_DIRECTIVE_STMT";
-            case 563L: return "TEMPLATE_INST_FUNCTION_DECL_STMT";
-            case 564L: return "TEMPLATE_INST_MEMBER_FUNCTION_DECL_STMT";
-            case 565L: return "TEMPLATE_INST_TYPEDEF_DECL_STMT";
-            case 566L: return "TemplateParameterTag";
-            case 567L: return "TEMPLATE_PARAMETER_VAL";
-            case 568L: return "TemplateParameterListTag";
-            case 569L: return "TEMPLATE_NAME";
-            case 570L: return "T_TEMPLATE";
-            case 571L: return "THIS_NODE";
-            case 572L: return "TYPE_TRAIT_BUILTIN_OPERATOR";
-            case 573L: return "SUPER_NODE";
-            case 574L: return "THROW_OP";
-            case 575L: return "TOKEN";
-            case 576L: return "TRY_STMT";
-            case 577L: return "TUPLE_EXP";
-            case 578L: return "TypeTag";
-            case 579L: return "T_BOOL";
-            case 580L: return "T_CHAR";
-            case 581L: return "T_CHAR16";
-            case 582L: return "T_CHAR32";
-            case 583L: return "T_COMPLEX";
-            case 584L: return "T_DEFAULT";
-            case 585L: return "TYPE_EXPRESSION";
-            case 586L: return "T_LABEL";
-            case 587L: return "T_DOUBLE";
-            case 588L: return "T_ELLIPSE";
-            case 589L: return "T_FIXED";
-            case 590L: return "T_FLOAT";
-            case 591L: return "T_FLOAT128";
-            case 592L: return "T_FLOAT80";
-            case 593L: return "T_GLOBAL_VOID";
-            case 594L: return "TYPEID_OP";
-            case 595L: return "T_IMAGINARY";
-            case 596L: return "T_INT";
-            case 597L: return "T_LONG";
-            case 598L: return "T_LONG_DOUBLE";
-            case 599L: return "T_LONG_LONG";
-            case 600L: return "TypeModifierTag";
-            case 601L: return "T_MATRIX";
-            case 602L: return "T_TUPLE";
-            case 603L: return "T_NULLPTR";
-            case 604L: return "T_TYPEOF_TYPE";
-            case 605L: return "T_SHORT";
-            case 606L: return "T_SIGNED_128BIT_INTEGER";
-            case 607L: return "T_SIGNED_CHAR";
-            case 608L: return "T_SIGNED_INT";
-            case 609L: return "T_SIGNED_LONG";
-            case 610L: return "T_SIGNED_LONG_LONG";
-            case 611L: return "T_SIGNED_SHORT";
-            case 612L: return "T_STRING";
-            case 613L: return "T_UNKNOWN";
-            case 614L: return "T_UNSIGNED_128BIT_INTEGER";
-            case 615L: return "T_UNSIGNED_CHAR";
-            case 616L: return "T_UNSIGNED_INT";
-            case 617L: return "T_UNSIGNED_LONG";
-            case 618L: return "T_UNSIGNED_LONG_LONG";
-            case 619L: return "T_UNSIGNED_SHORT";
-            case 620L: return "T_VOID";
-            case 621L: return "T_WCHAR";
-            case 622L: return "TYPEDEF_STMT";
-            case 623L: return "T_TYPEDEF_SEQ";
-            case 624L: return "TYPEDEF_NAME";
-            case 625L: return "T_TYPEDEF";
-            case 626L: return "UPC_AccessModifierTag";
-            case 627L: return "UNARY_ADD_OP";
-            case 628L: return "UNARY_EXPRESSION";
-            case 629L: return "UNDEF_DIRECTIVE_STMT";
-            case 630L: return "UndirectedGraphEdgeTag";
-            case 631L: return "TEMP_UnknownArrayOrFunctionReference";
-            case 632L: return "UnknownFileTag";
-            case 634L: return "Unparse_InfoTag";
-            case 635L: return "UNSIGNED_CHAR_VAL";
-            case 636L: return "UNSIGNED_INT_VAL";
-            case 637L: return "UNSIGNED_LONG_LONG_INT_VAL";
-            case 638L: return "UNSIGNED_LONG_INT_VAL";
-            case 639L: return "UNSIGNED_SHORT_VAL";
-            case 640L: return "UPC_BARRIER_STMT";
-            case 641L: return "UPC_BLOCK_SIZEOF_EXPR";
-            case 642L: return "UPC_ELEM_SIZEOF_EXPR";
-            case 643L: return "UPC_FENCE_STMT";
-            case 644L: return "UPC_FORALL_STMT";
-            case 645L: return "UPC_LOCAL_SIZEOF_EXPR";
-            case 646L: return "UPC_MYTHREAD";
-            case 647L: return "UPC_NOTIFY_STMT";
-            case 648L: return "UPC_THREADS";
-            case 649L: return "UPC_WAIT_STMT";
-            case 650L: return "USE_STATEMENT";
-            case 651L: return "USER_DEFINED_BINARY_OP";
-            case 652L: return "USER_DEFINED_UNARY_OP";
-            case 653L: return "USING_DECLARATION_STMT";
-            case 654L: return "USING_DIRECTIVE_STMT";
-            case 655L: return "ValueExpTag";
-            case 656L: return "VA_COPY_OP";
-            case 657L: return "VA_END_OP";
-            case 658L: return "VA_OP";
-            case 659L: return "VA_START_ONE_OPERAND_OP";
-            case 660L: return "VA_START_OP";
-            case 661L: return "VAR_REF";
-            case 662L: return "VAR_DECL_STMT";
-            case 663L: return "VAR_DEFN_STMT";
-            case 664L: return "VARIABLE_NAME";
-            case 665L: return "VARIANT_EXPR";
-            case 666L: return "VARIANT_STMT";
-            case 667L: return "VOID_VAL";
-            case 668L: return "WAIT_STATEMENT";
-            case 669L: return "WARNING_DIRECTIVE_STMT";
-            case 670L: return "WITH_STATEMENT";
-            case 671L: return "WCHAR_VAL";
-            case 672L: return "TEMP_Where_Statement";
-            case 673L: return "WHILE_STMT";
-            case 674L: return "WRITE_STATEMENT";
-            case 675L: return "XOR_ASSIGN_OP";
-            case 676L: return "YIELD_EXP";
-            case 677L: return "_File_InfoTag";
-            case 678L: return "T_CAFTEAM";
-            case 679L: return "WITHTEAM_STMT";
-            case 680L: return "COARRAY_REF_EXPR";
-            case 681L: return "CALL_EXPRESSION";
-            case 682L: return "T_CRAY_POINTER";
-            case 683L: return "CLASS_NODE";
-            case 685L: return "Cxx_Grammar_UNKNOWN_GRAMMAR";
-            case 686L: return "Cxx_Grammar_LAST_TAG";
+            case 356L: return "OMP_UNROLL_STMT";
+            case 357L: return "OMP_TILE_STMT";
+            case 358L: return "UPIR_SIMD_STMT";
+            case 359L: return "UpirBaseStatementTag";
+            case 360L: return "UPIR_LOOP_STMT";
+            case 361L: return "UPIR_LOOP_PARALLEL_STMT";
+            case 362L: return "UPIR_SYNC_STMT";
+            case 363L: return "OmpClauseTag";
+            case 364L: return "OmpAllocateClauseTag";
+            case 365L: return "OmpAllocatorClauseTag";
+            case 366L: return "OmpUsesAllocatorsClauseTag";
+            case 367L: return "OmpUsesAllocatorsDefinationTag";
+            case 368L: return "OmpToClauseTag";
+            case 369L: return "OmpFromClauseTag";
+            case 370L: return "OmpThreadsClauseTag";
+            case 371L: return "OmpSimdClauseTag";
+            case 372L: return "OmpBeginClauseTag";
+            case 373L: return "OmpCollapseClauseTag";
+            case 374L: return "OmpCopyinClauseTag";
+            case 375L: return "OmpCopyprivateClauseTag";
+            case 376L: return "OmpDefaultClauseTag";
+            case 377L: return "OmpEndClauseTag";
+            case 378L: return "OmpExpressionClauseTag";
+            case 379L: return "OmpFirstprivateClauseTag";
+            case 380L: return "OmpIfClauseTag";
+            case 381L: return "OmpFinalClauseTag";
+            case 382L: return "OmpPriorityClauseTag";
+            case 383L: return "OmpIfDeviceTag";
+            case 384L: return "OmpLastprivateClauseTag";
+            case 385L: return "OmpNowaitClauseTag";
+            case 386L: return "OmpReadClauseTag";
+            case 387L: return "OmpWriteClauseTag";
+            case 388L: return "OmpUpdateClauseTag";
+            case 389L: return "OmpDepobjUpdateClauseTag";
+            case 390L: return "OmpDestroyClauseTag";
+            case 391L: return "OmpCaptureClauseTag";
+            case 392L: return "OmpSeqCstClauseTag";
+            case 393L: return "OmpAcqRelClauseTag";
+            case 394L: return "OmpReleaseClauseTag";
+            case 395L: return "OmpAcquireClauseTag";
+            case 396L: return "OmpReverseOffloadClauseTag";
+            case 397L: return "OmpUnifiedAddressClauseTag";
+            case 398L: return "OmpUnifiedSharedMemoryClauseTag";
+            case 399L: return "OmpDynamicAllocatorsClauseTag";
+            case 400L: return "OmpAtomicDefaultMemOrderClauseTag";
+            case 401L: return "OmpExtImplementationDefinedRequirementClauseTag";
+            case 402L: return "OmpRelaxedClauseTag";
+            case 403L: return "OmpParallelClauseTag";
+            case 404L: return "OmpSectionsClauseTag";
+            case 405L: return "OmpForClauseTag";
+            case 406L: return "OmpTaskgroupClauseTag";
+            case 407L: return "UpirNumUnitsFieldTag";
+            case 408L: return "OmpNumTeamsClauseTag";
+            case 409L: return "OmpGrainsizeClauseTag";
+            case 410L: return "OmpDetachClauseTag";
+            case 411L: return "OmpNumTasksClauseTag";
+            case 412L: return "OmpNogroupClauseTag";
+            case 413L: return "OmpHintClauseTag";
+            case 414L: return "OmpOrderClauseTag";
+            case 415L: return "OmpDistScheduleClauseTag";
+            case 416L: return "OmpBindClauseTag";
+            case 417L: return "OmpNontemporalClauseTag";
+            case 418L: return "OmpInclusiveClauseTag";
+            case 419L: return "OmpExclusiveClauseTag";
+            case 420L: return "OmpIsDevicePtrClauseTag";
+            case 421L: return "OmpUseDevicePtrClauseTag";
+            case 422L: return "OmpUseDeviceAddrClauseTag";
+            case 423L: return "OmpThreadLimitClauseTag";
+            case 424L: return "OmpOrderedClauseTag";
+            case 425L: return "OmpPrivateClauseTag";
+            case 426L: return "OmpReductionClauseTag";
+            case 427L: return "OmpInReductionClauseTag";
+            case 428L: return "OmpTaskReductionClauseTag";
+            case 429L: return "OmpDefaultmapClauseTag";
+            case 430L: return "OmpScheduleClauseTag";
+            case 431L: return "OmpSharedClauseTag";
+            case 432L: return "OmpUntiedClauseTag";
+            case 433L: return "OmpMergeableClauseTag";
+            case 434L: return "OmpVariablesClauseTag";
+            case 435L: return "OmpMapClauseTag";
+            case 436L: return "OmpSafelenTag";
+            case 437L: return "OmpSimdlenTag";
+            case 438L: return "OmpLinearClauseTag";
+            case 439L: return "OmpUniformClauseTag";
+            case 440L: return "OmpAlignedClauseTag";
+            case 441L: return "OmpProcBindClauseTag";
+            case 442L: return "OmpAtomicClauseTag";
+            case 443L: return "OmpInbranchClauseTag";
+            case 444L: return "OmpNotinbranchClauseTag";
+            case 445L: return "OmpDependClauseTag";
+            case 446L: return "OmpAffinityClauseTag";
+            case 447L: return "OmpWhenClauseTag";
+            case 448L: return "OmpFullTag";
+            case 449L: return "OmpPartialTag";
+            case 450L: return "OmpSizesTag";
+            case 451L: return "UpirBranchFieldTag";
+            case 452L: return "UpirNestedLevelFieldTag";
+            case 453L: return "UpirNestedParentFieldTag";
+            case 454L: return "UpirNestedChildFieldTag";
+            case 455L: return "UpirSyncFieldTag";
+            case 456L: return "UpirDataFieldTag";
+            case 457L: return "UpirDataItemFieldTag";
+            case 458L: return "UpirTargetFieldTag";
+            case 459L: return "OPENCL_ACCESS_MODE";
+            case 460L: return "OPEN_STATEMENT";
+            case 461L: return "OptionsTag";
+            case 462L: return "OR_OP";
+            case 463L: return "PARAMETER_STATEMENT";
+            case 464L: return "T_PARTIAL_FUNCTION_MODIFIER";
+            case 465L: return "T_PARTIAL_FUNCTION";
+            case 466L: return "PASS_STATEMENT";
+            case 467L: return "PLUS_ASSIGN_OP";
+            case 468L: return "PLUSPLUS_OP";
+            case 469L: return "ARRAY_OP";
+            case 470L: return "POINTER_ASSIGN_OP";
+            case 471L: return "DEREF_OP";
+            case 472L: return "T_MEMBER_POINTER";
+            case 473L: return "T_POINTER";
+            case 474L: return "POWER_OP";
+            case 475L: return "PragmaTag";
+            case 476L: return "PRAGMA_DECL";
+            case 477L: return "PRINT_STATEMENT";
+            case 478L: return "PROCEDURE_HEADER_STMT";
+            case 479L: return "PROGRAM_HEADER_STMT";
+            case 480L: return "ProjectTag";
+            case 481L: return "PSEUDO_DESTRUCTOR_REF";
+            case 484L: return "QualifiedNameTag";
+            case 485L: return "T_QUALIFIED_NAME";
+            case 486L: return "RANGE_EXP";
+            case 487L: return "RANGE_BASED_FOR_STMT";
+            case 488L: return "READ_STATEMENT";
+            case 489L: return "REAL_PART_OP";
+            case 490L: return "TYPE_REF";
+            case 491L: return "T_REFERENCE";
+            case 492L: return "TEMP_Rename_Pair";
+            case 493L: return "RENAME_SYMBOL";
+            case 494L: return "RETURN_STMT";
+            case 495L: return "REWIND_STATEMENT";
+            case 496L: return "RSHIFT_ASSIGN_OP";
+            case 497L: return "RSHIFT_OP";
+            case 498L: return "T_RVALUE_REFERENCE";
+            case 499L: return "SCOPE_OP";
+            case 500L: return "SCOPE_STMT";
+            case 501L: return "TEMP_Sequence_Statement";
+            case 502L: return "SET_COMPREHENSION";
+            case 503L: return "SHORT_VAL";
+            case 504L: return "SIMD_BINARY_OP";
+            case 505L: return "SIMD_ADD_OP";
+            case 506L: return "SIMD_SUB_OP";
+            case 507L: return "SIMD_MUL_OP";
+            case 508L: return "SIMD_DIV_OP";
+            case 509L: return "SIMD_FMA_OP";
+            case 510L: return "SIMD_LOAD";
+            case 511L: return "SIMD_BROADCAST";
+            case 512L: return "SIMD_STORE";
+            case 513L: return "SIMD_PARTIAL_STORE";
+            case 514L: return "SIMD_SCALAR_STORE";
+            case 515L: return "SIMD_GATHER";
+            case 516L: return "SIMD_EXPLICIT_GATHER";
+            case 517L: return "SIMD_SCATTER";
+            case 518L: return "SIZEOF_OP";
+            case 519L: return "ALIGNOF_OP";
+            case 520L: return "SourceFileTag";
+            case 521L: return "SPACESHIP_OP";
+            case 522L: return "SPAWN_STMT";
+            case 523L: return "SYNC_ALL_STATEMENT";
+            case 524L: return "SYNC_IMAGES_STATEMENT";
+            case 525L: return "SYNC_MEMORY_STATEMENT";
+            case 526L: return "SYNC_TEAM_STATEMENT";
+            case 527L: return "LOCK_STATEMENT";
+            case 528L: return "UNLOCK_STATEMENT";
+            case 529L: return "PROCESS_CONTROL_STATEMENT";
+            case 530L: return "SpecialFunctionModifierTag";
+            case 531L: return "StatementTag";
+            case 532L: return "STATIC_ASSERTION_DECLARATION";
+            case 533L: return "STMT_DECL_STMT";
+            case 534L: return "STMT_EXPR";
+            case 535L: return "TEMP_Statement_Function_Statement";
+            case 537L: return "StorageModifierTag";
+            case 538L: return "STR_CONV";
+            case 539L: return "StringKeyedBidirectionalGraphTag";
+            case 540L: return "STRING_VAL";
+            case 541L: return "StructureModifierTag";
+            case 542L: return "SUBSCRIPT_EXPR";
+            case 543L: return "SUBT_OP";
+            case 544L: return "SupportTag";
+            case 545L: return "SWITCH_STMT";
+            case 546L: return "SymbolTag";
+            case 547L: return "SymbolTableTag";
+            case 548L: return "TemplateArgumentTag";
+            case 549L: return "TemplateArgumentListTag";
+            case 550L: return "TEMPLATE_DECL_STMT";
+            case 551L: return "TEMPLATE_CLASS_DECL_STMT";
+            case 552L: return "TEMPLATE_CLASS_NAME";
+            case 553L: return "TEMPLATE_FUNCTION_DECL_STMT";
+            case 554L: return "TEMPLATE_FUNCTION_REF";
+            case 555L: return "TEMPLATE_FUNC_NAME";
+            case 556L: return "TEMPLATE_MEMBER_FUNCTION_DECL_STMT";
+            case 557L: return "TEMPLATE_MEMBER_FUNCTION_REF";
+            case 558L: return "TEMPLATE_MEMBER_FUNC_NAME";
+            case 559L: return "TEMPLATE_TYPEDEF_DECL_STMT";
+            case 560L: return "TEMPLATE_TYPEDEF_NAME";
+            case 561L: return "TEMPLATE_VARIABLE_DECL_STMT";
+            case 562L: return "TEMPLATE_VARIABLE_NAME";
+            case 563L: return "TEMPLATE_CLASS_DEF_STMT";
+            case 564L: return "TEMPLATE_FUNCTION_DEF_STMT";
+            case 565L: return "TEMPLATE_INST_DECL_STMT";
+            case 566L: return "TEMPLATE_INST_DEFN_STMT";
+            case 567L: return "TEMPLATE_INST_DIRECTIVE_STMT";
+            case 568L: return "TEMPLATE_INST_FUNCTION_DECL_STMT";
+            case 569L: return "TEMPLATE_INST_MEMBER_FUNCTION_DECL_STMT";
+            case 570L: return "TEMPLATE_INST_TYPEDEF_DECL_STMT";
+            case 571L: return "TemplateParameterTag";
+            case 572L: return "TEMPLATE_PARAMETER_VAL";
+            case 573L: return "TemplateParameterListTag";
+            case 574L: return "TEMPLATE_NAME";
+            case 575L: return "T_TEMPLATE";
+            case 576L: return "THIS_NODE";
+            case 577L: return "TYPE_TRAIT_BUILTIN_OPERATOR";
+            case 578L: return "SUPER_NODE";
+            case 579L: return "THROW_OP";
+            case 580L: return "TOKEN";
+            case 581L: return "TRY_STMT";
+            case 582L: return "TUPLE_EXP";
+            case 583L: return "TypeTag";
+            case 584L: return "T_BOOL";
+            case 585L: return "T_CHAR";
+            case 586L: return "T_CHAR16";
+            case 587L: return "T_CHAR32";
+            case 588L: return "T_COMPLEX";
+            case 589L: return "T_DEFAULT";
+            case 590L: return "TYPE_EXPRESSION";
+            case 591L: return "T_LABEL";
+            case 592L: return "T_DOUBLE";
+            case 593L: return "T_ELLIPSE";
+            case 594L: return "T_FIXED";
+            case 595L: return "T_FLOAT";
+            case 596L: return "T_FLOAT128";
+            case 597L: return "T_FLOAT80";
+            case 598L: return "T_GLOBAL_VOID";
+            case 599L: return "TYPEID_OP";
+            case 600L: return "T_IMAGINARY";
+            case 601L: return "T_INT";
+            case 602L: return "T_LONG";
+            case 603L: return "T_LONG_DOUBLE";
+            case 604L: return "T_LONG_LONG";
+            case 605L: return "TypeModifierTag";
+            case 606L: return "T_MATRIX";
+            case 607L: return "T_TUPLE";
+            case 608L: return "T_NULLPTR";
+            case 609L: return "T_TYPEOF_TYPE";
+            case 610L: return "T_SHORT";
+            case 611L: return "T_SIGNED_128BIT_INTEGER";
+            case 612L: return "T_SIGNED_CHAR";
+            case 613L: return "T_SIGNED_INT";
+            case 614L: return "T_SIGNED_LONG";
+            case 615L: return "T_SIGNED_LONG_LONG";
+            case 616L: return "T_SIGNED_SHORT";
+            case 617L: return "T_STRING";
+            case 618L: return "T_UNKNOWN";
+            case 619L: return "T_UNSIGNED_128BIT_INTEGER";
+            case 620L: return "T_UNSIGNED_CHAR";
+            case 621L: return "T_UNSIGNED_INT";
+            case 622L: return "T_UNSIGNED_LONG";
+            case 623L: return "T_UNSIGNED_LONG_LONG";
+            case 624L: return "T_UNSIGNED_SHORT";
+            case 625L: return "T_VOID";
+            case 626L: return "T_WCHAR";
+            case 627L: return "TYPEDEF_STMT";
+            case 628L: return "T_TYPEDEF_SEQ";
+            case 629L: return "TYPEDEF_NAME";
+            case 630L: return "T_TYPEDEF";
+            case 631L: return "UPC_AccessModifierTag";
+            case 632L: return "UNARY_ADD_OP";
+            case 633L: return "UNARY_EXPRESSION";
+            case 634L: return "UNDEF_DIRECTIVE_STMT";
+            case 635L: return "UndirectedGraphEdgeTag";
+            case 636L: return "TEMP_UnknownArrayOrFunctionReference";
+            case 637L: return "UnknownFileTag";
+            case 639L: return "Unparse_InfoTag";
+            case 640L: return "UNSIGNED_CHAR_VAL";
+            case 641L: return "UNSIGNED_INT_VAL";
+            case 642L: return "UNSIGNED_LONG_LONG_INT_VAL";
+            case 643L: return "UNSIGNED_LONG_INT_VAL";
+            case 644L: return "UNSIGNED_SHORT_VAL";
+            case 645L: return "UPC_BARRIER_STMT";
+            case 646L: return "UPC_BLOCK_SIZEOF_EXPR";
+            case 647L: return "UPC_ELEM_SIZEOF_EXPR";
+            case 648L: return "UPC_FENCE_STMT";
+            case 649L: return "UPC_FORALL_STMT";
+            case 650L: return "UPC_LOCAL_SIZEOF_EXPR";
+            case 651L: return "UPC_MYTHREAD";
+            case 652L: return "UPC_NOTIFY_STMT";
+            case 653L: return "UPC_THREADS";
+            case 654L: return "UPC_WAIT_STMT";
+            case 655L: return "USE_STATEMENT";
+            case 656L: return "USER_DEFINED_BINARY_OP";
+            case 657L: return "USER_DEFINED_UNARY_OP";
+            case 658L: return "USING_DECLARATION_STMT";
+            case 659L: return "USING_DIRECTIVE_STMT";
+            case 660L: return "ValueExpTag";
+            case 661L: return "VA_COPY_OP";
+            case 662L: return "VA_END_OP";
+            case 663L: return "VA_OP";
+            case 664L: return "VA_START_ONE_OPERAND_OP";
+            case 665L: return "VA_START_OP";
+            case 666L: return "VAR_REF";
+            case 667L: return "VAR_DECL_STMT";
+            case 668L: return "VAR_DEFN_STMT";
+            case 669L: return "VARIABLE_NAME";
+            case 670L: return "VARIANT_EXPR";
+            case 671L: return "VARIANT_STMT";
+            case 672L: return "VOID_VAL";
+            case 673L: return "WAIT_STATEMENT";
+            case 674L: return "WARNING_DIRECTIVE_STMT";
+            case 675L: return "WITH_STATEMENT";
+            case 676L: return "WCHAR_VAL";
+            case 677L: return "TEMP_Where_Statement";
+            case 678L: return "WHILE_STMT";
+            case 679L: return "WRITE_STATEMENT";
+            case 680L: return "XOR_ASSIGN_OP";
+            case 681L: return "YIELD_EXP";
+            case 682L: return "_File_InfoTag";
+            case 683L: return "T_CAFTEAM";
+            case 684L: return "WITHTEAM_STMT";
+            case 685L: return "COARRAY_REF_EXPR";
+            case 686L: return "CALL_EXPRESSION";
+            case 687L: return "T_CRAY_POINTER";
+            case 688L: return "CLASS_NODE";
+            case 690L: return "Cxx_Grammar_UNKNOWN_GRAMMAR";
+            case 691L: return "Cxx_Grammar_LAST_TAG";
             default: return "";
         }
     }
@@ -40104,11 +40005,11 @@ namespace stringify {
             474L,
             475L,
             476L,
+            477L,
+            478L,
             479L,
             480L,
             481L,
-            482L,
-            483L,
             484L,
             485L,
             486L,
@@ -40156,11 +40057,11 @@ namespace stringify {
             528L,
             529L,
             530L,
+            531L,
             532L,
             533L,
             534L,
             535L,
-            536L,
             537L,
             538L,
             539L,
@@ -40257,11 +40158,11 @@ namespace stringify {
             630L,
             631L,
             632L,
+            633L,
             634L,
             635L,
             636L,
             637L,
-            638L,
             639L,
             640L,
             641L,
@@ -40307,10 +40208,15 @@ namespace stringify {
             681L,
             682L,
             683L,
+            684L,
             685L,
-            686L
+            686L,
+            687L,
+            688L,
+            690L,
+            691L
         };
-        static const std::vector<int64_t> retval(values, values + 677);
+        static const std::vector<int64_t> retval(values, values + 682);
         return retval;
     }
 
@@ -40336,7 +40242,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 698
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 703
 namespace stringify {
     const char* VariantT(int64_t i) {
         switch (i) {
@@ -40691,331 +40597,336 @@ namespace stringify {
             case 353L: return "V_SgOmpParallelLoopStatement";
             case 354L: return "V_SgOmpParallelMasterStatement";
             case 355L: return "V_SgOmpMasterTaskloopStatement";
-            case 356L: return "V_SgUpirSimdStatement";
-            case 357L: return "V_SgUpirBaseStatement";
-            case 358L: return "V_SgUpirLoopStatement";
-            case 359L: return "V_SgUpirLoopParallelStatement";
-            case 360L: return "V_SgUpirSyncStatement";
-            case 361L: return "V_SgOmpClause";
-            case 362L: return "V_SgOmpAllocateClause";
-            case 363L: return "V_SgOmpAllocatorClause";
-            case 364L: return "V_SgOmpUsesAllocatorsClause";
-            case 365L: return "V_SgOmpUsesAllocatorsDefination";
-            case 366L: return "V_SgOmpToClause";
-            case 367L: return "V_SgOmpFromClause";
-            case 368L: return "V_SgOmpThreadsClause";
-            case 369L: return "V_SgOmpSimdClause";
-            case 370L: return "V_SgOmpBeginClause";
-            case 371L: return "V_SgOmpCollapseClause";
-            case 372L: return "V_SgOmpCopyinClause";
-            case 373L: return "V_SgOmpCopyprivateClause";
-            case 374L: return "V_SgOmpDefaultClause";
-            case 375L: return "V_SgOmpEndClause";
-            case 376L: return "V_SgOmpExpressionClause";
-            case 377L: return "V_SgOmpFirstprivateClause";
-            case 378L: return "V_SgOmpIfClause";
-            case 379L: return "V_SgOmpFinalClause";
-            case 380L: return "V_SgOmpPriorityClause";
-            case 381L: return "V_SgOmpDeviceClause";
-            case 382L: return "V_SgOmpLastprivateClause";
-            case 383L: return "V_SgOmpNowaitClause";
-            case 384L: return "V_SgOmpReadClause";
-            case 385L: return "V_SgOmpWriteClause";
-            case 386L: return "V_SgOmpUpdateClause";
-            case 387L: return "V_SgOmpDepobjUpdateClause";
-            case 388L: return "V_SgOmpDestroyClause";
-            case 389L: return "V_SgOmpCaptureClause";
-            case 390L: return "V_SgOmpSeqCstClause";
-            case 391L: return "V_SgOmpAcqRelClause";
-            case 392L: return "V_SgOmpReleaseClause";
-            case 393L: return "V_SgOmpAcquireClause";
-            case 394L: return "V_SgOmpReverseOffloadClause";
-            case 395L: return "V_SgOmpUnifiedAddressClause";
-            case 396L: return "V_SgOmpUnifiedSharedMemoryClause";
-            case 397L: return "V_SgOmpDynamicAllocatorsClause";
-            case 398L: return "V_SgOmpAtomicDefaultMemOrderClause";
-            case 399L: return "V_SgOmpExtImplementationDefinedRequirementClause";
-            case 400L: return "V_SgOmpRelaxedClause";
-            case 401L: return "V_SgOmpParallelClause";
-            case 402L: return "V_SgOmpSectionsClause";
-            case 403L: return "V_SgOmpForClause";
-            case 404L: return "V_SgOmpTaskgroupClause";
-            case 405L: return "V_SgUpirNumUnitsField";
-            case 406L: return "V_SgOmpNumTeamsClause";
-            case 407L: return "V_SgOmpGrainsizeClause";
-            case 408L: return "V_SgOmpDetachClause";
-            case 409L: return "V_SgOmpNumTasksClause";
-            case 410L: return "V_SgOmpNogroupClause";
-            case 411L: return "V_SgOmpHintClause";
-            case 412L: return "V_SgOmpOrderClause";
-            case 413L: return "V_SgOmpDistScheduleClause";
-            case 414L: return "V_SgOmpBindClause";
-            case 415L: return "V_SgOmpNontemporalClause";
-            case 416L: return "V_SgOmpInclusiveClause";
-            case 417L: return "V_SgOmpExclusiveClause";
-            case 418L: return "V_SgOmpIsDevicePtrClause";
-            case 419L: return "V_SgOmpUseDevicePtrClause";
-            case 420L: return "V_SgOmpUseDeviceAddrClause";
-            case 421L: return "V_SgOmpThreadLimitClause";
-            case 422L: return "V_SgOmpOrderedClause";
-            case 423L: return "V_SgOmpPrivateClause";
-            case 424L: return "V_SgOmpReductionClause";
-            case 425L: return "V_SgOmpInReductionClause";
-            case 426L: return "V_SgOmpTaskReductionClause";
-            case 427L: return "V_SgOmpDefaultmapClause";
-            case 428L: return "V_SgOmpScheduleClause";
-            case 429L: return "V_SgOmpSharedClause";
-            case 430L: return "V_SgOmpUntiedClause";
-            case 431L: return "V_SgOmpMergeableClause";
-            case 432L: return "V_SgOmpVariablesClause";
-            case 433L: return "V_SgOmpMapClause";
-            case 434L: return "V_SgOmpSafelenClause";
-            case 435L: return "V_SgOmpSimdlenClause";
-            case 436L: return "V_SgOmpLinearClause";
-            case 437L: return "V_SgOmpUniformClause";
-            case 438L: return "V_SgOmpAlignedClause";
-            case 439L: return "V_SgOmpProcBindClause";
-            case 440L: return "V_SgOmpAtomicClause";
-            case 441L: return "V_SgOmpInbranchClause";
-            case 442L: return "V_SgOmpNotinbranchClause";
-            case 443L: return "V_SgOmpDependClause";
-            case 444L: return "V_SgOmpAffinityClause";
-            case 445L: return "V_SgOmpWhenClause";
-            case 446L: return "V_SgUpirBranchField";
-            case 447L: return "V_SgUpirNestedLevelField";
-            case 448L: return "V_SgUpirNestedParentField";
-            case 449L: return "V_SgUpirNestedChildField";
-            case 450L: return "V_SgUpirSyncField";
-            case 451L: return "V_SgUpirDataField";
-            case 452L: return "V_SgUpirDataItemField";
-            case 453L: return "V_SgUpirTargetField";
-            case 454L: return "V_SgOpenclAccessModeModifier";
-            case 455L: return "V_SgOpenStatement";
-            case 456L: return "V_SgOptions";
-            case 457L: return "V_SgOrOp";
-            case 458L: return "V_SgParameterStatement";
-            case 459L: return "V_SgPartialFunctionModifierType";
-            case 460L: return "V_SgPartialFunctionType";
-            case 461L: return "V_SgPassStatement";
-            case 462L: return "V_SgPlusAssignOp";
-            case 463L: return "V_SgPlusPlusOp";
-            case 464L: return "V_SgPntrArrRefExp";
-            case 465L: return "V_SgPointerAssignOp";
-            case 466L: return "V_SgPointerDerefExp";
-            case 467L: return "V_SgPointerMemberType";
-            case 468L: return "V_SgPointerType";
-            case 469L: return "V_SgPowerOp";
-            case 470L: return "V_SgPragma";
-            case 471L: return "V_SgPragmaDeclaration";
-            case 472L: return "V_SgPrintStatement";
-            case 473L: return "V_SgProcedureHeaderStatement";
-            case 474L: return "V_SgProgramHeaderStatement";
-            case 475L: return "V_SgProject";
-            case 476L: return "V_SgPseudoDestructorRefExp";
-            case 479L: return "V_SgQualifiedName";
-            case 480L: return "V_SgQualifiedNameType";
-            case 481L: return "V_SgRangeExp";
-            case 482L: return "V_SgRangeBasedForStatement";
-            case 483L: return "V_SgReadStatement";
-            case 484L: return "V_SgRealPartOp";
-            case 485L: return "V_SgRefExp";
-            case 486L: return "V_SgReferenceType";
-            case 487L: return "V_SgRenamePair";
-            case 488L: return "V_SgRenameSymbol";
-            case 489L: return "V_SgReturnStmt";
-            case 490L: return "V_SgRewindStatement";
-            case 491L: return "V_SgRshiftAssignOp";
-            case 492L: return "V_SgRshiftOp";
-            case 493L: return "V_SgRvalueReferenceType";
-            case 494L: return "V_SgScopeOp";
-            case 495L: return "V_SgScopeStatement";
-            case 496L: return "V_SgSequenceStatement";
-            case 497L: return "V_SgSetComprehension";
-            case 498L: return "V_SgShortVal";
-            case 499L: return "V_SgSIMDBinaryOp";
-            case 500L: return "V_SgSIMDAddOp";
-            case 501L: return "V_SgSIMDSubOp";
-            case 502L: return "V_SgSIMDMulOp";
-            case 503L: return "V_SgSIMDDivOp";
-            case 504L: return "V_SgSIMDFmaOp";
-            case 505L: return "V_SgSIMDLoad";
-            case 506L: return "V_SgSIMDBroadcast";
-            case 507L: return "V_SgSIMDStore";
-            case 508L: return "V_SgSIMDPartialStore";
-            case 509L: return "V_SgSIMDScalarStore";
-            case 510L: return "V_SgSIMDSVAddV";
-            case 511L: return "V_SgSIMDGather";
-            case 512L: return "V_SgSIMDScatter";
-            case 513L: return "V_SgSizeOfOp";
-            case 514L: return "V_SgAlignOfOp";
-            case 515L: return "V_SgSourceFile";
-            case 516L: return "V_SgSpaceshipOp";
-            case 517L: return "V_SgSpawnStmt";
-            case 518L: return "V_SgSyncAllStatement";
-            case 519L: return "V_SgSyncImagesStatement";
-            case 520L: return "V_SgSyncMemoryStatement";
-            case 521L: return "V_SgSyncTeamStatement";
-            case 522L: return "V_SgLockStatement";
-            case 523L: return "V_SgUnlockStatement";
-            case 524L: return "V_SgProcessControlStatement";
-            case 525L: return "V_SgSpecialFunctionModifier";
-            case 526L: return "V_SgStatement";
-            case 527L: return "V_SgStaticAssertionDeclaration";
-            case 528L: return "V_SgStmtDeclarationStatement";
-            case 529L: return "V_SgStatementExpression";
-            case 530L: return "V_SgStatementFunctionStatement";
-            case 532L: return "V_SgStorageModifier";
-            case 533L: return "V_SgStringConversion";
-            case 534L: return "V_SgStringKeyedBidirectionalGraph";
-            case 535L: return "V_SgStringVal";
-            case 536L: return "V_SgStructureModifier";
-            case 537L: return "V_SgSubscriptExpression";
-            case 538L: return "V_SgSubtractOp";
-            case 539L: return "V_SgSupport";
-            case 540L: return "V_SgSwitchStatement";
-            case 541L: return "V_SgSymbol";
-            case 542L: return "V_SgSymbolTable";
-            case 543L: return "V_SgTemplateArgument";
-            case 544L: return "V_SgTemplateArgumentList";
-            case 545L: return "V_SgTemplateDeclaration";
-            case 546L: return "V_SgTemplateClassDeclaration";
-            case 547L: return "V_SgTemplateClassSymbol";
-            case 548L: return "V_SgTemplateFunctionDeclaration";
-            case 549L: return "V_SgTemplateFunctionRefExp";
-            case 550L: return "V_SgTemplateFunctionSymbol";
-            case 551L: return "V_SgTemplateMemberFunctionDeclaration";
-            case 552L: return "V_SgTemplateMemberFunctionRefExp";
-            case 553L: return "V_SgTemplateMemberFunctionSymbol";
-            case 554L: return "V_SgTemplateTypedefDeclaration";
-            case 555L: return "V_SgTemplateTypedefSymbol";
-            case 556L: return "V_SgTemplateVariableDeclaration";
-            case 557L: return "V_SgTemplateVariableSymbol";
-            case 558L: return "V_SgTemplateClassDefinition";
-            case 559L: return "V_SgTemplateFunctionDefinition";
-            case 560L: return "V_SgTemplateInstantiationDecl";
-            case 561L: return "V_SgTemplateInstantiationDefn";
-            case 562L: return "V_SgTemplateInstantiationDirectiveStatement";
-            case 563L: return "V_SgTemplateInstantiationFunctionDecl";
-            case 564L: return "V_SgTemplateInstantiationMemberFunctionDecl";
-            case 565L: return "V_SgTemplateInstantiationTypedefDeclaration";
-            case 566L: return "V_SgTemplateParameter";
-            case 567L: return "V_SgTemplateParameterVal";
-            case 568L: return "V_SgTemplateParameterList";
-            case 569L: return "V_SgTemplateSymbol";
-            case 570L: return "V_SgTemplateType";
-            case 571L: return "V_SgThisExp";
-            case 572L: return "V_SgTypeTraitBuiltinOperator";
-            case 573L: return "V_SgSuperExp";
-            case 574L: return "V_SgThrowOp";
-            case 575L: return "V_SgToken";
-            case 576L: return "V_SgTryStmt";
-            case 577L: return "V_SgTupleExp";
-            case 578L: return "V_SgType";
-            case 579L: return "V_SgTypeBool";
-            case 580L: return "V_SgTypeChar";
-            case 581L: return "V_SgTypeChar16";
-            case 582L: return "V_SgTypeChar32";
-            case 583L: return "V_SgTypeComplex";
-            case 584L: return "V_SgTypeDefault";
-            case 585L: return "V_SgTypeExpression";
-            case 586L: return "V_SgTypeLabel";
-            case 587L: return "V_SgTypeDouble";
-            case 588L: return "V_SgTypeEllipse";
-            case 589L: return "V_SgTypeFixed";
-            case 590L: return "V_SgTypeFloat";
-            case 591L: return "V_SgTypeFloat128";
-            case 592L: return "V_SgTypeFloat80";
-            case 593L: return "V_SgTypeGlobalVoid";
-            case 594L: return "V_SgTypeIdOp";
-            case 595L: return "V_SgTypeImaginary";
-            case 596L: return "V_SgTypeInt";
-            case 597L: return "V_SgTypeLong";
-            case 598L: return "V_SgTypeLongDouble";
-            case 599L: return "V_SgTypeLongLong";
-            case 600L: return "V_SgTypeModifier";
-            case 601L: return "V_SgTypeMatrix";
-            case 602L: return "V_SgTypeTuple";
-            case 603L: return "V_SgTypeNullptr";
-            case 604L: return "V_SgTypeOfType";
-            case 605L: return "V_SgTypeShort";
-            case 606L: return "V_SgTypeSigned128bitInteger";
-            case 607L: return "V_SgTypeSignedChar";
-            case 608L: return "V_SgTypeSignedInt";
-            case 609L: return "V_SgTypeSignedLong";
-            case 610L: return "V_SgTypeSignedLongLong";
-            case 611L: return "V_SgTypeSignedShort";
-            case 612L: return "V_SgTypeString";
-            case 613L: return "V_SgTypeUnknown";
-            case 614L: return "V_SgTypeUnsigned128bitInteger";
-            case 615L: return "V_SgTypeUnsignedChar";
-            case 616L: return "V_SgTypeUnsignedInt";
-            case 617L: return "V_SgTypeUnsignedLong";
-            case 618L: return "V_SgTypeUnsignedLongLong";
-            case 619L: return "V_SgTypeUnsignedShort";
-            case 620L: return "V_SgTypeVoid";
-            case 621L: return "V_SgTypeWchar";
-            case 622L: return "V_SgTypedefDeclaration";
-            case 623L: return "V_SgTypedefSeq";
-            case 624L: return "V_SgTypedefSymbol";
-            case 625L: return "V_SgTypedefType";
-            case 626L: return "V_SgUPC_AccessModifier";
-            case 627L: return "V_SgUnaryAddOp";
-            case 628L: return "V_SgUnaryOp";
-            case 629L: return "V_SgUndefDirectiveStatement";
-            case 630L: return "V_SgUndirectedGraphEdge";
-            case 631L: return "V_SgUnknownArrayOrFunctionReference";
-            case 632L: return "V_SgUnknownFile";
-            case 634L: return "V_SgUnparse_Info";
-            case 635L: return "V_SgUnsignedCharVal";
-            case 636L: return "V_SgUnsignedIntVal";
-            case 637L: return "V_SgUnsignedLongLongIntVal";
-            case 638L: return "V_SgUnsignedLongVal";
-            case 639L: return "V_SgUnsignedShortVal";
-            case 640L: return "V_SgUpcBarrierStatement";
-            case 641L: return "V_SgUpcBlocksizeofExpression";
-            case 642L: return "V_SgUpcElemsizeofExpression";
-            case 643L: return "V_SgUpcFenceStatement";
-            case 644L: return "V_SgUpcForAllStatement";
-            case 645L: return "V_SgUpcLocalsizeofExpression";
-            case 646L: return "V_SgUpcMythread";
-            case 647L: return "V_SgUpcNotifyStatement";
-            case 648L: return "V_SgUpcThreads";
-            case 649L: return "V_SgUpcWaitStatement";
-            case 650L: return "V_SgUseStatement";
-            case 651L: return "V_SgUserDefinedBinaryOp";
-            case 652L: return "V_SgUserDefinedUnaryOp";
-            case 653L: return "V_SgUsingDeclarationStatement";
-            case 654L: return "V_SgUsingDirectiveStatement";
-            case 655L: return "V_SgValueExp";
-            case 656L: return "V_SgVarArgCopyOp";
-            case 657L: return "V_SgVarArgEndOp";
-            case 658L: return "V_SgVarArgOp";
-            case 659L: return "V_SgVarArgStartOneOperandOp";
-            case 660L: return "V_SgVarArgStartOp";
-            case 661L: return "V_SgVarRefExp";
-            case 662L: return "V_SgVariableDeclaration";
-            case 663L: return "V_SgVariableDefinition";
-            case 664L: return "V_SgVariableSymbol";
-            case 665L: return "V_SgVariantExpression";
-            case 666L: return "V_SgVariantStatement";
-            case 667L: return "V_SgVoidVal";
-            case 668L: return "V_SgWaitStatement";
-            case 669L: return "V_SgWarningDirectiveStatement";
-            case 670L: return "V_SgWithStatement";
-            case 671L: return "V_SgWcharVal";
-            case 672L: return "V_SgWhereStatement";
-            case 673L: return "V_SgWhileStmt";
-            case 674L: return "V_SgWriteStatement";
-            case 675L: return "V_SgXorAssignOp";
-            case 676L: return "V_SgYieldExpression";
-            case 677L: return "V_Sg_File_Info";
-            case 678L: return "V_SgTypeCAFTeam";
-            case 679L: return "V_SgCAFWithTeamStatement";
-            case 680L: return "V_SgCAFCoExpression";
-            case 681L: return "V_SgCallExpression";
-            case 682L: return "V_SgTypeCrayPointer";
-            case 683L: return "V_SgClassExp";
-            case 685L: return "V_SgNumVariants";
+            case 356L: return "V_SgOmpUnrollStatement";
+            case 357L: return "V_SgOmpTileStatement";
+            case 358L: return "V_SgUpirSimdStatement";
+            case 359L: return "V_SgUpirBaseStatement";
+            case 360L: return "V_SgUpirLoopStatement";
+            case 361L: return "V_SgUpirLoopParallelStatement";
+            case 362L: return "V_SgUpirSyncStatement";
+            case 363L: return "V_SgOmpClause";
+            case 364L: return "V_SgOmpAllocateClause";
+            case 365L: return "V_SgOmpAllocatorClause";
+            case 366L: return "V_SgOmpUsesAllocatorsClause";
+            case 367L: return "V_SgOmpUsesAllocatorsDefination";
+            case 368L: return "V_SgOmpToClause";
+            case 369L: return "V_SgOmpFromClause";
+            case 370L: return "V_SgOmpThreadsClause";
+            case 371L: return "V_SgOmpSimdClause";
+            case 372L: return "V_SgOmpBeginClause";
+            case 373L: return "V_SgOmpCollapseClause";
+            case 374L: return "V_SgOmpCopyinClause";
+            case 375L: return "V_SgOmpCopyprivateClause";
+            case 376L: return "V_SgOmpDefaultClause";
+            case 377L: return "V_SgOmpEndClause";
+            case 378L: return "V_SgOmpExpressionClause";
+            case 379L: return "V_SgOmpFirstprivateClause";
+            case 380L: return "V_SgOmpIfClause";
+            case 381L: return "V_SgOmpFinalClause";
+            case 382L: return "V_SgOmpPriorityClause";
+            case 383L: return "V_SgOmpDeviceClause";
+            case 384L: return "V_SgOmpLastprivateClause";
+            case 385L: return "V_SgOmpNowaitClause";
+            case 386L: return "V_SgOmpReadClause";
+            case 387L: return "V_SgOmpWriteClause";
+            case 388L: return "V_SgOmpUpdateClause";
+            case 389L: return "V_SgOmpDepobjUpdateClause";
+            case 390L: return "V_SgOmpDestroyClause";
+            case 391L: return "V_SgOmpCaptureClause";
+            case 392L: return "V_SgOmpSeqCstClause";
+            case 393L: return "V_SgOmpAcqRelClause";
+            case 394L: return "V_SgOmpReleaseClause";
+            case 395L: return "V_SgOmpAcquireClause";
+            case 396L: return "V_SgOmpReverseOffloadClause";
+            case 397L: return "V_SgOmpUnifiedAddressClause";
+            case 398L: return "V_SgOmpUnifiedSharedMemoryClause";
+            case 399L: return "V_SgOmpDynamicAllocatorsClause";
+            case 400L: return "V_SgOmpAtomicDefaultMemOrderClause";
+            case 401L: return "V_SgOmpExtImplementationDefinedRequirementClause";
+            case 402L: return "V_SgOmpRelaxedClause";
+            case 403L: return "V_SgOmpParallelClause";
+            case 404L: return "V_SgOmpSectionsClause";
+            case 405L: return "V_SgOmpForClause";
+            case 406L: return "V_SgOmpTaskgroupClause";
+            case 407L: return "V_SgUpirNumUnitsField";
+            case 408L: return "V_SgOmpNumTeamsClause";
+            case 409L: return "V_SgOmpGrainsizeClause";
+            case 410L: return "V_SgOmpDetachClause";
+            case 411L: return "V_SgOmpNumTasksClause";
+            case 412L: return "V_SgOmpNogroupClause";
+            case 413L: return "V_SgOmpHintClause";
+            case 414L: return "V_SgOmpOrderClause";
+            case 415L: return "V_SgOmpDistScheduleClause";
+            case 416L: return "V_SgOmpBindClause";
+            case 417L: return "V_SgOmpNontemporalClause";
+            case 418L: return "V_SgOmpInclusiveClause";
+            case 419L: return "V_SgOmpExclusiveClause";
+            case 420L: return "V_SgOmpIsDevicePtrClause";
+            case 421L: return "V_SgOmpUseDevicePtrClause";
+            case 422L: return "V_SgOmpUseDeviceAddrClause";
+            case 423L: return "V_SgOmpThreadLimitClause";
+            case 424L: return "V_SgOmpOrderedClause";
+            case 425L: return "V_SgOmpPrivateClause";
+            case 426L: return "V_SgOmpReductionClause";
+            case 427L: return "V_SgOmpInReductionClause";
+            case 428L: return "V_SgOmpTaskReductionClause";
+            case 429L: return "V_SgOmpDefaultmapClause";
+            case 430L: return "V_SgOmpScheduleClause";
+            case 431L: return "V_SgOmpSharedClause";
+            case 432L: return "V_SgOmpUntiedClause";
+            case 433L: return "V_SgOmpMergeableClause";
+            case 434L: return "V_SgOmpVariablesClause";
+            case 435L: return "V_SgOmpMapClause";
+            case 436L: return "V_SgOmpSafelenClause";
+            case 437L: return "V_SgOmpSimdlenClause";
+            case 438L: return "V_SgOmpLinearClause";
+            case 439L: return "V_SgOmpUniformClause";
+            case 440L: return "V_SgOmpAlignedClause";
+            case 441L: return "V_SgOmpProcBindClause";
+            case 442L: return "V_SgOmpAtomicClause";
+            case 443L: return "V_SgOmpInbranchClause";
+            case 444L: return "V_SgOmpNotinbranchClause";
+            case 445L: return "V_SgOmpDependClause";
+            case 446L: return "V_SgOmpAffinityClause";
+            case 447L: return "V_SgOmpWhenClause";
+            case 448L: return "V_SgOmpFullClause";
+            case 449L: return "V_SgOmpPartialClause";
+            case 450L: return "V_SgOmpSizesClause";
+            case 451L: return "V_SgUpirBranchField";
+            case 452L: return "V_SgUpirNestedLevelField";
+            case 453L: return "V_SgUpirNestedParentField";
+            case 454L: return "V_SgUpirNestedChildField";
+            case 455L: return "V_SgUpirSyncField";
+            case 456L: return "V_SgUpirDataField";
+            case 457L: return "V_SgUpirDataItemField";
+            case 458L: return "V_SgUpirTargetField";
+            case 459L: return "V_SgOpenclAccessModeModifier";
+            case 460L: return "V_SgOpenStatement";
+            case 461L: return "V_SgOptions";
+            case 462L: return "V_SgOrOp";
+            case 463L: return "V_SgParameterStatement";
+            case 464L: return "V_SgPartialFunctionModifierType";
+            case 465L: return "V_SgPartialFunctionType";
+            case 466L: return "V_SgPassStatement";
+            case 467L: return "V_SgPlusAssignOp";
+            case 468L: return "V_SgPlusPlusOp";
+            case 469L: return "V_SgPntrArrRefExp";
+            case 470L: return "V_SgPointerAssignOp";
+            case 471L: return "V_SgPointerDerefExp";
+            case 472L: return "V_SgPointerMemberType";
+            case 473L: return "V_SgPointerType";
+            case 474L: return "V_SgPowerOp";
+            case 475L: return "V_SgPragma";
+            case 476L: return "V_SgPragmaDeclaration";
+            case 477L: return "V_SgPrintStatement";
+            case 478L: return "V_SgProcedureHeaderStatement";
+            case 479L: return "V_SgProgramHeaderStatement";
+            case 480L: return "V_SgProject";
+            case 481L: return "V_SgPseudoDestructorRefExp";
+            case 484L: return "V_SgQualifiedName";
+            case 485L: return "V_SgQualifiedNameType";
+            case 486L: return "V_SgRangeExp";
+            case 487L: return "V_SgRangeBasedForStatement";
+            case 488L: return "V_SgReadStatement";
+            case 489L: return "V_SgRealPartOp";
+            case 490L: return "V_SgRefExp";
+            case 491L: return "V_SgReferenceType";
+            case 492L: return "V_SgRenamePair";
+            case 493L: return "V_SgRenameSymbol";
+            case 494L: return "V_SgReturnStmt";
+            case 495L: return "V_SgRewindStatement";
+            case 496L: return "V_SgRshiftAssignOp";
+            case 497L: return "V_SgRshiftOp";
+            case 498L: return "V_SgRvalueReferenceType";
+            case 499L: return "V_SgScopeOp";
+            case 500L: return "V_SgScopeStatement";
+            case 501L: return "V_SgSequenceStatement";
+            case 502L: return "V_SgSetComprehension";
+            case 503L: return "V_SgShortVal";
+            case 504L: return "V_SgSIMDBinaryOp";
+            case 505L: return "V_SgSIMDAddOp";
+            case 506L: return "V_SgSIMDSubOp";
+            case 507L: return "V_SgSIMDMulOp";
+            case 508L: return "V_SgSIMDDivOp";
+            case 509L: return "V_SgSIMDFmaOp";
+            case 510L: return "V_SgSIMDLoad";
+            case 511L: return "V_SgSIMDBroadcast";
+            case 512L: return "V_SgSIMDStore";
+            case 513L: return "V_SgSIMDPartialStore";
+            case 514L: return "V_SgSIMDScalarStore";
+            case 515L: return "V_SgSIMDGather";
+            case 516L: return "V_SgSIMDExplicitGather";
+            case 517L: return "V_SgSIMDScatter";
+            case 518L: return "V_SgSizeOfOp";
+            case 519L: return "V_SgAlignOfOp";
+            case 520L: return "V_SgSourceFile";
+            case 521L: return "V_SgSpaceshipOp";
+            case 522L: return "V_SgSpawnStmt";
+            case 523L: return "V_SgSyncAllStatement";
+            case 524L: return "V_SgSyncImagesStatement";
+            case 525L: return "V_SgSyncMemoryStatement";
+            case 526L: return "V_SgSyncTeamStatement";
+            case 527L: return "V_SgLockStatement";
+            case 528L: return "V_SgUnlockStatement";
+            case 529L: return "V_SgProcessControlStatement";
+            case 530L: return "V_SgSpecialFunctionModifier";
+            case 531L: return "V_SgStatement";
+            case 532L: return "V_SgStaticAssertionDeclaration";
+            case 533L: return "V_SgStmtDeclarationStatement";
+            case 534L: return "V_SgStatementExpression";
+            case 535L: return "V_SgStatementFunctionStatement";
+            case 537L: return "V_SgStorageModifier";
+            case 538L: return "V_SgStringConversion";
+            case 539L: return "V_SgStringKeyedBidirectionalGraph";
+            case 540L: return "V_SgStringVal";
+            case 541L: return "V_SgStructureModifier";
+            case 542L: return "V_SgSubscriptExpression";
+            case 543L: return "V_SgSubtractOp";
+            case 544L: return "V_SgSupport";
+            case 545L: return "V_SgSwitchStatement";
+            case 546L: return "V_SgSymbol";
+            case 547L: return "V_SgSymbolTable";
+            case 548L: return "V_SgTemplateArgument";
+            case 549L: return "V_SgTemplateArgumentList";
+            case 550L: return "V_SgTemplateDeclaration";
+            case 551L: return "V_SgTemplateClassDeclaration";
+            case 552L: return "V_SgTemplateClassSymbol";
+            case 553L: return "V_SgTemplateFunctionDeclaration";
+            case 554L: return "V_SgTemplateFunctionRefExp";
+            case 555L: return "V_SgTemplateFunctionSymbol";
+            case 556L: return "V_SgTemplateMemberFunctionDeclaration";
+            case 557L: return "V_SgTemplateMemberFunctionRefExp";
+            case 558L: return "V_SgTemplateMemberFunctionSymbol";
+            case 559L: return "V_SgTemplateTypedefDeclaration";
+            case 560L: return "V_SgTemplateTypedefSymbol";
+            case 561L: return "V_SgTemplateVariableDeclaration";
+            case 562L: return "V_SgTemplateVariableSymbol";
+            case 563L: return "V_SgTemplateClassDefinition";
+            case 564L: return "V_SgTemplateFunctionDefinition";
+            case 565L: return "V_SgTemplateInstantiationDecl";
+            case 566L: return "V_SgTemplateInstantiationDefn";
+            case 567L: return "V_SgTemplateInstantiationDirectiveStatement";
+            case 568L: return "V_SgTemplateInstantiationFunctionDecl";
+            case 569L: return "V_SgTemplateInstantiationMemberFunctionDecl";
+            case 570L: return "V_SgTemplateInstantiationTypedefDeclaration";
+            case 571L: return "V_SgTemplateParameter";
+            case 572L: return "V_SgTemplateParameterVal";
+            case 573L: return "V_SgTemplateParameterList";
+            case 574L: return "V_SgTemplateSymbol";
+            case 575L: return "V_SgTemplateType";
+            case 576L: return "V_SgThisExp";
+            case 577L: return "V_SgTypeTraitBuiltinOperator";
+            case 578L: return "V_SgSuperExp";
+            case 579L: return "V_SgThrowOp";
+            case 580L: return "V_SgToken";
+            case 581L: return "V_SgTryStmt";
+            case 582L: return "V_SgTupleExp";
+            case 583L: return "V_SgType";
+            case 584L: return "V_SgTypeBool";
+            case 585L: return "V_SgTypeChar";
+            case 586L: return "V_SgTypeChar16";
+            case 587L: return "V_SgTypeChar32";
+            case 588L: return "V_SgTypeComplex";
+            case 589L: return "V_SgTypeDefault";
+            case 590L: return "V_SgTypeExpression";
+            case 591L: return "V_SgTypeLabel";
+            case 592L: return "V_SgTypeDouble";
+            case 593L: return "V_SgTypeEllipse";
+            case 594L: return "V_SgTypeFixed";
+            case 595L: return "V_SgTypeFloat";
+            case 596L: return "V_SgTypeFloat128";
+            case 597L: return "V_SgTypeFloat80";
+            case 598L: return "V_SgTypeGlobalVoid";
+            case 599L: return "V_SgTypeIdOp";
+            case 600L: return "V_SgTypeImaginary";
+            case 601L: return "V_SgTypeInt";
+            case 602L: return "V_SgTypeLong";
+            case 603L: return "V_SgTypeLongDouble";
+            case 604L: return "V_SgTypeLongLong";
+            case 605L: return "V_SgTypeModifier";
+            case 606L: return "V_SgTypeMatrix";
+            case 607L: return "V_SgTypeTuple";
+            case 608L: return "V_SgTypeNullptr";
+            case 609L: return "V_SgTypeOfType";
+            case 610L: return "V_SgTypeShort";
+            case 611L: return "V_SgTypeSigned128bitInteger";
+            case 612L: return "V_SgTypeSignedChar";
+            case 613L: return "V_SgTypeSignedInt";
+            case 614L: return "V_SgTypeSignedLong";
+            case 615L: return "V_SgTypeSignedLongLong";
+            case 616L: return "V_SgTypeSignedShort";
+            case 617L: return "V_SgTypeString";
+            case 618L: return "V_SgTypeUnknown";
+            case 619L: return "V_SgTypeUnsigned128bitInteger";
+            case 620L: return "V_SgTypeUnsignedChar";
+            case 621L: return "V_SgTypeUnsignedInt";
+            case 622L: return "V_SgTypeUnsignedLong";
+            case 623L: return "V_SgTypeUnsignedLongLong";
+            case 624L: return "V_SgTypeUnsignedShort";
+            case 625L: return "V_SgTypeVoid";
+            case 626L: return "V_SgTypeWchar";
+            case 627L: return "V_SgTypedefDeclaration";
+            case 628L: return "V_SgTypedefSeq";
+            case 629L: return "V_SgTypedefSymbol";
+            case 630L: return "V_SgTypedefType";
+            case 631L: return "V_SgUPC_AccessModifier";
+            case 632L: return "V_SgUnaryAddOp";
+            case 633L: return "V_SgUnaryOp";
+            case 634L: return "V_SgUndefDirectiveStatement";
+            case 635L: return "V_SgUndirectedGraphEdge";
+            case 636L: return "V_SgUnknownArrayOrFunctionReference";
+            case 637L: return "V_SgUnknownFile";
+            case 639L: return "V_SgUnparse_Info";
+            case 640L: return "V_SgUnsignedCharVal";
+            case 641L: return "V_SgUnsignedIntVal";
+            case 642L: return "V_SgUnsignedLongLongIntVal";
+            case 643L: return "V_SgUnsignedLongVal";
+            case 644L: return "V_SgUnsignedShortVal";
+            case 645L: return "V_SgUpcBarrierStatement";
+            case 646L: return "V_SgUpcBlocksizeofExpression";
+            case 647L: return "V_SgUpcElemsizeofExpression";
+            case 648L: return "V_SgUpcFenceStatement";
+            case 649L: return "V_SgUpcForAllStatement";
+            case 650L: return "V_SgUpcLocalsizeofExpression";
+            case 651L: return "V_SgUpcMythread";
+            case 652L: return "V_SgUpcNotifyStatement";
+            case 653L: return "V_SgUpcThreads";
+            case 654L: return "V_SgUpcWaitStatement";
+            case 655L: return "V_SgUseStatement";
+            case 656L: return "V_SgUserDefinedBinaryOp";
+            case 657L: return "V_SgUserDefinedUnaryOp";
+            case 658L: return "V_SgUsingDeclarationStatement";
+            case 659L: return "V_SgUsingDirectiveStatement";
+            case 660L: return "V_SgValueExp";
+            case 661L: return "V_SgVarArgCopyOp";
+            case 662L: return "V_SgVarArgEndOp";
+            case 663L: return "V_SgVarArgOp";
+            case 664L: return "V_SgVarArgStartOneOperandOp";
+            case 665L: return "V_SgVarArgStartOp";
+            case 666L: return "V_SgVarRefExp";
+            case 667L: return "V_SgVariableDeclaration";
+            case 668L: return "V_SgVariableDefinition";
+            case 669L: return "V_SgVariableSymbol";
+            case 670L: return "V_SgVariantExpression";
+            case 671L: return "V_SgVariantStatement";
+            case 672L: return "V_SgVoidVal";
+            case 673L: return "V_SgWaitStatement";
+            case 674L: return "V_SgWarningDirectiveStatement";
+            case 675L: return "V_SgWithStatement";
+            case 676L: return "V_SgWcharVal";
+            case 677L: return "V_SgWhereStatement";
+            case 678L: return "V_SgWhileStmt";
+            case 679L: return "V_SgWriteStatement";
+            case 680L: return "V_SgXorAssignOp";
+            case 681L: return "V_SgYieldExpression";
+            case 682L: return "V_Sg_File_Info";
+            case 683L: return "V_SgTypeCAFTeam";
+            case 684L: return "V_SgCAFWithTeamStatement";
+            case 685L: return "V_SgCAFCoExpression";
+            case 686L: return "V_SgCallExpression";
+            case 687L: return "V_SgTypeCrayPointer";
+            case 688L: return "V_SgClassExp";
+            case 690L: return "V_SgNumVariants";
             default: return "";
         }
     }
@@ -41503,11 +41414,11 @@ namespace stringify {
             474L,
             475L,
             476L,
+            477L,
+            478L,
             479L,
             480L,
             481L,
-            482L,
-            483L,
             484L,
             485L,
             486L,
@@ -41555,11 +41466,11 @@ namespace stringify {
             528L,
             529L,
             530L,
+            531L,
             532L,
             533L,
             534L,
             535L,
-            536L,
             537L,
             538L,
             539L,
@@ -41656,11 +41567,11 @@ namespace stringify {
             630L,
             631L,
             632L,
+            633L,
             634L,
             635L,
             636L,
             637L,
-            638L,
             639L,
             640L,
             641L,
@@ -41706,9 +41617,14 @@ namespace stringify {
             681L,
             682L,
             683L,
-            685L
+            684L,
+            685L,
+            686L,
+            687L,
+            688L,
+            690L
         };
-        static const std::vector<int64_t> retval(values, values + 676);
+        static const std::vector<int64_t> retval(values, values + 681);
         return retval;
     }
 
@@ -41734,7 +41650,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 9026
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 9066
 namespace stringify { namespace SgConstVolatileModifier {
     const char* cv_modifier_enum(int64_t i) {
         switch (i) {
@@ -41792,7 +41708,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 9531
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 9571
 namespace stringify { namespace SgStorageModifier {
     const char* storage_modifier_enum(int64_t i) {
         switch (i) {
@@ -41888,7 +41804,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 10133
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 10173
 namespace stringify { namespace SgAccessModifier {
     const char* access_modifier_enum(int64_t i) {
         switch (i) {
@@ -41946,7 +41862,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 10636
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 10676
 namespace stringify { namespace SgFunctionModifier {
     const char* function_modifier_enum(int64_t i) {
         switch (i) {
@@ -42066,7 +41982,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 11375
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 11415
 namespace stringify { namespace SgUPC_AccessModifier {
     const char* upc_access_modifier_enum(int64_t i) {
         switch (i) {
@@ -42122,7 +42038,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 11888
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 11928
 namespace stringify { namespace SgSpecialFunctionModifier {
     const char* special_function_modifier_enum(int64_t i) {
         switch (i) {
@@ -42186,7 +42102,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 12406
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 12446
 namespace stringify { namespace SgElaboratedTypeModifier {
     const char* elaborated_type_modifier_enum(int64_t i) {
         switch (i) {
@@ -42248,7 +42164,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 12909
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 12949
 namespace stringify { namespace SgLinkageModifier {
     const char* linkage_modifier_enum(int64_t i) {
         switch (i) {
@@ -42308,7 +42224,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 13403
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 13443
 namespace stringify { namespace SgBaseClassModifier {
     const char* baseclass_modifier_enum(int64_t i) {
         switch (i) {
@@ -42362,7 +42278,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 13898
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 13938
 namespace stringify { namespace SgStructureModifier {
     const char* jovial_structure_modifier_enum(int64_t i) {
         switch (i) {
@@ -42418,7 +42334,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 14400
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 14440
 namespace stringify { namespace SgTypeModifier {
     const char* type_modifier_enum(int64_t i) {
         switch (i) {
@@ -42544,7 +42460,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 14492
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 14532
 namespace stringify { namespace SgTypeModifier {
     const char* gnu_extension_machine_mode_enum(int64_t i) {
         switch (i) {
@@ -42700,7 +42616,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 15279
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 15319
 namespace stringify { namespace SgDeclarationModifier {
     const char* declaration_modifier_enum(int64_t i) {
         switch (i) {
@@ -42808,7 +42724,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 15323
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 15363
 namespace stringify { namespace SgDeclarationModifier {
     const char* gnu_declaration_visability_enum(int64_t i) {
         switch (i) {
@@ -42870,7 +42786,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 16012
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 16052
 namespace stringify { namespace SgOpenclAccessModeModifier {
     const char* access_mode_modifier_enum(int64_t i) {
         switch (i) {
@@ -42928,7 +42844,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 20394
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 20434
 namespace stringify { namespace Sg_File_Info {
     const char* classifier(int64_t i) {
         switch (i) {
@@ -42994,7 +42910,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 20659
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 20699
 namespace stringify { namespace Sg_File_Info {
     const char* p_fileflags(int64_t i) {
         switch (i) {
@@ -43052,7 +42968,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 21220
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 21260
 namespace stringify { namespace SgFile {
     const char* outputFormatOption_enum(int64_t i) {
         switch (i) {
@@ -43104,7 +43020,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 21235
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 21275
 namespace stringify { namespace SgFile {
     const char* languageOption_enum(int64_t i) {
         switch (i) {
@@ -43162,7 +43078,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 21246
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 21286
 namespace stringify { namespace SgFile {
     const char* standard_enum(int64_t i) {
         switch (i) {
@@ -43250,7 +43166,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 24250
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 24290
 namespace stringify { namespace SgProject {
     const char* template_instantiation_enum(int64_t i) {
         switch (i) {
@@ -43310,7 +43226,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 26151
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 26182
 namespace stringify { namespace SgUnparse_Info {
     const char* unparse_type_num(int64_t i) {
         switch (i) {
@@ -43470,7 +43386,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 26328
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 26359
 namespace stringify { namespace SgUnparse_Info {
     const char* access_attr_enum(int64_t i) {
         switch (i) {
@@ -43526,7 +43442,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 29268
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 29299
 namespace stringify { namespace SgTemplateParameter {
     const char* template_parameter_enum(int64_t i) {
         switch (i) {
@@ -43580,7 +43496,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 29804
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 29835
 namespace stringify { namespace SgTemplateArgument {
     const char* template_argument_enum(int64_t i) {
         switch (i) {
@@ -43636,7 +43552,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 33782
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 33813
 namespace stringify { namespace SgGraph {
     const char* GraphEdgeType(int64_t i) {
         switch (i) {
@@ -43692,7 +43608,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 33796
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 33827
 namespace stringify { namespace SgGraph {
     const char* GraphProperties(int64_t i) {
         switch (i) {
@@ -43778,7 +43694,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 43433
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 43464
 namespace stringify { namespace SgDataStatementValue {
     const char* data_statement_value_enum(int64_t i) {
         switch (i) {
@@ -43836,7 +43752,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 44524
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 44555
 namespace stringify { namespace SgType {
     const char* useWithinDeclarationEnum(int64_t i) {
         switch (i) {
@@ -43886,7 +43802,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 44542
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 44573
 namespace stringify { namespace SgType {
     const char* fortran_attribute_specifiers_enum(int64_t i) {
         switch (i) {
@@ -43968,7 +43884,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 61960
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 61991
 namespace stringify { namespace SgModifierType {
     const char* modifiers(int64_t i) {
         switch (i) {
@@ -44030,7 +43946,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 62014
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 62045
 namespace stringify { namespace SgModifierType {
     const char* type_modifier_enum(int64_t i) {
         switch (i) {
@@ -44098,7 +44014,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 62031
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 62062
 namespace stringify { namespace SgModifierType {
     const char* storage_modifier_enum(int64_t i) {
         switch (i) {
@@ -44172,7 +44088,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 62053
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 62084
 namespace stringify { namespace SgModifierType {
     const char* access_modifier_enum(int64_t i) {
         switch (i) {
@@ -44230,7 +44146,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 63231
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 63262
 namespace stringify { namespace SgMemberFunctionType {
     const char* mfunc_specifier_enum(int64_t i) {
         switch (i) {
@@ -44286,7 +44202,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 74876
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 74907
 namespace stringify { namespace SgLocatedNode {
     const char* PositionOfPreprocessingInfoInListType(int64_t i) {
         switch (i) {
@@ -44338,7 +44254,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 75639
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 75670
 namespace stringify { namespace SgToken {
     const char* ROSE_Fortran_Keywords(int64_t i) {
         switch (i) {
@@ -44690,7 +44606,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 75806
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 75837
 namespace stringify { namespace SgToken {
     const char* ROSE_C_CXX_keywords(int64_t i) {
         switch (i) {
@@ -44864,7 +44780,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 75875
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 75906
 namespace stringify { namespace SgToken {
     const char* ROSE_Fortran_Operators(int64_t i) {
         switch (i) {
@@ -44956,7 +44872,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 75902
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 75933
 namespace stringify { namespace SgToken {
     const char* ROSE_C_CXX_Operators(int64_t i) {
         switch (i) {
@@ -45152,7 +45068,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 75982
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 76013
 namespace stringify { namespace SgToken {
     const char* ROSE_Fortran_Additional_Info(int64_t i) {
         switch (i) {
@@ -45208,7 +45124,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 77348
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 77379
 namespace stringify { namespace SgInitializedName {
     const char* preinitialization_enum(int64_t i) {
         switch (i) {
@@ -45266,7 +45182,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 77363
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 77394
 namespace stringify { namespace SgInitializedName {
     const char* asm_register_name_enum(int64_t i) {
         switch (i) {
@@ -45432,7 +45348,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 77430
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 77461
 namespace stringify { namespace SgInitializedName {
     const char* gnu_variable_attribute_enum(int64_t i) {
         switch (i) {
@@ -45522,7 +45438,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 77465
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 77496
 namespace stringify { namespace SgInitializedName {
     const char* excess_specifier_enum(int64_t i) {
         switch (i) {
@@ -45576,7 +45492,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 79945
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 79976
 namespace stringify { namespace SgOmpClause {
     const char* omp_default_option_enum(int64_t i) {
         switch (i) {
@@ -45636,7 +45552,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 79958
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 79989
 namespace stringify { namespace SgOmpClause {
     const char* omp_schedule_kind_enum(int64_t i) {
         switch (i) {
@@ -45694,7 +45610,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 79967
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 79998
 namespace stringify { namespace SgOmpClause {
     const char* omp_schedule_modifier_enum(int64_t i) {
         switch (i) {
@@ -45748,7 +45664,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 79974
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80005
 namespace stringify { namespace SgOmpClause {
     const char* omp_in_reduction_identifier_enum(int64_t i) {
         switch (i) {
@@ -45834,7 +45750,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80001
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80032
 namespace stringify { namespace SgOmpClause {
     const char* omp_task_reduction_identifier_enum(int64_t i) {
         switch (i) {
@@ -45920,7 +45836,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80028
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80059
 namespace stringify { namespace SgOmpClause {
     const char* omp_defaultmap_behavior_enum(int64_t i) {
         switch (i) {
@@ -45982,7 +45898,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80040
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80071
 namespace stringify { namespace SgOmpClause {
     const char* omp_defaultmap_category_enum(int64_t i) {
         switch (i) {
@@ -46038,7 +45954,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80049
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80080
 namespace stringify { namespace SgOmpClause {
     const char* omp_reduction_identifier_enum(int64_t i) {
         switch (i) {
@@ -46124,7 +46040,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80079
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80110
 namespace stringify { namespace SgOmpClause {
     const char* omp_reduction_modifier_enum(int64_t i) {
         switch (i) {
@@ -46178,7 +46094,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80087
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80118
 namespace stringify { namespace SgOmpClause {
     const char* omp_linear_modifier_enum(int64_t i) {
         switch (i) {
@@ -46232,7 +46148,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80095
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80126
 namespace stringify { namespace SgOmpClause {
     const char* omp_device_modifier_enum(int64_t i) {
         switch (i) {
@@ -46284,7 +46200,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80102
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80133
 namespace stringify { namespace SgOmpClause {
     const char* omp_lastprivate_modifier_enum(int64_t i) {
         switch (i) {
@@ -46334,7 +46250,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80108
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80139
 namespace stringify { namespace SgOmpClause {
     const char* omp_when_context_kind_enum(int64_t i) {
         switch (i) {
@@ -46394,7 +46310,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80119
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80150
 namespace stringify { namespace SgOmpClause {
     const char* omp_when_context_vendor_enum(int64_t i) {
         switch (i) {
@@ -46466,7 +46382,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80136
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80167
 namespace stringify { namespace SgOmpClause {
     const char* omp_allocate_modifier_enum(int64_t i) {
         switch (i) {
@@ -46532,7 +46448,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80152
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80183
 namespace stringify { namespace SgOmpClause {
     const char* omp_allocator_modifier_enum(int64_t i) {
         switch (i) {
@@ -46598,7 +46514,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80168
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80199
 namespace stringify { namespace SgOmpClause {
     const char* omp_uses_allocators_allocator_enum(int64_t i) {
         switch (i) {
@@ -46664,7 +46580,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80184
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80215
 namespace stringify { namespace SgOmpClause {
     const char* omp_to_kind_enum(int64_t i) {
         switch (i) {
@@ -46714,7 +46630,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80190
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80221
 namespace stringify { namespace SgOmpClause {
     const char* omp_from_kind_enum(int64_t i) {
         switch (i) {
@@ -46764,7 +46680,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80196
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80227
 namespace stringify { namespace SgOmpClause {
     const char* omp_dependence_type_enum(int64_t i) {
         switch (i) {
@@ -46826,7 +46742,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80208
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80239
 namespace stringify { namespace SgOmpClause {
     const char* omp_depend_modifier_enum(int64_t i) {
         switch (i) {
@@ -46876,7 +46792,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80214
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80245
 namespace stringify { namespace SgOmpClause {
     const char* omp_affinity_modifier_enum(int64_t i) {
         switch (i) {
@@ -46926,7 +46842,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80220
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80251
 namespace stringify { namespace SgOmpClause {
     const char* upir_target_type_enum(int64_t i) {
         switch (i) {
@@ -46980,7 +46896,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80228
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80259
 namespace stringify { namespace SgOmpClause {
     const char* upir_data_sharing_enum(int64_t i) {
         switch (i) {
@@ -47038,7 +46954,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80238
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80269
 namespace stringify { namespace SgOmpClause {
     const char* upir_data_mapping_enum(int64_t i) {
         switch (i) {
@@ -47096,7 +47012,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80248
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80279
 namespace stringify { namespace SgOmpClause {
     const char* upir_property_visibility_enum(int64_t i) {
         switch (i) {
@@ -47148,7 +47064,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80255
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80286
 namespace stringify { namespace SgOmpClause {
     const char* upir_data_access_enum(int64_t i) {
         switch (i) {
@@ -47202,7 +47118,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80263
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80294
 namespace stringify { namespace SgOmpClause {
     const char* upir_data_distribution_pattern_enum(int64_t i) {
         switch (i) {
@@ -47258,7 +47174,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80272
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80303
 namespace stringify { namespace SgOmpClause {
     const char* upir_data_allocator_enum(int64_t i) {
         switch (i) {
@@ -47310,7 +47226,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80279
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80310
 namespace stringify { namespace SgOmpClause {
     const char* upir_data_deallocator_enum(int64_t i) {
         switch (i) {
@@ -47362,7 +47278,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80287
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80318
 namespace stringify { namespace SgOmpClause {
     const char* omp_map_operator_enum(int64_t i) {
         switch (i) {
@@ -47420,7 +47336,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80298
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80329
 namespace stringify { namespace SgOmpClause {
     const char* omp_map_dist_data_enum(int64_t i) {
         switch (i) {
@@ -47476,7 +47392,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80308
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80339
 namespace stringify { namespace SgOmpClause {
     const char* omp_proc_bind_policy_enum(int64_t i) {
         switch (i) {
@@ -47532,7 +47448,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80317
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80348
 namespace stringify { namespace SgOmpClause {
     const char* omp_bind_binding_enum(int64_t i) {
         switch (i) {
@@ -47586,7 +47502,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80325
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80356
 namespace stringify { namespace SgOmpClause {
     const char* omp_atomic_default_mem_order_kind_enum(int64_t i) {
         switch (i) {
@@ -47640,7 +47556,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80333
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80364
 namespace stringify { namespace SgOmpClause {
     const char* omp_order_kind_enum(int64_t i) {
         switch (i) {
@@ -47690,7 +47606,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80339
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80370
 namespace stringify { namespace SgOmpClause {
     const char* omp_dist_schedule_kind_enum(int64_t i) {
         switch (i) {
@@ -47740,7 +47656,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80345
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80376
 namespace stringify { namespace SgOmpClause {
     const char* omp_atomic_clause_enum(int64_t i) {
         switch (i) {
@@ -47796,7 +47712,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80354
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80385
 namespace stringify { namespace SgOmpClause {
     const char* omp_if_modifier_enum(int64_t i) {
         switch (i) {
@@ -47864,7 +47780,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 80369
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 80400
 namespace stringify { namespace SgOmpClause {
     const char* omp_depobj_modifier_enum(int64_t i) {
         switch (i) {
@@ -47926,7 +47842,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 132782
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 134181
 namespace stringify { namespace SgForAllStatement {
     const char* forall_statement_kind_enum(int64_t i) {
         switch (i) {
@@ -47980,7 +47896,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 136235
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 137634
 namespace stringify { namespace SgDeclarationStatement {
     const char* template_specialization_enum(int64_t i) {
         switch (i) {
@@ -48036,7 +47952,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 136250
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 137649
 namespace stringify { namespace SgDeclarationStatement {
     const char* gnu_extension_visability_attribute_enum(int64_t i) {
         switch (i) {
@@ -48094,7 +48010,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 137663
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 139062
 namespace stringify { namespace SgVariableDeclaration {
     const char* gnu_extension_declaration_attributes_enum(int64_t i) {
         switch (i) {
@@ -48156,7 +48072,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 141898
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 143297
 namespace stringify { namespace SgAttributeSpecificationStatement {
     const char* attribute_spec_enum(int64_t i) {
         switch (i) {
@@ -48242,7 +48158,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 142900
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 144299
 namespace stringify { namespace SgTemplateDeclaration {
     const char* template_type_enum(int64_t i) {
         switch (i) {
@@ -48300,7 +48216,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 145814
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 147213
 namespace stringify { namespace SgInterfaceStatement {
     const char* generic_spec_enum(int64_t i) {
         switch (i) {
@@ -48360,7 +48276,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 150818
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 152217
 namespace stringify { namespace SgClassDeclaration {
     const char* class_types(int64_t i) {
         switch (i) {
@@ -48416,7 +48332,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 151506
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 152905
 namespace stringify { namespace SgTemplateClassDeclaration {
     const char* class_types(int64_t i) {
         switch (i) {
@@ -48470,7 +48386,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 153451
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 154850
 namespace stringify { namespace SgImplicitStatement {
     const char* implicit_spec_enum(int64_t i) {
         switch (i) {
@@ -48528,7 +48444,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 159290
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 160689
 namespace stringify { namespace SgProcedureHeaderStatement {
     const char* subprogram_kind_enum(int64_t i) {
         switch (i) {
@@ -48584,7 +48500,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 179991
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 181390
 namespace stringify { namespace SgProcessControlStatement {
     const char* control_enum(int64_t i) {
         switch (i) {
@@ -48642,7 +48558,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 180481
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 181880
 namespace stringify { namespace SgIOStatement {
     const char* io_statement_enum(int64_t i) {
         switch (i) {
@@ -48710,7 +48626,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 224760
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 227031
 namespace stringify { namespace SgImageControlStatement {
     const char* image_control_statement_enum(int64_t i) {
         switch (i) {
@@ -48782,7 +48698,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 228621
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 230892
 namespace stringify { namespace SgUnaryOp {
     const char* Sgop_mode(int64_t i) {
         switch (i) {
@@ -48832,7 +48748,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 233190
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 235461
 namespace stringify { namespace SgCastExp {
     const char* cast_type_enum(int64_t i) {
         switch (i) {
@@ -48896,7 +48812,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 233769
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 236040
 namespace stringify { namespace SgThrowOp {
     const char* e_throw_kind(int64_t i) {
         switch (i) {
@@ -48948,7 +48864,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 303464
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 305735
 namespace stringify { namespace SgAsmOp {
     const char* asm_operand_modifier_enum(int64_t i) {
         switch (i) {
@@ -49014,7 +48930,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 303483
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 305754
 namespace stringify { namespace SgAsmOp {
     const char* asm_operand_constraint_enum(int64_t i) {
         switch (i) {
@@ -49176,7 +49092,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_Grammar.h line 328020
+// -build/src/frontend/SageIII/Cxx_Grammar.h line 330291
 namespace stringify { namespace SgLabelSymbol {
     const char* label_type_enum(int64_t i) {
         switch (i) {
@@ -49236,7 +49152,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 3
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 3
 namespace stringify {
     const char* E_SgSourceFile(int64_t i) {
         switch (i) {
@@ -49284,7 +49200,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 6
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 6
 namespace stringify {
     const char* E_SgUnknownFile(int64_t i) {
         switch (i) {
@@ -49332,7 +49248,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 9
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 9
 namespace stringify {
     const char* E_SgProject(int64_t i) {
         switch (i) {
@@ -49380,7 +49296,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 12
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 12
 namespace stringify {
     const char* E_SgExpBaseClass(int64_t i) {
         switch (i) {
@@ -49430,7 +49346,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 15
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 15
 namespace stringify {
     const char* E_SgNonrealBaseClass(int64_t i) {
         switch (i) {
@@ -49480,7 +49396,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 18
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 18
 namespace stringify {
     const char* E_SgBaseClass(int64_t i) {
         switch (i) {
@@ -49528,7 +49444,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 21
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 21
 namespace stringify {
     const char* E_SgTemplateParameter(int64_t i) {
         switch (i) {
@@ -49584,7 +49500,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 24
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 24
 namespace stringify {
     const char* E_SgTemplateArgument(int64_t i) {
         switch (i) {
@@ -49636,7 +49552,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 27
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 27
 namespace stringify {
     const char* E_SgDirectory(int64_t i) {
         switch (i) {
@@ -49686,7 +49602,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 30
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 30
 namespace stringify {
     const char* E_SgFileList(int64_t i) {
         switch (i) {
@@ -49734,7 +49650,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 33
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 33
 namespace stringify {
     const char* E_SgDirectoryList(int64_t i) {
         switch (i) {
@@ -49782,7 +49698,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 36
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 36
 namespace stringify {
     const char* E_SgTemplateArgumentList(int64_t i) {
         switch (i) {
@@ -49830,7 +49746,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 39
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 39
 namespace stringify {
     const char* E_SgTemplateParameterList(int64_t i) {
         switch (i) {
@@ -49878,7 +49794,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 42
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 42
 namespace stringify {
     const char* E_SgIncludeFile(int64_t i) {
         switch (i) {
@@ -49926,7 +49842,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 45
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 45
 namespace stringify {
     const char* E_SgTypeUnknown(int64_t i) {
         switch (i) {
@@ -49976,7 +49892,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 48
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 48
 namespace stringify {
     const char* E_SgTypeChar(int64_t i) {
         switch (i) {
@@ -50026,7 +49942,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 51
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 51
 namespace stringify {
     const char* E_SgTypeSignedChar(int64_t i) {
         switch (i) {
@@ -50076,7 +49992,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 54
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 54
 namespace stringify {
     const char* E_SgTypeUnsignedChar(int64_t i) {
         switch (i) {
@@ -50126,7 +50042,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 57
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 57
 namespace stringify {
     const char* E_SgTypeShort(int64_t i) {
         switch (i) {
@@ -50176,7 +50092,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 60
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 60
 namespace stringify {
     const char* E_SgTypeSignedShort(int64_t i) {
         switch (i) {
@@ -50226,7 +50142,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 63
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 63
 namespace stringify {
     const char* E_SgTypeUnsignedShort(int64_t i) {
         switch (i) {
@@ -50276,7 +50192,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 66
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 66
 namespace stringify {
     const char* E_SgTypeInt(int64_t i) {
         switch (i) {
@@ -50326,7 +50242,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 69
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 69
 namespace stringify {
     const char* E_SgTypeSignedInt(int64_t i) {
         switch (i) {
@@ -50376,7 +50292,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 72
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 72
 namespace stringify {
     const char* E_SgTypeUnsignedInt(int64_t i) {
         switch (i) {
@@ -50426,7 +50342,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 75
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 75
 namespace stringify {
     const char* E_SgTypeLong(int64_t i) {
         switch (i) {
@@ -50476,7 +50392,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 78
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 78
 namespace stringify {
     const char* E_SgTypeSignedLong(int64_t i) {
         switch (i) {
@@ -50526,7 +50442,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 81
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 81
 namespace stringify {
     const char* E_SgTypeUnsignedLong(int64_t i) {
         switch (i) {
@@ -50576,7 +50492,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 84
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 84
 namespace stringify {
     const char* E_SgTypeVoid(int64_t i) {
         switch (i) {
@@ -50626,7 +50542,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 87
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 87
 namespace stringify {
     const char* E_SgTypeGlobalVoid(int64_t i) {
         switch (i) {
@@ -50676,7 +50592,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 90
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 90
 namespace stringify {
     const char* E_SgTypeWchar(int64_t i) {
         switch (i) {
@@ -50726,7 +50642,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 93
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 93
 namespace stringify {
     const char* E_SgTypeFloat(int64_t i) {
         switch (i) {
@@ -50776,7 +50692,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 96
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 96
 namespace stringify {
     const char* E_SgTypeDouble(int64_t i) {
         switch (i) {
@@ -50826,7 +50742,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 99
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 99
 namespace stringify {
     const char* E_SgTypeLongLong(int64_t i) {
         switch (i) {
@@ -50876,7 +50792,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 102
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 102
 namespace stringify {
     const char* E_SgTypeSignedLongLong(int64_t i) {
         switch (i) {
@@ -50926,7 +50842,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 105
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 105
 namespace stringify {
     const char* E_SgTypeUnsignedLongLong(int64_t i) {
         switch (i) {
@@ -50976,7 +50892,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 108
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 108
 namespace stringify {
     const char* E_SgTypeSigned128bitInteger(int64_t i) {
         switch (i) {
@@ -51026,7 +50942,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 111
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 111
 namespace stringify {
     const char* E_SgTypeUnsigned128bitInteger(int64_t i) {
         switch (i) {
@@ -51076,7 +50992,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 114
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 114
 namespace stringify {
     const char* E_SgTypeFloat80(int64_t i) {
         switch (i) {
@@ -51126,7 +51042,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 117
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 117
 namespace stringify {
     const char* E_SgTypeLongDouble(int64_t i) {
         switch (i) {
@@ -51176,7 +51092,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 120
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 120
 namespace stringify {
     const char* E_SgTypeString(int64_t i) {
         switch (i) {
@@ -51226,7 +51142,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 123
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 123
 namespace stringify {
     const char* E_SgTypeBool(int64_t i) {
         switch (i) {
@@ -51276,7 +51192,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 126
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 126
 namespace stringify {
     const char* E_SgPointerMemberType(int64_t i) {
         switch (i) {
@@ -51326,7 +51242,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 129
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 129
 namespace stringify {
     const char* E_SgPointerType(int64_t i) {
         switch (i) {
@@ -51376,7 +51292,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 132
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 132
 namespace stringify {
     const char* E_SgReferenceType(int64_t i) {
         switch (i) {
@@ -51424,7 +51340,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 135
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 135
 namespace stringify {
     const char* E_SgClassType(int64_t i) {
         switch (i) {
@@ -51476,7 +51392,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 138
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 138
 namespace stringify {
     const char* E_SgEnumType(int64_t i) {
         switch (i) {
@@ -51528,7 +51444,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 141
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 141
 namespace stringify {
     const char* E_SgTypedefType(int64_t i) {
         switch (i) {
@@ -51580,7 +51496,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 144
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 144
 namespace stringify {
     const char* E_SgNonrealType(int64_t i) {
         switch (i) {
@@ -51632,7 +51548,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 147
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 147
 namespace stringify {
     const char* E_SgNamedType(int64_t i) {
         switch (i) {
@@ -51684,7 +51600,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 150
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 150
 namespace stringify {
     const char* E_SgModifierType(int64_t i) {
         switch (i) {
@@ -51734,7 +51650,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 153
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 153
 namespace stringify {
     const char* E_SgPartialFunctionModifierType(int64_t i) {
         switch (i) {
@@ -51788,7 +51704,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 156
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 156
 namespace stringify {
     const char* E_SgPartialFunctionType(int64_t i) {
         switch (i) {
@@ -51840,7 +51756,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 159
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 159
 namespace stringify {
     const char* E_SgMemberFunctionType(int64_t i) {
         switch (i) {
@@ -51892,7 +51808,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 162
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 162
 namespace stringify {
     const char* E_SgFunctionType(int64_t i) {
         switch (i) {
@@ -51944,7 +51860,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 165
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 165
 namespace stringify {
     const char* E_SgArrayType(int64_t i) {
         switch (i) {
@@ -51996,7 +51912,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 168
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 168
 namespace stringify {
     const char* E_SgTypeEllipse(int64_t i) {
         switch (i) {
@@ -52046,7 +51962,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 171
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 171
 namespace stringify {
     const char* E_SgTemplateType(int64_t i) {
         switch (i) {
@@ -52100,7 +52016,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 174
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 174
 namespace stringify {
     const char* E_SgQualifiedNameType(int64_t i) {
         switch (i) {
@@ -52148,7 +52064,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 177
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 177
 namespace stringify {
     const char* E_SgTypeComplex(int64_t i) {
         switch (i) {
@@ -52196,7 +52112,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 180
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 180
 namespace stringify {
     const char* E_SgTypeImaginary(int64_t i) {
         switch (i) {
@@ -52244,7 +52160,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 183
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 183
 namespace stringify {
     const char* E_SgTypeDefault(int64_t i) {
         switch (i) {
@@ -52294,7 +52210,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 186
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 186
 namespace stringify {
     const char* E_SgTypeCAFTeam(int64_t i) {
         switch (i) {
@@ -52344,7 +52260,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 189
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 189
 namespace stringify {
     const char* E_SgTypeCrayPointer(int64_t i) {
         switch (i) {
@@ -52394,7 +52310,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 192
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 192
 namespace stringify {
     const char* E_SgTypeLabel(int64_t i) {
         switch (i) {
@@ -52444,7 +52360,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 195
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 195
 namespace stringify {
     const char* E_SgRvalueReferenceType(int64_t i) {
         switch (i) {
@@ -52492,7 +52408,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 198
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 198
 namespace stringify {
     const char* E_SgTypeNullptr(int64_t i) {
         switch (i) {
@@ -52542,7 +52458,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 201
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 201
 namespace stringify {
     const char* E_SgDeclType(int64_t i) {
         switch (i) {
@@ -52590,7 +52506,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 204
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 204
 namespace stringify {
     const char* E_SgTypeOfType(int64_t i) {
         switch (i) {
@@ -52638,7 +52554,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 207
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 207
 namespace stringify {
     const char* E_SgTypeMatrix(int64_t i) {
         switch (i) {
@@ -52688,7 +52604,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 210
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 210
 namespace stringify {
     const char* E_SgTypeTuple(int64_t i) {
         switch (i) {
@@ -52738,7 +52654,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 213
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 213
 namespace stringify {
     const char* E_SgTypeChar16(int64_t i) {
         switch (i) {
@@ -52788,7 +52704,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 216
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 216
 namespace stringify {
     const char* E_SgTypeChar32(int64_t i) {
         switch (i) {
@@ -52838,7 +52754,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 219
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 219
 namespace stringify {
     const char* E_SgTypeFloat128(int64_t i) {
         switch (i) {
@@ -52888,7 +52804,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 222
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 222
 namespace stringify {
     const char* E_SgTypeFixed(int64_t i) {
         switch (i) {
@@ -52940,7 +52856,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 225
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 225
 namespace stringify {
     const char* E_SgAutoType(int64_t i) {
         switch (i) {
@@ -52988,7 +52904,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 228
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 228
 namespace stringify {
     const char* E_SgType(int64_t i) {
         switch (i) {
@@ -53036,7 +52952,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 231
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 231
 namespace stringify {
     const char* E_SgCommonBlockObject(int64_t i) {
         switch (i) {
@@ -53084,7 +53000,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 234
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 234
 namespace stringify {
     const char* E_SgInitializedName(int64_t i) {
         switch (i) {
@@ -53132,7 +53048,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 237
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 237
 namespace stringify {
     const char* E_SgOmpDefaultClause(int64_t i) {
         switch (i) {
@@ -53180,7 +53096,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 240
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 240
 namespace stringify {
     const char* E_SgOmpDistScheduleClause(int64_t i) {
         switch (i) {
@@ -53228,7 +53144,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 243
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 243
 namespace stringify {
     const char* E_SgOmpOrderedClause(int64_t i) {
         switch (i) {
@@ -53276,7 +53192,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 246
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 246
 namespace stringify {
     const char* E_SgOmpCollapseClause(int64_t i) {
         switch (i) {
@@ -53324,7 +53240,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 249
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 249
 namespace stringify {
     const char* E_SgOmpIfClause(int64_t i) {
         switch (i) {
@@ -53372,7 +53288,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 252
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 252
 namespace stringify {
     const char* E_SgUpirNumUnitsField(int64_t i) {
         switch (i) {
@@ -53420,7 +53336,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 255
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 255
 namespace stringify {
     const char* E_SgOmpNumTeamsClause(int64_t i) {
         switch (i) {
@@ -53468,7 +53384,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 258
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 258
 namespace stringify {
     const char* E_SgOmpThreadLimitClause(int64_t i) {
         switch (i) {
@@ -53516,7 +53432,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 261
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 261
 namespace stringify {
     const char* E_SgOmpDeviceClause(int64_t i) {
         switch (i) {
@@ -53564,7 +53480,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 264
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 264
 namespace stringify {
     const char* E_SgOmpHintClause(int64_t i) {
         switch (i) {
@@ -53612,7 +53528,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 267
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 267
 namespace stringify {
     const char* E_SgOmpGrainsizeClause(int64_t i) {
         switch (i) {
@@ -53660,7 +53576,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 270
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 270
 namespace stringify {
     const char* E_SgOmpNumTasksClause(int64_t i) {
         switch (i) {
@@ -53708,7 +53624,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 273
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 273
 namespace stringify {
     const char* E_SgOmpDetachClause(int64_t i) {
         switch (i) {
@@ -53756,7 +53672,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 276
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 276
 namespace stringify {
     const char* E_SgOmpSafelenClause(int64_t i) {
         switch (i) {
@@ -53804,7 +53720,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 279
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 279
 namespace stringify {
     const char* E_SgOmpSimdlenClause(int64_t i) {
         switch (i) {
@@ -53852,7 +53768,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 282
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 282
 namespace stringify {
     const char* E_SgOmpFinalClause(int64_t i) {
         switch (i) {
@@ -53900,7 +53816,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 285
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 285
 namespace stringify {
     const char* E_SgOmpPriorityClause(int64_t i) {
         switch (i) {
@@ -53948,7 +53864,103 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 288
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 288
+namespace stringify {
+    const char* E_SgOmpPartialClause(int64_t i) {
+        switch (i) {
+            case 0L: return "SgOmpPartialClause_expression";
+            default: return "";
+        }
+    }
+
+    std::string E_SgOmpPartialClause(int64_t i, const std::string &strip) {
+        std::string s = E_SgOmpPartialClause(i);
+        if (s.empty())
+            s = "(E_SgOmpPartialClause)" + boost::lexical_cast<std::string>(i);
+        if (boost::starts_with(s, strip))
+            s = s.substr(strip.size());
+        return s;
+    }
+
+    const std::vector<int64_t>& E_SgOmpPartialClause() {
+        static const int64_t values[] = {
+            0L
+        };
+        static const std::vector<int64_t> retval(values, values + 1);
+        return retval;
+    }
+
+}
+
+namespace Rose {
+    std::string stringifyE_SgOmpPartialClause(int64_t i, const char *strip, bool canonic) {
+        std::string retval = stringify::E_SgOmpPartialClause(i);
+        if (retval.empty()) {
+            retval = "(E_SgOmpPartialClause)" + boost::lexical_cast<std::string>(i);
+        } else {
+            if (strip && !strncmp(strip, retval.c_str(), strlen(strip)))
+                retval = retval.substr(strlen(strip));
+            if (canonic)
+                retval = "E_SgOmpPartialClause::" + retval;
+        }
+        return retval;
+    }
+
+    const std::vector<int64_t>& stringifyE_SgOmpPartialClause() {
+        return stringify::E_SgOmpPartialClause();
+    }
+}
+
+// DO NOT EDIT -- This implementation was automatically generated for the enum defined at
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 291
+namespace stringify {
+    const char* E_SgOmpSizesClause(int64_t i) {
+        switch (i) {
+            case 0L: return "SgOmpSizesClause_expression";
+            default: return "";
+        }
+    }
+
+    std::string E_SgOmpSizesClause(int64_t i, const std::string &strip) {
+        std::string s = E_SgOmpSizesClause(i);
+        if (s.empty())
+            s = "(E_SgOmpSizesClause)" + boost::lexical_cast<std::string>(i);
+        if (boost::starts_with(s, strip))
+            s = s.substr(strip.size());
+        return s;
+    }
+
+    const std::vector<int64_t>& E_SgOmpSizesClause() {
+        static const int64_t values[] = {
+            0L
+        };
+        static const std::vector<int64_t> retval(values, values + 1);
+        return retval;
+    }
+
+}
+
+namespace Rose {
+    std::string stringifyE_SgOmpSizesClause(int64_t i, const char *strip, bool canonic) {
+        std::string retval = stringify::E_SgOmpSizesClause(i);
+        if (retval.empty()) {
+            retval = "(E_SgOmpSizesClause)" + boost::lexical_cast<std::string>(i);
+        } else {
+            if (strip && !strncmp(strip, retval.c_str(), strlen(strip)))
+                retval = retval.substr(strlen(strip));
+            if (canonic)
+                retval = "E_SgOmpSizesClause::" + retval;
+        }
+        return retval;
+    }
+
+    const std::vector<int64_t>& stringifyE_SgOmpSizesClause() {
+        return stringify::E_SgOmpSizesClause();
+    }
+}
+
+// DO NOT EDIT -- This implementation was automatically generated for the enum defined at
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 294
 namespace stringify {
     const char* E_SgOmpExpressionClause(int64_t i) {
         switch (i) {
@@ -53996,7 +54008,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 291
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 297
 namespace stringify {
     const char* E_SgOmpExtImplementationDefinedRequirementClause(int64_t i) {
         switch (i) {
@@ -54044,7 +54056,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 294
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 300
 namespace stringify {
     const char* E_SgOmpCopyprivateClause(int64_t i) {
         switch (i) {
@@ -54092,7 +54104,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 297
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 303
 namespace stringify {
     const char* E_SgOmpPrivateClause(int64_t i) {
         switch (i) {
@@ -54140,7 +54152,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 300
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 306
 namespace stringify {
     const char* E_SgOmpFirstprivateClause(int64_t i) {
         switch (i) {
@@ -54188,7 +54200,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 303
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 309
 namespace stringify {
     const char* E_SgOmpNontemporalClause(int64_t i) {
         switch (i) {
@@ -54236,7 +54248,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 306
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 312
 namespace stringify {
     const char* E_SgOmpInclusiveClause(int64_t i) {
         switch (i) {
@@ -54284,7 +54296,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 309
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 315
 namespace stringify {
     const char* E_SgOmpExclusiveClause(int64_t i) {
         switch (i) {
@@ -54332,7 +54344,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 312
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 318
 namespace stringify {
     const char* E_SgOmpIsDevicePtrClause(int64_t i) {
         switch (i) {
@@ -54380,7 +54392,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 315
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 321
 namespace stringify {
     const char* E_SgOmpUseDevicePtrClause(int64_t i) {
         switch (i) {
@@ -54428,7 +54440,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 318
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 324
 namespace stringify {
     const char* E_SgOmpUseDeviceAddrClause(int64_t i) {
         switch (i) {
@@ -54476,7 +54488,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 321
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 327
 namespace stringify {
     const char* E_SgOmpSharedClause(int64_t i) {
         switch (i) {
@@ -54524,7 +54536,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 324
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 330
 namespace stringify {
     const char* E_SgOmpCopyinClause(int64_t i) {
         switch (i) {
@@ -54572,7 +54584,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 327
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 333
 namespace stringify {
     const char* E_SgOmpLastprivateClause(int64_t i) {
         switch (i) {
@@ -54620,7 +54632,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 330
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 336
 namespace stringify {
     const char* E_SgOmpReductionClause(int64_t i) {
         switch (i) {
@@ -54668,7 +54680,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 333
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 339
 namespace stringify {
     const char* E_SgOmpInReductionClause(int64_t i) {
         switch (i) {
@@ -54716,7 +54728,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 336
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 342
 namespace stringify {
     const char* E_SgOmpTaskReductionClause(int64_t i) {
         switch (i) {
@@ -54764,7 +54776,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 339
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 345
 namespace stringify {
     const char* E_SgOmpMapClause(int64_t i) {
         switch (i) {
@@ -54812,7 +54824,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 342
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 348
 namespace stringify {
     const char* E_SgOmpAllocateClause(int64_t i) {
         switch (i) {
@@ -54860,7 +54872,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 345
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 351
 namespace stringify {
     const char* E_SgOmpUniformClause(int64_t i) {
         switch (i) {
@@ -54908,7 +54920,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 348
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 354
 namespace stringify {
     const char* E_SgOmpAlignedClause(int64_t i) {
         switch (i) {
@@ -54958,7 +54970,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 351
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 357
 namespace stringify {
     const char* E_SgOmpLinearClause(int64_t i) {
         switch (i) {
@@ -55008,7 +55020,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 354
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 360
 namespace stringify {
     const char* E_SgOmpDependClause(int64_t i) {
         switch (i) {
@@ -55056,7 +55068,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 357
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 363
 namespace stringify {
     const char* E_SgOmpAffinityClause(int64_t i) {
         switch (i) {
@@ -55104,7 +55116,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 360
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 366
 namespace stringify {
     const char* E_SgOmpToClause(int64_t i) {
         switch (i) {
@@ -55152,7 +55164,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 363
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 369
 namespace stringify {
     const char* E_SgOmpFromClause(int64_t i) {
         switch (i) {
@@ -55200,7 +55212,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 366
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 372
 namespace stringify {
     const char* E_SgOmpVariablesClause(int64_t i) {
         switch (i) {
@@ -55248,7 +55260,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 369
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 375
 namespace stringify {
     const char* E_SgOmpScheduleClause(int64_t i) {
         switch (i) {
@@ -55296,7 +55308,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 372
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 378
 namespace stringify {
     const char* E_SgOmpWhenClause(int64_t i) {
         switch (i) {
@@ -55356,7 +55368,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 375
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 381
 namespace stringify {
     const char* E_SgUpirDataItemField(int64_t i) {
         switch (i) {
@@ -55414,7 +55426,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 378
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 384
 namespace stringify {
     const char* E_SgLambdaCapture(int64_t i) {
         switch (i) {
@@ -55466,7 +55478,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 381
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 387
 namespace stringify {
     const char* E_SgLambdaCaptureList(int64_t i) {
         switch (i) {
@@ -55514,7 +55526,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 384
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 390
 namespace stringify {
     const char* E_SgGlobal(int64_t i) {
         switch (i) {
@@ -55562,7 +55574,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 387
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 393
 namespace stringify {
     const char* E_SgBasicBlock(int64_t i) {
         switch (i) {
@@ -55610,7 +55622,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 390
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 396
 namespace stringify {
     const char* E_SgIfStmt(int64_t i) {
         switch (i) {
@@ -55662,7 +55674,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 393
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 399
 namespace stringify {
     const char* E_SgForStatement(int64_t i) {
         switch (i) {
@@ -55718,7 +55730,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 396
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 402
 namespace stringify {
     const char* E_SgTemplateFunctionDefinition(int64_t i) {
         switch (i) {
@@ -55766,7 +55778,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 399
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 405
 namespace stringify {
     const char* E_SgFunctionDefinition(int64_t i) {
         switch (i) {
@@ -55814,7 +55826,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 402
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 408
 namespace stringify {
     const char* E_SgTemplateInstantiationDefn(int64_t i) {
         switch (i) {
@@ -55862,7 +55874,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 405
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 411
 namespace stringify {
     const char* E_SgTemplateClassDefinition(int64_t i) {
         switch (i) {
@@ -55910,7 +55922,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 408
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 414
 namespace stringify {
     const char* E_SgClassDefinition(int64_t i) {
         switch (i) {
@@ -55958,7 +55970,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 411
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 417
 namespace stringify {
     const char* E_SgWhileStmt(int64_t i) {
         switch (i) {
@@ -56010,7 +56022,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 414
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 420
 namespace stringify {
     const char* E_SgDoWhileStmt(int64_t i) {
         switch (i) {
@@ -56060,7 +56072,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 417
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 423
 namespace stringify {
     const char* E_SgSwitchStatement(int64_t i) {
         switch (i) {
@@ -56110,7 +56122,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 420
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 426
 namespace stringify {
     const char* E_SgCatchOptionStmt(int64_t i) {
         switch (i) {
@@ -56160,7 +56172,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 423
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 429
 namespace stringify {
     const char* E_SgNamespaceDefinitionStatement(int64_t i) {
         switch (i) {
@@ -56208,7 +56220,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 426
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 432
 namespace stringify {
     const char* E_SgAssociateStatement(int64_t i) {
         switch (i) {
@@ -56256,7 +56268,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 429
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 435
 namespace stringify {
     const char* E_SgFortranNonblockedDo(int64_t i) {
         switch (i) {
@@ -56310,7 +56322,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 432
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 438
 namespace stringify {
     const char* E_SgFortranDo(int64_t i) {
         switch (i) {
@@ -56364,7 +56376,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 435
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 441
 namespace stringify {
     const char* E_SgForAllStatement(int64_t i) {
         switch (i) {
@@ -56414,7 +56426,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 438
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 444
 namespace stringify {
     const char* E_SgUpcForAllStatement(int64_t i) {
         switch (i) {
@@ -56470,7 +56482,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 441
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 447
 namespace stringify {
     const char* E_SgCAFWithTeamStatement(int64_t i) {
         switch (i) {
@@ -56518,7 +56530,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 444
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 450
 namespace stringify {
     const char* E_SgFunctionParameterScope(int64_t i) {
         switch (i) {
@@ -56566,7 +56578,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 447
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 453
 namespace stringify {
     const char* E_SgRangeBasedForStatement(int64_t i) {
         switch (i) {
@@ -56626,7 +56638,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 450
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 456
 namespace stringify {
     const char* E_SgFunctionParameterList(int64_t i) {
         switch (i) {
@@ -56674,7 +56686,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 453
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 459
 namespace stringify {
     const char* E_SgTemplateVariableDeclaration(int64_t i) {
         switch (i) {
@@ -56724,7 +56736,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 456
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 462
 namespace stringify {
     const char* E_SgVariableDeclaration(int64_t i) {
         switch (i) {
@@ -56774,7 +56786,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 459
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 465
 namespace stringify {
     const char* E_SgVariableDefinition(int64_t i) {
         switch (i) {
@@ -56824,7 +56836,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 462
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 468
 namespace stringify {
     const char* E_SgEnumDeclaration(int64_t i) {
         switch (i) {
@@ -56872,7 +56884,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 465
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 471
 namespace stringify {
     const char* E_SgAsmStmt(int64_t i) {
         switch (i) {
@@ -56920,7 +56932,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 468
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 474
 namespace stringify {
     const char* E_SgTemplateInstantiationDirectiveStatement(int64_t i) {
         switch (i) {
@@ -56968,7 +56980,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 471
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 477
 namespace stringify {
     const char* E_SgUseStatement(int64_t i) {
         switch (i) {
@@ -57016,7 +57028,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 474
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 480
 namespace stringify {
     const char* E_SgNamespaceDeclarationStatement(int64_t i) {
         switch (i) {
@@ -57064,7 +57076,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 477
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 483
 namespace stringify {
     const char* E_SgInterfaceStatement(int64_t i) {
         switch (i) {
@@ -57112,7 +57124,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 480
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 486
 namespace stringify {
     const char* E_SgCommonBlock(int64_t i) {
         switch (i) {
@@ -57160,7 +57172,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 483
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 489
 namespace stringify {
     const char* E_SgTemplateTypedefDeclaration(int64_t i) {
         switch (i) {
@@ -57208,7 +57220,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 486
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 492
 namespace stringify {
     const char* E_SgTemplateInstantiationTypedefDeclaration(int64_t i) {
         switch (i) {
@@ -57256,7 +57268,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 489
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 495
 namespace stringify {
     const char* E_SgTypedefDeclaration(int64_t i) {
         switch (i) {
@@ -57304,7 +57316,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 492
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 498
 namespace stringify {
     const char* E_SgStatementFunctionStatement(int64_t i) {
         switch (i) {
@@ -57354,7 +57366,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 495
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 501
 namespace stringify {
     const char* E_SgCtorInitializerList(int64_t i) {
         switch (i) {
@@ -57402,7 +57414,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 498
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 504
 namespace stringify {
     const char* E_SgPragmaDeclaration(int64_t i) {
         switch (i) {
@@ -57450,7 +57462,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 501
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 507
 namespace stringify {
     const char* E_SgTemplateClassDeclaration(int64_t i) {
         switch (i) {
@@ -57500,7 +57512,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 504
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 510
 namespace stringify {
     const char* E_SgTemplateInstantiationDecl(int64_t i) {
         switch (i) {
@@ -57550,7 +57562,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 507
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 513
 namespace stringify {
     const char* E_SgDerivedTypeStatement(int64_t i) {
         switch (i) {
@@ -57600,7 +57612,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 510
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 516
 namespace stringify {
     const char* E_SgModuleStatement(int64_t i) {
         switch (i) {
@@ -57650,7 +57662,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 513
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 519
 namespace stringify {
     const char* E_SgClassDeclaration(int64_t i) {
         switch (i) {
@@ -57700,7 +57712,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 516
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 522
 namespace stringify {
     const char* E_SgImplicitStatement(int64_t i) {
         switch (i) {
@@ -57748,7 +57760,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 519
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 525
 namespace stringify {
     const char* E_SgTemplateFunctionDeclaration(int64_t i) {
         switch (i) {
@@ -57800,7 +57812,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 522
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 528
 namespace stringify {
     const char* E_SgTemplateMemberFunctionDeclaration(int64_t i) {
         switch (i) {
@@ -57854,7 +57866,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 525
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 531
 namespace stringify {
     const char* E_SgTemplateInstantiationMemberFunctionDecl(int64_t i) {
         switch (i) {
@@ -57908,7 +57920,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 528
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 534
 namespace stringify {
     const char* E_SgMemberFunctionDeclaration(int64_t i) {
         switch (i) {
@@ -57962,7 +57974,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 531
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 537
 namespace stringify {
     const char* E_SgTemplateInstantiationFunctionDecl(int64_t i) {
         switch (i) {
@@ -58014,7 +58026,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 534
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 540
 namespace stringify {
     const char* E_SgProgramHeaderStatement(int64_t i) {
         switch (i) {
@@ -58066,7 +58078,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 537
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 543
 namespace stringify {
     const char* E_SgProcedureHeaderStatement(int64_t i) {
         switch (i) {
@@ -58120,7 +58132,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 540
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 546
 namespace stringify {
     const char* E_SgEntryStatement(int64_t i) {
         switch (i) {
@@ -58174,7 +58186,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 543
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 549
 namespace stringify {
     const char* E_SgFunctionDeclaration(int64_t i) {
         switch (i) {
@@ -58226,7 +58238,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 546
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 552
 namespace stringify {
     const char* E_SgIncludeDirectiveStatement(int64_t i) {
         switch (i) {
@@ -58274,7 +58286,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 549
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 555
 namespace stringify {
     const char* E_SgOmpThreadprivateStatement(int64_t i) {
         switch (i) {
@@ -58322,7 +58334,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 552
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 558
 namespace stringify {
     const char* E_SgOmpRequiresStatement(int64_t i) {
         switch (i) {
@@ -58370,7 +58382,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 555
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 561
 namespace stringify {
     const char* E_SgOmpTaskwaitStatement(int64_t i) {
         switch (i) {
@@ -58418,7 +58430,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 558
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 564
 namespace stringify {
     const char* E_SgStmtDeclarationStatement(int64_t i) {
         switch (i) {
@@ -58466,7 +58478,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 561
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 567
 namespace stringify {
     const char* E_SgStaticAssertionDeclaration(int64_t i) {
         switch (i) {
@@ -58514,7 +58526,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 564
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 570
 namespace stringify {
     const char* E_SgOmpDeclareSimdStatement(int64_t i) {
         switch (i) {
@@ -58562,7 +58574,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 567
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 573
 namespace stringify {
     const char* E_SgExprStatement(int64_t i) {
         switch (i) {
@@ -58610,7 +58622,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 570
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 576
 namespace stringify {
     const char* E_SgLabelStatement(int64_t i) {
         switch (i) {
@@ -58658,7 +58670,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 573
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 579
 namespace stringify {
     const char* E_SgCaseOptionStmt(int64_t i) {
         switch (i) {
@@ -58710,7 +58722,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 576
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 582
 namespace stringify {
     const char* E_SgTryStmt(int64_t i) {
         switch (i) {
@@ -58764,7 +58776,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 579
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 585
 namespace stringify {
     const char* E_SgDefaultOptionStmt(int64_t i) {
         switch (i) {
@@ -58812,7 +58824,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 582
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 588
 namespace stringify {
     const char* E_SgReturnStmt(int64_t i) {
         switch (i) {
@@ -58860,7 +58872,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 585
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 591
 namespace stringify {
     const char* E_SgSpawnStmt(int64_t i) {
         switch (i) {
@@ -58908,7 +58920,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 588
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 594
 namespace stringify {
     const char* E_SgForInitStatement(int64_t i) {
         switch (i) {
@@ -58956,7 +58968,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 591
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 597
 namespace stringify {
     const char* E_SgCatchStatementSeq(int64_t i) {
         switch (i) {
@@ -59004,7 +59016,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 594
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 600
 namespace stringify {
     const char* E_SgProcessControlStatement(int64_t i) {
         switch (i) {
@@ -59054,7 +59066,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 597
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 603
 namespace stringify {
     const char* E_SgPrintStatement(int64_t i) {
         switch (i) {
@@ -59112,7 +59124,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 600
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 606
 namespace stringify {
     const char* E_SgReadStatement(int64_t i) {
         switch (i) {
@@ -59200,7 +59212,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 603
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 609
 namespace stringify {
     const char* E_SgWriteStatement(int64_t i) {
         switch (i) {
@@ -59288,7 +59300,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 606
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 612
 namespace stringify {
     const char* E_SgOpenStatement(int64_t i) {
         switch (i) {
@@ -59370,7 +59382,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 609
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 615
 namespace stringify {
     const char* E_SgCloseStatement(int64_t i) {
         switch (i) {
@@ -59428,7 +59440,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 612
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 618
 namespace stringify {
     const char* E_SgInquireStatement(int64_t i) {
         switch (i) {
@@ -59484,7 +59496,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 615
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 621
 namespace stringify {
     const char* E_SgFlushStatement(int64_t i) {
         switch (i) {
@@ -59540,7 +59552,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 618
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 624
 namespace stringify {
     const char* E_SgBackspaceStatement(int64_t i) {
         switch (i) {
@@ -59596,7 +59608,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 621
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 627
 namespace stringify {
     const char* E_SgRewindStatement(int64_t i) {
         switch (i) {
@@ -59652,7 +59664,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 624
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 630
 namespace stringify {
     const char* E_SgEndfileStatement(int64_t i) {
         switch (i) {
@@ -59708,7 +59720,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 627
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 633
 namespace stringify {
     const char* E_SgWaitStatement(int64_t i) {
         switch (i) {
@@ -59764,7 +59776,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 630
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 636
 namespace stringify {
     const char* E_SgIOStatement(int64_t i) {
         switch (i) {
@@ -59820,7 +59832,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 633
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 639
 namespace stringify {
     const char* E_SgWhereStatement(int64_t i) {
         switch (i) {
@@ -59872,7 +59884,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 636
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 642
 namespace stringify {
     const char* E_SgElseWhereStatement(int64_t i) {
         switch (i) {
@@ -59924,7 +59936,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 639
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 645
 namespace stringify {
     const char* E_SgNullifyStatement(int64_t i) {
         switch (i) {
@@ -59972,7 +59984,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 642
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 648
 namespace stringify {
     const char* E_SgArithmeticIfStatement(int64_t i) {
         switch (i) {
@@ -60020,7 +60032,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 645
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 651
 namespace stringify {
     const char* E_SgAssignStatement(int64_t i) {
         switch (i) {
@@ -60068,7 +60080,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 648
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 654
 namespace stringify {
     const char* E_SgComputedGotoStatement(int64_t i) {
         switch (i) {
@@ -60118,7 +60130,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 651
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 657
 namespace stringify {
     const char* E_SgAssignedGotoStatement(int64_t i) {
         switch (i) {
@@ -60166,7 +60178,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 654
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 660
 namespace stringify {
     const char* E_SgAllocateStatement(int64_t i) {
         switch (i) {
@@ -60220,7 +60232,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 657
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 663
 namespace stringify {
     const char* E_SgDeallocateStatement(int64_t i) {
         switch (i) {
@@ -60272,7 +60284,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 660
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 666
 namespace stringify {
     const char* E_SgUpcNotifyStatement(int64_t i) {
         switch (i) {
@@ -60320,7 +60332,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 663
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 669
 namespace stringify {
     const char* E_SgUpcWaitStatement(int64_t i) {
         switch (i) {
@@ -60368,7 +60380,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 666
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 672
 namespace stringify {
     const char* E_SgUpcBarrierStatement(int64_t i) {
         switch (i) {
@@ -60416,7 +60428,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 669
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 675
 namespace stringify {
     const char* E_SgOmpMasterStatement(int64_t i) {
         switch (i) {
@@ -60464,7 +60476,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 672
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 678
 namespace stringify {
     const char* E_SgOmpSectionStatement(int64_t i) {
         switch (i) {
@@ -60512,7 +60524,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 675
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 681
 namespace stringify {
     const char* E_SgOmpWorkshareStatement(int64_t i) {
         switch (i) {
@@ -60560,7 +60572,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 678
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 684
 namespace stringify {
     const char* E_SgUpirSpmdStatement(int64_t i) {
         switch (i) {
@@ -60610,7 +60622,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 681
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 687
 namespace stringify {
     const char* E_SgOmpTeamsStatement(int64_t i) {
         switch (i) {
@@ -60660,7 +60672,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 684
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 690
 namespace stringify {
     const char* E_SgOmpSingleStatement(int64_t i) {
         switch (i) {
@@ -60710,7 +60722,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 687
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 693
 namespace stringify {
     const char* E_SgOmpAtomicStatement(int64_t i) {
         switch (i) {
@@ -60760,7 +60772,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 690
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 696
 namespace stringify {
     const char* E_SgOmpScanStatement(int64_t i) {
         switch (i) {
@@ -60810,7 +60822,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 693
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 699
 namespace stringify {
     const char* E_SgOmpMetadirectiveStatement(int64_t i) {
         switch (i) {
@@ -60860,7 +60872,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 696
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 702
 namespace stringify {
     const char* E_SgOmpLoopStatement(int64_t i) {
         switch (i) {
@@ -60910,7 +60922,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 699
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 705
 namespace stringify {
     const char* E_SgOmpOrderedStatement(int64_t i) {
         switch (i) {
@@ -60960,7 +60972,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 702
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 708
 namespace stringify {
     const char* E_SgOmpTaskgroupStatement(int64_t i) {
         switch (i) {
@@ -61010,7 +61022,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 705
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 711
 namespace stringify {
     const char* E_SgOmpTaskloopStatement(int64_t i) {
         switch (i) {
@@ -61060,7 +61072,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 708
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 714
 namespace stringify {
     const char* E_SgOmpDepobjStatement(int64_t i) {
         switch (i) {
@@ -61110,7 +61122,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 711
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 717
 namespace stringify {
     const char* E_SgOmpTargetEnterDataStatement(int64_t i) {
         switch (i) {
@@ -61160,7 +61172,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 714
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 720
 namespace stringify {
     const char* E_SgOmpTargetExitDataStatement(int64_t i) {
         switch (i) {
@@ -61210,7 +61222,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 717
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 723
 namespace stringify {
     const char* E_SgOmpParallelMasterStatement(int64_t i) {
         switch (i) {
@@ -61260,7 +61272,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 720
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 726
 namespace stringify {
     const char* E_SgOmpMasterTaskloopStatement(int64_t i) {
         switch (i) {
@@ -61310,7 +61322,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 723
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 729
 namespace stringify {
     const char* E_SgOmpTaskStatement(int64_t i) {
         switch (i) {
@@ -61360,7 +61372,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 726
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 732
 namespace stringify {
     const char* E_SgOmpDoStatement(int64_t i) {
         switch (i) {
@@ -61410,7 +61422,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 729
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 735
 namespace stringify {
     const char* E_SgOmpSectionsStatement(int64_t i) {
         switch (i) {
@@ -61460,7 +61472,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 732
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 738
 namespace stringify {
     const char* E_SgUpirTaskStatement(int64_t i) {
         switch (i) {
@@ -61510,7 +61522,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 735
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 741
 namespace stringify {
     const char* E_SgOmpTargetDataStatement(int64_t i) {
         switch (i) {
@@ -61560,7 +61572,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 738
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 744
 namespace stringify {
     const char* E_SgOmpTargetParallelForStatement(int64_t i) {
         switch (i) {
@@ -61610,7 +61622,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 741
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 747
 namespace stringify {
     const char* E_SgOmpParallelLoopStatement(int64_t i) {
         switch (i) {
@@ -61660,7 +61672,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 744
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 750
 namespace stringify {
     const char* E_SgOmpTargetParallelStatement(int64_t i) {
         switch (i) {
@@ -61710,7 +61722,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 747
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 753
 namespace stringify {
     const char* E_SgOmpTargetParallelForSimdStatement(int64_t i) {
         switch (i) {
@@ -61760,7 +61772,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 750
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 756
 namespace stringify {
     const char* E_SgOmpTargetParallelLoopStatement(int64_t i) {
         switch (i) {
@@ -61810,7 +61822,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 753
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 759
 namespace stringify {
     const char* E_SgOmpTargetSimdStatement(int64_t i) {
         switch (i) {
@@ -61860,7 +61872,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 756
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 762
 namespace stringify {
     const char* E_SgOmpTargetTeamsStatement(int64_t i) {
         switch (i) {
@@ -61910,7 +61922,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 759
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 765
 namespace stringify {
     const char* E_SgOmpTargetTeamsDistributeStatement(int64_t i) {
         switch (i) {
@@ -61960,7 +61972,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 762
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 768
 namespace stringify {
     const char* E_SgOmpTargetTeamsDistributeSimdStatement(int64_t i) {
         switch (i) {
@@ -62010,7 +62022,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 765
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 771
 namespace stringify {
     const char* E_SgOmpTargetTeamsLoopStatement(int64_t i) {
         switch (i) {
@@ -62060,7 +62072,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 768
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 774
 namespace stringify {
     const char* E_SgOmpTargetTeamsDistributeParallelForStatement(int64_t i) {
         switch (i) {
@@ -62110,7 +62122,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 771
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 777
 namespace stringify {
     const char* E_SgOmpTargetTeamsDistributeParallelForSimdStatement(int64_t i) {
         switch (i) {
@@ -62160,7 +62172,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 774
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 780
 namespace stringify {
     const char* E_SgOmpDistributeSimdStatement(int64_t i) {
         switch (i) {
@@ -62210,7 +62222,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 777
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 783
 namespace stringify {
     const char* E_SgOmpDistributeParallelForStatement(int64_t i) {
         switch (i) {
@@ -62260,7 +62272,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 780
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 786
 namespace stringify {
     const char* E_SgOmpDistributeParallelForSimdStatement(int64_t i) {
         switch (i) {
@@ -62310,7 +62322,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 783
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 789
 namespace stringify {
     const char* E_SgOmpTaskloopSimdStatement(int64_t i) {
         switch (i) {
@@ -62360,7 +62372,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 786
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 792
 namespace stringify {
     const char* E_SgOmpMasterTaskloopSimdStatement(int64_t i) {
         switch (i) {
@@ -62410,7 +62422,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 789
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 795
 namespace stringify {
     const char* E_SgOmpParallelMasterTaskloopStatement(int64_t i) {
         switch (i) {
@@ -62460,7 +62472,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 792
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 798
 namespace stringify {
     const char* E_SgOmpParallelMasterTaskloopSimdStatement(int64_t i) {
         switch (i) {
@@ -62510,7 +62522,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 795
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 801
 namespace stringify {
     const char* E_SgOmpTeamsDistributeStatement(int64_t i) {
         switch (i) {
@@ -62560,7 +62572,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 798
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 804
 namespace stringify {
     const char* E_SgOmpTeamsDistributeSimdStatement(int64_t i) {
         switch (i) {
@@ -62610,7 +62622,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 801
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 807
 namespace stringify {
     const char* E_SgOmpTeamsDistributeParallelForStatement(int64_t i) {
         switch (i) {
@@ -62660,7 +62672,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 804
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 810
 namespace stringify {
     const char* E_SgOmpTeamsDistributeParallelForSimdStatement(int64_t i) {
         switch (i) {
@@ -62710,7 +62722,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 807
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 813
 namespace stringify {
     const char* E_SgOmpTeamsLoopStatement(int64_t i) {
         switch (i) {
@@ -62760,7 +62772,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 810
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 816
 namespace stringify {
     const char* E_SgOmpForSimdStatement(int64_t i) {
         switch (i) {
@@ -62810,7 +62822,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 813
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 819
 namespace stringify {
     const char* E_SgOmpCriticalStatement(int64_t i) {
         switch (i) {
@@ -62860,7 +62872,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 816
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 822
 namespace stringify {
     const char* E_SgOmpDistributeStatement(int64_t i) {
         switch (i) {
@@ -62910,7 +62922,107 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 819
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 825
+namespace stringify {
+    const char* E_SgOmpUnrollStatement(int64_t i) {
+        switch (i) {
+            case 0L: return "SgOmpUnrollStatement_body";
+            case 1L: return "SgOmpUnrollStatement_clauses";
+            default: return "";
+        }
+    }
+
+    std::string E_SgOmpUnrollStatement(int64_t i, const std::string &strip) {
+        std::string s = E_SgOmpUnrollStatement(i);
+        if (s.empty())
+            s = "(E_SgOmpUnrollStatement)" + boost::lexical_cast<std::string>(i);
+        if (boost::starts_with(s, strip))
+            s = s.substr(strip.size());
+        return s;
+    }
+
+    const std::vector<int64_t>& E_SgOmpUnrollStatement() {
+        static const int64_t values[] = {
+            0L,
+            1L
+        };
+        static const std::vector<int64_t> retval(values, values + 2);
+        return retval;
+    }
+
+}
+
+namespace Rose {
+    std::string stringifyE_SgOmpUnrollStatement(int64_t i, const char *strip, bool canonic) {
+        std::string retval = stringify::E_SgOmpUnrollStatement(i);
+        if (retval.empty()) {
+            retval = "(E_SgOmpUnrollStatement)" + boost::lexical_cast<std::string>(i);
+        } else {
+            if (strip && !strncmp(strip, retval.c_str(), strlen(strip)))
+                retval = retval.substr(strlen(strip));
+            if (canonic)
+                retval = "E_SgOmpUnrollStatement::" + retval;
+        }
+        return retval;
+    }
+
+    const std::vector<int64_t>& stringifyE_SgOmpUnrollStatement() {
+        return stringify::E_SgOmpUnrollStatement();
+    }
+}
+
+// DO NOT EDIT -- This implementation was automatically generated for the enum defined at
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 828
+namespace stringify {
+    const char* E_SgOmpTileStatement(int64_t i) {
+        switch (i) {
+            case 0L: return "SgOmpTileStatement_body";
+            case 1L: return "SgOmpTileStatement_clauses";
+            default: return "";
+        }
+    }
+
+    std::string E_SgOmpTileStatement(int64_t i, const std::string &strip) {
+        std::string s = E_SgOmpTileStatement(i);
+        if (s.empty())
+            s = "(E_SgOmpTileStatement)" + boost::lexical_cast<std::string>(i);
+        if (boost::starts_with(s, strip))
+            s = s.substr(strip.size());
+        return s;
+    }
+
+    const std::vector<int64_t>& E_SgOmpTileStatement() {
+        static const int64_t values[] = {
+            0L,
+            1L
+        };
+        static const std::vector<int64_t> retval(values, values + 2);
+        return retval;
+    }
+
+}
+
+namespace Rose {
+    std::string stringifyE_SgOmpTileStatement(int64_t i, const char *strip, bool canonic) {
+        std::string retval = stringify::E_SgOmpTileStatement(i);
+        if (retval.empty()) {
+            retval = "(E_SgOmpTileStatement)" + boost::lexical_cast<std::string>(i);
+        } else {
+            if (strip && !strncmp(strip, retval.c_str(), strlen(strip)))
+                retval = retval.substr(strlen(strip));
+            if (canonic)
+                retval = "E_SgOmpTileStatement::" + retval;
+        }
+        return retval;
+    }
+
+    const std::vector<int64_t>& stringifyE_SgOmpTileStatement() {
+        return stringify::E_SgOmpTileStatement();
+    }
+}
+
+// DO NOT EDIT -- This implementation was automatically generated for the enum defined at
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 831
 namespace stringify {
     const char* E_SgUpirLoopStatement(int64_t i) {
         switch (i) {
@@ -62960,7 +63072,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 822
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 834
 namespace stringify {
     const char* E_SgUpirFieldBodyStatement(int64_t i) {
         switch (i) {
@@ -63010,7 +63122,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 825
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 837
 namespace stringify {
     const char* E_SgUpirBodyStatement(int64_t i) {
         switch (i) {
@@ -63058,7 +63170,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 828
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 840
 namespace stringify {
     const char* E_SgOmpFlushStatement(int64_t i) {
         switch (i) {
@@ -63106,7 +63218,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 831
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 843
 namespace stringify {
     const char* E_SgOmpAllocateStatement(int64_t i) {
         switch (i) {
@@ -63154,7 +63266,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 834
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 846
 namespace stringify {
     const char* E_SgWithStatement(int64_t i) {
         switch (i) {
@@ -63204,7 +63316,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 837
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 849
 namespace stringify {
     const char* E_SgAssertStmt(int64_t i) {
         switch (i) {
@@ -63254,7 +63366,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 840
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 852
 namespace stringify {
     const char* E_SgExecStatement(int64_t i) {
         switch (i) {
@@ -63306,7 +63418,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 843
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 855
 namespace stringify {
     const char* E_SgSyncAllStatement(int64_t i) {
         switch (i) {
@@ -63358,7 +63470,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 846
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 858
 namespace stringify {
     const char* E_SgSyncImagesStatement(int64_t i) {
         switch (i) {
@@ -63412,7 +63524,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 849
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 861
 namespace stringify {
     const char* E_SgSyncMemoryStatement(int64_t i) {
         switch (i) {
@@ -63464,7 +63576,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 852
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 864
 namespace stringify {
     const char* E_SgSyncTeamStatement(int64_t i) {
         switch (i) {
@@ -63518,7 +63630,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 855
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 867
 namespace stringify {
     const char* E_SgLockStatement(int64_t i) {
         switch (i) {
@@ -63572,7 +63684,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 858
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 870
 namespace stringify {
     const char* E_SgUnlockStatement(int64_t i) {
         switch (i) {
@@ -63626,7 +63738,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 861
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 873
 namespace stringify {
     const char* E_SgImageControlStatement(int64_t i) {
         switch (i) {
@@ -63678,7 +63790,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 864
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 876
 namespace stringify {
     const char* E_SgExpressionRoot(int64_t i) {
         switch (i) {
@@ -63726,7 +63838,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 867
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 879
 namespace stringify {
     const char* E_SgMinusOp(int64_t i) {
         switch (i) {
@@ -63774,7 +63886,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 870
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 882
 namespace stringify {
     const char* E_SgUnaryAddOp(int64_t i) {
         switch (i) {
@@ -63822,7 +63934,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 873
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 885
 namespace stringify {
     const char* E_SgNotOp(int64_t i) {
         switch (i) {
@@ -63870,7 +63982,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 876
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 888
 namespace stringify {
     const char* E_SgPointerDerefExp(int64_t i) {
         switch (i) {
@@ -63918,7 +64030,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 879
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 891
 namespace stringify {
     const char* E_SgAddressOfOp(int64_t i) {
         switch (i) {
@@ -63966,7 +64078,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 882
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 894
 namespace stringify {
     const char* E_SgMinusMinusOp(int64_t i) {
         switch (i) {
@@ -64014,7 +64126,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 885
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 897
 namespace stringify {
     const char* E_SgPlusPlusOp(int64_t i) {
         switch (i) {
@@ -64062,7 +64174,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 888
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 900
 namespace stringify {
     const char* E_SgBitComplementOp(int64_t i) {
         switch (i) {
@@ -64110,7 +64222,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 891
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 903
 namespace stringify {
     const char* E_SgCastExp(int64_t i) {
         switch (i) {
@@ -64158,7 +64270,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 894
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 906
 namespace stringify {
     const char* E_SgThrowOp(int64_t i) {
         switch (i) {
@@ -64206,7 +64318,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 897
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 909
 namespace stringify {
     const char* E_SgRealPartOp(int64_t i) {
         switch (i) {
@@ -64254,7 +64366,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 900
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 912
 namespace stringify {
     const char* E_SgImagPartOp(int64_t i) {
         switch (i) {
@@ -64302,7 +64414,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 903
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 915
 namespace stringify {
     const char* E_SgConjugateOp(int64_t i) {
         switch (i) {
@@ -64350,7 +64462,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 906
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 918
 namespace stringify {
     const char* E_SgUserDefinedUnaryOp(int64_t i) {
         switch (i) {
@@ -64398,7 +64510,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 909
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 921
 namespace stringify {
     const char* E_SgMatrixTransposeOp(int64_t i) {
         switch (i) {
@@ -64446,7 +64558,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 912
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 924
 namespace stringify {
     const char* E_SgUnaryOp(int64_t i) {
         switch (i) {
@@ -64494,7 +64606,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 915
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 927
 namespace stringify {
     const char* E_SgArrowExp(int64_t i) {
         switch (i) {
@@ -64544,7 +64656,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 918
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 930
 namespace stringify {
     const char* E_SgDotExp(int64_t i) {
         switch (i) {
@@ -64594,7 +64706,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 921
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 933
 namespace stringify {
     const char* E_SgDotStarOp(int64_t i) {
         switch (i) {
@@ -64644,7 +64756,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 924
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 936
 namespace stringify {
     const char* E_SgArrowStarOp(int64_t i) {
         switch (i) {
@@ -64694,7 +64806,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 927
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 939
 namespace stringify {
     const char* E_SgEqualityOp(int64_t i) {
         switch (i) {
@@ -64744,7 +64856,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 930
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 942
 namespace stringify {
     const char* E_SgLessThanOp(int64_t i) {
         switch (i) {
@@ -64794,7 +64906,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 933
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 945
 namespace stringify {
     const char* E_SgGreaterThanOp(int64_t i) {
         switch (i) {
@@ -64844,7 +64956,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 936
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 948
 namespace stringify {
     const char* E_SgNotEqualOp(int64_t i) {
         switch (i) {
@@ -64894,7 +65006,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 939
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 951
 namespace stringify {
     const char* E_SgLessOrEqualOp(int64_t i) {
         switch (i) {
@@ -64944,7 +65056,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 942
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 954
 namespace stringify {
     const char* E_SgGreaterOrEqualOp(int64_t i) {
         switch (i) {
@@ -64994,7 +65106,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 945
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 957
 namespace stringify {
     const char* E_SgAddOp(int64_t i) {
         switch (i) {
@@ -65044,7 +65156,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 948
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 960
 namespace stringify {
     const char* E_SgSubtractOp(int64_t i) {
         switch (i) {
@@ -65094,7 +65206,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 951
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 963
 namespace stringify {
     const char* E_SgMultiplyOp(int64_t i) {
         switch (i) {
@@ -65144,7 +65256,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 954
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 966
 namespace stringify {
     const char* E_SgDivideOp(int64_t i) {
         switch (i) {
@@ -65194,7 +65306,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 957
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 969
 namespace stringify {
     const char* E_SgIntegerDivideOp(int64_t i) {
         switch (i) {
@@ -65244,7 +65356,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 960
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 972
 namespace stringify {
     const char* E_SgModOp(int64_t i) {
         switch (i) {
@@ -65294,7 +65406,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 963
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 975
 namespace stringify {
     const char* E_SgAndOp(int64_t i) {
         switch (i) {
@@ -65344,7 +65456,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 966
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 978
 namespace stringify {
     const char* E_SgOrOp(int64_t i) {
         switch (i) {
@@ -65394,7 +65506,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 969
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 981
 namespace stringify {
     const char* E_SgBitXorOp(int64_t i) {
         switch (i) {
@@ -65444,7 +65556,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 972
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 984
 namespace stringify {
     const char* E_SgBitAndOp(int64_t i) {
         switch (i) {
@@ -65494,7 +65606,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 975
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 987
 namespace stringify {
     const char* E_SgBitOrOp(int64_t i) {
         switch (i) {
@@ -65544,7 +65656,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 978
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 990
 namespace stringify {
     const char* E_SgBitEqvOp(int64_t i) {
         switch (i) {
@@ -65594,7 +65706,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 981
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 993
 namespace stringify {
     const char* E_SgCommaOpExp(int64_t i) {
         switch (i) {
@@ -65644,7 +65756,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 984
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 996
 namespace stringify {
     const char* E_SgLshiftOp(int64_t i) {
         switch (i) {
@@ -65694,7 +65806,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 987
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 999
 namespace stringify {
     const char* E_SgRshiftOp(int64_t i) {
         switch (i) {
@@ -65744,7 +65856,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 990
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1002
 namespace stringify {
     const char* E_SgPntrArrRefExp(int64_t i) {
         switch (i) {
@@ -65794,7 +65906,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 993
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1005
 namespace stringify {
     const char* E_SgScopeOp(int64_t i) {
         switch (i) {
@@ -65844,7 +65956,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 996
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1008
 namespace stringify {
     const char* E_SgAssignOp(int64_t i) {
         switch (i) {
@@ -65894,7 +66006,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 999
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1011
 namespace stringify {
     const char* E_SgExponentiationOp(int64_t i) {
         switch (i) {
@@ -65944,7 +66056,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1002
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1014
 namespace stringify {
     const char* E_SgConcatenationOp(int64_t i) {
         switch (i) {
@@ -65994,7 +66106,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1005
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1017
 namespace stringify {
     const char* E_SgPointerAssignOp(int64_t i) {
         switch (i) {
@@ -66044,7 +66156,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1008
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1020
 namespace stringify {
     const char* E_SgUserDefinedBinaryOp(int64_t i) {
         switch (i) {
@@ -66094,7 +66206,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1011
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1023
 namespace stringify {
     const char* E_SgPlusAssignOp(int64_t i) {
         switch (i) {
@@ -66144,7 +66256,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1014
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1026
 namespace stringify {
     const char* E_SgMinusAssignOp(int64_t i) {
         switch (i) {
@@ -66194,7 +66306,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1017
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1029
 namespace stringify {
     const char* E_SgAndAssignOp(int64_t i) {
         switch (i) {
@@ -66244,7 +66356,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1020
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1032
 namespace stringify {
     const char* E_SgIorAssignOp(int64_t i) {
         switch (i) {
@@ -66294,7 +66406,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1023
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1035
 namespace stringify {
     const char* E_SgMultAssignOp(int64_t i) {
         switch (i) {
@@ -66344,7 +66456,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1026
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1038
 namespace stringify {
     const char* E_SgDivAssignOp(int64_t i) {
         switch (i) {
@@ -66394,7 +66506,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1029
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1041
 namespace stringify {
     const char* E_SgModAssignOp(int64_t i) {
         switch (i) {
@@ -66444,7 +66556,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1032
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1044
 namespace stringify {
     const char* E_SgXorAssignOp(int64_t i) {
         switch (i) {
@@ -66494,7 +66606,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1035
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1047
 namespace stringify {
     const char* E_SgLshiftAssignOp(int64_t i) {
         switch (i) {
@@ -66544,7 +66656,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1038
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1050
 namespace stringify {
     const char* E_SgRshiftAssignOp(int64_t i) {
         switch (i) {
@@ -66594,7 +66706,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1041
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1053
 namespace stringify {
     const char* E_SgIntegerDivideAssignOp(int64_t i) {
         switch (i) {
@@ -66644,7 +66756,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1044
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1056
 namespace stringify {
     const char* E_SgExponentiationAssignOp(int64_t i) {
         switch (i) {
@@ -66694,7 +66806,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1047
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1059
 namespace stringify {
     const char* E_SgCompoundAssignOp(int64_t i) {
         switch (i) {
@@ -66744,7 +66856,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1050
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1062
 namespace stringify {
     const char* E_SgMembershipOp(int64_t i) {
         switch (i) {
@@ -66794,7 +66906,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1053
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1065
 namespace stringify {
     const char* E_SgSpaceshipOp(int64_t i) {
         switch (i) {
@@ -66844,7 +66956,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1056
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1068
 namespace stringify {
     const char* E_SgNonMembershipOp(int64_t i) {
         switch (i) {
@@ -66894,7 +67006,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1059
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1071
 namespace stringify {
     const char* E_SgIsOp(int64_t i) {
         switch (i) {
@@ -66944,7 +67056,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1062
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1074
 namespace stringify {
     const char* E_SgIsNotOp(int64_t i) {
         switch (i) {
@@ -66994,7 +67106,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1065
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1077
 namespace stringify {
     const char* E_SgElementwiseMultiplyOp(int64_t i) {
         switch (i) {
@@ -67044,7 +67156,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1068
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1080
 namespace stringify {
     const char* E_SgElementwisePowerOp(int64_t i) {
         switch (i) {
@@ -67094,7 +67206,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1071
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1083
 namespace stringify {
     const char* E_SgElementwiseLeftDivideOp(int64_t i) {
         switch (i) {
@@ -67144,7 +67256,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1074
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1086
 namespace stringify {
     const char* E_SgElementwiseDivideOp(int64_t i) {
         switch (i) {
@@ -67194,7 +67306,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1077
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1089
 namespace stringify {
     const char* E_SgElementwiseAddOp(int64_t i) {
         switch (i) {
@@ -67244,7 +67356,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1080
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1092
 namespace stringify {
     const char* E_SgElementwiseSubtractOp(int64_t i) {
         switch (i) {
@@ -67294,7 +67406,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1083
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1095
 namespace stringify {
     const char* E_SgElementwiseOp(int64_t i) {
         switch (i) {
@@ -67344,7 +67456,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1086
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1098
 namespace stringify {
     const char* E_SgPowerOp(int64_t i) {
         switch (i) {
@@ -67394,7 +67506,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1089
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1101
 namespace stringify {
     const char* E_SgLeftDivideOp(int64_t i) {
         switch (i) {
@@ -67444,7 +67556,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1092
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1104
 namespace stringify {
     const char* E_SgSIMDAddOp(int64_t i) {
         switch (i) {
@@ -67494,7 +67606,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1095
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1107
 namespace stringify {
     const char* E_SgSIMDSubOp(int64_t i) {
         switch (i) {
@@ -67544,7 +67656,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1098
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1110
 namespace stringify {
     const char* E_SgSIMDMulOp(int64_t i) {
         switch (i) {
@@ -67594,7 +67706,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1101
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1113
 namespace stringify {
     const char* E_SgSIMDDivOp(int64_t i) {
         switch (i) {
@@ -67644,7 +67756,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1104
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1116
 namespace stringify {
     const char* E_SgSIMDFmaOp(int64_t i) {
         switch (i) {
@@ -67694,7 +67806,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1107
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1119
 namespace stringify {
     const char* E_SgSIMDBinaryOp(int64_t i) {
         switch (i) {
@@ -67744,7 +67856,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1110
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1122
 namespace stringify {
     const char* E_SgSIMDLoad(int64_t i) {
         switch (i) {
@@ -67794,7 +67906,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1113
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1125
 namespace stringify {
     const char* E_SgSIMDBroadcast(int64_t i) {
         switch (i) {
@@ -67844,7 +67956,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1116
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1128
 namespace stringify {
     const char* E_SgSIMDStore(int64_t i) {
         switch (i) {
@@ -67894,7 +68006,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1119
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1131
 namespace stringify {
     const char* E_SgSIMDPartialStore(int64_t i) {
         switch (i) {
@@ -67944,7 +68056,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1122
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1134
 namespace stringify {
     const char* E_SgSIMDScalarStore(int64_t i) {
         switch (i) {
@@ -67994,57 +68106,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1125
-namespace stringify {
-    const char* E_SgSIMDSVAddV(int64_t i) {
-        switch (i) {
-            case 0L: return "SgSIMDSVAddV_lhs_operand_i";
-            case 1L: return "SgSIMDSVAddV_rhs_operand_i";
-            default: return "";
-        }
-    }
-
-    std::string E_SgSIMDSVAddV(int64_t i, const std::string &strip) {
-        std::string s = E_SgSIMDSVAddV(i);
-        if (s.empty())
-            s = "(E_SgSIMDSVAddV)" + boost::lexical_cast<std::string>(i);
-        if (boost::starts_with(s, strip))
-            s = s.substr(strip.size());
-        return s;
-    }
-
-    const std::vector<int64_t>& E_SgSIMDSVAddV() {
-        static const int64_t values[] = {
-            0L,
-            1L
-        };
-        static const std::vector<int64_t> retval(values, values + 2);
-        return retval;
-    }
-
-}
-
-namespace Rose {
-    std::string stringifyE_SgSIMDSVAddV(int64_t i, const char *strip, bool canonic) {
-        std::string retval = stringify::E_SgSIMDSVAddV(i);
-        if (retval.empty()) {
-            retval = "(E_SgSIMDSVAddV)" + boost::lexical_cast<std::string>(i);
-        } else {
-            if (strip && !strncmp(strip, retval.c_str(), strlen(strip)))
-                retval = retval.substr(strlen(strip));
-            if (canonic)
-                retval = "E_SgSIMDSVAddV::" + retval;
-        }
-        return retval;
-    }
-
-    const std::vector<int64_t>& stringifyE_SgSIMDSVAddV() {
-        return stringify::E_SgSIMDSVAddV();
-    }
-}
-
-// DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1128
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1137
 namespace stringify {
     const char* E_SgSIMDGather(int64_t i) {
         switch (i) {
@@ -68094,7 +68156,57 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1131
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1140
+namespace stringify {
+    const char* E_SgSIMDExplicitGather(int64_t i) {
+        switch (i) {
+            case 0L: return "SgSIMDExplicitGather_lhs_operand_i";
+            case 1L: return "SgSIMDExplicitGather_rhs_operand_i";
+            default: return "";
+        }
+    }
+
+    std::string E_SgSIMDExplicitGather(int64_t i, const std::string &strip) {
+        std::string s = E_SgSIMDExplicitGather(i);
+        if (s.empty())
+            s = "(E_SgSIMDExplicitGather)" + boost::lexical_cast<std::string>(i);
+        if (boost::starts_with(s, strip))
+            s = s.substr(strip.size());
+        return s;
+    }
+
+    const std::vector<int64_t>& E_SgSIMDExplicitGather() {
+        static const int64_t values[] = {
+            0L,
+            1L
+        };
+        static const std::vector<int64_t> retval(values, values + 2);
+        return retval;
+    }
+
+}
+
+namespace Rose {
+    std::string stringifyE_SgSIMDExplicitGather(int64_t i, const char *strip, bool canonic) {
+        std::string retval = stringify::E_SgSIMDExplicitGather(i);
+        if (retval.empty()) {
+            retval = "(E_SgSIMDExplicitGather)" + boost::lexical_cast<std::string>(i);
+        } else {
+            if (strip && !strncmp(strip, retval.c_str(), strlen(strip)))
+                retval = retval.substr(strlen(strip));
+            if (canonic)
+                retval = "E_SgSIMDExplicitGather::" + retval;
+        }
+        return retval;
+    }
+
+    const std::vector<int64_t>& stringifyE_SgSIMDExplicitGather() {
+        return stringify::E_SgSIMDExplicitGather();
+    }
+}
+
+// DO NOT EDIT -- This implementation was automatically generated for the enum defined at
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1143
 namespace stringify {
     const char* E_SgSIMDScatter(int64_t i) {
         switch (i) {
@@ -68144,7 +68256,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1134
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1146
 namespace stringify {
     const char* E_SgBinaryOp(int64_t i) {
         switch (i) {
@@ -68194,7 +68306,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1137
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1149
 namespace stringify {
     const char* E_SgListExp(int64_t i) {
         switch (i) {
@@ -68242,7 +68354,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1140
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1152
 namespace stringify {
     const char* E_SgTupleExp(int64_t i) {
         switch (i) {
@@ -68290,7 +68402,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1143
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1155
 namespace stringify {
     const char* E_SgMatrixExp(int64_t i) {
         switch (i) {
@@ -68338,7 +68450,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1146
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1158
 namespace stringify {
     const char* E_SgExprListExp(int64_t i) {
         switch (i) {
@@ -68386,7 +68498,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1149
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1161
 namespace stringify {
     const char* E_SgComplexVal(int64_t i) {
         switch (i) {
@@ -68436,7 +68548,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1152
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1164
 namespace stringify {
     const char* E_SgCudaKernelCallExp(int64_t i) {
         switch (i) {
@@ -68488,7 +68600,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1155
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1167
 namespace stringify {
     const char* E_SgFunctionCallExp(int64_t i) {
         switch (i) {
@@ -68538,7 +68650,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1158
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1170
 namespace stringify {
     const char* E_SgCallExpression(int64_t i) {
         switch (i) {
@@ -68588,7 +68700,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1161
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1173
 namespace stringify {
     const char* E_SgSizeOfOp(int64_t i) {
         switch (i) {
@@ -68636,7 +68748,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1164
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1176
 namespace stringify {
     const char* E_SgUpcLocalsizeofExpression(int64_t i) {
         switch (i) {
@@ -68684,7 +68796,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1167
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1179
 namespace stringify {
     const char* E_SgUpcBlocksizeofExpression(int64_t i) {
         switch (i) {
@@ -68732,7 +68844,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1170
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1182
 namespace stringify {
     const char* E_SgUpcElemsizeofExpression(int64_t i) {
         switch (i) {
@@ -68780,7 +68892,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1173
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1185
 namespace stringify {
     const char* E_SgTypeIdOp(int64_t i) {
         switch (i) {
@@ -68828,7 +68940,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1176
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1188
 namespace stringify {
     const char* E_SgConditionalExp(int64_t i) {
         switch (i) {
@@ -68880,7 +68992,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1179
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1191
 namespace stringify {
     const char* E_SgNewExp(int64_t i) {
         switch (i) {
@@ -68932,7 +69044,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1182
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1194
 namespace stringify {
     const char* E_SgDeleteExp(int64_t i) {
         switch (i) {
@@ -68980,7 +69092,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1185
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1197
 namespace stringify {
     const char* E_SgAggregateInitializer(int64_t i) {
         switch (i) {
@@ -69028,7 +69140,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1188
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1200
 namespace stringify {
     const char* E_SgCompoundInitializer(int64_t i) {
         switch (i) {
@@ -69076,7 +69188,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1191
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1203
 namespace stringify {
     const char* E_SgConstructorInitializer(int64_t i) {
         switch (i) {
@@ -69124,7 +69236,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1194
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1206
 namespace stringify {
     const char* E_SgAssignInitializer(int64_t i) {
         switch (i) {
@@ -69172,7 +69284,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1197
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1209
 namespace stringify {
     const char* E_SgDesignatedInitializer(int64_t i) {
         switch (i) {
@@ -69222,7 +69334,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1200
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1212
 namespace stringify {
     const char* E_SgBracedInitializer(int64_t i) {
         switch (i) {
@@ -69270,7 +69382,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1203
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1215
 namespace stringify {
     const char* E_SgVarArgStartOp(int64_t i) {
         switch (i) {
@@ -69320,7 +69432,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1206
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1218
 namespace stringify {
     const char* E_SgVarArgOp(int64_t i) {
         switch (i) {
@@ -69368,7 +69480,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1209
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1221
 namespace stringify {
     const char* E_SgVarArgEndOp(int64_t i) {
         switch (i) {
@@ -69416,7 +69528,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1212
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1224
 namespace stringify {
     const char* E_SgVarArgCopyOp(int64_t i) {
         switch (i) {
@@ -69466,7 +69578,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1215
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1227
 namespace stringify {
     const char* E_SgVarArgStartOneOperandOp(int64_t i) {
         switch (i) {
@@ -69514,7 +69626,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1218
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1230
 namespace stringify {
     const char* E_SgSubscriptExpression(int64_t i) {
         switch (i) {
@@ -69566,7 +69678,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1221
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1233
 namespace stringify {
     const char* E_SgImpliedDo(int64_t i) {
         switch (i) {
@@ -69620,7 +69732,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1224
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1236
 namespace stringify {
     const char* E_SgIOItemExpression(int64_t i) {
         switch (i) {
@@ -69668,7 +69780,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1227
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1239
 namespace stringify {
     const char* E_SgStatementExpression(int64_t i) {
         switch (i) {
@@ -69716,7 +69828,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1230
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1242
 namespace stringify {
     const char* E_SgAsmOp(int64_t i) {
         switch (i) {
@@ -69764,7 +69876,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1233
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1245
 namespace stringify {
     const char* E_SgActualArgumentExpression(int64_t i) {
         switch (i) {
@@ -69812,7 +69924,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1236
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1248
 namespace stringify {
     const char* E_SgUnknownArrayOrFunctionReference(int64_t i) {
         switch (i) {
@@ -69862,7 +69974,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1239
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1251
 namespace stringify {
     const char* E_SgCAFCoExpression(int64_t i) {
         switch (i) {
@@ -69910,7 +70022,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1242
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1254
 namespace stringify {
     const char* E_SgCudaKernelExecConfig(int64_t i) {
         switch (i) {
@@ -69964,7 +70076,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1245
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1257
 namespace stringify {
     const char* E_SgLambdaRefExp(int64_t i) {
         switch (i) {
@@ -70012,7 +70124,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1248
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1260
 namespace stringify {
     const char* E_SgDictionaryExp(int64_t i) {
         switch (i) {
@@ -70060,7 +70172,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1251
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1263
 namespace stringify {
     const char* E_SgKeyDatumPair(int64_t i) {
         switch (i) {
@@ -70110,7 +70222,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1254
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1266
 namespace stringify {
     const char* E_SgComprehension(int64_t i) {
         switch (i) {
@@ -70162,7 +70274,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1257
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1269
 namespace stringify {
     const char* E_SgListComprehension(int64_t i) {
         switch (i) {
@@ -70212,7 +70324,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1260
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1272
 namespace stringify {
     const char* E_SgSetComprehension(int64_t i) {
         switch (i) {
@@ -70262,7 +70374,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1263
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1275
 namespace stringify {
     const char* E_SgDictionaryComprehension(int64_t i) {
         switch (i) {
@@ -70312,7 +70424,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1266
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1278
 namespace stringify {
     const char* E_SgNaryBooleanOp(int64_t i) {
         switch (i) {
@@ -70360,7 +70472,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1269
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1281
 namespace stringify {
     const char* E_SgNaryComparisonOp(int64_t i) {
         switch (i) {
@@ -70408,7 +70520,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1272
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1284
 namespace stringify {
     const char* E_SgNaryOp(int64_t i) {
         switch (i) {
@@ -70456,7 +70568,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1275
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1287
 namespace stringify {
     const char* E_SgStringConversion(int64_t i) {
         switch (i) {
@@ -70504,7 +70616,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1278
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1290
 namespace stringify {
     const char* E_SgYieldExpression(int64_t i) {
         switch (i) {
@@ -70552,7 +70664,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1281
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1293
 namespace stringify {
     const char* E_SgAlignOfOp(int64_t i) {
         switch (i) {
@@ -70600,7 +70712,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1284
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1296
 namespace stringify {
     const char* E_SgRangeExp(int64_t i) {
         switch (i) {
@@ -70652,7 +70764,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1287
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1299
 namespace stringify {
     const char* E_SgFunctionParameterRefExp(int64_t i) {
         switch (i) {
@@ -70700,7 +70812,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1290
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1302
 namespace stringify {
     const char* E_SgLambdaExp(int64_t i) {
         switch (i) {
@@ -70752,7 +70864,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1293
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1305
 namespace stringify {
     const char* E_SgNoexceptOp(int64_t i) {
         switch (i) {
@@ -70800,7 +70912,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1296
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1308
 namespace stringify {
     const char* E_SgFoldExpression(int64_t i) {
         switch (i) {
@@ -70848,7 +70960,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1299
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1311
 namespace stringify {
     const char* E_SgAwaitExpression(int64_t i) {
         switch (i) {
@@ -70896,7 +71008,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1302
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1314
 namespace stringify {
     const char* E_SgChooseExpression(int64_t i) {
         switch (i) {
@@ -70944,7 +71056,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1305
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1317
 namespace stringify {
     const char* E_SgNonrealSymbol(int64_t i) {
         switch (i) {
@@ -70992,7 +71104,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1308
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1320
 namespace stringify {
     const char* E_SgTemplateMemberFunctionSymbol(int64_t i) {
         switch (i) {
@@ -71040,7 +71152,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1311
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1323
 namespace stringify {
     const char* E_SgMemberFunctionSymbol(int64_t i) {
         switch (i) {
@@ -71088,7 +71200,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1314
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1326
 namespace stringify {
     const char* E_SgTemplateFunctionSymbol(int64_t i) {
         switch (i) {
@@ -71136,7 +71248,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1317
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1329
 namespace stringify {
     const char* E_SgRenameSymbol(int64_t i) {
         switch (i) {
@@ -71186,7 +71298,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1320
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1332
 namespace stringify {
     const char* E_SgFunctionSymbol(int64_t i) {
         switch (i) {
@@ -71234,7 +71346,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1323
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1335
 namespace stringify {
     const char* E_SgTemplateClassSymbol(int64_t i) {
         switch (i) {
@@ -71282,7 +71394,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1326
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1338
 namespace stringify {
     const char* E_SgClassSymbol(int64_t i) {
         switch (i) {
@@ -71330,7 +71442,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1329
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1341
 namespace stringify {
     const char* E_SgTemplateSymbol(int64_t i) {
         switch (i) {
@@ -71378,7 +71490,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1332
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1344
 namespace stringify {
     const char* E_SgEnumSymbol(int64_t i) {
         switch (i) {
@@ -71426,7 +71538,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1335
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1347
 namespace stringify {
     const char* E_SgTemplateTypedefSymbol(int64_t i) {
         switch (i) {
@@ -71474,7 +71586,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1338
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1350
 namespace stringify {
     const char* E_SgTypedefSymbol(int64_t i) {
         switch (i) {
@@ -71522,7 +71634,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1341
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1353
 namespace stringify {
     const char* E_SgLabelSymbol(int64_t i) {
         switch (i) {
@@ -71570,7 +71682,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1344
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1356
 namespace stringify {
     const char* E_SgNamespaceSymbol(int64_t i) {
         switch (i) {
@@ -71620,7 +71732,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1347
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1359
 namespace stringify {
     const char* E_SgModuleSymbol(int64_t i) {
         switch (i) {
@@ -71668,7 +71780,7 @@ namespace Rose {
 }
 
 // DO NOT EDIT -- This implementation was automatically generated for the enum defined at
-// /home/yyan7/compiler/rexompiler-build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1350
+// -build/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h line 1362
 namespace stringify {
     const char* E_SgAliasSymbol(int64_t i) {
         switch (i) {

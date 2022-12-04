@@ -32,7 +32,6 @@ libroseSupport_la_SOURCES =			\
 pkginclude_HEADERS =				\
 	Combinatorics.h				\
 	IncludeDirective.h			\
-	callbacks.h				\
 	optionDeclaration.h			\
 	rangemap.h				\
 	roseTranslators.h			\

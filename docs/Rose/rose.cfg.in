@@ -687,24 +687,11 @@ INPUT                  = @top_srcdir@/docs/Rose/MainPage.dox \
                          @top_srcdir@/src/frontend/frontend.docs \
                          @top_srcdir@/docs/testDoxygen \
 			 @top_srcdir@/src/Rose \
-			 @top_srcdir@/src/Rose/BinaryAnalysis \
-			 @top_srcdir@/src/Rose/BinaryAnalysis/ByteCode \
-			 @top_srcdir@/src/Rose/BinaryAnalysis/Concolic \
-			 @top_srcdir@/src/Rose/BinaryAnalysis/Disassembler \
-			 @top_srcdir@/src/Rose/BinaryAnalysis/Dwarf \
-                         @top_srcdir@/src/Rose/BinaryAnalysis/InstructionSemantics \
-                         @top_srcdir@/src/Rose/BinaryAnalysis/InstructionSemantics/BaseSemantics \
-			 @top_srcdir@/src/Rose/BinaryAnalysis/ModelChecker \
-			 @top_srcdir@/src/Rose/BinaryAnalysis/Partitioner2 \
-			 @top_srcdir@/src/Rose/BinaryAnalysis/Unparser \
 			 @top_srcdir@/src/Rose/CommandLine \
 			 @top_srcdir@/src/Rose/StringUtility \
 			 @top_srcdir@/src/Rose/AST \
 			 @top_srcdir@/src/Rose/Traits \
 			 @top_srcdir@/src/Rose/CodeGen \
-                         @top_srcdir@/src/ROSETTA/src/binaryInstruction.C \
-                         @top_srcdir@/src/frontend/Disassemblers \
-                         @top_srcdir@/src/frontend/BinaryFormats/Rva.C \
                          @top_srcdir@/src/frontend/SageIII/ \
                          @top_srcdir@/src/frontend/SageIII/docs \
                          @top_srcdir@/src/frontend/SageIII/astPostProcessing/checkIsModifiedFlag.C \
@@ -712,11 +699,8 @@ INPUT                  = @top_srcdir@/docs/Rose/MainPage.dox \
                          @top_srcdir@/src/frontend/SageIII/astFromString \
                          @top_srcdir@/src/frontend/SageIII/virtualCFG \
                          @top_srcdir@/src/frontend/SageIII/virtualCFG/virtualBinCFG.C \
-                         @top_srcdir@/src/frontend/BinaryFormats \
                          @top_srcdir@/src/midend/abstractHandle \
 			 @top_srcdir@/src/midend/astMatching \
-                         @top_srcdir@/src/midend/BinaryAnalysis \
-                         @top_srcdir@/src/midend/BinaryAnalysis/libraryIdentification \
                          @top_srcdir@/src/midend/programTransformation/ompLowering \
                          @top_srcdir@/src/midend/midend.docs \
                          @top_srcdir@/src/midend/astDiagnostics/AstDiagnostics.docs \
@@ -739,7 +723,6 @@ INPUT                  = @top_srcdir@/docs/Rose/MainPage.dox \
                          @top_srcdir@/src/midend/astProcessing \
                          @top_srcdir@/src/midend/astQuery/QueryLib.docs \
                          @top_srcdir@/src/backend/backend.docs \
-                         @top_srcdir@/src/backend/asmUnparser \
                          @top_srcdir@/src/backend/unparser/unparser.docs \
                          @top_srcdir@/src/backend/unparser/languageIndependenceSupport/documentation.docs \
                          @top_srcdir@/src/backend/unparser/CxxCodeGeneration/documentation.docs \
@@ -1826,7 +1809,7 @@ INCLUDED_BY_GRAPH      = YES
 # the time of a run. So in most cases it will be better to enable call graphs
 # for selected functions only using the \callgraph command.
 
-CALL_GRAPH             = NO
+CALL_GRAPH             = YES 
 
 # If the CALLER_GRAPH and HAVE_DOT tags are set to YES then
 # doxygen will generate a caller dependency graph for every global function
@@ -1834,7 +1817,7 @@ CALL_GRAPH             = NO
 # the time of a run. So in most cases it will be better to enable caller
 # graphs for selected functions only using the \callergraph command.
 
-CALLER_GRAPH           = NO
+CALLER_GRAPH           = YES 
 
 # If the GRAPHICAL_HIERARCHY and HAVE_DOT tags are set to YES then doxygen
 # will generate a graphical hierarchy of all classes instead of a textual one.
