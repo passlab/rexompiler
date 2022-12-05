@@ -31,6 +31,8 @@ if ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
    libroseOpenFortranParserlibraries = frontend/OpenFortranParser_SAGE_Connection/libroseFortran.la
    pkgdata_DATA += $(top_srcdir)/src/3rdPartyLibraries/fortran-parser/iso_c_binding.rmod
    pkgdata_DATA += $(top_srcdir)/src/3rdPartyLibraries/fortran-parser/openacc.rmod
+   pkgdata_DATA += $(top_srcdir)/src/3rdPartyLibraries/fortran-parser/omp_lib.rmod
+   pkgdata_DATA += $(top_srcdir)/src/3rdPartyLibraries/fortran-parser/omp_lib_kinds.rmod
 #   libroseExperimentalGeneralLanguagelibraries = frontend/Experimental_General_Language_Support/libexperimentalRoseGeneralLanguage.la
 else
    libroseOpenFortranParserlibraries =
