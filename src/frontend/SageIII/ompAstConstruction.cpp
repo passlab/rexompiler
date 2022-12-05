@@ -1473,7 +1473,7 @@ namespace OmpSupport
   }*/
 
   //! Convert omp_pragma_list to SgOmpxxx nodes
-  void convert_OpenMP_pragma_to_AST (SgSourceFile *sageFilePtr)
+  void OpenMPIRToSageAST(SgSourceFile *sageFilePtr)
   {
     list<SgPragmaDeclaration* >::reverse_iterator iter; // bottom up handling for nested cases
     ROSE_ASSERT (sageFilePtr != NULL);
@@ -1835,7 +1835,7 @@ namespace OmpSupport
             printf ("Calling convert_OpenMP_pragma_to_AST() \n");
     }
     // We can turn this off to debug the convert_Fortran_OMP_Comments_to_Pragmas()
-    convert_OpenMP_pragma_to_AST( sageFilePtr);
+    OpenMPIRToSageAST( sageFilePtr);
 
     // stop here if only OpenMP AST construction is requested
     if (sageFilePtr->get_openmp_ast_only())
@@ -1866,7 +1866,7 @@ namespace OmpSupport
 } // end of the namespace
 
 SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
-    printf("ompparser directive is ready.\n");
+//    printf("ompparser directive is ready.\n");
     OpenMPDirectiveKind directive_kind = current_OpenMPIR_to_SageIII.second->getKind();
     SgStatement* result = NULL;
 

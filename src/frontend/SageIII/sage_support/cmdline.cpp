@@ -2519,9 +2519,6 @@ SgFile::usage ( int status )
 "                             force use of C++ as output language\n"
 "     -rose:Fortran_output_language\n"
 "                             force use of Fortran as output language\n"
-"     -rose:Promela_output_language\n"
-"                             force use of Promela as output language (not\n"
-"                               supported)\n"
 "     -rose:outputFormat      generate code in either fixed/free format (fortran only)\n"
 "                               options are: fixedOutput|fixedFormatOutput or \n"
 "                                            freeOutput|freeFormatOutput\n"
@@ -3853,7 +3850,6 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
   //      e_C_output_language
   //      e_Cxx_output_language
   //      e_Fortran_output_language
-  //      e_Promela_output_language
   // set_outputLanguage(SgFile::e_default_output_language);
   // ROSE_ASSERT (get_outputLanguage() == SgFile::e_default_output_language);
      if ( CommandlineProcessing::isOption(argv,"-rose:","C_output_language",true) == true )
