@@ -46,6 +46,8 @@ EDG_LIBS = @EDG_LIBS@
 
 RT_LIBS = @RT_LIBS@
 
+VALGRIND_BINARY = @VALGRIND_BINARY@
+
 # DQ (11/4/2016): Adding support for use of Address Sanitizer (for where the ROSE Test Handler (RTH) is used.
 # Note the quotes and escapes that are required:
 ADDRESS_SANITIZER_OPTIONS = "ASAN_OPTIONS=halt_on_error=0:symbolize=1:detect_leaks=0 ASAN_SYMBOLIZER_PATH=\`which llvm-symbolizer\`"
@@ -222,7 +224,6 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/midend/programAnalysis/staticInterproceduralSlicing \
      -I$(top_srcdir)/src/midend/programAnalysis/valuePropagation \
      -I$(top_srcdir)/src/midend/programAnalysis/variableRenaming \
-      $(ROSE_SIDEEFFECTS_INCLUDE) \
       $(ROSE_SIDEEFFECT_INCLUDE) \
      -I$(top_srcdir)/src/midend/programTransformation/partialRedundancyElimination \
      -I$(top_srcdir)/src/midend/programTransformation/finiteDifferencing \

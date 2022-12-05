@@ -73,8 +73,7 @@ libroseLibraries = \
    $(top_builddir)/src/util/Sawyer/libroseSawyer.la \
    $(top_builddir)/src/Rose/librose_partial.la \
    $(top_builddir)/src/Rose/AST/libRoseAST.la \
-   $(top_builddir)/src/Rose/CodeGen/libRoseCodeGen.la \
-   $(libroseSqlite3xConnection)
+   $(top_builddir)/src/Rose/CodeGen/libRoseCodeGen.la
 
 if ROSE_WITH_LIBHARU
 libroseLibraries += \

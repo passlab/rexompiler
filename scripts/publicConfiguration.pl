@@ -35,7 +35,7 @@
 use strict;
 
 # Produce output only for the following symbols:
-my @symbols = (qw/HAVE_PTHREAD_H HAVE_DWARF_H HAVE_LIBDWARF HAVE_LIBPQXX
+my @symbols = (qw/HAVE_PTHREAD_H HAVE_DWARF_H HAVE_LIBDWARF
                   PACKAGE_VERSION SIZEOF_INT SIZEOF_LONG
                   HAVE_LIBREADLINE HAVE_BOOST_SERIALIZATION_LIB USE_CMAKE
 	          HAVE_SYS_PERSONALITY_H/,
