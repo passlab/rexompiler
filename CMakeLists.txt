@@ -919,7 +919,6 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/midend
   ${ROSE_TOP_SRC_DIR}/src/midend/abstractHandle
   ${ROSE_TOP_SRC_DIR}/src/midend/abstractLayer
-  ${ROSE_TOP_SRC_DIR}/src/midend/abstractMemoryObject
   ${ROSE_TOP_SRC_DIR}/src/midend/astDiagnostics
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/astInlining
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/astOutlining
@@ -946,7 +945,6 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/midend/programAnalysis/bitvectorDataflow
   ${ROSE_TOP_SRC_DIR}/src/midend/programAnalysis/VirtualFunctionAnalysis
   ${ROSE_TOP_SRC_DIR}/src/midend/programAnalysis/defUseAnalysis
-  ${ROSE_TOP_SRC_DIR}/src/midend/programAnalysis/distributedMemoryAnalysis
   ${ROSE_TOP_SRC_DIR}/src/midend/programAnalysis/dominanceAnalysis
   ${ROSE_TOP_SRC_DIR}/src/midend/programAnalysis/pointerAnal
   ${ROSE_TOP_SRC_DIR}/src/midend/programAnalysis/staticSingleAssignment

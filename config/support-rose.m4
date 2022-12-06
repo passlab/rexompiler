@@ -1616,7 +1616,6 @@ tests/nonsmoke/functional/UnitTests/Rose/SageBuilder/Makefile
 tests/nonsmoke/functional/Utility/Makefile
 tests/nonsmoke/functional/roseTests/Makefile
 tests/nonsmoke/functional/roseTests/ROSETTA/Makefile
-tests/nonsmoke/functional/roseTests/abstractMemoryObjectTests/Makefile
 tests/nonsmoke/functional/roseTests/astFileIOTests/Makefile
 tests/nonsmoke/functional/roseTests/astInliningTests/Makefile
 tests/nonsmoke/functional/roseTests/astInterfaceTests/Makefile
@@ -1630,7 +1629,6 @@ tests/nonsmoke/functional/roseTests/astPerformanceTests/Makefile
 tests/nonsmoke/functional/roseTests/astProcessingTests/Makefile
 tests/nonsmoke/functional/roseTests/astQueryTests/Makefile
 tests/nonsmoke/functional/roseTests/astRewriteTests/Makefile
-tests/nonsmoke/functional/roseTests/astSnippetTests/Makefile
 tests/nonsmoke/functional/roseTests/astSymbolTableTests/Makefile
 tests/nonsmoke/functional/roseTests/astTokenStreamTests/Makefile
 tests/nonsmoke/functional/roseTests/fileLocation_tests/Makefile

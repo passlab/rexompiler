@@ -15,11 +15,6 @@ if(enable-c)
   #add_subdirectory (graph_tests)
   #add_subdirectory (mergeTraversal_tests)
   #add_subdirectory (astLValueTests)
-  #add_subdirectory (abstractMemoryObjectTests)
-
-  if (NOT with-insure)
-    #add_subdirectory (roseHPCToolkitTests)
-  endif ()
 
   # TOO (2/16/2011): Errors with Thrifty (GCC 3.4.4) backend compiler. We can
   # gradually enable these tests at a later stage if necessary.

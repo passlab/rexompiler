@@ -39,7 +39,6 @@ include $(srcdir)/CFG/Makefile_variables
 include $(srcdir)/bitvectorDataflow/Makefile_variables
 include $(srcdir)/VirtualFunctionAnalysis/Makefile_variables
 include $(srcdir)/defUseAnalysis/Makefile_variables
-include $(srcdir)/distributedMemoryAnalysis/Makefile_variables
 include $(srcdir)/dominanceAnalysis/Makefile_variables
 include $(srcdir)/genericDataflow/Makefile_variables
 include $(srcdir)/OAWrap/Makefile_variables
@@ -56,7 +55,6 @@ mpaCFGPath=$(srcdir)/CFG#
 mpaBitvectorDataflowPath=$(srcdir)/bitvectorDataflow#
 mpaVirtualFunctionAnalysisPath=$(srcdir)/VirtualFunctionAnalysis#
 mpaDefUseAnalysisPath=$(srcdir)/defUseAnalysis#
-mpaDistributedMemoryAnalysisPath=$(srcdir)/distributedMemoryAnalysis#
 mpaDominanceAnalysisPath=$(srcdir)/dominanceAnalysis#
 mpaGenericDataflowPath=$(srcdir)/genericDataflow#
 mpaOAWrapPath=$(srcdir)/OAWrap#
