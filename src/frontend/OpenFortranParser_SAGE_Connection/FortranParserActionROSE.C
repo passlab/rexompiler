@@ -16579,10 +16579,10 @@ void c_action_print_stmt(Token_t *label, Token_t *printKeyword, Token_t *eos, of
         }
 
         // This is part of a bug fix demonstrated by test2010_32.f90.
-        // DQ (8/28/2010): A function call in a module can apprea before it's declaration. This is supported by:
+        // DQ (8/28/2010): A function call in a module can appear before it's declaration. This is supported by:
         //    1) building the function declaration
         //    2) Building a function symbol
-        //    3) Put the function sysmbol into the global scope (since it is not clear where to put it)
+        //    3) Put the function symbol into the global scope (since it is not clear where to put it)
         //    4) Fixup function symbols of referenced function calls in the module
         // printf ("Now process function references in the module to match against functions defined in the module scope! \n");
         // printf ("Current scope = %p = %s \n",moduleScope,moduleScope->class_name().c_str());

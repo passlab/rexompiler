@@ -191,7 +191,7 @@ FortranModuleInfo::getModule(string modName)
 #if 1
        // DQ (10/1/2010): This is a work-around for OFP 0.8.2 failing to call the c_action_end_module_stmt() 
        // rule for an included module (from use statement) that includes another module (again, using 
-       // a use statment).  The first module using the use statment will not have its 
+       // a use statement).  The first module using the use statement will not have its
        // c_action_end_module_stmt() rule called. See the test_forcing.F90 example test code.
 
        // Extract the pointer to the SgModule from the SgSourceFile
@@ -288,10 +288,10 @@ FortranModuleInfo::createSgSourceFile(string modName)
      ROSE_ASSERT(newFile != NULL);
 
 #if 0
-     printf ("In FortranModuleInfo::createSgSourceFile(): Calling the fronend explicitly! \n");
+     printf ("In FortranModuleInfo::createSgSourceFile(): Calling the frontend explicitly! \n");
 #endif
 
-   // DQ (6/13/2013): Since we seperated the construction of the SgFile IR nodes from the invocation of the frontend, we have to call the frontend explicitly.
+   // DQ (6/13/2013): Since we separated the construction of the SgFile IR nodes from the invocation of the frontend, we have to call the frontend explicitly.
      newFile->runFrontend(errorCode);
 
   // DQ (6/13/2013): At least report that the error code is not checked, this is just something that I noticed but don't want to modify just now.
@@ -313,7 +313,7 @@ FortranModuleInfo::createSgSourceFile(string modName)
      newFile->set_skipfinalCompileStep(true);
      newFile->set_skip_unparse(true);
 
-     project->set_file(*newFile);
+     project->get_fileList->push_back(*newFile);
 
      if (SgProject::get_verbose() > 1)
           printf ("END FortranModuleInfo::createSgSourceFile(%s): nestedSgFile = %d \n",rmodFileName.c_str(),nestedSgFile);

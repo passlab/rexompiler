@@ -1234,7 +1234,7 @@ determineFileType ( vector<string> argv, int & nextErrorCode, SgProject* project
 void
 SgFile::runFrontend(int & nextErrorCode)
 {
-  // DQ (6/13/2013):  This function supports the seperation of the construction of the SgFile IR nodes from the
+  // DQ (6/13/2013):  This function supports the separation of the construction of the SgFile IR nodes from the
   // invocation of the frontend on each SgFile IR node.
 
 #if 0

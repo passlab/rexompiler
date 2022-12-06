@@ -1,7 +1,7 @@
 /*
  *  Read a module file "XX.rmod"
  *  Create a SgFile for the module
- *  Create an entry for the module in the moduleNAmeAstMap
+ *  Create an entry for the module in the moduleNameAstMap
  */
 
 #ifndef __FORTRANMODULEINFO_H_
