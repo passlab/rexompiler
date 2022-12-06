@@ -313,7 +313,7 @@ FortranModuleInfo::createSgSourceFile(string modName)
      newFile->set_skipfinalCompileStep(true);
      newFile->set_skip_unparse(true);
 
-     project->get_fileList->push_back(*newFile);
+     project->set_file(*newFile);
 
      if (SgProject::get_verbose() > 1)
           printf ("END FortranModuleInfo::createSgSourceFile(%s): nestedSgFile = %d \n",rmodFileName.c_str(),nestedSgFile);

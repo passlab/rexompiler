@@ -12,7 +12,6 @@ SUBDIRS = \
 else
 SUBDIRS = \
         abstractHandle \
-        abstractMemoryObject \
         astDiagnostics \
         astProcessing \
         astMatching \

@@ -12,13 +12,11 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 include $(srcdir)/abstractHandle/Makefile_variables
 include $(srcdir)/abstractLayer/Makefile_variables
-include $(srcdir)/abstractMemoryObject/Makefile_variables
 include $(srcdir)/astDiagnostics/Makefile_variables
 include $(srcdir)/astProcessing/Makefile_variables
 include $(srcdir)/astMatching/Makefile_variables
 include $(srcdir)/astRewriteMechanism/Makefile_variables
 include $(srcdir)/astQuery/Makefile_variables
-include $(srcdir)/astSnippet/Makefile_variables
 include $(srcdir)/astUtil/Makefile_variables
 include $(srcdir)/astUtil/annotation/Makefile_variables
 include $(srcdir)/astUtil/astInterface/Makefile_variables
@@ -43,13 +41,11 @@ include $(srcdir)/programTransformation/transformationTracking/Makefile_variable
 #mptPartialRedundancyEliminationPath=$(srcdir)/partialRedundancyElimination#
 mAbstractHandlePath=abstractHandle#
 mAbstractLayerPath=abstractLayer#
-mAbstractMemoryObjectPath=abstractMemoryObject#
 mAstDiagnosticsPath=astDiagnostics#
 mAstProcessingPath=astProcessing#
 mAstMatchingPath=astMatching#
 mAstRewriteMechanismPath=astRewriteMechanism#
 mAstQueryPath=astQuery#
-mAstSnippetPath=astSnippet#
 mAstUtilPath=astUtil#
 mProgramTransformationPath=programTransformation#
 

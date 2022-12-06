@@ -40,9 +40,6 @@
 //Liao, 10/9/2008, support for abstract handles for language constructs
 #include "abstract_handle.h"
 #include "roseAdapter.h"
-
-#include "memory_object.h"
-//#include "memory_object_impl.h"
 #endif
 
 //Liao, 2/8/2008. SAGE III node building interface

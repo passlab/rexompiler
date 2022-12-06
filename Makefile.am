@@ -723,10 +723,8 @@ lcov:
 -d src/midend/abstractHandle/.libs \
 -d src/midend/abstractLayer/.libs \
 -d src/midend/astDiagnostics/.libs \
--d src/midend/abstractMemoryObject/.libs \
 -d src/midend/astProcessing/.libs \
 -d src/midend/astQuery/.libs \
--d src/midend/astSnippet/.libs \
 -d src/midend/astRewriteMechanism/.libs \
 -d src/midend/astUtil/annotation/.libs \
 -d src/midend/astUtil/astInterface/.libs \
@@ -876,9 +874,6 @@ librose_lcov_web_pages: librose-lcov.info
 #      This file could only be tested using an automatically generated test and that might no be productive.
 #
 #
-# What is this:
-# src/midend/abstractMemoryObject  (DTEC work by Liao)
-# 
 #
 # Why are these so poorly tested:
 # src/midend/programTransformation/astInlining
