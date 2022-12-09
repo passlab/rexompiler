@@ -1,0 +1,5 @@
+<map id="I386PrimitiveTypeLayoutGenerator" name="I386PrimitiveTypeLayoutGenerator">
+<area shape="rect" id="node1" title="Layout generator for i386 primitive types." alt="" coords="5,80,228,107"/>
+<area shape="rect" id="node3" href="$classI386__VSPrimitiveTypeLayoutGenerator.html" title="Slight modification for Visual Studio – doubles are 8&#45;byte aligned." alt="" coords="21,155,212,196"/>
+<area shape="rect" id="node2" href="$classChainableTypeLayoutGenerator.html" title="Basic type layout engine – handles bookkeeping, plus handing typedefs and." alt="" coords="15,5,219,32"/>
+</map>

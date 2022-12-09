@@ -1,0 +1,5 @@
+<map id="SgBasicBlock" name="SgBasicBlock">
+<area shape="rect" id="node1" title="This class represents the concept of a block (not a basic block from control flow analysis)." alt="" coords="86,109,190,136"/>
+<area shape="rect" id="node2" href="$classSgScopeStatement.html" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="5,5,140,32"/>
+<area shape="rect" id="node3" title="STL class." alt="" coords="165,5,245,32"/>
+</map>

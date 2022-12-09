@@ -1,0 +1,5 @@
+<map id="SgSyncTeamStatement" name="SgSyncTeamStatement">
+<area shape="rect" id="node1" title=" " alt="" coords="13,200,173,227"/>
+<area shape="rect" id="node2" href="$classSgImageControlStatement.html" title=" " alt="" coords="145,124,321,151"/>
+<area shape="rect" id="node3" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="5,5,108,32"/>
+</map>

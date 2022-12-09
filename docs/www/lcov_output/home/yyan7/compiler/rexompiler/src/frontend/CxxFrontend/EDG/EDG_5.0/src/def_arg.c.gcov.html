@@ -1,0 +1,575 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /home/yyan7/compiler/rexompiler/src/frontend/CxxFrontend/EDG/EDG_5.0/src/def_arg.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../../../../index.html">top level</a> - <a href="index.html">home/yyan7/compiler/rexompiler/src/frontend/CxxFrontend/EDG/EDG_5.0/src</a> - def_arg.c<span style="font-size: 80%;"> (source / <a href="def_arg.c.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">128</td>
+            <td class="headerCovTableEntry">163</td>
+            <td class="headerCovTableEntryMed">78.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntryMed">84.6 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /******************************************************************************</a>
+<a name="2"><span class="lineNum">       2 </span>            : *                                                             \  ___  /       *</a>
+<a name="3"><span class="lineNum">       3 </span>            : *                                                               /   \         *</a>
+<a name="4"><span class="lineNum">       4 </span>            : * Edison Design Group C++/C Front End                        - | \^/ | -      *</a>
+<a name="5"><span class="lineNum">       5 </span>            : *                                                               \   /         *</a>
+<a name="6"><span class="lineNum">       6 </span>            : * Proprietary information of Edison Design Group Inc.         /  | |  \       *</a>
+<a name="7"><span class="lineNum">       7 </span>            : * Copyright 1988-2018 Edison Design Group Inc.                   [_]          *</a>
+<a name="8"><span class="lineNum">       8 </span>            : *                                                                             *</a>
+<a name="9"><span class="lineNum">       9 </span>            : ******************************************************************************/</a>
+<a name="10"><span class="lineNum">      10 </span>            : /*</a>
+<a name="11"><span class="lineNum">      11 </span>            : </a>
+<a name="12"><span class="lineNum">      12 </span>            : def_arg.c -- Processing of default arguments</a>
+<a name="13"><span class="lineNum">      13 </span>            : </a>
+<a name="14"><span class="lineNum">      14 </span>            : */</a>
+<a name="15"><span class="lineNum">      15 </span>            : </a>
+<a name="16"><span class="lineNum">      16 </span>            : /* Header files common to all files. */</a>
+<a name="17"><span class="lineNum">      17 </span>            : #include &quot;fe_common.h&quot;</a>
+<a name="18"><span class="lineNum">      18 </span>            : /* Header files used by files involved in declaration processing. */</a>
+<a name="19"><span class="lineNum">      19 </span>            : #include &quot;decl_hdrs.h&quot;</a>
+<a name="20"><span class="lineNum">      20 </span>            : </a>
+<a name="21"><span class="lineNum">      21 </span>            : #ifdef PCH_PRAGMA_GUARD</a>
+<a name="22"><span class="lineNum">      22 </span>            : /* Mark the end of the sequence of headers subject to precompiled header</a>
+<a name="23"><span class="lineNum">      23 </span>            :    processing. */</a>
+<a name="24"><span class="lineNum">      24 </span>            : #pragma hdrstop</a>
+<a name="25"><span class="lineNum">      25 </span>            : #endif /* ifdef PCH_PRAGMA_GUARD */</a>
+<a name="26"><span class="lineNum">      26 </span>            : </a>
+<a name="27"><span class="lineNum">      27 </span>            : </a>
+<a name="28"><span class="lineNum">      28 </span>            : /* Previously allocated fixup entries available for reuse. */</a>
+<a name="29"><span class="lineNum">      29 </span>            : static a_def_arg_expr_fixup_ptr avail_def_arg_expr_fixup;</a>
+<a name="30"><span class="lineNum">      30 </span>            : </a>
+<a name="31"><span class="lineNum">      31 </span>            : </a>
+<a name="32"><span class="lineNum">      32 </span>            : #if DEBUG</a>
+<a name="33"><span class="lineNum">      33 </span>            : /*</a>
+<a name="34"><span class="lineNum">      34 </span>            : Counter to track use of memory.</a>
+<a name="35"><span class="lineNum">      35 </span>            : */</a>
+<a name="36"><span class="lineNum">      36 </span>            : static unsigned long</a>
+<a name="37"><span class="lineNum">      37 </span>            :                 num_def_arg_expr_fixups_allocated;</a>
+<a name="38"><span class="lineNum">      38 </span>            : </a>
+<a name="39"><span class="lineNum">      39 </span><span class="lineNoCov">          0 : unsigned long db_show_def_arg_expr_fixups_used(unsigned long grand_total)</span></a>
+<a name="40"><span class="lineNum">      40 </span>            : /*</a>
+<a name="41"><span class="lineNum">      41 </span>            : Display the amount of space used for allocation of default argument fixup</a>
+<a name="42"><span class="lineNum">      42 </span>            : entries, for debugging purposes.  Also return the total amount.</a>
+<a name="43"><span class="lineNum">      43 </span>            : */</a>
+<a name="44"><span class="lineNum">      44 </span>            : {</a>
+<a name="45"><span class="lineNum">      45 </span><span class="lineNoCov">          0 :   unsigned long  num, size, total;</span></a>
+<a name="46"><span class="lineNum">      46 </span>            : </a>
+<a name="47"><span class="lineNum">      47 </span><span class="lineNoCov">          0 :   db_space_used_lost(&quot;def arg expr fixups&quot;, avail_def_arg_expr_fixup,</span></a>
+<a name="48"><span class="lineNum">      48 </span><span class="lineNoCov">          0 :                      num_def_arg_expr_fixups_allocated, a_def_arg_expr_fixup);</span></a>
+<a name="49"><span class="lineNum">      49 </span><span class="lineNoCov">          0 :   return grand_total;</span></a>
+<a name="50"><span class="lineNum">      50 </span>            : }  /* db_show_def_arg_expr_fixups_used */</a>
+<a name="51"><span class="lineNum">      51 </span>            : </a>
+<a name="52"><span class="lineNum">      52 </span>            : #endif /* DEBUG */</a>
+<a name="53"><span class="lineNum">      53 </span>            : </a>
+<a name="54"><span class="lineNum">      54 </span><span class="lineCov">       2416 : static a_def_arg_expr_fixup_ptr alloc_def_arg_expr_fixup(void)</span></a>
+<a name="55"><span class="lineNum">      55 </span>            : /*</a>
+<a name="56"><span class="lineNum">      56 </span>            : Allocate (or take from the available-list) a default arg expression fixup</a>
+<a name="57"><span class="lineNum">      57 </span>            : entry and initialize it.</a>
+<a name="58"><span class="lineNum">      58 </span>            : */</a>
+<a name="59"><span class="lineNum">      59 </span>            : {</a>
+<a name="60"><span class="lineNum">      60 </span><span class="lineCov">       2416 :   a_def_arg_expr_fixup_ptr  daefp;</span></a>
+<a name="61"><span class="lineNum">      61 </span>            :   </a>
+<a name="62"><span class="lineNum">      62 </span><span class="lineCov">       2416 :   if (avail_def_arg_expr_fixup != NULL) {</span></a>
+<a name="63"><span class="lineNum">      63 </span>            :     /* Reuse a previously allocated entity. */</a>
+<a name="64"><span class="lineNum">      64 </span><span class="lineCov">       1772 :     daefp = avail_def_arg_expr_fixup;</span></a>
+<a name="65"><span class="lineNum">      65 </span><span class="lineCov">       1772 :     avail_def_arg_expr_fixup = daefp-&gt;next;</span></a>
+<a name="66"><span class="lineNum">      66 </span>            :   } else {</a>
+<a name="67"><span class="lineNum">      67 </span>            :     /* Allocate memory for a new entity. */</a>
+<a name="68"><span class="lineNum">      68 </span><span class="lineCov">        644 :     daefp = (a_def_arg_expr_fixup_ptr)alloc_fe(sizeof(a_def_arg_expr_fixup));</span></a>
+<a name="69"><span class="lineNum">      69 </span>            : #if DEBUG</a>
+<a name="70"><span class="lineNum">      70 </span><span class="lineCov">        644 :     num_def_arg_expr_fixups_allocated++;</span></a>
+<a name="71"><span class="lineNum">      71 </span>            : #endif /* DEBUG */</a>
+<a name="72"><span class="lineNum">      72 </span>            :   }  /* if */</a>
+<a name="73"><span class="lineNum">      73 </span>            :   /* Clear the entity. */</a>
+<a name="74"><span class="lineNum">      74 </span><span class="lineCov">       2416 :   daefp-&gt;next = NULL;</span></a>
+<a name="75"><span class="lineNum">      75 </span><span class="lineCov">       2416 :   daefp-&gt;param_type = NULL;</span></a>
+<a name="76"><span class="lineNum">      76 </span><span class="lineCov">       2416 :   clear_template_cache(&amp;daefp-&gt;cache, /*reusable=*/FALSE);</span></a>
+<a name="77"><span class="lineNum">      77 </span><span class="lineCov">       2416 :   daefp-&gt;param_number = 0;</span></a>
+<a name="78"><span class="lineNum">      78 </span>            : </a>
+<a name="79"><span class="lineNum">      79 </span><span class="lineCov">       2416 :   return daefp;</span></a>
+<a name="80"><span class="lineNum">      80 </span>            : }  /* alloc_def_arg_expr_fixup */</a>
+<a name="81"><span class="lineNum">      81 </span>            : </a>
+<a name="82"><span class="lineNum">      82 </span>            : </a>
+<a name="83"><span class="lineNum">      83 </span><span class="lineCov">        212 : a_def_arg_expr_fixup_ptr copy_def_arg_expr_fixup_list(</span></a>
+<a name="84"><span class="lineNum">      84 </span>            :                                 a_def_arg_expr_fixup_ptr        orig_list)</a>
+<a name="85"><span class="lineNum">      85 </span>            : /*</a>
+<a name="86"><span class="lineNum">      86 </span>            : Make a copy of the default argument fixup list specified by orig_list.</a>
+<a name="87"><span class="lineNum">      87 </span>            : Return a pointer to the new list.</a>
+<a name="88"><span class="lineNum">      88 </span>            : */</a>
+<a name="89"><span class="lineNum">      89 </span>            : {</a>
+<a name="90"><span class="lineNum">      90 </span><span class="lineCov">        212 :   a_def_arg_expr_fixup_ptr      new_list = NULL;</span></a>
+<a name="91"><span class="lineNum">      91 </span><span class="lineCov">        212 :   a_def_arg_expr_fixup_ptr      new_tail = NULL;</span></a>
+<a name="92"><span class="lineNum">      92 </span><span class="lineCov">        212 :   a_def_arg_expr_fixup_ptr      daefp;</span></a>
+<a name="93"><span class="lineNum">      93 </span><span class="lineCov">        212 :   a_def_arg_expr_fixup_ptr      new_daefp;</span></a>
+<a name="94"><span class="lineNum">      94 </span>            : </a>
+<a name="95"><span class="lineNum">      95 </span><span class="lineCov">        212 :   for (daefp = orig_list; daefp != NULL; daefp = daefp-&gt;next) {</span></a>
+<a name="96"><span class="lineNum">      96 </span><span class="lineNoCov">          0 :     new_daefp = alloc_def_arg_expr_fixup();</span></a>
+<a name="97"><span class="lineNum">      97 </span><span class="lineNoCov">          0 :     *new_daefp = *daefp;</span></a>
+<a name="98"><span class="lineNum">      98 </span><span class="lineNoCov">          0 :     new_daefp-&gt;next = NULL;</span></a>
+<a name="99"><span class="lineNum">      99 </span><span class="lineNoCov">          0 :     if (new_list == NULL) new_list = new_daefp;</span></a>
+<a name="100"><span class="lineNum">     100 </span><span class="lineNoCov">          0 :     if (new_tail != NULL) new_tail-&gt;next = new_daefp;</span></a>
+<a name="101"><span class="lineNum">     101 </span><span class="lineNoCov">          0 :     new_tail = new_daefp;</span></a>
+<a name="102"><span class="lineNum">     102 </span>            :   }  /* for */</a>
+<a name="103"><span class="lineNum">     103 </span><span class="lineCov">        212 :   return new_list;</span></a>
+<a name="104"><span class="lineNum">     104 </span>            : }  /* copy_def_arg_expr_fixup_list */</a>
+<a name="105"><span class="lineNum">     105 </span>            : </a>
+<a name="106"><span class="lineNum">     106 </span>            : </a>
+<a name="107"><span class="lineNum">     107 </span><span class="lineCov">      42970 : void free_def_arg_expr_fixup(a_def_arg_expr_fixup_ptr  daefp)</span></a>
+<a name="108"><span class="lineNum">     108 </span>            : /*</a>
+<a name="109"><span class="lineNum">     109 </span>            : Return a default arg expr fixup entry, and any others chained to it, to the</a>
+<a name="110"><span class="lineNum">     110 </span>            : available-list.</a>
+<a name="111"><span class="lineNum">     111 </span>            : */</a>
+<a name="112"><span class="lineNum">     112 </span>            : {</a>
+<a name="113"><span class="lineNum">     113 </span><span class="lineCov">      42970 :   if (daefp != NULL) {</span></a>
+<a name="114"><span class="lineNum">     114 </span><span class="lineCov">       1858 :     free_def_arg_expr_fixup(daefp-&gt;next);</span></a>
+<a name="115"><span class="lineNum">     115 </span><span class="lineCov">       1858 :     daefp-&gt;next = avail_def_arg_expr_fixup;</span></a>
+<a name="116"><span class="lineNum">     116 </span><span class="lineCov">       1858 :     avail_def_arg_expr_fixup = daefp;</span></a>
+<a name="117"><span class="lineNum">     117 </span>            :   }  /* if */</a>
+<a name="118"><span class="lineNum">     118 </span><span class="lineCov">      42970 : }  /* free_def_arg_expr_fixup */</span></a>
+<a name="119"><span class="lineNum">     119 </span>            : </a>
+<a name="120"><span class="lineNum">     120 </span>            : </a>
+<a name="121"><span class="lineNum">     121 </span><span class="lineCov">       4192 : void prescan_default_arg_expr(a_token_cache_ptr         token_cache,</span></a>
+<a name="122"><span class="lineNum">     122 </span>            :                               a_boolean                 is_template_param,</a>
+<a name="123"><span class="lineNum">     123 </span>            :                               a_boolean                 is_function_template,</a>
+<a name="124"><span class="lineNum">     124 </span>            :                               a_boolean                 is_friend_decl)</a>
+<a name="125"><span class="lineNum">     125 </span>            : /*</a>
+<a name="126"><span class="lineNum">     126 </span>            : Place the tokens for a default argument expression into a token cache, to</a>
+<a name="127"><span class="lineNum">     127 </span>            : await actual processing at a later point.  is_template_param is TRUE</a>
+<a name="128"><span class="lineNum">     128 </span>            : if the expression is the default for a nontype template parameter.</a>
+<a name="129"><span class="lineNum">     129 </span>            : is_function_template is TRUE if the expression is the default for a</a>
+<a name="130"><span class="lineNum">     130 </span>            : function template function parameter.  is_friend_decl is TRUE if the</a>
+<a name="131"><span class="lineNum">     131 </span>            : expression is the default for a friend declaration; it must be FALSE</a>
+<a name="132"><span class="lineNum">     132 </span>            : when either is_function_template or is_template_param are FALSE.</a>
+<a name="133"><span class="lineNum">     133 </span>            : */</a>
+<a name="134"><span class="lineNum">     134 </span>            : {</a>
+<a name="135"><span class="lineNum">     135 </span><span class="lineCov">       4192 :   a_token_set_array             stop_tokens;</span></a>
+<a name="136"><span class="lineNum">     136 </span><span class="lineCov">       4192 :   a_token_sequence_number       first_tsn;</span></a>
+<a name="137"><span class="lineNum">     137 </span><span class="lineCov">       4192 :   a_token_sequence_number       last_tsn;</span></a>
+<a name="138"><span class="lineNum">     138 </span><span class="lineCov">       4192 :   a_scope_stack_entry_ptr       ssep;</span></a>
+<a name="139"><span class="lineNum">     139 </span><span class="lineCov">       4192 :   a_source_position             start_pos;</span></a>
+<a name="140"><span class="lineNum">     140 </span><span class="lineCov">       4192 :   a_cts_flag_set                cts_options;</span></a>
+<a name="141"><span class="lineNum">     141 </span>            : </a>
+<a name="142"><span class="lineNum">     142 </span><span class="lineCov">       4192 :   db_enter(3, &quot;prescan_default_arg_expr&quot;);</span></a>
+<a name="143"><span class="lineNum">     143 </span>            :   /* Initialize a local stop token set. */</a>
+<a name="144"><span class="lineNum">     144 </span><span class="lineCov">       4192 :   clear_token_set_array(stop_tokens);</span></a>
+<a name="145"><span class="lineNum">     145 </span>            :   /* Save the token sequence number of the first token to be cached. */</a>
+<a name="146"><span class="lineNum">     146 </span><span class="lineCov">       4192 :   first_tsn = curr_token_sequence_number;</span></a>
+<a name="147"><span class="lineNum">     147 </span>            :   /* In the normal case we will scan an expression and encounter a comma</a>
+<a name="148"><span class="lineNum">     148 </span>            :      or right parenthesis.  If both of these are omitted, terminate the token</a>
+<a name="149"><span class="lineNum">     149 </span>            :      stream when some likely delimiter is reached. */</a>
+<a name="150"><span class="lineNum">     150 </span><span class="lineCov">       4192 :   incr_token_set_array_element(stop_tokens, tok_comma);</span></a>
+<a name="151"><span class="lineNum">     151 </span><span class="lineCov">       4192 :   if (!is_template_param &amp;&amp; !is_variadic_template_context()) {</span></a>
+<a name="152"><span class="lineNum">     152 </span><span class="lineCov">        366 :     incr_token_set_array_element(stop_tokens, tok_ellipsis);</span></a>
+<a name="153"><span class="lineNum">     153 </span>            :   }  /* if */</a>
+<a name="154"><span class="lineNum">     154 </span><span class="lineCov">       4192 :   incr_token_set_array_element(stop_tokens, tok_rparen);</span></a>
+<a name="155"><span class="lineNum">     155 </span><span class="lineCov">       4192 :   incr_token_set_array_element(stop_tokens, tok_semicolon);</span></a>
+<a name="156"><span class="lineNum">     156 </span><span class="lineCov">       4192 :   clear_token_cache(token_cache, /*reusable=*/TRUE);</span></a>
+<a name="157"><span class="lineNum">     157 </span>            :   /* When scanning a template default argument add &quot;&gt;&quot; to the stop tokens. */</a>
+<a name="158"><span class="lineNum">     158 </span><span class="lineCov">       4192 :   if (is_template_param) {</span></a>
+<a name="159"><span class="lineNum">     159 </span><span class="lineCov">       1776 :     incr_token_set_array_element(stop_tokens, tok_gt);</span></a>
+<a name="160"><span class="lineNum">     160 </span>            :   }  /* if */</a>
+<a name="161"><span class="lineNum">     161 </span>            :   /* The background caching mechanism is used.  Once the end of the default</a>
+<a name="162"><span class="lineNum">     162 </span>            :      argument is found, the original (non-coalesced) tokens are extracted</a>
+<a name="163"><span class="lineNum">     163 </span>            :      from the background cache.  The caller should have enabled the</a>
+<a name="164"><span class="lineNum">     164 </span>            :      caching, but it is also done here to handle certain error cases. */</a>
+<a name="165"><span class="lineNum">     165 </span><span class="lineCov">       4192 :   start_pos = pos_curr_token;</span></a>
+<a name="166"><span class="lineNum">     166 </span><span class="lineCov">       4192 :   begin_caching_fetched_tokens(/*include_curr_token=*/TRUE);</span></a>
+<a name="167"><span class="lineNum">     167 </span><span class="lineCov">       4192 :   cts_options = CTS_COALESCE_IDS;</span></a>
+<a name="168"><span class="lineNum">     168 </span><span class="lineCov">       4192 :   if (is_template_param) cts_options |= CTS_STOP_ON_STATEMENT_END;</span></a>
+<a name="169"><span class="lineNum">     169 </span><span class="lineCov">       4192 :   cache_token_stream_full((a_token_cache_ptr)NULL, stop_tokens, cts_options);</span></a>
+<a name="170"><span class="lineNum">     170 </span><span class="lineCov">       4192 :   end_caching_fetched_tokens();</span></a>
+<a name="171"><span class="lineNum">     171 </span><span class="lineCov">       4192 :   if (is_template_param &amp;&amp;</span></a>
+<a name="172"><span class="lineNum">     172 </span><span class="lineCov">       1776 :       (curr_token == tok_semicolon || curr_token == tok_rbrace)) {</span></a>
+<a name="173"><span class="lineNum">     173 </span>            :     /* We ended up at an unexpected place because of mismatched</a>
+<a name="174"><span class="lineNum">     174 </span>            :        delimiters in the default argument.  A diagnostic is issued elsewhere</a>
+<a name="175"><span class="lineNum">     175 </span>            :        for function default argument cases. */</a>
+<a name="176"><span class="lineNum">     176 </span><span class="lineNoCov">          0 :     pos_error(ec_invalid_default_arg, &amp;start_pos);</span></a>
+<a name="177"><span class="lineNum">     177 </span>            :   }  /* if */</a>
+<a name="178"><span class="lineNum">     178 </span>            :   /* Save the token sequence number of the last token of the default</a>
+<a name="179"><span class="lineNum">     179 </span>            :      argument.  For things other than template parameters, the cache</a>
+<a name="180"><span class="lineNum">     180 </span>            :      actually contains the token after the last one of the default argument,</a>
+<a name="181"><span class="lineNum">     181 </span>            :      but that token should not be used as the last token of the cache</a>
+<a name="182"><span class="lineNum">     182 </span>            :      segment. */</a>
+<a name="183"><span class="lineNum">     183 </span><span class="lineCov">       4192 :   last_tsn = curr_token_sequence_number;</span></a>
+<a name="184"><span class="lineNum">     184 </span><span class="lineCov">       4192 :   if (!is_template_param) last_tsn--;</span></a>
+<a name="185"><span class="lineNum">     185 </span>            :   /* Normally the last token of the cache (usually a comma, &quot;)&quot;, or the &quot;&gt;&quot;</a>
+<a name="186"><span class="lineNum">     186 </span>            :      that ends the template parameter list) is not included.  But if we are</a>
+<a name="187"><span class="lineNum">     187 </span>            :      rescanning the default argument from a cache and hit the</a>
+<a name="188"><span class="lineNum">     188 </span>            :      tok_end_of_source terminator (which will not be in the cache),</a>
+<a name="189"><span class="lineNum">     189 </span>            :      we want to include the last token that is in the cache. */</a>
+<a name="190"><span class="lineNum">     190 </span><span class="lineCov">       4192 :   copy_tokens_from_cache(curr_lexical_state_cache(), first_tsn, last_tsn,</span></a>
+<a name="191"><span class="lineNum">     191 </span>            :                          /*include_last_token=*/</a>
+<a name="192"><span class="lineNum">     192 </span>            :                                                curr_token == tok_end_of_source,</a>
+<a name="193"><span class="lineNum">     193 </span>            :                          token_cache);</a>
+<a name="194"><span class="lineNum">     194 </span>            :   /* Normally tokens are cached directly into a reusable cache or are</a>
+<a name="195"><span class="lineNum">     195 </span>            :      moved from one reusable cache to another.  In this case, however,</a>
+<a name="196"><span class="lineNum">     196 </span>            :      the tokens are being copied from one reusable cache to another.</a>
+<a name="197"><span class="lineNum">     197 </span>            :      Update the token handles to refer to the copy of the cached token. */</a>
+<a name="198"><span class="lineNum">     198 </span><span class="lineCov">       4192 :   adjust_token_handles(token_cache);</span></a>
+<a name="199"><span class="lineNum">     199 </span><span class="lineCov">       4192 :   ssep = &amp;scope_stack[depth_scope_stack];</span></a>
+<a name="200"><span class="lineNum">     200 </span><span class="lineCov">       4192 :   if (!is_template_param &amp;&amp;</span></a>
+<a name="201"><span class="lineNum">     201 </span><span class="lineCov">       2416 :       ((ssep-&gt;in_prototype_instantiation &amp;&amp; !is_friend_decl) ||</span></a>
+<a name="202"><span class="lineNum">     202 </span><span class="lineCov">         30 :        (is_function_template &amp;&amp;</span></a>
+<a name="203"><span class="lineNum">     203 </span><span class="lineCov">         30 :         depth_innermost_instantiation_scope == NO_SCOPE_DEPTH))) {</span></a>
+<a name="204"><span class="lineNum">     204 </span>            :     /* This is a function default argument within a prototype instantiation</a>
+<a name="205"><span class="lineNum">     205 </span>            :        or in a template declaration.  Save the token numbers associated with</a>
+<a name="206"><span class="lineNum">     206 </span>            :        this default argument so that it can be removed from the cache later. */</a>
+<a name="207"><span class="lineNum">     207 </span><span class="lineCov">        558 :     a_template_cache_segment_ptr        tcsp;</span></a>
+<a name="208"><span class="lineNum">     208 </span><span class="lineCov">        558 :     tcsp = alloc_template_cache_segment(</span></a>
+<a name="209"><span class="lineNum">     209 </span>            :                    (a_symbol_ptr)NULL, (a_template_symbol_supplement_ptr)NULL);</a>
+<a name="210"><span class="lineNum">     210 </span><span class="lineCov">        558 :     tcsp-&gt;first_token_number = first_tsn;</span></a>
+<a name="211"><span class="lineNum">     211 </span>            :     /* When there is no default, the computed last token number could be</a>
+<a name="212"><span class="lineNum">     212 </span>            :        less that the first.  In that case, use the first token number as</a>
+<a name="213"><span class="lineNum">     213 </span>            :        the last. */</a>
+<a name="214"><span class="lineNum">     214 </span><span class="lineCov">        558 :     tcsp-&gt;last_token_number = last_tsn &lt; first_tsn ? first_tsn : last_tsn;</span></a>
+<a name="215"><span class="lineNum">     215 </span><span class="lineCov">        558 :     tcsp-&gt;is_default_arg = TRUE;</span></a>
+<a name="216"><span class="lineNum">     216 </span>            :     /* Check for the case where the cache is empty. */</a>
+<a name="217"><span class="lineNum">     217 </span><span class="lineCov">        558 :     tcsp-&gt;expression_missing = token_cache-&gt;first_token == NULL;</span></a>
+<a name="218"><span class="lineNum">     218 </span>            :   }  /* if */</a>
+<a name="219"><span class="lineNum">     219 </span>            :   /* Note that the terminating token (comma, rparen, etc.) is not added to</a>
+<a name="220"><span class="lineNum">     220 </span>            :      the cache. */</a>
+<a name="221"><span class="lineNum">     221 </span><span class="lineCov">       4192 :   terminate_token_cache(token_cache);</span></a>
+<a name="222"><span class="lineNum">     222 </span><span class="lineCov">       4192 :   db_exit();</span></a>
+<a name="223"><span class="lineNum">     223 </span><span class="lineCov">       4192 : }  /* prescan_default_arg_expr */</span></a>
+<a name="224"><span class="lineNum">     224 </span>            : </a>
+<a name="225"><span class="lineNum">     225 </span>            : </a>
+<a name="226"><span class="lineNum">     226 </span><span class="lineCov">       2416 : void prescan_default_function_arg_expr(</span></a>
+<a name="227"><span class="lineNum">     227 </span>            :                         a_param_type_ptr                ptp,</a>
+<a name="228"><span class="lineNum">     228 </span>            :                         a_def_arg_expr_fixup_ptr        *list,</a>
+<a name="229"><span class="lineNum">     229 </span>            :                         a_boolean                       is_function_template,</a>
+<a name="230"><span class="lineNum">     230 </span>            :                         a_boolean                       is_friend_decl,</a>
+<a name="231"><span class="lineNum">     231 </span>            :                         unsigned long                   param_number)</a>
+<a name="232"><span class="lineNum">     232 </span>            : /*</a>
+<a name="233"><span class="lineNum">     233 </span>            : Place the tokens for a default argument expression into a token cache, to</a>
+<a name="234"><span class="lineNum">     234 </span>            : await actual processing at a later point.  Link the default argument</a>
+<a name="235"><span class="lineNum">     235 </span>            : entry onto the list provided by the caller.  param_number specifies the</a>
+<a name="236"><span class="lineNum">     236 </span>            : position of the parameter in the parameter list.  If list or ptp is NULL,</a>
+<a name="237"><span class="lineNum">     237 </span>            : scan the default argument expression but discard the token cache.</a>
+<a name="238"><span class="lineNum">     238 </span>            : */</a>
+<a name="239"><span class="lineNum">     239 </span>            : {</a>
+<a name="240"><span class="lineNum">     240 </span><span class="lineCov">       2416 :   a_def_arg_expr_fixup_ptr  new_daefp, daefp;</span></a>
+<a name="241"><span class="lineNum">     241 </span><span class="lineCov">       2416 :   a_token_cache             token_cache;</span></a>
+<a name="242"><span class="lineNum">     242 </span>            : </a>
+<a name="243"><span class="lineNum">     243 </span><span class="lineCov">       2416 :   db_enter(3, &quot;prescan_default_function_arg_expr&quot;);</span></a>
+<a name="244"><span class="lineNum">     244 </span>            :   /* Scan the default argument expression. */</a>
+<a name="245"><span class="lineNum">     245 </span><span class="lineCov">       2416 :   prescan_default_arg_expr(&amp;token_cache, /*is_template_param=*/FALSE,</span></a>
+<a name="246"><span class="lineNum">     246 </span>            :                            is_function_template, is_friend_decl);</a>
+<a name="247"><span class="lineNum">     247 </span><span class="lineCov">       2416 :   if (list == NULL || ptp == NULL) {</span></a>
+<a name="248"><span class="lineNum">     248 </span>            :     /* Either no list pointer, or no param type pointer was passed by</a>
+<a name="249"><span class="lineNum">     249 </span>            :        the caller.  This indicates that the argument information should</a>
+<a name="250"><span class="lineNum">     250 </span>            :        simply be discarded. */</a>
+<a name="251"><span class="lineNum">     251 </span><span class="lineNoCov">          0 :     discard_token_cache(&amp;token_cache);</span></a>
+<a name="252"><span class="lineNum">     252 </span>            :   } else {</a>
+<a name="253"><span class="lineNum">     253 </span>            :     /* Allocate a default arg expr fixup entry. */</a>
+<a name="254"><span class="lineNum">     254 </span><span class="lineCov">       2416 :     new_daefp = alloc_def_arg_expr_fixup();</span></a>
+<a name="255"><span class="lineNum">     255 </span><span class="lineCov">       2416 :     new_daefp-&gt;param_type = ptp;</span></a>
+<a name="256"><span class="lineNum">     256 </span><span class="lineCov">       2416 :     new_daefp-&gt;cache.tokens = token_cache;</span></a>
+<a name="257"><span class="lineNum">     257 </span><span class="lineCov">       2416 :     new_daefp-&gt;param_number = param_number;</span></a>
+<a name="258"><span class="lineNum">     258 </span>            :     /* Add the entry to the end of the list of default arg expr fixup entries</a>
+<a name="259"><span class="lineNum">     259 </span>            :        for the current routine fixup. */</a>
+<a name="260"><span class="lineNum">     260 </span><span class="lineCov">       2416 :     if (*list == NULL) {</span></a>
+<a name="261"><span class="lineNum">     261 </span><span class="lineCov">       2224 :       *list = new_daefp;</span></a>
+<a name="262"><span class="lineNum">     262 </span>            :     } else {</a>
+<a name="263"><span class="lineNum">     263 </span>            :       daefp = *list;</a>
+<a name="264"><span class="lineNum">     264 </span><span class="lineCov">        208 :       while (daefp-&gt;next != NULL) daefp = daefp-&gt;next;</span></a>
+<a name="265"><span class="lineNum">     265 </span><span class="lineCov">        192 :       daefp-&gt;next = new_daefp;</span></a>
+<a name="266"><span class="lineNum">     266 </span>            :     }  /* if */</a>
+<a name="267"><span class="lineNum">     267 </span><span class="lineCov">       2416 :     if (is_function_template) {</span></a>
+<a name="268"><span class="lineNum">     268 </span>            :       /* Indicate that this default argument is a template default argument</a>
+<a name="269"><span class="lineNum">     269 </span>            :          whose expression has not yet been evaluated. */</a>
+<a name="270"><span class="lineNum">     270 </span><span class="lineCov">         44 :       ptp-&gt;has_unevaluated_template_default = TRUE;</span></a>
+<a name="271"><span class="lineNum">     271 </span><span class="lineCov">         44 :       ptp-&gt;orig_param_type_for_unevaluated_default_arg_expr = ptp;</span></a>
+<a name="272"><span class="lineNum">     272 </span>            :     }  /* if */</a>
+<a name="273"><span class="lineNum">     273 </span>            :   }  /* if */</a>
+<a name="274"><span class="lineNum">     274 </span><span class="lineCov">       2416 :   db_exit();</span></a>
+<a name="275"><span class="lineNum">     275 </span><span class="lineCov">       2416 : }  /* prescan_default_function_arg_expr */</span></a>
+<a name="276"><span class="lineNum">     276 </span>            : </a>
+<a name="277"><span class="lineNum">     277 </span>            : </a>
+<a name="278"><span class="lineNum">     278 </span>            : #if !NEED_NAME_MANGLING</a>
+<a name="279"><span class="lineNum">     279 </span>            : /*ARGSUSED*/  /* rout_sym is unused in some configurations. */</a>
+<a name="280"><span class="lineNum">     280 </span>            : #endif /* !NEED_NAME_MANGLING */</a>
+<a name="281"><span class="lineNum">     281 </span><span class="lineCov">       1013 : void delayed_scan_of_default_arg_expr(a_param_type_ptr param_type_entry,</span></a>
+<a name="282"><span class="lineNum">     282 </span>            :                                       a_symbol_ptr     rout_sym,</a>
+<a name="283"><span class="lineNum">     283 </span>            :                                       a_boolean        check_for_errors)</a>
+<a name="284"><span class="lineNum">     284 </span>            : /*</a>
+<a name="285"><span class="lineNum">     285 </span>            : Do the delayed scan of the default argument expression for a parameter.  The</a>
+<a name="286"><span class="lineNum">     286 </span>            : cache has just been reactivated, so curr_token should represent the first</a>
+<a name="287"><span class="lineNum">     287 </span>            : token in the cache.  If check_for_errors is TRUE, then before doing the scan</a>
+<a name="288"><span class="lineNum">     288 </span>            : check that default expressions have been declared for all successor arguments.</a>
+<a name="289"><span class="lineNum">     289 </span>            : </a>
+<a name="290"><span class="lineNum">     290 </span>            : The error checks are suppressed when this routine is called for a</a>
+<a name="291"><span class="lineNum">     291 </span>            : function template because the checks are done elsewhere (and cannot</a>
+<a name="292"><span class="lineNum">     292 </span>            : be done here because the default arguments for a given function template</a>
+<a name="293"><span class="lineNum">     293 </span>            : may be spread between several declarations).</a>
+<a name="294"><span class="lineNum">     294 </span>            : </a>
+<a name="295"><span class="lineNum">     295 </span>            : param_type_entry describes the parameter of the given routine (rout_sym) with</a>
+<a name="296"><span class="lineNum">     296 </span>            : which the default argument is associated.</a>
+<a name="297"><span class="lineNum">     297 </span>            : */</a>
+<a name="298"><span class="lineNum">     298 </span>            : {</a>
+<a name="299"><span class="lineNum">     299 </span><span class="lineCov">       1013 :   a_param_type_ptr  ptp;</span></a>
+<a name="300"><span class="lineNum">     300 </span><span class="lineCov">       1013 :   a_boolean         err = FALSE;</span></a>
+<a name="301"><span class="lineNum">     301 </span>            : #if MICROSOFT_EXTENSIONS_ALLOWED</a>
+<a name="302"><span class="lineNum">     302 </span>            :   a_boolean         discard_default_arg = FALSE;</a>
+<a name="303"><span class="lineNum">     303 </span>            : #endif /* MICROSOFT_EXTENSIONS_ALLOWED */</a>
+<a name="304"><span class="lineNum">     304 </span>            : </a>
+<a name="305"><span class="lineNum">     305 </span><span class="lineCov">       1013 :   db_enter(3, &quot;delayed_scan_of_default_arg_expr&quot;);</span></a>
+<a name="306"><span class="lineNum">     306 </span><span class="lineCov">       1013 :   if (param_type_entry-&gt;default_arg_expr != NULL &amp;&amp;</span></a>
+<a name="307"><span class="lineNum">     307 </span><span class="lineNoCov">          0 :       !is_error_node(param_type_entry-&gt;default_arg_expr)) {</span></a>
+<a name="308"><span class="lineNum">     308 </span><span class="lineNoCov">          0 :     pos_error(ec_default_arg_already_defined, &amp;pos_curr_token);</span></a>
+<a name="309"><span class="lineNum">     309 </span>            :   }  /* if */</a>
+<a name="310"><span class="lineNum">     310 </span><span class="lineCov">       1013 :   if (check_for_errors) {</span></a>
+<a name="311"><span class="lineNum">     311 </span>            : #if MICROSOFT_EXTENSIONS_ALLOWED</a>
+<a name="312"><span class="lineNum">     312 </span>            :     /* Verify that this is not a function with a C++/CLI param array. */</a>
+<a name="313"><span class="lineNum">     313 </span>            :     if (cppcli_enabled &amp;&amp; is_cli_param_array_routine_symbol(rout_sym)) {</a>
+<a name="314"><span class="lineNum">     314 </span>            :       /* Default arguments are not allowed with C++/CLI parameter arrays. */</a>
+<a name="315"><span class="lineNum">     315 </span>            :       pos_error(ec_default_arg_used_in_param_array_function, &amp;pos_curr_token);</a>
+<a name="316"><span class="lineNum">     316 </span>            :       err = TRUE;</a>
+<a name="317"><span class="lineNum">     317 </span>            :       discard_default_arg = TRUE;</a>
+<a name="318"><span class="lineNum">     318 </span>            :     }  /* if */</a>
+<a name="319"><span class="lineNum">     319 </span>            : #endif /* MICROSOFT_EXTENSIONS_ALLOWED */</a>
+<a name="320"><span class="lineNum">     320 </span>            :     /* Make a pass over all the param type entries that follow the current one.</a>
+<a name="321"><span class="lineNum">     321 </span>            :        It is an error if there are any without a default argument. */</a>
+<a name="322"><span class="lineNum">     322 </span><span class="lineCov">        494 :    for (ptp = param_type_entry-&gt;next; ptp != NULL; ptp = ptp-&gt;next) {</span></a>
+<a name="323"><span class="lineNum">     323 </span><span class="lineCov">        128 :      if (!ptp-&gt;has_default_arg) {</span></a>
+<a name="324"><span class="lineNum">     324 </span>            :         /* Issue an error on the first successor in the parameter list that</a>
+<a name="325"><span class="lineNum">     325 </span>            :            does not have a default argument. */</a>
+<a name="326"><span class="lineNum">     326 </span><span class="lineNoCov">          0 :         if (!err) {</span></a>
+<a name="327"><span class="lineNum">     327 </span><span class="lineNoCov">          0 :           pos_error(ec_default_arg_not_at_end, &amp;pos_curr_token);</span></a>
+<a name="328"><span class="lineNum">     328 </span><span class="lineNoCov">          0 :           err = TRUE;</span></a>
+<a name="329"><span class="lineNum">     329 </span>            :         }  /* if */</a>
+<a name="330"><span class="lineNum">     330 </span><span class="lineNoCov">          0 :         ptp-&gt;has_default_arg = TRUE;</span></a>
+<a name="331"><span class="lineNum">     331 </span><span class="lineNoCov">          0 :         ptp-&gt;default_arg_appeared_in_class_definition =</span></a>
+<a name="332"><span class="lineNum">     332 </span><span class="lineNoCov">          0 :                     param_type_entry-&gt;default_arg_appeared_in_class_definition;</span></a>
+<a name="333"><span class="lineNum">     333 </span><span class="lineNoCov">          0 :         ptp-&gt;default_arg_expr = error_node();</span></a>
+<a name="334"><span class="lineNum">     334 </span>            :       }  /* if */</a>
+<a name="335"><span class="lineNum">     335 </span>            :     }  /* for */</a>
+<a name="336"><span class="lineNum">     336 </span>            :   }  /* if */</a>
+<a name="337"><span class="lineNum">     337 </span>            :   /* We scan the expression whether an error was detected or not. */</a>
+<a name="338"><span class="lineNum">     338 </span><span class="lineCov">       1013 :   scan_default_arg_expr(param_type_entry,</span></a>
+<a name="339"><span class="lineNum">     339 </span>            :                         /*is_member_or_friend=*/TRUE);</a>
+<a name="340"><span class="lineNum">     340 </span>            : #if NEED_NAME_MANGLING</a>
+<a name="341"><span class="lineNum">     341 </span><span class="lineCov">       1013 :   set_parent_entity_for_closure_types(</span></a>
+<a name="342"><span class="lineNum">     342 </span>            :           param_type_entry-&gt;entities_defined_in_default_arg,</a>
+<a name="343"><span class="lineNum">     343 </span><span class="lineCov">       1013 :           is_simple_function_symbol(rout_sym) ? rout_sym : (a_symbol_ptr)NULL,</span></a>
+<a name="344"><span class="lineNum">     344 </span><span class="lineCov">       1013 :           param_type_entry-&gt;default_arg_appeared_in_class_definition);</span></a>
+<a name="345"><span class="lineNum">     345 </span>            : #endif /* NEED_NAME_MANGLING */</a>
+<a name="346"><span class="lineNum">     346 </span>            : #if MICROSOFT_EXTENSIONS_ALLOWED</a>
+<a name="347"><span class="lineNum">     347 </span>            :   if (discard_default_arg) {</a>
+<a name="348"><span class="lineNum">     348 </span>            :     /* Treat the parameter as not having a default argument for error recovery</a>
+<a name="349"><span class="lineNum">     349 </span>            :        purposes. */</a>
+<a name="350"><span class="lineNum">     350 </span>            :     check_assertion(err);</a>
+<a name="351"><span class="lineNum">     351 </span>            :     param_type_entry-&gt;has_default_arg = FALSE;</a>
+<a name="352"><span class="lineNum">     352 </span>            :     param_type_entry-&gt;default_arg_appeared_in_class_definition = FALSE;</a>
+<a name="353"><span class="lineNum">     353 </span>            :     param_type_entry-&gt;default_arg_expr = NULL;</a>
+<a name="354"><span class="lineNum">     354 </span>            :   }  /* if */</a>
+<a name="355"><span class="lineNum">     355 </span>            : #endif /* MICROSOFT_EXTENSIONS_ALLOWED */</a>
+<a name="356"><span class="lineNum">     356 </span>            :   /* In the normal case the current token should be end_of_source,</a>
+<a name="357"><span class="lineNum">     357 </span>            :      which was inserted to mark the end of the cached token</a>
+<a name="358"><span class="lineNum">     358 </span>            :      stream. */</a>
+<a name="359"><span class="lineNum">     359 </span><span class="lineCov">       1013 :   if (curr_token != tok_end_of_source) {</span></a>
+<a name="360"><span class="lineNum">     360 </span><span class="lineNoCov">          0 :     pos_error(ec_unexpected_end_of_default_arg, &amp;pos_curr_token);</span></a>
+<a name="361"><span class="lineNum">     361 </span>            :     /* If necessary, keep flushing until end-of-source is found. */</a>
+<a name="362"><span class="lineNum">     362 </span><span class="lineNoCov">          0 :     while (curr_token != tok_end_of_source) (void)get_token();</span></a>
+<a name="363"><span class="lineNum">     363 </span>            :   }  /* if */</a>
+<a name="364"><span class="lineNum">     364 </span>            :   /* Advance past the end-of-source token, which was added in</a>
+<a name="365"><span class="lineNum">     365 </span>            :      the prescan routine. */</a>
+<a name="366"><span class="lineNum">     366 </span><span class="lineCov">       1013 :   (void)get_token();</span></a>
+<a name="367"><span class="lineNum">     367 </span><span class="lineCov">       1013 :   db_exit();</span></a>
+<a name="368"><span class="lineNum">     368 </span><span class="lineCov">       1013 : }  /* delayed_scan_of_default_arg_expr */</span></a>
+<a name="369"><span class="lineNum">     369 </span>            : </a>
+<a name="370"><span class="lineNum">     370 </span>            : </a>
+<a name="371"><span class="lineNum">     371 </span><span class="lineCov">       3734 : static void check_for_valid_end_of_template_def_arg(void)</span></a>
+<a name="372"><span class="lineNum">     372 </span>            : /*</a>
+<a name="373"><span class="lineNum">     373 </span>            : We have just scanned the default for a template argument.  We</a>
+<a name="374"><span class="lineNum">     374 </span>            : should now be at the tok_end_of_source that terminates the cache.</a>
+<a name="375"><span class="lineNum">     375 </span>            : */</a>
+<a name="376"><span class="lineNum">     376 </span>            : {</a>
+<a name="377"><span class="lineNum">     377 </span>            :   /* In the normal case the current token should be end_of_source,</a>
+<a name="378"><span class="lineNum">     378 </span>            :      which was inserted to mark the end of the cached token</a>
+<a name="379"><span class="lineNum">     379 </span>            :      stream. */</a>
+<a name="380"><span class="lineNum">     380 </span><span class="lineCov">       3734 :   if (curr_token != tok_end_of_source) {</span></a>
+<a name="381"><span class="lineNum">     381 </span><span class="lineNoCov">          0 :     pos_error(ec_exp_comma, &amp;pos_curr_token);</span></a>
+<a name="382"><span class="lineNum">     382 </span>            :     /* If necessary, keep flushing until end-of-source is found. */</a>
+<a name="383"><span class="lineNum">     383 </span><span class="lineNoCov">          0 :     while (curr_token != tok_end_of_source) (void)get_token();</span></a>
+<a name="384"><span class="lineNum">     384 </span>            :   }  /* if */</a>
+<a name="385"><span class="lineNum">     385 </span>            :   /* Advance past the end-of-source token, which was added in</a>
+<a name="386"><span class="lineNum">     386 </span>            :      the prescan routine. */</a>
+<a name="387"><span class="lineNum">     387 </span><span class="lineCov">       3734 :   (void)get_token();</span></a>
+<a name="388"><span class="lineNum">     388 </span><span class="lineCov">       3734 : }  /* check_for_valid_end_of_template_def_arg */</span></a>
+<a name="389"><span class="lineNum">     389 </span>            : </a>
+<a name="390"><span class="lineNum">     390 </span>            : </a>
+<a name="391"><span class="lineNum">     391 </span><span class="lineCov">       1205 : void delayed_scan_of_template_default_arg_expr(a_type_ptr       type,</span></a>
+<a name="392"><span class="lineNum">     392 </span>            :                                                a_constant_ptr   constant)</a>
+<a name="393"><span class="lineNum">     393 </span>            : /*</a>
+<a name="394"><span class="lineNum">     394 </span>            : Do the delayed scan of the default argument expression for a template</a>
+<a name="395"><span class="lineNum">     395 </span>            : parameter.  The cache has just been reactivated, so curr_token should</a>
+<a name="396"><span class="lineNum">     396 </span>            : represent the first token in the cache.</a>
+<a name="397"><span class="lineNum">     397 </span>            : */</a>
+<a name="398"><span class="lineNum">     398 </span>            : {</a>
+<a name="399"><span class="lineNum">     399 </span><span class="lineCov">       1205 :   db_enter(3, &quot;delayed_scan_of_template_default_arg_expr&quot;);</span></a>
+<a name="400"><span class="lineNum">     400 </span><span class="lineCov">       1205 :   scan_template_argument_constant_expression(type, constant);</span></a>
+<a name="401"><span class="lineNum">     401 </span><span class="lineCov">       1205 :   check_for_valid_end_of_template_def_arg();</span></a>
+<a name="402"><span class="lineNum">     402 </span><span class="lineCov">       1205 :   db_exit();</span></a>
+<a name="403"><span class="lineNum">     403 </span><span class="lineCov">       1205 : }  /* delayed_scan_of_template_default_arg_expr */</span></a>
+<a name="404"><span class="lineNum">     404 </span>            : </a>
+<a name="405"><span class="lineNum">     405 </span>            : </a>
+<a name="406"><span class="lineNum">     406 </span><span class="lineCov">       2529 : a_type_ptr delayed_scan_of_template_default_type_arg(void)</span></a>
+<a name="407"><span class="lineNum">     407 </span>            : /*</a>
+<a name="408"><span class="lineNum">     408 </span>            : Do the delayed scan of the default argument expression for a template</a>
+<a name="409"><span class="lineNum">     409 </span>            : type parameter.  The cache has just been reactivated, so curr_token should</a>
+<a name="410"><span class="lineNum">     410 </span>            : represent the first token in the cache.  Return a pointer to the type</a>
+<a name="411"><span class="lineNum">     411 </span>            : that was scanned.</a>
+<a name="412"><span class="lineNum">     412 </span>            : */</a>
+<a name="413"><span class="lineNum">     413 </span>            : {</a>
+<a name="414"><span class="lineNum">     414 </span><span class="lineCov">       2529 :   a_type_ptr    tp = NULL;</span></a>
+<a name="415"><span class="lineNum">     415 </span>            : </a>
+<a name="416"><span class="lineNum">     416 </span><span class="lineCov">       2529 :   db_enter(3, &quot;delayed_scan_of_template_default_type_arg&quot;);</span></a>
+<a name="417"><span class="lineNum">     417 </span><span class="lineCov">       2529 :   tp = scan_template_type_argument();</span></a>
+<a name="418"><span class="lineNum">     418 </span><span class="lineCov">       2529 :   check_for_valid_end_of_template_def_arg();</span></a>
+<a name="419"><span class="lineNum">     419 </span><span class="lineCov">       2529 :   db_exit();</span></a>
+<a name="420"><span class="lineNum">     420 </span><span class="lineCov">       2529 :   return tp;</span></a>
+<a name="421"><span class="lineNum">     421 </span>            : }  /* delayed_scan_of_template_default_type_arg */</a>
+<a name="422"><span class="lineNum">     422 </span>            : </a>
+<a name="423"><span class="lineNum">     423 </span>            : </a>
+<a name="424"><span class="lineNum">     424 </span><span class="lineNoCov">          0 : a_template_ptr delayed_scan_of_template_default_template_arg(</span></a>
+<a name="425"><span class="lineNum">     425 </span>            :                                 a_template_ptr          param_template,</a>
+<a name="426"><span class="lineNum">     426 </span>            :                                 a_boolean               dependent_default,</a>
+<a name="427"><span class="lineNum">     427 </span>            :                                 a_source_position       *err_pos)</a>
+<a name="428"><span class="lineNum">     428 </span>            : /*</a>
+<a name="429"><span class="lineNum">     429 </span>            : Do the delayed scan of the default argument expression for a template</a>
+<a name="430"><span class="lineNum">     430 </span>            : template parameter.  The cache has just been reactivated, so curr_token should</a>
+<a name="431"><span class="lineNum">     431 </span>            : represent the first token in the cache.  Return a pointer to the template</a>
+<a name="432"><span class="lineNum">     432 </span>            : that was scanned.  dependent_default is TRUE if the template parameter</a>
+<a name="433"><span class="lineNum">     433 </span>            : list of the template parameter involves other template parameters, in</a>
+<a name="434"><span class="lineNum">     434 </span>            : which case checking the template parameter types of the default argument</a>
+<a name="435"><span class="lineNum">     435 </span>            : must be deferred until it is used.</a>
+<a name="436"><span class="lineNum">     436 </span>            : */</a>
+<a name="437"><span class="lineNum">     437 </span>            : {</a>
+<a name="438"><span class="lineNum">     438 </span><span class="lineNoCov">          0 :   a_template_ptr        templ;</span></a>
+<a name="439"><span class="lineNum">     439 </span>            : </a>
+<a name="440"><span class="lineNum">     440 </span><span class="lineNoCov">          0 :   db_enter(3, &quot;delayed_scan_of_template_default_template_arg&quot;);</span></a>
+<a name="441"><span class="lineNum">     441 </span><span class="lineNoCov">          0 :   templ = scan_template_template_argument(param_template, err_pos,</span></a>
+<a name="442"><span class="lineNum">     442 </span>            :                                           /*is_default=*/TRUE,</a>
+<a name="443"><span class="lineNum">     443 </span>            :                                           dependent_default);</a>
+<a name="444"><span class="lineNum">     444 </span><span class="lineNoCov">          0 :   check_for_valid_end_of_template_def_arg();</span></a>
+<a name="445"><span class="lineNum">     445 </span><span class="lineNoCov">          0 :   db_exit();</span></a>
+<a name="446"><span class="lineNum">     446 </span><span class="lineNoCov">          0 :   return templ;</span></a>
+<a name="447"><span class="lineNum">     447 </span>            : }  /* delayed_scan_of_template_default_template_arg */</a>
+<a name="448"><span class="lineNum">     448 </span>            : </a>
+<a name="449"><span class="lineNum">     449 </span>            : </a>
+<a name="450"><span class="lineNum">     450 </span><span class="lineCov">        320 : void def_arg_one_time_init(void)</span></a>
+<a name="451"><span class="lineNum">     451 </span>            : /*</a>
+<a name="452"><span class="lineNum">     452 </span>            : One-time initialization for def_arg.c static variables.</a>
+<a name="453"><span class="lineNum">     453 </span>            : */</a>
+<a name="454"><span class="lineNum">     454 </span>            : {</a>
+<a name="455"><span class="lineNum">     455 </span>            :   /* Save variables that are needed for precompiled headers */</a>
+<a name="456"><span class="lineNum">     456 </span><span class="lineCov">        320 :   if (precompiled_header_processing_required) {</span></a>
+<a name="457"><span class="lineNum">     457 </span><span class="lineNoCov">          0 :     static a_pch_saved_variable saved_vars[] = {</span></a>
+<a name="458"><span class="lineNum">     458 </span>            :       pch_saved_var_array_elem(avail_def_arg_expr_fixup),</a>
+<a name="459"><span class="lineNum">     459 </span>            : #if DEBUG</a>
+<a name="460"><span class="lineNum">     460 </span>            :       pch_saved_var_array_elem(num_def_arg_expr_fixups_allocated),</a>
+<a name="461"><span class="lineNum">     461 </span>            : #endif /* if DEBUG */</a>
+<a name="462"><span class="lineNum">     462 </span>            :       pch_saved_var_array_terminating_elem()</a>
+<a name="463"><span class="lineNum">     463 </span>            :     };</a>
+<a name="464"><span class="lineNum">     464 </span><span class="lineNoCov">          0 :     register_pch_saved_variables(saved_vars);</span></a>
+<a name="465"><span class="lineNum">     465 </span>            :   }  /* if */</a>
+<a name="466"><span class="lineNum">     466 </span><span class="lineCov">        320 : }  /* def_arg_one_time_init */</span></a>
+<a name="467"><span class="lineNum">     467 </span>            : </a>
+<a name="468"><span class="lineNum">     468 </span>            : </a>
+<a name="469"><span class="lineNum">     469 </span><span class="lineCov">        320 : void def_arg_init(void)</span></a>
+<a name="470"><span class="lineNum">     470 </span>            : /*</a>
+<a name="471"><span class="lineNum">     471 </span>            : Initializations for class declaration processing.</a>
+<a name="472"><span class="lineNum">     472 </span>            : */</a>
+<a name="473"><span class="lineNum">     473 </span>            : {</a>
+<a name="474"><span class="lineNum">     474 </span>            :   /* Initialize the list of freed delayed-scan-fixup entries. */</a>
+<a name="475"><span class="lineNum">     475 </span><span class="lineCov">        320 :   avail_def_arg_expr_fixup = NULL;</span></a>
+<a name="476"><span class="lineNum">     476 </span>            : #if DEBUG</a>
+<a name="477"><span class="lineNum">     477 </span><span class="lineCov">        320 :   num_def_arg_expr_fixups_allocated = 0;</span></a>
+<a name="478"><span class="lineNum">     478 </span>            : #endif /* DEBUG */</a>
+<a name="479"><span class="lineNum">     479 </span><span class="lineCov">        320 :   return;</span></a>
+<a name="480"><span class="lineNum">     480 </span>            : }  /* def_arg_init */</a>
+<a name="481"><span class="lineNum">     481 </span>            : </a>
+<a name="482"><span class="lineNum">     482 </span>            : </a>
+<a name="483"><span class="lineNum">     483 </span>            : /******************************************************************************</a>
+<a name="484"><span class="lineNum">     484 </span>            : *                                                             \  ___  /       *</a>
+<a name="485"><span class="lineNum">     485 </span>            : *                                                               /   \         *</a>
+<a name="486"><span class="lineNum">     486 </span>            : * Edison Design Group C++/C Front End                        - | \^/ | -      *</a>
+<a name="487"><span class="lineNum">     487 </span>            : *                                                               \   /         *</a>
+<a name="488"><span class="lineNum">     488 </span>            : * Proprietary information of Edison Design Group Inc.         /  | |  \       *</a>
+<a name="489"><span class="lineNum">     489 </span>            : * Copyright 1988-2018 Edison Design Group Inc.                   [_]          *</a>
+<a name="490"><span class="lineNum">     490 </span>            : *                                                                             *</a>
+<a name="491"><span class="lineNum">     491 </span>            : ******************************************************************************/</a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

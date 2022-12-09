@@ -1,0 +1,5 @@
+<map id="SgTypeTable" name="SgTypeTable">
+<area shape="rect" id="node1" title=" " alt="" coords="5,171,103,197"/>
+<area shape="rect" id="node2" href="$classSgSupport.html" title="This class represents the base class of a numbr of IR nodes that don&#39;t otherwise fit into the existin..." alt="" coords="7,5,90,32"/>
+<area shape="rect" id="node3" href="$classSgSymbolTable.html" title="This class represents the symbol tables used in both SgScopeStatement and the SgFunctionTypeSymbolTab..." alt="" coords="71,81,184,108"/>
+</map>

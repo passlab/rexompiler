@@ -1,0 +1,5 @@
+<map id="SgStmtDeclarationStatement" name="SgStmtDeclarationStatement">
+<area shape="rect" id="node1" title="This class is intended to be a wrapper around SgStatements, allowing them to exist in scopes that onl..." alt="" coords="5,160,197,187"/>
+<area shape="rect" id="node2" href="$classSgDeclarationStatement.html" title="This class represents the concept of a declaration statement." alt="" coords="150,83,314,109"/>
+<area shape="rect" id="node3" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="15,5,113,32"/>
+</map>

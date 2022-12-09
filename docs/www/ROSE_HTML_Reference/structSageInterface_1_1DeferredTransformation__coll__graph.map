@@ -1,0 +1,11 @@
+<map id="SageInterface::DeferredTransformation" name="SageInterface::DeferredTransformation">
+<area shape="rect" id="node1" title=" " alt="" coords="781,287,1029,313"/>
+<area shape="rect" id="node2" href="$classSgClassDefinition.html" title="This class represents the concept of a class definition in C++." alt="" coords="5,40,132,67"/>
+<area shape="rect" id="node3" title=" " alt="" coords="335,84,539,111"/>
+<area shape="rect" id="node4" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="19,256,118,283"/>
+<area shape="rect" id="node8" title=" " alt="" coords="340,256,533,283"/>
+<area shape="rect" id="node9" href="$classSgDeclarationStatement.html" title="This class represents the concept of a declaration statement." alt="" coords="355,360,519,387"/>
+<area shape="rect" id="node5" title=" " alt="" coords="312,524,561,551"/>
+<area shape="rect" id="node6" title="STL class." alt="" coords="29,412,109,439"/>
+<area shape="rect" id="node7" href="$classSgBasicBlock.html" title="This class represents the concept of a block (not a basic block from control flow analysis)." alt="" coords="385,473,489,500"/>
+</map>

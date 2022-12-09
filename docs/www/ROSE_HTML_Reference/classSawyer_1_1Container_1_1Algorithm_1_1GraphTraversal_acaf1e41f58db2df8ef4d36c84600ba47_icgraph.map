@@ -1,0 +1,6 @@
+<map id="Sawyer::Container::Algorithm::GraphTraversal::vertex" name="Sawyer::Container::Algorithm::GraphTraversal::vertex">
+<area shape="rect" id="node1" title="Vertex to which traversal is pointing." alt="" coords="324,107,499,163"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#ac8b007c85ebd60238efbab420ffc38c3" title="Allow a vertex to be discovered again." alt="" coords="5,5,276,76"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#a949d2bca6b29869d826a68a547a6475d" title="True if the vertex has been discovered." alt="" coords="19,100,263,171"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#a942aeb95d88768409817fda27da57781" title="Call the specified functor for each vertex." alt="" coords="20,195,261,265"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="SgFunctionTypeSymbol" name="SgFunctionTypeSymbol">
+<area shape="rect" id="node1" title="This class represents the concept of a name and a type. It may be renamed in the future to SgTypeSymb..." alt="" coords="65,95,225,121"/>
+<area shape="rect" id="node2" href="$classSgSymbol.html" title="This class represents the concept of a name within the compiler." alt="" coords="5,5,88,32"/>
+<area shape="rect" id="node3" href="$classSgType.html" title="This class represents the base class for all types." alt="" coords="112,5,179,32"/>
+<area shape="rect" id="node4" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="203,5,277,32"/>
+</map>

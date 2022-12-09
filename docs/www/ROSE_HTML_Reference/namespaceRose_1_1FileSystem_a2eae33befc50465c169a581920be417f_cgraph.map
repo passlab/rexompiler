@@ -1,0 +1,6 @@
+<map id="Rose::FileSystem::copyFilesRecursively" name="Rose::FileSystem::copyFilesRecursively">
+<area shape="rect" id="node1" title="Recursively copy files." alt="" coords="5,57,196,98"/>
+<area shape="rect" id="node2" href="$namespaceRose_1_1FileSystem.html#a3e3f1b373bbb207a686fdfdc2712f348" title="Copy files from one directory to another." alt="" coords="248,5,439,32"/>
+<area shape="rect" id="node3" href="$namespaceRose_1_1FileSystem.html#a3e04041e76e27bdec3d3e314d22fafc5" title="Recursive list of names satisfying predicate." alt="" coords="244,57,443,98"/>
+<area shape="rect" id="node4" href="$namespaceRose_1_1FileSystem.html#a9014dfbc5cb2b128daaefd6536f0303c" title="Predicate returning true for existing regular files." alt="" coords="260,123,427,149"/>
+</map>

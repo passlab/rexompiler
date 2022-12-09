@@ -1,0 +1,442 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /home/yyan7/compiler/rexompiler/src/midend/programAnalysis/OpenAnalysis/CFG/CFG.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../../../index.html">top level</a> - <a href="index.html">home/yyan7/compiler/rexompiler/src/midend/programAnalysis/OpenAnalysis/CFG</a> - CFG.h<span style="font-size: 80%;"> (source / <a href="CFG.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">43</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // $Id: CFG.h,v 1.3 2008/01/08 02:56:40 dquinlan Exp $</a>
+<a name="2"><span class="lineNum">       2 </span>            : // -*-C++-*-</a>
+<a name="3"><span class="lineNum">       3 </span>            : // * BeginRiceCopyright *****************************************************</a>
+<a name="4"><span class="lineNum">       4 </span>            : // </a>
+<a name="5"><span class="lineNum">       5 </span>            : // Copyright ((c)) 2002, Rice University </a>
+<a name="6"><span class="lineNum">       6 </span>            : // All rights reserved.</a>
+<a name="7"><span class="lineNum">       7 </span>            : // </a>
+<a name="8"><span class="lineNum">       8 </span>            : // Redistribution and use in source and binary forms, with or without</a>
+<a name="9"><span class="lineNum">       9 </span>            : // modification, are permitted provided that the following conditions are</a>
+<a name="10"><span class="lineNum">      10 </span>            : // met:</a>
+<a name="11"><span class="lineNum">      11 </span>            : // </a>
+<a name="12"><span class="lineNum">      12 </span>            : // * Redistributions of source code must retain the above copyright</a>
+<a name="13"><span class="lineNum">      13 </span>            : //   notice, this list of conditions and the following disclaimer.</a>
+<a name="14"><span class="lineNum">      14 </span>            : // </a>
+<a name="15"><span class="lineNum">      15 </span>            : // * Redistributions in binary form must reproduce the above copyright</a>
+<a name="16"><span class="lineNum">      16 </span>            : //   notice, this list of conditions and the following disclaimer in the</a>
+<a name="17"><span class="lineNum">      17 </span>            : //   documentation and/or other materials provided with the distribution.</a>
+<a name="18"><span class="lineNum">      18 </span>            : // </a>
+<a name="19"><span class="lineNum">      19 </span>            : // * Neither the name of Rice University (RICE) nor the names of its</a>
+<a name="20"><span class="lineNum">      20 </span>            : //   contributors may be used to endorse or promote products derived from</a>
+<a name="21"><span class="lineNum">      21 </span>            : //   this software without specific prior written permission.</a>
+<a name="22"><span class="lineNum">      22 </span>            : // </a>
+<a name="23"><span class="lineNum">      23 </span>            : // This software is provided by RICE and contributors &quot;as is&quot; and any</a>
+<a name="24"><span class="lineNum">      24 </span>            : // express or implied warranties, including, but not limited to, the</a>
+<a name="25"><span class="lineNum">      25 </span>            : // implied warranties of merchantability and fitness for a particular</a>
+<a name="26"><span class="lineNum">      26 </span>            : // purpose are disclaimed. In no event shall RICE or contributors be</a>
+<a name="27"><span class="lineNum">      27 </span>            : // liable for any direct, indirect, incidental, special, exemplary, or</a>
+<a name="28"><span class="lineNum">      28 </span>            : // consequential damages (including, but not limited to, procurement of</a>
+<a name="29"><span class="lineNum">      29 </span>            : // substitute goods or services; loss of use, data, or profits; or</a>
+<a name="30"><span class="lineNum">      30 </span>            : // business interruption) however caused and on any theory of liability,</a>
+<a name="31"><span class="lineNum">      31 </span>            : // whether in contract, strict liability, or tort (including negligence</a>
+<a name="32"><span class="lineNum">      32 </span>            : // or otherwise) arising in any way out of the use of this software, even</a>
+<a name="33"><span class="lineNum">      33 </span>            : // if advised of the possibility of such damage. </a>
+<a name="34"><span class="lineNum">      34 </span>            : // </a>
+<a name="35"><span class="lineNum">      35 </span>            : // ******************************************************* EndRiceCopyright *</a>
+<a name="36"><span class="lineNum">      36 </span>            : </a>
+<a name="37"><span class="lineNum">      37 </span>            : // Best seen in 120-column wide window (or print in landscape mode).</a>
+<a name="38"><span class="lineNum">      38 </span>            : //--------------------------------------------------------------------------------------------------------------------</a>
+<a name="39"><span class="lineNum">      39 </span>            : // This file is part of Mint.</a>
+<a name="40"><span class="lineNum">      40 </span>            : // Arun Chauhan (achauhan@cs.rice.edu), Dept of Computer Science, Rice University, 2001.</a>
+<a name="41"><span class="lineNum">      41 </span>            : //--------------------------------------------------------------------------------------------------------------------</a>
+<a name="42"><span class="lineNum">      42 </span>            : </a>
+<a name="43"><span class="lineNum">      43 </span>            : #ifndef CFG_H</a>
+<a name="44"><span class="lineNum">      44 </span>            : #define CFG_H</a>
+<a name="45"><span class="lineNum">      45 </span>            : </a>
+<a name="46"><span class="lineNum">      46 </span>            : //--------------------------------------------------------------------------------------------------------------------</a>
+<a name="47"><span class="lineNum">      47 </span>            : // standard headers</a>
+<a name="48"><span class="lineNum">      48 </span>            : #ifdef NO_STD_CHEADERS</a>
+<a name="49"><span class="lineNum">      49 </span>            : # include &lt;string.h&gt;</a>
+<a name="50"><span class="lineNum">      50 </span>            : #else</a>
+<a name="51"><span class="lineNum">      51 </span>            : # include &lt;cstring&gt;</a>
+<a name="52"><span class="lineNum">      52 </span>            : #endif</a>
+<a name="53"><span class="lineNum">      53 </span>            : </a>
+<a name="54"><span class="lineNum">      54 </span>            : // STL headers</a>
+<a name="55"><span class="lineNum">      55 </span>            : #include &lt;list&gt;</a>
+<a name="56"><span class="lineNum">      56 </span>            : #include &lt;set&gt;</a>
+<a name="57"><span class="lineNum">      57 </span>            : #include &lt;map&gt;</a>
+<a name="58"><span class="lineNum">      58 </span>            : </a>
+<a name="59"><span class="lineNum">      59 </span>            : // OpenAnalysis headers</a>
+<a name="60"><span class="lineNum">      60 </span>            : #include &lt;OpenAnalysis/Utils/DGraph.h&gt;</a>
+<a name="61"><span class="lineNum">      61 </span>            : #include &lt;OpenAnalysis/Interface/IRInterface.h&gt;</a>
+<a name="62"><span class="lineNum">      62 </span>            : </a>
+<a name="63"><span class="lineNum">      63 </span>            : class Worklist;</a>
+<a name="64"><span class="lineNum">      64 </span>            : </a>
+<a name="65"><span class="lineNum">      65 </span>            : //--------------------------------------------------------------------------------------------------------------------</a>
+<a name="66"><span class="lineNum">      66 </span>            : </a>
+<a name="67"><span class="lineNum">      67 </span>            : </a>
+<a name="68"><span class="lineNum">      68 </span>            : //--------------------------------------------------------------------------------------------------------------------</a>
+<a name="69"><span class="lineNum">      69 </span>            : /** CFG is a DGraph (directed graph) with enhanced nodes and edges.  Each node in the CFG points to a list of </a>
+<a name="70"><span class="lineNum">      70 </span>            :     statements that together represent a basic block.  The entire program would be represented by a set of CFGs,</a>
+<a name="71"><span class="lineNum">      71 </span>            :     one for each subroutine, and one for the main program.</a>
+<a name="72"><span class="lineNum">      72 </span>            : */</a>
+<a name="73"><span class="lineNum">      73 </span>            : class CFG : public DGraph {</a>
+<a name="74"><span class="lineNum">      74 </span>            : public:</a>
+<a name="75"><span class="lineNum">      75 </span>            :   class Node;</a>
+<a name="76"><span class="lineNum">      76 </span>            :   class NonLocalsIterator;</a>
+<a name="77"><span class="lineNum">      77 </span>            :   class DefBlocksIterator;</a>
+<a name="78"><span class="lineNum">      78 </span>            :   friend class Node;</a>
+<a name="79"><span class="lineNum">      79 </span>            :   friend class NonLocalsIterator;</a>
+<a name="80"><span class="lineNum">      80 </span>            :   friend class DefBlocksIterator;</a>
+<a name="81"><span class="lineNum">      81 </span>            : </a>
+<a name="82"><span class="lineNum">      82 </span>            :   // Changes here must be also reflected in CFG.C:edgeTypeToString.</a>
+<a name="83"><span class="lineNum">      83 </span>            :   enum EdgeType </a>
+<a name="84"><span class="lineNum">      84 </span>            :   { </a>
+<a name="85"><span class="lineNum">      85 </span>            :                   TRUE_EDGE = 0, FALLTHROUGH_EDGE, FALSE_EDGE,</a>
+<a name="86"><span class="lineNum">      86 </span>            :                   BACK_EDGE, MULTIWAY_EDGE, BREAK_EDGE,</a>
+<a name="87"><span class="lineNum">      87 </span>            :                   CONTINUE_EDGE, RETURN_EDGE };</a>
+<a name="88"><span class="lineNum">      88 </span>            : </a>
+<a name="89"><span class="lineNum">      89 </span>            : private:</a>
+<a name="90"><span class="lineNum">      90 </span>            :   //------------------------------------------------------------------------------------------------------------------</a>
+<a name="91"><span class="lineNum">      91 </span>            :   // Structure used for comparing node texts in an STL set of leaf handles.</a>
+<a name="92"><span class="lineNum">      92 </span>            : #if 0</a>
+<a name="93"><span class="lineNum">      93 </span>            :   // FIXME: eraxxon: This is used for ordering a LeafHandle set.</a>
+<a name="94"><span class="lineNum">      94 </span>            :   // Since LeafHandles have to be a builtin scalar type why not just</a>
+<a name="95"><span class="lineNum">      95 </span>            :   // use the default ordering?</a>
+<a name="96"><span class="lineNum">      96 </span>            :   struct ltnode {</a>
+<a name="97"><span class="lineNum">      97 </span>            :     bool operator() (const LeafHandle n1, const LeafHandle n2) const {</a>
+<a name="98"><span class="lineNum">      98 </span>            : # if 0</a>
+<a name="99"><span class="lineNum">      99 </span>            :       return strcmp(IRGetSymHandleFromLeafHandle(n1).name(),</a>
+<a name="100"><span class="lineNum">     100 </span>            :                     IRGetSymHandleFromLeafHandle(n2).name()) &lt; 0;</a>
+<a name="101"><span class="lineNum">     101 </span>            : # else</a>
+<a name="102"><span class="lineNum">     102 </span>            : // DQ (12/30/2005): This is a Bad Bad thing to do (I can explain)</a>
+<a name="103"><span class="lineNum">     103 </span>            : // it hides names in the global namespace and causes errors in </a>
+<a name="104"><span class="lineNum">     104 </span>            : // otherwise valid and useful code. Where it is needed it should</a>
+<a name="105"><span class="lineNum">     105 </span>            : // appear only in *.C files (and only ones not included for template </a>
+<a name="106"><span class="lineNum">     106 </span>            : // instantiation reasons) else they effect user who use ROSE unexpectedly.</a>
+<a name="107"><span class="lineNum">     107 </span>            : //    using namespace::std; // For compatibility with non-std C headers</a>
+<a name="108"><span class="lineNum">     108 </span>            :       return strcmp(IRGetSymNameFromLeafHandle(n1),</a>
+<a name="109"><span class="lineNum">     109 </span>            :                     IRGetSymNameFromLeafHandle(n2)) &lt; 0;</a>
+<a name="110"><span class="lineNum">     110 </span>            : # endif</a>
+<a name="111"><span class="lineNum">     111 </span>            :     }</a>
+<a name="112"><span class="lineNum">     112 </span>            :   };</a>
+<a name="113"><span class="lineNum">     113 </span>            : #endif</a>
+<a name="114"><span class="lineNum">     114 </span>            : </a>
+<a name="115"><span class="lineNum">     115 </span>            :   //------------------------------------------------------------------------------------------------------------------</a>
+<a name="116"><span class="lineNum">     116 </span>            : </a>
+<a name="117"><span class="lineNum">     117 </span>            : public:</a>
+<a name="118"><span class="lineNum">     118 </span>            :   CFG (IRInterface &amp;_ir, IRStmtIterator *si, SymHandle name, bool return_statements_allowed = true);</a>
+<a name="119"><span class="lineNum">     119 </span>            : </a>
+<a name="120"><span class="lineNum">     120 </span>            :   virtual ~CFG ();</a>
+<a name="121"><span class="lineNum">     121 </span>            : </a>
+<a name="122"><span class="lineNum">     122 </span>            :   //-------------------------------------</a>
+<a name="123"><span class="lineNum">     123 </span>            :   // CFG information access</a>
+<a name="124"><span class="lineNum">     124 </span>            :   //-------------------------------------</a>
+<a name="125"><span class="lineNum">     125 </span><span class="lineNoCov">          0 :   Node *Entry() { return entry; };</span></a>
+<a name="126"><span class="lineNum">     126 </span><span class="lineNoCov">          0 :   Node *Exit() { return exit; };</span></a>
+<a name="127"><span class="lineNum">     127 </span><span class="lineNoCov">          0 :   IRInterface &amp;GetIRInterface() { return ir; }</span></a>
+<a name="128"><span class="lineNum">     128 </span>            : </a>
+<a name="129"><span class="lineNum">     129 </span>            :   //------------------------------------------------------------------------------------------------------------------</a>
+<a name="130"><span class="lineNum">     130 </span>            :   // Exceptions</a>
+<a name="131"><span class="lineNum">     131 </span>            :   //------------------------------------------------------------------------------------------------------------------</a>
+<a name="132"><span class="lineNum">     132 </span><span class="lineNoCov">          0 :   class Unexpected_Break : public Exception {</span></a>
+<a name="133"><span class="lineNum">     133 </span>            :   public:</a>
+<a name="134"><span class="lineNum">     134 </span><span class="lineNoCov">          0 :     void report (std::ostream&amp; os) const { os &lt;&lt; &quot;E!  Unexpected break statement.&quot; &lt;&lt; std::endl; }</span></a>
+<a name="135"><span class="lineNum">     135 </span>            :   };</a>
+<a name="136"><span class="lineNum">     136 </span>            :   //------------------------------------------------------------------------------------------------------------------</a>
+<a name="137"><span class="lineNum">     137 </span><span class="lineNoCov">          0 :   class Unexpected_Return : public Exception {</span></a>
+<a name="138"><span class="lineNum">     138 </span>            :   public:</a>
+<a name="139"><span class="lineNum">     139 </span><span class="lineNoCov">          0 :     void report (std::ostream&amp; os) const { os &lt;&lt; &quot;E!  Unexpected return statement.&quot; &lt;&lt; std::endl; }</span></a>
+<a name="140"><span class="lineNum">     140 </span>            :   };</a>
+<a name="141"><span class="lineNum">     141 </span>            :   //------------------------------------------------------------------------------------------------------------------</a>
+<a name="142"><span class="lineNum">     142 </span><span class="lineNoCov">          0 :   class Unexpected_Continue : public Exception {</span></a>
+<a name="143"><span class="lineNum">     143 </span>            :   public:</a>
+<a name="144"><span class="lineNum">     144 </span><span class="lineNoCov">          0 :     void report (std::ostream&amp; os) const { os &lt;&lt; &quot;E!  Unexpected continue statement.&quot; &lt;&lt; std::endl; }</span></a>
+<a name="145"><span class="lineNum">     145 </span>            :   };</a>
+<a name="146"><span class="lineNum">     146 </span>            :   //------------------------------------------------------------------------------------------------------------------</a>
+<a name="147"><span class="lineNum">     147 </span>            : </a>
+<a name="148"><span class="lineNum">     148 </span>            :   class NodeStatementsIterator;</a>
+<a name="149"><span class="lineNum">     149 </span>            :   //------------------------------------------------------------------------------------------------------------------</a>
+<a name="150"><span class="lineNum">     150 </span>            :   class Node : public DGraph::Node {</a>
+<a name="151"><span class="lineNum">     151 </span>            :   public:</a>
+<a name="152"><span class="lineNum">     152 </span><span class="lineNoCov">          0 :     Node () : DGraph::Node() { label = ++label_count; }</span></a>
+<a name="153"><span class="lineNum">     153 </span><span class="lineNoCov">          0 :     Node (StmtHandle n) : DGraph::Node() { </span></a>
+<a name="154"><span class="lineNum">     154 </span><span class="lineNoCov">          0 :       stmt_list.push_back(n); label = ++label_count; </span></a>
+<a name="155"><span class="lineNum">     155 </span><span class="lineNoCov">          0 :     }</span></a>
+<a name="156"><span class="lineNum">     156 </span><span class="lineNoCov">          0 :     ~Node () { stmt_list.clear(); }</span></a>
+<a name="157"><span class="lineNum">     157 </span>            :     </a>
+<a name="158"><span class="lineNum">     158 </span>            :     unsigned int getID () { return label; }</a>
+<a name="159"><span class="lineNum">     159 </span>            :     </a>
+<a name="160"><span class="lineNum">     160 </span><span class="lineNoCov">          0 :     void add (StmtHandle h) { stmt_list.push_back(h); }</span></a>
+<a name="161"><span class="lineNum">     161 </span>            :     StmtHandle erase (StmtHandle h); // Careful: linear time!</a>
+<a name="162"><span class="lineNum">     162 </span>            :     unsigned int size () { return stmt_list.size(); }</a>
+<a name="163"><span class="lineNum">     163 </span><span class="lineNoCov">          0 :     bool empty () { return stmt_list.empty(); }</span></a>
+<a name="164"><span class="lineNum">     164 </span>            :     </a>
+<a name="165"><span class="lineNum">     165 </span>            :     void addEndExpr (ExprHandle expr) { end = expr; }</a>
+<a name="166"><span class="lineNum">     166 </span>            :     ExprHandle getEndExpr () { return end; }</a>
+<a name="167"><span class="lineNum">     167 </span>            :     </a>
+<a name="168"><span class="lineNum">     168 </span>            :     void split(StmtHandle splitPoint, Node* newBlock);</a>
+<a name="169"><span class="lineNum">     169 </span>            :     </a>
+<a name="170"><span class="lineNum">     170 </span><span class="lineNoCov">          0 :     void dump (std::ostream&amp; os) { os &lt;&lt; label; }</span></a>
+<a name="171"><span class="lineNum">     171 </span>            :     void longdump (CFG *, std::ostream&amp; os);</a>
+<a name="172"><span class="lineNum">     172 </span>            :     void longdump (CFG * _cfg) { longdump(_cfg, std::cout); } </a>
+<a name="173"><span class="lineNum">     173 </span>            :     </a>
+<a name="174"><span class="lineNum">     174 </span>            :     friend class CFG;</a>
+<a name="175"><span class="lineNum">     175 </span>            :     friend class CFG::NodeStatementsIterator;</a>
+<a name="176"><span class="lineNum">     176 </span>            :   private:</a>
+<a name="177"><span class="lineNum">     177 </span>            :     static unsigned int label_count;</a>
+<a name="178"><span class="lineNum">     178 </span>            :     unsigned int label;</a>
+<a name="179"><span class="lineNum">     179 </span>            :     std::list&lt;StmtHandle&gt; stmt_list;</a>
+<a name="180"><span class="lineNum">     180 </span>            :     ExprHandle end;</a>
+<a name="181"><span class="lineNum">     181 </span>            :   };</a>
+<a name="182"><span class="lineNum">     182 </span>            :   //------------------------------------------------------------------------------------------------------------------</a>
+<a name="183"><span class="lineNum">     183 </span>            :   class Edge : public DGraph::Edge {</a>
+<a name="184"><span class="lineNum">     184 </span>            :   public:</a>
+<a name="185"><span class="lineNum">     185 </span>            :     Edge (Node* n1, Node* n2, EdgeType type, ExprHandle expr);</a>
+<a name="186"><span class="lineNum">     186 </span><span class="lineNoCov">          0 :     ~Edge () {}</span></a>
+<a name="187"><span class="lineNum">     187 </span><span class="lineNoCov">          0 :     EdgeType getType() { return type; }</span></a>
+<a name="188"><span class="lineNum">     188 </span>            :     void dump (std::ostream&amp; os);</a>
+<a name="189"><span class="lineNum">     189 </span>            :     void dump () { dump(std::cout); }</a>
+<a name="190"><span class="lineNum">     190 </span>            :   private:</a>
+<a name="191"><span class="lineNum">     191 </span>            :     EdgeType type;</a>
+<a name="192"><span class="lineNum">     192 </span>            :     ExprHandle expr;</a>
+<a name="193"><span class="lineNum">     193 </span>            :   };  </a>
+<a name="194"><span class="lineNum">     194 </span>            :   //------------------------------------------------------------------------------------------------------------------</a>
+<a name="195"><span class="lineNum">     195 </span>            :   typedef std::list&lt;Node*&gt; NodeList;</a>
+<a name="196"><span class="lineNum">     196 </span>            :   class NodeListIterator : public Iterator {</a>
+<a name="197"><span class="lineNum">     197 </span>            :   public:</a>
+<a name="198"><span class="lineNum">     198 </span>            :     NodeListIterator (NodeList* nl) { list = nl; iter = list-&gt;begin(); }</a>
+<a name="199"><span class="lineNum">     199 </span>            :     virtual ~NodeListIterator () {}</a>
+<a name="200"><span class="lineNum">     200 </span>            :     void operator ++ () { if (iter != list-&gt;end()) ++iter; }</a>
+<a name="201"><span class="lineNum">     201 </span>            :     operator bool () { return (iter != list-&gt;end()); }</a>
+<a name="202"><span class="lineNum">     202 </span>            :     operator Node* () { return *iter; }</a>
+<a name="203"><span class="lineNum">     203 </span>            :   private:</a>
+<a name="204"><span class="lineNum">     204 </span>            :     NodeList* list;</a>
+<a name="205"><span class="lineNum">     205 </span>            :     std::list&lt;Node*&gt;::iterator iter;</a>
+<a name="206"><span class="lineNum">     206 </span>            :   };</a>
+<a name="207"><span class="lineNum">     207 </span>            :   //------------------------------------------------------------------------------------------------------------------</a>
+<a name="208"><span class="lineNum">     208 </span>            :   //------------------------------------</a>
+<a name="209"><span class="lineNum">     209 </span>            :   // enumerate nodes in DFS order</a>
+<a name="210"><span class="lineNum">     210 </span>            :   //------------------------------------</a>
+<a name="211"><span class="lineNum">     211 </span>            :   class DFSIterator : public DGraph::DFSIterator {</a>
+<a name="212"><span class="lineNum">     212 </span>            :   public:</a>
+<a name="213"><span class="lineNum">     213 </span>            :     DFSIterator (CFG  &amp;g) : DGraph::DFSIterator(g) {}</a>
+<a name="214"><span class="lineNum">     214 </span>            :     virtual ~DFSIterator () {}</a>
+<a name="215"><span class="lineNum">     215 </span>            :     operator Node* () { return dynamic_cast&lt;CFG::Node*&gt;(p); }</a>
+<a name="216"><span class="lineNum">     216 </span>            :     operator bool () { return (bool)p; }</a>
+<a name="217"><span class="lineNum">     217 </span>            :   };</a>
+<a name="218"><span class="lineNum">     218 </span>            :   //------------------------------------------------------------------------------------------------------------------</a>
+<a name="219"><span class="lineNum">     219 </span>            :   class NodeStatementsIterator : public Iterator {</a>
+<a name="220"><span class="lineNum">     220 </span>            :   public:</a>
+<a name="221"><span class="lineNum">     221 </span><span class="lineNoCov">          0 :     NodeStatementsIterator (Node* node) { center = node; iter = center-&gt;stmt_list.begin(); }</span></a>
+<a name="222"><span class="lineNum">     222 </span><span class="lineNoCov">          0 :     ~NodeStatementsIterator () {}</span></a>
+<a name="223"><span class="lineNum">     223 </span><span class="lineNoCov">          0 :     void operator ++ () { if (iter != center-&gt;stmt_list.end()) ++iter; }</span></a>
+<a name="224"><span class="lineNum">     224 </span><span class="lineNoCov">          0 :     operator bool () { return (iter != center-&gt;stmt_list.end()); }</span></a>
+<a name="225"><span class="lineNum">     225 </span><span class="lineNoCov">          0 :     operator StmtHandle () { return *iter; }</span></a>
+<a name="226"><span class="lineNum">     226 </span>            :   private:</a>
+<a name="227"><span class="lineNum">     227 </span>            :     Node* center;</a>
+<a name="228"><span class="lineNum">     228 </span>            :     std::list&lt;StmtHandle&gt;::iterator iter;</a>
+<a name="229"><span class="lineNum">     229 </span>            :   };</a>
+<a name="230"><span class="lineNum">     230 </span>            :   //------------------------------------------------------------------------------------------------------------------</a>
+<a name="231"><span class="lineNum">     231 </span><span class="lineNoCov">          0 :   class NonLocalsIterator : public Iterator {</span></a>
+<a name="232"><span class="lineNum">     232 </span>            :   public:</a>
+<a name="233"><span class="lineNum">     233 </span><span class="lineNoCov">          0 :     NonLocalsIterator (CFG&amp; c) { cfg = &amp;c; iter = cfg-&gt;non_locals.begin(); }</span></a>
+<a name="234"><span class="lineNum">     234 </span><span class="lineNoCov">          0 :     void operator++ () { ++iter; }</span></a>
+<a name="235"><span class="lineNum">     235 </span><span class="lineNoCov">          0 :     operator bool () { return (iter != cfg-&gt;non_locals.end()); }</span></a>
+<a name="236"><span class="lineNum">     236 </span><span class="lineNoCov">          0 :     operator LeafHandle () { return *iter; }</span></a>
+<a name="237"><span class="lineNum">     237 </span>            :   private:</a>
+<a name="238"><span class="lineNum">     238 </span>            :     CFG* cfg;</a>
+<a name="239"><span class="lineNum">     239 </span>            :     std::set&lt;LeafHandle/*, ltnode*/&gt;::iterator iter;</a>
+<a name="240"><span class="lineNum">     240 </span>            :   };</a>
+<a name="241"><span class="lineNum">     241 </span>            :   //------------------------------------------------------------------------------------------------------------------</a>
+<a name="242"><span class="lineNum">     242 </span>            :   class DefBlocksIterator : public Iterator {</a>
+<a name="243"><span class="lineNum">     243 </span>            :   public:</a>
+<a name="244"><span class="lineNum">     244 </span>            :     DefBlocksIterator (CFG&amp; cfg, SymHandle name) { blk_set = &amp;(cfg.def_blocks_set[name]); iter = blk_set-&gt;begin(); }</a>
+<a name="245"><span class="lineNum">     245 </span>            :     void operator++ () { ++iter; }</a>
+<a name="246"><span class="lineNum">     246 </span>            :     operator bool () { return (iter != blk_set-&gt;end()); }</a>
+<a name="247"><span class="lineNum">     247 </span>            :     operator Node* () { return *iter; }</a>
+<a name="248"><span class="lineNum">     248 </span>            :   private:</a>
+<a name="249"><span class="lineNum">     249 </span>            :     std::set&lt;Node*&gt;* blk_set;</a>
+<a name="250"><span class="lineNum">     250 </span>            :     std::set&lt;Node*&gt;::iterator iter;</a>
+<a name="251"><span class="lineNum">     251 </span>            :   };</a>
+<a name="252"><span class="lineNum">     252 </span>            :   //------------------------------------------------------------------------------------------------------------------</a>
+<a name="253"><span class="lineNum">     253 </span>            :   void dump (std::ostream&amp; os);</a>
+<a name="254"><span class="lineNum">     254 </span>            :   void dump () { dump(std::cout); }</a>
+<a name="255"><span class="lineNum">     255 </span>            :   SymHandle subprog_name () { return name; }</a>
+<a name="256"><span class="lineNum">     256 </span>            :   void compute_uses_sets ();</a>
+<a name="257"><span class="lineNum">     257 </span>            :   void compute_defs_sets ();</a>
+<a name="258"><span class="lineNum">     258 </span>            : </a>
+<a name="259"><span class="lineNum">     259 </span>            : private:</a>
+<a name="260"><span class="lineNum">     260 </span>            :   class NodeLabelListIterator;</a>
+<a name="261"><span class="lineNum">     261 </span>            :   friend class NodeLabelListIterator;</a>
+<a name="262"><span class="lineNum">     262 </span>            :   class NodeLabel {</a>
+<a name="263"><span class="lineNum">     263 </span>            :   public:</a>
+<a name="264"><span class="lineNum">     264 </span><span class="lineNoCov">          0 :     NodeLabel (Node* _n, EdgeType _et, ExprHandle _eh = 0) {</span></a>
+<a name="265"><span class="lineNum">     265 </span><span class="lineNoCov">          0 :       n = _n; eh = _eh; et = _et;</span></a>
+<a name="266"><span class="lineNum">     266 </span>            :     }</a>
+<a name="267"><span class="lineNum">     267 </span>            :     Node* n;</a>
+<a name="268"><span class="lineNum">     268 </span>            :     EdgeType et;</a>
+<a name="269"><span class="lineNum">     269 </span>            :     ExprHandle eh;</a>
+<a name="270"><span class="lineNum">     270 </span>            :     friend class CFG;</a>
+<a name="271"><span class="lineNum">     271 </span>            :   };</a>
+<a name="272"><span class="lineNum">     272 </span>            :   typedef std::list&lt;NodeLabel&gt; NodeLabelList;</a>
+<a name="273"><span class="lineNum">     273 </span>            :   class NodeLabelListIterator : public Iterator {</a>
+<a name="274"><span class="lineNum">     274 </span>            :   public:</a>
+<a name="275"><span class="lineNum">     275 </span><span class="lineNoCov">          0 :     NodeLabelListIterator (NodeLabelList* nl) { list = nl; iter = list-&gt;begin(); }</span></a>
+<a name="276"><span class="lineNum">     276 </span><span class="lineNoCov">          0 :     virtual ~NodeLabelListIterator () {}</span></a>
+<a name="277"><span class="lineNum">     277 </span><span class="lineNoCov">          0 :     void operator ++ () { if (iter != list-&gt;end()) ++iter; }</span></a>
+<a name="278"><span class="lineNum">     278 </span><span class="lineNoCov">          0 :     operator bool () { return (iter != list-&gt;end()); }</span></a>
+<a name="279"><span class="lineNum">     279 </span><span class="lineNoCov">          0 :     operator NodeLabel () { return *iter; }</span></a>
+<a name="280"><span class="lineNum">     280 </span>            :   private:</a>
+<a name="281"><span class="lineNum">     281 </span>            :     NodeLabelList* list;</a>
+<a name="282"><span class="lineNum">     282 </span>            :     std::list&lt;NodeLabel&gt;::iterator iter;</a>
+<a name="283"><span class="lineNum">     283 </span>            :   };</a>
+<a name="284"><span class="lineNum">     284 </span>            :   //------------------------------------------------------------------------------------------------------------------</a>
+<a name="285"><span class="lineNum">     285 </span>            :   IRStmtType build_block (Node* prev_node, IRStmtIterator *si,</a>
+<a name="286"><span class="lineNum">     286 </span>            :     NodeLabelList&amp; exit_nodes, NodeLabelList* break_nodes,</a>
+<a name="287"><span class="lineNum">     287 </span>            :     NodeLabelList* return_nodes, NodeLabelList* continue_nodes);</a>
+<a name="288"><span class="lineNum">     288 </span>            : </a>
+<a name="289"><span class="lineNum">     289 </span>            : #if __cplusplus &lt; 201103L</a>
+<a name="290"><span class="lineNum">     290 </span>            :   IRStmtType build_stmt (Node* prev_node, StmtHandle, NodeLabelList&amp; exit_nodes, NodeLabelList* break_nodes,</a>
+<a name="291"><span class="lineNum">     291 </span>            :                             NodeLabelList* return_nodes, NodeLabelList* continue_nodes)</a>
+<a name="292"><span class="lineNum">     292 </span>            :     throw (Unexpected_Break, Unexpected_Return, Unexpected_Continue);</a>
+<a name="293"><span class="lineNum">     293 </span>            : #else</a>
+<a name="294"><span class="lineNum">     294 </span>            :   IRStmtType build_stmt (Node* prev_node, StmtHandle, NodeLabelList&amp; exit_nodes, NodeLabelList* break_nodes,</a>
+<a name="295"><span class="lineNum">     295 </span>            :                             NodeLabelList* return_nodes, NodeLabelList* continue_nodes);</a>
+<a name="296"><span class="lineNum">     296 </span>            : #endif</a>
+<a name="297"><span class="lineNum">     297 </span>            :   IRStmtType build_CFG_loop (Node* prev_node, StmtHandle th, NodeLabelList&amp; exit_nodes,</a>
+<a name="298"><span class="lineNum">     298 </span>            :                              NodeLabelList* return_nodes);</a>
+<a name="299"><span class="lineNum">     299 </span>            :   IRStmtType build_CFG_end_tested_loop (Node* prev_node, StmtHandle th, NodeLabelList&amp; exit_nodes,</a>
+<a name="300"><span class="lineNum">     300 </span>            :                                         NodeLabelList* return_nodes);</a>
+<a name="301"><span class="lineNum">     301 </span>            :   IRStmtType build_CFG_twoway_branch (Node* prev_node, StmtHandle th, NodeLabelList&amp; exit_nodes,</a>
+<a name="302"><span class="lineNum">     302 </span>            :                                           NodeLabelList* break_nodes, NodeLabelList* return_nodes,</a>
+<a name="303"><span class="lineNum">     303 </span>            :                                           NodeLabelList* continue_nodes);</a>
+<a name="304"><span class="lineNum">     304 </span>            :   IRStmtType build_CFG_multiway_branch (Node* prev_node, StmtHandle th, NodeLabelList&amp; exit_nodes,</a>
+<a name="305"><span class="lineNum">     305 </span>            :                                             NodeLabelList* break_nodes, NodeLabelList* return_nodes,</a>
+<a name="306"><span class="lineNum">     306 </span>            :                                             NodeLabelList* continue_nodes);</a>
+<a name="307"><span class="lineNum">     307 </span>            :   IRStmtType build_CFG_multiway_branch_with_fallthrough (Node* prev_node, StmtHandle th, NodeLabelList&amp; exit_nodes,</a>
+<a name="308"><span class="lineNum">     308 </span>            :                                             NodeLabelList* return_nodes, NodeLabelList* continue_nodes);</a>
+<a name="309"><span class="lineNum">     309 </span>            :   IRStmtType build_CFG_unconditional_jump (Node* prev_node, StmtHandle stmt);</a>
+<a name="310"><span class="lineNum">     310 </span>            :   IRStmtType build_CFG_unconditional_jump_i (Node* prev_node, StmtHandle stmt);</a>
+<a name="311"><span class="lineNum">     311 </span>            :   IRStmtType build_CFG_ustruct_twoway_branch (Node* prev_node, StmtHandle stmt, CFG::NodeLabelList&amp; exit_nodes);</a>
+<a name="312"><span class="lineNum">     312 </span>            :   IRStmtType build_CFG_ustruct_multiway_branch (Node* prev_node, StmtHandle stmt);</a>
+<a name="313"><span class="lineNum">     313 </span>            : </a>
+<a name="314"><span class="lineNum">     314 </span>            :   //******************************************</a>
+<a name="315"><span class="lineNum">     315 </span>            :   // Support for building cfgs with delay slots.</a>
+<a name="316"><span class="lineNum">     316 </span>            :   //******************************************</a>
+<a name="317"><span class="lineNum">     317 </span>            :   void HandleDelayedBranches();</a>
+<a name="318"><span class="lineNum">     318 </span>            :   bool isInternalBranch(StmtHandle);</a>
+<a name="319"><span class="lineNum">     319 </span>            :   Node* getLabelBlock(StmtLabel);</a>
+<a name="320"><span class="lineNum">     320 </span>            :   void processBlock(CFG::Node* );</a>
+<a name="321"><span class="lineNum">     321 </span>            :   void createBasicCFG();</a>
+<a name="322"><span class="lineNum">     322 </span>            :   void processBlock();</a>
+<a name="323"><span class="lineNum">     323 </span>            : </a>
+<a name="324"><span class="lineNum">     324 </span>            : public: </a>
+<a name="325"><span class="lineNum">     325 </span>            :   Node* splitBlock(Node*, StmtHandle /* CFG::NodeStatementsIterator */);</a>
+<a name="326"><span class="lineNum">     326 </span>            : </a>
+<a name="327"><span class="lineNum">     327 </span><span class="lineNoCov">          0 :   void connect (Node* src, Node* dst, EdgeType type) {</span></a>
+<a name="328"><span class="lineNum">     328 </span><span class="lineNoCov">          0 :     add (new Edge (src, dst, type, 0));</span></a>
+<a name="329"><span class="lineNum">     329 </span><span class="lineNoCov">          0 :   }</span></a>
+<a name="330"><span class="lineNum">     330 </span><span class="lineNoCov">          0 :   void connect (Node* src, Node* dst, EdgeType type, ExprHandle expr) {</span></a>
+<a name="331"><span class="lineNum">     331 </span><span class="lineNoCov">          0 :     add (new Edge (src, dst, type, expr));</span></a>
+<a name="332"><span class="lineNum">     332 </span><span class="lineNoCov">          0 :   }</span></a>
+<a name="333"><span class="lineNum">     333 </span>            : </a>
+<a name="334"><span class="lineNum">     334 </span>            :   void connect (Node*, NodeLabelList&amp;);</a>
+<a name="335"><span class="lineNum">     335 </span>            :   void connect (NodeLabelList&amp;, Node*);</a>
+<a name="336"><span class="lineNum">     336 </span><span class="lineNoCov">          0 :   void disconnect (Edge* e) { remove(e); }</span></a>
+<a name="337"><span class="lineNum">     337 </span>            :   CFG::Node* node_from_label (StmtLabel);</a>
+<a name="338"><span class="lineNum">     338 </span>            : </a>
+<a name="339"><span class="lineNum">     339 </span>            : private:</a>
+<a name="340"><span class="lineNum">     340 </span>            :   SymHandle name;</a>
+<a name="341"><span class="lineNum">     341 </span>            :   std::set&lt;LeafHandle/*, ltnode*/&gt; non_locals;</a>
+<a name="342"><span class="lineNum">     342 </span>            :   std::map&lt;SymHandle, std::set&lt;Node*&gt; /* , Name::CompStruct */&gt; def_blocks_set;</a>
+<a name="343"><span class="lineNum">     343 </span>            : </a>
+<a name="344"><span class="lineNum">     344 </span>            :   IRInterface &amp;ir;</a>
+<a name="345"><span class="lineNum">     345 </span>            :   CFG::Node *entry;</a>
+<a name="346"><span class="lineNum">     346 </span>            :   CFG::Node *exit;</a>
+<a name="347"><span class="lineNum">     347 </span>            :   std::map&lt;StmtLabel, CFG::Node*&gt; label_to_node_map;</a>
+<a name="348"><span class="lineNum">     348 </span>            : </a>
+<a name="349"><span class="lineNum">     349 </span>            : private:</a>
+<a name="350"><span class="lineNum">     350 </span>            :   //------------------------------------------</a>
+<a name="351"><span class="lineNum">     351 </span>            :   // data structures for handling delay slots</a>
+<a name="352"><span class="lineNum">     352 </span>            :   //------------------------------------------</a>
+<a name="353"><span class="lineNum">     353 </span>            :   Worklist *the_worklist;</a>
+<a name="354"><span class="lineNum">     354 </span>            :   std::map&lt;CFG::Node*, CFG::Node*&gt; fallThrough;</a>
+<a name="355"><span class="lineNum">     355 </span>            : };</a>
+<a name="356"><span class="lineNum">     356 </span>            : //--------------------------------------------------------------------------------------------------------------------</a>
+<a name="357"><span class="lineNum">     357 </span>            : </a>
+<a name="358"><span class="lineNum">     358 </span>            : #endif</a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

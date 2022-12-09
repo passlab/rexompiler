@@ -1,0 +1,628 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /home/yyan7/compiler/rexompiler/src/midend/astProcessing/AstAttributeMechanism.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">home/yyan7/compiler/rexompiler/src/midend/astProcessing</a> - AstAttributeMechanism.h<span style="font-size: 80%;"> (source / <a href="AstAttributeMechanism.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntry">45</td>
+            <td class="headerCovTableEntryLo">11.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">27</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #ifndef ROSE_AstAttributeMechanism_H</a>
+<a name="2"><span class="lineNum">       2 </span>            : #define ROSE_AstAttributeMechanism_H</a>
+<a name="3"><span class="lineNum">       3 </span>            : </a>
+<a name="4"><span class="lineNum">       4 </span>            : #include &quot;rosedll.h&quot;</a>
+<a name="5"><span class="lineNum">       5 </span>            : #include &lt;Sawyer/Attribute.h&gt;</a>
+<a name="6"><span class="lineNum">       6 </span>            : #include &lt;list&gt;</a>
+<a name="7"><span class="lineNum">       7 </span>            : #include &lt;set&gt;</a>
+<a name="8"><span class="lineNum">       8 </span>            : </a>
+<a name="9"><span class="lineNum">       9 </span>            : class SgNode;</a>
+<a name="10"><span class="lineNum">      10 </span>            : class SgNamedType;</a>
+<a name="11"><span class="lineNum">      11 </span>            : class SgTemplateParameter;</a>
+<a name="12"><span class="lineNum">      12 </span>            : class SgTemplateParameterList;</a>
+<a name="13"><span class="lineNum">      13 </span>            : </a>
+<a name="14"><span class="lineNum">      14 </span>            : /** Base class for all IR node attribute values.</a>
+<a name="15"><span class="lineNum">      15 </span>            :  *</a>
+<a name="16"><span class="lineNum">      16 </span>            :  *  This is the base class for all attribute values stored in the Sage IR node using the @ref AstAttributeMechanism. IR node</a>
+<a name="17"><span class="lineNum">      17 </span>            :  *  attributes are polymorphic based on this abstract class, and are always allocated on the heap. Once the attribute value is</a>
+<a name="18"><span class="lineNum">      18 </span>            :  *  handed to an attribute container method the container owns the value and is reponsible for deleting it.  In the case of</a>
+<a name="19"><span class="lineNum">      19 </span>            :  *  methods that only optionally insert a value, the value is deleted immediately if it's not inserted.  But see @ref</a>
+<a name="20"><span class="lineNum">      20 </span>            :  *  getOwnershipPolicy for additional information.</a>
+<a name="21"><span class="lineNum">      21 </span>            :  *</a>
+<a name="22"><span class="lineNum">      22 </span>            :  *  The underlying @ref Sawyer::Attribute mechanism can store values of any type, including POD, 3rd party types, and</a>
+<a name="23"><span class="lineNum">      23 </span>            :  *  pointers. On the other hand, the @ref AstAttributeMechanism interface described here stores only pointers to values</a>
+<a name="24"><span class="lineNum">      24 </span>            :  *  allocated on the stack, owns those values, and supports operations that are useful specifically in IR nodes.</a>
+<a name="25"><span class="lineNum">      25 </span>            :  *</a>
+<a name="26"><span class="lineNum">      26 </span>            :  *  Subclasses should each implement a virtual @ref copy constructor, which should allocate a new copy of the value.  The</a>
+<a name="27"><span class="lineNum">      27 </span>            :  *  implementation in this base class returns a null pointer, which means that the attribute is not copied into a new AST node</a>
+<a name="28"><span class="lineNum">      28 </span>            :  *  when its AST node is copied.  If a subclass fails to implement the virtual copy constructor and a superclass has an</a>
+<a name="29"><span class="lineNum">      29 </span>            :  *  implementation that return non-null, then copying the AST node will copy only the superclass part of the attribute and the</a>
+<a name="30"><span class="lineNum">      30 </span>            :  *  new attribute will have the dynamic type of the superclass--probably not what you want!</a>
+<a name="31"><span class="lineNum">      31 </span>            :  *</a>
+<a name="32"><span class="lineNum">      32 </span>            :  *</a>
+<a name="33"><span class="lineNum">      33 </span>            :  *</a>
+<a name="34"><span class="lineNum">      34 </span>            :  *  For a more detailed description of using attributes in ROSE (and your own classes) see @ref attributes. */</a>
+<a name="35"><span class="lineNum">      35 </span><span class="lineNoCov">          0 : class ROSE_DLL_API AstAttribute {</span></a>
+<a name="36"><span class="lineNum">      36 </span>            : public:</a>
+<a name="37"><span class="lineNum">      37 </span>            :     /** Who owns this attribute.</a>
+<a name="38"><span class="lineNum">      38 </span>            :      *</a>
+<a name="39"><span class="lineNum">      39 </span>            :      *  See @ref getOwnershipPolicy. */</a>
+<a name="40"><span class="lineNum">      40 </span>            :     enum OwnershipPolicy {</a>
+<a name="41"><span class="lineNum">      41 </span>            :         CONTAINER_OWNERSHIP,                            /**&lt; Container owns attribute. New subclasses should use this! */</a>
+<a name="42"><span class="lineNum">      42 </span>            :         NO_OWNERSHIP,                                   /**&lt; Attributes are always leaked. */</a>
+<a name="43"><span class="lineNum">      43 </span>            :         CUSTOM_OWNERSHIP,                               /**&lt; Subclass defines ownership policy. */</a>
+<a name="44"><span class="lineNum">      44 </span>            :         UNKNOWN_OWNERSHIP                               /**&lt; Default for old subclasses. */</a>
+<a name="45"><span class="lineNum">      45 </span>            :     };</a>
+<a name="46"><span class="lineNum">      46 </span>            : </a>
+<a name="47"><span class="lineNum">      47 </span>            :     /** Who owns this attribute.</a>
+<a name="48"><span class="lineNum">      48 </span>            :      *</a>
+<a name="49"><span class="lineNum">      49 </span>            :      *  The original implementation of this class from the early 2000's did not have clear rules about who owned a</a>
+<a name="50"><span class="lineNum">      50 </span>            :      *  heap-allocated attribute.  The documentation was silent on the issue, and the implementation seemed to imply that</a>
+<a name="51"><span class="lineNum">      51 </span>            :      *  container ownership was intended but was then commented out at some point.  Any ownership policy should have the</a>
+<a name="52"><span class="lineNum">      52 </span>            :      *  following properties:</a>
+<a name="53"><span class="lineNum">      53 </span>            :      *</a>
+<a name="54"><span class="lineNum">      54 </span>            :      *  @li Attributes allocated on the heap should not be leaked. For instance, if an AST is deleted, then the attributes that</a>
+<a name="55"><span class="lineNum">      55 </span>            :      *      were referenced by the AST nodes should also be eventually deleted.</a>
+<a name="56"><span class="lineNum">      56 </span>            :      *  @li The mechanism should not place undue burden on the user.  For instance, if a user copies and later deletes an AST</a>
+<a name="57"><span class="lineNum">      57 </span>            :      *      to which some analysis has attached attributes, the user should not need to be concerned with deleting attributes</a>
+<a name="58"><span class="lineNum">      58 </span>            :      *      stored in the copy.</a>
+<a name="59"><span class="lineNum">      59 </span>            :      *  @li The mechanism should be able to support either deep or shallow attribute copies as appropriate for the</a>
+<a name="60"><span class="lineNum">      60 </span>            :      *      attribute. The deep vs. shallow copying policy is implemented by the virtual @ref copy method, which must</a>
+<a name="61"><span class="lineNum">      61 </span>            :      *      coordinate with the ownership policy to ensure no leaks.</a>
+<a name="62"><span class="lineNum">      62 </span>            :      *</a>
+<a name="63"><span class="lineNum">      63 </span>            :      *  We define four ownership policies, although from the standpoint of an attribute container there are really only two:</a>
+<a name="64"><span class="lineNum">      64 </span>            :      *  the container either deletes attributes or doesn't delete attributes.  The four ownership policies are:</a>
+<a name="65"><span class="lineNum">      65 </span>            :      *</a>
+<a name="66"><span class="lineNum">      66 </span>            :      *  @li @c CONTAINER_OWHERSHIP: The simple approach to ownership, and the one that we recommend for all new attribute</a>
+<a name="67"><span class="lineNum">      67 </span>            :      *      subclasses, is that the attribute container owns the attributes.  When the container is copied (e.g., as part of</a>
+<a name="68"><span class="lineNum">      68 </span>            :      *      copying an AST node) then it invokes the @ref copy methods of its attributes, and when the container is deleted</a>
+<a name="69"><span class="lineNum">      69 </span>            :      *      (e.g., as part of deleting an AST node) then it explicitly deletes its attributes. This policy is an &quot;allocate and</a>
+<a name="70"><span class="lineNum">      70 </span>            :      *      forget&quot; approach: once the creator inserts an attribute into the container it transfers/moves ownership to the</a>
+<a name="71"><span class="lineNum">      71 </span>            :      *      container and the creator never needs to invoke @c delete.  This policy also means that users never need to</a>
+<a name="72"><span class="lineNum">      72 </span>            :      *      explicitly delete attributes if they copy and then delete an AST.  Newly designed attribute subclasses should use</a>
+<a name="73"><span class="lineNum">      73 </span>            :      *      this policy unless they have a very good reason to use another policy.</a>
+<a name="74"><span class="lineNum">      74 </span>            :      *</a>
+<a name="75"><span class="lineNum">      75 </span>            :      *  @li @c NO_OWNERSHIP: Another simple approach is that ownership is transfered to the operating system.  In other words,</a>
+<a name="76"><span class="lineNum">      76 </span>            :      *     the attribute is &lt;em&gt;never&lt;/em&gt; deleted by the program and its memory is reclaimed only when the program terminates.</a>
+<a name="77"><span class="lineNum">      77 </span>            :      *     Attribute containers that are incorporated into objects that are frequently allocated and/or copied and then deleted</a>
+<a name="78"><span class="lineNum">      78 </span>            :      *     will result in a large number of leaked attributes.  This approach is not recommended and is present only for</a>
+<a name="79"><span class="lineNum">      79 </span>            :      *     laziness.</a>
+<a name="80"><span class="lineNum">      80 </span>            :      *</a>
+<a name="81"><span class="lineNum">      81 </span>            :      *  @li @c CUSTOM_OWNERSHIP: A third approach is that the attribute subclass implements its own ownership policy, which</a>
+<a name="82"><span class="lineNum">      82 </span>            :      *     ideally should have the properties listed above. An attribute using this policy will never be deleted by an</a>
+<a name="83"><span class="lineNum">      83 </span>            :      *     attribute container; the class must implement some other mechanism for tracking which attributes are allocated and</a>
+<a name="84"><span class="lineNum">      84 </span>            :      *     whether they can be safely deleted.</a>
+<a name="85"><span class="lineNum">      85 </span>            :      *</a>
+<a name="86"><span class="lineNum">      86 </span>            :      *  @li @c UNKNOWN_OWNERSHIP: This final policy is for subclasses implemented before clear attribute ownership rules were</a>
+<a name="87"><span class="lineNum">      87 </span>            :      *     defined.  Due to the ambiguity in the original AstAttributeMechanism implementation and the fact that attributes</a>
+<a name="88"><span class="lineNum">      88 </span>            :      *     are used by code outside the ROSE library, this must be the default implementation.</a>
+<a name="89"><span class="lineNum">      89 </span>            :      *</a>
+<a name="90"><span class="lineNum">      90 </span>            :      *  Regardless of the ownership policy, an attribute must not be deleted while it is a member of an AstAttributeMechanism</a>
+<a name="91"><span class="lineNum">      91 </span>            :      *  container. This is because in order for the container to decide whether it should delete the attribute, it must first</a>
+<a name="92"><span class="lineNum">      92 </span>            :      *  ask the attribute for its ownership policy.  In other words, the following code will likely result in a segmentation</a>
+<a name="93"><span class="lineNum">      93 </span>            :      *  fault:</a>
+<a name="94"><span class="lineNum">      94 </span>            :      *</a>
+<a name="95"><span class="lineNum">      95 </span>            :      *  @code</a>
+<a name="96"><span class="lineNum">      96 </span>            :      *   SgDirectedGraphEdge *edge = ...;</a>
+<a name="97"><span class="lineNum">      97 </span>            :      *   delete edge-&gt;getAttribute(&quot;info&quot;);</a>
+<a name="98"><span class="lineNum">      98 </span>            :      *   delete edge; // INVALID ACCESS TO EDGE ATTRIBUTE HERE</a>
+<a name="99"><span class="lineNum">      99 </span>            :      *  @endcode */</a>
+<a name="100"><span class="lineNum">     100 </span>            :     virtual OwnershipPolicy getOwnershipPolicy() const;</a>
+<a name="101"><span class="lineNum">     101 </span>            : </a>
+<a name="102"><span class="lineNum">     102 </span>            :     /** Support for attibutes to specify edges in the dot graphs. */</a>
+<a name="103"><span class="lineNum">     103 </span>            :     class ROSE_DLL_API AttributeEdgeInfo {</a>
+<a name="104"><span class="lineNum">     104 </span>            :     public:</a>
+<a name="105"><span class="lineNum">     105 </span>            :         SgNode* fromNode;</a>
+<a name="106"><span class="lineNum">     106 </span>            :         SgNode* toNode;</a>
+<a name="107"><span class="lineNum">     107 </span>            :         std::string label;</a>
+<a name="108"><span class="lineNum">     108 </span>            :         std::string options;</a>
+<a name="109"><span class="lineNum">     109 </span>            : </a>
+<a name="110"><span class="lineNum">     110 </span><span class="lineNoCov">          0 :         AttributeEdgeInfo(SgNode* fromNode, SgNode* toNode, std::string label, std::string options)</span></a>
+<a name="111"><span class="lineNum">     111 </span><span class="lineNoCov">          0 :             : fromNode(fromNode), toNode(toNode), label(label), options(options) {}</span></a>
+<a name="112"><span class="lineNum">     112 </span>            : </a>
+<a name="113"><span class="lineNum">     113 </span><span class="lineNoCov">          0 :         ~AttributeEdgeInfo() {</span></a>
+<a name="114"><span class="lineNum">     114 </span><span class="lineNoCov">          0 :             fromNode = NULL;</span></a>
+<a name="115"><span class="lineNum">     115 </span><span class="lineNoCov">          0 :             toNode = NULL;</span></a>
+<a name="116"><span class="lineNum">     116 </span><span class="lineNoCov">          0 :         };</span></a>
+<a name="117"><span class="lineNum">     117 </span>            :     };</a>
+<a name="118"><span class="lineNum">     118 </span>            : </a>
+<a name="119"><span class="lineNum">     119 </span>            :     /** Support for adding nodes to DOT graphs. */</a>
+<a name="120"><span class="lineNum">     120 </span>            :     class ROSE_DLL_API AttributeNodeInfo {</a>
+<a name="121"><span class="lineNum">     121 </span>            :     public:</a>
+<a name="122"><span class="lineNum">     122 </span>            :         SgNode* nodePtr;</a>
+<a name="123"><span class="lineNum">     123 </span>            :         std::string label;</a>
+<a name="124"><span class="lineNum">     124 </span>            :         std::string options;</a>
+<a name="125"><span class="lineNum">     125 </span>            : </a>
+<a name="126"><span class="lineNum">     126 </span>            :         AttributeNodeInfo(SgNode* nodePtr, std::string label, std::string options)</a>
+<a name="127"><span class="lineNum">     127 </span>            :             : nodePtr(nodePtr), label(label), options(options) {}</a>
+<a name="128"><span class="lineNum">     128 </span>            : </a>
+<a name="129"><span class="lineNum">     129 </span><span class="lineNoCov">          0 :         ~AttributeNodeInfo() {};</span></a>
+<a name="130"><span class="lineNum">     130 </span>            :     };</a>
+<a name="131"><span class="lineNum">     131 </span>            : </a>
+<a name="132"><span class="lineNum">     132 </span>            : public:</a>
+<a name="133"><span class="lineNum">     133 </span><span class="lineCov">         15 :     AstAttribute() {}</span></a>
+<a name="134"><span class="lineNum">     134 </span><span class="lineCov">          7 :     virtual ~AstAttribute() {}</span></a>
+<a name="135"><span class="lineNum">     135 </span>            : </a>
+<a name="136"><span class="lineNum">     136 </span>            :     /** Virtual default constructor.</a>
+<a name="137"><span class="lineNum">     137 </span>            :      *</a>
+<a name="138"><span class="lineNum">     138 </span>            :      *  Default-constructs a new object on the heap and returns its pointer.  All subclasses &lt;em&gt;must&lt;/em&gt; implement this in</a>
+<a name="139"><span class="lineNum">     139 </span>            :      *  order to instantiate the correct dynamic type, although many don't.  Invoking this constructor in a subclass that fails</a>
+<a name="140"><span class="lineNum">     140 </span>            :      *  to implement it will return an attribute that's an incorrect dynamic type.</a>
+<a name="141"><span class="lineNum">     141 </span>            :      *</a>
+<a name="142"><span class="lineNum">     142 </span>            :      *  It would be nice if we could make this pure virtual, but unfortunately ROSETTA-generated code fails to compile because</a>
+<a name="143"><span class="lineNum">     143 </span>            :      *  it generates an instantiation of this interface (whether or not that code is ever executed is unknown). [Robb Matzke</a>
+<a name="144"><span class="lineNum">     144 </span>            :      *  2015-11-10]. */</a>
+<a name="145"><span class="lineNum">     145 </span><span class="lineNoCov">          0 :     virtual AstAttribute* constructor() const {</span></a>
+<a name="146"><span class="lineNum">     146 </span><span class="lineNoCov">          0 :         return new AstAttribute;                        // it doesn't make much sense to instantiate this type!</span></a>
+<a name="147"><span class="lineNum">     147 </span>            :     }</a>
+<a name="148"><span class="lineNum">     148 </span>            : </a>
+<a name="149"><span class="lineNum">     149 </span>            :     /** Virtual copy constructor.</a>
+<a name="150"><span class="lineNum">     150 </span>            :      *</a>
+<a name="151"><span class="lineNum">     151 </span>            :      *  Copy-constructs a new object on the heap and returns its pointer.  All subclasses must implement this in order to</a>
+<a name="152"><span class="lineNum">     152 </span>            :      *  instantiate the correct dynamic type, although many don't.  If this @ref copy method returns a null pointer (like the</a>
+<a name="153"><span class="lineNum">     153 </span>            :      *  base implementation) then the attribute is not copied as part of copying its container.  E.g., an attribute stored in</a>
+<a name="154"><span class="lineNum">     154 </span>            :      *  an AST will not be copied when the AST is copied if that attribute is directly derived from @ref AstAttribute and fails</a>
+<a name="155"><span class="lineNum">     155 </span>            :      *  to implement @ref copy.  If a subclass fails to implement @ref copy and inherits from a class that does implement a</a>
+<a name="156"><span class="lineNum">     156 </span>            :      *  @ref copy that returns non-null, then the copied attribute will have an incorrect dynamic type.</a>
+<a name="157"><span class="lineNum">     157 </span>            :      *</a>
+<a name="158"><span class="lineNum">     158 </span>            :      *  It would be nice if we could make this pure virtual, but unfortunately ROSETTA-generated code fails to compile because</a>
+<a name="159"><span class="lineNum">     159 </span>            :      *  it generates an instantiation of this interface (whether or not that code is ever executed is unkown). [Robb Matzke</a>
+<a name="160"><span class="lineNum">     160 </span>            :      *  2015-11-10] */</a>
+<a name="161"><span class="lineNum">     161 </span><span class="lineNoCov">          0 :     virtual AstAttribute* copy() const {</span></a>
+<a name="162"><span class="lineNum">     162 </span><span class="lineNoCov">          0 :         return NULL;                                    // attribute will not be copied when the containing obj is copied</span></a>
+<a name="163"><span class="lineNum">     163 </span>            :     }</a>
+<a name="164"><span class="lineNum">     164 </span>            : </a>
+<a name="165"><span class="lineNum">     165 </span>            :     // DO NOT DOCUMENT!  The original implementation used a non-const copy constructor and many subclasses that implemented a</a>
+<a name="166"><span class="lineNum">     166 </span>            :     // copy constructor didn't use C++11's &quot;override&quot; word as a defensive measure. Since we don't have access to all those</a>
+<a name="167"><span class="lineNum">     167 </span>            :     // subclasses, we must continue to support the non-const version.  Subclasses should only have to implement one or the</a>
+<a name="168"><span class="lineNum">     168 </span>            :     // other, not both.</a>
+<a name="169"><span class="lineNum">     169 </span><span class="lineNoCov">          0 :     virtual AstAttribute* copy() {</span></a>
+<a name="170"><span class="lineNum">     170 </span><span class="lineNoCov">          0 :         return const_cast&lt;const AstAttribute*&gt;(this)-&gt;copy();</span></a>
+<a name="171"><span class="lineNum">     171 </span>            :     }</a>
+<a name="172"><span class="lineNum">     172 </span>            : </a>
+<a name="173"><span class="lineNum">     173 </span>            :     /** Attribute class name.</a>
+<a name="174"><span class="lineNum">     174 </span>            :      *</a>
+<a name="175"><span class="lineNum">     175 </span>            :      *  Returns the name of the dynamic type. All subclasses must implement this in order to return the correct type name,</a>
+<a name="176"><span class="lineNum">     176 </span>            :      *  although many don't.  If a subclass fails to implement this then it will return an incorrect class name.</a>
+<a name="177"><span class="lineNum">     177 </span>            :      *</a>
+<a name="178"><span class="lineNum">     178 </span>            :      *  It would be nice if this could be pure virtual, but unfortunately ROSETTA-generated code fails to compile because it</a>
+<a name="179"><span class="lineNum">     179 </span>            :      *  generates an instantiation of this interface (whether or not that code is ever executed is unknown). [Robb Matzke</a>
+<a name="180"><span class="lineNum">     180 </span>            :      *  2015-11-10] */</a>
+<a name="181"><span class="lineNum">     181 </span><span class="lineCov">          7 :     virtual std::string attribute_class_name() const {</span></a>
+<a name="182"><span class="lineNum">     182 </span><span class="lineCov">          7 :         return &quot;AstAttribute&quot;;                          // almost certainly not the right dynamic type name!</span></a>
+<a name="183"><span class="lineNum">     183 </span>            :     }</a>
+<a name="184"><span class="lineNum">     184 </span>            : </a>
+<a name="185"><span class="lineNum">     185 </span>            :     /** Convert an attribute to a string.</a>
+<a name="186"><span class="lineNum">     186 </span>            :      *</a>
+<a name="187"><span class="lineNum">     187 </span>            :      *  This is used by other components to print the value of an attribute. For example the pdf generation calls this function</a>
+<a name="188"><span class="lineNum">     188 </span>            :      *  to print the value of an attribute in the pdf file. The default implementation is to return the attribute address in</a>
+<a name="189"><span class="lineNum">     189 </span>            :      *  the heap as a string. */</a>
+<a name="190"><span class="lineNum">     190 </span>            :     virtual std::string toString();</a>
+<a name="191"><span class="lineNum">     191 </span>            : </a>
+<a name="192"><span class="lineNum">     192 </span>            :     /** Packing support.</a>
+<a name="193"><span class="lineNum">     193 </span>            :      *</a>
+<a name="194"><span class="lineNum">     194 </span>            :      * @{ */</a>
+<a name="195"><span class="lineNum">     195 </span>            :     virtual int packed_size();</a>
+<a name="196"><span class="lineNum">     196 </span>            :     virtual char* packed_data();</a>
+<a name="197"><span class="lineNum">     197 </span>            :     virtual void unpacked_data( int size, char* data );</a>
+<a name="198"><span class="lineNum">     198 </span>            :     /** @} */</a>
+<a name="199"><span class="lineNum">     199 </span>            : </a>
+<a name="200"><span class="lineNum">     200 </span>            :     /** DOT support.</a>
+<a name="201"><span class="lineNum">     201 </span>            :      *</a>
+<a name="202"><span class="lineNum">     202 </span>            :      *  @{ */</a>
+<a name="203"><span class="lineNum">     203 </span>            :     virtual std::string additionalNodeOptions();</a>
+<a name="204"><span class="lineNum">     204 </span>            :     virtual std::vector&lt;AttributeEdgeInfo&gt; additionalEdgeInfo();</a>
+<a name="205"><span class="lineNum">     205 </span>            :     virtual std::vector&lt;AttributeNodeInfo&gt; additionalNodeInfo();</a>
+<a name="206"><span class="lineNum">     206 </span>            :     /** @} */</a>
+<a name="207"><span class="lineNum">     207 </span>            : </a>
+<a name="208"><span class="lineNum">     208 </span>            :     /** Eliminate IR nodes in DOT graphs.</a>
+<a name="209"><span class="lineNum">     209 </span>            :      *</a>
+<a name="210"><span class="lineNum">     210 </span>            :      *  Or to tailor the presentation of information about ASTs. */</a>
+<a name="211"><span class="lineNum">     211 </span>            :     virtual bool commentOutNodeInGraph();</a>
+<a name="212"><span class="lineNum">     212 </span>            : };</a>
+<a name="213"><span class="lineNum">     213 </span>            : </a>
+<a name="214"><span class="lineNum">     214 </span>            : </a>
+<a name="215"><span class="lineNum">     215 </span>            : /** Stores named attributes in Sage IR nodes.</a>
+<a name="216"><span class="lineNum">     216 </span>            :  *</a>
+<a name="217"><span class="lineNum">     217 </span>            :  *  This attribute container stores one non-null, heap-allocated attribute per user-specified name.  All values are derived</a>
+<a name="218"><span class="lineNum">     218 </span>            :  *  from @ref AstAttribute.  Any object can have an attribute container data member. For example, each AST node (@ref SgNode)</a>
+<a name="219"><span class="lineNum">     219 </span>            :  *  contains one attribute container named @ref SgNode::get_attributeMechanism.</a>
+<a name="220"><span class="lineNum">     220 </span>            :  *</a>
+<a name="221"><span class="lineNum">     221 </span>            :  *  The value class's @ref AstAttribute::getOwnershipPolicy &quot;getOwnershipPolicy&quot; method indicates whether the container owns</a>
+<a name="222"><span class="lineNum">     222 </span>            :  *  the heap-allocated attribute and therefore whether the container is responsible for invoking @c delete on the attribute</a>
+<a name="223"><span class="lineNum">     223 </span>            :  *  when the container is destroyed.  New attribute subclasses should use the @ref AstAttribute::CONTAINER_OWNERSHIP policy if</a>
+<a name="224"><span class="lineNum">     224 </span>            :  *  possible.</a>
+<a name="225"><span class="lineNum">     225 </span>            :  *</a>
+<a name="226"><span class="lineNum">     226 </span>            :  *  IR node attribute values are always on the heap. Whenever an attribute container is copied, the container invokes the @ref</a>
+<a name="227"><span class="lineNum">     227 </span>            :  *  AstAttribute::copy &quot;copy&quot; method on all its attributes. The attributes' @c copy should either allocate a new copy of the</a>
+<a name="228"><span class="lineNum">     228 </span>            :  *  attribute or return a null pointer. Since these values must be derived from @ref AstAttribute, it is not possible to</a>
+<a name="229"><span class="lineNum">     229 </span>            :  *  directly store values whose type the user cannot modify to inherit from @ref AstAttribute. This includes POD types and</a>
+<a name="230"><span class="lineNum">     230 </span>            :  *  classes defined in 3rd party libraries (e.g., @c std::vector). To store such values, the user must wrap them in another</a>
+<a name="231"><span class="lineNum">     231 </span>            :  *  class that does inherit from @ref AstAttribute and which implements the necessary virtual functions.</a>
+<a name="232"><span class="lineNum">     232 </span>            :  *</a>
+<a name="233"><span class="lineNum">     233 </span>            :  *  The names of attributes are strings and the container does not check whether the string supplied to various container</a>
+<a name="234"><span class="lineNum">     234 </span>            :  *  methods is spelled correctly.  Using a misspelled attribute name is the same as using a different value name--in effect,</a>
+<a name="235"><span class="lineNum">     235 </span>            :  *  operating on a completely different, unintended attribute.</a>
+<a name="236"><span class="lineNum">     236 </span>            :  *</a>
+<a name="237"><span class="lineNum">     237 </span>            :  *  The @ref AstAttributeMechanism is used by AST nodes (@ref SgNode) and is available via @ref SgNode::get_attributeMechanism,</a>
+<a name="238"><span class="lineNum">     238 </span>            :  *  although that is not the preferred API.  Instead, @ref SgNode provides an additional methods that contain &quot;attribute&quot; as</a>
+<a name="239"><span class="lineNum">     239 </span>            :  *  part of their name. These &quot;attribute&quot; methods are mostly just wrappers around @ref SgNode::get_attributeMechanism.</a>
+<a name="240"><span class="lineNum">     240 </span>            :  *</a>
+<a name="241"><span class="lineNum">     241 </span>            :  *  Users can also use @ref AstAttributeMechanism as a data member in their own classes. However, @ref Sawyer::Attribute is</a>
+<a name="242"><span class="lineNum">     242 </span>            :  *  another choice: not only does it serve as the implementation for @ref AstAttributeMechanism, but it also supports checked</a>
+<a name="243"><span class="lineNum">     243 </span>            :  *  attribute names and attributes that are values rather than pointers, including POD, 3rd-party types, and shared-ownership</a>
+<a name="244"><span class="lineNum">     244 </span>            :  *  pointers. The amount of boilerplate that needs to be written in order to store a @ref Sawyer::Attribute is much less than</a>
+<a name="245"><span class="lineNum">     245 </span>            :  *  that required to store an attribute with @ref AstAttributeMechanism.</a>
+<a name="246"><span class="lineNum">     246 </span>            :  *</a>
+<a name="247"><span class="lineNum">     247 </span>            :  *  For additional information, including examples, see @ref attributes. */</a>
+<a name="248"><span class="lineNum">     248 </span>            : class ROSE_DLL_API AstAttributeMechanism {</a>
+<a name="249"><span class="lineNum">     249 </span>            :     // Use containment because we want to keep the original API.</a>
+<a name="250"><span class="lineNum">     250 </span>            :     Sawyer::Attribute::Storage&lt;&gt; attributes_;</a>
+<a name="251"><span class="lineNum">     251 </span>            : </a>
+<a name="252"><span class="lineNum">     252 </span>            : public:</a>
+<a name="253"><span class="lineNum">     253 </span>            :     /** Default constructor.</a>
+<a name="254"><span class="lineNum">     254 </span>            :      *</a>
+<a name="255"><span class="lineNum">     255 </span>            :      *  Constructs an attribute mechanism that holds no attributes. */</a>
+<a name="256"><span class="lineNum">     256 </span><span class="lineCov">          8 :     AstAttributeMechanism() {}</span></a>
+<a name="257"><span class="lineNum">     257 </span>            : </a>
+<a name="258"><span class="lineNum">     258 </span>            :     /** Copy constructor.</a>
+<a name="259"><span class="lineNum">     259 </span>            :      *</a>
+<a name="260"><span class="lineNum">     260 </span>            :      *  Copying an attribute container will copy the heap-allocated attribute values by invoking each value's @c copy</a>
+<a name="261"><span class="lineNum">     261 </span>            :      *  method. If the method returns null then the new attribute container will not have that attribute; i.e., the @ref exists</a>
+<a name="262"><span class="lineNum">     262 </span>            :      *  method returns false.</a>
+<a name="263"><span class="lineNum">     263 </span>            :      *</a>
+<a name="264"><span class="lineNum">     264 </span>            :      *  &lt;b&gt;New semantics:&lt;/b&gt; The original behavior was that if the value's @c copy method returned null, the @ref exists</a>
+<a name="265"><span class="lineNum">     265 </span>            :      *  predicate returned true even though no value existed. */</a>
+<a name="266"><span class="lineNum">     266 </span><span class="lineNoCov">          0 :     AstAttributeMechanism(const AstAttributeMechanism &amp;other) {</span></a>
+<a name="267"><span class="lineNum">     267 </span><span class="lineNoCov">          0 :         assignFrom(other);</span></a>
+<a name="268"><span class="lineNum">     268 </span><span class="lineNoCov">          0 :     }</span></a>
+<a name="269"><span class="lineNum">     269 </span>            : </a>
+<a name="270"><span class="lineNum">     270 </span>            :     /** Assignment operator.</a>
+<a name="271"><span class="lineNum">     271 </span>            :      *</a>
+<a name="272"><span class="lineNum">     272 </span>            :      *  Assigning one attribute container to another will cause the destination container's attributes to be erased and</a>
+<a name="273"><span class="lineNum">     273 </span>            :      *  deleted, and the source container's attributes to be copied.  The assignment operator is exception safe: it will either</a>
+<a name="274"><span class="lineNum">     274 </span>            :      *  successfully copy and assign all attributes or not assign any attributes. However, if an attribute uses anything other</a>
+<a name="275"><span class="lineNum">     275 </span>            :      *  than the @ref AstAttribute::CONTAINER_OWNERHSIP ownership policy then it is up to the attribute type's designer to</a>
+<a name="276"><span class="lineNum">     276 </span>            :      *  handle deletion of attributes that were copied before the exception occurred.</a>
+<a name="277"><span class="lineNum">     277 </span>            :      *</a>
+<a name="278"><span class="lineNum">     278 </span>            :      *  &lt;b&gt;New semantics:&lt;/b&gt; The original implementation had a copy constructor but no assignment operator. Assignment of one</a>
+<a name="279"><span class="lineNum">     279 </span>            :      *  attribute container to another caused both containers to share the attribute values allocated on the heap, making it</a>
+<a name="280"><span class="lineNum">     280 </span>            :      *  nearly impossible to figure out when they could be safely deleted and therefore leading to memory leaks. */</a>
+<a name="281"><span class="lineNum">     281 </span>            :     AstAttributeMechanism&amp; operator=(const AstAttributeMechanism &amp;other);</a>
+<a name="282"><span class="lineNum">     282 </span>            : </a>
+<a name="283"><span class="lineNum">     283 </span>            :     /** Destructor.</a>
+<a name="284"><span class="lineNum">     284 </span>            :      *</a>
+<a name="285"><span class="lineNum">     285 </span>            :      *  Destroying the attribute container should cause unused attributes to be destroyed.  If an attribute implements the @ref</a>
+<a name="286"><span class="lineNum">     286 </span>            :      *  AstAttribute::CONTAINER_OWNERHSIP policy then the container explicitly deletes the attribute, otherwise it is up to the</a>
+<a name="287"><span class="lineNum">     287 </span>            :      *  attribute class's designer to implement a deletion policy that prevents leaks.</a>
+<a name="288"><span class="lineNum">     288 </span>            :      *</a>
+<a name="289"><span class="lineNum">     289 </span>            :      *  &lt;b&gt;New semantics:&lt;/b&gt; The original implementation did not delete attributes when the container was destroyed, although</a>
+<a name="290"><span class="lineNum">     290 </span>            :      *  it had commented-out code to do so. */</a>
+<a name="291"><span class="lineNum">     291 </span>            :     ~AstAttributeMechanism();</a>
+<a name="292"><span class="lineNum">     292 </span>            : </a>
+<a name="293"><span class="lineNum">     293 </span>            :     /** Test for attribute existence.</a>
+<a name="294"><span class="lineNum">     294 </span>            :      *</a>
+<a name="295"><span class="lineNum">     295 </span>            :      *  Test whether this container holds an attribute with the specified name.  This predicate returns true only if the name</a>
+<a name="296"><span class="lineNum">     296 </span>            :      *  exists and points to a non-null attribute value.  The name need not be declared in the attribute system.</a>
+<a name="297"><span class="lineNum">     297 </span>            :      *</a>
+<a name="298"><span class="lineNum">     298 </span>            :      *  &lt;b&gt;New semantics:&lt;/b&gt; It is now permissible to invoke this method on a const attribute container and this method no</a>
+<a name="299"><span class="lineNum">     299 </span>            :      *  longer copies the name argument. */</a>
+<a name="300"><span class="lineNum">     300 </span>            :     bool exists(const std::string &amp;name) const;</a>
+<a name="301"><span class="lineNum">     301 </span>            : </a>
+<a name="302"><span class="lineNum">     302 </span>            :     /** Insert an attribute.</a>
+<a name="303"><span class="lineNum">     303 </span>            :      *</a>
+<a name="304"><span class="lineNum">     304 </span>            :      *  Inserts the specified heap-allocated value for the given attribute name, replacing any previous value stored for</a>
+<a name="305"><span class="lineNum">     305 </span>            :      *  that same name.</a>
+<a name="306"><span class="lineNum">     306 </span>            :      *</a>
+<a name="307"><span class="lineNum">     307 </span>            :      *  If the new value uses the @ref AstAttribute::CONTAINER_OWNERSHIP policy then ownership is immediately transferred/moved</a>
+<a name="308"><span class="lineNum">     308 </span>            :      *  to this container, which becomes responsible for deleting the attribute as appropriate to prevent leasks.  Otherwise,</a>
+<a name="309"><span class="lineNum">     309 </span>            :      *  the attribute's designer is responsible for implementing an ownership policy that safely prevents leaks.</a>
+<a name="310"><span class="lineNum">     310 </span>            :      *</a>
+<a name="311"><span class="lineNum">     311 </span>            :      *  If the old value (if present) uses the @ref AstAttribute::CONTAINER_OWNERSHIP policy then it is deleted. Otherwise the</a>
+<a name="312"><span class="lineNum">     312 </span>            :      *  attribute's designer is responsible for implementing an ownership policy that safely prevents leaks, and the attribute</a>
+<a name="313"><span class="lineNum">     313 </span>            :      *  must not be deleted until after this method returns.</a>
+<a name="314"><span class="lineNum">     314 </span>            :      *</a>
+<a name="315"><span class="lineNum">     315 </span>            :      *  &lt;b&gt;New semantics:&lt;/b&gt; The old implementation didn't delete the previous attribute value.  The old implementation</a>
+<a name="316"><span class="lineNum">     316 </span>            :      *  allowed setting a null value, in which case the old @c exists returned true but the @c operator[] returned no</a>
+<a name="317"><span class="lineNum">     317 </span>            :      *  attribute. */</a>
+<a name="318"><span class="lineNum">     318 </span>            :     void set(const std::string &amp;name, AstAttribute *value);</a>
+<a name="319"><span class="lineNum">     319 </span>            : </a>
+<a name="320"><span class="lineNum">     320 </span>            :     /** Insert a new value if the attribute doesn't already exist.</a>
+<a name="321"><span class="lineNum">     321 </span>            :      *</a>
+<a name="322"><span class="lineNum">     322 </span>            :      *  Tests whether an attribute with the specified name @ref exists and if not, invokes @ref set.  See @ref set for details</a>
+<a name="323"><span class="lineNum">     323 </span>            :      *  about ownership of the new attribute. Returns true if an attribute with the specified name did not already existed.</a>
+<a name="324"><span class="lineNum">     324 </span>            :      *</a>
+<a name="325"><span class="lineNum">     325 </span>            :      *  &lt;b&gt;New semantics:&lt;/b&gt; The old implementation was ambiguous about who owned the object after this call. It didn't take</a>
+<a name="326"><span class="lineNum">     326 </span>            :      *  ownership of an attribute that wasn't inserted, but it also didn't indicate whether it was inserted.  The old</a>
+<a name="327"><span class="lineNum">     327 </span>            :      *  implementation printed an error message on standard error if the attribute existed (even if only its name existed but</a>
+<a name="328"><span class="lineNum">     328 </span>            :      *  it had no value) and then returned to the caller without doing anything. Inserting a null value was allowed by the old</a>
+<a name="329"><span class="lineNum">     329 </span>            :      *  implementation, in which case the old @c exists returned true but the old @c operator[] returned no attribute. */</a>
+<a name="330"><span class="lineNum">     330 </span>            :     bool add(const std::string &amp;name, AstAttribute *value);</a>
+<a name="331"><span class="lineNum">     331 </span>            : </a>
+<a name="332"><span class="lineNum">     332 </span>            :     /** Insert a new value if the attribute already exists.</a>
+<a name="333"><span class="lineNum">     333 </span>            :      *</a>
+<a name="334"><span class="lineNum">     334 </span>            :      *  Tests whether the specified attribute exists, and if so, invokes @ref set. See @ref set for details about ownership of</a>
+<a name="335"><span class="lineNum">     335 </span>            :      *  the old and new attributes.  Returns true if an attribute with the specified name already existed.</a>
+<a name="336"><span class="lineNum">     336 </span>            :      *</a>
+<a name="337"><span class="lineNum">     337 </span>            :      *  &lt;b&gt;New semantics:&lt;/b&gt; The old implementation was ambiguous about who owned the object after this call. It didn't take</a>
+<a name="338"><span class="lineNum">     338 </span>            :      *  ownership of an attribute that wasn't inserted, but it also didn't indicate whether it was inserted. The old</a>
+<a name="339"><span class="lineNum">     339 </span>            :      *  implementation printed an error message on standard error if the attribute didn't exist and then returned to the caller</a>
+<a name="340"><span class="lineNum">     340 </span>            :      *  without doing anything. Inserting a null value was allowed by the old implementation, in which case the old @c exists</a>
+<a name="341"><span class="lineNum">     341 </span>            :      *  returned true but the old @c operator[] returned no attribute. */</a>
+<a name="342"><span class="lineNum">     342 </span>            :     bool replace(const std::string &amp;name, AstAttribute *value);</a>
+<a name="343"><span class="lineNum">     343 </span>            : </a>
+<a name="344"><span class="lineNum">     344 </span>            :     /** Get an attribute value.</a>
+<a name="345"><span class="lineNum">     345 </span>            :      *</a>
+<a name="346"><span class="lineNum">     346 </span>            :      *  Returns the value associated with the given attribute, or null if the attribute does not exist.  This method does not</a>
+<a name="347"><span class="lineNum">     347 </span>            :      *  copy the attribute before returning it, therefore the caller should not delete the attribute. Erasing the attribute</a>
+<a name="348"><span class="lineNum">     348 </span>            :      *  from the container may cause the pointer to become invalid, depending on the attribute's ownership policy. If the</a>
+<a name="349"><span class="lineNum">     349 </span>            :      *  attribute uses the @ref AstAttribute::CONTAINER_OWNERSHIP method then the attribute can be modified through its pointer</a>
+<a name="350"><span class="lineNum">     350 </span>            :      *  without affecting attributes in other containers, otherwise the behavior is up to the attribute's designer.</a>
+<a name="351"><span class="lineNum">     351 </span>            :      *</a>
+<a name="352"><span class="lineNum">     352 </span>            :      *  The caller will need to @c dynamic_cast the returned pointer to the appropriate subclass of @ref AstAttribute.</a>
+<a name="353"><span class="lineNum">     353 </span>            :      *</a>
+<a name="354"><span class="lineNum">     354 </span>            :      *  &lt;b&gt;New semantics:&lt;/b&gt; The old implementation partly created an attribute if it didn't exist: @c exists started</a>
+<a name="355"><span class="lineNum">     355 </span>            :      *  returning true although @c operator[] continued to return no attribute. The old implementation printed an error message</a>
+<a name="356"><span class="lineNum">     356 </span>            :      *  to standard error if the attribute did not exist. */</a>
+<a name="357"><span class="lineNum">     357 </span>            :     AstAttribute* operator[](const std::string &amp;name) const;</a>
+<a name="358"><span class="lineNum">     358 </span>            : </a>
+<a name="359"><span class="lineNum">     359 </span>            :     /** Erases the specified attribute.</a>
+<a name="360"><span class="lineNum">     360 </span>            :      *</a>
+<a name="361"><span class="lineNum">     361 </span>            :      *  If an attribute with the specified name exists then it is removed from the container. If the attribute implements the</a>
+<a name="362"><span class="lineNum">     362 </span>            :      *  @ref AstAttribute::CONTAINER_OWNERSHIP policy then this container deletes the attribute, otherwise it is up to the</a>
+<a name="363"><span class="lineNum">     363 </span>            :      *  attribute's designer to implement a safe way to prevent attribute leaks, and the attribute must not be deleted until</a>
+<a name="364"><span class="lineNum">     364 </span>            :      *  after this method returns.</a>
+<a name="365"><span class="lineNum">     365 </span>            :      *</a>
+<a name="366"><span class="lineNum">     366 </span>            :      *  &lt;b&gt;New semantics:&lt;/b&gt; The old implementation did not delete the attribute value. It also printed an error message</a>
+<a name="367"><span class="lineNum">     367 </span>            :      *  to standard error if the attribute did not exist. */</a>
+<a name="368"><span class="lineNum">     368 </span>            :     void remove(const std::string &amp;name);</a>
+<a name="369"><span class="lineNum">     369 </span>            : </a>
+<a name="370"><span class="lineNum">     370 </span>            :     /** Set of attribute names. */</a>
+<a name="371"><span class="lineNum">     371 </span>            :     typedef std::set&lt;std::string&gt; AttributeIdentifiers;</a>
+<a name="372"><span class="lineNum">     372 </span>            : </a>
+<a name="373"><span class="lineNum">     373 </span>            :     /** List of stored attribute names.</a>
+<a name="374"><span class="lineNum">     374 </span>            :      *</a>
+<a name="375"><span class="lineNum">     375 </span>            :      *  Returns the set of names for attributes stored in this container. This can be used to iterate over the attributes,</a>
+<a name="376"><span class="lineNum">     376 </span>            :      *  as in:</a>
+<a name="377"><span class="lineNum">     377 </span>            :      *</a>
+<a name="378"><span class="lineNum">     378 </span>            :      *  @snippet binaryAttribute.C iterate 2</a>
+<a name="379"><span class="lineNum">     379 </span>            :      *</a>
+<a name="380"><span class="lineNum">     380 </span>            :      *  Or using the @ref SgNode API for attributes:</a>
+<a name="381"><span class="lineNum">     381 </span>            :      *</a>
+<a name="382"><span class="lineNum">     382 </span>            :      *  @snippet binaryAttribute.C iterate 3</a>
+<a name="383"><span class="lineNum">     383 </span>            :      *</a>
+<a name="384"><span class="lineNum">     384 </span>            :      *  &lt;b&gt;New semantics:&lt;/b&gt; The old implementation also returned some names that had no attribute values. For instance, if</a>
+<a name="385"><span class="lineNum">     385 </span>            :      *  @c operator[] was invoked for an attribute that didn't exist then that name was also returned. */</a>
+<a name="386"><span class="lineNum">     386 </span>            :     AttributeIdentifiers getAttributeIdentifiers() const;</a>
+<a name="387"><span class="lineNum">     387 </span>            : </a>
+<a name="388"><span class="lineNum">     388 </span>            :     /** Number of attributes stored.</a>
+<a name="389"><span class="lineNum">     389 </span>            :      *</a>
+<a name="390"><span class="lineNum">     390 </span>            :      *  Returns the number of attributes stored in this container.</a>
+<a name="391"><span class="lineNum">     391 </span>            :      *</a>
+<a name="392"><span class="lineNum">     392 </span>            :      *  &lt;b&gt;New semantics:&lt;/b&gt; The old implementation returned a signed integer instead of @c size_t as is customary for size</a>
+<a name="393"><span class="lineNum">     393 </span>            :      *  measurements. It also could not be invoked on a const container. It also could return a value larger larger than the</a>
+<a name="394"><span class="lineNum">     394 </span>            :      *  number of stored attributes (such as when a previous query for a non-existing attribute occurred). */</a>
+<a name="395"><span class="lineNum">     395 </span>            :     size_t size() const;</a>
+<a name="396"><span class="lineNum">     396 </span>            : </a>
+<a name="397"><span class="lineNum">     397 </span>            : private:</a>
+<a name="398"><span class="lineNum">     398 </span>            :     // Called by copy constructor and assignment.</a>
+<a name="399"><span class="lineNum">     399 </span>            :     void assignFrom(const AstAttributeMechanism &amp;other);</a>
+<a name="400"><span class="lineNum">     400 </span>            : };</a>
+<a name="401"><span class="lineNum">     401 </span>            : </a>
+<a name="402"><span class="lineNum">     402 </span>            : </a>
+<a name="403"><span class="lineNum">     403 </span>            : </a>
+<a name="404"><span class="lineNum">     404 </span>            : /** Attribute corresponding to a metric.</a>
+<a name="405"><span class="lineNum">     405 </span>            :  *</a>
+<a name="406"><span class="lineNum">     406 </span>            :  *  A metric attribute represents a numeric value obtained by either dynamic analysis (gprof or hpct) or static analysis (for</a>
+<a name="407"><span class="lineNum">     407 </span>            :  *  example number of flop operations in a function) It MetricAttribute can be a raw (observed), or a propagated (derived)</a>
+<a name="408"><span class="lineNum">     408 </span>            :  *  count It containes no name-string, because the attribute is stored in an AttributeMechanism-map, where the name is the</a>
+<a name="409"><span class="lineNum">     409 </span>            :  *  key. */</a>
+<a name="410"><span class="lineNum">     410 </span><span class="lineNoCov">          0 : class ROSE_DLL_API MetricAttribute: public AstAttribute {</span></a>
+<a name="411"><span class="lineNum">     411 </span>            : protected:</a>
+<a name="412"><span class="lineNum">     412 </span>            :     bool is_derived_;</a>
+<a name="413"><span class="lineNum">     413 </span>            :     double value_;</a>
+<a name="414"><span class="lineNum">     414 </span>            : </a>
+<a name="415"><span class="lineNum">     415 </span>            : public:</a>
+<a name="416"><span class="lineNum">     416 </span>            :     MetricAttribute()</a>
+<a name="417"><span class="lineNum">     417 </span>            :         : is_derived_(false), value_(0) {}</a>
+<a name="418"><span class="lineNum">     418 </span>            :     </a>
+<a name="419"><span class="lineNum">     419 </span>            :     MetricAttribute(double value, bool is_derived=false)</a>
+<a name="420"><span class="lineNum">     420 </span>            :         : is_derived_(is_derived), value_(value) {}</a>
+<a name="421"><span class="lineNum">     421 </span>            :     </a>
+<a name="422"><span class="lineNum">     422 </span>            :     virtual AstAttribute* copy() const override;</a>
+<a name="423"><span class="lineNum">     423 </span>            :     virtual std::string attribute_class_name() const override;</a>
+<a name="424"><span class="lineNum">     424 </span>            : </a>
+<a name="425"><span class="lineNum">     425 </span><span class="lineNoCov">          0 :     virtual bool isDerived() const { return is_derived_; }</span></a>
+<a name="426"><span class="lineNum">     426 </span><span class="lineNoCov">          0 :     virtual double getValue()  const { return value_; }</span></a>
+<a name="427"><span class="lineNum">     427 </span><span class="lineNoCov">          0 :     virtual void setValue(double newVal) { value_ = newVal; }</span></a>
+<a name="428"><span class="lineNum">     428 </span>            : </a>
+<a name="429"><span class="lineNum">     429 </span>            :     virtual std::string toString() override;</a>
+<a name="430"><span class="lineNum">     430 </span>            : </a>
+<a name="431"><span class="lineNum">     431 </span>            :     virtual int packed_size() override;</a>
+<a name="432"><span class="lineNum">     432 </span>            :     virtual char* packed_data() override;</a>
+<a name="433"><span class="lineNum">     433 </span>            :     virtual void unpacked_data(int size, char* data) override;</a>
+<a name="434"><span class="lineNum">     434 </span>            : </a>
+<a name="435"><span class="lineNum">     435 </span>            :     MetricAttribute&amp; operator+=(const MetricAttribute &amp;other);</a>
+<a name="436"><span class="lineNum">     436 </span>            :     MetricAttribute&amp; operator-=(const MetricAttribute &amp;other);</a>
+<a name="437"><span class="lineNum">     437 </span>            :     MetricAttribute&amp; operator*=(const MetricAttribute &amp;other);</a>
+<a name="438"><span class="lineNum">     438 </span>            :     MetricAttribute&amp; operator/=(const MetricAttribute &amp;other);</a>
+<a name="439"><span class="lineNum">     439 </span>            : };</a>
+<a name="440"><span class="lineNum">     440 </span>            : </a>
+<a name="441"><span class="lineNum">     441 </span>            : </a>
+<a name="442"><span class="lineNum">     442 </span>            : /** IR node attribute that stores a copyable value.</a>
+<a name="443"><span class="lineNum">     443 </span>            :  *</a>
+<a name="444"><span class="lineNum">     444 </span>            :  *  Since IR node attributes must all inherit from @ref AstAttribute we need to write wrappers around POD types and 3rd party</a>
+<a name="445"><span class="lineNum">     445 </span>            :  *  types when we want to store them as IR attributes. We've ended up with a proliferation of such attributes that all do</a>
+<a name="446"><span class="lineNum">     446 </span>            :  *  almost the same thing but have different names to access their data members. Hopefully by providing one class template we</a>
+<a name="447"><span class="lineNum">     447 </span>            :  *  can avoid further proliferation. */</a>
+<a name="448"><span class="lineNum">     448 </span>            : template&lt;class T&gt;</a>
+<a name="449"><span class="lineNum">     449 </span>            : class ROSE_DLL_API AstValueAttribute: public AstAttribute {</a>
+<a name="450"><span class="lineNum">     450 </span>            : public:</a>
+<a name="451"><span class="lineNum">     451 </span>            :     /** Type of value this wrapper holds. */</a>
+<a name="452"><span class="lineNum">     452 </span>            :     typedef T Value;</a>
+<a name="453"><span class="lineNum">     453 </span>            : private:</a>
+<a name="454"><span class="lineNum">     454 </span>            :     Value value_;</a>
+<a name="455"><span class="lineNum">     455 </span>            : public:</a>
+<a name="456"><span class="lineNum">     456 </span>            :     /** Default constructor. Constructs an attribute wrapper having a default-constructed value. */</a>
+<a name="457"><span class="lineNum">     457 </span>            :     AstValueAttribute() {}</a>
+<a name="458"><span class="lineNum">     458 </span>            : </a>
+<a name="459"><span class="lineNum">     459 </span>            :     /** Constructs an attribute containing a specified value. */</a>
+<a name="460"><span class="lineNum">     460 </span>            :     explicit AstValueAttribute(const T &amp;value): value_(value) {}</a>
+<a name="461"><span class="lineNum">     461 </span>            : </a>
+<a name="462"><span class="lineNum">     462 </span>            :     /** Copy constructor. Invokes the copy-constructor of the contained value. */</a>
+<a name="463"><span class="lineNum">     463 </span><span class="lineNoCov">          0 :     AstValueAttribute(const AstValueAttribute &amp;other): value_(other.value_) {}</span></a>
+<a name="464"><span class="lineNum">     464 </span>            : </a>
+<a name="465"><span class="lineNum">     465 </span><span class="lineNoCov">          0 :     virtual AstAttribute* copy() const override { return new AstValueAttribute(*this); }</span></a>
+<a name="466"><span class="lineNum">     466 </span><span class="lineNoCov">          0 :     virtual std::string attribute_class_name() const override { return &quot;AstValueAttribute&quot;; }</span></a>
+<a name="467"><span class="lineNum">     467 </span>            : </a>
+<a name="468"><span class="lineNum">     468 </span>            :     /** Return the stored value by reference.</a>
+<a name="469"><span class="lineNum">     469 </span>            :      *</a>
+<a name="470"><span class="lineNum">     470 </span>            :      * @{ */</a>
+<a name="471"><span class="lineNum">     471 </span>            :     const T&amp; get() const { return value_; }</a>
+<a name="472"><span class="lineNum">     472 </span><span class="lineNoCov">          0 :     T&amp; get() { return value_; }</span></a>
+<a name="473"><span class="lineNum">     473 </span>            :     /** @} */</a>
+<a name="474"><span class="lineNum">     474 </span>            : </a>
+<a name="475"><span class="lineNum">     475 </span>            :     /** Assign a new value. */</a>
+<a name="476"><span class="lineNum">     476 </span>            :     void set(const T&amp; value) { value_ = value; }</a>
+<a name="477"><span class="lineNum">     477 </span>            : };</a>
+<a name="478"><span class="lineNum">     478 </span>            : </a>
+<a name="479"><span class="lineNum">     479 </span>            : // DQ (11/21/2009): Added new kind of attribute for handling regex trees.</a>
+<a name="480"><span class="lineNum">     480 </span>            : /** Attribute containing a regex expression as a string.</a>
+<a name="481"><span class="lineNum">     481 </span>            :  *</a>
+<a name="482"><span class="lineNum">     482 </span>            :  *  An AstRegExAttribute is added to each part of an AST tree pattern specification to a RegEx tree. */</a>
+<a name="483"><span class="lineNum">     483 </span><span class="lineNoCov">          0 : class ROSE_DLL_API AstRegExAttribute: public AstAttribute {</span></a>
+<a name="484"><span class="lineNum">     484 </span>            : public:</a>
+<a name="485"><span class="lineNum">     485 </span>            :     std::string expression;</a>
+<a name="486"><span class="lineNum">     486 </span>            : </a>
+<a name="487"><span class="lineNum">     487 </span>            :     AstRegExAttribute() {}</a>
+<a name="488"><span class="lineNum">     488 </span>            :     </a>
+<a name="489"><span class="lineNum">     489 </span>            :     explicit AstRegExAttribute(const std::string &amp; s)</a>
+<a name="490"><span class="lineNum">     490 </span>            :         : expression(s) {}</a>
+<a name="491"><span class="lineNum">     491 </span>            : </a>
+<a name="492"><span class="lineNum">     492 </span><span class="lineNoCov">          0 :     virtual AstAttribute* copy() const override {</span></a>
+<a name="493"><span class="lineNum">     493 </span><span class="lineNoCov">          0 :         return new AstRegExAttribute(*this);</span></a>
+<a name="494"><span class="lineNum">     494 </span>            :     }</a>
+<a name="495"><span class="lineNum">     495 </span>            : </a>
+<a name="496"><span class="lineNum">     496 </span><span class="lineNoCov">          0 :     virtual std::string attribute_class_name() const override {</span></a>
+<a name="497"><span class="lineNum">     497 </span><span class="lineNoCov">          0 :         return &quot;AstRegExAttribute&quot;;</span></a>
+<a name="498"><span class="lineNum">     498 </span>            :     }</a>
+<a name="499"><span class="lineNum">     499 </span>            : };</a>
+<a name="500"><span class="lineNum">     500 </span>            : </a>
+<a name="501"><span class="lineNum">     501 </span>            : </a>
+<a name="502"><span class="lineNum">     502 </span>            : // PC (10/21/2012): Added new kind of attribute for handling regex trees.</a>
+<a name="503"><span class="lineNum">     503 </span>            : /** Attribute storing an SgNode.</a>
+<a name="504"><span class="lineNum">     504 </span>            :  *</a>
+<a name="505"><span class="lineNum">     505 </span>            :  *  A SgNode attribute may be used to &quot;dynamically add&quot; an SgNode field to an AST node. */</a>
+<a name="506"><span class="lineNum">     506 </span>            : class ROSE_DLL_API AstSgNodeAttribute: public AstValueAttribute&lt;SgNode*&gt; {</a>
+<a name="507"><span class="lineNum">     507 </span>            : public:</a>
+<a name="508"><span class="lineNum">     508 </span>            :     typedef AstValueAttribute&lt;SgNode*&gt; Super;</a>
+<a name="509"><span class="lineNum">     509 </span>            :     AstSgNodeAttribute(): Super(NULL) {}</a>
+<a name="510"><span class="lineNum">     510 </span>            :     explicit AstSgNodeAttribute(SgNode *value): Super(value) {}</a>
+<a name="511"><span class="lineNum">     511 </span><span class="lineNoCov">          0 :     AstSgNodeAttribute(const AstSgNodeAttribute &amp;other): Super(other) {}</span></a>
+<a name="512"><span class="lineNum">     512 </span><span class="lineNoCov">          0 :     virtual AstAttribute* copy() const override { return new AstSgNodeAttribute(*this); }</span></a>
+<a name="513"><span class="lineNum">     513 </span><span class="lineNoCov">          0 :     virtual std::string attribute_class_name() const override { return &quot;AstSgNodeAttribute&quot;; }</span></a>
+<a name="514"><span class="lineNum">     514 </span><span class="lineNoCov">          0 :     SgNode* getNode() { return get(); }</span></a>
+<a name="515"><span class="lineNum">     515 </span>            :     void setNode(SgNode *node) { set(node); }</a>
+<a name="516"><span class="lineNum">     516 </span>            : };</a>
+<a name="517"><span class="lineNum">     517 </span>            : </a>
+<a name="518"><span class="lineNum">     518 </span>            : class ROSE_DLL_API AstSgNodeListAttribute: public AstValueAttribute&lt;std::vector&lt;SgNode*&gt; &gt; {</a>
+<a name="519"><span class="lineNum">     519 </span>            : public:</a>
+<a name="520"><span class="lineNum">     520 </span>            :     typedef AstValueAttribute&lt;std::vector&lt;SgNode*&gt; &gt; Super;</a>
+<a name="521"><span class="lineNum">     521 </span>            :     AstSgNodeListAttribute() {}</a>
+<a name="522"><span class="lineNum">     522 </span>            :     explicit AstSgNodeListAttribute(std::vector&lt;SgNode *&gt; &amp;value): Super(value) {}</a>
+<a name="523"><span class="lineNum">     523 </span><span class="lineNoCov">          0 :     AstSgNodeListAttribute(const AstSgNodeListAttribute &amp;other): Super(other) {}</span></a>
+<a name="524"><span class="lineNum">     524 </span><span class="lineNoCov">          0 :     virtual AstAttribute* copy() const override { return new AstSgNodeListAttribute(*this); }</span></a>
+<a name="525"><span class="lineNum">     525 </span><span class="lineNoCov">          0 :     virtual std::string attribute_class_name() const override { return &quot;AstSgNodeListAttribute&quot;; }</span></a>
+<a name="526"><span class="lineNum">     526 </span>            :     std::vector&lt;SgNode*&gt; &amp;getNodeList() { return get(); }</a>
+<a name="527"><span class="lineNum">     527 </span>            :     void addNode(SgNode *n) { get().push_back(n); }</a>
+<a name="528"><span class="lineNum">     528 </span>            :     void setNode(SgNode*, int);</a>
+<a name="529"><span class="lineNum">     529 </span>            :     SgNode *getNode(int);</a>
+<a name="530"><span class="lineNum">     530 </span>            :     int size() { return get().size(); }</a>
+<a name="531"><span class="lineNum">     531 </span>            : };</a>
+<a name="532"><span class="lineNum">     532 </span>            : </a>
+<a name="533"><span class="lineNum">     533 </span>            : class ROSE_DLL_API AstIntAttribute : public AstValueAttribute&lt;int&gt; {</a>
+<a name="534"><span class="lineNum">     534 </span>            : public:</a>
+<a name="535"><span class="lineNum">     535 </span>            :     typedef AstValueAttribute&lt;int&gt; Super;</a>
+<a name="536"><span class="lineNum">     536 </span>            :     AstIntAttribute(): Super(0) {}</a>
+<a name="537"><span class="lineNum">     537 </span>            :     explicit AstIntAttribute(int value): Super(value) {}</a>
+<a name="538"><span class="lineNum">     538 </span><span class="lineNoCov">          0 :     AstIntAttribute(const AstIntAttribute &amp;other): Super(other) {}</span></a>
+<a name="539"><span class="lineNum">     539 </span><span class="lineNoCov">          0 :     virtual AstAttribute* copy() const override { return new AstIntAttribute(*this); }</span></a>
+<a name="540"><span class="lineNum">     540 </span><span class="lineNoCov">          0 :     virtual std::string attribute_class_name() const override { return &quot;AstIntAttribute&quot;; }</span></a>
+<a name="541"><span class="lineNum">     541 </span>            :     int getValue() { return get(); }</a>
+<a name="542"><span class="lineNum">     542 </span>            : };</a>
+<a name="543"><span class="lineNum">     543 </span>            : </a>
+<a name="544"><span class="lineNum">     544 </span>            : #endif</a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

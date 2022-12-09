@@ -1,0 +1,13 @@
+<map id="Sawyer::Container::AddressMapConstraints::none" name="Sawyer::Container::AddressMapConstraints::none">
+<area shape="rect" id="node1" title="Constraints that match nothing." alt="" coords="445,281,644,322"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#a73c20d1438a7ec1760e7977908bb81eb" title="Limit addresses." alt="" coords="5,5,168,61"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#ad288a31241d2ae0cddcdd3a26a5a0ca8" title="Anchor at a certain address." alt="" coords="216,365,397,406"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#ad00a4efe30167ddc5ca9764b6bd3c96c" title="Limit addresses." alt="" coords="225,52,388,108"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#ad16896935c25c7824c776254f8178855" title="Limit addresses." alt="" coords="5,111,168,167"/>
+<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#a0e35e4c4083628449d94d1279c6bc7fd" title="Limit addresses." alt="" coords="5,191,168,247"/>
+<area shape="rect" id="node7" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#acf007c10cb47a0c16f6f3764b7638928" title="Limit addresses." alt="" coords="225,183,388,239"/>
+<area shape="rect" id="node8" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#a631a9d37d2f3a6c3f2302646bb29ebaa" title="Limit addreses." alt="" coords="5,281,168,337"/>
+<area shape="rect" id="node9" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#a1e7b229039bfde68032769c1fba95a5e" title="Limit matching length." alt="" coords="225,431,388,487"/>
+<area shape="rect" id="node10" href="$classSawyer_1_1Container_1_1AddressMap.html#ac6151ac162e90dec4698bee00f484ea8" title="Constraint: matches nothing." alt="" coords="237,511,376,553"/>
+<area shape="rect" id="node11" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#a6e5f99800abf7adc8377339835cc8fb0" title="Limit segments." alt="" coords="225,577,388,633"/>
+</map>

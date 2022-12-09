@@ -1,0 +1,7 @@
+<map id="Sawyer::Container::Graph::insertEdge" name="Sawyer::Container::Graph::insertEdge">
+<area shape="rect" id="node1" title="Insert a new edge." alt="" coords="5,68,144,109"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#a3f256b70a465482d53478b84941dc8b5" title="Finds the vertex with specified ID number." alt="" coords="381,5,520,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Graph_1_1Vertex.html#af8439ff325ea20ab17e0418268546fbf" title="Unique vertex ID number." alt="" coords="381,100,520,141"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Graph.html#a0c3a2fe3c55de1001e0ae8e7508a86f0" title="Insert a new edge." alt="" coords="193,100,332,141"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Graph.html#a7f5c8eef7ec4d3399518437f5dd22b68" title="Determines whether the vertex iterator is valid." alt="" coords="192,35,333,76"/>
+</map>

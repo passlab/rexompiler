@@ -1,0 +1,5 @@
+<map id="SgAssertStmt" name="SgAssertStmt">
+<area shape="rect" id="node1" title=" " alt="" coords="65,109,169,136"/>
+<area shape="rect" id="node2" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="5,5,104,32"/>
+<area shape="rect" id="node3" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="129,5,231,32"/>
+</map>

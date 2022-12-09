@@ -1,0 +1,5 @@
+<map id="Rose::Progress::reportRegularly" name="Rose::Progress::reportRegularly">
+<area shape="rect" id="node1" title="Invoke the specified function at regular intervals." alt="" coords="5,31,215,57"/>
+<area shape="rect" id="node2" href="$classRose_1_1Progress.html#ad10c667ea7d3ff9685f0ff1ec0296746" title="Predicate indicating whether the task is finished." alt="" coords="268,5,448,32"/>
+<area shape="rect" id="node3" href="$classRose_1_1Progress.html#a57b6c9195bfb5d0777012cc3699c202e" title="Latest report and its age in seconds." alt="" coords="263,56,453,83"/>
+</map>

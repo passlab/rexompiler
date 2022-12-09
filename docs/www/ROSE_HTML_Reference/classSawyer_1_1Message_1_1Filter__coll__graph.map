@@ -1,0 +1,4 @@
+<map id="Sawyer::Message::Filter" name="Sawyer::Message::Filter">
+<area shape="rect" id="node1" title="Base class for internal nodes that filter messages." alt="" coords="23,80,187,107"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Message_1_1Multiplexer.html" title="Sends incoming messages to multiple destinations." alt="" coords="5,5,204,32"/>
+</map>

@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /home/yyan7/compiler/rexompiler/src/util/Sawyer/SharedObject.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">home/yyan7/compiler/rexompiler/src/util/Sawyer</a> - SharedObject.h<span style="font-size: 80%;"> (source / <a href="SharedObject.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryLo">50.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // WARNING: Changes to this file must be contributed back to Sawyer or else they will</a>
+<a name="2"><span class="lineNum">       2 </span>            : //          be clobbered by the next update from Sawyer.  The Sawyer repository is at</a>
+<a name="3"><span class="lineNum">       3 </span>            : //          https://github.com/matzke1/sawyer.</a>
+<a name="4"><span class="lineNum">       4 </span>            : </a>
+<a name="5"><span class="lineNum">       5 </span>            : </a>
+<a name="6"><span class="lineNum">       6 </span>            : </a>
+<a name="7"><span class="lineNum">       7 </span>            : </a>
+<a name="8"><span class="lineNum">       8 </span>            : #ifndef Sawyer_SharedObject_H</a>
+<a name="9"><span class="lineNum">       9 </span>            : #define Sawyer_SharedObject_H</a>
+<a name="10"><span class="lineNum">      10 </span>            : </a>
+<a name="11"><span class="lineNum">      11 </span>            : #include &lt;Sawyer/Sawyer.h&gt;</a>
+<a name="12"><span class="lineNum">      12 </span>            : #include &lt;Sawyer/Synchronization.h&gt;</a>
+<a name="13"><span class="lineNum">      13 </span>            : </a>
+<a name="14"><span class="lineNum">      14 </span>            : namespace Sawyer {</a>
+<a name="15"><span class="lineNum">      15 </span>            : </a>
+<a name="16"><span class="lineNum">      16 </span>            : /** Base class for reference counted objects.</a>
+<a name="17"><span class="lineNum">      17 </span>            :  *</a>
+<a name="18"><span class="lineNum">      18 </span>            :  *  The @ref SharedObject class is used in conjunction with @ref SharedPointer to declare that objects of this type are</a>
+<a name="19"><span class="lineNum">      19 </span>            :  *  allocated on the heap (only), are reference counted, and invoke &quot;delete&quot; on themselves when the reference count decreases to</a>
+<a name="20"><span class="lineNum">      20 </span>            :  *  zero.  Any object that is intended to be referenced by a @ref SharedPointer must inherit directly or indirectly from</a>
+<a name="21"><span class="lineNum">      21 </span>            :  *  @ref SharedObject.</a>
+<a name="22"><span class="lineNum">      22 </span>            :  *</a>
+<a name="23"><span class="lineNum">      23 </span>            :  *  Here's an example that demonstrates some of the best practices:</a>
+<a name="24"><span class="lineNum">      24 </span>            :  *</a>
+<a name="25"><span class="lineNum">      25 </span>            :  *  @li Provide a declaration for the pointer by appending &quot;Ptr&quot; to the class name.</a>
+<a name="26"><span class="lineNum">      26 </span>            :  *</a>
+<a name="27"><span class="lineNum">      27 </span>            :  *  @li Inherit from @ref SharedObject just once in the entire class hierarchy, normally in the base class.</a>
+<a name="28"><span class="lineNum">      28 </span>            :  *</a>
+<a name="29"><span class="lineNum">      29 </span>            :  *  @li Provide a public &quot;Ptr&quot; member type that's equivalent to the forward-declared pointer type.</a>
+<a name="30"><span class="lineNum">      30 </span>            :  *</a>
+<a name="31"><span class="lineNum">      31 </span>            :  *  @li Make all constructors &quot;protected&quot; so that users are less likely to construct objects without allocating them in the</a>
+<a name="32"><span class="lineNum">      32 </span>            :  *  heap.</a>
+<a name="33"><span class="lineNum">      33 </span>            :  *</a>
+<a name="34"><span class="lineNum">      34 </span>            :  *  @li Provide static member functions named &quot;instance&quot;, one per constructor, that allocate the object on the heap and return</a>
+<a name="35"><span class="lineNum">      35 </span>            :  *  its first reference-counting pointer.</a>
+<a name="36"><span class="lineNum">      36 </span>            :  *</a>
+<a name="37"><span class="lineNum">      37 </span>            :  * @code</a>
+<a name="38"><span class="lineNum">      38 </span>            :  *  // Forward declarations if necessary</a>
+<a name="39"><span class="lineNum">      39 </span>            :  *  class MyBaseClass;</a>
+<a name="40"><span class="lineNum">      40 </span>            :  *  typedef Sawyer::SharedPointer&lt;MyBaseClass&gt; MyBaseClassPtr;</a>
+<a name="41"><span class="lineNum">      41 </span>            :  *</a>
+<a name="42"><span class="lineNum">      42 </span>            :  *  // Class definition</a>
+<a name="43"><span class="lineNum">      43 </span>            :  *  class MyBaseClass: public SharedObject {</a>
+<a name="44"><span class="lineNum">      44 </span>            :  *  public:</a>
+<a name="45"><span class="lineNum">      45 </span>            :  *      typedef Sawyer::SharedPointer&lt;MyBaseClass&gt; Ptr;</a>
+<a name="46"><span class="lineNum">      46 </span>            :  *</a>
+<a name="47"><span class="lineNum">      47 </span>            :  *  protected:</a>
+<a name="48"><span class="lineNum">      48 </span>            :  *      // Hide the constructors so users don't accidentally create objects on the stack</a>
+<a name="49"><span class="lineNum">      49 </span>            :  *      MyBaseClass();</a>
+<a name="50"><span class="lineNum">      50 </span>            :  *      MyBaseClass(const MyBaseClass&amp;);</a>
+<a name="51"><span class="lineNum">      51 </span>            :  *</a>
+<a name="52"><span class="lineNum">      52 </span>            :  *  public:</a>
+<a name="53"><span class="lineNum">      53 </span>            :  *      // Provide allocating wrappers around the constructors</a>
+<a name="54"><span class="lineNum">      54 </span>            :  *      static Ptr instance() {</a>
+<a name="55"><span class="lineNum">      55 </span>            :  *          return Ptr(new MyBaseClass);</a>
+<a name="56"><span class="lineNum">      56 </span>            :  *      }</a>
+<a name="57"><span class="lineNum">      57 </span>            :  *      static Ptr instance(const MyBaseClass &amp;other) {</a>
+<a name="58"><span class="lineNum">      58 </span>            :  *          return Ptr(new MyBaseClass(other));</a>
+<a name="59"><span class="lineNum">      59 </span>            :  *      }</a>
+<a name="60"><span class="lineNum">      60 </span>            :  *  };</a>
+<a name="61"><span class="lineNum">      61 </span>            :  * @endcode</a>
+<a name="62"><span class="lineNum">      62 </span>            :  *</a>
+<a name="63"><span class="lineNum">      63 </span>            :  *  @sa SharedPointer, @ref SharedFromThis */</a>
+<a name="64"><span class="lineNum">      64 </span>            : class SAWYER_EXPORT SharedObject {</a>
+<a name="65"><span class="lineNum">      65 </span>            :     template&lt;class U&gt; friend class SharedPointer;</a>
+<a name="66"><span class="lineNum">      66 </span>            :     mutable SAWYER_THREAD_TRAITS::Mutex mutex_;</a>
+<a name="67"><span class="lineNum">      67 </span>            :     mutable size_t nrefs_;</a>
+<a name="68"><span class="lineNum">      68 </span>            : public:</a>
+<a name="69"><span class="lineNum">      69 </span>            :     /** Default constructor.  Initializes the reference count to zero. */</a>
+<a name="70"><span class="lineNum">      70 </span><span class="lineCov">      10683 :     SharedObject(): nrefs_(0) {}</span></a>
+<a name="71"><span class="lineNum">      71 </span>            : </a>
+<a name="72"><span class="lineNum">      72 </span>            :     /** Copy constructor.</a>
+<a name="73"><span class="lineNum">      73 </span>            :      *</a>
+<a name="74"><span class="lineNum">      74 </span>            :      *  Shared objects are not typically copy-constructed, but we must support it anyway in case the user wants to</a>
+<a name="75"><span class="lineNum">      75 </span>            :      *  copy-construct some shared object.  The new object has a ref-count of zero. */</a>
+<a name="76"><span class="lineNum">      76 </span>            :     SharedObject(const SharedObject&amp;): nrefs_(0) {}</a>
+<a name="77"><span class="lineNum">      77 </span>            : </a>
+<a name="78"><span class="lineNum">      78 </span>            :     /** Virtual destructor. Verifies that the reference count is zero. */</a>
+<a name="79"><span class="lineNum">      79 </span><span class="lineCov">      10656 :     virtual ~SharedObject() {</span></a>
+<a name="80"><span class="lineNum">      80 </span><span class="lineCov">      10656 :         ASSERT_require(nrefs_==0);</span></a>
+<a name="81"><span class="lineNum">      81 </span><span class="lineCov">      10656 :     }</span></a>
+<a name="82"><span class="lineNum">      82 </span>            : </a>
+<a name="83"><span class="lineNum">      83 </span>            :     /** Assignment.</a>
+<a name="84"><span class="lineNum">      84 </span>            :      *</a>
+<a name="85"><span class="lineNum">      85 </span>            :      *  Assigning one object to another doesn't change the reference count or mutex of either object. */</a>
+<a name="86"><span class="lineNum">      86 </span>            :     SharedObject&amp; operator=(const SharedObject&amp;) {</a>
+<a name="87"><span class="lineNum">      87 </span>            :         return *this;</a>
+<a name="88"><span class="lineNum">      88 </span>            :     }</a>
+<a name="89"><span class="lineNum">      89 </span>            : };</a>
+<a name="90"><span class="lineNum">      90 </span>            : </a>
+<a name="91"><span class="lineNum">      91 </span>            : } // namespace</a>
+<a name="92"><span class="lineNum">      92 </span>            : </a>
+<a name="93"><span class="lineNum">      93 </span>            : #endif</a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

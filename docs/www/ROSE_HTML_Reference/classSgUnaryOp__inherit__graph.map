@@ -1,0 +1,20 @@
+<map id="SgUnaryOp" name="SgUnaryOp">
+<area shape="rect" id="node1" title="This class represents the notion of a unary operator. It is derived from a SgExpression because opera..." alt="" coords="156,385,247,412"/>
+<area shape="rect" id="node3" href="$classSgAddressOfOp.html" title=" " alt="" coords="317,5,435,32"/>
+<area shape="rect" id="node4" href="$classSgBitComplementOp.html" title=" " alt="" coords="303,56,449,83"/>
+<area shape="rect" id="node5" href="$classSgCastExp.html" title=" " alt="" coords="331,107,421,133"/>
+<area shape="rect" id="node6" href="$classSgConjugateOp.html" title=" " alt="" coords="319,157,433,184"/>
+<area shape="rect" id="node7" href="$classSgExpressionRoot.html" title=" " alt="" coords="311,208,441,235"/>
+<area shape="rect" id="node8" href="$classSgImagPartOp.html" title=" " alt="" coords="322,259,430,285"/>
+<area shape="rect" id="node9" href="$classSgMatrixTransposeOp.html" title=" " alt="" coords="300,309,452,336"/>
+<area shape="rect" id="node10" href="$classSgMinusMinusOp.html" title=" " alt="" coords="313,360,439,387"/>
+<area shape="rect" id="node11" href="$classSgMinusOp.html" title="This class represents the numeric negation of a value. Not to be confused with SgSubtractOp." alt="" coords="331,411,421,437"/>
+<area shape="rect" id="node12" href="$classSgNotOp.html" title=" " alt="" coords="338,461,414,488"/>
+<area shape="rect" id="node13" href="$classSgPlusPlusOp.html" title=" " alt="" coords="323,512,429,539"/>
+<area shape="rect" id="node14" href="$classSgPointerDerefExp.html" title=" " alt="" coords="309,563,443,589"/>
+<area shape="rect" id="node15" href="$classSgRealPartOp.html" title=" " alt="" coords="323,613,429,640"/>
+<area shape="rect" id="node16" href="$classSgThrowOp.html" title="This class represents the C++ throw expression (handled as a unary operator)." alt="" coords="331,664,421,691"/>
+<area shape="rect" id="node17" href="$classSgUnaryAddOp.html" title=" " alt="" coords="319,715,433,741"/>
+<area shape="rect" id="node18" href="$classSgUserDefinedUnaryOp.html" title=" " alt="" coords="295,765,457,792"/>
+<area shape="rect" id="node2" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="5,385,108,412"/>
+</map>

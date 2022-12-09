@@ -1,0 +1,6 @@
+<map id="Rose::AST::Defects::defect_t&lt; Kind::integrity_edges &gt;" name="Rose::AST::Defects::defect_t&lt; Kind::integrity_edges &gt;">
+<area shape="rect" id="node1" title="Specialization of the defect_t template for the case of an edge integrity defect." alt="" coords="136,124,305,180"/>
+<area shape="rect" id="node2" href="$structRose_1_1AST_1_1Defects_1_1defect__t_3_01Kind_1_1any_01_4.html" title="Defect descriptor specialization for the default kind &quot;any&quot;." alt="" coords="5,5,161,47"/>
+<area shape="rect" id="node3" href="$classSgNode.html" title="This class represents the base class for all IR nodes within Sage III." alt="" coords="186,13,255,39"/>
+<area shape="rect" id="node4" title="STL class." alt="" coords="383,13,463,39"/>
+</map>

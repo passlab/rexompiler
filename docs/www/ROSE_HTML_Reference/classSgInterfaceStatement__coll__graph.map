@@ -1,0 +1,6 @@
+<map id="SgInterfaceStatement" name="SgInterfaceStatement">
+<area shape="rect" id="node1" title=" " alt="" coords="375,97,525,124"/>
+<area shape="rect" id="node2" href="$classSgDeclarationStatement.html" title="This class represents the concept of a declaration statement." alt="" coords="5,7,169,33"/>
+<area shape="rect" id="node3" href="$classSgLabelRefExp.html" title=" " alt="" coords="393,7,507,33"/>
+<area shape="rect" id="node4" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="571,7,644,33"/>
+</map>

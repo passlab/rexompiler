@@ -1,0 +1,7 @@
+<map id="SgIfStmt" name="SgIfStmt">
+<area shape="rect" id="node1" title="This class represents the concept of an &quot;if&quot; construct." alt="" coords="237,305,311,332"/>
+<area shape="rect" id="node2" href="$classSgScopeStatement.html" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="292,207,427,234"/>
+<area shape="rect" id="node3" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="141,95,239,121"/>
+<area shape="rect" id="node4" href="$classSgLabelRefExp.html" title=" " alt="" coords="5,5,119,32"/>
+<area shape="rect" id="node5" title="STL class." alt="" coords="451,207,531,234"/>
+</map>

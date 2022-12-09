@@ -1,0 +1,8 @@
+<map id="Sawyer::Container::Algorithm::GraphTraversal::event" name="Sawyer::Container::Algorithm::GraphTraversal::event">
+<area shape="rect" id="node1" title="Current event on which traversal is stopped." alt="" coords="293,202,468,258"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#a574c3e3db87c283066fd908ef4ab0863" title="Advance traversal to next interesting event." alt="" coords="17,5,234,76"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#ae1d03524a936787552da796a23da2ed8" title="Edge to which traversal is pointing." alt="" coords="17,100,234,171"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#a6366dbafc7f0cb91be8433fad44e3148" title="Causes traversal to skip children." alt="" coords="5,195,245,265"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#a1025261c9abbd3c93ecdbedddeb670f7" title="Restart the traversal at the specified vertex." alt="" coords="17,289,234,360"/>
+<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#acaf1e41f58db2df8ef4d36c84600ba47" title="Vertex to which traversal is pointing." alt="" coords="17,384,234,455"/>
+</map>

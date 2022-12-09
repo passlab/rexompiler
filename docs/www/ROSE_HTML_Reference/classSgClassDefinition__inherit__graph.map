@@ -1,0 +1,6 @@
+<map id="SgClassDefinition" name="SgClassDefinition">
+<area shape="rect" id="node1" title="This class represents the concept of a class definition in C++." alt="" coords="136,80,263,107"/>
+<area shape="rect" id="node3" href="$classSgTemplateClassDefinition.html" title=" " alt="" coords="5,155,185,181"/>
+<area shape="rect" id="node4" href="$classSgTemplateInstantiationDefn.html" title="This class represents the concept of a class definition in C++." alt="" coords="209,155,400,181"/>
+<area shape="rect" id="node2" href="$classSgScopeStatement.html" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="132,5,267,32"/>
+</map>

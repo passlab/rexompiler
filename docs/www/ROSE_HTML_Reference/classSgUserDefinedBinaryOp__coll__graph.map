@@ -1,0 +1,6 @@
+<map id="SgUserDefinedBinaryOp" name="SgUserDefinedBinaryOp">
+<area shape="rect" id="node1" title=" " alt="" coords="75,95,241,121"/>
+<area shape="rect" id="node2" href="$classSgBinaryOp.html" title="This class represents the notion of a binary operator. It is derived from a SgExpression because oper..." alt="" coords="5,5,97,32"/>
+<area shape="rect" id="node3" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="121,5,195,32"/>
+<area shape="rect" id="node4" href="$classSgFunctionSymbol.html" title=" " alt="" coords="228,5,360,32"/>
+</map>

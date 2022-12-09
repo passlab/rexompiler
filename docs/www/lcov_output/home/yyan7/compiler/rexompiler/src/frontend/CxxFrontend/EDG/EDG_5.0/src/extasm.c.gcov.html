@@ -1,0 +1,1430 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /home/yyan7/compiler/rexompiler/src/frontend/CxxFrontend/EDG/EDG_5.0/src/extasm.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../../../../index.html">top level</a> - <a href="index.html">home/yyan7/compiler/rexompiler/src/frontend/CxxFrontend/EDG/EDG_5.0/src</a> - extasm.c<span style="font-size: 80%;"> (source / <a href="extasm.c.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntry">214</td>
+            <td class="headerCovTableEntryLo">8.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntryLo">22.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /******************************************************************************</a>
+<a name="2"><span class="lineNum">       2 </span>            : *                                                             \  ___  /       *</a>
+<a name="3"><span class="lineNum">       3 </span>            : *                                                               /   \         *</a>
+<a name="4"><span class="lineNum">       4 </span>            : * Edison Design Group C++/C Front End                        - | \^/ | -      *</a>
+<a name="5"><span class="lineNum">       5 </span>            : *                                                               \   /         *</a>
+<a name="6"><span class="lineNum">       6 </span>            : * Proprietary information of Edison Design Group Inc.         /  | |  \       *</a>
+<a name="7"><span class="lineNum">       7 </span>            : * Copyright 2001-2018 Edison Design Group Inc.                   [_]          *</a>
+<a name="8"><span class="lineNum">       8 </span>            : *                                                                             *</a>
+<a name="9"><span class="lineNum">       9 </span>            : ******************************************************************************/</a>
+<a name="10"><span class="lineNum">      10 </span>            : /*</a>
+<a name="11"><span class="lineNum">      11 </span>            : </a>
+<a name="12"><span class="lineNum">      12 </span>            : extasm.c -- Scanning and validation of GNU extended asm() statements.</a>
+<a name="13"><span class="lineNum">      13 </span>            : </a>
+<a name="14"><span class="lineNum">      14 </span>            : */</a>
+<a name="15"><span class="lineNum">      15 </span>            : </a>
+<a name="16"><span class="lineNum">      16 </span>            : /* Header files common to all files. */</a>
+<a name="17"><span class="lineNum">      17 </span>            : #include &quot;fe_common.h&quot;</a>
+<a name="18"><span class="lineNum">      18 </span>            : </a>
+<a name="19"><span class="lineNum">      19 </span>            : #ifdef PCH_PRAGMA_GUARD</a>
+<a name="20"><span class="lineNum">      20 </span>            : /* Mark the end of the sequence of headers subject to precompiled header</a>
+<a name="21"><span class="lineNum">      21 </span>            :    processing. */</a>
+<a name="22"><span class="lineNum">      22 </span>            : #pragma hdrstop</a>
+<a name="23"><span class="lineNum">      23 </span>            : #endif /* ifdef PCH_PRAGMA_GUARD */</a>
+<a name="24"><span class="lineNum">      24 </span>            : </a>
+<a name="25"><span class="lineNum">      25 </span>            : #if GNU_EXTENSIONS_ALLOWED</a>
+<a name="26"><span class="lineNum">      26 </span>            : </a>
+<a name="27"><span class="lineNum">      27 </span>            : #include &quot;extasm.h&quot;</a>
+<a name="28"><span class="lineNum">      28 </span>            : </a>
+<a name="29"><span class="lineNum">      29 </span>            : /* Header files used by files involved in declaration processing. */</a>
+<a name="30"><span class="lineNum">      30 </span>            : #include &quot;decl_hdrs.h&quot;</a>
+<a name="31"><span class="lineNum">      31 </span>            : </a>
+<a name="32"><span class="lineNum">      32 </span>            : </a>
+<a name="33"><span class="lineNum">      33 </span>            : struct name_to_reg {</a>
+<a name="34"><span class="lineNum">      34 </span>            :   /* Structure to hold a name-to-register mapping entry. */</a>
+<a name="35"><span class="lineNum">      35 </span>            :   a_const_char      *name;</a>
+<a name="36"><span class="lineNum">      36 </span>            :   a_named_register  reg;</a>
+<a name="37"><span class="lineNum">      37 </span>            : };</a>
+<a name="38"><span class="lineNum">      38 </span>            : </a>
+<a name="39"><span class="lineNum">      39 </span>            : /*</a>
+<a name="40"><span class="lineNum">      40 </span>            : Extra named registers, in addition to the canonical names in il_def.h.</a>
+<a name="41"><span class="lineNum">      41 </span>            : */</a>
+<a name="42"><span class="lineNum">      42 </span>            : static struct name_to_reg extra_reg_names[] = {</a>
+<a name="43"><span class="lineNum">      43 </span>            : #if GNU_X86_ASM_EXTENSIONS_ALLOWED</a>
+<a name="44"><span class="lineNum">      44 </span>            :   /* x86 integer registers, common set, other possible names... */</a>
+<a name="45"><span class="lineNum">      45 </span>            :   { &quot;al&quot;,  (a_named_register)anr_a  },</a>
+<a name="46"><span class="lineNum">      46 </span>            :   { &quot;bl&quot;,  (a_named_register)anr_b  },</a>
+<a name="47"><span class="lineNum">      47 </span>            :   { &quot;cl&quot;,  (a_named_register)anr_c  },</a>
+<a name="48"><span class="lineNum">      48 </span>            :   { &quot;dl&quot;,  (a_named_register)anr_d  },</a>
+<a name="49"><span class="lineNum">      49 </span>            :   { &quot;ah&quot;,  (a_named_register)anr_a  },</a>
+<a name="50"><span class="lineNum">      50 </span>            :   { &quot;bh&quot;,  (a_named_register)anr_b  },</a>
+<a name="51"><span class="lineNum">      51 </span>            :   { &quot;ch&quot;,  (a_named_register)anr_c  },</a>
+<a name="52"><span class="lineNum">      52 </span>            :   { &quot;dh&quot;,  (a_named_register)anr_d  },</a>
+<a name="53"><span class="lineNum">      53 </span>            :   { &quot;eax&quot;, (a_named_register)anr_a  },</a>
+<a name="54"><span class="lineNum">      54 </span>            :   { &quot;ebx&quot;, (a_named_register)anr_b  },</a>
+<a name="55"><span class="lineNum">      55 </span>            :   { &quot;ecx&quot;, (a_named_register)anr_c  },</a>
+<a name="56"><span class="lineNum">      56 </span>            :   { &quot;edx&quot;, (a_named_register)anr_d  },</a>
+<a name="57"><span class="lineNum">      57 </span>            :   { &quot;esi&quot;, (a_named_register)anr_si },</a>
+<a name="58"><span class="lineNum">      58 </span>            :   { &quot;edi&quot;, (a_named_register)anr_di },</a>
+<a name="59"><span class="lineNum">      59 </span>            :   { &quot;ebp&quot;, (a_named_register)anr_bp },</a>
+<a name="60"><span class="lineNum">      60 </span>            :   { &quot;esp&quot;, (a_named_register)anr_sp },</a>
+<a name="61"><span class="lineNum">      61 </span>            :   { &quot;cc&quot;,  (a_named_register)anr_flags },</a>
+<a name="62"><span class="lineNum">      62 </span>            : </a>
+<a name="63"><span class="lineNum">      63 </span>            :   /* x86-64 additional integer registers, other possible names... */</a>
+<a name="64"><span class="lineNum">      64 </span>            :   { &quot;rax&quot;, (a_named_register)anr_a  },</a>
+<a name="65"><span class="lineNum">      65 </span>            :   { &quot;rbx&quot;, (a_named_register)anr_b  },</a>
+<a name="66"><span class="lineNum">      66 </span>            :   { &quot;rcx&quot;, (a_named_register)anr_c  },</a>
+<a name="67"><span class="lineNum">      67 </span>            :   { &quot;rdx&quot;, (a_named_register)anr_d  },</a>
+<a name="68"><span class="lineNum">      68 </span>            :   { &quot;rsi&quot;, (a_named_register)anr_si },</a>
+<a name="69"><span class="lineNum">      69 </span>            :   { &quot;rdi&quot;, (a_named_register)anr_di },</a>
+<a name="70"><span class="lineNum">      70 </span>            :   { &quot;rbp&quot;, (a_named_register)anr_bp },</a>
+<a name="71"><span class="lineNum">      71 </span>            :   { &quot;rsp&quot;, (a_named_register)anr_sp },</a>
+<a name="72"><span class="lineNum">      72 </span>            :   { &quot;sil&quot;, (a_named_register)anr_si },</a>
+<a name="73"><span class="lineNum">      73 </span>            :   { &quot;dil&quot;, (a_named_register)anr_di },</a>
+<a name="74"><span class="lineNum">      74 </span>            :   { &quot;bpl&quot;, (a_named_register)anr_bp },</a>
+<a name="75"><span class="lineNum">      75 </span>            :   { &quot;spl&quot;, (a_named_register)anr_sp },</a>
+<a name="76"><span class="lineNum">      76 </span>            :   { &quot;r8b&quot;,  (a_named_register)anr_r8  },</a>
+<a name="77"><span class="lineNum">      77 </span>            :   { &quot;r8w&quot;,  (a_named_register)anr_r8  },</a>
+<a name="78"><span class="lineNum">      78 </span>            :   { &quot;r8d&quot;,  (a_named_register)anr_r8  },</a>
+<a name="79"><span class="lineNum">      79 </span>            :   { &quot;r9b&quot;,  (a_named_register)anr_r9  },</a>
+<a name="80"><span class="lineNum">      80 </span>            :   { &quot;r9w&quot;,  (a_named_register)anr_r9  },</a>
+<a name="81"><span class="lineNum">      81 </span>            :   { &quot;r9d&quot;,  (a_named_register)anr_r9  },</a>
+<a name="82"><span class="lineNum">      82 </span>            :   { &quot;r10b&quot;, (a_named_register)anr_r10 },</a>
+<a name="83"><span class="lineNum">      83 </span>            :   { &quot;r10w&quot;, (a_named_register)anr_r10 },</a>
+<a name="84"><span class="lineNum">      84 </span>            :   { &quot;r10d&quot;, (a_named_register)anr_r10 },</a>
+<a name="85"><span class="lineNum">      85 </span>            :   { &quot;r11b&quot;, (a_named_register)anr_r11 },</a>
+<a name="86"><span class="lineNum">      86 </span>            :   { &quot;r11w&quot;, (a_named_register)anr_r11 },</a>
+<a name="87"><span class="lineNum">      87 </span>            :   { &quot;r11d&quot;, (a_named_register)anr_r11 },</a>
+<a name="88"><span class="lineNum">      88 </span>            :   { &quot;r12b&quot;, (a_named_register)anr_r12 },</a>
+<a name="89"><span class="lineNum">      89 </span>            :   { &quot;r12w&quot;, (a_named_register)anr_r12 },</a>
+<a name="90"><span class="lineNum">      90 </span>            :   { &quot;r12d&quot;, (a_named_register)anr_r12 },</a>
+<a name="91"><span class="lineNum">      91 </span>            :   { &quot;r13b&quot;, (a_named_register)anr_r13 },</a>
+<a name="92"><span class="lineNum">      92 </span>            :   { &quot;r13w&quot;, (a_named_register)anr_r13 },</a>
+<a name="93"><span class="lineNum">      93 </span>            :   { &quot;r13d&quot;, (a_named_register)anr_r13 },</a>
+<a name="94"><span class="lineNum">      94 </span>            :   { &quot;r14b&quot;, (a_named_register)anr_r14 },</a>
+<a name="95"><span class="lineNum">      95 </span>            :   { &quot;r14w&quot;, (a_named_register)anr_r14 },</a>
+<a name="96"><span class="lineNum">      96 </span>            :   { &quot;r14d&quot;, (a_named_register)anr_r14 },</a>
+<a name="97"><span class="lineNum">      97 </span>            :   { &quot;r15b&quot;, (a_named_register)anr_r15 },</a>
+<a name="98"><span class="lineNum">      98 </span>            :   { &quot;r15w&quot;, (a_named_register)anr_r15 },</a>
+<a name="99"><span class="lineNum">      99 </span>            :   { &quot;r15d&quot;, (a_named_register)anr_r15 },</a>
+<a name="100"><span class="lineNum">     100 </span>            : </a>
+<a name="101"><span class="lineNum">     101 </span>            :   /* 80387 floating point registers, other possible names... */</a>
+<a name="102"><span class="lineNum">     102 </span>            :   { &quot;st1&quot;, (a_named_register)anr_st1 },</a>
+<a name="103"><span class="lineNum">     103 </span>            :   { &quot;st2&quot;, (a_named_register)anr_st2 },</a>
+<a name="104"><span class="lineNum">     104 </span>            :   { &quot;st3&quot;, (a_named_register)anr_st3 },</a>
+<a name="105"><span class="lineNum">     105 </span>            :   { &quot;st4&quot;, (a_named_register)anr_st4 },</a>
+<a name="106"><span class="lineNum">     106 </span>            :   { &quot;st5&quot;, (a_named_register)anr_st5 },</a>
+<a name="107"><span class="lineNum">     107 </span>            :   { &quot;st6&quot;, (a_named_register)anr_st6 },</a>
+<a name="108"><span class="lineNum">     108 </span>            :   { &quot;st7&quot;, (a_named_register)anr_st7 },</a>
+<a name="109"><span class="lineNum">     109 </span>            : </a>
+<a name="110"><span class="lineNum">     110 </span>            :   /* numeric register names... */</a>
+<a name="111"><span class="lineNum">     111 </span>            :   { &quot;0&quot;,   (a_named_register)anr_a  },</a>
+<a name="112"><span class="lineNum">     112 </span>            :   { &quot;1&quot;,   (a_named_register)anr_d  },</a>
+<a name="113"><span class="lineNum">     113 </span>            :   { &quot;2&quot;,   (a_named_register)anr_c  },</a>
+<a name="114"><span class="lineNum">     114 </span>            :   { &quot;3&quot;,   (a_named_register)anr_b  },</a>
+<a name="115"><span class="lineNum">     115 </span>            :   { &quot;4&quot;,   (a_named_register)anr_si },</a>
+<a name="116"><span class="lineNum">     116 </span>            :   { &quot;5&quot;,   (a_named_register)anr_di },</a>
+<a name="117"><span class="lineNum">     117 </span>            :   { &quot;6&quot;,   (a_named_register)anr_bp },</a>
+<a name="118"><span class="lineNum">     118 </span>            :   { &quot;7&quot;,   (a_named_register)anr_sp },</a>
+<a name="119"><span class="lineNum">     119 </span>            :   { &quot;8&quot;,   (a_named_register)anr_st },</a>
+<a name="120"><span class="lineNum">     120 </span>            :   { &quot;9&quot;,   (a_named_register)anr_st1 },</a>
+<a name="121"><span class="lineNum">     121 </span>            :   { &quot;10&quot;,  (a_named_register)anr_st2 },</a>
+<a name="122"><span class="lineNum">     122 </span>            :   { &quot;11&quot;,  (a_named_register)anr_st3 },</a>
+<a name="123"><span class="lineNum">     123 </span>            :   { &quot;12&quot;,  (a_named_register)anr_st4 },</a>
+<a name="124"><span class="lineNum">     124 </span>            :   { &quot;13&quot;,  (a_named_register)anr_st5 },</a>
+<a name="125"><span class="lineNum">     125 </span>            :   { &quot;14&quot;,  (a_named_register)anr_st6 },</a>
+<a name="126"><span class="lineNum">     126 </span>            :   { &quot;15&quot;,  (a_named_register)anr_st7 },</a>
+<a name="127"><span class="lineNum">     127 </span>            :   /* (Registers 16 through 20 do not map on known registers.  Their primary</a>
+<a name="128"><span class="lineNum">     128 </span>            :      names are therefore just &quot;16&quot;, &quot;17, &quot;18&quot;, &quot;19&quot;, and &quot;20&quot;.  No secondary</a>
+<a name="129"><span class="lineNum">     129 </span>            :      names are needed here. */</a>
+<a name="130"><span class="lineNum">     130 </span>            :   { &quot;21&quot;,  (a_named_register)anr_f0 },</a>
+<a name="131"><span class="lineNum">     131 </span>            :   { &quot;22&quot;,  (a_named_register)anr_f1 },</a>
+<a name="132"><span class="lineNum">     132 </span>            :   { &quot;23&quot;,  (a_named_register)anr_f2 },</a>
+<a name="133"><span class="lineNum">     133 </span>            :   { &quot;24&quot;,  (a_named_register)anr_f3 },</a>
+<a name="134"><span class="lineNum">     134 </span>            :   { &quot;25&quot;,  (a_named_register)anr_f4 },</a>
+<a name="135"><span class="lineNum">     135 </span>            :   { &quot;26&quot;,  (a_named_register)anr_f5 },</a>
+<a name="136"><span class="lineNum">     136 </span>            :   { &quot;27&quot;,  (a_named_register)anr_f6 },</a>
+<a name="137"><span class="lineNum">     137 </span>            :   { &quot;28&quot;,  (a_named_register)anr_f7 },</a>
+<a name="138"><span class="lineNum">     138 </span>            :   { &quot;29&quot;,  (a_named_register)anr_mm0 },</a>
+<a name="139"><span class="lineNum">     139 </span>            :   { &quot;30&quot;,  (a_named_register)anr_mm1 },</a>
+<a name="140"><span class="lineNum">     140 </span>            :   { &quot;31&quot;,  (a_named_register)anr_mm2 },</a>
+<a name="141"><span class="lineNum">     141 </span>            :   { &quot;32&quot;,  (a_named_register)anr_mm3 },</a>
+<a name="142"><span class="lineNum">     142 </span>            :   { &quot;33&quot;,  (a_named_register)anr_mm4 },</a>
+<a name="143"><span class="lineNum">     143 </span>            :   { &quot;34&quot;,  (a_named_register)anr_mm5 },</a>
+<a name="144"><span class="lineNum">     144 </span>            :   { &quot;35&quot;,  (a_named_register)anr_mm6 },</a>
+<a name="145"><span class="lineNum">     145 </span>            :   { &quot;36&quot;,  (a_named_register)anr_mm7 },</a>
+<a name="146"><span class="lineNum">     146 </span>            :   { &quot;37&quot;,  (a_named_register)anr_r8 },</a>
+<a name="147"><span class="lineNum">     147 </span>            :   { &quot;38&quot;,  (a_named_register)anr_r9 },</a>
+<a name="148"><span class="lineNum">     148 </span>            :   { &quot;39&quot;,  (a_named_register)anr_r10 },</a>
+<a name="149"><span class="lineNum">     149 </span>            :   { &quot;40&quot;,  (a_named_register)anr_r11 },</a>
+<a name="150"><span class="lineNum">     150 </span>            :   { &quot;41&quot;,  (a_named_register)anr_r12 },</a>
+<a name="151"><span class="lineNum">     151 </span>            :   { &quot;42&quot;,  (a_named_register)anr_r13 },</a>
+<a name="152"><span class="lineNum">     152 </span>            :   { &quot;43&quot;,  (a_named_register)anr_r14 },</a>
+<a name="153"><span class="lineNum">     153 </span>            :   { &quot;44&quot;,  (a_named_register)anr_r15 },</a>
+<a name="154"><span class="lineNum">     154 </span>            :   { &quot;45&quot;,  (a_named_register)anr_f8 },</a>
+<a name="155"><span class="lineNum">     155 </span>            :   { &quot;46&quot;,  (a_named_register)anr_f9 },</a>
+<a name="156"><span class="lineNum">     156 </span>            :   { &quot;47&quot;,  (a_named_register)anr_f10 },</a>
+<a name="157"><span class="lineNum">     157 </span>            :   { &quot;48&quot;,  (a_named_register)anr_f11 },</a>
+<a name="158"><span class="lineNum">     158 </span>            :   { &quot;49&quot;,  (a_named_register)anr_f12 },</a>
+<a name="159"><span class="lineNum">     159 </span>            :   { &quot;50&quot;,  (a_named_register)anr_f13 },</a>
+<a name="160"><span class="lineNum">     160 </span>            :   { &quot;51&quot;,  (a_named_register)anr_f14 },</a>
+<a name="161"><span class="lineNum">     161 </span>            :   { &quot;52&quot;,  (a_named_register)anr_f15 },</a>
+<a name="162"><span class="lineNum">     162 </span>            : #endif /* GNU_X86_ASM_EXTENSIONS_ALLOWED */</a>
+<a name="163"><span class="lineNum">     163 </span>            : #if ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS</a>
+<a name="164"><span class="lineNum">     164 </span>            :   { &quot;&quot;, (a_named_register)anr_unrecognized },</a>
+<a name="165"><span class="lineNum">     165 </span>            : #endif /* ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS */</a>
+<a name="166"><span class="lineNum">     166 </span>            :   { &quot;&quot;, (a_named_register)anr_last }</a>
+<a name="167"><span class="lineNum">     167 </span>            : };</a>
+<a name="168"><span class="lineNum">     168 </span>            : </a>
+<a name="169"><span class="lineNum">     169 </span>            : /* The complete map between register names and enumerators, and its size. */</a>
+<a name="170"><span class="lineNum">     170 </span>            : static struct name_to_reg *regmap;</a>
+<a name="171"><span class="lineNum">     171 </span>            : static size_t regmap_size;</a>
+<a name="172"><span class="lineNum">     172 </span>            : </a>
+<a name="173"><span class="lineNum">     173 </span>            : </a>
+<a name="174"><span class="lineNum">     174 </span><span class="lineNoCov">          0 : a_named_register name_to_register(a_const_char  *name)</span></a>
+<a name="175"><span class="lineNum">     175 </span>            : /*</a>
+<a name="176"><span class="lineNum">     176 </span>            : Given the user-specified name of a register as a string, return</a>
+<a name="177"><span class="lineNum">     177 </span>            : its code number, or anr_invalid if there is no such register.</a>
+<a name="178"><span class="lineNum">     178 </span>            : In the latter case, issues an error.</a>
+<a name="179"><span class="lineNum">     179 </span>            : */</a>
+<a name="180"><span class="lineNum">     180 </span>            : {</a>
+<a name="181"><span class="lineNum">     181 </span><span class="lineNoCov">          0 :   unsigned int      md, mn = 0, mx = (unsigned int)regmap_size;</span></a>
+<a name="182"><span class="lineNum">     182 </span><span class="lineNoCov">          0 :   int               comp;</span></a>
+<a name="183"><span class="lineNum">     183 </span><span class="lineNoCov">          0 :   a_named_register  result = (a_named_register)anr_invalid;</span></a>
+<a name="184"><span class="lineNum">     184 </span><span class="lineNoCov">          0 :   a_const_char      *name_to_search = name;</span></a>
+<a name="185"><span class="lineNum">     185 </span>            : </a>
+<a name="186"><span class="lineNum">     186 </span>            : #if GNU_X86_ASM_EXTENSIONS_ALLOWED</a>
+<a name="187"><span class="lineNum">     187 </span><span class="lineNoCov">          0 :   if (name[0] == '%') {</span></a>
+<a name="188"><span class="lineNum">     188 </span>            :     /* Register names are optionally prefixed with the &quot;%&quot; character. */</a>
+<a name="189"><span class="lineNum">     189 </span><span class="lineNoCov">          0 :     ++name_to_search;</span></a>
+<a name="190"><span class="lineNum">     190 </span>            :   }  /* if */</a>
+<a name="191"><span class="lineNum">     191 </span>            : #endif /* GNU_X86_ASM_EXTENSIONS_ALLOWED */</a>
+<a name="192"><span class="lineNum">     192 </span>            :   /* Binary search regmap array. */</a>
+<a name="193"><span class="lineNum">     193 </span><span class="lineNoCov">          0 :   while (mx &gt; mn) {</span></a>
+<a name="194"><span class="lineNum">     194 </span><span class="lineNoCov">          0 :     md = (mn + mx) / 2;</span></a>
+<a name="195"><span class="lineNum">     195 </span><span class="lineNoCov">          0 :     comp = strcmp(name_to_search, regmap[md].name);</span></a>
+<a name="196"><span class="lineNum">     196 </span><span class="lineNoCov">          0 :     if (comp &gt; 0) {</span></a>
+<a name="197"><span class="lineNum">     197 </span><span class="lineNoCov">          0 :       mn = md + 1;</span></a>
+<a name="198"><span class="lineNum">     198 </span><span class="lineNoCov">          0 :     } else if (comp &lt; 0) {</span></a>
+<a name="199"><span class="lineNum">     199 </span>            :       mx = md;</a>
+<a name="200"><span class="lineNum">     200 </span>            :     } else {</a>
+<a name="201"><span class="lineNum">     201 </span><span class="lineNoCov">          0 :       result = regmap[md].reg;</span></a>
+<a name="202"><span class="lineNum">     202 </span><span class="lineNoCov">          0 :       break;</span></a>
+<a name="203"><span class="lineNum">     203 </span>            :     }  /* if */</a>
+<a name="204"><span class="lineNum">     204 </span>            :   }  /* while */</a>
+<a name="205"><span class="lineNum">     205 </span>            : #if ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS</a>
+<a name="206"><span class="lineNum">     206 </span><span class="lineNoCov">          0 :   if (result == (a_named_register)anr_invalid) {</span></a>
+<a name="207"><span class="lineNum">     207 </span><span class="lineNoCov">          0 :     result = (a_named_register)anr_unrecognized;</span></a>
+<a name="208"><span class="lineNum">     208 </span>            :   }  /* if */</a>
+<a name="209"><span class="lineNum">     209 </span>            : #endif /* ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS */</a>
+<a name="210"><span class="lineNum">     210 </span><span class="lineNoCov">          0 :   return result;</span></a>
+<a name="211"><span class="lineNum">     211 </span>            : }  /* name_to_register */</a>
+<a name="212"><span class="lineNum">     212 </span>            : </a>
+<a name="213"><span class="lineNum">     213 </span>            : #if !RECORD_RAW_ASM_OPERAND_DESCRIPTIONS</a>
+<a name="214"><span class="lineNum">     214 </span>            : </a>
+<a name="215"><span class="lineNum">     215 </span>            : /*ARGSUSED*/</a>
+<a name="216"><span class="lineNum">     216 </span>            : static a_boolean validate_expr_for_constraints(</a>
+<a name="217"><span class="lineNum">     217 </span>            :                                            an_expr_node_ptr              expr,</a>
+<a name="218"><span class="lineNum">     218 </span>            :                                            an_asm_operand_constraint_ptr cstrt)</a>
+<a name="219"><span class="lineNum">     219 </span>            : /*</a>
+<a name="220"><span class="lineNum">     220 </span>            : Verify that expr can legitimately be used as an asm operand with</a>
+<a name="221"><span class="lineNum">     221 </span>            : constraints given by cstrt.  This code is machine specific and must be</a>
+<a name="222"><span class="lineNum">     222 </span>            : provided by the author of the back end.</a>
+<a name="223"><span class="lineNum">     223 </span>            : */</a>
+<a name="224"><span class="lineNum">     224 </span>            : {</a>
+<a name="225"><span class="lineNum">     225 </span>            :   return TRUE;</a>
+<a name="226"><span class="lineNum">     226 </span>            : }  /* validate_expr_for_constraints */</a>
+<a name="227"><span class="lineNum">     227 </span>            : </a>
+<a name="228"><span class="lineNum">     228 </span>            : #endif /* !RECORD_RAW_ASM_OPERAND_DESCRIPTIONS */</a>
+<a name="229"><span class="lineNum">     229 </span>            : </a>
+<a name="230"><span class="lineNum">     230 </span><span class="lineNoCov">          0 : static int find_symbolic_operand(a_const_char        **pc,</span></a>
+<a name="231"><span class="lineNum">     231 </span>            :                                  an_asm_operand_ptr  operands,</a>
+<a name="232"><span class="lineNum">     232 </span>            :                                  a_label_list_ptr    labels,</a>
+<a name="233"><span class="lineNum">     233 </span>            :                                  a_boolean           is_label,</a>
+<a name="234"><span class="lineNum">     234 </span>            :                                  a_source_position   *diag_pos)</a>
+<a name="235"><span class="lineNum">     235 </span>            : /*</a>
+<a name="236"><span class="lineNum">     236 </span>            : *pc points to a left bracket ('[') that starts a reference to a symbolic asm</a>
+<a name="237"><span class="lineNum">     237 </span>            : operand or label.  Advance the *pc pointer to the matching right bracket (or</a>
+<a name="238"><span class="lineNum">     238 </span>            : the null character terminating the string if there is no right bracket) and</a>
+<a name="239"><span class="lineNum">     239 </span>            : return the position of the indicated operand.  If the indicated operand name</a>
+<a name="240"><span class="lineNum">     240 </span>            : does not correspond to a previous operand or label, issue an error (at the</a>
+<a name="241"><span class="lineNum">     241 </span>            : given source position) and return -1.  operands points to the list of operands</a>
+<a name="242"><span class="lineNum">     242 </span>            : created so far (this routine is sometimes called when that list is still</a>
+<a name="243"><span class="lineNum">     243 </span>            : incomplete).  labels points to a list of labels (if this is an &quot;asm goto&quot;</a>
+<a name="244"><span class="lineNum">     244 </span>            : statement) or NULL.  When is_label is TRUE, the symbolic name is from a</a>
+<a name="245"><span class="lineNum">     245 </span>            : &quot;%l[label]&quot; reference, and thus refers to a label (and not an operand).</a>
+<a name="246"><span class="lineNum">     246 </span>            : */</a>
+<a name="247"><span class="lineNum">     247 </span>            : {</a>
+<a name="248"><span class="lineNum">     248 </span><span class="lineNoCov">          0 :   int          result = -1, n = 0;</span></a>
+<a name="249"><span class="lineNum">     249 </span><span class="lineNoCov">          0 :   a_const_char *start;</span></a>
+<a name="250"><span class="lineNum">     250 </span>            : </a>
+<a name="251"><span class="lineNum">     251 </span><span class="lineNoCov">          0 :   check_assertion(**pc == '[');</span></a>
+<a name="252"><span class="lineNum">     252 </span><span class="lineNoCov">          0 :   start = ++*pc;</span></a>
+<a name="253"><span class="lineNum">     253 </span>            :   /* Find the end of the symbolic operand name. */</a>
+<a name="254"><span class="lineNum">     254 </span><span class="lineNoCov">          0 :   while (**pc != ']' &amp;&amp; **pc != '\0') {</span></a>
+<a name="255"><span class="lineNum">     255 </span><span class="lineNoCov">          0 :     ++*pc;</span></a>
+<a name="256"><span class="lineNum">     256 </span>            :   }  /* while */</a>
+<a name="257"><span class="lineNum">     257 </span><span class="lineNoCov">          0 :   if (is_label) {</span></a>
+<a name="258"><span class="lineNum">     258 </span>            :     /* Look for a label whose name matches the symbolic name. */</a>
+<a name="259"><span class="lineNum">     259 </span><span class="lineNoCov">          0 :     check_assertion_or_expect_error(labels != NULL);</span></a>
+<a name="260"><span class="lineNum">     260 </span><span class="lineNoCov">          0 :     while (labels != NULL) {</span></a>
+<a name="261"><span class="lineNum">     261 </span><span class="lineNoCov">          0 :       a_const_char *label_name = labels-&gt;label-&gt;source_corresp.name;</span></a>
+<a name="262"><span class="lineNum">     262 </span><span class="lineNoCov">          0 :       if (label_name != NULL &amp;&amp;</span></a>
+<a name="263"><span class="lineNum">     263 </span><span class="lineNoCov">          0 :           strncmp(label_name, start, *pc-start) == 0 &amp;&amp;</span></a>
+<a name="264"><span class="lineNum">     264 </span><span class="lineNoCov">          0 :           (sizeof_t)strlen(label_name) == (sizeof_t)(*pc-start)) {</span></a>
+<a name="265"><span class="lineNum">     265 </span>            :         result = n;</a>
+<a name="266"><span class="lineNum">     266 </span>            :         break;</a>
+<a name="267"><span class="lineNum">     267 </span>            :       }  /* if */</a>
+<a name="268"><span class="lineNum">     268 </span><span class="lineNoCov">          0 :       labels = labels-&gt;next;</span></a>
+<a name="269"><span class="lineNum">     269 </span><span class="lineNoCov">          0 :       ++n;</span></a>
+<a name="270"><span class="lineNum">     270 </span>            :     }  /* while */</a>
+<a name="271"><span class="lineNum">     271 </span>            :   } else {</a>
+<a name="272"><span class="lineNum">     272 </span>            :     /* Look for an operand with that name in the list of preceding operands. */</a>
+<a name="273"><span class="lineNum">     273 </span><span class="lineNoCov">          0 :     while (operands != NULL) {</span></a>
+<a name="274"><span class="lineNum">     274 </span><span class="lineNoCov">          0 :       if (operands-&gt;name != NULL &amp;&amp;</span></a>
+<a name="275"><span class="lineNum">     275 </span><span class="lineNoCov">          0 :           strncmp(operands-&gt;name, start, *pc-start) == 0 &amp;&amp;</span></a>
+<a name="276"><span class="lineNum">     276 </span><span class="lineNoCov">          0 :           (sizeof_t)strlen(operands-&gt;name) == (sizeof_t)(*pc-start)) {</span></a>
+<a name="277"><span class="lineNum">     277 </span>            :         result = n;</a>
+<a name="278"><span class="lineNum">     278 </span>            :         break;</a>
+<a name="279"><span class="lineNum">     279 </span>            :       }  /* if */</a>
+<a name="280"><span class="lineNum">     280 </span><span class="lineNoCov">          0 :       operands = operands-&gt;next;</span></a>
+<a name="281"><span class="lineNum">     281 </span><span class="lineNoCov">          0 :       ++n;</span></a>
+<a name="282"><span class="lineNum">     282 </span>            :     }  /* while */</a>
+<a name="283"><span class="lineNum">     283 </span>            :   }  /* if */</a>
+<a name="284"><span class="lineNum">     284 </span><span class="lineNoCov">          0 :   if (result == -1) {</span></a>
+<a name="285"><span class="lineNum">     285 </span><span class="lineNoCov">          0 :     char saved_char = **pc;</span></a>
+<a name="286"><span class="lineNum">     286 </span><span class="lineNoCov">          0 :     *(char *)*pc = '\0';</span></a>
+<a name="287"><span class="lineNum">     287 </span><span class="lineNoCov">          0 :     pos_st_error(ec_invalid_symbolic_asm_operand_name, diag_pos, start);</span></a>
+<a name="288"><span class="lineNum">     288 </span><span class="lineNoCov">          0 :     *(char *)*pc = saved_char;</span></a>
+<a name="289"><span class="lineNum">     289 </span>            :   }  /* if */</a>
+<a name="290"><span class="lineNum">     290 </span><span class="lineNoCov">          0 :   return result;</span></a>
+<a name="291"><span class="lineNum">     291 </span>            : }  /* find_symbolic_operand */</a>
+<a name="292"><span class="lineNum">     292 </span>            : </a>
+<a name="293"><span class="lineNum">     293 </span>            : </a>
+<a name="294"><span class="lineNum">     294 </span><span class="lineNoCov">          0 : static void validate_symbolic_operand_and_label_references(</span></a>
+<a name="295"><span class="lineNum">     295 </span>            :                                                    an_asm_entry_ptr  asm_entry)</a>
+<a name="296"><span class="lineNum">     296 </span>            : /*</a>
+<a name="297"><span class="lineNum">     297 </span>            : Traverse the asm string for the given asm_entry and validate any symbolic</a>
+<a name="298"><span class="lineNum">     298 </span>            : operand references of the form &quot;%[&lt;name&gt;]&quot; it contains against the list of</a>
+<a name="299"><span class="lineNum">     299 </span>            : operands.  For an asm goto also check the string for any references to labels,</a>
+<a name="300"><span class="lineNum">     300 </span>            : either by symbolic reference (e.g., &quot;%l[label]) or by argument number</a>
+<a name="301"><span class="lineNum">     301 </span>            : (e.g., &quot;%l0).</a>
+<a name="302"><span class="lineNum">     302 </span>            : */</a>
+<a name="303"><span class="lineNum">     303 </span>            : {</a>
+<a name="304"><span class="lineNum">     304 </span><span class="lineNoCov">          0 :   a_constant_ptr      asm_string = asm_entry-&gt;asm_string;</span></a>
+<a name="305"><span class="lineNum">     305 </span>            : </a>
+<a name="306"><span class="lineNum">     306 </span><span class="lineNoCov">          0 :   if (asm_string-&gt;kind == (a_constant_repr_kind)ck_string) {</span></a>
+<a name="307"><span class="lineNum">     307 </span><span class="lineNoCov">          0 :     size_t       operand_count = 0;</span></a>
+<a name="308"><span class="lineNum">     308 </span><span class="lineNoCov">          0 :     a_boolean    is_label;</span></a>
+<a name="309"><span class="lineNum">     309 </span><span class="lineNoCov">          0 :     a_source_position</span></a>
+<a name="310"><span class="lineNum">     310 </span><span class="lineNoCov">          0 :                  *diag_pos = &amp;asm_entry-&gt;source_corresp.decl_position;</span></a>
+<a name="311"><span class="lineNum">     311 </span><span class="lineNoCov">          0 :     a_const_char *pc = asm_string-&gt;variant.string.value;</span></a>
+<a name="312"><span class="lineNum">     312 </span><span class="lineNoCov">          0 :     while (*pc != '\0') {</span></a>
+<a name="313"><span class="lineNum">     313 </span><span class="lineNoCov">          0 :       if (pc[0] == '%' &amp;&amp; (pc[1] == '[' || (pc[1] != '\0' &amp;&amp; pc[2] == '['))) {</span></a>
+<a name="314"><span class="lineNum">     314 </span>            :         /* We found a &quot;%[&quot; or &quot;%X[&quot; (where X is an output format modifier)</a>
+<a name="315"><span class="lineNum">     315 </span>            :            construct.  Look up the symbolic operand reference that (normally)</a>
+<a name="316"><span class="lineNum">     316 </span>            :            follows.  The call to find_symbol_operand will trigger any needed</a>
+<a name="317"><span class="lineNum">     317 </span>            :            diagnostics. */</a>
+<a name="318"><span class="lineNum">     318 </span><span class="lineNoCov">          0 :         ++pc;</span></a>
+<a name="319"><span class="lineNum">     319 </span><span class="lineNoCov">          0 :         is_label = FALSE;</span></a>
+<a name="320"><span class="lineNum">     320 </span><span class="lineNoCov">          0 :         if (*pc != '[')  {</span></a>
+<a name="321"><span class="lineNum">     321 </span>            :           /* An output format modifier between the '%' and '['. */</a>
+<a name="322"><span class="lineNum">     322 </span><span class="lineNoCov">          0 :           if (*pc == 'l' &amp;&amp; asm_entry-&gt;is_asm_goto) {</span></a>
+<a name="323"><span class="lineNum">     323 </span>            :             /* Found &quot;%l[&quot;, which introduces a label in an &quot;asm goto&quot;.  The</a>
+<a name="324"><span class="lineNum">     324 </span>            :                name that follows must match one of the label arguments. */</a>
+<a name="325"><span class="lineNum">     325 </span><span class="lineNoCov">          0 :             is_label = TRUE;</span></a>
+<a name="326"><span class="lineNum">     326 </span>            :           }  /* if */</a>
+<a name="327"><span class="lineNum">     327 </span><span class="lineNoCov">          0 :           ++pc;</span></a>
+<a name="328"><span class="lineNum">     328 </span>            :         }  /* if */</a>
+<a name="329"><span class="lineNum">     329 </span><span class="lineNoCov">          0 :         (void)find_symbolic_operand(&amp;pc, asm_entry-&gt;operands,</span></a>
+<a name="330"><span class="lineNum">     330 </span>            :                                     asm_entry-&gt;labels, is_label, diag_pos);</a>
+<a name="331"><span class="lineNum">     331 </span><span class="lineNoCov">          0 :       } else if (pc[0] == '%' &amp;&amp; pc[1] == '%') {</span></a>
+<a name="332"><span class="lineNum">     332 </span>            :         /* Found &quot;%%&quot; which indicates a register that begins with a '%'; just</a>
+<a name="333"><span class="lineNum">     333 </span>            :            skip over it. */</a>
+<a name="334"><span class="lineNum">     334 </span><span class="lineNoCov">          0 :         pc += 2;</span></a>
+<a name="335"><span class="lineNum">     335 </span><span class="lineNoCov">          0 :       } else if (pc[0] == '%' &amp;&amp; pc[1] == 'l' &amp;&amp; asm_entry-&gt;is_asm_goto) {</span></a>
+<a name="336"><span class="lineNum">     336 </span>            :         /* Found &quot;%l&quot; (but not &quot;%l[&quot;); what follows should be a decimal number</a>
+<a name="337"><span class="lineNum">     337 </span>            :            that corresponds to a valid label argument number. */</a>
+<a name="338"><span class="lineNum">     338 </span><span class="lineNoCov">          0 :         pc += 2;</span></a>
+<a name="339"><span class="lineNum">     339 </span><span class="lineNoCov">          0 :         if (*pc &gt;= '0' &amp;&amp; *pc &lt;= '9') {</span></a>
+<a name="340"><span class="lineNum">     340 </span>            :           size_t operand_num = 0;</a>
+<a name="341"><span class="lineNum">     341 </span><span class="lineNoCov">          0 :           while (*pc &gt;= '0' &amp;&amp; *pc &lt;= '9') {</span></a>
+<a name="342"><span class="lineNum">     342 </span><span class="lineNoCov">          0 :             operand_num *= 10;</span></a>
+<a name="343"><span class="lineNum">     343 </span><span class="lineNoCov">          0 :             operand_num += *pc - '0';</span></a>
+<a name="344"><span class="lineNum">     344 </span><span class="lineNoCov">          0 :             ++pc;</span></a>
+<a name="345"><span class="lineNum">     345 </span>            :           }  /* while */</a>
+<a name="346"><span class="lineNum">     346 </span>            :           /* Verify that the (zero-based) operand number refers to a label</a>
+<a name="347"><span class="lineNum">     347 </span>            :              argument that was specified.  The argument number includes</a>
+<a name="348"><span class="lineNum">     348 </span>            :              any input or output operands specified before the labels. */</a>
+<a name="349"><span class="lineNum">     349 </span><span class="lineNoCov">          0 :           if (operand_count == 0) {</span></a>
+<a name="350"><span class="lineNum">     350 </span><span class="lineNoCov">          0 :             a_label_list_ptr   llp;</span></a>
+<a name="351"><span class="lineNum">     351 </span><span class="lineNoCov">          0 :             an_asm_operand_ptr aop;</span></a>
+<a name="352"><span class="lineNum">     352 </span><span class="lineNoCov">          0 :             for (aop = asm_entry-&gt;operands; aop != NULL; aop = aop-&gt;next) {</span></a>
+<a name="353"><span class="lineNum">     353 </span><span class="lineNoCov">          0 :               ++operand_count;</span></a>
+<a name="354"><span class="lineNum">     354 </span>            :             }  /* for */</a>
+<a name="355"><span class="lineNum">     355 </span><span class="lineNoCov">          0 :             for (llp = asm_entry-&gt;labels; llp != NULL; llp = llp-&gt;next) {</span></a>
+<a name="356"><span class="lineNum">     356 </span><span class="lineNoCov">          0 :               ++operand_count;</span></a>
+<a name="357"><span class="lineNum">     357 </span>            :             }  /* for */</a>
+<a name="358"><span class="lineNum">     358 </span>            :           }  /* if */</a>
+<a name="359"><span class="lineNum">     359 </span><span class="lineNoCov">          0 :           if (operand_num &gt;= operand_count) {</span></a>
+<a name="360"><span class="lineNum">     360 </span><span class="lineNoCov">          0 :             pos_error(ec_label_operand_number_out_of_range, diag_pos);</span></a>
+<a name="361"><span class="lineNum">     361 </span>            :           }  /* if */</a>
+<a name="362"><span class="lineNum">     362 </span>            :         } else {</a>
+<a name="363"><span class="lineNum">     363 </span>            :           /* No operand number after &quot;%l&quot;. */</a>
+<a name="364"><span class="lineNum">     364 </span><span class="lineNoCov">          0 :           pos_error(ec_missing_label_operand_number, diag_pos);</span></a>
+<a name="365"><span class="lineNum">     365 </span>            :         }  /* if */</a>
+<a name="366"><span class="lineNum">     366 </span>            :       } else {</a>
+<a name="367"><span class="lineNum">     367 </span><span class="lineNoCov">          0 :         ++pc;</span></a>
+<a name="368"><span class="lineNum">     368 </span>            :       }  /* if */</a>
+<a name="369"><span class="lineNum">     369 </span>            :     }  /* while */</a>
+<a name="370"><span class="lineNum">     370 </span>            :   } else {</a>
+<a name="371"><span class="lineNum">     371 </span><span class="lineNoCov">          0 :     check_assertion(is_error_constant(asm_string));</span></a>
+<a name="372"><span class="lineNum">     372 </span><span class="lineNoCov">          0 :     expect_error();</span></a>
+<a name="373"><span class="lineNum">     373 </span>            :   }  /* if */</a>
+<a name="374"><span class="lineNum">     374 </span><span class="lineNoCov">          0 : }  /* validate_symbolic_operand_and_label_references */</span></a>
+<a name="375"><span class="lineNum">     375 </span>            : </a>
+<a name="376"><span class="lineNum">     376 </span>            : #if !RECORD_RAW_ASM_OPERAND_DESCRIPTIONS</a>
+<a name="377"><span class="lineNum">     377 </span>            : </a>
+<a name="378"><span class="lineNum">     378 </span>            : static an_asm_operand_constraint_kind get_symbolic_matching_constraint(</a>
+<a name="379"><span class="lineNum">     379 </span>            :                                                  a_const_char        **pc,</a>
+<a name="380"><span class="lineNum">     380 </span>            :                                                  an_asm_operand_ptr  operands,</a>
+<a name="381"><span class="lineNum">     381 </span>            :                                                  a_source_position   *diag_pos)</a>
+<a name="382"><span class="lineNum">     382 </span>            : /*</a>
+<a name="383"><span class="lineNum">     383 </span>            : *pc points to a '[' character starting a symbolic operand name.  Advance this</a>
+<a name="384"><span class="lineNum">     384 </span>            : pointer to the matching ']' character (or to the last character in the string</a>
+<a name="385"><span class="lineNum">     385 </span>            : if none is found) and return a &quot;matching constraint kind&quot; for the operand</a>
+<a name="386"><span class="lineNum">     386 </span>            : name indicated.  operands points to the list of operands already created.</a>
+<a name="387"><span class="lineNum">     387 </span>            : Errors are diagnosed at the given position.</a>
+<a name="388"><span class="lineNum">     388 </span>            : */</a>
+<a name="389"><span class="lineNum">     389 </span>            : {</a>
+<a name="390"><span class="lineNum">     390 </span>            :   an_asm_operand_constraint_kind  result;</a>
+<a name="391"><span class="lineNum">     391 </span>            :   int                             op_num;</a>
+<a name="392"><span class="lineNum">     392 </span>            : </a>
+<a name="393"><span class="lineNum">     393 </span>            :   op_num = find_symbolic_operand(pc, operands, (a_label_list_ptr)NULL,</a>
+<a name="394"><span class="lineNum">     394 </span>            :                                  /*is_label=*/FALSE, diag_pos);</a>
+<a name="395"><span class="lineNum">     395 </span>            :   if (op_num &lt; 0) {</a>
+<a name="396"><span class="lineNum">     396 </span>            :     /* An error was already issued. */</a>
+<a name="397"><span class="lineNum">     397 </span>            :     result = (an_asm_operand_constraint_kind)aoc_invalid;</a>
+<a name="398"><span class="lineNum">     398 </span>            :   } else if (op_num &gt; 9) {</a>
+<a name="399"><span class="lineNum">     399 </span>            :     pos_error(ec_match_limit_for_symbolic_asm_operand, diag_pos);</a>
+<a name="400"><span class="lineNum">     400 </span>            :     result = (an_asm_operand_constraint_kind)aoc_invalid;</a>
+<a name="401"><span class="lineNum">     401 </span>            :   } else {</a>
+<a name="402"><span class="lineNum">     402 </span>            :     result = (an_asm_operand_constraint_kind)((int)aoc_match_0 + op_num);</a>
+<a name="403"><span class="lineNum">     403 </span>            :   }  /* if */</a>
+<a name="404"><span class="lineNum">     404 </span>            :   return result;</a>
+<a name="405"><span class="lineNum">     405 </span>            : }  /* get_symbolic_matching_constraint */</a>
+<a name="406"><span class="lineNum">     406 </span>            : </a>
+<a name="407"><span class="lineNum">     407 </span>            : #endif /* !RECORD_RAW_ASM_OPERAND_DESCRIPTIONS */</a>
+<a name="408"><span class="lineNum">     408 </span>            : </a>
+<a name="409"><span class="lineNum">     409 </span>            : #if RECORD_RAW_ASM_OPERAND_DESCRIPTIONS</a>
+<a name="410"><span class="lineNum">     410 </span>            : /* ARGSUSED */  /* operands, number_of_constraints are not used. */</a>
+<a name="411"><span class="lineNum">     411 </span>            : #endif /* RECORD_RAW_ASM_OPERAND_DESCRIPTIONS */</a>
+<a name="412"><span class="lineNum">     412 </span>            : static void process_asm_operand(an_asm_operand_ptr  operand,</a>
+<a name="413"><span class="lineNum">     413 </span>            :                                 an_asm_operand_ptr  operands,</a>
+<a name="414"><span class="lineNum">     414 </span>            :                                 an_expr_node_ptr    expr,</a>
+<a name="415"><span class="lineNum">     415 </span>            :                                 a_const_char        *cstring,</a>
+<a name="416"><span class="lineNum">     416 </span>            :                                 a_boolean           output,</a>
+<a name="417"><span class="lineNum">     417 </span>            :                                 int                 *number_of_constraints)</a>
+<a name="418"><span class="lineNum">     418 </span>            : /*</a>
+<a name="419"><span class="lineNum">     419 </span>            : Fill in *operand (a GNU asm operand description) using the cstring constraints</a>
+<a name="420"><span class="lineNum">     420 </span>            : string and the expr expression.  Output is TRUE if the call is for an output</a>
+<a name="421"><span class="lineNum">     421 </span>            : operand.  If RECORD_RAW_ASM_OPERAND_DESCRIPTIONS is FALSE, validate the</a>
+<a name="422"><span class="lineNum">     422 </span>            : semantic consistency of expr, cstring, and output: If an inconsistency is</a>
+<a name="423"><span class="lineNum">     423 </span>            : detected, an error is issued and *operand is set to &quot;error placemarker&quot; values.</a>
+<a name="424"><span class="lineNum">     424 </span>            : operands points to the operands created so far.  If *number_of_constraints is</a>
+<a name="425"><span class="lineNum">     425 </span>            : zero, this is the first operand and *number_of_constraints will be updated to</a>
+<a name="426"><span class="lineNum">     426 </span>            : the actual number of constraints found in the constraint string (and will check</a>
+<a name="427"><span class="lineNum">     427 </span>            : for that number on subsequent invocations).</a>
+<a name="428"><span class="lineNum">     428 </span>            : */</a>
+<a name="429"><span class="lineNum">     429 </span>            : {</a>
+<a name="430"><span class="lineNum">     430 </span>            : #if RECORD_RAW_ASM_OPERAND_DESCRIPTIONS</a>
+<a name="431"><span class="lineNum">     431 </span>            :   /* When the raw form is recorded, consistency checks are not performed by</a>
+<a name="432"><span class="lineNum">     432 </span>            :      the front end.  (A back end may be in a better position to perform those</a>
+<a name="433"><span class="lineNum">     433 </span>            :      checks.) */</a>
+<a name="434"><span class="lineNum">     434 </span>            :   operand-&gt;is_output_operand = output;</a>
+<a name="435"><span class="lineNum">     435 </span>            :   operand-&gt;constraints_string = cstring;</a>
+<a name="436"><span class="lineNum">     436 </span>            :   operand-&gt;expression = expr;</a>
+<a name="437"><span class="lineNum">     437 </span>            : #else /* !RECORD_RAW_ASM_OPERAND_DESCRIPTIONS */</a>
+<a name="438"><span class="lineNum">     438 </span>            :   an_asm_operand_constraint_ptr  *constraint;</a>
+<a name="439"><span class="lineNum">     439 </span>            :   an_asm_operand_constraint_kind ck;</a>
+<a name="440"><span class="lineNum">     440 </span>            :   an_asm_operand_modifier        modifiers;</a>
+<a name="441"><span class="lineNum">     441 </span>            :   a_boolean                      error_occurred = FALSE;</a>
+<a name="442"><span class="lineNum">     442 </span>            :   a_const_char                   *p;</a>
+<a name="443"><span class="lineNum">     443 </span>            :   int                            constraints = 1;</a>
+<a name="444"><span class="lineNum">     444 </span>            : #if !ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS</a>
+<a name="445"><span class="lineNum">     445 </span>            :   char                           errletter[2];</a>
+<a name="446"><span class="lineNum">     446 </span>            : #endif /* !ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS */</a>
+<a name="447"><span class="lineNum">     447 </span>            : </a>
+<a name="448"><span class="lineNum">     448 </span>            :   operand-&gt;constraints = NULL;</a>
+<a name="449"><span class="lineNum">     449 </span>            :   if (cstring == NULL || expr == NULL) {</a>
+<a name="450"><span class="lineNum">     450 </span>            :     /* Syntactically invalid -- an error has already been issued.</a>
+<a name="451"><span class="lineNum">     451 </span>            :        N.B. We do not bail out if expr is an error node, because it's</a>
+<a name="452"><span class="lineNum">     452 </span>            :        still possible and useful to validate the constraint string. */</a>
+<a name="453"><span class="lineNum">     453 </span>            :     goto error_return;</a>
+<a name="454"><span class="lineNum">     454 </span>            :   }  /* if */</a>
+<a name="455"><span class="lineNum">     455 </span>            : #if !ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS</a>
+<a name="456"><span class="lineNum">     456 </span>            :   errletter[1] = '\0';</a>
+<a name="457"><span class="lineNum">     457 </span>            : #endif /* !ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS */</a>
+<a name="458"><span class="lineNum">     458 </span>            :   /* Compute modifiers.  Note that the &quot;+&quot; and &quot;=&quot; modifiers must appear at the</a>
+<a name="459"><span class="lineNum">     459 </span>            :      beginning of the constraint string; other modifiers are handled as</a>
+<a name="460"><span class="lineNum">     460 </span>            :      &quot;constraints&quot; in the loop below. */</a>
+<a name="461"><span class="lineNum">     461 </span>            :   modifiers = (an_asm_operand_modifier)aom_invalid;</a>
+<a name="462"><span class="lineNum">     462 </span>            :   for (p = cstring; *p != '\0'; p++) {</a>
+<a name="463"><span class="lineNum">     463 </span>            :     switch (*p) {</a>
+<a name="464"><span class="lineNum">     464 </span>            :       /* Modifiers valid only at beginning of constraint string. */</a>
+<a name="465"><span class="lineNum">     465 </span>            :       case '=': modifiers |= (an_asm_operand_modifier)aom_output; break;</a>
+<a name="466"><span class="lineNum">     466 </span>            :       case '+': modifiers |= (an_asm_operand_modifier)aom_modify; break;</a>
+<a name="467"><span class="lineNum">     467 </span>            :       default:</a>
+<a name="468"><span class="lineNum">     468 </span>            :         goto done_with_modifiers;</a>
+<a name="469"><span class="lineNum">     469 </span>            :     }  /* switch */</a>
+<a name="470"><span class="lineNum">     470 </span>            :   }  /* for */</a>
+<a name="471"><span class="lineNum">     471 </span>            : done_with_modifiers:</a>
+<a name="472"><span class="lineNum">     472 </span>            :   if (modifiers == (an_asm_operand_modifier)aom_invalid) {</a>
+<a name="473"><span class="lineNum">     473 </span>            :     /* No modifiers on an input operand. */</a>
+<a name="474"><span class="lineNum">     474 </span>            :     modifiers = (an_asm_operand_modifier)aom_input;</a>
+<a name="475"><span class="lineNum">     475 </span>            :   }  /* if */</a>
+<a name="476"><span class="lineNum">     476 </span>            :   if (*p == '\0') {</a>
+<a name="477"><span class="lineNum">     477 </span>            :     pos_error(ec_missing_constraint_letter, &amp;operand-&gt;position);</a>
+<a name="478"><span class="lineNum">     478 </span>            :     goto error_return;</a>
+<a name="479"><span class="lineNum">     479 </span>            :   }  /* if */</a>
+<a name="480"><span class="lineNum">     480 </span>            :   constraint = &amp;operand-&gt;constraints;</a>
+<a name="481"><span class="lineNum">     481 </span>            :   /*lint --e{850} p modified in loop */</a>
+<a name="482"><span class="lineNum">     482 </span>            :   for (; *p != '\0'; p++) {</a>
+<a name="483"><span class="lineNum">     483 </span>            :     /* The next thing in the string should be a constraint letter. */</a>
+<a name="484"><span class="lineNum">     484 </span>            :     ck = (an_asm_operand_constraint_kind)aoc_invalid;</a>
+<a name="485"><span class="lineNum">     485 </span>            :     switch (*p) {</a>
+<a name="486"><span class="lineNum">     486 </span>            :       /* A constraint separator (multiple alternative constraint case). */</a>
+<a name="487"><span class="lineNum">     487 </span>            :       case ',':</a>
+<a name="488"><span class="lineNum">     488 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_end_of_constraint;</a>
+<a name="489"><span class="lineNum">     489 </span>            :         constraints++;</a>
+<a name="490"><span class="lineNum">     490 </span>            :         break;</a>
+<a name="491"><span class="lineNum">     491 </span>            :       /* Modifiers that can appear multiple times in a constraint string. */</a>
+<a name="492"><span class="lineNum">     492 </span>            :       case '&amp;':</a>
+<a name="493"><span class="lineNum">     493 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_mod_earlyclobber;</a>
+<a name="494"><span class="lineNum">     494 </span>            :         break;</a>
+<a name="495"><span class="lineNum">     495 </span>            :       case '%':</a>
+<a name="496"><span class="lineNum">     496 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_mod_commutative_ops;</a>
+<a name="497"><span class="lineNum">     497 </span>            :         break;</a>
+<a name="498"><span class="lineNum">     498 </span>            :       case '#':</a>
+<a name="499"><span class="lineNum">     499 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_mod_ignore;</a>
+<a name="500"><span class="lineNum">     500 </span>            :         break;</a>
+<a name="501"><span class="lineNum">     501 </span>            :       case '*':</a>
+<a name="502"><span class="lineNum">     502 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_mod_ignore_char;</a>
+<a name="503"><span class="lineNum">     503 </span>            :         break;</a>
+<a name="504"><span class="lineNum">     504 </span>            :       case '?':</a>
+<a name="505"><span class="lineNum">     505 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_mod_disparage_slightly;</a>
+<a name="506"><span class="lineNum">     506 </span>            :         break;</a>
+<a name="507"><span class="lineNum">     507 </span>            :       case '!':</a>
+<a name="508"><span class="lineNum">     508 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_mod_disparage_severely;</a>
+<a name="509"><span class="lineNum">     509 </span>            :         break;</a>
+<a name="510"><span class="lineNum">     510 </span>            :       /* Machine independent constraints - miscellaneous. */</a>
+<a name="511"><span class="lineNum">     511 </span>            :       case 'X':</a>
+<a name="512"><span class="lineNum">     512 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_any;     </a>
+<a name="513"><span class="lineNum">     513 </span>            :         break;</a>
+<a name="514"><span class="lineNum">     514 </span>            :       case 'g': </a>
+<a name="515"><span class="lineNum">     515 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_general; </a>
+<a name="516"><span class="lineNum">     516 </span>            :         break;</a>
+<a name="517"><span class="lineNum">     517 </span>            :       case '0': </a>
+<a name="518"><span class="lineNum">     518 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_match_0; </a>
+<a name="519"><span class="lineNum">     519 </span>            :         break;</a>
+<a name="520"><span class="lineNum">     520 </span>            :       case '1': </a>
+<a name="521"><span class="lineNum">     521 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_match_1; </a>
+<a name="522"><span class="lineNum">     522 </span>            :         break;</a>
+<a name="523"><span class="lineNum">     523 </span>            :       case '2': </a>
+<a name="524"><span class="lineNum">     524 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_match_2; </a>
+<a name="525"><span class="lineNum">     525 </span>            :         break;</a>
+<a name="526"><span class="lineNum">     526 </span>            :       case '3':</a>
+<a name="527"><span class="lineNum">     527 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_match_3; </a>
+<a name="528"><span class="lineNum">     528 </span>            :         break;</a>
+<a name="529"><span class="lineNum">     529 </span>            :       case '4': </a>
+<a name="530"><span class="lineNum">     530 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_match_4; </a>
+<a name="531"><span class="lineNum">     531 </span>            :         break;</a>
+<a name="532"><span class="lineNum">     532 </span>            :       case '5': </a>
+<a name="533"><span class="lineNum">     533 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_match_5; </a>
+<a name="534"><span class="lineNum">     534 </span>            :         break;</a>
+<a name="535"><span class="lineNum">     535 </span>            :       case '6': </a>
+<a name="536"><span class="lineNum">     536 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_match_6; </a>
+<a name="537"><span class="lineNum">     537 </span>            :         break;</a>
+<a name="538"><span class="lineNum">     538 </span>            :       case '7': </a>
+<a name="539"><span class="lineNum">     539 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_match_7; </a>
+<a name="540"><span class="lineNum">     540 </span>            :         break;</a>
+<a name="541"><span class="lineNum">     541 </span>            :       case '8': </a>
+<a name="542"><span class="lineNum">     542 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_match_8; </a>
+<a name="543"><span class="lineNum">     543 </span>            :         break;</a>
+<a name="544"><span class="lineNum">     544 </span>            :       case '9': </a>
+<a name="545"><span class="lineNum">     545 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_match_9; </a>
+<a name="546"><span class="lineNum">     546 </span>            :         break;</a>
+<a name="547"><span class="lineNum">     547 </span>            :       case '[':</a>
+<a name="548"><span class="lineNum">     548 </span>            :         ck = get_symbolic_matching_constraint(&amp;p, operands,</a>
+<a name="549"><span class="lineNum">     549 </span>            :                                               &amp;operand-&gt;position);</a>
+<a name="550"><span class="lineNum">     550 </span>            :         error_occurred = (ck == (an_asm_operand_constraint_kind)aoc_invalid);</a>
+<a name="551"><span class="lineNum">     551 </span>            :         break;</a>
+<a name="552"><span class="lineNum">     552 </span>            :       /* Registers */</a>
+<a name="553"><span class="lineNum">     553 </span>            :       case 'r': </a>
+<a name="554"><span class="lineNum">     554 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_reg_integer; </a>
+<a name="555"><span class="lineNum">     555 </span>            :         break;</a>
+<a name="556"><span class="lineNum">     556 </span>            :       case 'f': </a>
+<a name="557"><span class="lineNum">     557 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_reg_float;   </a>
+<a name="558"><span class="lineNum">     558 </span>            :         break;</a>
+<a name="559"><span class="lineNum">     559 </span>            :       /* Memory */</a>
+<a name="560"><span class="lineNum">     560 </span>            :       case 'm': </a>
+<a name="561"><span class="lineNum">     561 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_mem_any;</a>
+<a name="562"><span class="lineNum">     562 </span>            :         break;</a>
+<a name="563"><span class="lineNum">     563 </span>            :       case 'p': </a>
+<a name="564"><span class="lineNum">     564 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_mem_load;</a>
+<a name="565"><span class="lineNum">     565 </span>            :         break;</a>
+<a name="566"><span class="lineNum">     566 </span>            :       case 'o': </a>
+<a name="567"><span class="lineNum">     567 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_mem_offset;</a>
+<a name="568"><span class="lineNum">     568 </span>            :         break;</a>
+<a name="569"><span class="lineNum">     569 </span>            :       case 'V': </a>
+<a name="570"><span class="lineNum">     570 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_mem_nonoffset;</a>
+<a name="571"><span class="lineNum">     571 </span>            :         break;</a>
+<a name="572"><span class="lineNum">     572 </span>            :       case '&lt;': </a>
+<a name="573"><span class="lineNum">     573 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_mem_autoinc;</a>
+<a name="574"><span class="lineNum">     574 </span>            :         break;</a>
+<a name="575"><span class="lineNum">     575 </span>            :       case '&gt;': </a>
+<a name="576"><span class="lineNum">     576 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_mem_autodec;</a>
+<a name="577"><span class="lineNum">     577 </span>            :         break;</a>
+<a name="578"><span class="lineNum">     578 </span>            :       /* Immediates */</a>
+<a name="579"><span class="lineNum">     579 </span>            :       case 'i':</a>
+<a name="580"><span class="lineNum">     580 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_imm_int;    </a>
+<a name="581"><span class="lineNum">     581 </span>            :         break;</a>
+<a name="582"><span class="lineNum">     582 </span>            :       case 'n':</a>
+<a name="583"><span class="lineNum">     583 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_imm_number; </a>
+<a name="584"><span class="lineNum">     584 </span>            :         break;</a>
+<a name="585"><span class="lineNum">     585 </span>            :       case 's':</a>
+<a name="586"><span class="lineNum">     586 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_imm_symbol; </a>
+<a name="587"><span class="lineNum">     587 </span>            :         break;</a>
+<a name="588"><span class="lineNum">     588 </span>            :       case 'E':</a>
+<a name="589"><span class="lineNum">     589 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_imm_float;  </a>
+<a name="590"><span class="lineNum">     590 </span>            :         break;</a>
+<a name="591"><span class="lineNum">     591 </span>            :       case 'F':</a>
+<a name="592"><span class="lineNum">     592 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_imm_float;  </a>
+<a name="593"><span class="lineNum">     593 </span>            :         break;</a>
+<a name="594"><span class="lineNum">     594 </span>            : #if GNU_X86_ASM_EXTENSIONS_ALLOWED</a>
+<a name="595"><span class="lineNum">     595 </span>            :       /* x86 specific constraints - registers */</a>
+<a name="596"><span class="lineNum">     596 </span>            :       case 'a':</a>
+<a name="597"><span class="lineNum">     597 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_reg_a;         </a>
+<a name="598"><span class="lineNum">     598 </span>            :         break;</a>
+<a name="599"><span class="lineNum">     599 </span>            :       case 'b':</a>
+<a name="600"><span class="lineNum">     600 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_reg_b;         </a>
+<a name="601"><span class="lineNum">     601 </span>            :         break;</a>
+<a name="602"><span class="lineNum">     602 </span>            :       case 'c':</a>
+<a name="603"><span class="lineNum">     603 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_reg_c;         </a>
+<a name="604"><span class="lineNum">     604 </span>            :         break;</a>
+<a name="605"><span class="lineNum">     605 </span>            :       case 'd':</a>
+<a name="606"><span class="lineNum">     606 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_reg_d;         </a>
+<a name="607"><span class="lineNum">     607 </span>            :         break;</a>
+<a name="608"><span class="lineNum">     608 </span>            :       case 'S':</a>
+<a name="609"><span class="lineNum">     609 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_reg_si;        </a>
+<a name="610"><span class="lineNum">     610 </span>            :         break;</a>
+<a name="611"><span class="lineNum">     611 </span>            :       case 'D':</a>
+<a name="612"><span class="lineNum">     612 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_reg_di;        </a>
+<a name="613"><span class="lineNum">     613 </span>            :         break;</a>
+<a name="614"><span class="lineNum">     614 </span>            :       case 'R':</a>
+<a name="615"><span class="lineNum">     615 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_reg_legacy;    </a>
+<a name="616"><span class="lineNum">     616 </span>            :         break;</a>
+<a name="617"><span class="lineNum">     617 </span>            :       case 'q':</a>
+<a name="618"><span class="lineNum">     618 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_reg_q;         </a>
+<a name="619"><span class="lineNum">     619 </span>            :         break;</a>
+<a name="620"><span class="lineNum">     620 </span>            :       case 'Q':</a>
+<a name="621"><span class="lineNum">     621 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_reg_Q;         </a>
+<a name="622"><span class="lineNum">     622 </span>            :         break;</a>
+<a name="623"><span class="lineNum">     623 </span>            :       case 'A':</a>
+<a name="624"><span class="lineNum">     624 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_reg_ad;        </a>
+<a name="625"><span class="lineNum">     625 </span>            :         break;</a>
+<a name="626"><span class="lineNum">     626 </span>            :       case 't':</a>
+<a name="627"><span class="lineNum">     627 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_reg_float_tos; </a>
+<a name="628"><span class="lineNum">     628 </span>            :         break;</a>
+<a name="629"><span class="lineNum">     629 </span>            :       case 'u':</a>
+<a name="630"><span class="lineNum">     630 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_reg_float_second;</a>
+<a name="631"><span class="lineNum">     631 </span>            :         break;</a>
+<a name="632"><span class="lineNum">     632 </span>            :       case 'x':</a>
+<a name="633"><span class="lineNum">     633 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_reg_sse;       </a>
+<a name="634"><span class="lineNum">     634 </span>            :         break;</a>
+<a name="635"><span class="lineNum">     635 </span>            :       case 'Y':</a>
+<a name="636"><span class="lineNum">     636 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_reg_sse2;      </a>
+<a name="637"><span class="lineNum">     637 </span>            :         break;</a>
+<a name="638"><span class="lineNum">     638 </span>            :       case 'y':</a>
+<a name="639"><span class="lineNum">     639 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_reg_mmx;       </a>
+<a name="640"><span class="lineNum">     640 </span>            :         break;</a>
+<a name="641"><span class="lineNum">     641 </span>            :       /* Immediates */</a>
+<a name="642"><span class="lineNum">     642 </span>            :       case 'I':</a>
+<a name="643"><span class="lineNum">     643 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_imm_short_shift;</a>
+<a name="644"><span class="lineNum">     644 </span>            :         break;</a>
+<a name="645"><span class="lineNum">     645 </span>            :       case 'J':</a>
+<a name="646"><span class="lineNum">     646 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_imm_long_shift;</a>
+<a name="647"><span class="lineNum">     647 </span>            :         break;</a>
+<a name="648"><span class="lineNum">     648 </span>            :       case 'M':</a>
+<a name="649"><span class="lineNum">     649 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_imm_lea_shift; </a>
+<a name="650"><span class="lineNum">     650 </span>            :         break;</a>
+<a name="651"><span class="lineNum">     651 </span>            :       case 'K':</a>
+<a name="652"><span class="lineNum">     652 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_imm_signed8;   </a>
+<a name="653"><span class="lineNum">     653 </span>            :         break;</a>
+<a name="654"><span class="lineNum">     654 </span>            :       case 'N':</a>
+<a name="655"><span class="lineNum">     655 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_imm_unsigned8; </a>
+<a name="656"><span class="lineNum">     656 </span>            :         break;</a>
+<a name="657"><span class="lineNum">     657 </span>            :       case 'L':</a>
+<a name="658"><span class="lineNum">     658 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_imm_and_zext;  </a>
+<a name="659"><span class="lineNum">     659 </span>            :         break;</a>
+<a name="660"><span class="lineNum">     660 </span>            :       case 'G':</a>
+<a name="661"><span class="lineNum">     661 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_imm_80387;     </a>
+<a name="662"><span class="lineNum">     662 </span>            :         break;</a>
+<a name="663"><span class="lineNum">     663 </span>            :       case 'H':</a>
+<a name="664"><span class="lineNum">     664 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_imm_sse;       </a>
+<a name="665"><span class="lineNum">     665 </span>            :         break;</a>
+<a name="666"><span class="lineNum">     666 </span>            :       case 'e':</a>
+<a name="667"><span class="lineNum">     667 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_imm_sext32;    </a>
+<a name="668"><span class="lineNum">     668 </span>            :         break;</a>
+<a name="669"><span class="lineNum">     669 </span>            :       case 'Z':</a>
+<a name="670"><span class="lineNum">     670 </span>            :         ck = (an_asm_operand_constraint_kind)aoc_imm_zext32;    </a>
+<a name="671"><span class="lineNum">     671 </span>            :         break;</a>
+<a name="672"><span class="lineNum">     672 </span>            : #endif /* GNU_X86_ASM_EXTENSIONS_ALLOWED */</a>
+<a name="673"><span class="lineNum">     673 </span>            :       default:</a>
+<a name="674"><span class="lineNum">     674 </span>            : #if !ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS</a>
+<a name="675"><span class="lineNum">     675 </span>            :         errletter[0] = *p;</a>
+<a name="676"><span class="lineNum">     676 </span>            :         pos_st_error(ispunct((unsigned char)*p) ? </a>
+<a name="677"><span class="lineNum">     677 </span>            :                      ec_bad_asm_constraint_modifier : </a>
+<a name="678"><span class="lineNum">     678 </span>            :                      ec_bad_asm_constraint_letter,</a>
+<a name="679"><span class="lineNum">     679 </span>            :                      &amp;operand-&gt;position, errletter);</a>
+<a name="680"><span class="lineNum">     680 </span>            :         error_occurred = TRUE;</a>
+<a name="681"><span class="lineNum">     681 </span>            : #endif /* !ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS */</a>
+<a name="682"><span class="lineNum">     682 </span>            :         break;</a>
+<a name="683"><span class="lineNum">     683 </span>            :     }  /* switch */</a>
+<a name="684"><span class="lineNum">     684 </span>            :     /* Create a new constraint and add it to the list.  */</a>
+<a name="685"><span class="lineNum">     685 </span>            :     if (ck != (an_asm_operand_constraint_kind)aoc_invalid) {</a>
+<a name="686"><span class="lineNum">     686 </span>            :       *constraint = alloc_asm_operand_constraint(ck);</a>
+<a name="687"><span class="lineNum">     687 </span>            :       constraint = &amp;(*constraint)-&gt;next;</a>
+<a name="688"><span class="lineNum">     688 </span>            :     }  /* if */</a>
+<a name="689"><span class="lineNum">     689 </span>            :   }  /* for */</a>
+<a name="690"><span class="lineNum">     690 </span>            :   if (error_occurred) {</a>
+<a name="691"><span class="lineNum">     691 </span>            :     goto error_return;</a>
+<a name="692"><span class="lineNum">     692 </span>            :   }  /* if */</a>
+<a name="693"><span class="lineNum">     693 </span>            :   /* Semantic validation. */</a>
+<a name="694"><span class="lineNum">     694 </span>            :   if (output &amp;&amp; !(modifiers &amp; (an_asm_operand_modifier)aom_output)) {</a>
+<a name="695"><span class="lineNum">     695 </span>            :     pos_error(ec_asm_output_must_have_output_mod, &amp;operand-&gt;position);</a>
+<a name="696"><span class="lineNum">     696 </span>            :     goto error_return;</a>
+<a name="697"><span class="lineNum">     697 </span>            :   } else if (!output &amp;&amp; (modifiers &amp; (an_asm_operand_modifier)aom_output)) {</a>
+<a name="698"><span class="lineNum">     698 </span>            :     pos_error(ec_asm_input_must_not_have_output_mod, &amp;operand-&gt;position);</a>
+<a name="699"><span class="lineNum">     699 </span>            :     goto error_return;</a>
+<a name="700"><span class="lineNum">     700 </span>            :   }  /* if */</a>
+<a name="701"><span class="lineNum">     701 </span>            :   if (*number_of_constraints == 0) {</a>
+<a name="702"><span class="lineNum">     702 </span>            :     /* The number of constraints in each constraint string has not yet</a>
+<a name="703"><span class="lineNum">     703 </span>            :        been established; set it now. */</a>
+<a name="704"><span class="lineNum">     704 </span>            :     *number_of_constraints = constraints;</a>
+<a name="705"><span class="lineNum">     705 </span>            :   } else if (*number_of_constraints != constraints &amp;&amp;</a>
+<a name="706"><span class="lineNum">     706 </span>            :              *number_of_constraints != -1) {</a>
+<a name="707"><span class="lineNum">     707 </span>            :     /* Each multi-alternative constraint string must have the same number of</a>
+<a name="708"><span class="lineNum">     708 </span>            :        constraints. */</a>
+<a name="709"><span class="lineNum">     709 </span>            :     pos_error(ec_constraint_number_mismatch, &amp;operand-&gt;position);</a>
+<a name="710"><span class="lineNum">     710 </span>            :     /* Use -1 so we don't get multiple instances of the same error. */</a>
+<a name="711"><span class="lineNum">     711 </span>            :     *number_of_constraints = -1;</a>
+<a name="712"><span class="lineNum">     712 </span>            :     goto error_return;</a>
+<a name="713"><span class="lineNum">     713 </span>            :   }  /* if */</a>
+<a name="714"><span class="lineNum">     714 </span>            :   if (validate_expr_for_constraints(expr, operand-&gt;constraints)) {</a>
+<a name="715"><span class="lineNum">     715 </span>            :     operand-&gt;expression = expr;</a>
+<a name="716"><span class="lineNum">     716 </span>            :     operand-&gt;modifiers = modifiers;</a>
+<a name="717"><span class="lineNum">     717 </span>            :   } else {</a>
+<a name="718"><span class="lineNum">     718 </span>            : error_return:</a>
+<a name="719"><span class="lineNum">     719 </span>            :     operand-&gt;expression = error_node();</a>
+<a name="720"><span class="lineNum">     720 </span>            :     operand-&gt;modifiers = (an_asm_operand_modifier)aom_invalid;</a>
+<a name="721"><span class="lineNum">     721 </span>            :   }  /* if */</a>
+<a name="722"><span class="lineNum">     722 </span>            : #endif /* RECORD_RAW_ASM_OPERAND_DESCRIPTIONS */</a>
+<a name="723"><span class="lineNum">     723 </span>            : }  /* process_asm_operand */</a>
+<a name="724"><span class="lineNum">     724 </span>            : </a>
+<a name="725"><span class="lineNum">     725 </span>            : </a>
+<a name="726"><span class="lineNum">     726 </span>            : /*</a>
+<a name="727"><span class="lineNum">     727 </span>            : Machine-specific tables used by validate_operands_and_clobbers.</a>
+<a name="728"><span class="lineNum">     728 </span>            : */</a>
+<a name="729"><span class="lineNum">     729 </span>            : #if !RECORD_RAW_ASM_OPERAND_DESCRIPTIONS</a>
+<a name="730"><span class="lineNum">     730 </span>            : typedef struct single_register_constraint {</a>
+<a name="731"><span class="lineNum">     731 </span>            :   /* Structure to hold a constraint-to-register mapping. */</a>
+<a name="732"><span class="lineNum">     732 </span>            :   an_asm_operand_constraint_kind cons;</a>
+<a name="733"><span class="lineNum">     733 </span>            :   a_named_register               reg;</a>
+<a name="734"><span class="lineNum">     734 </span>            : } single_register_constraint;</a>
+<a name="735"><span class="lineNum">     735 </span>            : </a>
+<a name="736"><span class="lineNum">     736 </span>            : </a>
+<a name="737"><span class="lineNum">     737 </span>            : static single_register_constraint single_register_constraints[] = {</a>
+<a name="738"><span class="lineNum">     738 </span>            : #if GNU_X86_ASM_EXTENSIONS_ALLOWED</a>
+<a name="739"><span class="lineNum">     739 </span>            :   { (an_asm_operand_constraint_kind)aoc_reg_a, (a_named_register)anr_a },</a>
+<a name="740"><span class="lineNum">     740 </span>            :   { (an_asm_operand_constraint_kind)aoc_reg_b, (a_named_register)anr_b },</a>
+<a name="741"><span class="lineNum">     741 </span>            :   { (an_asm_operand_constraint_kind)aoc_reg_c, (a_named_register)anr_c },</a>
+<a name="742"><span class="lineNum">     742 </span>            :   { (an_asm_operand_constraint_kind)aoc_reg_d, (a_named_register)anr_d },</a>
+<a name="743"><span class="lineNum">     743 </span>            :   { (an_asm_operand_constraint_kind)aoc_reg_si, (a_named_register)anr_si },</a>
+<a name="744"><span class="lineNum">     744 </span>            :   { (an_asm_operand_constraint_kind)aoc_reg_di, (a_named_register)anr_di },</a>
+<a name="745"><span class="lineNum">     745 </span>            :   /* 't' and 'u' (x86 reg stack) are not included in this list,</a>
+<a name="746"><span class="lineNum">     746 </span>            :      because the rules are not properly handled by the generic code</a>
+<a name="747"><span class="lineNum">     747 </span>            :      below.  Machine-specific code must be written to handle them. */</a>
+<a name="748"><span class="lineNum">     748 </span>            : #endif /* GNU_X86_ASM_EXTENSIONS_ALLOWED */</a>
+<a name="749"><span class="lineNum">     749 </span>            :   { (an_asm_operand_constraint_kind)aoc_last, (a_named_register)anr_last }</a>
+<a name="750"><span class="lineNum">     750 </span>            : };</a>
+<a name="751"><span class="lineNum">     751 </span>            : </a>
+<a name="752"><span class="lineNum">     752 </span>            : #endif /* !RECORD_RAW_ASM_OPERAND_DESCRIPTIONS */</a>
+<a name="753"><span class="lineNum">     753 </span>            : </a>
+<a name="754"><span class="lineNum">     754 </span>            : static a_named_register fixed_registers[] = {</a>
+<a name="755"><span class="lineNum">     755 </span>            : #if GNU_X86_ASM_EXTENSIONS_ALLOWED</a>
+<a name="756"><span class="lineNum">     756 </span>            :   (a_named_register)anr_bp, (a_named_register)anr_sp,</a>
+<a name="757"><span class="lineNum">     757 </span>            : #endif /* GNU_X86_ASM_EXTENSIONS_ALLOWED */</a>
+<a name="758"><span class="lineNum">     758 </span>            :   (a_named_register)anr_last</a>
+<a name="759"><span class="lineNum">     759 </span>            : };</a>
+<a name="760"><span class="lineNum">     760 </span>            : </a>
+<a name="761"><span class="lineNum">     761 </span>            : </a>
+<a name="762"><span class="lineNum">     762 </span><span class="lineNoCov">          0 : void validate_operands_and_clobbers(an_asm_entry_ptr  asm_entry)</span></a>
+<a name="763"><span class="lineNum">     763 </span>            : /*</a>
+<a name="764"><span class="lineNum">     764 </span>            : Validate the given asm entry.  The machine-independent portion of this code</a>
+<a name="765"><span class="lineNum">     765 </span>            : simply checks that no duplicates appear in the clobbers list, no single-</a>
+<a name="766"><span class="lineNum">     766 </span>            : register constraint is used when the corresponding register is clobbered,</a>
+<a name="767"><span class="lineNum">     767 </span>            : and no un-clobberable registers appear in the clobber list.  It also</a>
+<a name="768"><span class="lineNum">     768 </span>            : verifies that symbolic operand names appearing in the asm string itself do</a>
+<a name="769"><span class="lineNum">     769 </span>            : refer to actual operands.  Back end authors should augment this code to do</a>
+<a name="770"><span class="lineNum">     770 </span>            : complete validation of the lists; it is easy to write an asm statement with</a>
+<a name="771"><span class="lineNum">     771 </span>            : unsatisfiable register allocation requirements that does not trip over any</a>
+<a name="772"><span class="lineNum">     772 </span>            : of the machine-independent checks.</a>
+<a name="773"><span class="lineNum">     773 </span>            : </a>
+<a name="774"><span class="lineNum">     774 </span>            : Note that this function never modifies the operands or clobbers lists,</a>
+<a name="775"><span class="lineNum">     775 </span>            : even if they are invalid.</a>
+<a name="776"><span class="lineNum">     776 </span>            : */</a>
+<a name="777"><span class="lineNum">     777 </span>            : {</a>
+<a name="778"><span class="lineNum">     778 </span>            : #if RECORD_RAW_ASM_OPERAND_DESCRIPTIONS</a>
+<a name="779"><span class="lineNum">     779 </span>            :   /* Only raw operand descriptions are recorded: We do not attempt to</a>
+<a name="780"><span class="lineNum">     780 </span>            :      understand the meaning of those descriptions and therefore we do not</a>
+<a name="781"><span class="lineNum">     781 </span>            :      diagnose semantic errors in them.  We can however diagnose duplicate</a>
+<a name="782"><span class="lineNum">     782 </span>            :      clobbers and attempts to clobber fixed registers. */</a>
+<a name="783"><span class="lineNum">     783 </span><span class="lineNoCov">          0 :   a_byte                     regs_clobbered[(int)anr_last];</span></a>
+<a name="784"><span class="lineNum">     784 </span><span class="lineNoCov">          0 :   a_named_register_list_ptr  clobber, clobbers = asm_entry-&gt;clobbers;</span></a>
+<a name="785"><span class="lineNum">     785 </span><span class="lineNoCov">          0 :   int                        i;</span></a>
+<a name="786"><span class="lineNum">     786 </span><span class="lineNoCov">          0 :   a_named_register           r;</span></a>
+<a name="787"><span class="lineNum">     787 </span>            : </a>
+<a name="788"><span class="lineNum">     788 </span><span class="lineNoCov">          0 :   memzero((char*)regs_clobbered, sizeof regs_clobbered);</span></a>
+<a name="789"><span class="lineNum">     789 </span><span class="lineNoCov">          0 :   for (clobber = clobbers; clobber != NULL; clobber = clobber-&gt;next) {</span></a>
+<a name="790"><span class="lineNum">     790 </span><span class="lineNoCov">          0 :     r = clobber-&gt;reg;</span></a>
+<a name="791"><span class="lineNum">     791 </span>            : #if ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS</a>
+<a name="792"><span class="lineNum">     792 </span>            :     /* Ignore entries for unrecognized registers. */</a>
+<a name="793"><span class="lineNum">     793 </span><span class="lineNoCov">          0 :     if (r == (a_named_register)anr_unrecognized) continue;</span></a>
+<a name="794"><span class="lineNum">     794 </span>            : #endif /* ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS */</a>
+<a name="795"><span class="lineNum">     795 </span><span class="lineNoCov">          0 :     if (r != (a_named_register)anr_invalid &amp;&amp; regs_clobbered[(int)r] == 1) {</span></a>
+<a name="796"><span class="lineNum">     796 </span>            :       /* Test clobbered == 1 so the diagnostic is issued at most once per</a>
+<a name="797"><span class="lineNum">     797 </span>            :          register. */</a>
+<a name="798"><span class="lineNum">     798 </span><span class="lineNoCov">          0 :       pos_st_warning(ec_register_clobbered_twice,</span></a>
+<a name="799"><span class="lineNum">     799 </span>            :                      &amp;asm_entry-&gt;source_corresp.decl_position,</a>
+<a name="800"><span class="lineNum">     800 </span>            :                      named_register_names[(int)r]);</a>
+<a name="801"><span class="lineNum">     801 </span>            :     }  /* if */</a>
+<a name="802"><span class="lineNum">     802 </span><span class="lineNoCov">          0 :     ++regs_clobbered[(int)r];</span></a>
+<a name="803"><span class="lineNum">     803 </span>            :   }  /* for */</a>
+<a name="804"><span class="lineNum">     804 </span><span class="lineNoCov">          0 :   for (i = 0; fixed_registers[i] != (a_named_register)anr_last; i++) {</span></a>
+<a name="805"><span class="lineNum">     805 </span><span class="lineNoCov">          0 :     r = fixed_registers[i];</span></a>
+<a name="806"><span class="lineNum">     806 </span>            : #if ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS</a>
+<a name="807"><span class="lineNum">     807 </span>            :     /* Ignore entries for unrecognized registers. */</a>
+<a name="808"><span class="lineNum">     808 </span><span class="lineNoCov">          0 :     if (r == (a_named_register)anr_unrecognized) continue;</span></a>
+<a name="809"><span class="lineNum">     809 </span>            : #endif /* ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS */</a>
+<a name="810"><span class="lineNum">     810 </span><span class="lineNoCov">          0 :     if (regs_clobbered[(int)r]) {</span></a>
+<a name="811"><span class="lineNum">     811 </span><span class="lineNoCov">          0 :       pos_st_error(ec_fixed_register_clobbered,</span></a>
+<a name="812"><span class="lineNum">     812 </span>            :                    &amp;asm_entry-&gt;source_corresp.decl_position,</a>
+<a name="813"><span class="lineNum">     813 </span>            :                    named_register_names[(int)r]);</a>
+<a name="814"><span class="lineNum">     814 </span>            :     }  /* if */</a>
+<a name="815"><span class="lineNum">     815 </span>            :   }  /* for */</a>
+<a name="816"><span class="lineNum">     816 </span>            : #else /* !RECORD_RAW_ASM_OPERAND_DESCRIPTIONS */</a>
+<a name="817"><span class="lineNum">     817 </span>            :   /* Asm operand descriptions are parsed and can therefore be diagnosed for</a>
+<a name="818"><span class="lineNum">     818 </span>            :      consistency. */</a>
+<a name="819"><span class="lineNum">     819 </span>            :   /* For multi-alternative constraints, each set of constraints needs its</a>
+<a name="820"><span class="lineNum">     820 </span>            :      own check.  The local data structures here assume a maximum number of</a>
+<a name="821"><span class="lineNum">     821 </span>            :      constraints (which matches GNU's limit); no checking is done on</a>
+<a name="822"><span class="lineNum">     822 </span>            :      constraints over this limit (a diagnostic is issued). */</a>
+<a name="823"><span class="lineNum">     823 </span>            : #define MAX_CONSTRAINTS 30 /* The maximum number of checked constraints. */</a>
+<a name="824"><span class="lineNum">     824 </span>            :   a_byte                        regs_clobbered[(int)anr_last][MAX_CONSTRAINTS];</a>
+<a name="825"><span class="lineNum">     825 </span>            :   a_byte                        regs_used_in[(int)anr_last][MAX_CONSTRAINTS];</a>
+<a name="826"><span class="lineNum">     826 </span>            :   a_byte                        regs_used_out[(int)anr_last][MAX_CONSTRAINTS];</a>
+<a name="827"><span class="lineNum">     827 </span>            :   an_asm_operand_ptr            aop;</a>
+<a name="828"><span class="lineNum">     828 </span>            :   a_named_register_list_ptr     clobber, clobbers = asm_entry-&gt;clobbers;</a>
+<a name="829"><span class="lineNum">     829 </span>            :   an_asm_operand_constraint_ptr c;</a>
+<a name="830"><span class="lineNum">     830 </span>            :   int                           i, constraint, constraint_limit;</a>
+<a name="831"><span class="lineNum">     831 </span>            :   a_named_register              r;</a>
+<a name="832"><span class="lineNum">     832 </span>            : </a>
+<a name="833"><span class="lineNum">     833 </span>            :   memzero((char*)regs_clobbered, sizeof regs_clobbered);</a>
+<a name="834"><span class="lineNum">     834 </span>            :   memzero((char*)regs_used_in, sizeof regs_used_in);</a>
+<a name="835"><span class="lineNum">     835 </span>            :   memzero((char*)regs_used_out, sizeof regs_used_out);</a>
+<a name="836"><span class="lineNum">     836 </span>            :   for (aop = asm_entry-&gt;operands; aop != NULL; aop = aop-&gt;next) {</a>
+<a name="837"><span class="lineNum">     837 </span>            :     for (i = 0;</a>
+<a name="838"><span class="lineNum">     838 </span>            :          single_register_constraints[i].cons !=</a>
+<a name="839"><span class="lineNum">     839 </span>            :                                       (an_asm_operand_constraint_kind)aoc_last;</a>
+<a name="840"><span class="lineNum">     840 </span>            :          i++) {</a>
+<a name="841"><span class="lineNum">     841 </span>            :       a_boolean  input =</a>
+<a name="842"><span class="lineNum">     842 </span>            :                     (aop-&gt;modifiers &amp; (an_asm_operand_modifier)aom_input) != 0;</a>
+<a name="843"><span class="lineNum">     843 </span>            :       a_boolean  output =</a>
+<a name="844"><span class="lineNum">     844 </span>            :                    (aop-&gt;modifiers &amp; (an_asm_operand_modifier)aom_output) != 0;</a>
+<a name="845"><span class="lineNum">     845 </span>            :       constraint = 0;</a>
+<a name="846"><span class="lineNum">     846 </span>            :       for (c = aop-&gt;constraints; c != NULL; c = c-&gt;next) {</a>
+<a name="847"><span class="lineNum">     847 </span>            :         if (c-&gt;kind == (an_asm_operand_constraint_kind)aoc_end_of_constraint) {</a>
+<a name="848"><span class="lineNum">     848 </span>            :           /* This is a multiple alternative constraint string; each set of</a>
+<a name="849"><span class="lineNum">     849 </span>            :              constraints is checked independently of the others. */</a>
+<a name="850"><span class="lineNum">     850 </span>            :           constraint++;</a>
+<a name="851"><span class="lineNum">     851 </span>            :           if (constraint &gt;= MAX_CONSTRAINTS) {</a>
+<a name="852"><span class="lineNum">     852 </span>            :             /* The number of constraints exceeds the space allocated for</a>
+<a name="853"><span class="lineNum">     853 </span>            :                constraint checking; don't check the remaining constraints. */</a>
+<a name="854"><span class="lineNum">     854 </span>            :             pos_diagnostic(es_discretionary_error, ec_too_many_constraints,</a>
+<a name="855"><span class="lineNum">     855 </span>            :                            &amp;aop-&gt;position);</a>
+<a name="856"><span class="lineNum">     856 </span>            :             goto clobber_check;</a>
+<a name="857"><span class="lineNum">     857 </span>            :           }  /* if */</a>
+<a name="858"><span class="lineNum">     858 </span>            :         } else if (c-&gt;kind ==</a>
+<a name="859"><span class="lineNum">     859 </span>            :                         (an_asm_operand_constraint_kind)aoc_mod_earlyclobber) {</a>
+<a name="860"><span class="lineNum">     860 </span>            :           if (asm_entry-&gt;number_of_constraints == 1 &amp;&amp; !clang_mode) {</a>
+<a name="861"><span class="lineNum">     861 </span>            :             /* Indicate that the register is clobbered.  Clang doesn't appear</a>
+<a name="862"><span class="lineNum">     862 </span>            :                to do any earlyclobber checks. */</a>
+<a name="863"><span class="lineNum">     863 </span>            :             input = output = TRUE;</a>
+<a name="864"><span class="lineNum">     864 </span>            :           } else {</a>
+<a name="865"><span class="lineNum">     865 </span>            :             /* GNU seems to be inconsistent about issuing errors related to</a>
+<a name="866"><span class="lineNum">     866 </span>            :                earlyclobbers in multi-alternative constraints.  For example,</a>
+<a name="867"><span class="lineNum">     867 </span>            :                it issues one error in this case:</a>
+<a name="868"><span class="lineNum">     868 </span>            : </a>
+<a name="869"><span class="lineNum">     869 </span>            :                  asm(&quot;foo %1,%0;&quot; : &quot;=&amp;a,&amp;b&quot; (out) : &quot;b,b&quot; (in)); // Okay</a>
+<a name="870"><span class="lineNum">     870 </span>            :                  asm(&quot;foo %1,%0;&quot; : &quot;=&amp;a,&amp;b&quot; (out) : &quot;a,a&quot; (in)); // Error</a>
+<a name="871"><span class="lineNum">     871 </span>            :                  asm(&quot;foo %1,%0;&quot; : &quot;=&amp;b,&amp;a&quot; (out) : &quot;b,b&quot; (in)); // Okay</a>
+<a name="872"><span class="lineNum">     872 </span>            :                  asm(&quot;foo %1,%0;&quot; : &quot;=&amp;b,&amp;a&quot; (out) : &quot;a,a&quot; (in)); // Okay</a>
+<a name="873"><span class="lineNum">     873 </span>            : </a>
+<a name="874"><span class="lineNum">     874 </span>            :                Until a better understanding of GNU's behavior is attained,</a>
+<a name="875"><span class="lineNum">     875 </span>            :                suppress any error checking related to earlyclobbers when</a>
+<a name="876"><span class="lineNum">     876 </span>            :                multi-alternative constraints are used. */</a>
+<a name="877"><span class="lineNum">     877 </span>            :           }  /* if */</a>
+<a name="878"><span class="lineNum">     878 </span>            :         } else if (c-&gt;kind == single_register_constraints[i].cons) {</a>
+<a name="879"><span class="lineNum">     879 </span>            :           r = single_register_constraints[i].reg;</a>
+<a name="880"><span class="lineNum">     880 </span>            : #if ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS</a>
+<a name="881"><span class="lineNum">     881 </span>            :           /* Ignore entries for unrecognized registers. */</a>
+<a name="882"><span class="lineNum">     882 </span>            :           if (r == (a_named_register)anr_unrecognized) continue;</a>
+<a name="883"><span class="lineNum">     883 </span>            : #endif /* ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS */</a>
+<a name="884"><span class="lineNum">     884 </span>            :           /* Test used == 1 so the error is issued once per register. */</a>
+<a name="885"><span class="lineNum">     885 </span>            :           if (r != (a_named_register)anr_invalid &amp;&amp;</a>
+<a name="886"><span class="lineNum">     886 </span>            :               ((input &amp;&amp; regs_used_in[(int)r][constraint] == 1) ||</a>
+<a name="887"><span class="lineNum">     887 </span>            :                (output &amp;&amp; regs_used_out[(int)r][constraint] == 1))) {</a>
+<a name="888"><span class="lineNum">     888 </span>            :             pos_st_error(ec_register_used_twice, &amp;aop-&gt;position,</a>
+<a name="889"><span class="lineNum">     889 </span>            :                          named_register_names[(int)r]);</a>
+<a name="890"><span class="lineNum">     890 </span>            :           }  /* if */</a>
+<a name="891"><span class="lineNum">     891 </span>            :           if (input) ++regs_used_in[(int)r][constraint];</a>
+<a name="892"><span class="lineNum">     892 </span>            :           if (output) ++regs_used_out[(int)r][constraint];</a>
+<a name="893"><span class="lineNum">     893 </span>            :         }  /* if */</a>
+<a name="894"><span class="lineNum">     894 </span>            :       }  /* for */</a>
+<a name="895"><span class="lineNum">     895 </span>            :     }  /* for */</a>
+<a name="896"><span class="lineNum">     896 </span>            :   }  /* for */</a>
+<a name="897"><span class="lineNum">     897 </span>            : clobber_check:</a>
+<a name="898"><span class="lineNum">     898 </span>            :   /* Do the requisite checking for each set of constraints (up to the max). */</a>
+<a name="899"><span class="lineNum">     899 </span>            :   constraint_limit = (int)asm_entry-&gt;number_of_constraints;</a>
+<a name="900"><span class="lineNum">     900 </span>            :   if (constraint_limit == 0) {</a>
+<a name="901"><span class="lineNum">     901 </span>            :     /* If there were no input/output operands, we still need to do constraint</a>
+<a name="902"><span class="lineNum">     902 </span>            :        checking on the clobbers operand. */</a>
+<a name="903"><span class="lineNum">     903 </span>            :     constraint_limit = 1;</a>
+<a name="904"><span class="lineNum">     904 </span>            :   } else if (constraint_limit &gt; MAX_CONSTRAINTS) {</a>
+<a name="905"><span class="lineNum">     905 </span>            :     /* Constrain the check to the max (a diagnostic has already been</a>
+<a name="906"><span class="lineNum">     906 </span>            :        issued). */</a>
+<a name="907"><span class="lineNum">     907 </span>            :     constraint_limit = MAX_CONSTRAINTS;</a>
+<a name="908"><span class="lineNum">     908 </span>            :   }  /* if */</a>
+<a name="909"><span class="lineNum">     909 </span>            :   for (constraint = 0; constraint &lt; constraint_limit; constraint++) {</a>
+<a name="910"><span class="lineNum">     910 </span>            :     for (clobber = clobbers; clobber != NULL; clobber = clobber-&gt;next) {</a>
+<a name="911"><span class="lineNum">     911 </span>            :       r = clobber-&gt;reg;</a>
+<a name="912"><span class="lineNum">     912 </span>            : #if ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS</a>
+<a name="913"><span class="lineNum">     913 </span>            :       /* Ignore entries for unrecognized registers. */</a>
+<a name="914"><span class="lineNum">     914 </span>            :       if (r == (a_named_register)anr_unrecognized) continue;</a>
+<a name="915"><span class="lineNum">     915 </span>            : #endif /* ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS */</a>
+<a name="916"><span class="lineNum">     916 </span>            :       if ((regs_used_in[(int)r][constraint] ||</a>
+<a name="917"><span class="lineNum">     917 </span>            :            regs_used_out[(int)r][constraint]) &amp;&amp;</a>
+<a name="918"><span class="lineNum">     918 </span>            :           !regs_clobbered[(int)r][constraint]) {</a>
+<a name="919"><span class="lineNum">     919 </span>            :         /* Test used and not clobbered so the error is issued at most once per</a>
+<a name="920"><span class="lineNum">     920 </span>            :            register. */</a>
+<a name="921"><span class="lineNum">     921 </span>            :         pos_st_error(ec_register_used_and_clobbered,</a>
+<a name="922"><span class="lineNum">     922 </span>            :                      &amp;asm_entry-&gt;source_corresp.decl_position,</a>
+<a name="923"><span class="lineNum">     923 </span>            :                      named_register_names[(int)r]);</a>
+<a name="924"><span class="lineNum">     924 </span>            :       } else if (r != (a_named_register)anr_invalid &amp;&amp;</a>
+<a name="925"><span class="lineNum">     925 </span>            :                  regs_clobbered[(int)r][constraint] == 1) {</a>
+<a name="926"><span class="lineNum">     926 </span>            :         /* Test clobbered == 1 so the diagnostic is issued at most once per</a>
+<a name="927"><span class="lineNum">     927 </span>            :            register. */</a>
+<a name="928"><span class="lineNum">     928 </span>            :         pos_st_warning(ec_register_clobbered_twice,</a>
+<a name="929"><span class="lineNum">     929 </span>            :                        &amp;asm_entry-&gt;source_corresp.decl_position,</a>
+<a name="930"><span class="lineNum">     930 </span>            :                        named_register_names[(int)r]);</a>
+<a name="931"><span class="lineNum">     931 </span>            :       }  /* if */</a>
+<a name="932"><span class="lineNum">     932 </span>            :       ++regs_clobbered[(int)r][constraint];</a>
+<a name="933"><span class="lineNum">     933 </span>            :     }  /* for */</a>
+<a name="934"><span class="lineNum">     934 </span>            :     for (i = 0; fixed_registers[i] != (a_named_register)anr_last; i++) {</a>
+<a name="935"><span class="lineNum">     935 </span>            :       r = fixed_registers[i];</a>
+<a name="936"><span class="lineNum">     936 </span>            : #if ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS</a>
+<a name="937"><span class="lineNum">     937 </span>            :       /* Ignore entries for unrecognized registers. */</a>
+<a name="938"><span class="lineNum">     938 </span>            :       if (r == (a_named_register)anr_unrecognized) continue;</a>
+<a name="939"><span class="lineNum">     939 </span>            : #endif /* ACCEPT_UNRECOGNIZED_GNU_ASM_OPERANDS */</a>
+<a name="940"><span class="lineNum">     940 </span>            :       if (regs_used_in[(int)r][constraint] ||</a>
+<a name="941"><span class="lineNum">     941 </span>            :           regs_used_out[(int)r][constraint]) {</a>
+<a name="942"><span class="lineNum">     942 </span>            :         pos_st_error(ec_fixed_register_used,</a>
+<a name="943"><span class="lineNum">     943 </span>            :                      &amp;asm_entry-&gt;source_corresp.decl_position,</a>
+<a name="944"><span class="lineNum">     944 </span>            :                      named_register_names[(int)r]);</a>
+<a name="945"><span class="lineNum">     945 </span>            :       } else if (regs_clobbered[(int)r][constraint]) {</a>
+<a name="946"><span class="lineNum">     946 </span>            :         pos_st_error(ec_fixed_register_clobbered,</a>
+<a name="947"><span class="lineNum">     947 </span>            :                      &amp;asm_entry-&gt;source_corresp.decl_position,</a>
+<a name="948"><span class="lineNum">     948 </span>            :                      named_register_names[(int)r]);</a>
+<a name="949"><span class="lineNum">     949 </span>            :       }  /* if */</a>
+<a name="950"><span class="lineNum">     950 </span>            :     }  /* for */</a>
+<a name="951"><span class="lineNum">     951 </span>            :   }  /* for */</a>
+<a name="952"><span class="lineNum">     952 </span>            : #undef MAX_CONSTRAINTS</a>
+<a name="953"><span class="lineNum">     953 </span>            : #endif /* RECORD_RAW_ASM_OPERAND_DESCRIPTIONS */</a>
+<a name="954"><span class="lineNum">     954 </span><span class="lineNoCov">          0 :   validate_symbolic_operand_and_label_references(asm_entry);</span></a>
+<a name="955"><span class="lineNum">     955 </span><span class="lineNoCov">          0 : }  /* validate_operands_and_clobbers */</span></a>
+<a name="956"><span class="lineNum">     956 </span>            : </a>
+<a name="957"><span class="lineNum">     957 </span>            : </a>
+<a name="958"><span class="lineNum">     958 </span>            : static void asm_operand(an_asm_operand_ptr operand,</a>
+<a name="959"><span class="lineNum">     959 </span>            :                         an_asm_operand_ptr operands,</a>
+<a name="960"><span class="lineNum">     960 </span>            :                         a_boolean          output,</a>
+<a name="961"><span class="lineNum">     961 </span>            :                         a_boolean          *seen_tok_colon_colon,</a>
+<a name="962"><span class="lineNum">     962 </span>            :                         int                *number_of_constraints)</a>
+<a name="963"><span class="lineNum">     963 </span>            : /*</a>
+<a name="964"><span class="lineNum">     964 </span>            : Scan a single asm-statement operand, writing it into the structure pointed to</a>
+<a name="965"><span class="lineNum">     965 </span>            : by operand.  The syntax is</a>
+<a name="966"><span class="lineNum">     966 </span>            : </a>
+<a name="967"><span class="lineNum">     967 </span>            :    string-literal ( expression )</a>
+<a name="968"><span class="lineNum">     968 </span>            : </a>
+<a name="969"><span class="lineNum">     969 </span>            : optionally preceded by a symbolic name specifier of the form</a>
+<a name="970"><span class="lineNum">     970 </span>            : </a>
+<a name="971"><span class="lineNum">     971 </span>            :    [ identifier ]</a>
+<a name="972"><span class="lineNum">     972 </span>            : </a>
+<a name="973"><span class="lineNum">     973 </span>            : operands points to the list of operands created so far and output is TRUE</a>
+<a name="974"><span class="lineNum">     974 </span>            : if we're scanning an output operand.  seen_tok_colon_colon maintains</a>
+<a name="975"><span class="lineNum">     975 </span>            : state information for get_token_with_colon_separation.  *number_of_constraints</a>
+<a name="976"><span class="lineNum">     976 </span>            : is used to ensure that the number of constraints in a multi-alternative</a>
+<a name="977"><span class="lineNum">     977 </span>            : constraint string are the same across all input and output specifications of a</a>
+<a name="978"><span class="lineNum">     978 </span>            : particular asm statement.</a>
+<a name="979"><span class="lineNum">     979 </span>            : */</a>
+<a name="980"><span class="lineNum">     980 </span>            : {</a>
+<a name="981"><span class="lineNum">     981 </span>            :   a_const_char     *constraint_string = NULL;</a>
+<a name="982"><span class="lineNum">     982 </span>            :   an_expr_node_ptr expr = NULL;</a>
+<a name="983"><span class="lineNum">     983 </span>            : </a>
+<a name="984"><span class="lineNum">     984 </span>            :   db_enter(4, &quot;asm_operand&quot;);</a>
+<a name="985"><span class="lineNum">     985 </span>            :   add_stop_token(tok_comma);</a>
+<a name="986"><span class="lineNum">     986 </span>            :   add_stop_token(tok_colon);</a>
+<a name="987"><span class="lineNum">     987 </span>            :   add_stop_token(tok_colon_colon);</a>
+<a name="988"><span class="lineNum">     988 </span>            :   operand-&gt;position = pos_curr_token;</a>
+<a name="989"><span class="lineNum">     989 </span>            :   if (curr_token == tok_lbracket) {</a>
+<a name="990"><span class="lineNum">     990 </span>            :     /* Presumably a named operand.  The next token must be an identifier. */</a>
+<a name="991"><span class="lineNum">     991 </span>            :     (void)get_token_with_colon_separation(seen_tok_colon_colon);</a>
+<a name="992"><span class="lineNum">     992 </span>            :     add_stop_token(tok_rbracket);</a>
+<a name="993"><span class="lineNum">     993 </span>            :     if (curr_token != tok_identifier) {</a>
+<a name="994"><span class="lineNum">     994 </span>            :       syntax_error(ec_exp_identifier);</a>
+<a name="995"><span class="lineNum">     995 </span>            :     } else {</a>
+<a name="996"><span class="lineNum">     996 </span>            :       /* Record the identifier as the name of the operand. */</a>
+<a name="997"><span class="lineNum">     997 </span>            :       a_symbol_header  *sym_hdr = locator_for_curr_id.symbol_header;</a>
+<a name="998"><span class="lineNum">     998 </span>            :       operand-&gt;name = alloc_il(sym_hdr-&gt;identifier_length+1);</a>
+<a name="999"><span class="lineNum">     999 </span>            :       (void)strcpy(operand-&gt;name, sym_hdr-&gt;identifier);</a>
+<a name="1000"><span class="lineNum">    1000 </span>            :       (void)get_token_with_colon_separation(seen_tok_colon_colon);</a>
+<a name="1001"><span class="lineNum">    1001 </span>            :     }  /* if */</a>
+<a name="1002"><span class="lineNum">    1002 </span>            :     if (curr_token != tok_rbracket) {</a>
+<a name="1003"><span class="lineNum">    1003 </span>            :       syntax_error(ec_exp_rbracket);</a>
+<a name="1004"><span class="lineNum">    1004 </span>            :     }  /* if */</a>
+<a name="1005"><span class="lineNum">    1005 </span>            :     (void)get_token_with_colon_separation(seen_tok_colon_colon);</a>
+<a name="1006"><span class="lineNum">    1006 </span>            :     remove_stop_token(tok_rbracket);</a>
+<a name="1007"><span class="lineNum">    1007 </span>            :   }  /* if */</a>
+<a name="1008"><span class="lineNum">    1008 </span>            :   if (curr_token != tok_string_literal) {</a>
+<a name="1009"><span class="lineNum">    1009 </span>            :     syntax_error(ec_exp_string_literal);</a>
+<a name="1010"><span class="lineNum">    1010 </span>            :   } else if (!is_normal_character_kind(const_for_curr_token.character_kind)) {</a>
+<a name="1011"><span class="lineNum">    1011 </span>            :     syntax_error(ec_wide_string_invalid_in_asm);</a>
+<a name="1012"><span class="lineNum">    1012 </span>            :   } else {</a>
+<a name="1013"><span class="lineNum">    1013 </span>            :     constraint_string = const_for_curr_token.variant.string.value;</a>
+<a name="1014"><span class="lineNum">    1014 </span>            :     /* Advance past string literal. */</a>
+<a name="1015"><span class="lineNum">    1015 </span>            :     (void)get_token_with_colon_separation(seen_tok_colon_colon);</a>
+<a name="1016"><span class="lineNum">    1016 </span>            :     if (curr_token == tok_lparen) {</a>
+<a name="1017"><span class="lineNum">    1017 </span>            :       a_boolean  input = !output, is_memory_operand = FALSE;</a>
+<a name="1018"><span class="lineNum">    1018 </span>            :       (void)get_token_with_colon_separation(seen_tok_colon_colon);</a>
+<a name="1019"><span class="lineNum">    1019 </span>            :       if (constraint_string != NULL) {</a>
+<a name="1020"><span class="lineNum">    1020 </span>            :         /* Take a peek at the constraint string to determine how to</a>
+<a name="1021"><span class="lineNum">    1021 </span>            :            scan the operand expression (the constraint string is examined</a>
+<a name="1022"><span class="lineNum">    1022 </span>            :            in more detail by process_asm_operand below). */</a>
+<a name="1023"><span class="lineNum">    1023 </span>            :         a_const_char *cp;</a>
+<a name="1024"><span class="lineNum">    1024 </span>            :         if (output) {</a>
+<a name="1025"><span class="lineNum">    1025 </span>            :           /* A '+' in the constraint string of an output operand indicates a</a>
+<a name="1026"><span class="lineNum">    1026 </span>            :              read-modify-write instruction; i.e., the operand is first an input</a>
+<a name="1027"><span class="lineNum">    1027 </span>            :              operand and then an output operand. */</a>
+<a name="1028"><span class="lineNum">    1028 </span>            :           input = (strchr(constraint_string, '+') != NULL);</a>
+<a name="1029"><span class="lineNum">    1029 </span>            :         }  /* if */</a>
+<a name="1030"><span class="lineNum">    1030 </span>            :         for (cp = constraint_string; *cp != '\0'; cp++) {</a>
+<a name="1031"><span class="lineNum">    1031 </span>            :           /* The constraints below indicate some form of a memory operand</a>
+<a name="1032"><span class="lineNum">    1032 </span>            :              (meaning that the operand should not be converted). */</a>
+<a name="1033"><span class="lineNum">    1033 </span>            :           if (*cp == 'm' || *cp == 'o' || *cp == 'v' ||</a>
+<a name="1034"><span class="lineNum">    1034 </span>            :               *cp == '&gt;' || *cp == '&lt;') {</a>
+<a name="1035"><span class="lineNum">    1035 </span>            :             is_memory_operand = TRUE;</a>
+<a name="1036"><span class="lineNum">    1036 </span>            :             break;</a>
+<a name="1037"><span class="lineNum">    1037 </span>            :           }  /* if */</a>
+<a name="1038"><span class="lineNum">    1038 </span>            :         }  /* for */</a>
+<a name="1039"><span class="lineNum">    1039 </span>            :       }  /* if */</a>
+<a name="1040"><span class="lineNum">    1040 </span>            :       add_stop_token(tok_rparen);</a>
+<a name="1041"><span class="lineNum">    1041 </span>            :       expr = scan_asm_operand_expression(output, input, is_memory_operand);</a>
+<a name="1042"><span class="lineNum">    1042 </span>            :       if (curr_token == tok_rparen) {</a>
+<a name="1043"><span class="lineNum">    1043 </span>            :         (void)get_token_with_colon_separation(seen_tok_colon_colon);</a>
+<a name="1044"><span class="lineNum">    1044 </span>            :       } else {</a>
+<a name="1045"><span class="lineNum">    1045 </span>            :         syntax_error(ec_exp_rparen);</a>
+<a name="1046"><span class="lineNum">    1046 </span>            :       }  /* if */</a>
+<a name="1047"><span class="lineNum">    1047 </span>            :       remove_stop_token(tok_rparen);</a>
+<a name="1048"><span class="lineNum">    1048 </span>            :     } else {</a>
+<a name="1049"><span class="lineNum">    1049 </span>            :       syntax_error(ec_exp_lparen);</a>
+<a name="1050"><span class="lineNum">    1050 </span>            :     }  /* if */</a>
+<a name="1051"><span class="lineNum">    1051 </span>            :   }  /* if */</a>
+<a name="1052"><span class="lineNum">    1052 </span>            :   process_asm_operand(operand, operands, expr, constraint_string, output,</a>
+<a name="1053"><span class="lineNum">    1053 </span>            :                       number_of_constraints);</a>
+<a name="1054"><span class="lineNum">    1054 </span>            :   remove_stop_token(tok_comma);</a>
+<a name="1055"><span class="lineNum">    1055 </span>            :   remove_stop_token(tok_colon);</a>
+<a name="1056"><span class="lineNum">    1056 </span>            :   remove_stop_token(tok_colon_colon);</a>
+<a name="1057"><span class="lineNum">    1057 </span>            :   db_exit();</a>
+<a name="1058"><span class="lineNum">    1058 </span>            : }  /* asm_operand */</a>
+<a name="1059"><span class="lineNum">    1059 </span>            : </a>
+<a name="1060"><span class="lineNum">    1060 </span>            : </a>
+<a name="1061"><span class="lineNum">    1061 </span><span class="lineNoCov">          0 : an_asm_operand_ptr asm_operands_spec(a_boolean *seen_tok_colon_colon,</span></a>
+<a name="1062"><span class="lineNum">    1062 </span>            :                                      int       *number_of_constraints)</a>
+<a name="1063"><span class="lineNum">    1063 </span>            : /*</a>
+<a name="1064"><span class="lineNum">    1064 </span>            : Parse and validate a list of asm-statement operands.  This handles both input</a>
+<a name="1065"><span class="lineNum">    1065 </span>            : and output operands.  The list is returned as a sequence of an_asm_operand</a>
+<a name="1066"><span class="lineNum">    1066 </span>            : entries.  *number_of_constraints is used to ensure that the number of</a>
+<a name="1067"><span class="lineNum">    1067 </span>            : constraints in a multi-alternative constraint string are the same across</a>
+<a name="1068"><span class="lineNum">    1068 </span>            : all input and output specifications of a particular asm statement.</a>
+<a name="1069"><span class="lineNum">    1069 </span>            : </a>
+<a name="1070"><span class="lineNum">    1070 </span>            : On entry, curr_token is the leading colon of the operands specification; on</a>
+<a name="1071"><span class="lineNum">    1071 </span>            : exit, it is the leading colon of the clobbers specification, or the close</a>
+<a name="1072"><span class="lineNum">    1072 </span>            : parenthesis if there are no clobbers.</a>
+<a name="1073"><span class="lineNum">    1073 </span>            : </a>
+<a name="1074"><span class="lineNum">    1074 </span>            : The syntax is</a>
+<a name="1075"><span class="lineNum">    1075 </span>            : </a>
+<a name="1076"><span class="lineNum">    1076 </span>            :     : [operand [, operand...]]   // outputs</a>
+<a name="1077"><span class="lineNum">    1077 </span>            :    [: [operand [, operand...]]]  // inputs</a>
+<a name="1078"><span class="lineNum">    1078 </span>            : </a>
+<a name="1079"><span class="lineNum">    1079 </span>            : Operand lists and clobbers can be empty, leading to cases where</a>
+<a name="1080"><span class="lineNum">    1080 </span>            : two adjacent colons are parsed (in C++) as a single tok_colon_colon.  To</a>
+<a name="1081"><span class="lineNum">    1081 </span>            : get around this case (without undue complexity), use</a>
+<a name="1082"><span class="lineNum">    1082 </span>            : get_token_with_colon_separation rather than get_token to return two</a>
+<a name="1083"><span class="lineNum">    1083 </span>            : tok_colon tokens rather than a single tok_tolon_colon.  See</a>
+<a name="1084"><span class="lineNum">    1084 </span>            : get_token_with_colon_separation for a description of seen_tok_colon_colon.</a>
+<a name="1085"><span class="lineNum">    1085 </span>            : */</a>
+<a name="1086"><span class="lineNum">    1086 </span>            : {</a>
+<a name="1087"><span class="lineNum">    1087 </span><span class="lineNoCov">          0 :   a_boolean          output = TRUE;</span></a>
+<a name="1088"><span class="lineNum">    1088 </span><span class="lineNoCov">          0 :   an_asm_operand_ptr operands = NULL;</span></a>
+<a name="1089"><span class="lineNum">    1089 </span><span class="lineNoCov">          0 :   an_asm_operand_ptr *p_operands = &amp;operands;</span></a>
+<a name="1090"><span class="lineNum">    1090 </span>            : </a>
+<a name="1091"><span class="lineNum">    1091 </span><span class="lineNoCov">          0 :   db_enter(3, &quot;asm_operands_spec&quot;);</span></a>
+<a name="1092"><span class="lineNum">    1092 </span><span class="lineNoCov">          0 :   check_assertion(curr_token == tok_colon);</span></a>
+<a name="1093"><span class="lineNum">    1093 </span><span class="lineNoCov">          0 :   report_gnu_extension_if_needed(&amp;pos_curr_token,</span></a>
+<a name="1094"><span class="lineNum">    1094 </span><span class="lineNoCov">          0 :                                  ec_asm_operand_spec_is_gnu_extension);</span></a>
+<a name="1095"><span class="lineNum">    1095 </span>            :   /* Skip initial :. */</a>
+<a name="1096"><span class="lineNum">    1096 </span><span class="lineNoCov">          0 :   (void)get_token_with_colon_separation(seen_tok_colon_colon);</span></a>
+<a name="1097"><span class="lineNum">    1097 </span>            :   /* If the output list is empty, we'll be at another colon. */</a>
+<a name="1098"><span class="lineNum">    1098 </span><span class="lineNoCov">          0 :   if (curr_token == tok_colon) {</span></a>
+<a name="1099"><span class="lineNum">    1099 </span><span class="lineNoCov">          0 :     output = FALSE;</span></a>
+<a name="1100"><span class="lineNum">    1100 </span><span class="lineNoCov">          0 :     (void)get_token_with_colon_separation(seen_tok_colon_colon);</span></a>
+<a name="1101"><span class="lineNum">    1101 </span>            :   }  /* if */</a>
+<a name="1102"><span class="lineNum">    1102 </span><span class="lineNoCov">          0 :   while (curr_token == tok_string_literal || curr_token == tok_lbracket) {</span></a>
+<a name="1103"><span class="lineNum">    1103 </span><span class="lineNoCov">          0 :     *p_operands = alloc_asm_operand();</span></a>
+<a name="1104"><span class="lineNum">    1104 </span><span class="lineNoCov">          0 :     asm_operand(*p_operands, operands, output, seen_tok_colon_colon,</span></a>
+<a name="1105"><span class="lineNum">    1105 </span>            :                 number_of_constraints);</a>
+<a name="1106"><span class="lineNum">    1106 </span><span class="lineNoCov">          0 :     p_operands = &amp;(*p_operands)-&gt;next;</span></a>
+<a name="1107"><span class="lineNum">    1107 </span>            :     /* Next must be a comma, colon, or right paren. */</a>
+<a name="1108"><span class="lineNum">    1108 </span><span class="lineNoCov">          0 :     if (curr_token == tok_colon) {</span></a>
+<a name="1109"><span class="lineNum">    1109 </span><span class="lineNoCov">          0 :       if (output) {</span></a>
+<a name="1110"><span class="lineNum">    1110 </span>            :         /* End of output list; consume colon and continue. */</a>
+<a name="1111"><span class="lineNum">    1111 </span><span class="lineNoCov">          0 :         output = FALSE;</span></a>
+<a name="1112"><span class="lineNum">    1112 </span><span class="lineNoCov">          0 :         (void)get_token_with_colon_separation(seen_tok_colon_colon);</span></a>
+<a name="1113"><span class="lineNum">    1113 </span>            :       } /* if */</a>
+<a name="1114"><span class="lineNum">    1114 </span><span class="lineNoCov">          0 :     } else if (curr_token == tok_comma) {</span></a>
+<a name="1115"><span class="lineNum">    1115 </span><span class="lineNoCov">          0 :       (void)get_token_with_colon_separation(seen_tok_colon_colon);</span></a>
+<a name="1116"><span class="lineNum">    1116 </span><span class="lineNoCov">          0 :       if (curr_token != tok_string_literal &amp;&amp; curr_token != tok_lbracket) {</span></a>
+<a name="1117"><span class="lineNum">    1117 </span><span class="lineNoCov">          0 :         syntax_error(ec_exp_asm_operand);</span></a>
+<a name="1118"><span class="lineNum">    1118 </span>            :       }  /* if */</a>
+<a name="1119"><span class="lineNum">    1119 </span>            :     }  /* if */</a>
+<a name="1120"><span class="lineNum">    1120 </span>            :   }  /* while */</a>
+<a name="1121"><span class="lineNum">    1121 </span><span class="lineNoCov">          0 :   db_exit();</span></a>
+<a name="1122"><span class="lineNum">    1122 </span><span class="lineNoCov">          0 :   return operands;</span></a>
+<a name="1123"><span class="lineNum">    1123 </span>            : }  /* asm_operands_spec */</a>
+<a name="1124"><span class="lineNum">    1124 </span>            : </a>
+<a name="1125"><span class="lineNum">    1125 </span>            : </a>
+<a name="1126"><span class="lineNum">    1126 </span><span class="lineNoCov">          0 : a_named_register_list_ptr asm_clobbers_spec(a_boolean *seen_tok_colon_colon)</span></a>
+<a name="1127"><span class="lineNum">    1127 </span>            : /*</a>
+<a name="1128"><span class="lineNum">    1128 </span>            : Parse and validate a list of asm-statement clobbers.  Returns the list of</a>
+<a name="1129"><span class="lineNum">    1129 </span>            : registers clobbered.</a>
+<a name="1130"><span class="lineNum">    1130 </span>            : </a>
+<a name="1131"><span class="lineNum">    1131 </span>            : The syntax is</a>
+<a name="1132"><span class="lineNum">    1132 </span>            : </a>
+<a name="1133"><span class="lineNum">    1133 </span>            :    string-literal [, string-literal ...]</a>
+<a name="1134"><span class="lineNum">    1134 </span>            : </a>
+<a name="1135"><span class="lineNum">    1135 </span>            : Operand lists and clobbers can be empty, leading to cases where</a>
+<a name="1136"><span class="lineNum">    1136 </span>            : two adjacent colons are parsed (in C++) as a single tok_colon_colon.  To</a>
+<a name="1137"><span class="lineNum">    1137 </span>            : get around this case (without undue complexity), use</a>
+<a name="1138"><span class="lineNum">    1138 </span>            : get_token_with_colon_separation rather than get_token to return two</a>
+<a name="1139"><span class="lineNum">    1139 </span>            : tok_colon tokens rather than a single tok_tolon_colon.  See</a>
+<a name="1140"><span class="lineNum">    1140 </span>            : get_token_with_colon_separation for a description of seen_tok_colon_colon.</a>
+<a name="1141"><span class="lineNum">    1141 </span>            : */</a>
+<a name="1142"><span class="lineNum">    1142 </span>            : {</a>
+<a name="1143"><span class="lineNum">    1143 </span>            :   /* There is no hard limit on the number of clobbers. */</a>
+<a name="1144"><span class="lineNum">    1144 </span><span class="lineNoCov">          0 :   a_named_register           reg;</span></a>
+<a name="1145"><span class="lineNum">    1145 </span><span class="lineNoCov">          0 :   int                        nparsed = 0;</span></a>
+<a name="1146"><span class="lineNum">    1146 </span><span class="lineNoCov">          0 :   a_const_char               *name;</span></a>
+<a name="1147"><span class="lineNum">    1147 </span><span class="lineNoCov">          0 :   a_named_register_list_ptr  first_reg = NULL, last_reg = NULL;</span></a>
+<a name="1148"><span class="lineNum">    1148 </span>            : </a>
+<a name="1149"><span class="lineNum">    1149 </span><span class="lineNoCov">          0 :   db_enter(3, &quot;asm_clobbers_spec&quot;);</span></a>
+<a name="1150"><span class="lineNum">    1150 </span><span class="lineNoCov">          0 :   if (curr_token == tok_colon) {</span></a>
+<a name="1151"><span class="lineNum">    1151 </span><span class="lineNoCov">          0 :     (void)get_token_with_colon_separation(seen_tok_colon_colon);</span></a>
+<a name="1152"><span class="lineNum">    1152 </span><span class="lineNoCov">          0 :     while (curr_token == tok_string_literal) {</span></a>
+<a name="1153"><span class="lineNum">    1153 </span><span class="lineNoCov">          0 :       nparsed++;</span></a>
+<a name="1154"><span class="lineNum">    1154 </span><span class="lineNoCov">          0 :       name = const_for_curr_token.variant.string.value;</span></a>
+<a name="1155"><span class="lineNum">    1155 </span><span class="lineNoCov">          0 :       if (strcmp(name, &quot;memory&quot;) == 0) {</span></a>
+<a name="1156"><span class="lineNum">    1156 </span>            :         /* The string &quot;memory&quot; can appear in place of a register name.  */</a>
+<a name="1157"><span class="lineNum">    1157 </span>            :         reg = (a_named_register)anr_memory;</a>
+<a name="1158"><span class="lineNum">    1158 </span><span class="lineNoCov">          0 :       } else if (strcmp(name, &quot;cc&quot;) == 0) {</span></a>
+<a name="1159"><span class="lineNum">    1159 </span><span class="lineNoCov">          0 :         pos_warning(ec_cc_clobber_ignored, &amp;error_position);</span></a>
+<a name="1160"><span class="lineNum">    1160 </span><span class="lineNoCov">          0 :         goto skip_item;</span></a>
+<a name="1161"><span class="lineNum">    1161 </span>            :       } else {</a>
+<a name="1162"><span class="lineNum">    1162 </span><span class="lineNoCov">          0 :         reg = name_to_register(name);</span></a>
+<a name="1163"><span class="lineNum">    1163 </span>            :       }  /* if */</a>
+<a name="1164"><span class="lineNum">    1164 </span><span class="lineNoCov">          0 :       if (reg == (a_named_register)anr_invalid) {</span></a>
+<a name="1165"><span class="lineNum">    1165 </span><span class="lineNoCov">          0 :         pos_st_error(ec_bad_reg_name, &amp;pos_curr_token, name);</span></a>
+<a name="1166"><span class="lineNum">    1166 </span>            :       } else {</a>
+<a name="1167"><span class="lineNum">    1167 </span>            :         /* Add this register to our list. */</a>
+<a name="1168"><span class="lineNum">    1168 </span><span class="lineNoCov">          0 :         if (first_reg == NULL) {</span></a>
+<a name="1169"><span class="lineNum">    1169 </span><span class="lineNoCov">          0 :           first_reg = last_reg = alloc_named_register_list();</span></a>
+<a name="1170"><span class="lineNum">    1170 </span>            :         } else {</a>
+<a name="1171"><span class="lineNum">    1171 </span><span class="lineNoCov">          0 :           last_reg-&gt;next = alloc_named_register_list();</span></a>
+<a name="1172"><span class="lineNum">    1172 </span><span class="lineNoCov">          0 :           last_reg = last_reg-&gt;next;</span></a>
+<a name="1173"><span class="lineNum">    1173 </span>            :         }  /* if */</a>
+<a name="1174"><span class="lineNum">    1174 </span><span class="lineNoCov">          0 :         last_reg-&gt;reg = reg;</span></a>
+<a name="1175"><span class="lineNum">    1175 </span>            :       }  /* if */</a>
+<a name="1176"><span class="lineNum">    1176 </span><span class="lineNoCov">          0 : skip_item:</span></a>
+<a name="1177"><span class="lineNum">    1177 </span>            :       /* Advance past the string literal. */</a>
+<a name="1178"><span class="lineNum">    1178 </span><span class="lineNoCov">          0 :       (void)get_token_with_colon_separation(seen_tok_colon_colon);</span></a>
+<a name="1179"><span class="lineNum">    1179 </span>            :       /* The next token must be a comma or a right parenthesis. */</a>
+<a name="1180"><span class="lineNum">    1180 </span><span class="lineNoCov">          0 :       if (curr_token == tok_comma) {</span></a>
+<a name="1181"><span class="lineNum">    1181 </span><span class="lineNoCov">          0 :         (void)get_token_with_colon_separation(seen_tok_colon_colon);</span></a>
+<a name="1182"><span class="lineNum">    1182 </span><span class="lineNoCov">          0 :         if (curr_token != tok_string_literal) {</span></a>
+<a name="1183"><span class="lineNum">    1183 </span><span class="lineNoCov">          0 :           syntax_error(ec_exp_asm_clobber);</span></a>
+<a name="1184"><span class="lineNum">    1184 </span>            :         }  /* if */</a>
+<a name="1185"><span class="lineNum">    1185 </span>            :       }  /* if */</a>
+<a name="1186"><span class="lineNum">    1186 </span>            :     }  /* while */</a>
+<a name="1187"><span class="lineNum">    1187 </span>            :     /* GNU C versions prior to 4.5 treat an empty clobbers list with a colon as</a>
+<a name="1188"><span class="lineNum">    1188 </span>            :        a syntax error.  We can parse it correctly, so it's semantic for us.</a>
+<a name="1189"><span class="lineNum">    1189 </span>            :        Don't issue this error if we saw anything other than a colon immediately</a>
+<a name="1190"><span class="lineNum">    1190 </span>            :        followed by a right parenthesis.  In the &quot;asm goto&quot; case, a fourth</a>
+<a name="1191"><span class="lineNum">    1191 </span>            :        colon follows the clobber list. */</a>
+<a name="1192"><span class="lineNum">    1192 </span><span class="lineNoCov">          0 :     if (curr_token != tok_rparen &amp;&amp; curr_token != tok_colon) {</span></a>
+<a name="1193"><span class="lineNum">    1193 </span><span class="lineNoCov">          0 :       syntax_error(ec_exp_rparen);</span></a>
+<a name="1194"><span class="lineNum">    1194 </span><span class="lineNoCov">          0 :     } else if (nparsed == 0 &amp;&amp; gcc_mode &amp;&amp; gnu_version &lt; 40500) {</span></a>
+<a name="1195"><span class="lineNum">    1195 </span><span class="lineNoCov">          0 :       pos_error(ec_empty_clobbers_list, &amp;pos_curr_token);</span></a>
+<a name="1196"><span class="lineNum">    1196 </span>            :     }  /* if */</a>
+<a name="1197"><span class="lineNum">    1197 </span>            :   }  /* if */</a>
+<a name="1198"><span class="lineNum">    1198 </span><span class="lineNoCov">          0 :   db_exit();</span></a>
+<a name="1199"><span class="lineNum">    1199 </span><span class="lineNoCov">          0 :   return first_reg;</span></a>
+<a name="1200"><span class="lineNum">    1200 </span>            : }  /* asm_clobbers_spec */</a>
+<a name="1201"><span class="lineNum">    1201 </span>            : </a>
+<a name="1202"><span class="lineNum">    1202 </span>            : </a>
+<a name="1203"><span class="lineNum">    1203 </span><span class="lineNoCov">          0 : a_label_list_ptr asm_labels_spec(a_boolean *seen_tok_colon_colon)</span></a>
+<a name="1204"><span class="lineNum">    1204 </span>            : /*</a>
+<a name="1205"><span class="lineNum">    1205 </span>            : Parse and validate a list of asm-statement labels that appear after the</a>
+<a name="1206"><span class="lineNum">    1206 </span>            : fourth colon in an &quot;asm goto&quot; statement and return the list.</a>
+<a name="1207"><span class="lineNum">    1207 </span>            : </a>
+<a name="1208"><span class="lineNum">    1208 </span>            : The syntax is</a>
+<a name="1209"><span class="lineNum">    1209 </span>            : </a>
+<a name="1210"><span class="lineNum">    1210 </span>            :    label [, label ...]</a>
+<a name="1211"><span class="lineNum">    1211 </span>            : </a>
+<a name="1212"><span class="lineNum">    1212 </span>            : Operand lists and clobbers can be empty, leading to cases where</a>
+<a name="1213"><span class="lineNum">    1213 </span>            : two adjacent colons are parsed (in C++) as a single tok_colon_colon.  To</a>
+<a name="1214"><span class="lineNum">    1214 </span>            : get around this case (without undue complexity), use</a>
+<a name="1215"><span class="lineNum">    1215 </span>            : get_token_with_colon_separation rather than get_token to return two</a>
+<a name="1216"><span class="lineNum">    1216 </span>            : tok_colon tokens rather than a single tok_tolon_colon.  See</a>
+<a name="1217"><span class="lineNum">    1217 </span>            : get_token_with_colon_separation for a description of seen_tok_colon_colon.</a>
+<a name="1218"><span class="lineNum">    1218 </span>            : */</a>
+<a name="1219"><span class="lineNum">    1219 </span>            : {</a>
+<a name="1220"><span class="lineNum">    1220 </span>            :   /* There is no hard limit on the number of labels. */</a>
+<a name="1221"><span class="lineNum">    1221 </span><span class="lineNoCov">          0 :   int               nparsed = 0;</span></a>
+<a name="1222"><span class="lineNum">    1222 </span><span class="lineNoCov">          0 :   a_label_ptr       label;</span></a>
+<a name="1223"><span class="lineNum">    1223 </span><span class="lineNoCov">          0 :   a_label_list_ptr  first_label = NULL, last_label = NULL;</span></a>
+<a name="1224"><span class="lineNum">    1224 </span>            : </a>
+<a name="1225"><span class="lineNum">    1225 </span><span class="lineNoCov">          0 :   db_enter(3, &quot;asm_labels_spec&quot;);</span></a>
+<a name="1226"><span class="lineNum">    1226 </span><span class="lineNoCov">          0 :   if (curr_token == tok_colon) {</span></a>
+<a name="1227"><span class="lineNum">    1227 </span><span class="lineNoCov">          0 :     (void)get_token_with_colon_separation(seen_tok_colon_colon);</span></a>
+<a name="1228"><span class="lineNum">    1228 </span><span class="lineNoCov">          0 :     while (curr_token == tok_identifier) {</span></a>
+<a name="1229"><span class="lineNum">    1229 </span><span class="lineNoCov">          0 :       nparsed++;</span></a>
+<a name="1230"><span class="lineNum">    1230 </span><span class="lineNoCov">          0 :       label = scan_label(/*is_definition=*/FALSE, /*is_declaration=*/FALSE);</span></a>
+<a name="1231"><span class="lineNum">    1231 </span><span class="lineNoCov">          0 :       check_assertion(label != NULL);</span></a>
+<a name="1232"><span class="lineNum">    1232 </span>            :       /* Add this label to our list. */</a>
+<a name="1233"><span class="lineNum">    1233 </span><span class="lineNoCov">          0 :       if (first_label == NULL) {</span></a>
+<a name="1234"><span class="lineNum">    1234 </span><span class="lineNoCov">          0 :         first_label = last_label = alloc_label_list();</span></a>
+<a name="1235"><span class="lineNum">    1235 </span>            :       } else {</a>
+<a name="1236"><span class="lineNum">    1236 </span><span class="lineNoCov">          0 :         last_label-&gt;next = alloc_label_list();</span></a>
+<a name="1237"><span class="lineNum">    1237 </span><span class="lineNoCov">          0 :         last_label = last_label-&gt;next;</span></a>
+<a name="1238"><span class="lineNum">    1238 </span>            :       }  /* if */</a>
+<a name="1239"><span class="lineNum">    1239 </span><span class="lineNoCov">          0 :       last_label-&gt;label = label;</span></a>
+<a name="1240"><span class="lineNum">    1240 </span>            :       /* The next token must be a comma or a right parenthesis. */</a>
+<a name="1241"><span class="lineNum">    1241 </span><span class="lineNoCov">          0 :       if (curr_token == tok_comma) {</span></a>
+<a name="1242"><span class="lineNum">    1242 </span><span class="lineNoCov">          0 :         (void)get_token_with_colon_separation(seen_tok_colon_colon);</span></a>
+<a name="1243"><span class="lineNum">    1243 </span><span class="lineNoCov">          0 :         if (curr_token != tok_identifier) {</span></a>
+<a name="1244"><span class="lineNum">    1244 </span><span class="lineNoCov">          0 :           syntax_error(ec_exp_asm_label);</span></a>
+<a name="1245"><span class="lineNum">    1245 </span>            :         }  /* if */</a>
+<a name="1246"><span class="lineNum">    1246 </span>            :       }  /* if */</a>
+<a name="1247"><span class="lineNum">    1247 </span>            :     }  /* while */</a>
+<a name="1248"><span class="lineNum">    1248 </span>            :     /* Make sure at least one label was specified. */</a>
+<a name="1249"><span class="lineNum">    1249 </span><span class="lineNoCov">          0 :     if (curr_token != tok_rparen) {</span></a>
+<a name="1250"><span class="lineNum">    1250 </span><span class="lineNoCov">          0 :       syntax_error(ec_exp_rparen);</span></a>
+<a name="1251"><span class="lineNum">    1251 </span><span class="lineNoCov">          0 :     } else if (nparsed == 0) {</span></a>
+<a name="1252"><span class="lineNum">    1252 </span><span class="lineNoCov">          0 :       pos_error(ec_exp_asm_label, &amp;pos_curr_token);</span></a>
+<a name="1253"><span class="lineNum">    1253 </span>            :     }  /* if */</a>
+<a name="1254"><span class="lineNum">    1254 </span>            :   } else {</a>
+<a name="1255"><span class="lineNum">    1255 </span><span class="lineNoCov">          0 :     syntax_error(ec_exp_colon);</span></a>
+<a name="1256"><span class="lineNum">    1256 </span>            :   }  /* if */</a>
+<a name="1257"><span class="lineNum">    1257 </span><span class="lineNoCov">          0 :   db_exit();</span></a>
+<a name="1258"><span class="lineNum">    1258 </span><span class="lineNoCov">          0 :   return first_label;</span></a>
+<a name="1259"><span class="lineNum">    1259 </span>            : }  /* asm_labels_spec */</a>
+<a name="1260"><span class="lineNum">    1260 </span>            : </a>
+<a name="1261"><span class="lineNum">    1261 </span>            : </a>
+<a name="1262"><span class="lineNum">    1262 </span>            : #if BSEARCH_QSORT_FUNCTION_IS_EXTERN_C</a>
+<a name="1263"><span class="lineNum">    1263 </span>            : BEGIN_EXTERN_C_BLOCK</a>
+<a name="1264"><span class="lineNum">    1264 </span>            : #endif /* BSEARCH_QSORT_FUNCTION_IS_EXTERN_C */</a>
+<a name="1265"><span class="lineNum">    1265 </span>            : </a>
+<a name="1266"><span class="lineNum">    1266 </span><span class="lineCov">     267200 : static int compare_n2r(const void *a,</span></a>
+<a name="1267"><span class="lineNum">    1267 </span>            :                        const void *b)</a>
+<a name="1268"><span class="lineNum">    1268 </span>            : /*</a>
+<a name="1269"><span class="lineNum">    1269 </span>            : Compare a &lt;=&gt; b, which are really pointers to name_to_reg structures,</a>
+<a name="1270"><span class="lineNum">    1270 </span>            : by their name strings.</a>
+<a name="1271"><span class="lineNum">    1271 </span>            : */</a>
+<a name="1272"><span class="lineNum">    1272 </span>            : {</a>
+<a name="1273"><span class="lineNum">    1273 </span><span class="lineCov">     267200 :   struct name_to_reg *x = (struct name_to_reg *)a;</span></a>
+<a name="1274"><span class="lineNum">    1274 </span><span class="lineCov">     267200 :   struct name_to_reg *y = (struct name_to_reg *)b;</span></a>
+<a name="1275"><span class="lineNum">    1275 </span>            : </a>
+<a name="1276"><span class="lineNum">    1276 </span><span class="lineCov">     267200 :   return strcmp(x-&gt;name, y-&gt;name);</span></a>
+<a name="1277"><span class="lineNum">    1277 </span>            : }  /* compare_n2r */</a>
+<a name="1278"><span class="lineNum">    1278 </span>            : </a>
+<a name="1279"><span class="lineNum">    1279 </span>            : #if BSEARCH_QSORT_FUNCTION_IS_EXTERN_C</a>
+<a name="1280"><span class="lineNum">    1280 </span>            : END_EXTERN_C_BLOCK</a>
+<a name="1281"><span class="lineNum">    1281 </span>            : #endif /* BSEARCH_QSORT_FUNCTION_IS_EXTERN_C */</a>
+<a name="1282"><span class="lineNum">    1282 </span>            : </a>
+<a name="1283"><span class="lineNum">    1283 </span>            : </a>
+<a name="1284"><span class="lineNum">    1284 </span><span class="lineCov">        320 : void extasm_one_time_init(void)</span></a>
+<a name="1285"><span class="lineNum">    1285 </span>            : /*</a>
+<a name="1286"><span class="lineNum">    1286 </span>            : Do one-time initialization of variables related to the processing of</a>
+<a name="1287"><span class="lineNum">    1287 </span>            : extended asm statements.</a>
+<a name="1288"><span class="lineNum">    1288 </span>            : */</a>
+<a name="1289"><span class="lineNum">    1289 </span>            : {</a>
+<a name="1290"><span class="lineNum">    1290 </span><span class="lineCov">        320 :   int i;</span></a>
+<a name="1291"><span class="lineNum">    1291 </span>            : #if CHECKING</a>
+<a name="1292"><span class="lineNum">    1292 </span>            :   /* Check that the table of mode names is correctly initialized. */</a>
+<a name="1293"><span class="lineNum">    1293 </span><span class="lineCov">        320 :   if (named_register_names[(int)anr_last] == NULL ||</span></a>
+<a name="1294"><span class="lineNum">    1294 </span><span class="lineCov">        320 :       strcmp(named_register_names[(int)anr_last], &quot;last&quot;) != 0) {</span></a>
+<a name="1295"><span class="lineNum">    1295 </span><span class="lineNoCov">          0 :     internal_error(</span></a>
+<a name="1296"><span class="lineNum">    1296 </span>            :       &quot;extasm_one_time_init: named_register_names: bad init&quot;);</a>
+<a name="1297"><span class="lineNum">    1297 </span>            :   }  /* if */</a>
+<a name="1298"><span class="lineNum">    1298 </span>            : #if !RECORD_RAW_ASM_OPERAND_DESCRIPTIONS</a>
+<a name="1299"><span class="lineNum">    1299 </span>            :   /* Ditto the table of constraint letters. */</a>
+<a name="1300"><span class="lineNum">    1300 </span>            :   if (asm_operand_constraint_letters[(int)aoc_last] != '~') {</a>
+<a name="1301"><span class="lineNum">    1301 </span>            :     internal_error(</a>
+<a name="1302"><span class="lineNum">    1302 </span>            :       &quot;extasm_one_time_init: asm_operand_constraint_letters: bad init&quot;);</a>
+<a name="1303"><span class="lineNum">    1303 </span>            :   }  /* if */</a>
+<a name="1304"><span class="lineNum">    1304 </span>            : #endif /* !RECORD_RAW_ASM_OPERAND_DESCRIPTIONS */</a>
+<a name="1305"><span class="lineNum">    1305 </span>            : #endif /* CHECKING */</a>
+<a name="1306"><span class="lineNum">    1306 </span>            :   /* Set up the complete regmap table, including both the official and</a>
+<a name="1307"><span class="lineNum">    1307 </span>            :      extra register names.  regmap does not include entries for</a>
+<a name="1308"><span class="lineNum">    1308 </span>            :      anr_invalid or anr_last. */</a>
+<a name="1309"><span class="lineNum">    1309 </span><span class="lineCov">        320 :   regmap_size = (int)anr_last - 1;</span></a>
+<a name="1310"><span class="lineNum">    1310 </span><span class="lineCov">        320 :   regmap_size += (sizeof(extra_reg_names) /</span></a>
+<a name="1311"><span class="lineNum">    1311 </span>            :                   sizeof(struct name_to_reg)) - 1;  /*lint !e845*/</a>
+<a name="1312"><span class="lineNum">    1312 </span><span class="lineCov">        320 :   regmap = (struct name_to_reg *)alloc_general(</span></a>
+<a name="1313"><span class="lineNum">    1313 </span>            :                          (sizeof_t)(regmap_size * sizeof(struct name_to_reg)));</a>
+<a name="1314"><span class="lineNum">    1314 </span>            :   /* Start with i = 1 since anr_invalid is not copied. */</a>
+<a name="1315"><span class="lineNum">    1315 </span><span class="lineCov">      18880 :   for (i = 1; i &lt; (int)anr_last; i++) { /*lint !e681*/</span></a>
+<a name="1316"><span class="lineNum">    1316 </span><span class="lineCov">      18560 :     regmap[i-1].name = named_register_names[i];</span></a>
+<a name="1317"><span class="lineNum">    1317 </span><span class="lineCov">      18560 :     regmap[i-1].reg = i;</span></a>
+<a name="1318"><span class="lineNum">    1318 </span>            :   }  /* for */</a>
+<a name="1319"><span class="lineNum">    1319 </span>            :   /* Copy the extra register information. */</a>
+<a name="1320"><span class="lineNum">    1320 </span><span class="lineCov">        320 :   (void)memcpy((char*)&amp;regmap[(int)anr_last-1], (char*)extra_reg_names,</span></a>
+<a name="1321"><span class="lineNum">    1321 </span>            :                size_t_arg(sizeof(extra_reg_names) -</a>
+<a name="1322"><span class="lineNum">    1322 </span>            :                                                   sizeof(struct name_to_reg)));</a>
+<a name="1323"><span class="lineNum">    1323 </span>            :   /* name_to_register requires that regmap be sorted. */</a>
+<a name="1324"><span class="lineNum">    1324 </span><span class="lineCov">        320 :   qsort((a_void_ptr)regmap, (qsort_nmemb_type)regmap_size,</span></a>
+<a name="1325"><span class="lineNum">    1325 </span>            :         (qsort_nmemb_type)sizeof(struct name_to_reg), compare_n2r);</a>
+<a name="1326"><span class="lineNum">    1326 </span>            :   /* Save variables from extasm.h and extasm.c that are needed for</a>
+<a name="1327"><span class="lineNum">    1327 </span>            :      precompiled headers */</a>
+<a name="1328"><span class="lineNum">    1328 </span><span class="lineCov">        320 :   if (precompiled_header_processing_required) {</span></a>
+<a name="1329"><span class="lineNum">    1329 </span><span class="lineNoCov">          0 :     static a_pch_saved_variable saved_vars[] = {</span></a>
+<a name="1330"><span class="lineNum">    1330 </span>            :       pch_saved_var_array_terminating_elem()</a>
+<a name="1331"><span class="lineNum">    1331 </span>            :     };</a>
+<a name="1332"><span class="lineNum">    1332 </span><span class="lineNoCov">          0 :     register_pch_saved_variables(saved_vars);</span></a>
+<a name="1333"><span class="lineNum">    1333 </span>            :   }  /* if */</a>
+<a name="1334"><span class="lineNum">    1334 </span><span class="lineCov">        320 : }  /* extasm_one_time_init */</span></a>
+<a name="1335"><span class="lineNum">    1335 </span>            : </a>
+<a name="1336"><span class="lineNum">    1336 </span>            : #endif /* GNU_EXTENSIONS_ALLOWED */</a>
+<a name="1337"><span class="lineNum">    1337 </span>            : </a>
+<a name="1338"><span class="lineNum">    1338 </span>            : /******************************************************************************</a>
+<a name="1339"><span class="lineNum">    1339 </span>            : *                                                             \  ___  /       *</a>
+<a name="1340"><span class="lineNum">    1340 </span>            : *                                                               /   \         *</a>
+<a name="1341"><span class="lineNum">    1341 </span>            : * Edison Design Group C++/C Front End                        - | \^/ | -      *</a>
+<a name="1342"><span class="lineNum">    1342 </span>            : *                                                               \   /         *</a>
+<a name="1343"><span class="lineNum">    1343 </span>            : * Proprietary information of Edison Design Group Inc.         /  | |  \       *</a>
+<a name="1344"><span class="lineNum">    1344 </span>            : * Copyright 2001-2018 Edison Design Group Inc.                   [_]          *</a>
+<a name="1345"><span class="lineNum">    1345 </span>            : *                                                                             *</a>
+<a name="1346"><span class="lineNum">    1346 </span>            : ******************************************************************************/</a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

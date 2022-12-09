@@ -1,0 +1,391 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /usr/include/boost/random/uniform_smallint.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/include/boost/random</a> - uniform_smallint.hpp<span style="font-size: 80%;"> (source / <a href="uniform_smallint.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">14</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* boost random/uniform_smallint.hpp header file</a>
+<a name="2"><span class="lineNum">       2 </span>            :  *</a>
+<a name="3"><span class="lineNum">       3 </span>            :  * Copyright Jens Maurer 2000-2001</a>
+<a name="4"><span class="lineNum">       4 </span>            :  * Distributed under the Boost Software License, Version 1.0. (See</a>
+<a name="5"><span class="lineNum">       5 </span>            :  * accompanying file LICENSE_1_0.txt or copy at</a>
+<a name="6"><span class="lineNum">       6 </span>            :  * http://www.boost.org/LICENSE_1_0.txt)</a>
+<a name="7"><span class="lineNum">       7 </span>            :  *</a>
+<a name="8"><span class="lineNum">       8 </span>            :  * See http://www.boost.org for most recent version including documentation.</a>
+<a name="9"><span class="lineNum">       9 </span>            :  *</a>
+<a name="10"><span class="lineNum">      10 </span>            :  * $Id$</a>
+<a name="11"><span class="lineNum">      11 </span>            :  *</a>
+<a name="12"><span class="lineNum">      12 </span>            :  * Revision history</a>
+<a name="13"><span class="lineNum">      13 </span>            :  *  2001-04-08  added min&lt;max assertion (N. Becker)</a>
+<a name="14"><span class="lineNum">      14 </span>            :  *  2001-02-18  moved to individual header files</a>
+<a name="15"><span class="lineNum">      15 </span>            :  */</a>
+<a name="16"><span class="lineNum">      16 </span>            : </a>
+<a name="17"><span class="lineNum">      17 </span>            : #ifndef BOOST_RANDOM_UNIFORM_SMALLINT_HPP</a>
+<a name="18"><span class="lineNum">      18 </span>            : #define BOOST_RANDOM_UNIFORM_SMALLINT_HPP</a>
+<a name="19"><span class="lineNum">      19 </span>            : </a>
+<a name="20"><span class="lineNum">      20 </span>            : #include &lt;istream&gt;</a>
+<a name="21"><span class="lineNum">      21 </span>            : #include &lt;iosfwd&gt;</a>
+<a name="22"><span class="lineNum">      22 </span>            : #include &lt;boost/assert.hpp&gt;</a>
+<a name="23"><span class="lineNum">      23 </span>            : #include &lt;boost/config.hpp&gt;</a>
+<a name="24"><span class="lineNum">      24 </span>            : #include &lt;boost/limits.hpp&gt;</a>
+<a name="25"><span class="lineNum">      25 </span>            : #include &lt;boost/type_traits/is_integral.hpp&gt;</a>
+<a name="26"><span class="lineNum">      26 </span>            : #include &lt;boost/random/detail/config.hpp&gt;</a>
+<a name="27"><span class="lineNum">      27 </span>            : #include &lt;boost/random/detail/operators.hpp&gt;</a>
+<a name="28"><span class="lineNum">      28 </span>            : #include &lt;boost/random/detail/signed_unsigned_tools.hpp&gt;</a>
+<a name="29"><span class="lineNum">      29 </span>            : #include &lt;boost/random/uniform_01.hpp&gt;</a>
+<a name="30"><span class="lineNum">      30 </span>            : #include &lt;boost/detail/workaround.hpp&gt;</a>
+<a name="31"><span class="lineNum">      31 </span>            : #include &lt;boost/mpl/bool.hpp&gt;</a>
+<a name="32"><span class="lineNum">      32 </span>            : </a>
+<a name="33"><span class="lineNum">      33 </span>            : #ifdef BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS</a>
+<a name="34"><span class="lineNum">      34 </span>            : #include &lt;boost/mpl/if.hpp&gt;</a>
+<a name="35"><span class="lineNum">      35 </span>            : #endif</a>
+<a name="36"><span class="lineNum">      36 </span>            : </a>
+<a name="37"><span class="lineNum">      37 </span>            : namespace boost {</a>
+<a name="38"><span class="lineNum">      38 </span>            : namespace random {</a>
+<a name="39"><span class="lineNum">      39 </span>            : </a>
+<a name="40"><span class="lineNum">      40 </span>            : // uniform integer distribution on a small range [min, max]</a>
+<a name="41"><span class="lineNum">      41 </span>            : </a>
+<a name="42"><span class="lineNum">      42 </span>            : /**</a>
+<a name="43"><span class="lineNum">      43 </span>            :  * The distribution function uniform_smallint models a \random_distribution.</a>
+<a name="44"><span class="lineNum">      44 </span>            :  * On each invocation, it returns a random integer value uniformly distributed</a>
+<a name="45"><span class="lineNum">      45 </span>            :  * in the set of integer numbers {min, min+1, min+2, ..., max}. It assumes</a>
+<a name="46"><span class="lineNum">      46 </span>            :  * that the desired range (max-min+1) is small compared to the range of the</a>
+<a name="47"><span class="lineNum">      47 </span>            :  * underlying source of random numbers and thus makes no attempt to limit</a>
+<a name="48"><span class="lineNum">      48 </span>            :  * quantization errors.</a>
+<a name="49"><span class="lineNum">      49 </span>            :  *</a>
+<a name="50"><span class="lineNum">      50 </span>            :  * Let \f$r_{\mathtt{out}} = (\mbox{max}-\mbox{min}+1)\f$ the desired range of</a>
+<a name="51"><span class="lineNum">      51 </span>            :  * integer numbers, and</a>
+<a name="52"><span class="lineNum">      52 </span>            :  * let \f$r_{\mathtt{base}}\f$ be the range of the underlying source of random</a>
+<a name="53"><span class="lineNum">      53 </span>            :  * numbers. Then, for the uniform distribution, the theoretical probability</a>
+<a name="54"><span class="lineNum">      54 </span>            :  * for any number i in the range \f$r_{\mathtt{out}}\f$ will be</a>
+<a name="55"><span class="lineNum">      55 </span>            :  * \f$\displaystyle p_{\mathtt{out}}(i) = \frac{1}{r_{\mathtt{out}}}\f$.</a>
+<a name="56"><span class="lineNum">      56 </span>            :  * Likewise, assume a uniform distribution on \f$r_{\mathtt{base}}\f$ for</a>
+<a name="57"><span class="lineNum">      57 </span>            :  * the underlying source of random numbers, i.e.</a>
+<a name="58"><span class="lineNum">      58 </span>            :  * \f$\displaystyle p_{\mathtt{base}}(i) = \frac{1}{r_{\mathtt{base}}}\f$.</a>
+<a name="59"><span class="lineNum">      59 </span>            :  * Let \f$p_{\mathtt{out\_s}}(i)\f$ denote the random</a>
+<a name="60"><span class="lineNum">      60 </span>            :  * distribution generated by @c uniform_smallint. Then the sum over all</a>
+<a name="61"><span class="lineNum">      61 </span>            :  * i in \f$r_{\mathtt{out}}\f$ of</a>
+<a name="62"><span class="lineNum">      62 </span>            :  * \f$\displaystyle</a>
+<a name="63"><span class="lineNum">      63 </span>            :  * \left(\frac{p_{\mathtt{out\_s}}(i)}{p_{\mathtt{out}}(i)} - 1\right)^2\f$</a>
+<a name="64"><span class="lineNum">      64 </span>            :  * shall not exceed</a>
+<a name="65"><span class="lineNum">      65 </span>            :  * \f$\displaystyle \frac{r_{\mathtt{out}}}{r_{\mathtt{base}}^2}</a>
+<a name="66"><span class="lineNum">      66 </span>            :  * (r_{\mathtt{base}} \mbox{ mod } r_{\mathtt{out}})</a>
+<a name="67"><span class="lineNum">      67 </span>            :  * (r_{\mathtt{out}} - r_{\mathtt{base}} \mbox{ mod } r_{\mathtt{out}})\f$.</a>
+<a name="68"><span class="lineNum">      68 </span>            :  *</a>
+<a name="69"><span class="lineNum">      69 </span>            :  * The template parameter IntType shall denote an integer-like value type.</a>
+<a name="70"><span class="lineNum">      70 </span>            :  *</a>
+<a name="71"><span class="lineNum">      71 </span>            :  * @xmlnote</a>
+<a name="72"><span class="lineNum">      72 </span>            :  * The property above is the square sum of the relative differences</a>
+<a name="73"><span class="lineNum">      73 </span>            :  * in probabilities between the desired uniform distribution</a>
+<a name="74"><span class="lineNum">      74 </span>            :  * \f$p_{\mathtt{out}}(i)\f$ and the generated distribution</a>
+<a name="75"><span class="lineNum">      75 </span>            :  * \f$p_{\mathtt{out\_s}}(i)\f$.</a>
+<a name="76"><span class="lineNum">      76 </span>            :  * The property can be fulfilled with the calculation</a>
+<a name="77"><span class="lineNum">      77 </span>            :  * \f$(\mbox{base\_rng} \mbox{ mod } r_{\mathtt{out}})\f$, as follows:</a>
+<a name="78"><span class="lineNum">      78 </span>            :  * Let \f$r = r_{\mathtt{base}} \mbox{ mod } r_{\mathtt{out}}\f$.</a>
+<a name="79"><span class="lineNum">      79 </span>            :  * The base distribution on \f$r_{\mathtt{base}}\f$ is folded onto the</a>
+<a name="80"><span class="lineNum">      80 </span>            :  * range \f$r_{\mathtt{out}}\f$. The numbers i &lt; r have assigned</a>
+<a name="81"><span class="lineNum">      81 </span>            :  * \f$\displaystyle</a>
+<a name="82"><span class="lineNum">      82 </span>            :  * \left\lfloor\frac{r_{\mathtt{base}}}{r_{\mathtt{out}}}\right\rfloor+1\f$</a>
+<a name="83"><span class="lineNum">      83 </span>            :  * numbers of the base distribution, the rest has only \f$\displaystyle</a>
+<a name="84"><span class="lineNum">      84 </span>            :  * \left\lfloor\frac{r_{\mathtt{base}}}{r_{\mathtt{out}}}\right\rfloor\f$.</a>
+<a name="85"><span class="lineNum">      85 </span>            :  * Therefore,</a>
+<a name="86"><span class="lineNum">      86 </span>            :  * \f$\displaystyle p_{\mathtt{out\_s}}(i) =</a>
+<a name="87"><span class="lineNum">      87 </span>            :  * \left(\left\lfloor\frac{r_{\mathtt{base}}}</a>
+<a name="88"><span class="lineNum">      88 </span>            :  * {r_{\mathtt{out}}}\right\rfloor+1\right) /</a>
+<a name="89"><span class="lineNum">      89 </span>            :  * r_{\mathtt{base}}\f$ for i &lt; r and \f$\displaystyle p_{\mathtt{out\_s}}(i) =</a>
+<a name="90"><span class="lineNum">      90 </span>            :  * \left\lfloor\frac{r_{\mathtt{base}}}</a>
+<a name="91"><span class="lineNum">      91 </span>            :  * {r_{\mathtt{out}}}\right\rfloor/r_{\mathtt{base}}\f$ otherwise.</a>
+<a name="92"><span class="lineNum">      92 </span>            :  * Substituting this in the</a>
+<a name="93"><span class="lineNum">      93 </span>            :  * above sum formula leads to the desired result.</a>
+<a name="94"><span class="lineNum">      94 </span>            :  * @endxmlnote</a>
+<a name="95"><span class="lineNum">      95 </span>            :  *</a>
+<a name="96"><span class="lineNum">      96 </span>            :  * Note: The upper bound for</a>
+<a name="97"><span class="lineNum">      97 </span>            :  * \f$(r_{\mathtt{base}} \mbox{ mod } r_{\mathtt{out}})</a>
+<a name="98"><span class="lineNum">      98 </span>            :  * (r_{\mathtt{out}} - r_{\mathtt{base}} \mbox{ mod } r_{\mathtt{out}})\f$ is</a>
+<a name="99"><span class="lineNum">      99 </span>            :  * \f$\displaystyle \frac{r_{\mathtt{out}}^2}{4}\f$.  Regarding the upper bound</a>
+<a name="100"><span class="lineNum">     100 </span>            :  * for the square sum of the relative quantization error of</a>
+<a name="101"><span class="lineNum">     101 </span>            :  * \f$\displaystyle \frac{r_\mathtt{out}^3}{4r_{\mathtt{base}}^2}\f$, it</a>
+<a name="102"><span class="lineNum">     102 </span>            :  * seems wise to either choose \f$r_{\mathtt{base}}\f$ so that</a>
+<a name="103"><span class="lineNum">     103 </span>            :  * \f$r_{\mathtt{base}} &gt; 10r_{\mathtt{out}}^2\f$ or ensure that</a>
+<a name="104"><span class="lineNum">     104 </span>            :  * \f$r_{\mathtt{base}}\f$ is</a>
+<a name="105"><span class="lineNum">     105 </span>            :  * divisible by \f$r_{\mathtt{out}}\f$.</a>
+<a name="106"><span class="lineNum">     106 </span>            :  */</a>
+<a name="107"><span class="lineNum">     107 </span>            : template&lt;class IntType = int&gt;</a>
+<a name="108"><span class="lineNum">     108 </span>            : class uniform_smallint</a>
+<a name="109"><span class="lineNum">     109 </span>            : {</a>
+<a name="110"><span class="lineNum">     110 </span>            : public:</a>
+<a name="111"><span class="lineNum">     111 </span>            :     typedef IntType input_type;</a>
+<a name="112"><span class="lineNum">     112 </span>            :     typedef IntType result_type;</a>
+<a name="113"><span class="lineNum">     113 </span>            : </a>
+<a name="114"><span class="lineNum">     114 </span>            :     class param_type</a>
+<a name="115"><span class="lineNum">     115 </span>            :     {</a>
+<a name="116"><span class="lineNum">     116 </span>            :     public:</a>
+<a name="117"><span class="lineNum">     117 </span>            : </a>
+<a name="118"><span class="lineNum">     118 </span>            :         typedef uniform_smallint distribution_type;</a>
+<a name="119"><span class="lineNum">     119 </span>            : </a>
+<a name="120"><span class="lineNum">     120 </span>            :         /** constructs the parameters of a @c uniform_smallint distribution. */</a>
+<a name="121"><span class="lineNum">     121 </span>            :         param_type(IntType min_arg = 0, IntType max_arg = 9)</a>
+<a name="122"><span class="lineNum">     122 </span>            :           : _min(min_arg), _max(max_arg)</a>
+<a name="123"><span class="lineNum">     123 </span>            :         {</a>
+<a name="124"><span class="lineNum">     124 </span>            :             BOOST_ASSERT(_min &lt;= _max);</a>
+<a name="125"><span class="lineNum">     125 </span>            :         }</a>
+<a name="126"><span class="lineNum">     126 </span>            : </a>
+<a name="127"><span class="lineNum">     127 </span>            :         /** Returns the minimum value. */</a>
+<a name="128"><span class="lineNum">     128 </span>            :         IntType a() const { return _min; }</a>
+<a name="129"><span class="lineNum">     129 </span>            :         /** Returns the maximum value. */</a>
+<a name="130"><span class="lineNum">     130 </span>            :         IntType b() const { return _max; }</a>
+<a name="131"><span class="lineNum">     131 </span>            :         </a>
+<a name="132"><span class="lineNum">     132 </span>            : </a>
+<a name="133"><span class="lineNum">     133 </span>            :         /** Writes the parameters to a @c std::ostream. */</a>
+<a name="134"><span class="lineNum">     134 </span>            :         BOOST_RANDOM_DETAIL_OSTREAM_OPERATOR(os, param_type, parm)</a>
+<a name="135"><span class="lineNum">     135 </span>            :         {</a>
+<a name="136"><span class="lineNum">     136 </span>            :             os &lt;&lt; parm._min &lt;&lt; &quot; &quot; &lt;&lt; parm._max;</a>
+<a name="137"><span class="lineNum">     137 </span>            :             return os;</a>
+<a name="138"><span class="lineNum">     138 </span>            :         }</a>
+<a name="139"><span class="lineNum">     139 </span>            :     </a>
+<a name="140"><span class="lineNum">     140 </span>            :         /** Reads the parameters from a @c std::istream. */</a>
+<a name="141"><span class="lineNum">     141 </span>            :         BOOST_RANDOM_DETAIL_ISTREAM_OPERATOR(is, param_type, parm)</a>
+<a name="142"><span class="lineNum">     142 </span>            :         {</a>
+<a name="143"><span class="lineNum">     143 </span>            :             is &gt;&gt; parm._min &gt;&gt; std::ws &gt;&gt; parm._max;</a>
+<a name="144"><span class="lineNum">     144 </span>            :             return is;</a>
+<a name="145"><span class="lineNum">     145 </span>            :         }</a>
+<a name="146"><span class="lineNum">     146 </span>            : </a>
+<a name="147"><span class="lineNum">     147 </span>            :         /** Returns true if the two sets of parameters are equal. */</a>
+<a name="148"><span class="lineNum">     148 </span>            :         BOOST_RANDOM_DETAIL_EQUALITY_OPERATOR(param_type, lhs, rhs)</a>
+<a name="149"><span class="lineNum">     149 </span>            :         { return lhs._min == rhs._min &amp;&amp; lhs._max == rhs._max; }</a>
+<a name="150"><span class="lineNum">     150 </span>            : </a>
+<a name="151"><span class="lineNum">     151 </span>            :         /** Returns true if the two sets of parameters are different. */</a>
+<a name="152"><span class="lineNum">     152 </span>            :         BOOST_RANDOM_DETAIL_INEQUALITY_OPERATOR(param_type)</a>
+<a name="153"><span class="lineNum">     153 </span>            : </a>
+<a name="154"><span class="lineNum">     154 </span>            :     private:</a>
+<a name="155"><span class="lineNum">     155 </span>            :         IntType _min;</a>
+<a name="156"><span class="lineNum">     156 </span>            :         IntType _max;</a>
+<a name="157"><span class="lineNum">     157 </span>            :     };</a>
+<a name="158"><span class="lineNum">     158 </span>            : </a>
+<a name="159"><span class="lineNum">     159 </span>            :     /**</a>
+<a name="160"><span class="lineNum">     160 </span>            :      * Constructs a @c uniform_smallint. @c min and @c max are the</a>
+<a name="161"><span class="lineNum">     161 </span>            :      * lower and upper bounds of the output range, respectively.</a>
+<a name="162"><span class="lineNum">     162 </span>            :      */</a>
+<a name="163"><span class="lineNum">     163 </span><span class="lineNoCov">          0 :     explicit uniform_smallint(IntType min_arg = 0, IntType max_arg = 9)</span></a>
+<a name="164"><span class="lineNum">     164 </span><span class="lineNoCov">          0 :       : _min(min_arg), _max(max_arg) {}</span></a>
+<a name="165"><span class="lineNum">     165 </span>            : </a>
+<a name="166"><span class="lineNum">     166 </span>            :     /**</a>
+<a name="167"><span class="lineNum">     167 </span>            :      * Constructs a @c uniform_smallint from its parameters.</a>
+<a name="168"><span class="lineNum">     168 </span>            :      */</a>
+<a name="169"><span class="lineNum">     169 </span>            :     explicit uniform_smallint(const param_type&amp; parm)</a>
+<a name="170"><span class="lineNum">     170 </span>            :       : _min(parm.a()), _max(parm.b()) {}</a>
+<a name="171"><span class="lineNum">     171 </span>            : </a>
+<a name="172"><span class="lineNum">     172 </span>            :     /** Returns the minimum value of the distribution. */</a>
+<a name="173"><span class="lineNum">     173 </span>            :     result_type a() const { return _min; }</a>
+<a name="174"><span class="lineNum">     174 </span>            :     /** Returns the maximum value of the distribution. */</a>
+<a name="175"><span class="lineNum">     175 </span>            :     result_type b() const { return _max; }</a>
+<a name="176"><span class="lineNum">     176 </span>            :     /** Returns the minimum value of the distribution. */</a>
+<a name="177"><span class="lineNum">     177 </span>            :     result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () const { return _min; }</a>
+<a name="178"><span class="lineNum">     178 </span>            :     /** Returns the maximum value of the distribution. */</a>
+<a name="179"><span class="lineNum">     179 </span>            :     result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () const { return _max; }</a>
+<a name="180"><span class="lineNum">     180 </span>            : </a>
+<a name="181"><span class="lineNum">     181 </span>            :     /** Returns the parameters of the distribution. */</a>
+<a name="182"><span class="lineNum">     182 </span>            :     param_type param() const { return param_type(_min, _max); }</a>
+<a name="183"><span class="lineNum">     183 </span>            :     /** Sets the parameters of the distribution. */</a>
+<a name="184"><span class="lineNum">     184 </span>            :     void param(const param_type&amp; parm)</a>
+<a name="185"><span class="lineNum">     185 </span>            :     {</a>
+<a name="186"><span class="lineNum">     186 </span>            :         _min = parm.a();</a>
+<a name="187"><span class="lineNum">     187 </span>            :         _max = parm.b();</a>
+<a name="188"><span class="lineNum">     188 </span>            :     }</a>
+<a name="189"><span class="lineNum">     189 </span>            : </a>
+<a name="190"><span class="lineNum">     190 </span>            :     /**</a>
+<a name="191"><span class="lineNum">     191 </span>            :      * Effects: Subsequent uses of the distribution do not depend</a>
+<a name="192"><span class="lineNum">     192 </span>            :      * on values produced by any engine prior to invoking reset.</a>
+<a name="193"><span class="lineNum">     193 </span>            :      */</a>
+<a name="194"><span class="lineNum">     194 </span>            :     void reset() { }</a>
+<a name="195"><span class="lineNum">     195 </span>            : </a>
+<a name="196"><span class="lineNum">     196 </span>            :     /** Returns a value uniformly distributed in the range [min(), max()]. */</a>
+<a name="197"><span class="lineNum">     197 </span>            :     template&lt;class Engine&gt;</a>
+<a name="198"><span class="lineNum">     198 </span><span class="lineNoCov">          0 :     result_type operator()(Engine&amp; eng) const</span></a>
+<a name="199"><span class="lineNum">     199 </span>            :     {</a>
+<a name="200"><span class="lineNum">     200 </span>            :         typedef typename Engine::result_type base_result;</a>
+<a name="201"><span class="lineNum">     201 </span><span class="lineNoCov">          0 :         return generate(eng, boost::random::traits::is_integral&lt;base_result&gt;());</span></a>
+<a name="202"><span class="lineNum">     202 </span>            :     }</a>
+<a name="203"><span class="lineNum">     203 </span>            : </a>
+<a name="204"><span class="lineNum">     204 </span>            :     /** Returns a value uniformly distributed in the range [param.a(), param.b()]. */</a>
+<a name="205"><span class="lineNum">     205 </span>            :     template&lt;class Engine&gt;</a>
+<a name="206"><span class="lineNum">     206 </span>            :     result_type operator()(Engine&amp; eng, const param_type&amp; parm) const</a>
+<a name="207"><span class="lineNum">     207 </span>            :     { return uniform_smallint(parm)(eng); }</a>
+<a name="208"><span class="lineNum">     208 </span>            : </a>
+<a name="209"><span class="lineNum">     209 </span>            :     /** Writes the distribution to a @c std::ostream. */</a>
+<a name="210"><span class="lineNum">     210 </span>            :     BOOST_RANDOM_DETAIL_OSTREAM_OPERATOR(os, uniform_smallint, ud)</a>
+<a name="211"><span class="lineNum">     211 </span>            :     {</a>
+<a name="212"><span class="lineNum">     212 </span>            :         os &lt;&lt; ud._min &lt;&lt; &quot; &quot; &lt;&lt; ud._max;</a>
+<a name="213"><span class="lineNum">     213 </span>            :         return os;</a>
+<a name="214"><span class="lineNum">     214 </span>            :     }</a>
+<a name="215"><span class="lineNum">     215 </span>            :     </a>
+<a name="216"><span class="lineNum">     216 </span>            :     /** Reads the distribution from a @c std::istream. */</a>
+<a name="217"><span class="lineNum">     217 </span>            :     BOOST_RANDOM_DETAIL_ISTREAM_OPERATOR(is, uniform_smallint, ud)</a>
+<a name="218"><span class="lineNum">     218 </span>            :     {</a>
+<a name="219"><span class="lineNum">     219 </span>            :         is &gt;&gt; ud._min &gt;&gt; std::ws &gt;&gt; ud._max;</a>
+<a name="220"><span class="lineNum">     220 </span>            :         return is;</a>
+<a name="221"><span class="lineNum">     221 </span>            :     }</a>
+<a name="222"><span class="lineNum">     222 </span>            : </a>
+<a name="223"><span class="lineNum">     223 </span>            :     /**</a>
+<a name="224"><span class="lineNum">     224 </span>            :      * Returns true if the two distributions will produce identical</a>
+<a name="225"><span class="lineNum">     225 </span>            :      * sequences of values given equal generators.</a>
+<a name="226"><span class="lineNum">     226 </span>            :      */</a>
+<a name="227"><span class="lineNum">     227 </span>            :     BOOST_RANDOM_DETAIL_EQUALITY_OPERATOR(uniform_smallint, lhs, rhs)</a>
+<a name="228"><span class="lineNum">     228 </span>            :     { return lhs._min == rhs._min &amp;&amp; lhs._max == rhs._max; }</a>
+<a name="229"><span class="lineNum">     229 </span>            :     </a>
+<a name="230"><span class="lineNum">     230 </span>            :     /**</a>
+<a name="231"><span class="lineNum">     231 </span>            :      * Returns true if the two distributions may produce different</a>
+<a name="232"><span class="lineNum">     232 </span>            :      * sequences of values given equal generators.</a>
+<a name="233"><span class="lineNum">     233 </span>            :      */</a>
+<a name="234"><span class="lineNum">     234 </span>            :     BOOST_RANDOM_DETAIL_INEQUALITY_OPERATOR(uniform_smallint)</a>
+<a name="235"><span class="lineNum">     235 </span>            : </a>
+<a name="236"><span class="lineNum">     236 </span>            : private:</a>
+<a name="237"><span class="lineNum">     237 </span>            :     </a>
+<a name="238"><span class="lineNum">     238 </span>            :     // \cond show_private</a>
+<a name="239"><span class="lineNum">     239 </span>            :     template&lt;class Engine&gt;</a>
+<a name="240"><span class="lineNum">     240 </span><span class="lineNoCov">          0 :     result_type generate(Engine&amp; eng, boost::mpl::true_) const</span></a>
+<a name="241"><span class="lineNum">     241 </span>            :     {</a>
+<a name="242"><span class="lineNum">     242 </span>            :         // equivalent to (eng() - eng.min()) % (_max - _min + 1) + _min,</a>
+<a name="243"><span class="lineNum">     243 </span>            :         // but guarantees no overflow.</a>
+<a name="244"><span class="lineNum">     244 </span>            :         typedef typename Engine::result_type base_result;</a>
+<a name="245"><span class="lineNum">     245 </span>            :         typedef typename boost::random::traits::make_unsigned&lt;base_result&gt;::type base_unsigned;</a>
+<a name="246"><span class="lineNum">     246 </span>            :         typedef typename boost::random::traits::make_unsigned_or_unbounded&lt;result_type&gt;::type range_type;</a>
+<a name="247"><span class="lineNum">     247 </span>            : #ifdef BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS</a>
+<a name="248"><span class="lineNum">     248 </span>            :         typedef typename mpl::if_c&lt;</a>
+<a name="249"><span class="lineNum">     249 </span>            :            std::numeric_limits&lt;range_type&gt;::is_specialized &amp;&amp; std::numeric_limits&lt;base_unsigned&gt;::is_specialized</a>
+<a name="250"><span class="lineNum">     250 </span>            :            &amp;&amp; (std::numeric_limits&lt;range_type&gt;::digits &gt;= std::numeric_limits&lt;base_unsigned&gt;::digits),</a>
+<a name="251"><span class="lineNum">     251 </span>            :            range_type, base_unsigned&gt;::type mixed_range_type;</a>
+<a name="252"><span class="lineNum">     252 </span>            : #else</a>
+<a name="253"><span class="lineNum">     253 </span>            :         typedef base_unsigned mixed_range_type;</a>
+<a name="254"><span class="lineNum">     254 </span>            : #endif</a>
+<a name="255"><span class="lineNum">     255 </span><span class="lineNoCov">          0 :         range_type range = random::detail::subtract&lt;result_type&gt;()(_max, _min);</span></a>
+<a name="256"><span class="lineNum">     256 </span>            :         base_unsigned base_range =</a>
+<a name="257"><span class="lineNum">     257 </span><span class="lineNoCov">          0 :             random::detail::subtract&lt;base_result&gt;()((eng.max)(), (eng.min)());</span></a>
+<a name="258"><span class="lineNum">     258 </span>            :         base_unsigned val =</a>
+<a name="259"><span class="lineNum">     259 </span><span class="lineNoCov">          0 :             random::detail::subtract&lt;base_result&gt;()(eng(), (eng.min)());</span></a>
+<a name="260"><span class="lineNum">     260 </span><span class="lineNoCov">          0 :         if(range &gt;= base_range) {</span></a>
+<a name="261"><span class="lineNum">     261 </span><span class="lineNoCov">          0 :             return boost::random::detail::add&lt;range_type, result_type&gt;()(</span></a>
+<a name="262"><span class="lineNum">     262 </span><span class="lineNoCov">          0 :                 static_cast&lt;range_type&gt;(val), _min);</span></a>
+<a name="263"><span class="lineNum">     263 </span>            :         } else {</a>
+<a name="264"><span class="lineNum">     264 </span>            :             // This involves mixed arithmetic between the base generators range</a>
+<a name="265"><span class="lineNum">     265 </span>            :             // type, and the result_type's range type.  mixed_range_type is</a>
+<a name="266"><span class="lineNum">     266 </span>            :             // normally the same as base_unsigned which is the most efficient</a>
+<a name="267"><span class="lineNum">     267 </span>            :             // option, but requires a narrowing explcit cast if result_type</a>
+<a name="268"><span class="lineNum">     268 </span>            :             // is a multiprecision type.  If no such casts are available then use</a>
+<a name="269"><span class="lineNum">     269 </span>            :             // multiprecision arithmetic throughout instead.</a>
+<a name="270"><span class="lineNum">     270 </span><span class="lineNoCov">          0 :             mixed_range_type modulus = static_cast&lt;mixed_range_type&gt;(range)+1;</span></a>
+<a name="271"><span class="lineNum">     271 </span><span class="lineNoCov">          0 :             return boost::random::detail::add&lt;range_type, result_type&gt;()(</span></a>
+<a name="272"><span class="lineNum">     272 </span><span class="lineNoCov">          0 :                 static_cast&lt;mixed_range_type&gt;(val) % modulus, _min);</span></a>
+<a name="273"><span class="lineNum">     273 </span>            :         }</a>
+<a name="274"><span class="lineNum">     274 </span>            :     }</a>
+<a name="275"><span class="lineNum">     275 </span>            :     </a>
+<a name="276"><span class="lineNum">     276 </span>            :     template&lt;class Engine&gt;</a>
+<a name="277"><span class="lineNum">     277 </span>            :     result_type generate(Engine&amp; eng, boost::mpl::false_) const</a>
+<a name="278"><span class="lineNum">     278 </span>            :     {</a>
+<a name="279"><span class="lineNum">     279 </span>            :         typedef typename Engine::result_type base_result;</a>
+<a name="280"><span class="lineNum">     280 </span>            :         typedef typename boost::random::traits::make_unsigned&lt;result_type&gt;::type range_type;</a>
+<a name="281"><span class="lineNum">     281 </span>            :         range_type range = random::detail::subtract&lt;result_type&gt;()(_max, _min);</a>
+<a name="282"><span class="lineNum">     282 </span>            :         base_result val = boost::uniform_01&lt;base_result&gt;()(eng);</a>
+<a name="283"><span class="lineNum">     283 </span>            :         // what is the worst that can possibly happen here?</a>
+<a name="284"><span class="lineNum">     284 </span>            :         // base_result may not be able to represent all the values in [0, range]</a>
+<a name="285"><span class="lineNum">     285 </span>            :         // exactly.  If this happens, it will cause round off error and we</a>
+<a name="286"><span class="lineNum">     286 </span>            :         // won't be able to produce all the values in the range.  We don't</a>
+<a name="287"><span class="lineNum">     287 </span>            :         // care about this because the user has already told us not to by</a>
+<a name="288"><span class="lineNum">     288 </span>            :         // using uniform_smallint.  However, we do need to be careful</a>
+<a name="289"><span class="lineNum">     289 </span>            :         // to clamp the result, or floating point rounding can produce</a>
+<a name="290"><span class="lineNum">     290 </span>            :         // an out of range result.</a>
+<a name="291"><span class="lineNum">     291 </span>            :         range_type offset = static_cast&lt;range_type&gt;(val * (static_cast&lt;base_result&gt;(range) + 1));</a>
+<a name="292"><span class="lineNum">     292 </span>            :         if(offset &gt; range) return _max;</a>
+<a name="293"><span class="lineNum">     293 </span>            :         return boost::random::detail::add&lt;range_type, result_type&gt;()(offset , _min);</a>
+<a name="294"><span class="lineNum">     294 </span>            :     }</a>
+<a name="295"><span class="lineNum">     295 </span>            :     // \endcond</a>
+<a name="296"><span class="lineNum">     296 </span>            : </a>
+<a name="297"><span class="lineNum">     297 </span>            :     result_type _min;</a>
+<a name="298"><span class="lineNum">     298 </span>            :     result_type _max;</a>
+<a name="299"><span class="lineNum">     299 </span>            : };</a>
+<a name="300"><span class="lineNum">     300 </span>            : </a>
+<a name="301"><span class="lineNum">     301 </span>            : } // namespace random</a>
+<a name="302"><span class="lineNum">     302 </span>            : </a>
+<a name="303"><span class="lineNum">     303 </span>            : using random::uniform_smallint;</a>
+<a name="304"><span class="lineNum">     304 </span>            : </a>
+<a name="305"><span class="lineNum">     305 </span>            : } // namespace boost</a>
+<a name="306"><span class="lineNum">     306 </span>            : </a>
+<a name="307"><span class="lineNum">     307 </span>            : #endif // BOOST_RANDOM_UNIFORM_SMALLINT_HPP</a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

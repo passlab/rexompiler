@@ -1,0 +1,366 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /home/yyan7/compiler/rexompiler/src/frontend/CxxFrontend/EDG/edgRose/edgSupport.C</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../../../index.html">top level</a> - <a href="index.html">home/yyan7/compiler/rexompiler/src/frontend/CxxFrontend/EDG/edgRose</a> - edgSupport.C<span style="font-size: 80%;"> (source / <a href="edgSupport.C.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntry">35</td>
+            <td class="headerCovTableEntryLo">28.6 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryLo">33.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #include &quot;sage3basic.h&quot;</a>
+<a name="2"><span class="lineNum">       2 </span>            : </a>
+<a name="3"><span class="lineNum">       3 </span>            : #include &quot;edgRoseHeaders.h&quot;</a>
+<a name="4"><span class="lineNum">       4 </span>            : </a>
+<a name="5"><span class="lineNum">       5 </span>            : #include &quot;edgRoseFunctions.h&quot;</a>
+<a name="6"><span class="lineNum">       6 </span>            : </a>
+<a name="7"><span class="lineNum">       7 </span>            : // #include &quot;edgRoseAttributes.h&quot;</a>
+<a name="8"><span class="lineNum">       8 </span>            : </a>
+<a name="9"><span class="lineNum">       9 </span>            : </a>
+<a name="10"><span class="lineNum">      10 </span>            : </a>
+<a name="11"><span class="lineNum">      11 </span>            : // This is where I have copied EDG specific source code </a>
+<a name="12"><span class="lineNum">      12 </span>            : // typically from cp_gen_be.c to support some of the</a>
+<a name="13"><span class="lineNum">      13 </span>            : // logic required to translater from EDG to the ROSE IR.</a>
+<a name="14"><span class="lineNum">      14 </span>            : </a>
+<a name="15"><span class="lineNum">      15 </span>            : </a>
+<a name="16"><span class="lineNum">      16 </span>            : // DQ (12/30/2008): This function is copied from the EDG unparser.</a>
+<a name="17"><span class="lineNum">      17 </span>            : bool</a>
+<a name="18"><span class="lineNum">      18 </span><span class="lineCov">      55555 : EDG_ROSE_Translation::is_implicitly_cast_integral_constant(a_constant_ptr con)</span></a>
+<a name="19"><span class="lineNum">      19 </span>            : /*</a>
+<a name="20"><span class="lineNum">      20 </span>            : Return TRUE if the indicated constant is an integral constant cast to</a>
+<a name="21"><span class="lineNum">      21 </span>            : some other type, and the conversion is one that can be done implicitly.</a>
+<a name="22"><span class="lineNum">      22 </span>            : This is used for calls of C-mode functions with parameters that</a>
+<a name="23"><span class="lineNum">      23 </span>            : possibly involve prototype scope types.  For example:</a>
+<a name="24"><span class="lineNum">      24 </span>            : </a>
+<a name="25"><span class="lineNum">      25 </span>            :   void f(struct A { int i; } *);</a>
+<a name="26"><span class="lineNum">      26 </span>            :   void g(enum E { AA });</a>
+<a name="27"><span class="lineNum">      27 </span>            :   main() {</a>
+<a name="28"><span class="lineNum">      28 </span>            :     f(0);</a>
+<a name="29"><span class="lineNum">      29 </span>            :     g(5);</a>
+<a name="30"><span class="lineNum">      30 </span>            :   }</a>
+<a name="31"><span class="lineNum">      31 </span>            : </a>
+<a name="32"><span class="lineNum">      32 </span>            : These cases are problems because the cast cannot be written explicitly</a>
+<a name="33"><span class="lineNum">      33 </span>            : since the type cannot be named at the call site; therefore we detect them</a>
+<a name="34"><span class="lineNum">      34 </span>            : and put them out as implicit conversions.  Note that for the 0 --&gt; pointer</a>
+<a name="35"><span class="lineNum">      35 </span>            : case we're not checking to see if a prototype scope type is involved in</a>
+<a name="36"><span class="lineNum">      36 </span>            : the conversion, so some cases not involving such types will be rendered</a>
+<a name="37"><span class="lineNum">      37 </span>            : as implicit conversions even though the conversion could be written</a>
+<a name="38"><span class="lineNum">      38 </span>            : explicitly, but that's a good thing for a null pointer constant.  Implicit</a>
+<a name="39"><span class="lineNum">      39 </span>            : conversions on nonconstants are handled in eok_cast processing.</a>
+<a name="40"><span class="lineNum">      40 </span>            : */</a>
+<a name="41"><span class="lineNum">      41 </span>            : {</a>
+<a name="42"><span class="lineNum">      42 </span><span class="lineCov">      55555 :   bool is_implicit_cast = FALSE;</span></a>
+<a name="43"><span class="lineNum">      43 </span>            : </a>
+<a name="44"><span class="lineNum">      44 </span>            :   /* The implicit_cast flag is not checked here on purpose.  It's not set</a>
+<a name="45"><span class="lineNum">      45 </span>            :      for the enum case. */</a>
+<a name="46"><span class="lineNum">      46 </span><span class="lineCov">      55555 :   if (con-&gt;kind == (a_constant_repr_kind)ck_integer) {</span></a>
+<a name="47"><span class="lineNum">      47 </span><span class="lineCov">      55555 :     a_type_ptr con_type = skip_typerefs(con-&gt;type);</span></a>
+<a name="48"><span class="lineNum">      48 </span><span class="lineCov">      56002 :     if (con_type-&gt;kind == (a_type_kind)tk_pointer &amp;&amp;</span></a>
+<a name="49"><span class="lineNum">      49 </span><span class="lineCov">        447 :         cmplit_integer_constant(con, (a_host_large_integer)0) == 0) {</span></a>
+<a name="50"><span class="lineNum">      50 </span>            :       /* Zero converted to a pointer type. */</a>
+<a name="51"><span class="lineNum">      51 </span>            :       is_implicit_cast = TRUE;</a>
+<a name="52"><span class="lineNum">      52 </span><span class="lineCov">      55108 :     } else if (con_type-&gt;kind == (a_type_kind)tk_integer &amp;&amp;</span></a>
+<a name="53"><span class="lineNum">      53 </span><span class="lineCov">      54983 :                con_type-&gt;variant.integer.enum_type &amp;&amp;</span></a>
+<a name="54"><span class="lineNum">      54 </span><span class="lineCov">       7412 :                con_type-&gt;declared_in_function_prototype) {</span></a>
+<a name="55"><span class="lineNum">      55 </span>            :       /* Any integral value converted to a prototype scope enum type. */</a>
+<a name="56"><span class="lineNum">      56 </span><span class="lineNoCov">          0 :       is_implicit_cast = TRUE;</span></a>
+<a name="57"><span class="lineNum">      57 </span>            :     }  /* if */</a>
+<a name="58"><span class="lineNum">      58 </span>            :   }  /* if */</a>
+<a name="59"><span class="lineNum">      59 </span><span class="lineCov">      55555 :   return is_implicit_cast;</span></a>
+<a name="60"><span class="lineNum">      60 </span>            : }  /* is_implicitly_cast_integral_constant */</a>
+<a name="61"><span class="lineNum">      61 </span>            : </a>
+<a name="62"><span class="lineNum">      62 </span>            : </a>
+<a name="63"><span class="lineNum">      63 </span>            : // DQ (12/30/2008): This function is copied from the EDG unparser.</a>
+<a name="64"><span class="lineNum">      64 </span>            : bool</a>
+<a name="65"><span class="lineNum">      65 </span><span class="lineNoCov">          0 : EDG_ROSE_Translation::pm_cast_is_unambiguous(a_constant_ptr constant)</span></a>
+<a name="66"><span class="lineNum">      66 </span>            : /*</a>
+<a name="67"><span class="lineNum">      67 </span>            : constant points at a ck_ptr_to_member constant.  If the constant requires</a>
+<a name="68"><span class="lineNum">      68 </span>            : a cast to a base or derived class, and the cast is unambiguous when done in</a>
+<a name="69"><span class="lineNum">      69 </span>            : one step instead of class-by-class, return TRUE.</a>
+<a name="70"><span class="lineNum">      70 </span>            : */</a>
+<a name="71"><span class="lineNum">      71 </span>            : {</a>
+<a name="72"><span class="lineNum">      72 </span><span class="lineNoCov">          0 :   bool unambiguous_cast = FALSE;</span></a>
+<a name="73"><span class="lineNum">      73 </span>            : </a>
+<a name="74"><span class="lineNum">      74 </span><span class="lineNoCov">          0 :   if (constant-&gt;variant.ptr_to_member.casting_base_class != NULL) {</span></a>
+<a name="75"><span class="lineNum">      75 </span>            :     /* See if there is another base class with the same name as the one</a>
+<a name="76"><span class="lineNum">      76 </span>            :        we're starting from.  If not, the cast is unambiguous. */</a>
+<a name="77"><span class="lineNum">      77 </span><span class="lineNoCov">          0 :     if (!constant-&gt;variant.ptr_to_member.casting_base_class-&gt;ambiguous) {</span></a>
+<a name="78"><span class="lineNum">      78 </span><span class="lineNoCov">          0 :       unambiguous_cast = TRUE;</span></a>
+<a name="79"><span class="lineNum">      79 </span>            :     }  /* if */</a>
+<a name="80"><span class="lineNum">      80 </span>            :   }  /* if */</a>
+<a name="81"><span class="lineNum">      81 </span><span class="lineNoCov">          0 :   return unambiguous_cast;</span></a>
+<a name="82"><span class="lineNum">      82 </span>            : }  /* pm_cast_is_unambiguous */</a>
+<a name="83"><span class="lineNum">      83 </span>            : </a>
+<a name="84"><span class="lineNum">      84 </span>            : </a>
+<a name="85"><span class="lineNum">      85 </span>            : </a>
+<a name="86"><span class="lineNum">      86 </span>            : #if 0</a>
+<a name="87"><span class="lineNum">      87 </span>            : // DQ (3/19/2017): These functions do not appear to ever be called (experiment with commenting it out).</a>
+<a name="88"><span class="lineNum">      88 </span>            : </a>
+<a name="89"><span class="lineNum">      89 </span>            : // DQ (1/4/2009): Copied to support dik_constructor case!</a>
+<a name="90"><span class="lineNum">      90 </span>            : bool</a>
+<a name="91"><span class="lineNum">      91 </span>            : EDG_ROSE_Translation::default_class_array_initialization(</a>
+<a name="92"><span class="lineNum">      92 </span>            :                                              a_dynamic_init_ptr dip,</a>
+<a name="93"><span class="lineNum">      93 </span>            :                                              a_boolean          *is_value_init)</a>
+<a name="94"><span class="lineNum">      94 </span>            : /*</a>
+<a name="95"><span class="lineNum">      95 </span>            : Return TRUE if the indicated dynamic initialization entry performs</a>
+<a name="96"><span class="lineNum">      96 </span>            : default initialization on an array of classes.  Default initialization</a>
+<a name="97"><span class="lineNum">      97 </span>            : for such a case is to call the default constructor for each element of the</a>
+<a name="98"><span class="lineNum">      98 </span>            : array.  If the dynamic initialization performs value-initialization</a>
+<a name="99"><span class="lineNum">      99 </span>            : on an array, *value_init is returned TRUE, and the function returns FALSE;</a>
+<a name="100"><span class="lineNum">     100 </span>            : */</a>
+<a name="101"><span class="lineNum">     101 </span>            : {</a>
+<a name="102"><span class="lineNum">     102 </span>            :   bool is_default_array_init = FALSE;</a>
+<a name="103"><span class="lineNum">     103 </span>            : </a>
+<a name="104"><span class="lineNum">     104 </span>            :   *is_value_init = FALSE;</a>
+<a name="105"><span class="lineNum">     105 </span>            :   if (dip-&gt;kind == (a_dynamic_init_kind)dik_nonconstant_aggregate) {</a>
+<a name="106"><span class="lineNum">     106 </span>            :     a_constant_ptr con = dip-&gt;variant.constant;</a>
+<a name="107"><span class="lineNum">     107 </span>            :     check_assertion(con-&gt;kind == (a_constant_repr_kind)ck_aggregate);</a>
+<a name="108"><span class="lineNum">     108 </span>            :     if (con-&gt;variant.aggregate.first_constant-&gt;kind ==</a>
+<a name="109"><span class="lineNum">     109 </span>            :                                         (a_constant_repr_kind)ck_init_repeat) {</a>
+<a name="110"><span class="lineNum">     110 </span>            :       is_default_array_init = TRUE;</a>
+<a name="111"><span class="lineNum">     111 </span>            :       con= con-&gt;variant.aggregate.first_constant-&gt;variant.init_repeat.constant;</a>
+<a name="112"><span class="lineNum">     112 </span>            :       if (con-&gt;kind == (a_constant_repr_kind)ck_dynamic_init) {</a>
+<a name="113"><span class="lineNum">     113 </span>            :         a_dynamic_init_ptr dip2 = con-&gt;variant.dynamic_init;</a>
+<a name="114"><span class="lineNum">     114 </span>            :         if (dip2-&gt;kind == (a_dynamic_init_kind)dik_constructor) {</a>
+<a name="115"><span class="lineNum">     115 </span>            :           /* Value-initialization is not default-initialization. */</a>
+<a name="116"><span class="lineNum">     116 </span>            :           if (dip2-&gt;variant.constructor.value_initialization) {</a>
+<a name="117"><span class="lineNum">     117 </span>            :             *is_value_init = TRUE;</a>
+<a name="118"><span class="lineNum">     118 </span>            :             is_default_array_init = FALSE;</a>
+<a name="119"><span class="lineNum">     119 </span>            :           }  /* if */</a>
+<a name="120"><span class="lineNum">     120 </span>            :         }  /* if */</a>
+<a name="121"><span class="lineNum">     121 </span>            :       }  /* if */</a>
+<a name="122"><span class="lineNum">     122 </span>            :     }  /* if */</a>
+<a name="123"><span class="lineNum">     123 </span>            :   }  /* if */</a>
+<a name="124"><span class="lineNum">     124 </span>            :   return is_default_array_init;</a>
+<a name="125"><span class="lineNum">     125 </span>            : }  /* default_class_array_initialization */</a>
+<a name="126"><span class="lineNum">     126 </span>            : </a>
+<a name="127"><span class="lineNum">     127 </span>            : </a>
+<a name="128"><span class="lineNum">     128 </span>            : // DQ (1/4/2009): Copied to support dik_constructor case!</a>
+<a name="129"><span class="lineNum">     129 </span>            : bool</a>
+<a name="130"><span class="lineNum">     130 </span>            : EDG_ROSE_Translation::is_default_dynamic_init(a_dynamic_init_ptr dip)</a>
+<a name="131"><span class="lineNum">     131 </span>            : /*</a>
+<a name="132"><span class="lineNum">     132 </span>            : Return TRUE if the indicated dynamic initialization represents</a>
+<a name="133"><span class="lineNum">     133 </span>            : a default initialization, i.e., one that wasn't written in the</a>
+<a name="134"><span class="lineNum">     134 </span>            : source.</a>
+<a name="135"><span class="lineNum">     135 </span>            : */</a>
+<a name="136"><span class="lineNum">     136 </span>            : {</a>
+<a name="137"><span class="lineNum">     137 </span>            :   bool is_default_init = FALSE;</a>
+<a name="138"><span class="lineNum">     138 </span>            : </a>
+<a name="139"><span class="lineNum">     139 </span>            :   a_boolean is_value_init;</a>
+<a name="140"><span class="lineNum">     140 </span>            : </a>
+<a name="141"><span class="lineNum">     141 </span>            :   if (dip-&gt;is_explicit_cast) {</a>
+<a name="142"><span class="lineNum">     142 </span>            :     /* An explicit cast is not a default initialization. */</a>
+<a name="143"><span class="lineNum">     143 </span>            :   } else if (dip-&gt;kind == (a_dynamic_init_kind)dik_none) {</a>
+<a name="144"><span class="lineNum">     144 </span>            :     /* No initialization at all.  (The dynamic init is here because</a>
+<a name="145"><span class="lineNum">     145 </span>            :        there is a destructor, but it's implicit.) */</a>
+<a name="146"><span class="lineNum">     146 </span>            :     is_default_init = TRUE;</a>
+<a name="147"><span class="lineNum">     147 </span>            :   } else if (dip-&gt;kind == (a_dynamic_init_kind)dik_zero) {</a>
+<a name="148"><span class="lineNum">     148 </span>            :     /* Zero-initialization is generated by IL lowering, and</a>
+<a name="149"><span class="lineNum">     149 </span>            :        except for value-initialization (which would have is_explicit_cast</a>
+<a name="150"><span class="lineNum">     150 </span>            :        TRUE, covered above) it is implicit. */</a>
+<a name="151"><span class="lineNum">     151 </span>            :     is_default_init = TRUE;</a>
+<a name="152"><span class="lineNum">     152 </span>            :   } else if (dip-&gt;kind == (a_dynamic_init_kind)dik_constructor &amp;&amp;</a>
+<a name="153"><span class="lineNum">     153 </span>            :              (dip-&gt;variant.constructor.args == NULL ||</a>
+<a name="154"><span class="lineNum">     154 </span>            :               dip-&gt;variant.constructor.args-&gt;generated_default_arg) &amp;&amp;</a>
+<a name="155"><span class="lineNum">     155 </span>            :              !dip-&gt;variant.constructor.value_initialization) {</a>
+<a name="156"><span class="lineNum">     156 </span>            :     /* This is default (implicit) initialization. */</a>
+<a name="157"><span class="lineNum">     157 </span>            :     is_default_init = TRUE;</a>
+<a name="158"><span class="lineNum">     158 </span>            :   } else if (default_class_array_initialization(dip, &amp;is_value_init)) {</a>
+<a name="159"><span class="lineNum">     159 </span>            :     /* This is default initialization for a class array. */</a>
+<a name="160"><span class="lineNum">     160 </span>            :     is_default_init = TRUE;</a>
+<a name="161"><span class="lineNum">     161 </span>            :   }  /* if */</a>
+<a name="162"><span class="lineNum">     162 </span>            :   return is_default_init;</a>
+<a name="163"><span class="lineNum">     163 </span>            : }  /* is_default_dynamic_init */</a>
+<a name="164"><span class="lineNum">     164 </span>            : </a>
+<a name="165"><span class="lineNum">     165 </span>            : // DQ (3/19/2017): These functions do not appear to ever be called (experiment with commenting it out).</a>
+<a name="166"><span class="lineNum">     166 </span>            : #endif</a>
+<a name="167"><span class="lineNum">     167 </span>            : </a>
+<a name="168"><span class="lineNum">     168 </span>            : </a>
+<a name="169"><span class="lineNum">     169 </span>            : a_statement_ptr</a>
+<a name="170"><span class="lineNum">     170 </span><span class="lineNoCov">          0 : EDG_ROSE_Translation::find_statement_before_target(a_statement_ptr starting_statement, a_statement_ptr target_statement)</span></a>
+<a name="171"><span class="lineNum">     171 </span>            :    {</a>
+<a name="172"><span class="lineNum">     172 </span>            :   // DQ (10/24/2012): This function is used in the support for switch statements and identifying statements around case option statements.</a>
+<a name="173"><span class="lineNum">     173 </span>            : </a>
+<a name="174"><span class="lineNum">     174 </span>            :   // Note that target_statement CAN be NULL which means that we return the last statement in the list (that is not a stmk_label).</a>
+<a name="175"><span class="lineNum">     175 </span>            : </a>
+<a name="176"><span class="lineNum">     176 </span>            :   // DQ (10/28/2012): This function must not count statements that will be associated with a non-compiler-generated label.</a>
+<a name="177"><span class="lineNum">     177 </span>            : </a>
+<a name="178"><span class="lineNum">     178 </span>            : </a>
+<a name="179"><span class="lineNum">     179 </span>            :   // Return statement.</a>
+<a name="180"><span class="lineNum">     180 </span><span class="lineNoCov">          0 :      a_statement_ptr last_statement_before_target_statement = NULL;</span></a>
+<a name="181"><span class="lineNum">     181 </span>            : </a>
+<a name="182"><span class="lineNum">     182 </span><span class="lineNoCov">          0 :      ROSE_ASSERT(starting_statement != NULL);</span></a>
+<a name="183"><span class="lineNum">     183 </span>            :   // ROSE_ASSERT(target_statement != NULL);</a>
+<a name="184"><span class="lineNum">     184 </span>            : </a>
+<a name="185"><span class="lineNum">     185 </span>            : #if 0</a>
+<a name="186"><span class="lineNum">     186 </span>            :   // DQ (10/26/2012): We might be able to handle this but for now make sure it does not happen.</a>
+<a name="187"><span class="lineNum">     187 </span>            :      if (starting_statement-&gt;kind == stmk_label)</a>
+<a name="188"><span class="lineNum">     188 </span>            :         {</a>
+<a name="189"><span class="lineNum">     189 </span>            :           printf (&quot;In find_statement_before_target(): calling summarize_statement(starting_statement = %p) \n&quot;,starting_statement);</a>
+<a name="190"><span class="lineNum">     190 </span>            :           summarize_statement(starting_statement);</a>
+<a name="191"><span class="lineNum">     191 </span>            : </a>
+<a name="192"><span class="lineNum">     192 </span>            :           ROSE_ASSERT(starting_statement-&gt;variant.label.ptr-&gt;source_corresp.name != NULL);</a>
+<a name="193"><span class="lineNum">     193 </span>            :         }</a>
+<a name="194"><span class="lineNum">     194 </span>            : #endif</a>
+<a name="195"><span class="lineNum">     195 </span>            : </a>
+<a name="196"><span class="lineNum">     196 </span>            :   // If this is a stmk_label, it should not be a compiler generated one.</a>
+<a name="197"><span class="lineNum">     197 </span>            :   // ROSE_ASSERT(starting_statement-&gt;kind != stmk_label);</a>
+<a name="198"><span class="lineNum">     198 </span><span class="lineNoCov">          0 :      ROSE_ASSERT((starting_statement-&gt;kind != stmk_label) || (starting_statement-&gt;variant.label.ptr-&gt;source_corresp.name != NULL) );</span></a>
+<a name="199"><span class="lineNum">     199 </span><span class="lineNoCov">          0 :      if (target_statement != NULL)</span></a>
+<a name="200"><span class="lineNum">     200 </span>            :         {</a>
+<a name="201"><span class="lineNum">     201 </span><span class="lineNoCov">          0 :           ROSE_ASSERT(target_statement-&gt;kind != stmk_label);</span></a>
+<a name="202"><span class="lineNum">     202 </span>            :         }</a>
+<a name="203"><span class="lineNum">     203 </span>            : </a>
+<a name="204"><span class="lineNum">     204 </span>            : #if 0</a>
+<a name="205"><span class="lineNum">     205 </span>            :      printf (&quot;In find_statement_before_target(): starting_statement = %p = %s target_statement = %p = %s \n&quot;,</a>
+<a name="206"><span class="lineNum">     206 </span>            :           starting_statement,summarize_statement_in_string(starting_statement),target_statement,summarize_statement_in_string(target_statement));</a>
+<a name="207"><span class="lineNum">     207 </span>            : #endif</a>
+<a name="208"><span class="lineNum">     208 </span>            : </a>
+<a name="209"><span class="lineNum">     209 </span>            :   // Start here.</a>
+<a name="210"><span class="lineNum">     210 </span><span class="lineNoCov">          0 :      a_statement_ptr temp_statement = starting_statement;</span></a>
+<a name="211"><span class="lineNum">     211 </span><span class="lineNoCov">          0 :      while (temp_statement != NULL)</span></a>
+<a name="212"><span class="lineNum">     212 </span>            :         {</a>
+<a name="213"><span class="lineNum">     213 </span>            : #if 0</a>
+<a name="214"><span class="lineNum">     214 </span>            :           printf (&quot;In find_statement_before_target(): temp_statement = %p = %s \n&quot;,temp_statement,summarize_statement_in_string(temp_statement));</a>
+<a name="215"><span class="lineNum">     215 </span>            : #endif</a>
+<a name="216"><span class="lineNum">     216 </span><span class="lineNoCov">          0 :           last_statement_before_target_statement = temp_statement;</span></a>
+<a name="217"><span class="lineNum">     217 </span>            : </a>
+<a name="218"><span class="lineNum">     218 </span>            :        // If we encounter a non-compiler-generated label then it will absorbe the next statement, so advance past this label.</a>
+<a name="219"><span class="lineNum">     219 </span>            :        // Can a non-compiler-generated label be used without an associated statement to absorbe???</a>
+<a name="220"><span class="lineNum">     220 </span><span class="lineNoCov">          0 :           if ( (temp_statement != NULL) &amp;&amp; (temp_statement-&gt;kind == stmk_label) &amp;&amp; (temp_statement-&gt;variant.label.ptr-&gt;source_corresp.name != NULL) )</span></a>
+<a name="221"><span class="lineNum">     221 </span>            :              {</a>
+<a name="222"><span class="lineNum">     222 </span>            : #if 0</a>
+<a name="223"><span class="lineNum">     223 </span>            :                a_label_ptr label_statement = temp_statement-&gt;variant.label.ptr;</a>
+<a name="224"><span class="lineNum">     224 </span>            :                printf (&quot;In find_statement_before_target(): Found a label %s in a case statement list: the next statement will be absorbed into the label so advance past next statement \n&quot;,label_statement-&gt;source_corresp.name);</a>
+<a name="225"><span class="lineNum">     225 </span>            : #endif</a>
+<a name="226"><span class="lineNum">     226 </span><span class="lineNoCov">          0 :                temp_statement = (temp_statement-&gt;next == target_statement) ? NULL : temp_statement-&gt;next;</span></a>
+<a name="227"><span class="lineNum">     227 </span>            :              }</a>
+<a name="228"><span class="lineNum">     228 </span>            : </a>
+<a name="229"><span class="lineNum">     229 </span><span class="lineNoCov">          0 :           if (temp_statement != NULL)</span></a>
+<a name="230"><span class="lineNum">     230 </span>            :              {</a>
+<a name="231"><span class="lineNum">     231 </span><span class="lineNoCov">          0 :                temp_statement = (temp_statement-&gt;next == target_statement) ? NULL : temp_statement-&gt;next;</span></a>
+<a name="232"><span class="lineNum">     232 </span>            :              }</a>
+<a name="233"><span class="lineNum">     233 </span>            : </a>
+<a name="234"><span class="lineNum">     234 </span>            :        // Loop over any compiler generated stmk_label statements in the list (note: source_corresp.name == NULL means compiler generated).</a>
+<a name="235"><span class="lineNum">     235 </span>            :        // while (temp_statement != NULL &amp;&amp; temp_statement-&gt;kind == stmk_label)</a>
+<a name="236"><span class="lineNum">     236 </span><span class="lineNoCov">          0 :           while ( (temp_statement != NULL) &amp;&amp; (temp_statement-&gt;kind == stmk_label) &amp;&amp; (temp_statement-&gt;variant.label.ptr-&gt;source_corresp.name == NULL) )</span></a>
+<a name="237"><span class="lineNum">     237 </span>            :              {</a>
+<a name="238"><span class="lineNum">     238 </span>            : #if 0</a>
+<a name="239"><span class="lineNum">     239 </span>            :                printf (&quot;In find_statement_before_target(): loop over stmk_label statements temp_statement = %p = %s \n&quot;,temp_statement,summarize_statement_in_string(temp_statement));</a>
+<a name="240"><span class="lineNum">     240 </span>            : #endif</a>
+<a name="241"><span class="lineNum">     241 </span><span class="lineNoCov">          0 :                temp_statement = (temp_statement-&gt;next == target_statement) ? NULL : temp_statement-&gt;next;</span></a>
+<a name="242"><span class="lineNum">     242 </span>            :              }</a>
+<a name="243"><span class="lineNum">     243 </span>            : </a>
+<a name="244"><span class="lineNum">     244 </span>            :        // Loop over stmk_init statements since they are not a part of the source sequence list.</a>
+<a name="245"><span class="lineNum">     245 </span><span class="lineNoCov">          0 :           while ( (temp_statement != NULL) &amp;&amp; (temp_statement-&gt;kind == stmk_init) )</span></a>
+<a name="246"><span class="lineNum">     246 </span>            :              {</a>
+<a name="247"><span class="lineNum">     247 </span>            : #if 0</a>
+<a name="248"><span class="lineNum">     248 </span>            :                printf (&quot;In find_statement_before_target(): loop over stmk_init statements temp_statement = %p = %s \n&quot;,temp_statement,summarize_statement_in_string(temp_statement));</a>
+<a name="249"><span class="lineNum">     249 </span>            : #endif</a>
+<a name="250"><span class="lineNum">     250 </span><span class="lineNoCov">          0 :                temp_statement = (temp_statement-&gt;next == target_statement) ? NULL : temp_statement-&gt;next;</span></a>
+<a name="251"><span class="lineNum">     251 </span>            :              }</a>
+<a name="252"><span class="lineNum">     252 </span>            :         }</a>
+<a name="253"><span class="lineNum">     253 </span>            : </a>
+<a name="254"><span class="lineNum">     254 </span>            :   // Can we assert this?</a>
+<a name="255"><span class="lineNum">     255 </span>            :   // ROSE_ASSERT(last_statement_before_target_statement != NULL);</a>
+<a name="256"><span class="lineNum">     256 </span>            : </a>
+<a name="257"><span class="lineNum">     257 </span>            : #if 0</a>
+<a name="258"><span class="lineNum">     258 </span>            :      printf (&quot;Leaving find_statement_before_target(): last_statement_before_target_statement = %p = %s \n&quot;,</a>
+<a name="259"><span class="lineNum">     259 </span>            :           last_statement_before_target_statement,last_statement_before_target_statement != NULL ? summarize_statement_in_string(last_statement_before_target_statement) : &quot;null&quot;);</a>
+<a name="260"><span class="lineNum">     260 </span>            : #endif</a>
+<a name="261"><span class="lineNum">     261 </span>            : </a>
+<a name="262"><span class="lineNum">     262 </span><span class="lineNoCov">          0 :      return last_statement_before_target_statement;</span></a>
+<a name="263"><span class="lineNum">     263 </span>            :    }</a>
+<a name="264"><span class="lineNum">     264 </span>            : </a>
+<a name="265"><span class="lineNum">     265 </span>            : </a>
+<a name="266"><span class="lineNum">     266 </span>            : #if 0</a>
+<a name="267"><span class="lineNum">     267 </span>            : // DQ (3/21/2017): This function appears to no longer be used.</a>
+<a name="268"><span class="lineNum">     268 </span>            : a_tagged_pointer</a>
+<a name="269"><span class="lineNum">     269 </span>            : EDG_ROSE_Translation::entity_associated_with_src_seq_end_of_construct(SourceSequenceList&amp; sse)</a>
+<a name="270"><span class="lineNum">     270 </span>            :    {</a>
+<a name="271"><span class="lineNum">     271 </span>            :      a_tagged_pointer entity; // = NULL;</a>
+<a name="272"><span class="lineNum">     272 </span>            : </a>
+<a name="273"><span class="lineNum">     273 </span>            :      if (sse-&gt;entity.kind == iek_src_seq_end_of_construct)</a>
+<a name="274"><span class="lineNum">     274 </span>            :         {</a>
+<a name="275"><span class="lineNum">     275 </span>            :           a_src_seq_end_of_construct_ptr src_seq_end_of_construct = (a_src_seq_end_of_construct_ptr)(sse-&gt;entity.ptr);</a>
+<a name="276"><span class="lineNum">     276 </span>            :           entity = src_seq_end_of_construct-&gt;entity;</a>
+<a name="277"><span class="lineNum">     277 </span>            :         }</a>
+<a name="278"><span class="lineNum">     278 </span>            : </a>
+<a name="279"><span class="lineNum">     279 </span>            :      return entity;</a>
+<a name="280"><span class="lineNum">     280 </span>            :    }</a>
+<a name="281"><span class="lineNum">     281 </span>            : #endif</a>
+<a name="282"><span class="lineNum">     282 </span>            : </a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

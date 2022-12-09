@@ -1,0 +1,6 @@
+<map id="SgUserDefinedUnaryOp" name="SgUserDefinedUnaryOp">
+<area shape="rect" id="node1" title=" " alt="" coords="76,95,239,121"/>
+<area shape="rect" id="node2" href="$classSgUnaryOp.html" title="This class represents the notion of a unary operator. It is derived from a SgExpression because opera..." alt="" coords="5,5,96,32"/>
+<area shape="rect" id="node3" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="121,5,194,32"/>
+<area shape="rect" id="node4" href="$classSgFunctionSymbol.html" title=" " alt="" coords="227,5,359,32"/>
+</map>

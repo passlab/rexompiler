@@ -1,0 +1,7 @@
+<map id="Sawyer::Container::BitVectorSupport::add" name="Sawyer::Container::BitVectorSupport::add">
+<area shape="rect" id="node1" title="Add bits." alt="" coords="492,93,643,135"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1BitVector.html#ad227b36add661119094a305c657b56d2" title="Add bits as integers." alt="" coords="281,5,419,47"/>
+<area shape="rect" id="node3" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a44dce682e900925e0043015663657450" title="Obtain bits from a decimal representation." alt="" coords="5,93,208,135"/>
+<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a2e1a5421e50db760e7711d615688ca79" title="Multiply by 10." alt="" coords="256,123,444,164"/>
+<area shape="rect" id="node5" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a2e59f3428ec7731a3200b95d54b3fa29" title="Subtract bits." alt="" coords="262,188,438,229"/>
+</map>

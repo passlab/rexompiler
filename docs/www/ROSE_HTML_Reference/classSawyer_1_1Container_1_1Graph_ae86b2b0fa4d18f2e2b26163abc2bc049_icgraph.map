@@ -1,0 +1,5 @@
+<map id="Sawyer::Container::Graph::eraseVertex" name="Sawyer::Container::Graph::eraseVertex">
+<area shape="rect" id="node1" title="Erases a vertex and its incident edges." alt="" coords="256,39,395,80"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#ab31179f8150d5e4f5c36d83236b0bc06" title="Erases and edge and possibly vertices." alt="" coords="5,5,208,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Graph.html#a8de3fd4c85547af9ff084e75e629639d" title="Erases a vertex and its incident edges." alt="" coords="37,71,176,112"/>
+</map>

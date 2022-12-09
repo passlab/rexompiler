@@ -1,0 +1,13 @@
+<map id="Sawyer::Container::BitVectorSupport::signExtend" name="Sawyer::Container::BitVectorSupport::signExtend">
+<area shape="rect" id="node1" title="Sign extend." alt="" coords="5,301,200,342"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Interval.html#a136b9afce8c48871c21c58dc9ecdc48f" title="Construct an interval from one endpoint and a size." alt="" coords="268,5,407,61"/>
+<area shape="rect" id="node3" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a5fca01114382a97afa15c25b29579dff" title="Clear some bits." alt="" coords="475,303,632,345"/>
+<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#aff6810c441e283e64b214bd4d9bbc0a6" title="Copy some bits." alt="" coords="259,137,416,178"/>
+<area shape="rect" id="node5" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a98b33c1888d241c1ef777bcef0eacc3c" title="Return a single bit." alt="" coords="264,202,411,243"/>
+<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1Interval.html#a0c203b5387ef72aa3bcf8815ec8b7c16" title="Returns upper limit." alt="" coords="268,267,407,309"/>
+<area shape="rect" id="node7" href="$classSawyer_1_1Container_1_1Interval.html#a164457a90e3cc9c898d0eea5a57fca2a" title="Construct an interval from two endpoints." alt="" coords="261,333,413,374"/>
+<area shape="rect" id="node8" href="$classSawyer_1_1Container_1_1Interval.html#aab81e29f7ededeac6d008e6dfaa1bf19" title="True if interval is empty." alt="" coords="268,398,407,439"/>
+<area shape="rect" id="node9" href="$classSawyer_1_1Container_1_1Interval.html#abb62f08552ec4762be55510d97e7a233" title="Returns lower limit." alt="" coords="268,463,407,505"/>
+<area shape="rect" id="node10" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#af68ac2d6efbbb861299c4cfe02e8a148" title="Set or clear some bits." alt="" coords="248,529,427,570"/>
+<area shape="rect" id="node11" href="$classSawyer_1_1Container_1_1Interval.html#a75d8ca4e63b1180f6d2194a0ec79440d" title="Size of interval." alt="" coords="268,594,407,635"/>
+</map>

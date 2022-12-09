@@ -1,0 +1,5 @@
+<map id="SgClassSymbol" name="SgClassSymbol">
+<area shape="rect" id="node1" title="This class represents the concept of a class name within the compiler." alt="" coords="55,95,171,121"/>
+<area shape="rect" id="node2" href="$classSgSymbol.html" title="This class represents the concept of a name within the compiler." alt="" coords="5,5,88,32"/>
+<area shape="rect" id="node3" href="$classSgClassDeclaration.html" title="This class represents the concept of a class declaration statement. It includes the concept of an ins..." alt="" coords="112,5,251,32"/>
+</map>

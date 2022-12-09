@@ -1,0 +1,10 @@
+<map id="SgFunctionDeclaration" name="SgFunctionDeclaration">
+<area shape="rect" id="node1" title="This class represents the concept of a function declaration statement." alt="" coords="217,132,372,159"/>
+<area shape="rect" id="node3" href="$classSgEntryStatement.html" title=" " alt="" coords="475,5,604,32"/>
+<area shape="rect" id="node4" href="$classSgMemberFunctionDeclaration.html" title="This class represents the concept of a member function declaration statement." alt="" coords="439,56,640,83"/>
+<area shape="rect" id="node5" href="$classSgProcedureHeaderStatement.html" title=" " alt="" coords="440,107,639,133"/>
+<area shape="rect" id="node6" href="$classSgProgramHeaderStatement.html" title=" " alt="" coords="445,157,634,184"/>
+<area shape="rect" id="node7" href="$classSgTemplateFunctionDeclaration.html" title=" " alt="" coords="436,208,643,235"/>
+<area shape="rect" id="node8" href="$classSgTemplateInstantiationFunctionDecl.html" title="This class represents the concept of an instantiation of function template." alt="" coords="420,259,659,285"/>
+<area shape="rect" id="node2" href="$classSgDeclarationStatement.html" title="This class represents the concept of a declaration statement." alt="" coords="5,132,169,159"/>
+</map>

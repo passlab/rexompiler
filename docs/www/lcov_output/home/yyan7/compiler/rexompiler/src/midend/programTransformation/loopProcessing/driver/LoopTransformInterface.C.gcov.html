@@ -1,0 +1,452 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /home/yyan7/compiler/rexompiler/src/midend/programTransformation/loopProcessing/driver/LoopTransformInterface.C</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../../../index.html">top level</a> - <a href="index.html">home/yyan7/compiler/rexompiler/src/midend/programTransformation/loopProcessing/driver</a> - LoopTransformInterface.C<span style="font-size: 80%;"> (source / <a href="LoopTransformInterface.C.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">188</td>
+            <td class="headerCovTableEntryLo">1.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">21</td>
+            <td class="headerCovTableEntryLo">4.8 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #include &lt;sstream&gt;</a>
+<a name="2"><span class="lineNum">       2 </span>            : #include &lt;iostream&gt;</a>
+<a name="3"><span class="lineNum">       3 </span>            : #include &lt;string&gt;</a>
+<a name="4"><span class="lineNum">       4 </span>            : #include &lt;LoopTransformInterface.h&gt;</a>
+<a name="5"><span class="lineNum">       5 </span>            : #include &lt;LoopTransformOptions.h&gt;</a>
+<a name="6"><span class="lineNum">       6 </span>            : #include &lt;ProcessAstTree.h&gt;</a>
+<a name="7"><span class="lineNum">       7 </span>            : </a>
+<a name="8"><span class="lineNum">       8 </span>            : #include &lt;BreakupStmt.h&gt;</a>
+<a name="9"><span class="lineNum">       9 </span>            : #include &lt;LoopUnroll.h&gt;</a>
+<a name="10"><span class="lineNum">      10 </span>            : #include &lt;CommandOptions.h&gt;</a>
+<a name="11"><span class="lineNum">      11 </span>            : #include &lt;AutoTuningInterface.h&gt;</a>
+<a name="12"><span class="lineNum">      12 </span>            : #include &lt;ROSE_ASSERT.h&gt;</a>
+<a name="13"><span class="lineNum">      13 </span>            : </a>
+<a name="14"><span class="lineNum">      14 </span>            : //#define DEBUG 1</a>
+<a name="15"><span class="lineNum">      15 </span>            : </a>
+<a name="16"><span class="lineNum">      16 </span>            : AstInterface* LoopTransformInterface::fa = 0;</a>
+<a name="17"><span class="lineNum">      17 </span>            : int LoopTransformInterface::configIndex = 0;</a>
+<a name="18"><span class="lineNum">      18 </span>            : AliasAnalysisInterface* LoopTransformInterface::aliasInfo = 0;</a>
+<a name="19"><span class="lineNum">      19 </span>            : FunctionSideEffectInterface* LoopTransformInterface::funcInfo = 0;</a>
+<a name="20"><span class="lineNum">      20 </span>            : ArrayAbstractionInterface* LoopTransformInterface::arrayInfo = 0;</a>
+<a name="21"><span class="lineNum">      21 </span>            : AutoTuningInterface* LoopTransformInterface::tuning = 0;</a>
+<a name="22"><span class="lineNum">      22 </span>            : </a>
+<a name="23"><span class="lineNum">      23 </span>            : using namespace std;</a>
+<a name="24"><span class="lineNum">      24 </span>            : </a>
+<a name="25"><span class="lineNum">      25 </span>            : // This function is defined in TransformComputation.C.</a>
+<a name="26"><span class="lineNum">      26 </span>            : extern bool LoopTransformation(const AstNodePtr&amp; head, AstNodePtr&amp; result);</a>
+<a name="27"><span class="lineNum">      27 </span>            : </a>
+<a name="28"><span class="lineNum">      28 </span>            : </a>
+<a name="29"><span class="lineNum">      29 </span>            : //////////////////////</a>
+<a name="30"><span class="lineNum">      30 </span>            : // Helper Functions //</a>
+<a name="31"><span class="lineNum">      31 </span>            : //////////////////////</a>
+<a name="32"><span class="lineNum">      32 </span>            : </a>
+<a name="33"><span class="lineNum">      33 </span><span class="lineNoCov">          0 : bool ArrayUseAccessFunction::</span></a>
+<a name="34"><span class="lineNum">      34 </span>            : IsUniqueArray( AstInterface&amp; fa, const AstNodePtr&amp; array)</a>
+<a name="35"><span class="lineNum">      35 </span>            : {</a>
+<a name="36"><span class="lineNum">      36 </span><span class="lineNoCov">          0 :   if (prev != 0 &amp;&amp;  prev-&gt;IsUniqueArray(fa, array))</span></a>
+<a name="37"><span class="lineNum">      37 </span>            :        return true;</a>
+<a name="38"><span class="lineNum">      38 </span><span class="lineNoCov">          0 :   AstNodeType t;</span></a>
+<a name="39"><span class="lineNum">      39 </span><span class="lineNoCov">          0 :   if (!fa.IsVarRef(array, &amp;t)) ROSE_ABORT();</span></a>
+<a name="40"><span class="lineNum">      40 </span>            : </a>
+<a name="41"><span class="lineNum">      41 </span><span class="lineNoCov">          0 :   return false;</span></a>
+<a name="42"><span class="lineNum">      42 </span>            : }</a>
+<a name="43"><span class="lineNum">      43 </span>            : </a>
+<a name="44"><span class="lineNum">      44 </span><span class="lineNoCov">          0 : bool ArrayUseAccessFunction::</span></a>
+<a name="45"><span class="lineNum">      45 </span>            : IsArrayAccess( AstInterface&amp; fa, const AstNodePtr&amp; s, AstNodePtr* array,</a>
+<a name="46"><span class="lineNum">      46 </span>            :                                  AstInterface::AstNodeList* index)</a>
+<a name="47"><span class="lineNum">      47 </span>            : {</a>
+<a name="48"><span class="lineNum">      48 </span><span class="lineNoCov">          0 :   AstInterface::AstNodeList args;</span></a>
+<a name="49"><span class="lineNum">      49 </span><span class="lineNoCov">          0 :   if (prev != 0 &amp;&amp;  prev-&gt;IsArrayAccess(fa, s, array, index))</span></a>
+<a name="50"><span class="lineNum">      50 </span>            :        return true;</a>
+<a name="51"><span class="lineNum">      51 </span><span class="lineNoCov">          0 :   std::string sig;</span></a>
+<a name="52"><span class="lineNum">      52 </span><span class="lineNoCov">          0 :   AstNodePtr f;</span></a>
+<a name="53"><span class="lineNum">      53 </span><span class="lineNoCov">          0 :   if (fa.IsFunctionCall(s, &amp;f,&amp;args) &amp;&amp; fa.IsVarRef(f,0,&amp;sig) &amp;&amp; sig == funcname) {</span></a>
+<a name="54"><span class="lineNum">      54 </span><span class="lineNoCov">          0 :       AstInterface::AstNodeList::const_iterator p = args.begin();</span></a>
+<a name="55"><span class="lineNum">      55 </span><span class="lineNoCov">          0 :       if (array != 0)</span></a>
+<a name="56"><span class="lineNum">      56 </span><span class="lineNoCov">          0 :         *array = *p;</span></a>
+<a name="57"><span class="lineNum">      57 </span><span class="lineNoCov">          0 :       if (index != 0) {</span></a>
+<a name="58"><span class="lineNum">      58 </span><span class="lineNoCov">          0 :          for (++p; p != args.end(); ++p) {</span></a>
+<a name="59"><span class="lineNum">      59 </span><span class="lineNoCov">          0 :             index-&gt;push_back(*p);</span></a>
+<a name="60"><span class="lineNum">      60 </span>            :          }</a>
+<a name="61"><span class="lineNum">      61 </span>            :       }</a>
+<a name="62"><span class="lineNum">      62 </span><span class="lineNoCov">          0 :       return true;</span></a>
+<a name="63"><span class="lineNum">      63 </span>            :   }</a>
+<a name="64"><span class="lineNum">      64 </span>            :   return false;</a>
+<a name="65"><span class="lineNum">      65 </span>            : }</a>
+<a name="66"><span class="lineNum">      66 </span>            : </a>
+<a name="67"><span class="lineNum">      67 </span><span class="lineNoCov">          0 : bool ArrayUseAccessFunction::</span></a>
+<a name="68"><span class="lineNum">      68 </span>            : GetArrayBound( AstInterface&amp; fa, const AstNodePtr&amp; array,</a>
+<a name="69"><span class="lineNum">      69 </span>            :                                  int dim, int &amp;lb, int &amp;ub)</a>
+<a name="70"><span class="lineNum">      70 </span>            : {</a>
+<a name="71"><span class="lineNum">      71 </span><span class="lineNoCov">          0 :   if (prev != 0)</span></a>
+<a name="72"><span class="lineNum">      72 </span><span class="lineNoCov">          0 :      return prev-&gt;GetArrayBound(fa, array, dim, lb, ub);</span></a>
+<a name="73"><span class="lineNum">      73 </span><span class="lineNoCov">          0 :   return fa.GetArrayBound(array, dim, lb, ub);</span></a>
+<a name="74"><span class="lineNum">      74 </span>            : }</a>
+<a name="75"><span class="lineNum">      75 </span>            : </a>
+<a name="76"><span class="lineNum">      76 </span><span class="lineNoCov">          0 : bool ArrayUseAccessFunction::get_modify(AstInterface&amp; fa, const AstNodePtr&amp; fc,</span></a>
+<a name="77"><span class="lineNum">      77 </span>            :                                CollectObject&lt;AstNodePtr&gt;* collect)</a>
+<a name="78"><span class="lineNum">      78 </span>            : {</a>
+<a name="79"><span class="lineNum">      79 </span><span class="lineNoCov">          0 :   AstInterface::AstNodeList args;</span></a>
+<a name="80"><span class="lineNum">      80 </span><span class="lineNoCov">          0 :   if (prev1 != 0 &amp;&amp; prev1-&gt;get_modify(fa, fc, collect))</span></a>
+<a name="81"><span class="lineNum">      81 </span>            :        return true;</a>
+<a name="82"><span class="lineNum">      82 </span><span class="lineNoCov">          0 :   std::string sig;</span></a>
+<a name="83"><span class="lineNum">      83 </span><span class="lineNoCov">          0 :   AstNodePtr f;</span></a>
+<a name="84"><span class="lineNum">      84 </span><span class="lineNoCov">          0 :   if (fa.IsFunctionCall(fc, &amp;f,&amp;args) &amp;&amp; fa.IsVarRef(f,0,&amp;sig) &amp;&amp; sig == funcname) {</span></a>
+<a name="85"><span class="lineNum">      85 </span><span class="lineNoCov">          0 :        return true;</span></a>
+<a name="86"><span class="lineNum">      86 </span>            :   }</a>
+<a name="87"><span class="lineNum">      87 </span>            :   return false;</a>
+<a name="88"><span class="lineNum">      88 </span>            : }</a>
+<a name="89"><span class="lineNum">      89 </span>            : </a>
+<a name="90"><span class="lineNum">      90 </span><span class="lineNoCov">          0 : bool ArrayUseAccessFunction::get_read(AstInterface&amp; fa, const AstNodePtr&amp; fc,</span></a>
+<a name="91"><span class="lineNum">      91 </span>            :                                CollectObject&lt;AstNodePtr&gt;* collect)</a>
+<a name="92"><span class="lineNum">      92 </span>            : {</a>
+<a name="93"><span class="lineNum">      93 </span><span class="lineNoCov">          0 :   AstInterface::AstNodeList args;</span></a>
+<a name="94"><span class="lineNum">      94 </span><span class="lineNoCov">          0 :   if (prev1 != 0 &amp;&amp; prev1-&gt;get_read(fa, fc, collect))</span></a>
+<a name="95"><span class="lineNum">      95 </span>            :        return true;</a>
+<a name="96"><span class="lineNum">      96 </span><span class="lineNoCov">          0 :   std::string sig;</span></a>
+<a name="97"><span class="lineNum">      97 </span><span class="lineNoCov">          0 :   AstNodePtr f;</span></a>
+<a name="98"><span class="lineNum">      98 </span><span class="lineNoCov">          0 :   if (fa.IsFunctionCall(fc, &amp;f,&amp;args) &amp;&amp; fa.IsVarRef(f,0,&amp;sig) &amp;&amp; sig == funcname) {</span></a>
+<a name="99"><span class="lineNum">      99 </span><span class="lineNoCov">          0 :        if (collect != 0)  {</span></a>
+<a name="100"><span class="lineNum">     100 </span><span class="lineNoCov">          0 :            AstInterface::AstNodeList::const_iterator argp = args.begin();</span></a>
+<a name="101"><span class="lineNum">     101 </span><span class="lineNoCov">          0 :            for ( ++argp; argp != args.end(); ++argp) {</span></a>
+<a name="102"><span class="lineNum">     102 </span><span class="lineNoCov">          0 :               (*collect)(*argp);</span></a>
+<a name="103"><span class="lineNum">     103 </span>            :            }</a>
+<a name="104"><span class="lineNum">     104 </span>            :        }</a>
+<a name="105"><span class="lineNum">     105 </span><span class="lineNoCov">          0 :        return true;</span></a>
+<a name="106"><span class="lineNum">     106 </span>            :   }</a>
+<a name="107"><span class="lineNum">     107 </span>            :   return false;</a>
+<a name="108"><span class="lineNum">     108 </span>            : }</a>
+<a name="109"><span class="lineNum">     109 </span>            : </a>
+<a name="110"><span class="lineNum">     110 </span><span class="lineNoCov">          0 : SymbolicVal ArrayUseAccessFunction::</span></a>
+<a name="111"><span class="lineNum">     111 </span>            : CreateArrayAccess( const SymbolicVal&amp; arr, const SymbolicVal&amp; index)</a>
+<a name="112"><span class="lineNum">     112 </span>            : {</a>
+<a name="113"><span class="lineNum">     113 </span><span class="lineNoCov">          0 :    return SymbolicFunction(AstInterface::OP_ARRAY_ACCESS,funcname, arr,index);</span></a>
+<a name="114"><span class="lineNum">     114 </span>            : }</a>
+<a name="115"><span class="lineNum">     115 </span>            : </a>
+<a name="116"><span class="lineNum">     116 </span><span class="lineNoCov">          0 : AstNodePtr LoopTransformInterface::</span></a>
+<a name="117"><span class="lineNum">     117 </span>            : CreateArrayAccess( const AstNodePtr&amp; arr, AstInterface::AstList&amp; index)</a>
+<a name="118"><span class="lineNum">     118 </span><span class="lineNoCov">          0 :   { assert(fa != 0);</span></a>
+<a name="119"><span class="lineNum">     119 </span><span class="lineNoCov">          0 :     AstNodePtr res;</span></a>
+<a name="120"><span class="lineNum">     120 </span><span class="lineNoCov">          0 :     if (arrayInfo != 0){</span></a>
+<a name="121"><span class="lineNum">     121 </span><span class="lineNoCov">          0 :         res = arrayInfo-&gt;CreateArrayAccess(*fa,arr,index); }</span></a>
+<a name="122"><span class="lineNum">     122 </span><span class="lineNoCov">          0 :     if (res == AST_NULL) {</span></a>
+<a name="123"><span class="lineNum">     123 </span><span class="lineNoCov">          0 :        res = arr;</span></a>
+<a name="124"><span class="lineNum">     124 </span><span class="lineNoCov">          0 :        for (AstNodeList::const_reverse_iterator p = index.rbegin();</span></a>
+<a name="125"><span class="lineNum">     125 </span><span class="lineNoCov">          0 :             p != index.rend(); ++p)</span></a>
+<a name="126"><span class="lineNum">     126 </span><span class="lineNoCov">          0 :          { res = AstInterface::CreateArrayAccess(res, *p); }</span></a>
+<a name="127"><span class="lineNum">     127 </span>            :     }</a>
+<a name="128"><span class="lineNum">     128 </span><span class="lineNoCov">          0 :     return res;</span></a>
+<a name="129"><span class="lineNum">     129 </span>            :   }</a>
+<a name="130"><span class="lineNum">     130 </span>            : </a>
+<a name="131"><span class="lineNum">     131 </span><span class="lineNoCov">          0 : AstNodePtr ArrayUseAccessFunction::</span></a>
+<a name="132"><span class="lineNum">     132 </span>            : CreateArrayAccess( AstInterface&amp; fa, const AstNodePtr&amp; arr,</a>
+<a name="133"><span class="lineNum">     133 </span>            :                                 const AstNodeList&amp; index)</a>
+<a name="134"><span class="lineNum">     134 </span>            : {</a>
+<a name="135"><span class="lineNum">     135 </span><span class="lineNoCov">          0 :   AstNodePtr r;</span></a>
+<a name="136"><span class="lineNum">     136 </span><span class="lineNoCov">          0 :   if (prev != 0)</span></a>
+<a name="137"><span class="lineNum">     137 </span><span class="lineNoCov">          0 :      r =  prev-&gt;CreateArrayAccess(fa, arr, index);</span></a>
+<a name="138"><span class="lineNum">     138 </span><span class="lineNoCov">          0 :   if (r == AST_NULL) {</span></a>
+<a name="139"><span class="lineNum">     139 </span><span class="lineNoCov">          0 :     AstNodeList nindex;</span></a>
+<a name="140"><span class="lineNum">     140 </span><span class="lineNoCov">          0 :     nindex.push_back(arr.get_ptr());</span></a>
+<a name="141"><span class="lineNum">     141 </span><span class="lineNoCov">          0 :     for (AstNodeList::const_iterator p = index.begin(); p != index.end(); ++p)</span></a>
+<a name="142"><span class="lineNum">     142 </span><span class="lineNoCov">          0 :        nindex.push_back(*p);</span></a>
+<a name="143"><span class="lineNum">     143 </span><span class="lineNoCov">          0 :     r = fa.CreateFunctionCall(funcname,nindex.begin(), nindex.end()) ;</span></a>
+<a name="144"><span class="lineNum">     144 </span>            :   }</a>
+<a name="145"><span class="lineNum">     145 </span><span class="lineNoCov">          0 :   return r;</span></a>
+<a name="146"><span class="lineNum">     146 </span>            : }</a>
+<a name="147"><span class="lineNum">     147 </span>            : </a>
+<a name="148"><span class="lineNum">     148 </span><span class="lineNoCov">          0 : AstNodePtr LoopTransformInterface::</span></a>
+<a name="149"><span class="lineNum">     149 </span>            : CreateArrayAccess(const std::string&amp; arrname,</a>
+<a name="150"><span class="lineNum">     150 </span>            :                             const std::vector&lt;SymbolicVal&gt;&amp; arrindex)</a>
+<a name="151"><span class="lineNum">     151 </span>            :   {</a>
+<a name="152"><span class="lineNum">     152 </span><span class="lineNoCov">          0 :      assert(fa != 0);</span></a>
+<a name="153"><span class="lineNum">     153 </span><span class="lineNoCov">          0 :      AstNodePtr res = fa-&gt;CreateVarRef(arrname);</span></a>
+<a name="154"><span class="lineNum">     154 </span><span class="lineNoCov">          0 :      AstNodeList args;</span></a>
+<a name="155"><span class="lineNum">     155 </span><span class="lineNoCov">          0 :      for (std::vector&lt;SymbolicVal&gt;::const_iterator indexp = arrindex.begin();</span></a>
+<a name="156"><span class="lineNum">     156 </span><span class="lineNoCov">          0 :           indexp != arrindex.end(); ++indexp) {</span></a>
+<a name="157"><span class="lineNum">     157 </span><span class="lineNoCov">          0 :         AstNodePtr cur = (*indexp).CodeGen(*fa);</span></a>
+<a name="158"><span class="lineNum">     158 </span><span class="lineNoCov">          0 :         args.push_back(cur.get_ptr());</span></a>
+<a name="159"><span class="lineNum">     159 </span>            :      }</a>
+<a name="160"><span class="lineNum">     160 </span><span class="lineNoCov">          0 :     return CreateArrayAccess(res,args);</span></a>
+<a name="161"><span class="lineNum">     161 </span>            :    }</a>
+<a name="162"><span class="lineNum">     162 </span>            : </a>
+<a name="163"><span class="lineNum">     163 </span>            : class LoopTransformationWrap : public TransformAstTree</a>
+<a name="164"><span class="lineNum">     164 </span>            : {</a>
+<a name="165"><span class="lineNum">     165 </span>            :  public:</a>
+<a name="166"><span class="lineNum">     166 </span><span class="lineNoCov">          0 :   bool operator()( AstInterface&amp; fa, const AstNodePtr&amp; head, AstNodePtr&amp; result)</span></a>
+<a name="167"><span class="lineNum">     167 </span>            :   {</a>
+<a name="168"><span class="lineNum">     168 </span>            : #ifdef DEBUG</a>
+<a name="169"><span class="lineNum">     169 </span>            : std::cerr &lt;&lt; &quot;LoopTransformationWrap:operator()\n&quot;;</a>
+<a name="170"><span class="lineNum">     170 </span>            : #endif</a>
+<a name="171"><span class="lineNum">     171 </span><span class="lineNoCov">          0 :      if (!fa.IsStatement(head))</span></a>
+<a name="172"><span class="lineNum">     172 </span>            :          return false;</a>
+<a name="173"><span class="lineNum">     173 </span><span class="lineNoCov">          0 :      fa.SetRoot( head);</span></a>
+<a name="174"><span class="lineNum">     174 </span><span class="lineNoCov">          0 :      return LoopTransformation(head, result);</span></a>
+<a name="175"><span class="lineNum">     175 </span>            :   }</a>
+<a name="176"><span class="lineNum">     176 </span>            : };</a>
+<a name="177"><span class="lineNum">     177 </span>            : </a>
+<a name="178"><span class="lineNum">     178 </span><span class="lineCov">          2 : void LoopTransformInterface:: set_astInterface( AstInterface&amp; _fa)</span></a>
+<a name="179"><span class="lineNum">     179 </span><span class="lineCov">          2 : { fa = &amp;_fa; }</span></a>
+<a name="180"><span class="lineNum">     180 </span>            : </a>
+<a name="181"><span class="lineNum">     181 </span><span class="lineNoCov">          0 : void LoopTransformInterface::</span></a>
+<a name="182"><span class="lineNum">     182 </span>            : set_tuningInterface(AutoTuningInterface* _tuning)</a>
+<a name="183"><span class="lineNum">     183 </span><span class="lineNoCov">          0 : { tuning = _tuning;</span></a>
+<a name="184"><span class="lineNum">     184 </span><span class="lineNoCov">          0 :   if (arrayInfo != 0) tuning-&gt;set_arrayInfo(*arrayInfo);</span></a>
+<a name="185"><span class="lineNum">     185 </span><span class="lineNoCov">          0 : }</span></a>
+<a name="186"><span class="lineNum">     186 </span>            : </a>
+<a name="187"><span class="lineNum">     187 </span><span class="lineNoCov">          0 : void LoopTransformInterface::</span></a>
+<a name="188"><span class="lineNum">     188 </span>            : cmdline_configure(std::vector&lt;std::string&gt;&amp; argv)</a>
+<a name="189"><span class="lineNum">     189 </span>            : {</a>
+<a name="190"><span class="lineNum">     190 </span>            :   /*QY: in the following, argv will be modified to remove all the options</a>
+<a name="191"><span class="lineNum">     191 </span>            :     not recognizable by ROSE, so that SLICE options won't be treated as    file names by the ROSE compiler */</a>
+<a name="192"><span class="lineNum">     192 </span><span class="lineNoCov">          0 :   std::vector&lt;std::string&gt; unknown;</span></a>
+<a name="193"><span class="lineNum">     193 </span>            : </a>
+<a name="194"><span class="lineNum">     194 </span><span class="lineNoCov">          0 :   LoopUnrolling::cmdline_configure(argv, &amp;unknown) ;</span></a>
+<a name="195"><span class="lineNum">     195 </span><span class="lineNoCov">          0 :   argv.clear();</span></a>
+<a name="196"><span class="lineNum">     196 </span><span class="lineNoCov">          0 :   BreakupStatement::cmdline_configure(unknown,&amp;argv);</span></a>
+<a name="197"><span class="lineNum">     197 </span><span class="lineNoCov">          0 :   unknown.clear();</span></a>
+<a name="198"><span class="lineNum">     198 </span><span class="lineNoCov">          0 :   LoopTransformOptions::GetInstance()-&gt;SetOptions(argv,&amp;unknown) ;</span></a>
+<a name="199"><span class="lineNum">     199 </span><span class="lineNoCov">          0 :   argv.clear();</span></a>
+<a name="200"><span class="lineNum">     200 </span>            : </a>
+<a name="201"><span class="lineNum">     201 </span><span class="lineNoCov">          0 :   for (unsigned index=0; index &lt; unknown.size(); ++index) {</span></a>
+<a name="202"><span class="lineNum">     202 </span><span class="lineNoCov">          0 :         std::string opt=unknown[index];</span></a>
+<a name="203"><span class="lineNum">     203 </span><span class="lineNoCov">          0 :         if (opt == &quot;-arracc&quot;) {</span></a>
+<a name="204"><span class="lineNum">     204 </span><span class="lineNoCov">          0 :            std::string name;</span></a>
+<a name="205"><span class="lineNum">     205 </span><span class="lineNoCov">          0 :            if (index &lt; unknown.size() &amp;&amp; opt.size() == 7)</span></a>
+<a name="206"><span class="lineNum">     206 </span><span class="lineNoCov">          0 :              name =  unknown[++index];</span></a>
+<a name="207"><span class="lineNum">     207 </span><span class="lineNoCov">          0 :            else name = opt.substr(7);</span></a>
+<a name="208"><span class="lineNum">     208 </span><span class="lineNoCov">          0 :            ArrayUseAccessFunction* r = new ArrayUseAccessFunction(name, arrayInfo, funcInfo);</span></a>
+<a name="209"><span class="lineNum">     209 </span>            : //std::cerr &lt;&lt; &quot;SETTING ARR FUNC\n&quot;;</a>
+<a name="210"><span class="lineNum">     210 </span><span class="lineNoCov">          0 :            funcInfo = r;</span></a>
+<a name="211"><span class="lineNum">     211 </span><span class="lineNoCov">          0 :            arrayInfo = r;</span></a>
+<a name="212"><span class="lineNum">     212 </span><span class="lineNoCov">          0 :            if (tuning != 0) tuning-&gt;set_arrayInfo(*r);</span></a>
+<a name="213"><span class="lineNum">     213 </span>            :         }</a>
+<a name="214"><span class="lineNum">     214 </span><span class="lineNoCov">          0 :         else if (opt == &quot;-poet&quot;);</span></a>
+<a name="215"><span class="lineNum">     215 </span>            :         else</a>
+<a name="216"><span class="lineNum">     216 </span>            :         {</a>
+<a name="217"><span class="lineNum">     217 </span><span class="lineNoCov">          0 :            argv.push_back(opt);</span></a>
+<a name="218"><span class="lineNum">     218 </span>            :         }</a>
+<a name="219"><span class="lineNum">     219 </span>            :       }</a>
+<a name="220"><span class="lineNum">     220 </span><span class="lineNoCov">          0 : }</span></a>
+<a name="221"><span class="lineNum">     221 </span>            : </a>
+<a name="222"><span class="lineNum">     222 </span><span class="lineNoCov">          0 : AstNodePtr LoopTransformInterface::</span></a>
+<a name="223"><span class="lineNum">     223 </span>            : TransformTraverse(AstInterfaceImpl&amp; scope,const AstNodePtr&amp; head)</a>
+<a name="224"><span class="lineNum">     224 </span>            : {</a>
+<a name="225"><span class="lineNum">     225 </span><span class="lineNoCov">          0 :   assert(aliasInfo!=0);  /*QY: alias analysis should never be null*/</span></a>
+<a name="226"><span class="lineNum">     226 </span><span class="lineNoCov">          0 :   AstInterface _fa(&amp;scope);</span></a>
+<a name="227"><span class="lineNum">     227 </span><span class="lineNoCov">          0 :   if (tuning != 0) tuning-&gt;set_astInterface(_fa);</span></a>
+<a name="228"><span class="lineNum">     228 </span>            : </a>
+<a name="229"><span class="lineNum">     229 </span><span class="lineNoCov">          0 :   fa = &amp;_fa;  /*QY: use static member variable to save the AstInterface*/</span></a>
+<a name="230"><span class="lineNum">     230 </span>            : </a>
+<a name="231"><span class="lineNum">     231 </span><span class="lineNoCov">          0 :   NormalizeForLoop(_fa, head);</span></a>
+<a name="232"><span class="lineNum">     232 </span><span class="lineNoCov">          0 :   AstNodePtr result = head;</span></a>
+<a name="233"><span class="lineNum">     233 </span><span class="lineNoCov">          0 :   if (BreakupStatement::get_breaksize() &gt; 0)</span></a>
+<a name="234"><span class="lineNum">     234 </span>            :    {</a>
+<a name="235"><span class="lineNum">     235 </span><span class="lineNoCov">          0 :        BreakupStatement bs;</span></a>
+<a name="236"><span class="lineNum">     236 </span><span class="lineNoCov">          0 :        result = bs(head);</span></a>
+<a name="237"><span class="lineNum">     237 </span>            :     }</a>
+<a name="238"><span class="lineNum">     238 </span><span class="lineNoCov">          0 :   _fa.SetRoot(result);</span></a>
+<a name="239"><span class="lineNum">     239 </span>            : </a>
+<a name="240"><span class="lineNum">     240 </span>            : /* QY 11/8/05 privatizeScalar should be initialized somewhere else</a>
+<a name="241"><span class="lineNum">     241 </span>            :   PrivatizeScalar ps;</a>
+<a name="242"><span class="lineNum">     242 </span>            :   result = head;</a>
+<a name="243"><span class="lineNum">     243 </span>            :   if (ps.cmdline_configure())</a>
+<a name="244"><span class="lineNum">     244 </span>            :        result = ps(l,head);</a>
+<a name="245"><span class="lineNum">     245 </span>            :   _fa.SetRoot(result);</a>
+<a name="246"><span class="lineNum">     246 </span>            : */</a>
+<a name="247"><span class="lineNum">     247 </span>            : </a>
+<a name="248"><span class="lineNum">     248 </span><span class="lineNoCov">          0 :   LoopTransformationWrap op;</span></a>
+<a name="249"><span class="lineNum">     249 </span><span class="lineNoCov">          0 :   result = TransformAstTraverse(_fa, result, op, AstInterface::PreVisit);</span></a>
+<a name="250"><span class="lineNum">     250 </span><span class="lineNoCov">          0 :   if (LoopUnrolling::get_unrollsize() &gt; 1)</span></a>
+<a name="251"><span class="lineNum">     251 </span><span class="lineNoCov">          0 :        result = LoopUnrolling()(result);</span></a>
+<a name="252"><span class="lineNum">     252 </span><span class="lineNoCov">          0 :   _fa.SetRoot(result);</span></a>
+<a name="253"><span class="lineNum">     253 </span>            : </a>
+<a name="254"><span class="lineNum">     254 </span><span class="lineNoCov">          0 :   if (tuning != 0)  tuning-&gt;ApplyOpt(_fa);</span></a>
+<a name="255"><span class="lineNum">     255 </span><span class="lineNoCov">          0 :   fa = 0;</span></a>
+<a name="256"><span class="lineNum">     256 </span><span class="lineNoCov">          0 :   return result;</span></a>
+<a name="257"><span class="lineNum">     257 </span>            : }</a>
+<a name="258"><span class="lineNum">     258 </span>            : </a>
+<a name="259"><span class="lineNum">     259 </span><span class="lineNoCov">          0 : void LoopTransformInterface::</span></a>
+<a name="260"><span class="lineNum">     260 </span>            : PrintTransformUsage(std::ostream&amp; __outstream)</a>
+<a name="261"><span class="lineNum">     261 </span>            : {</a>
+<a name="262"><span class="lineNum">     262 </span><span class="lineNoCov">          0 :   std::cerr &lt;&lt; &quot;-debugloop: print debugging information for loop transformations; \n&quot;</span></a>
+<a name="263"><span class="lineNum">     263 </span>            :             &lt;&lt; &quot;-debugdep: print debugging information for dependence analysis; \n&quot;</a>
+<a name="264"><span class="lineNum">     264 </span>            :             &lt;&lt; &quot;-tmloop: print timing information for loop transformations; \n&quot;</a>
+<a name="265"><span class="lineNum">     265 </span>            :             &lt;&lt; &quot;-arracc &lt;funcname&gt;: use function &lt;funcname&gt; to denote multi-dimensional array access;\n&quot;</a>
+<a name="266"><span class="lineNum">     266 </span>            :             &lt;&lt; &quot;opt &lt;level=0&gt;: the level of loop optimizations to apply; by default, only the outermost level is optimized;\n&quot;</a>
+<a name="267"><span class="lineNum">     267 </span><span class="lineNoCov">          0 :             &lt;&lt; LoopUnrolling::cmdline_help() &lt;&lt; std::endl</span></a>
+<a name="268"><span class="lineNum">     268 </span><span class="lineNoCov">          0 :             &lt;&lt; BreakupStatement::cmdline_help() &lt;&lt; std::endl;</span></a>
+<a name="269"><span class="lineNum">     269 </span><span class="lineNoCov">          0 :   LoopTransformOptions::GetInstance()-&gt;PrintUsage(__outstream);</span></a>
+<a name="270"><span class="lineNum">     270 </span><span class="lineNoCov">          0 : }</span></a>
+<a name="271"><span class="lineNum">     271 </span>            : </a>
+<a name="272"><span class="lineNum">     272 </span>            : //////////////////////////////////</a>
+<a name="273"><span class="lineNum">     273 </span>            : // class LoopTransformInterface //</a>
+<a name="274"><span class="lineNum">     274 </span>            : //////////////////////////////////</a>
+<a name="275"><span class="lineNum">     275 </span>            : </a>
+<a name="276"><span class="lineNum">     276 </span><span class="lineNoCov">          0 : bool LoopTransformInterface::</span></a>
+<a name="277"><span class="lineNum">     277 </span>            : GetFunctionCallSideEffect( const AstNodePtr&amp; fc,</a>
+<a name="278"><span class="lineNum">     278 </span>            :                      CollectObject&lt;AstNodePtr&gt;&amp; collectmod,</a>
+<a name="279"><span class="lineNum">     279 </span>            :                      CollectObject&lt;AstNodePtr&gt;&amp; collectread)</a>
+<a name="280"><span class="lineNum">     280 </span>            : {</a>
+<a name="281"><span class="lineNum">     281 </span><span class="lineNoCov">          0 :     assert(fa != 0);</span></a>
+<a name="282"><span class="lineNum">     282 </span><span class="lineNoCov">          0 :     return funcInfo!= 0</span></a>
+<a name="283"><span class="lineNum">     283 </span><span class="lineNoCov">          0 :            &amp;&amp; funcInfo-&gt;get_modify(*fa, fc, &amp;collectmod)</span></a>
+<a name="284"><span class="lineNum">     284 </span><span class="lineNoCov">          0 :            &amp;&amp; funcInfo-&gt;get_read(*fa, fc, &amp;collectread);</span></a>
+<a name="285"><span class="lineNum">     285 </span>            : }</a>
+<a name="286"><span class="lineNum">     286 </span>            : </a>
+<a name="287"><span class="lineNum">     287 </span>            : </a>
+<a name="288"><span class="lineNum">     288 </span><span class="lineNoCov">          0 : AstNodePtr LoopTransformInterface::</span></a>
+<a name="289"><span class="lineNum">     289 </span>            : CreateDynamicFusionConfig( const AstNodePtr&amp; groupNum, AstInterface::AstNodeList&amp; args, int &amp;id)</a>
+<a name="290"><span class="lineNum">     290 </span><span class="lineNoCov">          0 : { assert(fa != 0);</span></a>
+<a name="291"><span class="lineNum">     291 </span><span class="lineNoCov">          0 :   std::string name = &quot;DynamicFusionConfig&quot;;</span></a>
+<a name="292"><span class="lineNum">     292 </span><span class="lineNoCov">          0 :   ++configIndex;</span></a>
+<a name="293"><span class="lineNum">     293 </span><span class="lineNoCov">          0 :   args.push_back( fa-&gt;CreateConstInt(configIndex).get_ptr() );</span></a>
+<a name="294"><span class="lineNum">     294 </span><span class="lineNoCov">          0 :   args.push_back( fa-&gt;CreateConstInt( args.size() ).get_ptr() );</span></a>
+<a name="295"><span class="lineNum">     295 </span><span class="lineNoCov">          0 :   std::string funname = &quot;DynamicFusionConfig&quot;;</span></a>
+<a name="296"><span class="lineNum">     296 </span><span class="lineNoCov">          0 :   AstNodePtr invoc = fa-&gt;CreateFunctionCall( funname,  args.begin(), args.end());</span></a>
+<a name="297"><span class="lineNum">     297 </span><span class="lineNoCov">          0 :   return fa-&gt;CreateAssignment ( groupNum, invoc) ;</span></a>
+<a name="298"><span class="lineNum">     298 </span>            : }</a>
+<a name="299"><span class="lineNum">     299 </span>            : </a>
+<a name="300"><span class="lineNum">     300 </span><span class="lineNoCov">          0 : AstNodePtr LoopTransformInterface::CreateDynamicFusionEnd( int id)</span></a>
+<a name="301"><span class="lineNum">     301 </span><span class="lineNoCov">          0 : { assert(fa != 0);</span></a>
+<a name="302"><span class="lineNum">     302 </span><span class="lineNoCov">          0 :   AstInterface::AstNodeList args;</span></a>
+<a name="303"><span class="lineNum">     303 </span><span class="lineNoCov">          0 :   args.push_back( fa-&gt;CreateConstInt(id).get_ptr());</span></a>
+<a name="304"><span class="lineNum">     304 </span><span class="lineNoCov">          0 :   std::string funname = &quot;DynamicFusionEnd&quot;;</span></a>
+<a name="305"><span class="lineNum">     305 </span><span class="lineNoCov">          0 :   return fa-&gt;CreateFunctionCall(funname, args.begin(), args.end());</span></a>
+<a name="306"><span class="lineNum">     306 </span>            : }</a>
+<a name="307"><span class="lineNum">     307 </span>            : </a>
+<a name="308"><span class="lineNum">     308 </span><span class="lineNoCov">          0 : bool LoopTransformInterface::</span></a>
+<a name="309"><span class="lineNum">     309 </span>            : IsDynamicFusionConfig( const AstNodePtr&amp; n, AstNodePtr* configvar, int* configID,</a>
+<a name="310"><span class="lineNum">     310 </span>            :                        AstInterface::AstNodeList* params)</a>
+<a name="311"><span class="lineNum">     311 </span><span class="lineNoCov">          0 : { assert(fa != 0);</span></a>
+<a name="312"><span class="lineNum">     312 </span><span class="lineNoCov">          0 :   AstNodePtr invoc;</span></a>
+<a name="313"><span class="lineNum">     313 </span><span class="lineNoCov">          0 :   if (!fa-&gt;IsAssignment(n, configvar, &amp;invoc))</span></a>
+<a name="314"><span class="lineNum">     314 </span>            :     return false;</a>
+<a name="315"><span class="lineNum">     315 </span><span class="lineNoCov">          0 :   AstInterface::AstNodeList args;</span></a>
+<a name="316"><span class="lineNum">     316 </span><span class="lineNoCov">          0 :   std::string sig;</span></a>
+<a name="317"><span class="lineNum">     317 </span><span class="lineNoCov">          0 :   AstNodePtr f;</span></a>
+<a name="318"><span class="lineNum">     318 </span><span class="lineNoCov">          0 :   if (!fa-&gt;IsFunctionCall(invoc, &amp;f, &amp;args) || !fa-&gt;IsVarRef(f, 0, &amp;sig) )</span></a>
+<a name="319"><span class="lineNum">     319 </span><span class="lineNoCov">          0 :     return false;</span></a>
+<a name="320"><span class="lineNum">     320 </span><span class="lineNoCov">          0 :   if (sig == &quot;DynamicFusionConfig&quot;) {</span></a>
+<a name="321"><span class="lineNum">     321 </span><span class="lineNoCov">          0 :     if (configID != 0) {</span></a>
+<a name="322"><span class="lineNum">     322 </span><span class="lineNoCov">          0 :       AstNodePtr idnode = args.front();</span></a>
+<a name="323"><span class="lineNum">     323 </span><span class="lineNoCov">          0 :       bool isconst = fa-&gt;IsConstInt( idnode, configID);</span></a>
+<a name="324"><span class="lineNum">     324 </span><span class="lineNoCov">          0 :       assert(isconst);</span></a>
+<a name="325"><span class="lineNum">     325 </span>            :     }</a>
+<a name="326"><span class="lineNum">     326 </span><span class="lineNoCov">          0 :     if (params != 0) {</span></a>
+<a name="327"><span class="lineNum">     327 </span><span class="lineNoCov">          0 :       *params = args;</span></a>
+<a name="328"><span class="lineNum">     328 </span><span class="lineNoCov">          0 :       params-&gt;erase(params-&gt;begin());</span></a>
+<a name="329"><span class="lineNum">     329 </span><span class="lineNoCov">          0 :       params-&gt;erase(params-&gt;begin());</span></a>
+<a name="330"><span class="lineNum">     330 </span>            :     }</a>
+<a name="331"><span class="lineNum">     331 </span><span class="lineNoCov">          0 :    return true;</span></a>
+<a name="332"><span class="lineNum">     332 </span>            :   }</a>
+<a name="333"><span class="lineNum">     333 </span>            :   return false;</a>
+<a name="334"><span class="lineNum">     334 </span>            : }</a>
+<a name="335"><span class="lineNum">     335 </span>            : </a>
+<a name="336"><span class="lineNum">     336 </span><span class="lineNoCov">          0 : bool LoopTransformInterface::IsDynamicFusionEnd(const AstNodePtr&amp; n)</span></a>
+<a name="337"><span class="lineNum">     337 </span>            : {</a>
+<a name="338"><span class="lineNum">     338 </span><span class="lineNoCov">          0 :   assert(fa != 0);</span></a>
+<a name="339"><span class="lineNum">     339 </span><span class="lineNoCov">          0 :   std::string sig;</span></a>
+<a name="340"><span class="lineNum">     340 </span><span class="lineNoCov">          0 :   AstNodePtr f;</span></a>
+<a name="341"><span class="lineNum">     341 </span><span class="lineNoCov">          0 :   if (!fa-&gt;IsFunctionCall(n, &amp;f) || !fa-&gt;IsVarRef(f, 0, &amp;sig))</span></a>
+<a name="342"><span class="lineNum">     342 </span><span class="lineNoCov">          0 :     return false;</span></a>
+<a name="343"><span class="lineNum">     343 </span><span class="lineNoCov">          0 :   return sig == &quot;DynamicFusionEnd&quot;;</span></a>
+<a name="344"><span class="lineNum">     344 </span>            : }</a>
+<a name="345"><span class="lineNum">     345 </span>            : </a>
+<a name="346"><span class="lineNum">     346 </span>            : bool</a>
+<a name="347"><span class="lineNum">     347 </span><span class="lineNoCov">          0 : LoopTransformInterface::</span></a>
+<a name="348"><span class="lineNum">     348 </span>            : IsLoop(const AstNodePtr&amp; s, SymbolicVal* init , SymbolicVal* cond,</a>
+<a name="349"><span class="lineNum">     349 </span>            :         SymbolicVal* incr, AstNodePtr* body)</a>
+<a name="350"><span class="lineNum">     350 </span>            : {</a>
+<a name="351"><span class="lineNum">     351 </span><span class="lineNoCov">          0 :   assert(init != NULL);</span></a>
+<a name="352"><span class="lineNum">     352 </span><span class="lineNoCov">          0 :   std::cerr &lt;&lt; &quot;### &quot;  &lt;&lt;&quot;--&quot;&lt;&lt;init-&gt;toString()&lt;&lt;std::endl;</span></a>
+<a name="353"><span class="lineNum">     353 </span><span class="lineNoCov">          0 :   AstNodePtr initast, condast, incrast;</span></a>
+<a name="354"><span class="lineNum">     354 </span><span class="lineNoCov">          0 :   assert(fa != NULL);</span></a>
+<a name="355"><span class="lineNum">     355 </span><span class="lineNoCov">          0 :   if (!fa-&gt;IsLoop(s, &amp;initast, &amp;condast, &amp;incrast, body))</span></a>
+<a name="356"><span class="lineNum">     356 </span>            :       return false;</a>
+<a name="357"><span class="lineNum">     357 </span><span class="lineNoCov">          0 :   if (init != NULL &amp;&amp; initast != AST_NULL) {</span></a>
+<a name="358"><span class="lineNum">     358 </span><span class="lineNoCov">          0 :      *init = SymbolicValGenerator::GetSymbolicVal(*fa,initast);</span></a>
+<a name="359"><span class="lineNum">     359 </span>            :   }</a>
+<a name="360"><span class="lineNum">     360 </span><span class="lineNoCov">          0 :   if (cond != 0 &amp;&amp; condast != AST_NULL) {</span></a>
+<a name="361"><span class="lineNum">     361 </span><span class="lineNoCov">          0 :      *cond = SymbolicValGenerator::GetSymbolicVal(*fa,condast);</span></a>
+<a name="362"><span class="lineNum">     362 </span>            :   }</a>
+<a name="363"><span class="lineNum">     363 </span><span class="lineNoCov">          0 :   if (incr != 0 &amp;&amp; incrast != AST_NULL) {</span></a>
+<a name="364"><span class="lineNum">     364 </span><span class="lineNoCov">          0 :      *incr = SymbolicValGenerator::GetSymbolicVal(*fa,incrast);</span></a>
+<a name="365"><span class="lineNum">     365 </span>            :   }</a>
+<a name="366"><span class="lineNum">     366 </span>            :   return true;</a>
+<a name="367"><span class="lineNum">     367 </span>            : }</a>
+<a name="368"><span class="lineNum">     368 </span>            : </a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,4 @@
+<map id="X86_64PrimitiveTypeLayoutGenerator" name="X86_64PrimitiveTypeLayoutGenerator">
+<area shape="rect" id="node1" title="Layout generator for x86&#45;64 primitive types." alt="" coords="15,84,199,125"/>
+<area shape="rect" id="node2" href="$classChainableTypeLayoutGenerator.html" title="Basic type layout engine – handles bookkeeping, plus handing typedefs and." alt="" coords="5,7,209,33"/>
+</map>

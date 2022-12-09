@@ -1,0 +1,1051 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /home/yyan7/compiler/rexompiler/src/util/Sawyer/IntervalMap.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">home/yyan7/compiler/rexompiler/src/util/Sawyer</a> - IntervalMap.h<span style="font-size: 80%;"> (source / <a href="IntervalMap.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // WARNING: Changes to this file must be contributed back to Sawyer or else they will</a>
+<a name="2"><span class="lineNum">       2 </span>            : //          be clobbered by the next update from Sawyer.  The Sawyer repository is at</a>
+<a name="3"><span class="lineNum">       3 </span>            : //          https://github.com/matzke1/sawyer.</a>
+<a name="4"><span class="lineNum">       4 </span>            : </a>
+<a name="5"><span class="lineNum">       5 </span>            : </a>
+<a name="6"><span class="lineNum">       6 </span>            : </a>
+<a name="7"><span class="lineNum">       7 </span>            : </a>
+<a name="8"><span class="lineNum">       8 </span>            : #ifndef Sawyer_IntervalMap_H</a>
+<a name="9"><span class="lineNum">       9 </span>            : #define Sawyer_IntervalMap_H</a>
+<a name="10"><span class="lineNum">      10 </span>            : </a>
+<a name="11"><span class="lineNum">      11 </span>            : #include &lt;boost/cstdint.hpp&gt;</a>
+<a name="12"><span class="lineNum">      12 </span>            : #include &lt;Sawyer/Assert.h&gt;</a>
+<a name="13"><span class="lineNum">      13 </span>            : #include &lt;Sawyer/Map.h&gt;</a>
+<a name="14"><span class="lineNum">      14 </span>            : #include &lt;Sawyer/Optional.h&gt;</a>
+<a name="15"><span class="lineNum">      15 </span>            : #include &lt;Sawyer/Sawyer.h&gt;</a>
+<a name="16"><span class="lineNum">      16 </span>            : </a>
+<a name="17"><span class="lineNum">      17 </span>            : #include &lt;boost/serialization/access.hpp&gt;</a>
+<a name="18"><span class="lineNum">      18 </span>            : #include &lt;boost/serialization/nvp.hpp&gt;</a>
+<a name="19"><span class="lineNum">      19 </span>            : </a>
+<a name="20"><span class="lineNum">      20 </span>            : namespace Sawyer {</a>
+<a name="21"><span class="lineNum">      21 </span>            : namespace Container {</a>
+<a name="22"><span class="lineNum">      22 </span>            : </a>
+<a name="23"><span class="lineNum">      23 </span>            : /** Traits for IntervalMap. */</a>
+<a name="24"><span class="lineNum">      24 </span>            : template&lt;class IntervalMap&gt;</a>
+<a name="25"><span class="lineNum">      25 </span>            : struct IntervalMapTraits {</a>
+<a name="26"><span class="lineNum">      26 </span>            :     typedef typename IntervalMap::NodeIterator NodeIterator;    /**&lt; Node iterator. */</a>
+<a name="27"><span class="lineNum">      27 </span>            :     typedef typename IntervalMap::ValueIterator ValueIterator;  /**&lt; Value iterator. */</a>
+<a name="28"><span class="lineNum">      28 </span>            :     typedef typename IntervalMap::Value &amp;ValueReference;        /**&lt; Reference to value. */</a>
+<a name="29"><span class="lineNum">      29 </span>            : };</a>
+<a name="30"><span class="lineNum">      30 </span>            : </a>
+<a name="31"><span class="lineNum">      31 </span>            : template&lt;class IntervalMap&gt;</a>
+<a name="32"><span class="lineNum">      32 </span>            : struct IntervalMapTraits&lt;const IntervalMap&gt; {</a>
+<a name="33"><span class="lineNum">      33 </span>            :     typedef typename IntervalMap::ConstNodeIterator NodeIterator;</a>
+<a name="34"><span class="lineNum">      34 </span>            :     typedef typename IntervalMap::ConstValueIterator ValueIterator;</a>
+<a name="35"><span class="lineNum">      35 </span>            :     typedef typename IntervalMap::Value const &amp;ValueReference;</a>
+<a name="36"><span class="lineNum">      36 </span>            : };</a>
+<a name="37"><span class="lineNum">      37 </span>            : </a>
+<a name="38"><span class="lineNum">      38 </span>            : /** Policy indicating how values are merged and split.</a>
+<a name="39"><span class="lineNum">      39 </span>            :  *</a>
+<a name="40"><span class="lineNum">      40 </span>            :  *  Adjacent nodes of an IntervalMap can be joined together provided their values can also be joined together.  This joining is</a>
+<a name="41"><span class="lineNum">      41 </span>            :  *  a key feature of an IntervalMap since it can significantly reduce the number nodes required in the underlying map. */</a>
+<a name="42"><span class="lineNum">      42 </span>            : template&lt;typename I, typename T&gt;</a>
+<a name="43"><span class="lineNum">      43 </span>            : class MergePolicy {</a>
+<a name="44"><span class="lineNum">      44 </span>            : public:</a>
+<a name="45"><span class="lineNum">      45 </span>            :     typedef I Interval;</a>
+<a name="46"><span class="lineNum">      46 </span>            :     typedef T Value;</a>
+<a name="47"><span class="lineNum">      47 </span>            : </a>
+<a name="48"><span class="lineNum">      48 </span>            : private:</a>
+<a name="49"><span class="lineNum">      49 </span>            :     friend class boost::serialization::access;</a>
+<a name="50"><span class="lineNum">      50 </span>            : </a>
+<a name="51"><span class="lineNum">      51 </span>            :     template&lt;class S&gt;</a>
+<a name="52"><span class="lineNum">      52 </span>            :     void serialize(S&amp;, const unsigned /*version*/) {</a>
+<a name="53"><span class="lineNum">      53 </span>            :         // nothing to serialize in this class</a>
+<a name="54"><span class="lineNum">      54 </span>            :     }</a>
+<a name="55"><span class="lineNum">      55 </span>            : </a>
+<a name="56"><span class="lineNum">      56 </span>            : public:</a>
+<a name="57"><span class="lineNum">      57 </span>            :     /** Merge two values if possible.</a>
+<a name="58"><span class="lineNum">      58 </span>            :      *</a>
+<a name="59"><span class="lineNum">      59 </span>            :      *  The @p rightValue is merged into the @p leftValue if possible, or this method returns false without changing either</a>
+<a name="60"><span class="lineNum">      60 </span>            :      *  value.  After a successful merge, the @p rightValue will be removed from the IntervalMap and its destructor called. */</a>
+<a name="61"><span class="lineNum">      61 </span>            :     bool merge(const Interval &amp;leftInterval, Value &amp;leftValue, const Interval &amp;rightInterval, Value &amp;rightValue) {</a>
+<a name="62"><span class="lineNum">      62 </span>            :         SAWYER_ARGUSED(leftInterval);</a>
+<a name="63"><span class="lineNum">      63 </span>            :         SAWYER_ARGUSED(rightInterval);</a>
+<a name="64"><span class="lineNum">      64 </span>            :         return leftValue == rightValue;</a>
+<a name="65"><span class="lineNum">      65 </span>            :     }</a>
+<a name="66"><span class="lineNum">      66 </span>            : </a>
+<a name="67"><span class="lineNum">      67 </span>            :     /** Split one value into two values.</a>
+<a name="68"><span class="lineNum">      68 </span>            :      *</a>
+<a name="69"><span class="lineNum">      69 </span>            :      *  The IntervalMap calls this method when the @p interval is being split into two smaller, adjacent intervals. The @p</a>
+<a name="70"><span class="lineNum">      70 </span>            :      *  splitPoint argument is the split point and becomes the least value of the right interval. The @p value argument is</a>
+<a name="71"><span class="lineNum">      71 </span>            :      *  modified in place to become the left value, and the right value is returned. This method is only invoked when the</a>
+<a name="72"><span class="lineNum">      72 </span>            :      *  result would be two non-empty intervals. */</a>
+<a name="73"><span class="lineNum">      73 </span>            :     Value split(const Interval &amp;interval, Value &amp;value, const typename Interval::Value &amp;splitPoint) {</a>
+<a name="74"><span class="lineNum">      74 </span>            :         SAWYER_ARGUSED(interval);</a>
+<a name="75"><span class="lineNum">      75 </span>            :         SAWYER_ARGUSED(splitPoint);</a>
+<a name="76"><span class="lineNum">      76 </span>            :         return value;</a>
+<a name="77"><span class="lineNum">      77 </span>            :     }</a>
+<a name="78"><span class="lineNum">      78 </span>            : </a>
+<a name="79"><span class="lineNum">      79 </span>            :     /** Discard the right part of a value.</a>
+<a name="80"><span class="lineNum">      80 </span>            :      *</a>
+<a name="81"><span class="lineNum">      81 </span>            :      *  This method is the same as @ref split except the right part of the resulting value is discarded.  This is sometimes</a>
+<a name="82"><span class="lineNum">      82 </span>            :      *  more efficient than calling @ref split and then destroying the return value. */</a>
+<a name="83"><span class="lineNum">      83 </span>            :     void truncate(const Interval &amp;interval, Value &amp;value, const typename Interval::Value &amp;splitPoint) {</a>
+<a name="84"><span class="lineNum">      84 </span>            :         SAWYER_ARGUSED(interval);</a>
+<a name="85"><span class="lineNum">      85 </span>            :         SAWYER_ARGUSED(value);</a>
+<a name="86"><span class="lineNum">      86 </span>            :         SAWYER_ARGUSED(splitPoint);</a>
+<a name="87"><span class="lineNum">      87 </span>            :     }</a>
+<a name="88"><span class="lineNum">      88 </span>            : };</a>
+<a name="89"><span class="lineNum">      89 </span>            : </a>
+<a name="90"><span class="lineNum">      90 </span>            : /** An associative container whose keys are non-overlapping intervals.</a>
+<a name="91"><span class="lineNum">      91 </span>            :  *</a>
+<a name="92"><span class="lineNum">      92 </span>            :  *  This container is somewhat like an STL &lt;code&gt;std::map&lt;/code&gt; in that it stores key/value pairs.  However, it is optimized</a>
+<a name="93"><span class="lineNum">      93 </span>            :  *  for the case when many consecutive keys are the same or related.  The values may be any type; the keys are any interval</a>
+<a name="94"><span class="lineNum">      94 </span>            :  *  type that follows the API and semantics of Sawyer::Container::Interval, namely a closed interval with members</a>
+<a name="95"><span class="lineNum">      95 </span>            :  *  &lt;code&gt;least&lt;/code&gt; and &lt;code&gt;greatest&lt;/code&gt; demarcating the inclusive end points, and a few other methods.</a>
+<a name="96"><span class="lineNum">      96 </span>            :  *</a>
+<a name="97"><span class="lineNum">      97 </span>            :  *  The interval/value pair nodes that are stored in this container are managed by the container, automatically joining</a>
+<a name="98"><span class="lineNum">      98 </span>            :  *  adjacent nodes when they are inserted, if possible and permitted, and automatically spliting nodes if necessary when</a>
+<a name="99"><span class="lineNum">      99 </span>            :  *  something is erased. For the most part, the user can think of this container as associating scalar keys with values, and</a>
+<a name="100"><span class="lineNum">     100 </span>            :  *  almost forget that the container uses intervals as an optimization.</a>
+<a name="101"><span class="lineNum">     101 </span>            :  *</a>
+<a name="102"><span class="lineNum">     102 </span>            :  *  When two neighboring interval/value nodes are inserted, the container will possibly join them into a single interval/value</a>
+<a name="103"><span class="lineNum">     103 </span>            :  *  node.  Normally, the merging of two nodes happens if the two values are equal, but this can be influenced by a policy class</a>
+<a name="104"><span class="lineNum">     104 </span>            :  *  provided as an argument of the container's constructor. See @ref MergePolicy for details.  Similarly, when part of an</a>
+<a name="105"><span class="lineNum">     105 </span>            :  *  interval is erased, the container might need to split the affected node into two nodes, which is also handled by the</a>
+<a name="106"><span class="lineNum">     106 </span>            :  *  policy.</a>
+<a name="107"><span class="lineNum">     107 </span>            :  *</a>
+<a name="108"><span class="lineNum">     108 </span>            :  *  The following examples demonstrates some aspects of the interface:</a>
+<a name="109"><span class="lineNum">     109 </span>            :  *</a>
+<a name="110"><span class="lineNum">     110 </span>            :  * @code</a>
+<a name="111"><span class="lineNum">     111 </span>            :  *  typedef Sawyer::Container::Interval&lt;unsigned&gt; Interval; // integral types work best</a>
+<a name="112"><span class="lineNum">     112 </span>            :  *  class Stats {...} stats1=..., stats2=...; // needs at least a copy c'tor, assignment, and equality predicate.</a>
+<a name="113"><span class="lineNum">     113 </span>            :  *  typedef IntervalMap&lt;Interval, Stats&gt; Map;</a>
+<a name="114"><span class="lineNum">     114 </span>            :  *  Map map;</a>
+<a name="115"><span class="lineNum">     115 </span>            :  *  map.insert(Interval(1,5), stats1);</a>
+<a name="116"><span class="lineNum">     116 </span>            :  *  map.insert(6, stats2);</a>
+<a name="117"><span class="lineNum">     117 </span>            :  * @endcode</a>
+<a name="118"><span class="lineNum">     118 </span>            :  *</a>
+<a name="119"><span class="lineNum">     119 </span>            :  *  If the policy allows the two &quot;stats&quot; objects to be merged (the default policy allows them to merge only if they are equal),</a>
+<a name="120"><span class="lineNum">     120 </span>            :  *  then the container will end up having one node, the pair ([1,6], merge(stats1,stats2)), otherwise it will have two nodes.</a>
+<a name="121"><span class="lineNum">     121 </span>            :  *</a>
+<a name="122"><span class="lineNum">     122 </span>            :  * @code</a>
+<a name="123"><span class="lineNum">     123 </span>            :  *  map.erase(Interval(2,3));</a>
+<a name="124"><span class="lineNum">     124 </span>            :  * @endcode</a>
+<a name="125"><span class="lineNum">     125 </span>            :  *</a>
+<a name="126"><span class="lineNum">     126 </span>            :  *  Erasing keys 2 and 3 causes the affected node to split into two discontiguous nodes and a new copy of the node's</a>
+<a name="127"><span class="lineNum">     127 </span>            :  *  value. Assuming we started with the two nodes { ([1,5], stats1), (6, stats2) }, then after erasing [2,3] the container will</a>
+<a name="128"><span class="lineNum">     128 </span>            :  *  hold three nodes: { (1, stats1), ([4,5], stats1), (6, stats2) }.</a>
+<a name="129"><span class="lineNum">     129 </span>            :  *</a>
+<a name="130"><span class="lineNum">     130 </span>            :  *  Iteration over the container returns references to the nodes as @ref Node object that has &lt;code&gt;key&lt;/code&gt; and</a>
+<a name="131"><span class="lineNum">     131 </span>            :  *  &lt;code&gt;value&lt;/code&gt; methods to access the interval key and user-defined value parts of each storage node.  For example,</a>
+<a name="132"><span class="lineNum">     132 </span>            :  *  here's one way to print the contents of the container, assuming the interval itself doesn't already have a printing</a>
+<a name="133"><span class="lineNum">     133 </span>            :  *  function:</a>
+<a name="134"><span class="lineNum">     134 </span>            :  *</a>
+<a name="135"><span class="lineNum">     135 </span>            :  * @code</a>
+<a name="136"><span class="lineNum">     136 </span>            :  *  std::cout &lt;&lt;&quot;{&quot;;</a>
+<a name="137"><span class="lineNum">     137 </span>            :  *  for (Map::ConstNodeIterator iter=map.nodes().begin(); iter!=map.nodes().end(); ++iter) {</a>
+<a name="138"><span class="lineNum">     138 </span>            :  *      const Interval &amp;interval = iter-&gt;key();</a>
+<a name="139"><span class="lineNum">     139 </span>            :  *      const Stats &amp;stats = iter-&gt;value();</a>
+<a name="140"><span class="lineNum">     140 </span>            :  *      std::cout &lt;&lt;&quot; (&quot;;</a>
+<a name="141"><span class="lineNum">     141 </span>            :  *      if (interval.isSingleton())</a>
+<a name="142"><span class="lineNum">     142 </span>            :  *          std::cout &lt;&lt;interval.least() &lt;&lt;&quot;, &quot;;</a>
+<a name="143"><span class="lineNum">     143 </span>            :  *      } else {</a>
+<a name="144"><span class="lineNum">     144 </span>            :  *          std::cout &lt;&lt;&quot;[&quot; &lt;&lt;interval.least() &lt;&lt;&quot;,&quot; &lt;&lt;interval.greatest() &lt;&lt;&quot;], &quot;;</a>
+<a name="145"><span class="lineNum">     145 </span>            :  *      }</a>
+<a name="146"><span class="lineNum">     146 </span>            :  *      std::cout &lt;&lt;stats &lt;&lt;&quot;)&quot;;</a>
+<a name="147"><span class="lineNum">     147 </span>            :  *  }</a>
+<a name="148"><span class="lineNum">     148 </span>            :  *  std::cout &lt;&lt;&quot; }&quot;;</a>
+<a name="149"><span class="lineNum">     149 </span>            :  * @endcode</a>
+<a name="150"><span class="lineNum">     150 </span>            :  *</a>
+<a name="151"><span class="lineNum">     151 </span>            :  *  Here's another way:</a>
+<a name="152"><span class="lineNum">     152 </span>            :  *</a>
+<a name="153"><span class="lineNum">     153 </span>            :  * @code</a>
+<a name="154"><span class="lineNum">     154 </span>            :  *  BOOST_FOREACH (const Map::Node &amp;node, map.nodes()) {</a>
+<a name="155"><span class="lineNum">     155 </span>            :  *      const Interval &amp;interval = node.key();</a>
+<a name="156"><span class="lineNum">     156 </span>            :  *      const Stats &amp;stats = node.value();</a>
+<a name="157"><span class="lineNum">     157 </span>            :  *      ...</a>
+<a name="158"><span class="lineNum">     158 </span>            :  *  }</a>
+<a name="159"><span class="lineNum">     159 </span>            :  * @endcode</a>
+<a name="160"><span class="lineNum">     160 </span>            :  *</a>
+<a name="161"><span class="lineNum">     161 </span>            :  *  Besides &lt;code&gt;nodes()&lt;/code&gt;, there's also &lt;code&gt;values()&lt;/code&gt; and &lt;code&gt;intervals()&lt;/code&gt; that return bidirectional</a>
+<a name="162"><span class="lineNum">     162 </span>            :  *  iterators over the user-defined values or the intervals when dereferenced.</a>
+<a name="163"><span class="lineNum">     163 </span>            :  *</a>
+<a name="164"><span class="lineNum">     164 </span>            :  *  This class uses CamelCase for all its methods and inner types in conformance with the naming convention for the rest of the</a>
+<a name="165"><span class="lineNum">     165 </span>            :  *  library. This includes iterator names (we don't use &lt;code&gt;iterator&lt;/code&gt;, &lt;code&gt;const_iterator&lt;/code&gt;, etc).</a>
+<a name="166"><span class="lineNum">     166 </span>            :  *</a>
+<a name="167"><span class="lineNum">     167 </span>            :  * @sa</a>
+<a name="168"><span class="lineNum">     168 </span>            :  *</a>
+<a name="169"><span class="lineNum">     169 </span>            :  *  See @ref IntervalSetMap for a similar container that stores sets of values per interval. */</a>
+<a name="170"><span class="lineNum">     170 </span>            : template&lt;typename I, typename T, class Policy = MergePolicy&lt;I, T&gt; &gt;</a>
+<a name="171"><span class="lineNum">     171 </span>            : class IntervalMap {</a>
+<a name="172"><span class="lineNum">     172 </span>            : public:</a>
+<a name="173"><span class="lineNum">     173 </span>            :     typedef I Interval;                                 /**&lt; Interval type. */</a>
+<a name="174"><span class="lineNum">     174 </span>            :     typedef T Value;                                    /**&lt; Value type. */</a>
+<a name="175"><span class="lineNum">     175 </span>            : </a>
+<a name="176"><span class="lineNum">     176 </span>            : private:</a>
+<a name="177"><span class="lineNum">     177 </span>            :     // Nodes of the underlying map are sorted by their last value so that we can use that map's lowerBound method to find the</a>
+<a name="178"><span class="lineNum">     178 </span>            :     // range to which a scalar key might belong.  Since the intervals in the map are non-overlapping, sorting by greatest values</a>
+<a name="179"><span class="lineNum">     179 </span>            :     // has the same effect as sorting by least values.</a>
+<a name="180"><span class="lineNum">     180 </span>            :     struct IntervalCompare {</a>
+<a name="181"><span class="lineNum">     181 </span>            :         bool operator()(const Interval &amp;a, const Interval &amp;b) const {</a>
+<a name="182"><span class="lineNum">     182 </span>            :             return a.greatest() &lt; b.greatest();</a>
+<a name="183"><span class="lineNum">     183 </span>            :         }</a>
+<a name="184"><span class="lineNum">     184 </span>            :     };</a>
+<a name="185"><span class="lineNum">     185 </span>            : </a>
+<a name="186"><span class="lineNum">     186 </span>            :     typedef std::pair&lt;Interval, Interval&gt; IntervalPair;</a>
+<a name="187"><span class="lineNum">     187 </span>            : </a>
+<a name="188"><span class="lineNum">     188 </span>            : public:</a>
+<a name="189"><span class="lineNum">     189 </span>            :     /** Type of the underlying map. */</a>
+<a name="190"><span class="lineNum">     190 </span>            :     typedef Container::Map&lt;Interval, Value, IntervalCompare&gt; Map;</a>
+<a name="191"><span class="lineNum">     191 </span>            : </a>
+<a name="192"><span class="lineNum">     192 </span>            :     /** Storage node.</a>
+<a name="193"><span class="lineNum">     193 </span>            :      *</a>
+<a name="194"><span class="lineNum">     194 </span>            :      *  An interval/value pair with methods &lt;code&gt;key&lt;/code&gt; and &lt;code&gt;value&lt;/code&gt; for accessing the interval key and its</a>
+<a name="195"><span class="lineNum">     195 </span>            :      *  associated user-defined value. */</a>
+<a name="196"><span class="lineNum">     196 </span>            :     typedef typename Map::Node Node;</a>
+<a name="197"><span class="lineNum">     197 </span>            : </a>
+<a name="198"><span class="lineNum">     198 </span>            :     /** Interval iterator.</a>
+<a name="199"><span class="lineNum">     199 </span>            :      *</a>
+<a name="200"><span class="lineNum">     200 </span>            :      *  This iterator visits the intervals of the container.  Dereferencing the iterator returns a reference to a const</a>
+<a name="201"><span class="lineNum">     201 </span>            :      *  interval. */</a>
+<a name="202"><span class="lineNum">     202 </span>            :     typedef typename Map::ConstKeyIterator ConstIntervalIterator;</a>
+<a name="203"><span class="lineNum">     203 </span>            : </a>
+<a name="204"><span class="lineNum">     204 </span>            :     /** Value iterator.</a>
+<a name="205"><span class="lineNum">     205 </span>            :      *</a>
+<a name="206"><span class="lineNum">     206 </span>            :      *  This iterator visits the values of the container.  Dereferencing the iterator returns a reference (const or mutable,</a>
+<a name="207"><span class="lineNum">     207 </span>            :      *  depending on the iterator) to a user-defined value.</a>
+<a name="208"><span class="lineNum">     208 </span>            :      *</a>
+<a name="209"><span class="lineNum">     209 </span>            :      *  @{ */</a>
+<a name="210"><span class="lineNum">     210 </span>            :     typedef typename Map::ValueIterator ValueIterator;</a>
+<a name="211"><span class="lineNum">     211 </span>            :     typedef typename Map::ConstValueIterator ConstValueIterator;</a>
+<a name="212"><span class="lineNum">     212 </span>            :     /** @} */</a>
+<a name="213"><span class="lineNum">     213 </span>            : </a>
+<a name="214"><span class="lineNum">     214 </span>            :     /** Node iterator.</a>
+<a name="215"><span class="lineNum">     215 </span>            :      *</a>
+<a name="216"><span class="lineNum">     216 </span>            :      *  This iterator visits the nodes of the container. Dereferencing the iterator returns a @ref Node reference (const or</a>
+<a name="217"><span class="lineNum">     217 </span>            :      *  mutable depending on the iterator), from which the interval key and user-define value can be obtained.</a>
+<a name="218"><span class="lineNum">     218 </span>            :      *</a>
+<a name="219"><span class="lineNum">     219 </span>            :      * @{ */</a>
+<a name="220"><span class="lineNum">     220 </span>            :     typedef typename Map::NodeIterator NodeIterator;</a>
+<a name="221"><span class="lineNum">     221 </span>            :     typedef typename Map::ConstNodeIterator ConstNodeIterator;</a>
+<a name="222"><span class="lineNum">     222 </span>            :     /** @} */</a>
+<a name="223"><span class="lineNum">     223 </span>            :     </a>
+<a name="224"><span class="lineNum">     224 </span>            : private:</a>
+<a name="225"><span class="lineNum">     225 </span>            :     Map map_;</a>
+<a name="226"><span class="lineNum">     226 </span>            :     Policy policy_;</a>
+<a name="227"><span class="lineNum">     227 </span>            :     typename Interval::Value size_;                     // number of values (map_.size is number of intervals)</a>
+<a name="228"><span class="lineNum">     228 </span>            : </a>
+<a name="229"><span class="lineNum">     229 </span>            : private:</a>
+<a name="230"><span class="lineNum">     230 </span>            :     friend class boost::serialization::access;</a>
+<a name="231"><span class="lineNum">     231 </span>            : </a>
+<a name="232"><span class="lineNum">     232 </span>            :     template&lt;class S&gt;</a>
+<a name="233"><span class="lineNum">     233 </span>            :     void serialize(S &amp;s, const unsigned /*version*/) {</a>
+<a name="234"><span class="lineNum">     234 </span>            :         s &amp; BOOST_SERIALIZATION_NVP(map_);</a>
+<a name="235"><span class="lineNum">     235 </span>            :         s &amp; BOOST_SERIALIZATION_NVP(policy_);</a>
+<a name="236"><span class="lineNum">     236 </span>            :         s &amp; BOOST_SERIALIZATION_NVP(size_);</a>
+<a name="237"><span class="lineNum">     237 </span>            :     }</a>
+<a name="238"><span class="lineNum">     238 </span>            : </a>
+<a name="239"><span class="lineNum">     239 </span>            :     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</a>
+<a name="240"><span class="lineNum">     240 </span>            :     //                                  Constructors</a>
+<a name="241"><span class="lineNum">     241 </span>            :     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</a>
+<a name="242"><span class="lineNum">     242 </span>            : public:</a>
+<a name="243"><span class="lineNum">     243 </span>            :     /** Default constructor.</a>
+<a name="244"><span class="lineNum">     244 </span>            :      *</a>
+<a name="245"><span class="lineNum">     245 </span>            :      *  Creates an empty container. */</a>
+<a name="246"><span class="lineNum">     246 </span>            :     IntervalMap(): size_(0) {}</a>
+<a name="247"><span class="lineNum">     247 </span>            : </a>
+<a name="248"><span class="lineNum">     248 </span>            :     /** Copy constructor.</a>
+<a name="249"><span class="lineNum">     249 </span>            :      *</a>
+<a name="250"><span class="lineNum">     250 </span>            :      *  Initialize this container by copying all nodes from the @p other container.  This constructor has &lt;em&gt;O(n)&lt;/em&gt;</a>
+<a name="251"><span class="lineNum">     251 </span>            :      *  complexity, where &lt;em&gt;n&lt;/em&gt; is the number of nodes in the container. */</a>
+<a name="252"><span class="lineNum">     252 </span>            :     template&lt;class Interval2, class T2, class Policy2&gt;</a>
+<a name="253"><span class="lineNum">     253 </span>            :     IntervalMap(const IntervalMap&lt;Interval2, T2, Policy2&gt; &amp;other) {</a>
+<a name="254"><span class="lineNum">     254 </span>            :         typedef typename IntervalMap&lt;Interval2, T2, Policy2&gt;::ConstNodeIterator OtherIterator;</a>
+<a name="255"><span class="lineNum">     255 </span>            :         for (OtherIterator otherIter=other.nodes().begin(); other!=other.nodes().end(); ++other)</a>
+<a name="256"><span class="lineNum">     256 </span>            :             insert(Interval(otherIter-&gt;key()), Value(otherIter-&gt;value()));</a>
+<a name="257"><span class="lineNum">     257 </span>            :     }</a>
+<a name="258"><span class="lineNum">     258 </span>            : </a>
+<a name="259"><span class="lineNum">     259 </span>            :     /** Assignment operator.</a>
+<a name="260"><span class="lineNum">     260 </span>            :      *</a>
+<a name="261"><span class="lineNum">     261 </span>            :      *  Makes this container look like the @p other container by clearing this container and then copying all nodes from the</a>
+<a name="262"><span class="lineNum">     262 </span>            :      *  other container. */</a>
+<a name="263"><span class="lineNum">     263 </span>            :     template&lt;class Interval2, class T2, class Policy2&gt;</a>
+<a name="264"><span class="lineNum">     264 </span>            :     IntervalMap&amp; operator=(const IntervalMap&lt;Interval2, T2, Policy2&gt; &amp;other) {</a>
+<a name="265"><span class="lineNum">     265 </span>            :         clear();</a>
+<a name="266"><span class="lineNum">     266 </span>            :         typedef typename IntervalMap&lt;Interval2, T2, Policy2&gt;::ConstNodeIterator OtherIterator;</a>
+<a name="267"><span class="lineNum">     267 </span>            :         for (OtherIterator otherIter=other.nodes().begin(); other!=other.nodes().end(); ++other)</a>
+<a name="268"><span class="lineNum">     268 </span>            :             insert(Interval(otherIter-&gt;key()), Value(otherIter-&gt;value()));</a>
+<a name="269"><span class="lineNum">     269 </span>            :         return *this;</a>
+<a name="270"><span class="lineNum">     270 </span>            :     }</a>
+<a name="271"><span class="lineNum">     271 </span>            : </a>
+<a name="272"><span class="lineNum">     272 </span>            :     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</a>
+<a name="273"><span class="lineNum">     273 </span>            :     //                                  Searching</a>
+<a name="274"><span class="lineNum">     274 </span>            :     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</a>
+<a name="275"><span class="lineNum">     275 </span>            : public:</a>
+<a name="276"><span class="lineNum">     276 </span>            : </a>
+<a name="277"><span class="lineNum">     277 </span>            :     /** Iterators for traversing nodes.</a>
+<a name="278"><span class="lineNum">     278 </span>            :      *</a>
+<a name="279"><span class="lineNum">     279 </span>            :      *  Returns a range of iterators that traverse storage nodes (key/value pairs) for all nodes of this container.  The nodes</a>
+<a name="280"><span class="lineNum">     280 </span>            :      *  are traversed in key order.</a>
+<a name="281"><span class="lineNum">     281 </span>            :      *</a>
+<a name="282"><span class="lineNum">     282 </span>            :      * @{ */</a>
+<a name="283"><span class="lineNum">     283 </span>            :     boost::iterator_range&lt;NodeIterator&gt; nodes() { return map_.nodes(); }</a>
+<a name="284"><span class="lineNum">     284 </span><span class="lineNoCov">          0 :     boost::iterator_range&lt;ConstNodeIterator&gt; nodes() const { return map_.nodes(); }</span></a>
+<a name="285"><span class="lineNum">     285 </span>            :     /** @} */</a>
+<a name="286"><span class="lineNum">     286 </span>            : </a>
+<a name="287"><span class="lineNum">     287 </span>            :     /** Iterators for traversing keys.</a>
+<a name="288"><span class="lineNum">     288 </span>            :      *</a>
+<a name="289"><span class="lineNum">     289 </span>            :      *  Returns a range of iteratores that traverse all keys (non-overlapping intervals) of this container according to the</a>
+<a name="290"><span class="lineNum">     290 </span>            :      *  order of the intervals. */</a>
+<a name="291"><span class="lineNum">     291 </span>            :     boost::iterator_range&lt;ConstIntervalIterator&gt; intervals() const { return map_.keys(); }</a>
+<a name="292"><span class="lineNum">     292 </span>            : </a>
+<a name="293"><span class="lineNum">     293 </span>            :     /** Iterators for traversing values.</a>
+<a name="294"><span class="lineNum">     294 </span>            :      *</a>
+<a name="295"><span class="lineNum">     295 </span>            :      *  Returns a range of iterators that traverse the values (user-defined type) of this container.  The values are traversed</a>
+<a name="296"><span class="lineNum">     296 </span>            :      *  in the order of their associated keys.</a>
+<a name="297"><span class="lineNum">     297 </span>            :      *</a>
+<a name="298"><span class="lineNum">     298 </span>            :      * @{ */</a>
+<a name="299"><span class="lineNum">     299 </span>            :     boost::iterator_range&lt;ValueIterator&gt; values() { return map_.values(); }</a>
+<a name="300"><span class="lineNum">     300 </span>            :     boost::iterator_range&lt;ConstValueIterator&gt; values() const { return map_.values(); }</a>
+<a name="301"><span class="lineNum">     301 </span>            :     /** @} */</a>
+<a name="302"><span class="lineNum">     302 </span>            : </a>
+<a name="303"><span class="lineNum">     303 </span>            :     /** Find the first node whose interval ends at or above the specified scalar key.</a>
+<a name="304"><span class="lineNum">     304 </span>            :      *</a>
+<a name="305"><span class="lineNum">     305 </span>            :      *  Returns an iterator to the node, or the end iterator if no such node exists.</a>
+<a name="306"><span class="lineNum">     306 </span>            :      *</a>
+<a name="307"><span class="lineNum">     307 </span>            :      * @{ */</a>
+<a name="308"><span class="lineNum">     308 </span>            :     NodeIterator lowerBound(const typename Interval::Value &amp;scalar) {</a>
+<a name="309"><span class="lineNum">     309 </span>            :         return map_.lowerBound(Interval(scalar));</a>
+<a name="310"><span class="lineNum">     310 </span>            :     }</a>
+<a name="311"><span class="lineNum">     311 </span>            :     ConstNodeIterator lowerBound(const typename Interval::Value &amp;scalar) const {</a>
+<a name="312"><span class="lineNum">     312 </span>            :         return map_.lowerBound(Interval(scalar));</a>
+<a name="313"><span class="lineNum">     313 </span>            :     }</a>
+<a name="314"><span class="lineNum">     314 </span>            :     /** @} */</a>
+<a name="315"><span class="lineNum">     315 </span>            : </a>
+<a name="316"><span class="lineNum">     316 </span>            :     /** Find the first node whose interval begins above the specified scalar key.</a>
+<a name="317"><span class="lineNum">     317 </span>            :      *</a>
+<a name="318"><span class="lineNum">     318 </span>            :      *  Returns an iterator to the node, or the end iterator if no such node exists.</a>
+<a name="319"><span class="lineNum">     319 </span>            :      *</a>
+<a name="320"><span class="lineNum">     320 </span>            :      *  @{ */</a>
+<a name="321"><span class="lineNum">     321 </span>            :     NodeIterator upperBound(const typename Interval::Value &amp;scalar) {</a>
+<a name="322"><span class="lineNum">     322 </span>            :         NodeIterator ub = map_.upperBound(Interval(scalar)); // first node that ENDS after scalar</a>
+<a name="323"><span class="lineNum">     323 </span>            :         while (ub!=map_.nodes().end() &amp;&amp; ub-&gt;key().least() &lt;= scalar)</a>
+<a name="324"><span class="lineNum">     324 </span>            :             ++ub;</a>
+<a name="325"><span class="lineNum">     325 </span>            :         return ub;</a>
+<a name="326"><span class="lineNum">     326 </span>            :     }</a>
+<a name="327"><span class="lineNum">     327 </span>            :     ConstNodeIterator upperBound(const typename Interval::Value &amp;scalar) const {</a>
+<a name="328"><span class="lineNum">     328 </span>            :         ConstNodeIterator ub = map_.upperBound(Interval(scalar)); // first node that ENDS after scalar</a>
+<a name="329"><span class="lineNum">     329 </span>            :         while (ub!=map_.nodes().end() &amp;&amp; ub-&gt;key().least() &lt;= scalar)</a>
+<a name="330"><span class="lineNum">     330 </span>            :             ++ub;</a>
+<a name="331"><span class="lineNum">     331 </span>            :         return ub;</a>
+<a name="332"><span class="lineNum">     332 </span>            :     }</a>
+<a name="333"><span class="lineNum">     333 </span>            :     /** @} */</a>
+<a name="334"><span class="lineNum">     334 </span>            : </a>
+<a name="335"><span class="lineNum">     335 </span>            :     /** Find the last node whose interval starts at or below the specified scalar key.</a>
+<a name="336"><span class="lineNum">     336 </span>            :      *</a>
+<a name="337"><span class="lineNum">     337 </span>            :      *  Returns an iterator to the node, or the end iterator if no such node exists.</a>
+<a name="338"><span class="lineNum">     338 </span>            :      *</a>
+<a name="339"><span class="lineNum">     339 </span>            :      * @{ */</a>
+<a name="340"><span class="lineNum">     340 </span>            :     NodeIterator findPrior(const typename Interval::Value &amp;scalar) {</a>
+<a name="341"><span class="lineNum">     341 </span>            :         return findPriorImpl(*this, scalar);</a>
+<a name="342"><span class="lineNum">     342 </span>            :     }</a>
+<a name="343"><span class="lineNum">     343 </span>            :     ConstNodeIterator findPrior(const typename Interval::Value &amp;scalar) const {</a>
+<a name="344"><span class="lineNum">     344 </span>            :         return findPriorImpl(*this, scalar);</a>
+<a name="345"><span class="lineNum">     345 </span>            :     }</a>
+<a name="346"><span class="lineNum">     346 </span>            : </a>
+<a name="347"><span class="lineNum">     347 </span>            :     template&lt;class IMap&gt;</a>
+<a name="348"><span class="lineNum">     348 </span>            :     static typename IntervalMapTraits&lt;IMap&gt;::NodeIterator</a>
+<a name="349"><span class="lineNum">     349 </span>            :     findPriorImpl(IMap &amp;imap, const typename Interval::Value &amp;scalar) {</a>
+<a name="350"><span class="lineNum">     350 </span>            :         typedef typename IntervalMapTraits&lt;IMap&gt;::NodeIterator Iter;</a>
+<a name="351"><span class="lineNum">     351 </span>            :         if (imap.isEmpty())</a>
+<a name="352"><span class="lineNum">     352 </span>            :             return imap.nodes().end();</a>
+<a name="353"><span class="lineNum">     353 </span>            :         Iter lb = imap.lowerBound(scalar);</a>
+<a name="354"><span class="lineNum">     354 </span>            :         if (lb!=imap.nodes().end() &amp;&amp; lb-&gt;key().least() &lt;= scalar)</a>
+<a name="355"><span class="lineNum">     355 </span>            :             return lb;</a>
+<a name="356"><span class="lineNum">     356 </span>            :         if (lb==imap.nodes().begin())</a>
+<a name="357"><span class="lineNum">     357 </span>            :             return imap.nodes().end();</a>
+<a name="358"><span class="lineNum">     358 </span>            :         return --lb;</a>
+<a name="359"><span class="lineNum">     359 </span>            :     }</a>
+<a name="360"><span class="lineNum">     360 </span>            :     /** @} */</a>
+<a name="361"><span class="lineNum">     361 </span>            : </a>
+<a name="362"><span class="lineNum">     362 </span>            :     /** Find the node containing the specified scalar key.</a>
+<a name="363"><span class="lineNum">     363 </span>            :      *</a>
+<a name="364"><span class="lineNum">     364 </span>            :      *  Returns an iterator to the matching node, or the end iterator if no such node exists.</a>
+<a name="365"><span class="lineNum">     365 </span>            :      *</a>
+<a name="366"><span class="lineNum">     366 </span>            :      *  @{ */</a>
+<a name="367"><span class="lineNum">     367 </span>            :     NodeIterator find(const typename Interval::Value &amp;scalar) {</a>
+<a name="368"><span class="lineNum">     368 </span>            :         return findImpl(*this, scalar);</a>
+<a name="369"><span class="lineNum">     369 </span>            :     }</a>
+<a name="370"><span class="lineNum">     370 </span>            :     ConstNodeIterator find(const typename Interval::Value &amp;scalar) const {</a>
+<a name="371"><span class="lineNum">     371 </span>            :         return findImpl(*this, scalar);</a>
+<a name="372"><span class="lineNum">     372 </span>            :     }</a>
+<a name="373"><span class="lineNum">     373 </span>            : </a>
+<a name="374"><span class="lineNum">     374 </span>            :     template&lt;class IMap&gt;</a>
+<a name="375"><span class="lineNum">     375 </span>            :     static typename IntervalMapTraits&lt;IMap&gt;::NodeIterator</a>
+<a name="376"><span class="lineNum">     376 </span>            :     findImpl(IMap &amp;imap, const typename Interval::Value &amp;scalar) {</a>
+<a name="377"><span class="lineNum">     377 </span>            :         typedef typename IntervalMapTraits&lt;IMap&gt;::NodeIterator Iter;</a>
+<a name="378"><span class="lineNum">     378 </span>            :         Iter found = imap.lowerBound(scalar);</a>
+<a name="379"><span class="lineNum">     379 </span>            :         if (found==imap.nodes().end() || scalar &lt; found-&gt;key().least())</a>
+<a name="380"><span class="lineNum">     380 </span>            :             return imap.nodes().end();</a>
+<a name="381"><span class="lineNum">     381 </span>            :         return found;</a>
+<a name="382"><span class="lineNum">     382 </span>            :     }</a>
+<a name="383"><span class="lineNum">     383 </span>            :     /** @} */</a>
+<a name="384"><span class="lineNum">     384 </span>            : </a>
+<a name="385"><span class="lineNum">     385 </span>            :     /** Finds all nodes overlapping the specified interval.</a>
+<a name="386"><span class="lineNum">     386 </span>            :      *</a>
+<a name="387"><span class="lineNum">     387 </span>            :      *  Returns an iterator range that enumerates the nodes that overlap with the specified interval.</a>
+<a name="388"><span class="lineNum">     388 </span>            :      *</a>
+<a name="389"><span class="lineNum">     389 </span>            :      *  @{ */</a>
+<a name="390"><span class="lineNum">     390 </span>            :     boost::iterator_range&lt;NodeIterator&gt; findAll(const Interval &amp;interval) {</a>
+<a name="391"><span class="lineNum">     391 </span>            :         return findAllImpl(*this, interval);</a>
+<a name="392"><span class="lineNum">     392 </span>            :     }</a>
+<a name="393"><span class="lineNum">     393 </span>            :     boost::iterator_range&lt;ConstNodeIterator&gt; findAll(const Interval &amp;interval) const {</a>
+<a name="394"><span class="lineNum">     394 </span>            :         return findAllImpl(*this, interval);</a>
+<a name="395"><span class="lineNum">     395 </span>            :     }</a>
+<a name="396"><span class="lineNum">     396 </span>            : </a>
+<a name="397"><span class="lineNum">     397 </span>            :     template&lt;class IMap&gt;</a>
+<a name="398"><span class="lineNum">     398 </span>            :     static boost::iterator_range&lt;typename IntervalMapTraits&lt;IMap&gt;::NodeIterator&gt;</a>
+<a name="399"><span class="lineNum">     399 </span>            :     findAllImpl(IMap &amp;imap, const Interval &amp;interval) {</a>
+<a name="400"><span class="lineNum">     400 </span>            :         typedef typename IntervalMapTraits&lt;IMap&gt;::NodeIterator Iter;</a>
+<a name="401"><span class="lineNum">     401 </span>            :         if (interval.isEmpty())</a>
+<a name="402"><span class="lineNum">     402 </span>            :             return boost::iterator_range&lt;Iter&gt;(imap.nodes().end(), imap.nodes().end());</a>
+<a name="403"><span class="lineNum">     403 </span>            :         Iter begin = imap.lowerBound(interval.least());</a>
+<a name="404"><span class="lineNum">     404 </span>            :         if (begin==imap.nodes().end() || begin-&gt;key().least() &gt; interval.greatest())</a>
+<a name="405"><span class="lineNum">     405 </span>            :             return boost::iterator_range&lt;Iter&gt;(imap.nodes().end(), imap.nodes().end());</a>
+<a name="406"><span class="lineNum">     406 </span>            :         return boost::iterator_range&lt;Iter&gt;(begin, imap.upperBound(interval.greatest()));</a>
+<a name="407"><span class="lineNum">     407 </span>            :     }</a>
+<a name="408"><span class="lineNum">     408 </span>            :     /** @} */</a>
+<a name="409"><span class="lineNum">     409 </span>            :     </a>
+<a name="410"><span class="lineNum">     410 </span>            :     /** Find first interval that overlaps with the specified interval.</a>
+<a name="411"><span class="lineNum">     411 </span>            :      *</a>
+<a name="412"><span class="lineNum">     412 </span>            :      *  Returns an iterator to the matching node, or the end iterator if no such node exists.</a>
+<a name="413"><span class="lineNum">     413 </span>            :      *</a>
+<a name="414"><span class="lineNum">     414 </span>            :      * @{ */</a>
+<a name="415"><span class="lineNum">     415 </span>            :     NodeIterator findFirstOverlap(const Interval &amp;interval) {</a>
+<a name="416"><span class="lineNum">     416 </span>            :         return findFirstOverlapImpl(*this, interval);</a>
+<a name="417"><span class="lineNum">     417 </span>            :     }</a>
+<a name="418"><span class="lineNum">     418 </span>            :     ConstNodeIterator findFirstOverlap(const Interval &amp;interval) const {</a>
+<a name="419"><span class="lineNum">     419 </span>            :         return findFirstOverlapImpl(*this, interval);</a>
+<a name="420"><span class="lineNum">     420 </span>            :     }</a>
+<a name="421"><span class="lineNum">     421 </span>            : </a>
+<a name="422"><span class="lineNum">     422 </span>            :     template&lt;class IMap&gt;</a>
+<a name="423"><span class="lineNum">     423 </span>            :     static typename IntervalMapTraits&lt;IMap&gt;::NodeIterator</a>
+<a name="424"><span class="lineNum">     424 </span>            :     findFirstOverlapImpl(IMap &amp;imap, const Interval &amp;interval) {</a>
+<a name="425"><span class="lineNum">     425 </span>            :         typedef typename IntervalMapTraits&lt;IMap&gt;::NodeIterator Iter;</a>
+<a name="426"><span class="lineNum">     426 </span>            :         if (interval.isEmpty())</a>
+<a name="427"><span class="lineNum">     427 </span>            :             return imap.nodes().end();</a>
+<a name="428"><span class="lineNum">     428 </span>            :         Iter lb = imap.lowerBound(interval.least());</a>
+<a name="429"><span class="lineNum">     429 </span>            :         return lb!=imap.nodes().end() &amp;&amp; interval.isOverlapping(lb-&gt;key()) ? lb : imap.nodes().end();</a>
+<a name="430"><span class="lineNum">     430 </span>            :     }</a>
+<a name="431"><span class="lineNum">     431 </span>            :     /** @} */</a>
+<a name="432"><span class="lineNum">     432 </span>            : </a>
+<a name="433"><span class="lineNum">     433 </span>            :     /** Find first interval that overlaps with any in another container.</a>
+<a name="434"><span class="lineNum">     434 </span>            :      *</a>
+<a name="435"><span class="lineNum">     435 </span>            :      *  The @p other container must use the same interval type, but may have different values and merge policies.  The search</a>
+<a name="436"><span class="lineNum">     436 </span>            :      *  begins at the specified iterators and returns a pair of iterators pointing to the two nodes that overlap.  The first</a>
+<a name="437"><span class="lineNum">     437 </span>            :      *  member of the pair is an iterator to this container, and the second is an iterator for the @p other container.  If no</a>
+<a name="438"><span class="lineNum">     438 </span>            :      *  such nodes exist at or after the starting locations, then the return value will be a pair of end iterators for</a>
+<a name="439"><span class="lineNum">     439 </span>            :      *  their respective containers.</a>
+<a name="440"><span class="lineNum">     440 </span>            :      *</a>
+<a name="441"><span class="lineNum">     441 </span>            :      * @{ */</a>
+<a name="442"><span class="lineNum">     442 </span>            :     template&lt;typename T2, class Policy2&gt;</a>
+<a name="443"><span class="lineNum">     443 </span>            :     std::pair&lt;NodeIterator, typename IntervalMap&lt;Interval, T2, Policy2&gt;::ConstNodeIterator&gt;</a>
+<a name="444"><span class="lineNum">     444 </span>            :     findFirstOverlap(typename IntervalMap::NodeIterator thisIter, const IntervalMap&lt;Interval, T2, Policy2&gt; &amp;other,</a>
+<a name="445"><span class="lineNum">     445 </span>            :                      typename IntervalMap&lt;Interval, T2, Policy2&gt;::ConstNodeIterator otherIter) {</a>
+<a name="446"><span class="lineNum">     446 </span>            :         return findFirstOverlapImpl(*this, thisIter, other, otherIter);</a>
+<a name="447"><span class="lineNum">     447 </span>            :     }</a>
+<a name="448"><span class="lineNum">     448 </span>            :     template&lt;typename T2, class Policy2&gt;</a>
+<a name="449"><span class="lineNum">     449 </span>            :     std::pair&lt;ConstNodeIterator, typename IntervalMap&lt;Interval, T2, Policy2&gt;::ConstNodeIterator&gt;</a>
+<a name="450"><span class="lineNum">     450 </span>            :     findFirstOverlap(typename IntervalMap::ConstNodeIterator thisIter, const IntervalMap&lt;Interval, T2, Policy2&gt; &amp;other,</a>
+<a name="451"><span class="lineNum">     451 </span>            :                      typename IntervalMap&lt;Interval, T2, Policy2&gt;::ConstNodeIterator otherIter) const {</a>
+<a name="452"><span class="lineNum">     452 </span>            :         return findFirstOverlapImpl(*this, thisIter, other, otherIter);</a>
+<a name="453"><span class="lineNum">     453 </span>            :     }</a>
+<a name="454"><span class="lineNum">     454 </span>            : </a>
+<a name="455"><span class="lineNum">     455 </span>            :     template&lt;class IMap, typename T2, class Policy2&gt;</a>
+<a name="456"><span class="lineNum">     456 </span>            :     static std::pair&lt;typename IntervalMapTraits&lt;IMap&gt;::NodeIterator,</a>
+<a name="457"><span class="lineNum">     457 </span>            :                      typename IntervalMap&lt;Interval, T2, Policy2&gt;::ConstNodeIterator&gt;</a>
+<a name="458"><span class="lineNum">     458 </span>            :     findFirstOverlapImpl(IMap &amp;imap,</a>
+<a name="459"><span class="lineNum">     459 </span>            :                          typename IntervalMapTraits&lt;IMap&gt;::NodeIterator thisIter,</a>
+<a name="460"><span class="lineNum">     460 </span>            :                          const IntervalMap&lt;Interval, T2, Policy2&gt; &amp;other,</a>
+<a name="461"><span class="lineNum">     461 </span>            :                          typename IntervalMap&lt;Interval, T2, Policy2&gt;::ConstNodeIterator otherIter) {</a>
+<a name="462"><span class="lineNum">     462 </span>            :         while (thisIter!=imap.nodes().end() &amp;&amp; otherIter!=other.nodes().end()) {</a>
+<a name="463"><span class="lineNum">     463 </span>            :             if (thisIter-&gt;key().isOverlapping(otherIter-&gt;key()))</a>
+<a name="464"><span class="lineNum">     464 </span>            :                 return std::make_pair(thisIter, otherIter);</a>
+<a name="465"><span class="lineNum">     465 </span>            :             if (thisIter-&gt;key().greatest() &lt; otherIter-&gt;key().greatest()) {</a>
+<a name="466"><span class="lineNum">     466 </span>            :                 ++thisIter;</a>
+<a name="467"><span class="lineNum">     467 </span>            :             } else {</a>
+<a name="468"><span class="lineNum">     468 </span>            :                 ++otherIter;</a>
+<a name="469"><span class="lineNum">     469 </span>            :             }</a>
+<a name="470"><span class="lineNum">     470 </span>            :         }</a>
+<a name="471"><span class="lineNum">     471 </span>            :         return std::make_pair(imap.nodes().end(), other.nodes().end());</a>
+<a name="472"><span class="lineNum">     472 </span>            :     }</a>
+<a name="473"><span class="lineNum">     473 </span>            :     /** @} */</a>
+<a name="474"><span class="lineNum">     474 </span>            : </a>
+<a name="475"><span class="lineNum">     475 </span>            :     /** Find the first fit node at or after a starting point.</a>
+<a name="476"><span class="lineNum">     476 </span>            :      *</a>
+<a name="477"><span class="lineNum">     477 </span>            :      *  Finds the first node of contiguous values beginning at or after the specified starting iterator, @p start, and which is</a>
+<a name="478"><span class="lineNum">     478 </span>            :      *  at least as large as the desired @p size.  If there are no such nodes then the end iterator is returned.</a>
+<a name="479"><span class="lineNum">     479 </span>            :      *</a>
+<a name="480"><span class="lineNum">     480 </span>            :      *  Caveat emptor: The @p size argument has the name type as the interval end points. If the end points have a signed type,</a>
+<a name="481"><span class="lineNum">     481 </span>            :      *  then it is entirely likely that the size will overflow.  In fact, it is also possible that unsigned sizes overflow</a>
+<a name="482"><span class="lineNum">     482 </span>            :      *  since, for example, an 8-bit unsigned size cannot hold the size of an interval representing the entire 8-bit space.</a>
+<a name="483"><span class="lineNum">     483 </span>            :      *  Therefore, use this method with care.</a>
+<a name="484"><span class="lineNum">     484 </span>            :      *</a>
+<a name="485"><span class="lineNum">     485 </span>            :      * @{ */</a>
+<a name="486"><span class="lineNum">     486 </span>            :     NodeIterator firstFit(const typename Interval::Value &amp;size, NodeIterator start) {</a>
+<a name="487"><span class="lineNum">     487 </span>            :         return firstFitImpl(*this, size, start);</a>
+<a name="488"><span class="lineNum">     488 </span>            :     }</a>
+<a name="489"><span class="lineNum">     489 </span>            :     ConstNodeIterator firstFit(const typename Interval::Value &amp;size, ConstNodeIterator start) const {</a>
+<a name="490"><span class="lineNum">     490 </span>            :         return firstFitImpl(*this, size, start);</a>
+<a name="491"><span class="lineNum">     491 </span>            :     }</a>
+<a name="492"><span class="lineNum">     492 </span>            : </a>
+<a name="493"><span class="lineNum">     493 </span>            :     template&lt;class IMap&gt;</a>
+<a name="494"><span class="lineNum">     494 </span>            :     static typename IntervalMapTraits&lt;IMap&gt;::NodeIterator</a>
+<a name="495"><span class="lineNum">     495 </span>            :     firstFitImpl(IMap &amp;imap, const typename Interval::Value &amp;size, typename IntervalMapTraits&lt;IMap&gt;::NodeIterator start) {</a>
+<a name="496"><span class="lineNum">     496 </span>            :         typedef typename IntervalMapTraits&lt;IMap&gt;::NodeIterator Iter;</a>
+<a name="497"><span class="lineNum">     497 </span>            :         for (Iter iter=start; iter!=imap.nodes().end(); ++iter) {</a>
+<a name="498"><span class="lineNum">     498 </span>            :             if (isLarge(iter-&gt;key(), size))</a>
+<a name="499"><span class="lineNum">     499 </span>            :                 return iter;</a>
+<a name="500"><span class="lineNum">     500 </span>            :         }</a>
+<a name="501"><span class="lineNum">     501 </span>            :         return imap.nodes().end();</a>
+<a name="502"><span class="lineNum">     502 </span>            :     }</a>
+<a name="503"><span class="lineNum">     503 </span>            :         </a>
+<a name="504"><span class="lineNum">     504 </span>            :     /** @} */</a>
+<a name="505"><span class="lineNum">     505 </span>            : </a>
+<a name="506"><span class="lineNum">     506 </span>            :     /** Find the best fit node at or after a starting point.</a>
+<a name="507"><span class="lineNum">     507 </span>            :      *</a>
+<a name="508"><span class="lineNum">     508 </span>            :      *  Finds a node of contiguous values beginning at or after the specified starting iterator, @p start, and which is at</a>
+<a name="509"><span class="lineNum">     509 </span>            :      *  least as large as the desired @p size.  If there is more than one such node, then the first smallest such node is</a>
+<a name="510"><span class="lineNum">     510 </span>            :      *  returned.  If there are no such nodes then the end iterator is returned.</a>
+<a name="511"><span class="lineNum">     511 </span>            :      *</a>
+<a name="512"><span class="lineNum">     512 </span>            :      *  Caveat emptor: The @p size argument has the name type as the interval end points. If the end points have a signed type,</a>
+<a name="513"><span class="lineNum">     513 </span>            :      *  then it is entirely likely that the size will overflow.  In fact, it is also possible that unsigned sizes overflow</a>
+<a name="514"><span class="lineNum">     514 </span>            :      *  since, for example, an 8-bit unsigned size cannot hold the size of an interval representing the entire 8-bit space.</a>
+<a name="515"><span class="lineNum">     515 </span>            :      *  Therefore, use this method with care.</a>
+<a name="516"><span class="lineNum">     516 </span>            :      *</a>
+<a name="517"><span class="lineNum">     517 </span>            :      * @{ */</a>
+<a name="518"><span class="lineNum">     518 </span>            :     NodeIterator bestFit(const typename Interval::Value &amp;size, NodeIterator start) {</a>
+<a name="519"><span class="lineNum">     519 </span>            :         return bestFitImpl(*this, size, start);</a>
+<a name="520"><span class="lineNum">     520 </span>            :     }</a>
+<a name="521"><span class="lineNum">     521 </span>            :     ConstNodeIterator bestFit(const typename Interval::Value &amp;size, ConstNodeIterator start) const {</a>
+<a name="522"><span class="lineNum">     522 </span>            :         return bestFitImpl(*this, size, start);</a>
+<a name="523"><span class="lineNum">     523 </span>            :     }</a>
+<a name="524"><span class="lineNum">     524 </span>            : </a>
+<a name="525"><span class="lineNum">     525 </span>            :     template&lt;class IMap&gt;</a>
+<a name="526"><span class="lineNum">     526 </span>            :     static typename IntervalMapTraits&lt;IMap&gt;::NodeIterator</a>
+<a name="527"><span class="lineNum">     527 </span>            :     bestFitImpl(IMap &amp;imap, const typename Interval::Value &amp;size, typename IntervalMapTraits&lt;IMap&gt;::NodeIterator start) {</a>
+<a name="528"><span class="lineNum">     528 </span>            :         typedef typename IntervalMapTraits&lt;IMap&gt;::NodeIterator Iter;</a>
+<a name="529"><span class="lineNum">     529 </span>            :         Iter best = imap.nodes().end();</a>
+<a name="530"><span class="lineNum">     530 </span>            :         for (Iter iter=start; iter!=imap.nodes().end(); ++iter) {</a>
+<a name="531"><span class="lineNum">     531 </span>            :             if (iter-&gt;key().size()==size &amp;&amp; size!=0)</a>
+<a name="532"><span class="lineNum">     532 </span>            :                 return iter;</a>
+<a name="533"><span class="lineNum">     533 </span>            :             if (iter-&gt;key().size() &gt; size &amp;&amp; (best==imap.nodes().end() || iter-&gt;key().size() &lt; best-&gt;key().size()))</a>
+<a name="534"><span class="lineNum">     534 </span>            :                 best = iter;</a>
+<a name="535"><span class="lineNum">     535 </span>            :         }</a>
+<a name="536"><span class="lineNum">     536 </span>            :         return best;</a>
+<a name="537"><span class="lineNum">     537 </span>            :     }</a>
+<a name="538"><span class="lineNum">     538 </span>            :     /** @} */</a>
+<a name="539"><span class="lineNum">     539 </span>            : </a>
+<a name="540"><span class="lineNum">     540 </span>            :     /** Find the first unmapped region.</a>
+<a name="541"><span class="lineNum">     541 </span>            :      *</a>
+<a name="542"><span class="lineNum">     542 </span>            :      *  Returns an interval that describes the lowest unmapped interval that begins at or after the specified starting address</a>
+<a name="543"><span class="lineNum">     543 </span>            :      *  and ends immediately prior to the mapped address that follows the unmapped interval, or the greatest possible address</a>
+<a name="544"><span class="lineNum">     544 </span>            :      *  if there are no following mapped addresses.  If @p minAddr is after the last unmapped address then an empty interval is</a>
+<a name="545"><span class="lineNum">     545 </span>            :      *  returned.  The returned interval will not include addresses less than @p minAddr. */</a>
+<a name="546"><span class="lineNum">     546 </span>            :     Interval firstUnmapped(typename Interval::Value minAddr) const {</a>
+<a name="547"><span class="lineNum">     547 </span>            :         Interval all = Interval::whole();</a>
+<a name="548"><span class="lineNum">     548 </span>            :         for (ConstNodeIterator iter=lowerBound(minAddr); iter!=nodes().end(); ++iter) {</a>
+<a name="549"><span class="lineNum">     549 </span>            :             if (minAddr &lt; iter-&gt;key().least())          // minAddr is not mapped</a>
+<a name="550"><span class="lineNum">     550 </span>            :                 return Interval::hull(minAddr, iter-&gt;key().least()-1);</a>
+<a name="551"><span class="lineNum">     551 </span>            :             if (iter-&gt;key().greatest() == all.greatest())</a>
+<a name="552"><span class="lineNum">     552 </span>            :                 return Interval();                      // no unmapped addresses, prevent potential overflow in next statement</a>
+<a name="553"><span class="lineNum">     553 </span>            :             minAddr = iter-&gt;key().greatest() + 1;</a>
+<a name="554"><span class="lineNum">     554 </span>            :         }</a>
+<a name="555"><span class="lineNum">     555 </span>            :         return Interval::hull(minAddr, all.greatest());</a>
+<a name="556"><span class="lineNum">     556 </span>            :     }</a>
+<a name="557"><span class="lineNum">     557 </span>            : </a>
+<a name="558"><span class="lineNum">     558 </span>            :     /** Find the last unmapped region.</a>
+<a name="559"><span class="lineNum">     559 </span>            :      *</a>
+<a name="560"><span class="lineNum">     560 </span>            :      *  Returns an interval that describes the lowest unmapped interval that ends at or before the specified maximum address</a>
+<a name="561"><span class="lineNum">     561 </span>            :      *  and starts immediately after the next lower mapped address, or the least possible address is no lower mapped address is</a>
+<a name="562"><span class="lineNum">     562 </span>            :      *  present. If @p maxAddr is before the first unmapped address then an empty interval is returned.  The returned interval</a>
+<a name="563"><span class="lineNum">     563 </span>            :      *  will not include addresses greater than @p maxAddr. */</a>
+<a name="564"><span class="lineNum">     564 </span>            :     Interval lastUnmapped(typename Interval::Value maxAddr) const {</a>
+<a name="565"><span class="lineNum">     565 </span>            :         Interval all = Interval::whole();</a>
+<a name="566"><span class="lineNum">     566 </span>            :         for (ConstNodeIterator iter=findPrior(maxAddr); iter!=nodes().begin(); --iter) {</a>
+<a name="567"><span class="lineNum">     567 </span>            :             if (maxAddr &gt; iter-&gt;key().greatest())        // maxAddr is not mapped</a>
+<a name="568"><span class="lineNum">     568 </span>            :                 return Interval::hull(iter-&gt;key().greatest()+1, maxAddr);</a>
+<a name="569"><span class="lineNum">     569 </span>            :             if (iter-&gt;key().least() == all.least())</a>
+<a name="570"><span class="lineNum">     570 </span>            :                 return Interval();                      // no unmapped address, prevent potential overflow in next statement</a>
+<a name="571"><span class="lineNum">     571 </span>            :             maxAddr = iter-&gt;key().least() - 1;</a>
+<a name="572"><span class="lineNum">     572 </span>            :         }</a>
+<a name="573"><span class="lineNum">     573 </span>            :         return Interval::hull(all.least(), maxAddr);</a>
+<a name="574"><span class="lineNum">     574 </span>            :     }</a>
+<a name="575"><span class="lineNum">     575 </span>            : </a>
+<a name="576"><span class="lineNum">     576 </span>            :     /** Returns true if element exists.</a>
+<a name="577"><span class="lineNum">     577 </span>            :      *</a>
+<a name="578"><span class="lineNum">     578 </span>            :      *  Returns true if and only if the specified key exists in the map. */</a>
+<a name="579"><span class="lineNum">     579 </span>            :     bool exists(const typename Interval::Value &amp;size) const {</a>
+<a name="580"><span class="lineNum">     580 </span>            :         return find(size)!=nodes().end();</a>
+<a name="581"><span class="lineNum">     581 </span>            :     }</a>
+<a name="582"><span class="lineNum">     582 </span>            :     </a>
+<a name="583"><span class="lineNum">     583 </span>            :     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</a>
+<a name="584"><span class="lineNum">     584 </span>            :     //                                  Accessors</a>
+<a name="585"><span class="lineNum">     585 </span>            :     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</a>
+<a name="586"><span class="lineNum">     586 </span>            : public:</a>
+<a name="587"><span class="lineNum">     587 </span>            :     /** Returns a reference to an existing value.</a>
+<a name="588"><span class="lineNum">     588 </span>            :      *</a>
+<a name="589"><span class="lineNum">     589 </span>            :      *  Returns a reference to the value at the node with the specified @p scalar.  Unlike &lt;code&gt;std::map&lt;/code&gt;, this</a>
+<a name="590"><span class="lineNum">     590 </span>            :      *  container does not instantiate a new value if the @p scalar key is not in the map's domain.  In other words, the</a>
+<a name="591"><span class="lineNum">     591 </span>            :      *  array operator for this class is more like an array operator on arrays or vectors--such objects are not automatically</a>
+<a name="592"><span class="lineNum">     592 </span>            :      *  extended if dereferenced with an operand that is outside the domain.</a>
+<a name="593"><span class="lineNum">     593 </span>            :      *</a>
+<a name="594"><span class="lineNum">     594 </span>            :      *  If the @p scalar is not part of this map's domain then an &lt;code&gt;std:domain_error&lt;/code&gt; is thrown.</a>
+<a name="595"><span class="lineNum">     595 </span>            :      *</a>
+<a name="596"><span class="lineNum">     596 </span>            :      *  @{ */</a>
+<a name="597"><span class="lineNum">     597 </span>            :     const Value&amp; operator[](const typename Interval::Value &amp;scalar) const {</a>
+<a name="598"><span class="lineNum">     598 </span>            :         ConstNodeIterator found = find(scalar);</a>
+<a name="599"><span class="lineNum">     599 </span>            :         if (found==nodes().end())</a>
+<a name="600"><span class="lineNum">     600 </span>            :             throw std::domain_error(&quot;key lookup failure; key is not in map domain&quot;);</a>
+<a name="601"><span class="lineNum">     601 </span>            :         return found-&gt;value();</a>
+<a name="602"><span class="lineNum">     602 </span>            :     }</a>
+<a name="603"><span class="lineNum">     603 </span>            : </a>
+<a name="604"><span class="lineNum">     604 </span>            :     const Value&amp; get(const typename Interval::Value &amp;scalar) const {</a>
+<a name="605"><span class="lineNum">     605 </span>            :         ConstNodeIterator found = find(scalar);</a>
+<a name="606"><span class="lineNum">     606 </span>            :         if (found==nodes().end())</a>
+<a name="607"><span class="lineNum">     607 </span>            :             throw std::domain_error(&quot;key lookup failure; key is not in map domain&quot;);</a>
+<a name="608"><span class="lineNum">     608 </span>            :         return found-&gt;value();</a>
+<a name="609"><span class="lineNum">     609 </span>            :     }</a>
+<a name="610"><span class="lineNum">     610 </span>            :     /** @} */</a>
+<a name="611"><span class="lineNum">     611 </span>            : </a>
+<a name="612"><span class="lineNum">     612 </span>            :     /** Lookup and return a value or nothing.</a>
+<a name="613"><span class="lineNum">     613 </span>            :      *</a>
+<a name="614"><span class="lineNum">     614 </span>            :      *  Looks up the node with the specified @p scalar key and returns either a copy of its value, or nothing. This method</a>
+<a name="615"><span class="lineNum">     615 </span>            :      *  executes in logorithmic time.</a>
+<a name="616"><span class="lineNum">     616 </span>            :      *</a>
+<a name="617"><span class="lineNum">     617 </span>            :      *  Here's an example of one convenient way to use this:</a>
+<a name="618"><span class="lineNum">     618 </span>            :      *</a>
+<a name="619"><span class="lineNum">     619 </span>            :      * @code</a>
+<a name="620"><span class="lineNum">     620 </span>            :      *  IntervalMap&lt;AddressInterval, FileInfo&gt; files;</a>
+<a name="621"><span class="lineNum">     621 </span>            :      *  ...</a>
+<a name="622"><span class="lineNum">     622 </span>            :      *  if (Optional&lt;FileInfo&gt; fileInfo = files.getOptional(address))</a>
+<a name="623"><span class="lineNum">     623 </span>            :      *      std::cout &lt;&lt;&quot;file info for &quot; &lt;&lt;address &lt;&lt;&quot; is &quot; &lt;&lt;*fileInfo &lt;&lt;&quot;\n&quot;;</a>
+<a name="624"><span class="lineNum">     624 </span>            :      * @endcode */</a>
+<a name="625"><span class="lineNum">     625 </span>            :     Optional&lt;Value&gt; getOptional(const typename Interval::Value &amp;scalar) const {</a>
+<a name="626"><span class="lineNum">     626 </span>            :         ConstNodeIterator found = find(scalar);</a>
+<a name="627"><span class="lineNum">     627 </span>            :         return found == nodes().end() ? Optional&lt;Value&gt;() : Optional&lt;Value&gt;(found-&gt;value());</a>
+<a name="628"><span class="lineNum">     628 </span>            :     }</a>
+<a name="629"><span class="lineNum">     629 </span>            :     </a>
+<a name="630"><span class="lineNum">     630 </span>            :     /** Lookup and return a value or something else.</a>
+<a name="631"><span class="lineNum">     631 </span>            :      *</a>
+<a name="632"><span class="lineNum">     632 </span>            :      *  This is similar to the @ref getOptional method, except a default can be provided.  If a node with the specified @p</a>
+<a name="633"><span class="lineNum">     633 </span>            :      *  scalar key is present in this container, then a reference to that node's value is returned, otherwise the (reference</a>
+<a name="634"><span class="lineNum">     634 </span>            :      *  to) supplied default is returned.</a>
+<a name="635"><span class="lineNum">     635 </span>            :      *</a>
+<a name="636"><span class="lineNum">     636 </span>            :      * @{ */</a>
+<a name="637"><span class="lineNum">     637 </span>            :     Value&amp; getOrElse(const typename Interval::Value &amp;scalar, Value &amp;dflt) {</a>
+<a name="638"><span class="lineNum">     638 </span>            :         NodeIterator found = find(scalar);</a>
+<a name="639"><span class="lineNum">     639 </span>            :         return found == nodes().end() ? dflt : found-&gt;value();</a>
+<a name="640"><span class="lineNum">     640 </span>            :     }</a>
+<a name="641"><span class="lineNum">     641 </span>            :     const Value&amp; getOrElse(const typename Interval::Value &amp;scalar, const Value &amp;dflt) const {</a>
+<a name="642"><span class="lineNum">     642 </span>            :         ConstNodeIterator found = find(scalar);</a>
+<a name="643"><span class="lineNum">     643 </span>            :         return found == nodes().end() ? dflt : found-&gt;value();</a>
+<a name="644"><span class="lineNum">     644 </span>            :     }</a>
+<a name="645"><span class="lineNum">     645 </span>            :     /** @} */</a>
+<a name="646"><span class="lineNum">     646 </span>            : </a>
+<a name="647"><span class="lineNum">     647 </span>            :     /** Lookup and return a value or a default.</a>
+<a name="648"><span class="lineNum">     648 </span>            :      *</a>
+<a name="649"><span class="lineNum">     649 </span>            :      *  This is similar to the @ref getOrElse method except when the @p scalar key is not present in the map, a reference to a</a>
+<a name="650"><span class="lineNum">     650 </span>            :      *  const, default-constructed value is returned. */</a>
+<a name="651"><span class="lineNum">     651 </span>            :     const Value&amp; getOrDefault(const typename Interval::Value &amp;scalar) const {</a>
+<a name="652"><span class="lineNum">     652 </span>            :         static const Value dflt;</a>
+<a name="653"><span class="lineNum">     653 </span>            :         ConstNodeIterator found = find(scalar);</a>
+<a name="654"><span class="lineNum">     654 </span>            :         return found==nodes().end() ? dflt : found-&gt;value();</a>
+<a name="655"><span class="lineNum">     655 </span>            :     }</a>
+<a name="656"><span class="lineNum">     656 </span>            :     </a>
+<a name="657"><span class="lineNum">     657 </span>            :     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</a>
+<a name="658"><span class="lineNum">     658 </span>            :     //                                  Capacity</a>
+<a name="659"><span class="lineNum">     659 </span>            :     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</a>
+<a name="660"><span class="lineNum">     660 </span>            : public:</a>
+<a name="661"><span class="lineNum">     661 </span>            : </a>
+<a name="662"><span class="lineNum">     662 </span>            :     /** Determine if the container is empty.</a>
+<a name="663"><span class="lineNum">     663 </span>            :      *</a>
+<a name="664"><span class="lineNum">     664 </span>            :      *  Returns true if this container has no nodes. */</a>
+<a name="665"><span class="lineNum">     665 </span><span class="lineNoCov">          0 :     bool isEmpty() const {</span></a>
+<a name="666"><span class="lineNum">     666 </span><span class="lineNoCov">          0 :         return map_.isEmpty();</span></a>
+<a name="667"><span class="lineNum">     667 </span>            :     }</a>
+<a name="668"><span class="lineNum">     668 </span>            : </a>
+<a name="669"><span class="lineNum">     669 </span>            :     /** Number of nodes in the container.</a>
+<a name="670"><span class="lineNum">     670 </span>            :      *</a>
+<a name="671"><span class="lineNum">     671 </span>            :      *  Each node is a pair consisting of an interval and a value.  The container normally merges two juxtaposed intervals if</a>
+<a name="672"><span class="lineNum">     672 </span>            :      *  their values can be combined. */</a>
+<a name="673"><span class="lineNum">     673 </span>            :     size_t nIntervals() const {</a>
+<a name="674"><span class="lineNum">     674 </span>            :         return map_.size();</a>
+<a name="675"><span class="lineNum">     675 </span>            :     }</a>
+<a name="676"><span class="lineNum">     676 </span>            : </a>
+<a name="677"><span class="lineNum">     677 </span>            :     /** Returns the number of values represented by this container.</a>
+<a name="678"><span class="lineNum">     678 </span>            :      *</a>
+<a name="679"><span class="lineNum">     679 </span>            :      *  The number of values in a container is the sum of the widths of all the nodes. This can be calculated in constant</a>
+<a name="680"><span class="lineNum">     680 </span>            :      *  time. */</a>
+<a name="681"><span class="lineNum">     681 </span>            :     typename Interval::Value size() const {</a>
+<a name="682"><span class="lineNum">     682 </span>            :         return size_;</a>
+<a name="683"><span class="lineNum">     683 </span>            :     }</a>
+<a name="684"><span class="lineNum">     684 </span>            : </a>
+<a name="685"><span class="lineNum">     685 </span>            :     /** Returns the minimum scalar key. */</a>
+<a name="686"><span class="lineNum">     686 </span>            :     typename Interval::Value least() const {</a>
+<a name="687"><span class="lineNum">     687 </span>            :         ASSERT_forbid(isEmpty());</a>
+<a name="688"><span class="lineNum">     688 </span>            :         return map_.keys().begin()-&gt;least();</a>
+<a name="689"><span class="lineNum">     689 </span>            :     }</a>
+<a name="690"><span class="lineNum">     690 </span>            : </a>
+<a name="691"><span class="lineNum">     691 </span>            :     /** Returns the maximum scalar key. */</a>
+<a name="692"><span class="lineNum">     692 </span>            :     typename Interval::Value greatest() const {</a>
+<a name="693"><span class="lineNum">     693 </span>            :         ASSERT_forbid(isEmpty());</a>
+<a name="694"><span class="lineNum">     694 </span>            :         ConstIntervalIterator last = map_.keys().end(); --last;</a>
+<a name="695"><span class="lineNum">     695 </span>            :         return last-&gt;greatest();</a>
+<a name="696"><span class="lineNum">     696 </span>            :     }</a>
+<a name="697"><span class="lineNum">     697 </span>            : </a>
+<a name="698"><span class="lineNum">     698 </span>            :     /** Returns the limited-minimum scalar key.</a>
+<a name="699"><span class="lineNum">     699 </span>            :      *</a>
+<a name="700"><span class="lineNum">     700 </span>            :      *  Returns the minimum scalar key that exists in the map and which is greater than or equal to @p lowerLimit.  If no such</a>
+<a name="701"><span class="lineNum">     701 </span>            :      *  value exists then nothing is returned. */</a>
+<a name="702"><span class="lineNum">     702 </span>            :     Optional&lt;typename Interval::Value&gt; least(typename Interval::Value lowerLimit) const {</a>
+<a name="703"><span class="lineNum">     703 </span>            :         ConstNodeIterator found = lowerBound(lowerLimit); // first node ending at or after lowerLimit</a>
+<a name="704"><span class="lineNum">     704 </span>            :         if (found==nodes().end())</a>
+<a name="705"><span class="lineNum">     705 </span>            :             return Nothing();</a>
+<a name="706"><span class="lineNum">     706 </span>            :         return std::max(lowerLimit, found-&gt;key().least());</a>
+<a name="707"><span class="lineNum">     707 </span>            :     }</a>
+<a name="708"><span class="lineNum">     708 </span>            : </a>
+<a name="709"><span class="lineNum">     709 </span>            :     /** Returns the limited-maximum scalar key.</a>
+<a name="710"><span class="lineNum">     710 </span>            :      *</a>
+<a name="711"><span class="lineNum">     711 </span>            :      *  Returns the maximum scalar key that exists in the map and which is less than or equal to @p upperLimit.  If no such</a>
+<a name="712"><span class="lineNum">     712 </span>            :      *  value exists then nothing is returned. */</a>
+<a name="713"><span class="lineNum">     713 </span>            :     Optional&lt;typename Interval::Value&gt; greatest(typename Interval::Value upperLimit) const {</a>
+<a name="714"><span class="lineNum">     714 </span>            :         ConstNodeIterator found = findPrior(upperLimit); // last node beginning at or before upperLimit</a>
+<a name="715"><span class="lineNum">     715 </span>            :         if (found==nodes().end())</a>
+<a name="716"><span class="lineNum">     716 </span>            :             return Nothing();</a>
+<a name="717"><span class="lineNum">     717 </span>            :         return std::min(upperLimit, found-&gt;key().greatest());</a>
+<a name="718"><span class="lineNum">     718 </span>            :     }</a>
+<a name="719"><span class="lineNum">     719 </span>            : </a>
+<a name="720"><span class="lineNum">     720 </span>            :     /** Returns the limited-minimum unmapped scalar key.</a>
+<a name="721"><span class="lineNum">     721 </span>            :      *</a>
+<a name="722"><span class="lineNum">     722 </span>            :      *  Returns the lowest unmapped scalar key equal to or greater than the @p lowerLimit.  If no such value exists then</a>
+<a name="723"><span class="lineNum">     723 </span>            :      *  nothing is returned. */</a>
+<a name="724"><span class="lineNum">     724 </span>            :     Optional&lt;typename Interval::Value&gt; leastUnmapped(typename Interval::Value lowerLimit) const {</a>
+<a name="725"><span class="lineNum">     725 </span>            :         for (ConstNodeIterator iter = lowerBound(lowerLimit); iter!=nodes().end(); ++iter) {</a>
+<a name="726"><span class="lineNum">     726 </span>            :             if (lowerLimit &lt; iter-&gt;key().least())</a>
+<a name="727"><span class="lineNum">     727 </span>            :                 return lowerLimit;</a>
+<a name="728"><span class="lineNum">     728 </span>            :             lowerLimit = iter-&gt;key().greatest() + 1;</a>
+<a name="729"><span class="lineNum">     729 </span>            :             if (lowerLimit &lt;= iter-&gt;key().least())      // sensitive to GCC optimization</a>
+<a name="730"><span class="lineNum">     730 </span>            :                 return Nothing();                       // overflow</a>
+<a name="731"><span class="lineNum">     731 </span>            :         }</a>
+<a name="732"><span class="lineNum">     732 </span>            :         return lowerLimit;</a>
+<a name="733"><span class="lineNum">     733 </span>            :     }</a>
+<a name="734"><span class="lineNum">     734 </span>            : </a>
+<a name="735"><span class="lineNum">     735 </span>            :     /** Returns the limited-maximum unmapped scalar key.</a>
+<a name="736"><span class="lineNum">     736 </span>            :      *</a>
+<a name="737"><span class="lineNum">     737 </span>            :      *  Returns the maximum unmapped scalar key equal to or less than the @p upperLimit.  If no such value exists then nothing</a>
+<a name="738"><span class="lineNum">     738 </span>            :      *  is returned. */</a>
+<a name="739"><span class="lineNum">     739 </span>            :     Optional&lt;typename Interval::Value&gt; greatestUnmapped(typename Interval::Value upperLimit) const {</a>
+<a name="740"><span class="lineNum">     740 </span>            :         for (ConstNodeIterator iter = findPrior(upperLimit); iter!=nodes().end(); --iter) {</a>
+<a name="741"><span class="lineNum">     741 </span>            :             if (upperLimit &gt; iter-&gt;key().greatest())</a>
+<a name="742"><span class="lineNum">     742 </span>            :                 return upperLimit;</a>
+<a name="743"><span class="lineNum">     743 </span>            :             upperLimit = iter-&gt;key().least() - 1;</a>
+<a name="744"><span class="lineNum">     744 </span>            :             if (upperLimit &gt;= iter-&gt;key().greatest())   // sensitive to GCC optimization</a>
+<a name="745"><span class="lineNum">     745 </span>            :                 return Nothing();                       // overflow</a>
+<a name="746"><span class="lineNum">     746 </span>            :             if (iter==nodes().begin())</a>
+<a name="747"><span class="lineNum">     747 </span>            :                 break;</a>
+<a name="748"><span class="lineNum">     748 </span>            :         }</a>
+<a name="749"><span class="lineNum">     749 </span>            :         return upperLimit;</a>
+<a name="750"><span class="lineNum">     750 </span>            :     }</a>
+<a name="751"><span class="lineNum">     751 </span>            :     </a>
+<a name="752"><span class="lineNum">     752 </span>            :     /** Returns the range of values in this map. */</a>
+<a name="753"><span class="lineNum">     753 </span>            :     Interval hull() const {</a>
+<a name="754"><span class="lineNum">     754 </span>            :         return isEmpty() ? Interval() : Interval::hull(least(), greatest());</a>
+<a name="755"><span class="lineNum">     755 </span>            :     }</a>
+<a name="756"><span class="lineNum">     756 </span>            : </a>
+<a name="757"><span class="lineNum">     757 </span>            : </a>
+<a name="758"><span class="lineNum">     758 </span>            :     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</a>
+<a name="759"><span class="lineNum">     759 </span>            :     //                                  Mutators</a>
+<a name="760"><span class="lineNum">     760 </span>            :     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</a>
+<a name="761"><span class="lineNum">     761 </span>            : public:</a>
+<a name="762"><span class="lineNum">     762 </span>            : </a>
+<a name="763"><span class="lineNum">     763 </span>            :     /** Empties the container. */</a>
+<a name="764"><span class="lineNum">     764 </span>            :     void clear() {</a>
+<a name="765"><span class="lineNum">     765 </span>            :         map_.clear();</a>
+<a name="766"><span class="lineNum">     766 </span>            :         size_ = 0;</a>
+<a name="767"><span class="lineNum">     767 </span>            :     }</a>
+<a name="768"><span class="lineNum">     768 </span>            : </a>
+<a name="769"><span class="lineNum">     769 </span>            :     /** Erase the specified interval. */</a>
+<a name="770"><span class="lineNum">     770 </span>            :     void erase(const Interval &amp;erasure) {</a>
+<a name="771"><span class="lineNum">     771 </span>            :         if (erasure.isEmpty())</a>
+<a name="772"><span class="lineNum">     772 </span>            :             return;</a>
+<a name="773"><span class="lineNum">     773 </span>            : </a>
+<a name="774"><span class="lineNum">     774 </span>            :         // Find what needs to be removed, and create a list of things to insert, but delay actual removing until after</a>
+<a name="775"><span class="lineNum">     775 </span>            :         // the loop since Map::erase doesn't return a next iterator.</a>
+<a name="776"><span class="lineNum">     776 </span>            :         Map insertions;                                 // what needs to be inserted back in</a>
+<a name="777"><span class="lineNum">     777 </span>            :         NodeIterator eraseBegin = nodes().end();</a>
+<a name="778"><span class="lineNum">     778 </span>            :         NodeIterator iter;</a>
+<a name="779"><span class="lineNum">     779 </span>            :         for (iter=lowerBound(erasure.least()); iter!=nodes().end() &amp;&amp; !erasure.isLeftOf(iter-&gt;key()); ++iter) {</a>
+<a name="780"><span class="lineNum">     780 </span>            :             Interval foundInterval = iter-&gt;key();</a>
+<a name="781"><span class="lineNum">     781 </span>            :             Value &amp;v = iter-&gt;value();</a>
+<a name="782"><span class="lineNum">     782 </span>            :             if (erasure.isContaining(foundInterval)) {</a>
+<a name="783"><span class="lineNum">     783 </span>            :                 // erase entire found interval</a>
+<a name="784"><span class="lineNum">     784 </span>            :                 if (eraseBegin==nodes().end())</a>
+<a name="785"><span class="lineNum">     785 </span>            :                     eraseBegin = iter;</a>
+<a name="786"><span class="lineNum">     786 </span>            :                 size_ -= foundInterval.size();</a>
+<a name="787"><span class="lineNum">     787 </span>            :             } else if (erasure.least()&gt;foundInterval.least() &amp;&amp; erasure.greatest()&lt;foundInterval.greatest()) {</a>
+<a name="788"><span class="lineNum">     788 </span>            :                 // erase the middle of the node, leaving a left and a right portion</a>
+<a name="789"><span class="lineNum">     789 </span>            :                 ASSERT_require(eraseBegin==nodes().end());</a>
+<a name="790"><span class="lineNum">     790 </span>            :                 eraseBegin = iter;</a>
+<a name="791"><span class="lineNum">     791 </span>            :                 IntervalPair rt = splitInterval(foundInterval, erasure.greatest()+1);</a>
+<a name="792"><span class="lineNum">     792 </span>            :                 Value rightValue = policy_.split(foundInterval, v /*in,out*/, rt.second.least());</a>
+<a name="793"><span class="lineNum">     793 </span>            :                 insertions.insert(rt.second, rightValue);</a>
+<a name="794"><span class="lineNum">     794 </span>            :                 IntervalPair lt = splitInterval(rt.first, erasure.least());</a>
+<a name="795"><span class="lineNum">     795 </span>            :                 policy_.truncate(rt.first, v /*in,out*/, erasure.least());</a>
+<a name="796"><span class="lineNum">     796 </span>            :                 insertions.insert(lt.first, v);</a>
+<a name="797"><span class="lineNum">     797 </span>            :                 size_ -= erasure.size();</a>
+<a name="798"><span class="lineNum">     798 </span>            :             } else if (erasure.least() &gt; foundInterval.least()) {</a>
+<a name="799"><span class="lineNum">     799 </span>            :                 // erase the right part of the node</a>
+<a name="800"><span class="lineNum">     800 </span>            :                 ASSERT_require(eraseBegin==nodes().end());</a>
+<a name="801"><span class="lineNum">     801 </span>            :                 eraseBegin = iter;</a>
+<a name="802"><span class="lineNum">     802 </span>            :                 IntervalPair halves = splitInterval(foundInterval, erasure.least());</a>
+<a name="803"><span class="lineNum">     803 </span>            :                 policy_.truncate(foundInterval, v /*in,out*/, erasure.least());</a>
+<a name="804"><span class="lineNum">     804 </span>            :                 insertions.insert(halves.first, v);</a>
+<a name="805"><span class="lineNum">     805 </span>            :                 size_ -= halves.second.size();</a>
+<a name="806"><span class="lineNum">     806 </span>            :             } else if (erasure.greatest() &lt; foundInterval.greatest()) {</a>
+<a name="807"><span class="lineNum">     807 </span>            :                 // erase the left part of the node</a>
+<a name="808"><span class="lineNum">     808 </span>            :                 if (eraseBegin==nodes().end())</a>
+<a name="809"><span class="lineNum">     809 </span>            :                     eraseBegin = iter;</a>
+<a name="810"><span class="lineNum">     810 </span>            :                 IntervalPair halves = splitInterval(foundInterval, erasure.greatest()+1);</a>
+<a name="811"><span class="lineNum">     811 </span>            :                 Value rightValue = policy_.split(foundInterval, v /*in,out*/, halves.second.least());</a>
+<a name="812"><span class="lineNum">     812 </span>            :                 insertions.insert(halves.second, rightValue);</a>
+<a name="813"><span class="lineNum">     813 </span>            :                 size_ -= halves.first.size();</a>
+<a name="814"><span class="lineNum">     814 </span>            :             }</a>
+<a name="815"><span class="lineNum">     815 </span>            :         }</a>
+<a name="816"><span class="lineNum">     816 </span>            : </a>
+<a name="817"><span class="lineNum">     817 </span>            :         // Do the actual erasing and insert the new stuff, which is easy now because we know it doesn't overlap with anything.</a>
+<a name="818"><span class="lineNum">     818 </span>            :         if (eraseBegin!=nodes().end())</a>
+<a name="819"><span class="lineNum">     819 </span>            :             map_.eraseAtMultiple(eraseBegin, iter);</a>
+<a name="820"><span class="lineNum">     820 </span>            :         map_.insertMultiple(insertions.nodes());</a>
+<a name="821"><span class="lineNum">     821 </span>            :     }</a>
+<a name="822"><span class="lineNum">     822 </span>            : </a>
+<a name="823"><span class="lineNum">     823 </span>            :     /** Erase intervals specified in another IntervalMap</a>
+<a name="824"><span class="lineNum">     824 </span>            :      *</a>
+<a name="825"><span class="lineNum">     825 </span>            :      *  Every interval in @p other is erased from this container. */</a>
+<a name="826"><span class="lineNum">     826 </span>            :     template&lt;typename T2, class Policy2&gt;</a>
+<a name="827"><span class="lineNum">     827 </span>            :     void eraseMultiple(const IntervalMap&lt;Interval, T2, Policy2&gt; &amp;other) {</a>
+<a name="828"><span class="lineNum">     828 </span>            :         ASSERT_forbid2((const void*)&amp;other == (const void*)this, &quot;use clear() instead&quot;);</a>
+<a name="829"><span class="lineNum">     829 </span>            :         typedef typename IntervalMap&lt;Interval, T2, Policy2&gt;::ConstNodeIterator OtherIter;</a>
+<a name="830"><span class="lineNum">     830 </span>            :         for (OtherIter oi=other.nodes().begin(); oi!=other.nodes().end(); ++oi)</a>
+<a name="831"><span class="lineNum">     831 </span>            :             erase(oi-&gt;key());</a>
+<a name="832"><span class="lineNum">     832 </span>            :     }</a>
+<a name="833"><span class="lineNum">     833 </span>            : </a>
+<a name="834"><span class="lineNum">     834 </span>            :     /** Insert a key/value pair.</a>
+<a name="835"><span class="lineNum">     835 </span>            :      *</a>
+<a name="836"><span class="lineNum">     836 </span>            :      *  If @p makeHole is true then the interval being inserted is first erased; otherwise the insertion happens only if none</a>
+<a name="837"><span class="lineNum">     837 </span>            :      *  of the interval being inserted already exists in the container.  */</a>
+<a name="838"><span class="lineNum">     838 </span>            :     void insert(Interval key, Value value, bool makeHole=true) {</a>
+<a name="839"><span class="lineNum">     839 </span>            :         if (key.isEmpty())</a>
+<a name="840"><span class="lineNum">     840 </span>            :             return;</a>
+<a name="841"><span class="lineNum">     841 </span>            :         if (makeHole) {</a>
+<a name="842"><span class="lineNum">     842 </span>            :             erase(key);</a>
+<a name="843"><span class="lineNum">     843 </span>            :         } else {</a>
+<a name="844"><span class="lineNum">     844 </span>            :             NodeIterator found = lowerBound(key.least());</a>
+<a name="845"><span class="lineNum">     845 </span>            :             if (found!=nodes().end() &amp;&amp; key.isOverlapping(found-&gt;key()))</a>
+<a name="846"><span class="lineNum">     846 </span>            :                 return;</a>
+<a name="847"><span class="lineNum">     847 </span>            :         }</a>
+<a name="848"><span class="lineNum">     848 </span>            : </a>
+<a name="849"><span class="lineNum">     849 </span>            :         // Attempt to merge with a left-adjoining node</a>
+<a name="850"><span class="lineNum">     850 </span>            :         if (key.least() - 1 &lt; key.least()) {</a>
+<a name="851"><span class="lineNum">     851 </span>            :             NodeIterator left = find(key.least() - 1);</a>
+<a name="852"><span class="lineNum">     852 </span>            :             if (left!=nodes().end() &amp;&amp;</a>
+<a name="853"><span class="lineNum">     853 </span>            :                 left-&gt;key().greatest()+1==key.least() &amp;&amp;</a>
+<a name="854"><span class="lineNum">     854 </span>            :                 policy_.merge(left-&gt;key(), left-&gt;value(), key, value)) {</a>
+<a name="855"><span class="lineNum">     855 </span>            :                 key = Interval::hull(left-&gt;key().least(), key.greatest());</a>
+<a name="856"><span class="lineNum">     856 </span>            :                 std::swap(value, left-&gt;value());</a>
+<a name="857"><span class="lineNum">     857 </span>            :                 size_ -= left-&gt;key().size();</a>
+<a name="858"><span class="lineNum">     858 </span>            :                 map_.eraseAt(left);</a>
+<a name="859"><span class="lineNum">     859 </span>            :             }</a>
+<a name="860"><span class="lineNum">     860 </span>            :         }</a>
+<a name="861"><span class="lineNum">     861 </span>            : </a>
+<a name="862"><span class="lineNum">     862 </span>            :         // Attempt to merge with a right-adjoining node</a>
+<a name="863"><span class="lineNum">     863 </span>            :         if (key.greatest() + 1 &gt; key.greatest()) {</a>
+<a name="864"><span class="lineNum">     864 </span>            :             NodeIterator right = find(key.greatest() + 1);</a>
+<a name="865"><span class="lineNum">     865 </span>            :             if (right!=nodes().end() &amp;&amp;</a>
+<a name="866"><span class="lineNum">     866 </span>            :                 key.greatest()+1==right-&gt;key().least() &amp;&amp;</a>
+<a name="867"><span class="lineNum">     867 </span>            :                 policy_.merge(key, value, right-&gt;key(), right-&gt;value())) {</a>
+<a name="868"><span class="lineNum">     868 </span>            :                 key = Interval::hull(key.least(), right-&gt;key().greatest());</a>
+<a name="869"><span class="lineNum">     869 </span>            :                 size_ -= right-&gt;key().size();</a>
+<a name="870"><span class="lineNum">     870 </span>            :                 map_.eraseAt(right);</a>
+<a name="871"><span class="lineNum">     871 </span>            :             }</a>
+<a name="872"><span class="lineNum">     872 </span>            :         }</a>
+<a name="873"><span class="lineNum">     873 </span>            : </a>
+<a name="874"><span class="lineNum">     874 </span>            :         map_.insert(key, value);</a>
+<a name="875"><span class="lineNum">     875 </span>            :         size_ += key.size();</a>
+<a name="876"><span class="lineNum">     876 </span>            :     }</a>
+<a name="877"><span class="lineNum">     877 </span>            : </a>
+<a name="878"><span class="lineNum">     878 </span>            :     /** Insert values from another container.</a>
+<a name="879"><span class="lineNum">     879 </span>            :      *</a>
+<a name="880"><span class="lineNum">     880 </span>            :      *  The values in the other container must be convertable to values of this container, and the intervals must be the same</a>
+<a name="881"><span class="lineNum">     881 </span>            :      *  type. */</a>
+<a name="882"><span class="lineNum">     882 </span>            :     template&lt;typename T2, class Policy2&gt;</a>
+<a name="883"><span class="lineNum">     883 </span>            :     void insertMultiple(const IntervalMap&lt;Interval, T2, Policy2&gt; &amp;other, bool makeHole=true) {</a>
+<a name="884"><span class="lineNum">     884 </span>            :         ASSERT_forbid2((const void*)&amp;other == (const void*)this, &quot;cannot insert a container into itself&quot;);</a>
+<a name="885"><span class="lineNum">     885 </span>            :         typedef typename IntervalMap&lt;Interval, T2, Policy&gt;::ConstNodeIterator OtherIter;</a>
+<a name="886"><span class="lineNum">     886 </span>            :         for (OtherIter oi=other.nodes().begin(); oi!=other.nodes().end(); ++oi)</a>
+<a name="887"><span class="lineNum">     887 </span>            :             insert(oi-&gt;key(), Value(oi-&gt;value()), makeHole);</a>
+<a name="888"><span class="lineNum">     888 </span>            :     }</a>
+<a name="889"><span class="lineNum">     889 </span>            : </a>
+<a name="890"><span class="lineNum">     890 </span>            : // FIXME[Robb Matzke 2014-04-13]</a>
+<a name="891"><span class="lineNum">     891 </span>            : //    // Intersection</a>
+<a name="892"><span class="lineNum">     892 </span>            : //    void intersect(const Interval&amp;);</a>
+<a name="893"><span class="lineNum">     893 </span>            : </a>
+<a name="894"><span class="lineNum">     894 </span>            : </a>
+<a name="895"><span class="lineNum">     895 </span>            : </a>
+<a name="896"><span class="lineNum">     896 </span>            :     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</a>
+<a name="897"><span class="lineNum">     897 </span>            :     //                                  Predicates</a>
+<a name="898"><span class="lineNum">     898 </span>            :     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</a>
+<a name="899"><span class="lineNum">     899 </span>            : public:</a>
+<a name="900"><span class="lineNum">     900 </span>            :     bool isOverlapping(const Interval &amp;interval) const {</a>
+<a name="901"><span class="lineNum">     901 </span>            :         return findFirstOverlap(interval)!=nodes().end();</a>
+<a name="902"><span class="lineNum">     902 </span>            :     }</a>
+<a name="903"><span class="lineNum">     903 </span>            : </a>
+<a name="904"><span class="lineNum">     904 </span>            :     template&lt;typename T2, class Policy2&gt;</a>
+<a name="905"><span class="lineNum">     905 </span>            :     bool isOverlapping(const IntervalMap&lt;Interval, T2, Policy2&gt; &amp;other) const {</a>
+<a name="906"><span class="lineNum">     906 </span>            :         return findFirstOverlap(nodes().begin(), other, other.nodes().begin()).first != nodes().end();</a>
+<a name="907"><span class="lineNum">     907 </span>            :     }</a>
+<a name="908"><span class="lineNum">     908 </span>            : </a>
+<a name="909"><span class="lineNum">     909 </span>            :     bool isDistinct(const Interval &amp;interval) const {</a>
+<a name="910"><span class="lineNum">     910 </span>            :         return !isOverlapping(interval);</a>
+<a name="911"><span class="lineNum">     911 </span>            :     }</a>
+<a name="912"><span class="lineNum">     912 </span>            : </a>
+<a name="913"><span class="lineNum">     913 </span>            :     template&lt;typename T2, class Policy2&gt;</a>
+<a name="914"><span class="lineNum">     914 </span>            :     bool isDistinct(const IntervalMap&lt;Interval, T2, Policy2&gt; &amp;other) const {</a>
+<a name="915"><span class="lineNum">     915 </span>            :         return !isOverlapping(other);</a>
+<a name="916"><span class="lineNum">     916 </span>            :     }</a>
+<a name="917"><span class="lineNum">     917 </span>            : </a>
+<a name="918"><span class="lineNum">     918 </span>            :     bool contains(Interval key) const {</a>
+<a name="919"><span class="lineNum">     919 </span>            :         if (key.isEmpty())</a>
+<a name="920"><span class="lineNum">     920 </span>            :             return true;</a>
+<a name="921"><span class="lineNum">     921 </span>            :         ConstNodeIterator found = find(key.least());</a>
+<a name="922"><span class="lineNum">     922 </span>            :         while (1) {</a>
+<a name="923"><span class="lineNum">     923 </span>            :             if (found==nodes().end())</a>
+<a name="924"><span class="lineNum">     924 </span>            :                 return false;</a>
+<a name="925"><span class="lineNum">     925 </span>            :             if (key.least() &lt; found-&gt;key().least())</a>
+<a name="926"><span class="lineNum">     926 </span>            :                 return false;</a>
+<a name="927"><span class="lineNum">     927 </span>            :             ASSERT_require(key.isOverlapping(found-&gt;key()));</a>
+<a name="928"><span class="lineNum">     928 </span>            :             if (key.greatest() &lt;= found-&gt;key().greatest())</a>
+<a name="929"><span class="lineNum">     929 </span>            :                 return true;</a>
+<a name="930"><span class="lineNum">     930 </span>            :             key = splitInterval(key, found-&gt;key().greatest()+1).second;</a>
+<a name="931"><span class="lineNum">     931 </span>            :             ++found;</a>
+<a name="932"><span class="lineNum">     932 </span>            :         }</a>
+<a name="933"><span class="lineNum">     933 </span>            :     }</a>
+<a name="934"><span class="lineNum">     934 </span>            : </a>
+<a name="935"><span class="lineNum">     935 </span>            :     template&lt;typename T2, class Policy2&gt;</a>
+<a name="936"><span class="lineNum">     936 </span>            :     bool contains(const IntervalMap&lt;Interval, T2, Policy2&gt; &amp;other) const {</a>
+<a name="937"><span class="lineNum">     937 </span>            :         for (ConstNodeIterator iter=other.nodes().begin(); iter!=other.nodes().end(); ++iter) {</a>
+<a name="938"><span class="lineNum">     938 </span>            :             if (!contains(iter-&gt;key()))</a>
+<a name="939"><span class="lineNum">     939 </span>            :                 return false;</a>
+<a name="940"><span class="lineNum">     940 </span>            :         }</a>
+<a name="941"><span class="lineNum">     941 </span>            :         return true;</a>
+<a name="942"><span class="lineNum">     942 </span>            :     }</a>
+<a name="943"><span class="lineNum">     943 </span>            : </a>
+<a name="944"><span class="lineNum">     944 </span>            : </a>
+<a name="945"><span class="lineNum">     945 </span>            :     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</a>
+<a name="946"><span class="lineNum">     946 </span>            :     //                                  Private support methods</a>
+<a name="947"><span class="lineNum">     947 </span>            :     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</a>
+<a name="948"><span class="lineNum">     948 </span>            : private:</a>
+<a name="949"><span class="lineNum">     949 </span>            :     static IntervalPair splitInterval(const Interval &amp;interval, const typename Interval::Value &amp;splitPoint) {</a>
+<a name="950"><span class="lineNum">     950 </span>            :         ASSERT_forbid(interval.isEmpty());</a>
+<a name="951"><span class="lineNum">     951 </span>            :         ASSERT_require(splitPoint &gt; interval.least() &amp;&amp; splitPoint &lt;= interval.greatest());</a>
+<a name="952"><span class="lineNum">     952 </span>            : </a>
+<a name="953"><span class="lineNum">     953 </span>            :         Interval left = Interval::hull(interval.least(), splitPoint-1);</a>
+<a name="954"><span class="lineNum">     954 </span>            :         Interval right = Interval::hull(splitPoint, interval.greatest());</a>
+<a name="955"><span class="lineNum">     955 </span>            :         return IntervalPair(left, right);</a>
+<a name="956"><span class="lineNum">     956 </span>            :     }</a>
+<a name="957"><span class="lineNum">     957 </span>            : </a>
+<a name="958"><span class="lineNum">     958 </span>            :     // a more convenient way to check whether interval contains at least size items and still handle overflow</a>
+<a name="959"><span class="lineNum">     959 </span>            :     static bool isLarge(const Interval &amp;interval, boost::uint64_t size) {</a>
+<a name="960"><span class="lineNum">     960 </span>            :         return !interval.isEmpty() &amp;&amp; (interval.size()==0 || interval.size() &gt;= size);</a>
+<a name="961"><span class="lineNum">     961 </span>            :     }</a>
+<a name="962"><span class="lineNum">     962 </span>            : };</a>
+<a name="963"><span class="lineNum">     963 </span>            : </a>
+<a name="964"><span class="lineNum">     964 </span>            : } // namespace</a>
+<a name="965"><span class="lineNum">     965 </span>            : } // namespace</a>
+<a name="966"><span class="lineNum">     966 </span>            : </a>
+<a name="967"><span class="lineNum">     967 </span>            : #endif</a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

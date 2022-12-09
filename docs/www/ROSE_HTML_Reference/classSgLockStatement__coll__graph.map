@@ -1,0 +1,5 @@
+<map id="SgLockStatement" name="SgLockStatement">
+<area shape="rect" id="node1" title=" " alt="" coords="32,200,159,227"/>
+<area shape="rect" id="node2" href="$classSgImageControlStatement.html" title=" " alt="" coords="154,124,330,151"/>
+<area shape="rect" id="node3" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="5,5,108,32"/>
+</map>

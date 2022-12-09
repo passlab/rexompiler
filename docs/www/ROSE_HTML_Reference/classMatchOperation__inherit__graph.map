@@ -1,0 +1,19 @@
+<map id="MatchOperation" name="MatchOperation">
+<area shape="rect" id="node1" title=" " alt="" coords="5,385,120,412"/>
+<area shape="rect" id="node2" href="$classMatchOpAccessRoseAstAttribute.html" title=" " alt="" coords="168,5,387,32"/>
+<area shape="rect" id="node3" href="$classMatchOpAccessUserAstAttribute.html" title=" " alt="" coords="169,56,385,83"/>
+<area shape="rect" id="node4" href="$classMatchOpAccessVariable.html" title=" " alt="" coords="195,107,360,133"/>
+<area shape="rect" id="node5" href="$classMatchOpArityCheck.html" title=" " alt="" coords="207,157,347,184"/>
+<area shape="rect" id="node6" href="$classMatchOpBinaryOp.html" title=" " alt="" coords="213,208,342,235"/>
+<area shape="rect" id="node7" href="$classMatchOpCheckNode.html" title=" " alt="" coords="205,259,349,285"/>
+<area shape="rect" id="node8" href="$classMatchOpCheckNodeSet.html" title=" " alt="" coords="195,309,359,336"/>
+<area shape="rect" id="node9" href="$classMatchOpCheckNull.html" title=" " alt="" coords="209,360,345,387"/>
+<area shape="rect" id="node10" href="$classMatchOpConstant.html" title=" " alt="" coords="213,411,341,437"/>
+<area shape="rect" id="node11" href="$classMatchOpDotDot.html" title=" " alt="" coords="219,461,336,488"/>
+<area shape="rect" id="node12" href="$classMatchOpForward.html" title=" " alt="" coords="216,512,339,539"/>
+<area shape="rect" id="node13" href="$classMatchOpMarkNode.html" title=" " alt="" coords="210,563,345,589"/>
+<area shape="rect" id="node14" href="$classMatchOpOr.html" title=" " alt="" coords="233,613,322,640"/>
+<area shape="rect" id="node15" href="$classMatchOpSkipChildOnForward.html" title=" " alt="" coords="180,664,375,691"/>
+<area shape="rect" id="node16" href="$classMatchOpUnaryOp.html" title=" " alt="" coords="214,715,341,741"/>
+<area shape="rect" id="node17" href="$classMatchOpVariableAssignment.html" title=" " alt="" coords="182,765,373,792"/>
+</map>

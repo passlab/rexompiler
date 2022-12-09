@@ -1,0 +1,6 @@
+<map id="Sawyer::Container::BitVectorSupport::mostSignificantClearBit" name="Sawyer::Container::BitVectorSupport::mostSignificantClearBit">
+<area shape="rect" id="node1" title="Index of most significant clear bit." alt="" coords="5,43,224,99"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Interval.html#abb62f08552ec4762be55510d97e7a233" title="Returns lower limit." alt="" coords="496,5,635,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Interval.html#a75d8ca4e63b1180f6d2194a0ec79440d" title="Size of interval." alt="" coords="496,84,635,125"/>
+<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#acc438763608a5808fa1d155f013d9e23" title="Traverses a range of bits." alt="" coords="272,51,448,92"/>
+</map>

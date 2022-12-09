@@ -1,0 +1,4 @@
+<map id="SgBinaryOp::get_lhs_operand" name="SgBinaryOp::get_lhs_operand">
+<area shape="rect" id="node1" title="returns SgExpression pointer to the lhs operand associated with this binary operator." alt="" coords="231,5,373,47"/>
+<area shape="rect" id="node2" href="$classVariableStateTransfer.html#a6ff59689ac7ddc206e8b99c35f3f2abe" title="create three lattices from a binary operation: lhs, rhs, and result lattices" alt="" coords="5,5,183,47"/>
+</map>

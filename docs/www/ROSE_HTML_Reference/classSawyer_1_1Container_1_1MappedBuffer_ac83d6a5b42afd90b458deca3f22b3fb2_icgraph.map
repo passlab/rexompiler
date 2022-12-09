@@ -1,0 +1,5 @@
+<map id="Sawyer::Container::MappedBuffer::available" name="Sawyer::Container::MappedBuffer::available">
+<area shape="rect" id="node1" title="Distance to end of buffer." alt="" coords="192,39,355,80"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1MappedBuffer.html#a71fc1e96908e59ae2667bee996c6d4b0" title="Reads data from a buffer." alt="" coords="5,5,144,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1MappedBuffer.html#ac37ae3fb2cf9635c9149f560f86fee6d" title="Writes data to a buffer." alt="" coords="5,71,144,112"/>
+</map>

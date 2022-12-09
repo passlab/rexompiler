@@ -1,0 +1,9 @@
+<map id="SgDeclarationModifier" name="SgDeclarationModifier">
+<area shape="rect" id="node1" title="This class represents modifiers for SgDeclaration (declaration statements)." alt="" coords="608,132,759,159"/>
+<area shape="rect" id="node2" href="$classSgModifier.html" title="This class represents the base class of a number of IR nodes define modifiers within the C++ grammar." alt="" coords="29,83,113,109"/>
+<area shape="rect" id="node3" href="$classSgTypeModifier.html" title=" " alt="" coords="297,157,409,184"/>
+<area shape="rect" id="node5" href="$classSgStorageModifier.html" title="This class represents modifiers specific to storage." alt="" coords="288,5,417,32"/>
+<area shape="rect" id="node7" href="$classSgAccessModifier.html" title=" " alt="" coords="289,56,417,83"/>
+<area shape="rect" id="node4" title=" " alt="" coords="5,192,137,219"/>
+<area shape="rect" id="node6" title="STL class." alt="" coords="313,337,393,364"/>
+</map>

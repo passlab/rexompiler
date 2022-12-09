@@ -1,0 +1,1114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /home/yyan7/compiler/rexompiler/src/frontend/SageIII/astPostProcessing/fixupTemplateArguments.C</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../../index.html">top level</a> - <a href="index.html">home/yyan7/compiler/rexompiler/src/frontend/SageIII/astPostProcessing</a> - fixupTemplateArguments.C<span style="font-size: 80%;"> (source / <a href="fixupTemplateArguments.C.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">112</td>
+            <td class="headerCovTableEntry">162</td>
+            <td class="headerCovTableEntryLo">69.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryMed">83.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // See header file for documentation.</a>
+<a name="2"><span class="lineNum">       2 </span>            : </a>
+<a name="3"><span class="lineNum">       3 </span>            : #include &quot;sage3basic.h&quot;</a>
+<a name="4"><span class="lineNum">       4 </span>            : </a>
+<a name="5"><span class="lineNum">       5 </span>            : #include &quot;fixupTemplateArguments.h&quot;</a>
+<a name="6"><span class="lineNum">       6 </span>            : </a>
+<a name="7"><span class="lineNum">       7 </span>            : // We need this so that BACKEND_COMPILERS will be known.</a>
+<a name="8"><span class="lineNum">       8 </span>            : #include &lt;rose_config.h&gt;</a>
+<a name="9"><span class="lineNum">       9 </span>            : </a>
+<a name="10"><span class="lineNum">      10 </span>            : using namespace std;</a>
+<a name="11"><span class="lineNum">      11 </span>            : </a>
+<a name="12"><span class="lineNum">      12 </span>            : #define DEBUG_PRIVATE_TYPE 0</a>
+<a name="13"><span class="lineNum">      13 </span>            : #define DEBUGGING_USING_RECURSIVE_DEPTH 0</a>
+<a name="14"><span class="lineNum">      14 </span>            : </a>
+<a name="15"><span class="lineNum">      15 </span>            : // DQ (2/11/2017): This are tailored to provide less output for debugging larger problems.</a>
+<a name="16"><span class="lineNum">      16 </span>            : #define DEBUG_VISIT_PRIVATE_TYPE 0</a>
+<a name="17"><span class="lineNum">      17 </span>            : #define DEBUG_PRIVATE_TYPE_TRANSFORMATION 0</a>
+<a name="18"><span class="lineNum">      18 </span>            : </a>
+<a name="19"><span class="lineNum">      19 </span>            : // bool contains_private_type (SgType* type);</a>
+<a name="20"><span class="lineNum">      20 </span>            : // bool contains_private_type (SgTemplateArgument* templateArgument);</a>
+<a name="21"><span class="lineNum">      21 </span>            : </a>
+<a name="22"><span class="lineNum">      22 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="23"><span class="lineNum">      23 </span>            : // For debugging, keep track of the recursive depth.</a>
+<a name="24"><span class="lineNum">      24 </span>            : static size_t global_depth = 0;</a>
+<a name="25"><span class="lineNum">      25 </span>            : #endif</a>
+<a name="26"><span class="lineNum">      26 </span>            : </a>
+<a name="27"><span class="lineNum">      27 </span><span class="lineCov">      34671 : bool FixupTemplateArguments::contains_private_type (SgType* type, SgScopeStatement* targetScope)</span></a>
+<a name="28"><span class="lineNum">      28 </span>            :    {</a>
+<a name="29"><span class="lineNum">      29 </span>            :   // DQ (4/2/2018): Note that this function now addresses requirements of supporting both private and protected types.</a>
+<a name="30"><span class="lineNum">      30 </span>            : </a>
+<a name="31"><span class="lineNum">      31 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="32"><span class="lineNum">      32 </span>            :   // For debugging, keep track of the recursive depth.</a>
+<a name="33"><span class="lineNum">      33 </span>            :      static size_t depth = 0;</a>
+<a name="34"><span class="lineNum">      34 </span>            : </a>
+<a name="35"><span class="lineNum">      35 </span>            :      printf (&quot;In contains_private_type(SgType*): depth = %zu \n&quot;,depth);</a>
+<a name="36"><span class="lineNum">      36 </span>            :      ROSE_ASSERT(depth &lt; 500);</a>
+<a name="37"><span class="lineNum">      37 </span>            : </a>
+<a name="38"><span class="lineNum">      38 </span>            :      printf (&quot;In contains_private_type(SgType*): global_depth = %zu \n&quot;,global_depth);</a>
+<a name="39"><span class="lineNum">      39 </span>            :      ROSE_ASSERT(global_depth &lt; 55);</a>
+<a name="40"><span class="lineNum">      40 </span>            : #endif</a>
+<a name="41"><span class="lineNum">      41 </span>            : </a>
+<a name="42"><span class="lineNum">      42 </span>            :   // Note this is the recursive function.</a>
+<a name="43"><span class="lineNum">      43 </span><span class="lineCov">      34671 :      bool returnValue = false;</span></a>
+<a name="44"><span class="lineNum">      44 </span>            : </a>
+<a name="45"><span class="lineNum">      45 </span>            : #if DEBUG_PRIVATE_TYPE || 0</a>
+<a name="46"><span class="lineNum">      46 </span>            :   // DQ (1/7/2016): It is a problem to do this for some files (failing about 35 files in Cxx_tests).</a>
+<a name="47"><span class="lineNum">      47 </span>            :   // The issues appears to be in the unparsing of the template arguments of the qualified names for the types.</a>
+<a name="48"><span class="lineNum">      48 </span>            :   // printf (&quot;In contains_private_type(SgType*): type = %p = %s = %s \n&quot;,type,type-&gt;class_name().c_str(),type-&gt;unparseToString().c_str());</a>
+<a name="49"><span class="lineNum">      49 </span>            :      printf (&quot;In contains_private_type(SgType*): type = %p = %s \n&quot;,type,type-&gt;class_name().c_str());</a>
+<a name="50"><span class="lineNum">      50 </span>            : #endif</a>
+<a name="51"><span class="lineNum">      51 </span>            : </a>
+<a name="52"><span class="lineNum">      52 </span><span class="lineCov">      34671 :      SgTypedefType* typedefType = isSgTypedefType(type);</span></a>
+<a name="53"><span class="lineNum">      53 </span><span class="lineCov">      34671 :      if (typedefType != NULL)</span></a>
+<a name="54"><span class="lineNum">      54 </span>            :         {</a>
+<a name="55"><span class="lineNum">      55 </span>            :        // Get the associated declaration.</a>
+<a name="56"><span class="lineNum">      56 </span><span class="lineCov">       7310 :           SgTypedefDeclaration* typedefDeclaration = isSgTypedefDeclaration(typedefType-&gt;get_declaration());</span></a>
+<a name="57"><span class="lineNum">      57 </span><span class="lineCov">       7310 :           ROSE_ASSERT(typedefDeclaration != NULL);</span></a>
+<a name="58"><span class="lineNum">      58 </span>            : </a>
+<a name="59"><span class="lineNum">      59 </span>            : #if 0</a>
+<a name="60"><span class="lineNum">      60 </span>            :           bool isPrivate = typedefDeclaration-&gt;get_declarationModifier().get_accessModifier().isPrivate();</a>
+<a name="61"><span class="lineNum">      61 </span>            : #else</a>
+<a name="62"><span class="lineNum">      62 </span>            :        // DQ (4/2/2018): Fix this to address requirements of both private and protected class members (see Cxx11_tests/test2018_71.C).</a>
+<a name="63"><span class="lineNum">      63 </span><span class="lineCov">      14605 :           bool isPrivate = typedefDeclaration-&gt;get_declarationModifier().get_accessModifier().isPrivate() ||</span></a>
+<a name="64"><span class="lineNum">      64 </span><span class="lineCov">       7295 :                            typedefDeclaration-&gt;get_declarationModifier().get_accessModifier().isProtected();</span></a>
+<a name="65"><span class="lineNum">      65 </span>            : #endif</a>
+<a name="66"><span class="lineNum">      66 </span>            : #if DEBUG_PRIVATE_TYPE || 0</a>
+<a name="67"><span class="lineNum">      67 </span>            :           printf (&quot;typedefDeclaration isPrivate = %s \n&quot;,isPrivate ? &quot;true&quot; : &quot;false&quot;);</a>
+<a name="68"><span class="lineNum">      68 </span>            : #endif</a>
+<a name="69"><span class="lineNum">      69 </span>            : </a>
+<a name="70"><span class="lineNum">      70 </span>            :        // First we need to know if this is a visable type.</a>
+<a name="71"><span class="lineNum">      71 </span><span class="lineCov">       7310 :           bool isVisable = false;</span></a>
+<a name="72"><span class="lineNum">      72 </span>            : #if 0</a>
+<a name="73"><span class="lineNum">      73 </span>            :           printf (&quot;targetScope                     = %p = %s \n&quot;,targetScope,targetScope-&gt;class_name().c_str());</a>
+<a name="74"><span class="lineNum">      74 </span>            :        // printf (&quot;typedefDeclaration              = %p = %s \n&quot;,typedefDeclaration,typedefDeclaration-&gt;class_name().c_str());</a>
+<a name="75"><span class="lineNum">      75 </span>            :           printf (&quot;typedefDeclaration-&gt;get_scope() = %p = %s \n&quot;,typedefDeclaration-&gt;get_scope(),typedefDeclaration-&gt;get_scope()-&gt;class_name().c_str());</a>
+<a name="76"><span class="lineNum">      76 </span>            : #endif</a>
+<a name="77"><span class="lineNum">      77 </span>            : #if 0</a>
+<a name="78"><span class="lineNum">      78 </span>            :           printf (&quot;SageInterface::whereAmI(targetScope): \n&quot;);</a>
+<a name="79"><span class="lineNum">      79 </span>            :           SageInterface::whereAmI(targetScope);</a>
+<a name="80"><span class="lineNum">      80 </span>            :           printf (&quot;SageInterface::whereAmI(typedefDeclaration): \n&quot;);</a>
+<a name="81"><span class="lineNum">      81 </span>            :           SageInterface::whereAmI(typedefDeclaration);</a>
+<a name="82"><span class="lineNum">      82 </span>            : #endif</a>
+<a name="83"><span class="lineNum">      83 </span>            : #if 0</a>
+<a name="84"><span class="lineNum">      84 </span>            :           printf (&quot;\ntargetScope symbol table: \n&quot;);</a>
+<a name="85"><span class="lineNum">      85 </span>            :           targetScope-&gt;get_symbol_table()-&gt;print(&quot;targetScope&quot;);</a>
+<a name="86"><span class="lineNum">      86 </span>            :           printf (&quot;end of symbol table \n&quot;);</a>
+<a name="87"><span class="lineNum">      87 </span>            :           printf (&quot;\ntypedefDeclaration-&gt;get_scope() symbol table: \n&quot;);</a>
+<a name="88"><span class="lineNum">      88 </span>            :           typedefDeclaration-&gt;get_scope()-&gt;get_symbol_table()-&gt;print(&quot;typedefDeclaration-&gt;get_scope()&quot;);</a>
+<a name="89"><span class="lineNum">      89 </span>            :           printf (&quot;end of symbol table \n\n&quot;);</a>
+<a name="90"><span class="lineNum">      90 </span>            : #endif</a>
+<a name="91"><span class="lineNum">      91 </span>            :        // Test for the trivial case of matching scope (an even better test (below) is be to make sure that the targetScope is nested in the typedef scope).</a>
+<a name="92"><span class="lineNum">      92 </span><span class="lineCov">       7310 :           if (typedefDeclaration-&gt;get_scope() == targetScope)</span></a>
+<a name="93"><span class="lineNum">      93 </span>            :              {</a>
+<a name="94"><span class="lineNum">      94 </span>            : #if 0</a>
+<a name="95"><span class="lineNum">      95 </span>            :                printf (&quot;In contains_private_type(SgType*): This is a typedef type from the same scope as the target declaration \n&quot;);</a>
+<a name="96"><span class="lineNum">      96 </span>            : #endif</a>
+<a name="97"><span class="lineNum">      97 </span>            :             // ROSE_ASSERT(false);</a>
+<a name="98"><span class="lineNum">      98 </span>            :             // return false;</a>
+<a name="99"><span class="lineNum">      99 </span>            :                isVisable = true;</a>
+<a name="100"><span class="lineNum">     100 </span>            :              }</a>
+<a name="101"><span class="lineNum">     101 </span>            :             else</a>
+<a name="102"><span class="lineNum">     102 </span>            :              {</a>
+<a name="103"><span class="lineNum">     103 </span>            :             // SgTypedefSymbol*   lookupTypedefSymbolInParentScopes  (const SgName &amp; name, SgScopeStatement *currentScope = NULL);</a>
+<a name="104"><span class="lineNum">     104 </span><span class="lineCov">       6045 :                SgTypedefSymbol* typedefSymbol = SageInterface::lookupTypedefSymbolInParentScopes (typedefDeclaration-&gt;get_name(),targetScope);</span></a>
+<a name="105"><span class="lineNum">     105 </span><span class="lineCov">       6045 :                if (typedefSymbol != NULL)</span></a>
+<a name="106"><span class="lineNum">     106 </span>            :                   {</a>
+<a name="107"><span class="lineNum">     107 </span>            : #if 0</a>
+<a name="108"><span class="lineNum">     108 </span>            :                     printf (&quot;In contains_private_type(SgType*): This is not in the current scope but can be reached from the current scope \n&quot;);</a>
+<a name="109"><span class="lineNum">     109 </span>            : #endif</a>
+<a name="110"><span class="lineNum">     110 </span>            :                  // ROSE_ASSERT(false);</a>
+<a name="111"><span class="lineNum">     111 </span>            :                  // return false;</a>
+<a name="112"><span class="lineNum">     112 </span>            :                     isVisable = true;</a>
+<a name="113"><span class="lineNum">     113 </span>            :                   }</a>
+<a name="114"><span class="lineNum">     114 </span>            :                  else</a>
+<a name="115"><span class="lineNum">     115 </span>            :                   {</a>
+<a name="116"><span class="lineNum">     116 </span>            : #if 0</a>
+<a name="117"><span class="lineNum">     117 </span>            :                     printf (&quot;Symbol for typedef name = %s not found in parent scopes \n&quot;,typedefDeclaration-&gt;get_name().str());</a>
+<a name="118"><span class="lineNum">     118 </span>            : #endif</a>
+<a name="119"><span class="lineNum">     119 </span>            :                  // ROSE_ASSERT(false);</a>
+<a name="120"><span class="lineNum">     120 </span>            :                   }</a>
+<a name="121"><span class="lineNum">     121 </span>            :              }</a>
+<a name="122"><span class="lineNum">     122 </span>            : #if 0</a>
+<a name="123"><span class="lineNum">     123 </span>            :        // Testing codes because it seems that &quot;BitSet&quot; shuld be visiable and so we need to debug this first.</a>
+<a name="124"><span class="lineNum">     124 </span>            :           if (typedefDeclaration-&gt;get_name() == &quot;BitSet&quot;)</a>
+<a name="125"><span class="lineNum">     125 </span>            :              {</a>
+<a name="126"><span class="lineNum">     126 </span>            :                printf (&quot;Exiting as a test! \n&quot;);</a>
+<a name="127"><span class="lineNum">     127 </span>            :                ROSE_ABORT();</a>
+<a name="128"><span class="lineNum">     128 </span>            :              }</a>
+<a name="129"><span class="lineNum">     129 </span>            : #endif</a>
+<a name="130"><span class="lineNum">     130 </span>            :        // If this is not private, then we are looking at what would be possbile template arguments used in a possible name qualification.</a>
+<a name="131"><span class="lineNum">     131 </span>            :        // if (isPrivate == false)</a>
+<a name="132"><span class="lineNum">     132 </span>            :        // if (isPrivate == false &amp;&amp; isVisable == false)</a>
+<a name="133"><span class="lineNum">     133 </span><span class="lineCov">        412 :           if (isVisable == false)</span></a>
+<a name="134"><span class="lineNum">     134 </span>            :              {</a>
+<a name="135"><span class="lineNum">     135 </span><span class="lineCov">        412 :                if (isPrivate == true)</span></a>
+<a name="136"><span class="lineNum">     136 </span>            :                   {</a>
+<a name="137"><span class="lineNum">     137 </span>            :                     return true;</a>
+<a name="138"><span class="lineNum">     138 </span>            :                   }</a>
+<a name="139"><span class="lineNum">     139 </span>            :                  else</a>
+<a name="140"><span class="lineNum">     140 </span>            :                   {</a>
+<a name="141"><span class="lineNum">     141 </span>            : </a>
+<a name="142"><span class="lineNum">     142 </span>            :                  // Get the scope and see if it is a template instantiation.</a>
+<a name="143"><span class="lineNum">     143 </span><span class="lineCov">        412 :                     SgScopeStatement* scope = typedefDeclaration-&gt;get_scope();</span></a>
+<a name="144"><span class="lineNum">     144 </span>            : #if DEBUG_PRIVATE_TYPE || 0</a>
+<a name="145"><span class="lineNum">     145 </span>            :                     printf (&quot;++++++++++++++ Looking in parent scope for template arguments: scope = %p = %s \n&quot;,scope,scope-&gt;class_name().c_str());</a>
+<a name="146"><span class="lineNum">     146 </span>            : #endif</a>
+<a name="147"><span class="lineNum">     147 </span>            :                  // Get the associated declaration.</a>
+<a name="148"><span class="lineNum">     148 </span><span class="lineCov">        412 :                     switch (scope-&gt;variantT())</span></a>
+<a name="149"><span class="lineNum">     149 </span>            :                        {</a>
+<a name="150"><span class="lineNum">     150 </span><span class="lineCov">          3 :                          case V_SgTemplateInstantiationDefn:</span></a>
+<a name="151"><span class="lineNum">     151 </span><span class="lineCov">          3 :                             {</span></a>
+<a name="152"><span class="lineNum">     152 </span><span class="lineCov">          3 :                               SgTemplateInstantiationDefn* templateInstantiationDefinition = isSgTemplateInstantiationDefn(scope);</span></a>
+<a name="153"><span class="lineNum">     153 </span><span class="lineCov">          3 :                               ROSE_ASSERT(templateInstantiationDefinition != NULL);</span></a>
+<a name="154"><span class="lineNum">     154 </span>            : </a>
+<a name="155"><span class="lineNum">     155 </span><span class="lineCov">          3 :                               SgTemplateInstantiationDecl* templateInstantiationDeclaration = isSgTemplateInstantiationDecl(templateInstantiationDefinition-&gt;get_declaration());</span></a>
+<a name="156"><span class="lineNum">     156 </span><span class="lineCov">          3 :                               ROSE_ASSERT(templateInstantiationDeclaration != NULL);</span></a>
+<a name="157"><span class="lineNum">     157 </span>            : </a>
+<a name="158"><span class="lineNum">     158 </span><span class="lineCov">          3 :                               SgTemplateArgumentPtrList &amp; templateArgumentPtrList = templateInstantiationDeclaration-&gt;get_templateArguments();</span></a>
+<a name="159"><span class="lineNum">     159 </span><span class="lineCov">         18 :                               for (SgTemplateArgumentPtrList::iterator i = templateArgumentPtrList.begin(); i != templateArgumentPtrList.end(); i++)</span></a>
+<a name="160"><span class="lineNum">     160 </span>            :                                  {</a>
+<a name="161"><span class="lineNum">     161 </span>            : #if DEBUG_PRIVATE_TYPE</a>
+<a name="162"><span class="lineNum">     162 </span>            :                                    printf (&quot;recursive call to contains_private_type(%p): name = %s = %s \n&quot;,*i,(*i)-&gt;class_name().c_str(),(*i)-&gt;unparseToString().c_str());</a>
+<a name="163"><span class="lineNum">     163 </span>            : #endif</a>
+<a name="164"><span class="lineNum">     164 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="165"><span class="lineNum">     165 </span>            :                                    global_depth++;</a>
+<a name="166"><span class="lineNum">     166 </span>            : #endif</a>
+<a name="167"><span class="lineNum">     167 </span>            : </a>
+<a name="168"><span class="lineNum">     168 </span><span class="lineCov">         15 :                                    bool isPrivateType = contains_private_type(*i,targetScope);</span></a>
+<a name="169"><span class="lineNum">     169 </span>            : </a>
+<a name="170"><span class="lineNum">     170 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="171"><span class="lineNum">     171 </span>            :                                    global_depth--;</a>
+<a name="172"><span class="lineNum">     172 </span>            : #endif</a>
+<a name="173"><span class="lineNum">     173 </span><span class="lineCov">         15 :                                    returnValue |= isPrivateType;</span></a>
+<a name="174"><span class="lineNum">     174 </span>            :                                  }</a>
+<a name="175"><span class="lineNum">     175 </span>            :                               break;</a>
+<a name="176"><span class="lineNum">     176 </span>            :                             }</a>
+<a name="177"><span class="lineNum">     177 </span>            : </a>
+<a name="178"><span class="lineNum">     178 </span>            :                          default:</a>
+<a name="179"><span class="lineNum">     179 </span>            :                             {</a>
+<a name="180"><span class="lineNum">     180 </span>            : #if DEBUG_PRIVATE_TYPE</a>
+<a name="181"><span class="lineNum">     181 </span>            :                               printf (&quot;Ignoring non-SgTemplateInstantiationDefn \n&quot;);</a>
+<a name="182"><span class="lineNum">     182 </span>            : #endif</a>
+<a name="183"><span class="lineNum">     183 </span>            :                             }</a>
+<a name="184"><span class="lineNum">     184 </span>            :                        }</a>
+<a name="185"><span class="lineNum">     185 </span>            :                   }</a>
+<a name="186"><span class="lineNum">     186 </span>            :              }</a>
+<a name="187"><span class="lineNum">     187 </span>            :             else</a>
+<a name="188"><span class="lineNum">     188 </span>            :              {</a>
+<a name="189"><span class="lineNum">     189 </span>            :             // If it is visible then it need not be qualified and we don't care about if it was private.</a>
+<a name="190"><span class="lineNum">     190 </span><span class="lineCov">       6898 :                ROSE_ASSERT(isVisable == true);</span></a>
+<a name="191"><span class="lineNum">     191 </span>            : </a>
+<a name="192"><span class="lineNum">     192 </span>            :             // returnValue = true;</a>
+<a name="193"><span class="lineNum">     193 </span><span class="lineCov">       6898 :                returnValue = false;</span></a>
+<a name="194"><span class="lineNum">     194 </span>            :              }</a>
+<a name="195"><span class="lineNum">     195 </span>            :         }</a>
+<a name="196"><span class="lineNum">     196 </span>            :        else</a>
+<a name="197"><span class="lineNum">     197 </span>            :         {</a>
+<a name="198"><span class="lineNum">     198 </span>            : #if DEBUG_PRIVATE_TYPE || 0</a>
+<a name="199"><span class="lineNum">     199 </span>            :           printf (&quot;could be a wrapped type: type = %p = %s (not a template class instantiaton) \n&quot;,type,type-&gt;class_name().c_str());</a>
+<a name="200"><span class="lineNum">     200 </span>            :           if (isSgModifierType(type) != NULL)</a>
+<a name="201"><span class="lineNum">     201 </span>            :              {</a>
+<a name="202"><span class="lineNum">     202 </span>            :                SgModifierType* modifierType = isSgModifierType(type);</a>
+<a name="203"><span class="lineNum">     203 </span>            :                SgType* base_type = modifierType-&gt;get_base_type();</a>
+<a name="204"><span class="lineNum">     204 </span>            :                printf (&quot;--- base_type = %p = %s \n&quot;,base_type,base_type-&gt;class_name().c_str());</a>
+<a name="205"><span class="lineNum">     205 </span>            :                SgNamedType* namedType = isSgNamedType(base_type);</a>
+<a name="206"><span class="lineNum">     206 </span>            :                if (namedType != NULL)</a>
+<a name="207"><span class="lineNum">     207 </span>            :                   {</a>
+<a name="208"><span class="lineNum">     208 </span>            :                     printf (&quot;--- base_type: name = %s \n&quot;,namedType-&gt;get_name().str());</a>
+<a name="209"><span class="lineNum">     209 </span>            :                   }</a>
+<a name="210"><span class="lineNum">     210 </span>            :              }</a>
+<a name="211"><span class="lineNum">     211 </span>            : #endif</a>
+<a name="212"><span class="lineNum">     212 </span>            :        // If this is a default SgModifierType then unwrap it.</a>
+<a name="213"><span class="lineNum">     213 </span>            : #if 0</a>
+<a name="214"><span class="lineNum">     214 </span>            :           SgModifierType* modifierType = isSgModifierType(type);</a>
+<a name="215"><span class="lineNum">     215 </span>            :           if (modifierType != NULL)</a>
+<a name="216"><span class="lineNum">     216 </span>            :              {</a>
+<a name="217"><span class="lineNum">     217 </span>            : </a>
+<a name="218"><span class="lineNum">     218 </span>            : #error &quot;DEAD CODE!&quot;</a>
+<a name="219"><span class="lineNum">     219 </span>            : </a>
+<a name="220"><span class="lineNum">     220 </span>            :             // What kind of modifier is this?</a>
+<a name="221"><span class="lineNum">     221 </span>            :                printf (&quot;What kind of type modifier: %s \n&quot;,modifierType-&gt;get_typeModifier().displayString().c_str());</a>
+<a name="222"><span class="lineNum">     222 </span>            :                if (modifierType-&gt;get_typeModifier().isDefault() == true)</a>
+<a name="223"><span class="lineNum">     223 </span>            :                   {</a>
+<a name="224"><span class="lineNum">     224 </span>            :                  // This is a default mode modifier (acting as a wrapper type).</a>
+<a name="225"><span class="lineNum">     225 </span>            :                     type = modifierType-&gt;get_base_type();</a>
+<a name="226"><span class="lineNum">     226 </span>            :                   }</a>
+<a name="227"><span class="lineNum">     227 </span>            :                  else</a>
+<a name="228"><span class="lineNum">     228 </span>            :                   {</a>
+<a name="229"><span class="lineNum">     229 </span>            :                     printf (&quot;Not a default modifierType wrapper (need to handle this case) \n&quot;);</a>
+<a name="230"><span class="lineNum">     230 </span>            :                     ROSE_ABORT();</a>
+<a name="231"><span class="lineNum">     231 </span>            :                   }</a>
+<a name="232"><span class="lineNum">     232 </span>            :              }</a>
+<a name="233"><span class="lineNum">     233 </span>            : #else</a>
+<a name="234"><span class="lineNum">     234 </span>            : </a>
+<a name="235"><span class="lineNum">     235 </span>            :        // DQ (4/15/2019): With the new support for SgType::STRIP_POINTER_MEMBER_TYPE, we want to use it here.</a>
+<a name="236"><span class="lineNum">     236 </span>            :        // Strip past pointers and other wrapping modifiers (but not the typedef types, since the whole point is to detect private instatances).</a>
+<a name="237"><span class="lineNum">     237 </span>            :        // type = type-&gt;stripType(SgType::STRIP_MODIFIER_TYPE|SgType::STRIP_REFERENCE_TYPE|SgType::STRIP_RVALUE_REFERENCE_TYPE|SgType::STRIP_POINTER_TYPE|SgType::STRIP_ARRAY_TYPE);</a>
+<a name="238"><span class="lineNum">     238 </span><span class="lineCov">      27361 :           type = type-&gt;stripType(SgType::STRIP_MODIFIER_TYPE|SgType::STRIP_REFERENCE_TYPE|SgType::STRIP_RVALUE_REFERENCE_TYPE|SgType::STRIP_POINTER_TYPE|SgType::STRIP_POINTER_MEMBER_TYPE|SgType::STRIP_ARRAY_TYPE);</span></a>
+<a name="239"><span class="lineNum">     239 </span>            : #endif</a>
+<a name="240"><span class="lineNum">     240 </span>            : </a>
+<a name="241"><span class="lineNum">     241 </span>            : #if 0</a>
+<a name="242"><span class="lineNum">     242 </span>            :           printf (&quot;After stripType(): type = %p = %s \n&quot;,type,type-&gt;class_name().c_str());</a>
+<a name="243"><span class="lineNum">     243 </span>            :           SgNamedType* namedType = isSgNamedType(type);</a>
+<a name="244"><span class="lineNum">     244 </span>            :           if (namedType != NULL)</a>
+<a name="245"><span class="lineNum">     245 </span>            :              {</a>
+<a name="246"><span class="lineNum">     246 </span>            :                printf (&quot;--- stripType: name = %s \n&quot;,namedType-&gt;get_name().str());</a>
+<a name="247"><span class="lineNum">     247 </span>            :              }</a>
+<a name="248"><span class="lineNum">     248 </span>            : #endif</a>
+<a name="249"><span class="lineNum">     249 </span><span class="lineCov">      27361 :           ROSE_ASSERT(type != NULL);</span></a>
+<a name="250"><span class="lineNum">     250 </span>            : </a>
+<a name="251"><span class="lineNum">     251 </span>            : </a>
+<a name="252"><span class="lineNum">     252 </span>            :        // Make sure this is not a simple template type (else we will have infinite recursion).</a>
+<a name="253"><span class="lineNum">     253 </span>            :        // if (type != NULL &amp;&amp; type-&gt;isIntegerType() == false &amp;&amp; type-&gt;isFloatType() == false)</a>
+<a name="254"><span class="lineNum">     254 </span>            :        // if (type != NULL)</a>
+<a name="255"><span class="lineNum">     255 </span><span class="lineCov">      27361 :           SgTemplateType*        templateType        = isSgTemplateType(type);</span></a>
+<a name="256"><span class="lineNum">     256 </span><span class="lineCov">      27361 :           SgClassType*           classType           = isSgClassType(type);</span></a>
+<a name="257"><span class="lineNum">     257 </span><span class="lineCov">      27361 :           SgTypeVoid*            voidType            = isSgTypeVoid(type);</span></a>
+<a name="258"><span class="lineNum">     258 </span><span class="lineCov">      27361 :           SgRvalueReferenceType* rvalueReferenceType = isSgRvalueReferenceType(type);</span></a>
+<a name="259"><span class="lineNum">     259 </span><span class="lineCov">      27361 :           SgFunctionType*        functionType        = isSgFunctionType(type);</span></a>
+<a name="260"><span class="lineNum">     260 </span><span class="lineCov">      27361 :           SgDeclType*            declType            = isSgDeclType(type);</span></a>
+<a name="261"><span class="lineNum">     261 </span>            : </a>
+<a name="262"><span class="lineNum">     262 </span>            :        // DQ (12/7/2016): An enum type needs to be handled since the declaration might be private (but still debugging this for now).</a>
+<a name="263"><span class="lineNum">     263 </span><span class="lineCov">      27361 :           SgEnumType*            enumType            = isSgEnumType(type);</span></a>
+<a name="264"><span class="lineNum">     264 </span>            : </a>
+<a name="265"><span class="lineNum">     265 </span>            :        // DQ (2/12/2017): Added specific type (causing infinite recursion for CompileTests/RoseExample_tests/testRoseHeaders_03.C.</a>
+<a name="266"><span class="lineNum">     266 </span><span class="lineCov">      27361 :           SgTypeEllipse*         typeEllipse         = isSgTypeEllipse(type);</span></a>
+<a name="267"><span class="lineNum">     267 </span><span class="lineCov">      27361 :           SgTypeUnknown*         typeUnknown         = isSgTypeUnknown(type);</span></a>
+<a name="268"><span class="lineNum">     268 </span><span class="lineCov">      27361 :           SgTypeComplex*         typeComplex         = isSgTypeComplex(type);</span></a>
+<a name="269"><span class="lineNum">     269 </span>            : </a>
+<a name="270"><span class="lineNum">     270 </span>            :        // DQ (2/16/2017): This is a case causeing many C codes to fail.</a>
+<a name="271"><span class="lineNum">     271 </span><span class="lineCov">      27361 :           SgTypeOfType* typeOfType = isSgTypeOfType(type);</span></a>
+<a name="272"><span class="lineNum">     272 </span>            : </a>
+<a name="273"><span class="lineNum">     273 </span>            :        // TV (04/23/2018): deprecated SgTemplateType. Now using the notion of non-real declaration (and associated declaration, symbol, and reference expression)</a>
+<a name="274"><span class="lineNum">     274 </span><span class="lineCov">      27361 :           SgNonrealType*         typeNonreal         = isSgNonrealType(type);</span></a>
+<a name="275"><span class="lineNum">     275 </span><span class="lineCov">      27361 :           SgAutoType*            typeAuto            = isSgAutoType(type);</span></a>
+<a name="276"><span class="lineNum">     276 </span><span class="lineCov">      27361 :           SgTypeNullptr *        typeNullptr         = isSgTypeNullptr(type);</span></a>
+<a name="277"><span class="lineNum">     277 </span>            : </a>
+<a name="278"><span class="lineNum">     278 </span><span class="lineCov">      27361 :           if (type != NULL &amp;&amp; typeNonreal  == NULL &amp;&amp; classType   == NULL &amp;&amp; voidType   == NULL &amp;&amp; rvalueReferenceType == NULL &amp;&amp; </span></a>
+<a name="279"><span class="lineNum">     279 </span><span class="lineCov">      22392 :                               functionType == NULL &amp;&amp; declType    == NULL &amp;&amp; enumType   == NULL &amp;&amp; typeEllipse         == NULL &amp;&amp; </span></a>
+<a name="280"><span class="lineNum">     280 </span><span class="lineCov">      22281 :                               typeUnknown  == NULL &amp;&amp; typeComplex == NULL &amp;&amp; typeOfType == NULL &amp;&amp; typeAuto            == NULL &amp;&amp; </span></a>
+<a name="281"><span class="lineNum">     281 </span><span class="lineCov">      21814 :                               templateType == NULL &amp;&amp; typeNullptr == NULL)</span></a>
+<a name="282"><span class="lineNum">     282 </span>            :              {</a>
+<a name="283"><span class="lineNum">     283 </span>            : #if DEBUG_PRIVATE_TYPE || 0</a>
+<a name="284"><span class="lineNum">     284 </span>            :                printf (&quot;found unwrapped type = %p = %s = %s (not a template class instantiaton) \n&quot;,type,type-&gt;class_name().c_str(),type-&gt;unparseToString().c_str());</a>
+<a name="285"><span class="lineNum">     285 </span>            : #endif</a>
+<a name="286"><span class="lineNum">     286 </span>            :             // if (type-&gt;isIntegerType() == false &amp;&amp; type-&gt;isFloatType() == false)</a>
+<a name="287"><span class="lineNum">     287 </span>            :             // if (type-&gt;isIntegerType() == false &amp;&amp; type-&gt;isFloatType() == false)</a>
+<a name="288"><span class="lineNum">     288 </span><span class="lineCov">      21718 :                if (type-&gt;isIntegerType() == false &amp;&amp; type-&gt;isFloatType() == false)</span></a>
+<a name="289"><span class="lineNum">     289 </span>            :                   {</a>
+<a name="290"><span class="lineNum">     290 </span>            : #if DEBUG_PRIVATE_TYPE || 0</a>
+<a name="291"><span class="lineNum">     291 </span>            :                     printf (&quot;Making a recursive call to contains_private_type(type): not integer or float type: type = %p = %s  \n&quot;,type,type-&gt;class_name().c_str());</a>
+<a name="292"><span class="lineNum">     292 </span>            : #endif</a>
+<a name="293"><span class="lineNum">     293 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="294"><span class="lineNum">     294 </span>            :                     depth++;</a>
+<a name="295"><span class="lineNum">     295 </span>            :                     global_depth++;</a>
+<a name="296"><span class="lineNum">     296 </span>            : #endif</a>
+<a name="297"><span class="lineNum">     297 </span><span class="lineCov">       3564 :                     bool isPrivateType = contains_private_type(type,targetScope);</span></a>
+<a name="298"><span class="lineNum">     298 </span>            : </a>
+<a name="299"><span class="lineNum">     299 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="300"><span class="lineNum">     300 </span>            :                     depth--;</a>
+<a name="301"><span class="lineNum">     301 </span>            :                     global_depth--;</a>
+<a name="302"><span class="lineNum">     302 </span>            : #endif</a>
+<a name="303"><span class="lineNum">     303 </span><span class="lineCov">       3564 :                     returnValue = isPrivateType;</span></a>
+<a name="304"><span class="lineNum">     304 </span>            :                   }</a>
+<a name="305"><span class="lineNum">     305 </span>            :                  else</a>
+<a name="306"><span class="lineNum">     306 </span>            :                   {</a>
+<a name="307"><span class="lineNum">     307 </span>            :                  // This can't be a private type.</a>
+<a name="308"><span class="lineNum">     308 </span>            : #if DEBUG_PRIVATE_TYPE</a>
+<a name="309"><span class="lineNum">     309 </span>            :                     printf (&quot;This is an integer or float type (of some sort): type = %p = %s = %s \n&quot;,type,type-&gt;class_name().c_str(),type-&gt;unparseToString().c_str());</a>
+<a name="310"><span class="lineNum">     310 </span>            : #endif</a>
+<a name="311"><span class="lineNum">     311 </span>            :                     returnValue = false;</a>
+<a name="312"><span class="lineNum">     312 </span>            :                   }</a>
+<a name="313"><span class="lineNum">     313 </span>            :              }</a>
+<a name="314"><span class="lineNum">     314 </span>            :             else</a>
+<a name="315"><span class="lineNum">     315 </span>            :              {</a>
+<a name="316"><span class="lineNum">     316 </span>            :             // This is where we need to resolve is any types that are associated with declarations might be private (e.g. SgEnumType).</a>
+<a name="317"><span class="lineNum">     317 </span>            : </a>
+<a name="318"><span class="lineNum">     318 </span>            :             // DQ (3/1/2019): I think we need to resolve if an unnamed type is being used here (since they can't be template arguments).</a>
+<a name="319"><span class="lineNum">     319 </span>            : </a>
+<a name="320"><span class="lineNum">     320 </span><span class="lineCov">       5643 :                if (classType != NULL)</span></a>
+<a name="321"><span class="lineNum">     321 </span>            :                   {</a>
+<a name="322"><span class="lineNum">     322 </span>            :                  // Check if this is associated with a template class instantiation.</a>
+<a name="323"><span class="lineNum">     323 </span>            : #if DEBUG_PRIVATE_TYPE</a>
+<a name="324"><span class="lineNum">     324 </span>            :                     SgClassDeclaration* classDeclaration = isSgClassDeclaration(classType-&gt;get_declaration());</a>
+<a name="325"><span class="lineNum">     325 </span>            :                     ROSE_ASSERT(classDeclaration != NULL);</a>
+<a name="326"><span class="lineNum">     326 </span>            :                     printf (&quot;--------- classDeclaration = %p = %s = %s \n&quot;,classDeclaration,classDeclaration-&gt;class_name().c_str(),classDeclaration-&gt;get_name().str());</a>
+<a name="327"><span class="lineNum">     327 </span>            : #endif</a>
+<a name="328"><span class="lineNum">     328 </span><span class="lineCov">       3565 :                     SgTemplateInstantiationDecl* templateInstantiationDeclaration = isSgTemplateInstantiationDecl(classType-&gt;get_declaration());</span></a>
+<a name="329"><span class="lineNum">     329 </span><span class="lineCov">       3565 :                     if (templateInstantiationDeclaration != NULL)</span></a>
+<a name="330"><span class="lineNum">     330 </span>            :                        {</a>
+<a name="331"><span class="lineNum">     331 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="332"><span class="lineNum">     332 </span>            :                          global_depth++;</a>
+<a name="333"><span class="lineNum">     333 </span>            : #endif</a>
+<a name="334"><span class="lineNum">     334 </span>            : #if 0</a>
+<a name="335"><span class="lineNum">     335 </span>            :                          printf (&quot;Calling contains_private_type(SgTemplateArgumentPtrList): templateInstantiationDeclaration = %p = %s \n&quot;,</a>
+<a name="336"><span class="lineNum">     336 </span>            :                               templateInstantiationDeclaration,templateInstantiationDeclaration-&gt;get_name().str());</a>
+<a name="337"><span class="lineNum">     337 </span>            : #endif</a>
+<a name="338"><span class="lineNum">     338 </span><span class="lineCov">          6 :                          returnValue = contains_private_type(templateInstantiationDeclaration-&gt;get_templateArguments(),targetScope);</span></a>
+<a name="339"><span class="lineNum">     339 </span>            : </a>
+<a name="340"><span class="lineNum">     340 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="341"><span class="lineNum">     341 </span>            :                          global_depth--;</a>
+<a name="342"><span class="lineNum">     342 </span>            : #endif</a>
+<a name="343"><span class="lineNum">     343 </span>            : #if 0</a>
+<a name="344"><span class="lineNum">     344 </span>            :                          printf (&quot;DONE: Calling contains_private_type(SgTemplateArgumentPtrList): templateInstantiationDeclaration = %p = %s \n&quot;,</a>
+<a name="345"><span class="lineNum">     345 </span>            :                               templateInstantiationDeclaration,templateInstantiationDeclaration-&gt;get_name().str());</a>
+<a name="346"><span class="lineNum">     346 </span>            : #endif</a>
+<a name="347"><span class="lineNum">     347 </span>            :                        }</a>
+<a name="348"><span class="lineNum">     348 </span>            : #if 0</a>
+<a name="349"><span class="lineNum">     349 </span>            :                     printf (&quot;DONE: --- classDeclaration = %p = %s = %s \n&quot;,classDeclaration,classDeclaration-&gt;class_name().c_str(),classDeclaration-&gt;get_name().str());</a>
+<a name="350"><span class="lineNum">     350 </span>            : #endif</a>
+<a name="351"><span class="lineNum">     351 </span>            :                   }</a>
+<a name="352"><span class="lineNum">     352 </span>            :              }</a>
+<a name="353"><span class="lineNum">     353 </span>            :         }</a>
+<a name="354"><span class="lineNum">     354 </span>            : </a>
+<a name="355"><span class="lineNum">     355 </span>            : #if DEBUG_PRIVATE_TYPE || 0</a>
+<a name="356"><span class="lineNum">     356 </span>            :      printf (&quot;Leaving contains_private_type(SgType*): type = %p = %s = %s returnValue = %s \n&quot;,type,type-&gt;class_name().c_str(),type-&gt;unparseToString().c_str(),returnValue ? &quot;true&quot; : &quot;false&quot;);</a>
+<a name="357"><span class="lineNum">     357 </span>            : #endif</a>
+<a name="358"><span class="lineNum">     358 </span>            : </a>
+<a name="359"><span class="lineNum">     359 </span>            :      return returnValue;</a>
+<a name="360"><span class="lineNum">     360 </span>            :    }</a>
+<a name="361"><span class="lineNum">     361 </span>            : </a>
+<a name="362"><span class="lineNum">     362 </span>            : </a>
+<a name="363"><span class="lineNum">     363 </span><span class="lineCov">          6 : bool FixupTemplateArguments::contains_private_type ( SgTemplateArgumentPtrList &amp; templateArgList, SgScopeStatement* targetScope )</span></a>
+<a name="364"><span class="lineNum">     364 </span>            :    {</a>
+<a name="365"><span class="lineNum">     365 </span><span class="lineCov">          6 :      bool returnValue = false;</span></a>
+<a name="366"><span class="lineNum">     366 </span>            : </a>
+<a name="367"><span class="lineNum">     367 </span>            :   // ROSE_ASSERT(templateArgList.empty() == false);</a>
+<a name="368"><span class="lineNum">     368 </span>            : </a>
+<a name="369"><span class="lineNum">     369 </span><span class="lineCov">          6 :      static std::set&lt;SgTemplateArgumentPtrList&gt; templateArgumentListSet;</span></a>
+<a name="370"><span class="lineNum">     370 </span>            : </a>
+<a name="371"><span class="lineNum">     371 </span>            :   // DQ (2/15/2017): Make a copy of the vector and use that as a basis for identifing if the list has been previously processed.</a>
+<a name="372"><span class="lineNum">     372 </span>            :   // SgTemplateArgumentPtrList templateArgList = templateArgList;</a>
+<a name="373"><span class="lineNum">     373 </span>            :   // ROSE_ASSERT(templateArgList.empty() == false);</a>
+<a name="374"><span class="lineNum">     374 </span>            : </a>
+<a name="375"><span class="lineNum">     375 </span><span class="lineCov">          6 :      if (templateArgumentListSet.find(templateArgList) == templateArgumentListSet.end())</span></a>
+<a name="376"><span class="lineNum">     376 </span>            :         {</a>
+<a name="377"><span class="lineNum">     377 </span><span class="lineCov">          6 :           templateArgumentListSet.insert(templateArgList);</span></a>
+<a name="378"><span class="lineNum">     378 </span>            :         }</a>
+<a name="379"><span class="lineNum">     379 </span>            :        else</a>
+<a name="380"><span class="lineNum">     380 </span>            :         {</a>
+<a name="381"><span class="lineNum">     381 </span>            : // #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="382"><span class="lineNum">     382 </span>            : #if 0</a>
+<a name="383"><span class="lineNum">     383 </span>            :           printf (&quot;################# Already been or being processed: templateArgumentListSet.size() = %zu \n&quot;,templateArgumentListSet.size());</a>
+<a name="384"><span class="lineNum">     384 </span>            : #endif</a>
+<a name="385"><span class="lineNum">     385 </span>            : </a>
+<a name="386"><span class="lineNum">     386 </span>            : #if 0</a>
+<a name="387"><span class="lineNum">     387 </span>            :           printf (&quot;Leaving contains_private_type(SgTemplateArgumentPtrList): templateArgumentListSet.size() = %zu returning FALSE \n&quot;,templateArgumentListSet.size());</a>
+<a name="388"><span class="lineNum">     388 </span>            : #endif</a>
+<a name="389"><span class="lineNum">     389 </span>            :        // DQ (2/15/2017): Unclear if this is the correct return value, it might be that we want to record </a>
+<a name="390"><span class="lineNum">     390 </span>            :        // the associated value from the first time the argument list was processed and use that value.</a>
+<a name="391"><span class="lineNum">     391 </span>            :        // Then again, if the value had already been substituted into the template argument then no further </a>
+<a name="392"><span class="lineNum">     392 </span>            :        // processing is required.</a>
+<a name="393"><span class="lineNum">     393 </span>            :           return false;</a>
+<a name="394"><span class="lineNum">     394 </span>            :         }</a>
+<a name="395"><span class="lineNum">     395 </span>            : </a>
+<a name="396"><span class="lineNum">     396 </span><span class="lineCov">          6 :      int counter = 0;</span></a>
+<a name="397"><span class="lineNum">     397 </span><span class="lineCov">          6 :      SgTemplateArgumentPtrList::const_iterator i = templateArgList.begin();</span></a>
+<a name="398"><span class="lineNum">     398 </span><span class="lineCov">         14 :      while (returnValue == false &amp;&amp; i != templateArgList.end())</span></a>
+<a name="399"><span class="lineNum">     399 </span>            :         {</a>
+<a name="400"><span class="lineNum">     400 </span>            : #if 0</a>
+<a name="401"><span class="lineNum">     401 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="402"><span class="lineNum">     402 </span>            :           printf (&quot;In contains_private_type(SgTemplateArgumentPtrList): global_depth = %zu Evaluating template argument # %d = %p = %s \n&quot;,</a>
+<a name="403"><span class="lineNum">     403 </span>            :                global_depth,counter,*i,(*i)-&gt;class_name().c_str());</a>
+<a name="404"><span class="lineNum">     404 </span>            : #else</a>
+<a name="405"><span class="lineNum">     405 </span>            :           printf (&quot;In contains_private_type(SgTemplateArgumentPtrList): Evaluating template argument # %d = %p = %s \n&quot;,counter,*i,(*i)-&gt;class_name().c_str());</a>
+<a name="406"><span class="lineNum">     406 </span>            : #endif</a>
+<a name="407"><span class="lineNum">     407 </span>            : #endif</a>
+<a name="408"><span class="lineNum">     408 </span><span class="lineCov">          8 :           returnValue |= contains_private_type(*i,targetScope);</span></a>
+<a name="409"><span class="lineNum">     409 </span>            : #if 0</a>
+<a name="410"><span class="lineNum">     410 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="411"><span class="lineNum">     411 </span>            :           printf (&quot;In contains_private_type(SgTemplateArgumentPtrList): global_depth = %zu template argument # %d = %p = %s returnValue = %s \n&quot;,</a>
+<a name="412"><span class="lineNum">     412 </span>            :                global_depth,counter,*i,(*i)-&gt;class_name().c_str(),returnValue ? &quot;true&quot; : &quot;false&quot;);</a>
+<a name="413"><span class="lineNum">     413 </span>            : #else</a>
+<a name="414"><span class="lineNum">     414 </span>            :           printf (&quot;In contains_private_type(SgTemplateArgumentPtrList): template argument # %d = %p = %s returnValue = %s \n&quot;,</a>
+<a name="415"><span class="lineNum">     415 </span>            :                counter,*i,(*i)-&gt;class_name().c_str(),returnValue ? &quot;true&quot; : &quot;false&quot;);</a>
+<a name="416"><span class="lineNum">     416 </span>            : #endif</a>
+<a name="417"><span class="lineNum">     417 </span>            : #endif</a>
+<a name="418"><span class="lineNum">     418 </span><span class="lineCov">          8 :           i++;</span></a>
+<a name="419"><span class="lineNum">     419 </span><span class="lineCov">          8 :           counter++;</span></a>
+<a name="420"><span class="lineNum">     420 </span>            :         }</a>
+<a name="421"><span class="lineNum">     421 </span>            : </a>
+<a name="422"><span class="lineNum">     422 </span>            : #if DEBUG_PRIVATE_TYPE || 0</a>
+<a name="423"><span class="lineNum">     423 </span>            :      printf (&quot;Leaving contains_private_type(SgTemplateArgumentPtrList): templateArgumentListSet.size() = %zu returnValue = %s \n&quot;,templateArgumentListSet.size(),returnValue ? &quot;true&quot; : &quot;false&quot;);</a>
+<a name="424"><span class="lineNum">     424 </span>            : #endif</a>
+<a name="425"><span class="lineNum">     425 </span>            : </a>
+<a name="426"><span class="lineNum">     426 </span>            :      return returnValue;</a>
+<a name="427"><span class="lineNum">     427 </span>            :    }</a>
+<a name="428"><span class="lineNum">     428 </span>            : </a>
+<a name="429"><span class="lineNum">     429 </span>            : </a>
+<a name="430"><span class="lineNum">     430 </span>            : bool</a>
+<a name="431"><span class="lineNum">     431 </span><span class="lineCov">         23 : FixupTemplateArguments::contains_private_type (SgTemplateArgument* templateArgument, SgScopeStatement* targetScope)</span></a>
+<a name="432"><span class="lineNum">     432 </span>            :    {</a>
+<a name="433"><span class="lineNum">     433 </span>            :   // Note that within EDG and ROSE the template arguments may be shared so that we can support testing for equivalence.</a>
+<a name="434"><span class="lineNum">     434 </span>            : </a>
+<a name="435"><span class="lineNum">     435 </span>            :   // static std::list&lt;SgTemplateArgument*&gt; templateArgumentList;</a>
+<a name="436"><span class="lineNum">     436 </span>            :   // templateArgumentList.push_back(templateArgument);</a>
+<a name="437"><span class="lineNum">     437 </span><span class="lineCov">         23 :      static std::set&lt;SgTemplateArgument*&gt; templateArgumentSet;</span></a>
+<a name="438"><span class="lineNum">     438 </span>            : </a>
+<a name="439"><span class="lineNum">     439 </span><span class="lineCov">         46 :      if (templateArgumentSet.find(templateArgument) == templateArgumentSet.end())</span></a>
+<a name="440"><span class="lineNum">     440 </span>            :         {</a>
+<a name="441"><span class="lineNum">     441 </span><span class="lineCov">         23 :           templateArgumentSet.insert(templateArgument);</span></a>
+<a name="442"><span class="lineNum">     442 </span>            :         }</a>
+<a name="443"><span class="lineNum">     443 </span>            :        else</a>
+<a name="444"><span class="lineNum">     444 </span>            :         {</a>
+<a name="445"><span class="lineNum">     445 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="446"><span class="lineNum">     446 </span>            :           printf (&quot;@@@@@@@@@@@@@@@@@ Already been or being processed: templateArgument = %p = %s templateArgumentSet.size() = %zu \n&quot;,templateArgument,templateArgument-&gt;unparseToString().c_str(),templateArgumentSet.size());</a>
+<a name="447"><span class="lineNum">     447 </span>            : #endif</a>
+<a name="448"><span class="lineNum">     448 </span>            : </a>
+<a name="449"><span class="lineNum">     449 </span>            : #if 0</a>
+<a name="450"><span class="lineNum">     450 </span>            :           printf (&quot;Leaving contains_private_type(SgTemplateArgument): templateArgument = %p returning FALSE \n&quot;,templateArgument);</a>
+<a name="451"><span class="lineNum">     451 </span>            : #endif</a>
+<a name="452"><span class="lineNum">     452 </span>            : </a>
+<a name="453"><span class="lineNum">     453 </span>            :        // DQ (2/15/2017): Unclear if this is the correct return value, it might be that we want to record </a>
+<a name="454"><span class="lineNum">     454 </span>            :        // the associated value from the first time the argument list was processed and use that value.</a>
+<a name="455"><span class="lineNum">     455 </span>            :        // Then again, if the value had already been substituted into the template argument then no further </a>
+<a name="456"><span class="lineNum">     456 </span>            :        // processing is required.</a>
+<a name="457"><span class="lineNum">     457 </span>            :           return false;</a>
+<a name="458"><span class="lineNum">     458 </span>            :         }</a>
+<a name="459"><span class="lineNum">     459 </span>            : </a>
+<a name="460"><span class="lineNum">     460 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="461"><span class="lineNum">     461 </span>            :      printf (&quot;--- added templateArgument = %p templateArgumentSet.size() = %zu \n&quot;,templateArgument,templateArgumentSet.size());</a>
+<a name="462"><span class="lineNum">     462 </span>            : #endif</a>
+<a name="463"><span class="lineNum">     463 </span>            : </a>
+<a name="464"><span class="lineNum">     464 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="465"><span class="lineNum">     465 </span>            :   // For debugging, keep track of the recursive depth.</a>
+<a name="466"><span class="lineNum">     466 </span>            :      static size_t depth = 0;</a>
+<a name="467"><span class="lineNum">     467 </span>            : </a>
+<a name="468"><span class="lineNum">     468 </span>            :      printf (&quot;In contains_private_type(SgTemplateArgument*): depth = %zu \n&quot;,depth);</a>
+<a name="469"><span class="lineNum">     469 </span>            :      ROSE_ASSERT(depth &lt; 500);</a>
+<a name="470"><span class="lineNum">     470 </span>            : </a>
+<a name="471"><span class="lineNum">     471 </span>            :      printf (&quot;In contains_private_type(SgTemplateArgument*): global_depth = %zu \n&quot;,global_depth);</a>
+<a name="472"><span class="lineNum">     472 </span>            :      if (global_depth &gt;= 50)</a>
+<a name="473"><span class="lineNum">     473 </span>            :         {</a>
+<a name="474"><span class="lineNum">     474 </span>            :        // output the list of SgTemplateArgument in the list</a>
+<a name="475"><span class="lineNum">     475 </span>            :           printf (&quot;Error: too many elements in list: recursuion too deep \n&quot;);</a>
+<a name="476"><span class="lineNum">     476 </span>            :           size_t counter = 0;</a>
+<a name="477"><span class="lineNum">     477 </span>            :           for (std::set&lt;SgTemplateArgument*&gt;::iterator i = templateArgumentSet.begin(); i != templateArgumentSet.end(); i++)</a>
+<a name="478"><span class="lineNum">     478 </span>            :              {</a>
+<a name="479"><span class="lineNum">     479 </span>            :                printf (&quot;--- templateArgumentSet[counter] = %p = %s \n&quot;,*i,templateArgument-&gt;unparseToString().c_str()); </a>
+<a name="480"><span class="lineNum">     480 </span>            :                counter++;</a>
+<a name="481"><span class="lineNum">     481 </span>            :              }</a>
+<a name="482"><span class="lineNum">     482 </span>            :         }</a>
+<a name="483"><span class="lineNum">     483 </span>            :      ROSE_ASSERT(global_depth &lt; 50);</a>
+<a name="484"><span class="lineNum">     484 </span>            : #endif</a>
+<a name="485"><span class="lineNum">     485 </span>            : </a>
+<a name="486"><span class="lineNum">     486 </span>            :   // Note this is the recursive function.</a>
+<a name="487"><span class="lineNum">     487 </span><span class="lineCov">         23 :      bool returnValue = false;</span></a>
+<a name="488"><span class="lineNum">     488 </span>            : </a>
+<a name="489"><span class="lineNum">     489 </span>            : #if DEBUG_PRIVATE_TYPE</a>
+<a name="490"><span class="lineNum">     490 </span>            :      printf (&quot;In contains_private_type(SgTemplateArgument*): templateArgument = %p = %s = %s \n&quot;,templateArgument,templateArgument-&gt;class_name().c_str(),templateArgument-&gt;unparseToString().c_str());</a>
+<a name="491"><span class="lineNum">     491 </span>            : #endif</a>
+<a name="492"><span class="lineNum">     492 </span>            : </a>
+<a name="493"><span class="lineNum">     493 </span><span class="lineCov">         23 :      switch (templateArgument-&gt;get_argumentType())</span></a>
+<a name="494"><span class="lineNum">     494 </span>            :         {</a>
+<a name="495"><span class="lineNum">     495 </span><span class="lineCov">         23 :           case SgTemplateArgument::type_argument:</span></a>
+<a name="496"><span class="lineNum">     496 </span><span class="lineCov">         23 :              {</span></a>
+<a name="497"><span class="lineNum">     497 </span><span class="lineCov">         23 :                ROSE_ASSERT (templateArgument-&gt;get_type() != NULL);</span></a>
+<a name="498"><span class="lineNum">     498 </span>            : </a>
+<a name="499"><span class="lineNum">     499 </span><span class="lineCov">         23 :                SgType* templateArgumentType = templateArgument-&gt;get_type();</span></a>
+<a name="500"><span class="lineNum">     500 </span>            : #if DEBUG_PRIVATE_TYPE</a>
+<a name="501"><span class="lineNum">     501 </span>            :                printf (&quot;templateArgumentType = %p = %s \n&quot;,templateArgumentType,templateArgumentType-&gt;class_name().c_str());</a>
+<a name="502"><span class="lineNum">     502 </span>            :                if (isSgModifierType(templateArgumentType) != NULL)</a>
+<a name="503"><span class="lineNum">     503 </span>            :                   {</a>
+<a name="504"><span class="lineNum">     504 </span>            :                     SgModifierType* modifierType = isSgModifierType(templateArgumentType);</a>
+<a name="505"><span class="lineNum">     505 </span>            :                     SgType* base_type = modifierType-&gt;get_base_type();</a>
+<a name="506"><span class="lineNum">     506 </span>            :                     printf (&quot;--- base_type = %p = %s \n&quot;,base_type,base_type-&gt;class_name().c_str());</a>
+<a name="507"><span class="lineNum">     507 </span>            :                     SgNamedType* namedType = isSgNamedType(base_type);</a>
+<a name="508"><span class="lineNum">     508 </span>            :                     if (namedType != NULL)</a>
+<a name="509"><span class="lineNum">     509 </span>            :                        {</a>
+<a name="510"><span class="lineNum">     510 </span>            :                          printf (&quot;--- base_type: name = %s \n&quot;,namedType-&gt;get_name().str());</a>
+<a name="511"><span class="lineNum">     511 </span>            :                        }</a>
+<a name="512"><span class="lineNum">     512 </span>            :                   }</a>
+<a name="513"><span class="lineNum">     513 </span>            : #endif</a>
+<a name="514"><span class="lineNum">     514 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="515"><span class="lineNum">     515 </span>            :                depth++;</a>
+<a name="516"><span class="lineNum">     516 </span>            :                global_depth++;</a>
+<a name="517"><span class="lineNum">     517 </span>            : #endif</a>
+<a name="518"><span class="lineNum">     518 </span>            : </a>
+<a name="519"><span class="lineNum">     519 </span>            : #if 0</a>
+<a name="520"><span class="lineNum">     520 </span>            :                printf (&quot;In contains_private_type(SgTemplateArgument*): case SgTemplateArgument::type_argument: Calling contains_private_type(templateArgumentType) \n&quot;);</a>
+<a name="521"><span class="lineNum">     521 </span>            : #endif</a>
+<a name="522"><span class="lineNum">     522 </span>            :             // DQ (2/14/2017): We might want to generate a list of the private types used so</a>
+<a name="523"><span class="lineNum">     523 </span>            :             // that we can check them against the scope of the declaration where they occur.</a>
+<a name="524"><span class="lineNum">     524 </span>            :             // Note also that this does not address types that might appear in name qualification.</a>
+<a name="525"><span class="lineNum">     525 </span><span class="lineCov">         23 :                returnValue = contains_private_type(templateArgumentType,targetScope);</span></a>
+<a name="526"><span class="lineNum">     526 </span>            : </a>
+<a name="527"><span class="lineNum">     527 </span>            : </a>
+<a name="528"><span class="lineNum">     528 </span>            :             // DQ (3/2/2019): Detect any class declaration that is un-named since it can't be a tempalte argument either.</a>
+<a name="529"><span class="lineNum">     529 </span><span class="lineCov">         23 :                SgNamedType* namedType = isSgNamedType(templateArgumentType);</span></a>
+<a name="530"><span class="lineNum">     530 </span><span class="lineCov">         23 :                if (namedType != NULL)</span></a>
+<a name="531"><span class="lineNum">     531 </span>            :                   {</a>
+<a name="532"><span class="lineNum">     532 </span><span class="lineCov">         10 :                     SgDeclarationStatement* declarationStatement = namedType-&gt;get_declaration();</span></a>
+<a name="533"><span class="lineNum">     533 </span><span class="lineCov">         10 :                     ROSE_ASSERT(declarationStatement != NULL);</span></a>
+<a name="534"><span class="lineNum">     534 </span>            : </a>
+<a name="535"><span class="lineNum">     535 </span><span class="lineCov">         10 :                     SgClassDeclaration* classDeclaration = isSgClassDeclaration(declarationStatement);</span></a>
+<a name="536"><span class="lineNum">     536 </span><span class="lineCov">         10 :                     if (classDeclaration != NULL)</span></a>
+<a name="537"><span class="lineNum">     537 </span>            :                        {</a>
+<a name="538"><span class="lineNum">     538 </span>            : #if DEBUG_PRIVATE_TYPE</a>
+<a name="539"><span class="lineNum">     539 </span>            :                          printf (&quot;classDeclaration-&gt;get_isUnNamed() = %s \n&quot;,classDeclaration-&gt;get_isUnNamed() ? &quot;true&quot; : &quot;false&quot;);</a>
+<a name="540"><span class="lineNum">     540 </span>            : #endif</a>
+<a name="541"><span class="lineNum">     541 </span><span class="lineCov">          5 :                          if (classDeclaration-&gt;get_isUnNamed() == true)</span></a>
+<a name="542"><span class="lineNum">     542 </span>            :                             {</a>
+<a name="543"><span class="lineNum">     543 </span><span class="lineNoCov">          0 :                               returnValue = true;</span></a>
+<a name="544"><span class="lineNum">     544 </span>            : #if 0</a>
+<a name="545"><span class="lineNum">     545 </span>            :                               printf (&quot;Exiting as a test! \n&quot;);</a>
+<a name="546"><span class="lineNum">     546 </span>            :                               ROSE_ABORT();</a>
+<a name="547"><span class="lineNum">     547 </span>            : #endif</a>
+<a name="548"><span class="lineNum">     548 </span><span class="lineNoCov">          0 :                               SgClassDeclaration* definingClassDeclaration = isSgClassDeclaration(declarationStatement-&gt;get_definingDeclaration());</span></a>
+<a name="549"><span class="lineNum">     549 </span><span class="lineNoCov">          0 :                               if (definingClassDeclaration != NULL)</span></a>
+<a name="550"><span class="lineNum">     550 </span>            :                                  {</a>
+<a name="551"><span class="lineNum">     551 </span>            : #if 0</a>
+<a name="552"><span class="lineNum">     552 </span>            :                                    printf (&quot;--- definingClassDeclaration = %p = %s name = %s \n&quot;,definingClassDeclaration,definingClassDeclaration-&gt;class_name().c_str(),definingClassDeclaration-&gt;get_name().str());</a>
+<a name="553"><span class="lineNum">     553 </span>            : #endif</a>
+<a name="554"><span class="lineNum">     554 </span><span class="lineNoCov">          0 :                                    ROSE_ASSERT(definingClassDeclaration-&gt;get_isUnNamed() == true);</span></a>
+<a name="555"><span class="lineNum">     555 </span>            :                                  }</a>
+<a name="556"><span class="lineNum">     556 </span>            :                             }</a>
+<a name="557"><span class="lineNum">     557 </span>            : </a>
+<a name="558"><span class="lineNum">     558 </span>            :                        }</a>
+<a name="559"><span class="lineNum">     559 </span>            :                   }</a>
+<a name="560"><span class="lineNum">     560 </span>            : </a>
+<a name="561"><span class="lineNum">     561 </span>            : #if DEBUG_PRIVATE_TYPE</a>
+<a name="562"><span class="lineNum">     562 </span>            :             // DQ (3/1/2019): I think we need to resolve if an unnamed type is being used here (since they can't be template arguments).</a>
+<a name="563"><span class="lineNum">     563 </span>            :                printf (&quot;In contains_private_type(SgTemplateArgument*): templateArgumentType = %p = %s \n&quot;,templateArgumentType,templateArgumentType-&gt;class_name().c_str());</a>
+<a name="564"><span class="lineNum">     564 </span>            :                if (namedType != NULL)</a>
+<a name="565"><span class="lineNum">     565 </span>            :                   {</a>
+<a name="566"><span class="lineNum">     566 </span>            :                     printf (&quot;--- namedType: name = %s \n&quot;,namedType-&gt;get_name().str());</a>
+<a name="567"><span class="lineNum">     567 </span>            :                     SgDeclarationStatement* declarationStatement = namedType-&gt;get_declaration();</a>
+<a name="568"><span class="lineNum">     568 </span>            :                     ROSE_ASSERT(declarationStatement != NULL);</a>
+<a name="569"><span class="lineNum">     569 </span>            : </a>
+<a name="570"><span class="lineNum">     570 </span>            :                     SgClassDeclaration* classDeclaration = isSgClassDeclaration(declarationStatement);</a>
+<a name="571"><span class="lineNum">     571 </span>            :                     if (classDeclaration != NULL)</a>
+<a name="572"><span class="lineNum">     572 </span>            :                        {</a>
+<a name="573"><span class="lineNum">     573 </span>            :                          printf (&quot;--- classDeclaration = %p = %s name = %s \n&quot;,classDeclaration,classDeclaration-&gt;class_name().c_str(),classDeclaration-&gt;get_name().str());</a>
+<a name="574"><span class="lineNum">     574 </span>            :                          SgClassDeclaration* definingClassDeclaration = isSgClassDeclaration(declarationStatement-&gt;get_definingDeclaration());</a>
+<a name="575"><span class="lineNum">     575 </span>            :                          if (definingClassDeclaration != NULL)</a>
+<a name="576"><span class="lineNum">     576 </span>            :                             {</a>
+<a name="577"><span class="lineNum">     577 </span>            :                               printf (&quot;--- definingClassDeclaration = %p = %s name = %s \n&quot;,definingClassDeclaration,definingClassDeclaration-&gt;class_name().c_str(),definingClassDeclaration-&gt;get_name().str());</a>
+<a name="578"><span class="lineNum">     578 </span>            :                             }</a>
+<a name="579"><span class="lineNum">     579 </span>            :                        }</a>
+<a name="580"><span class="lineNum">     580 </span>            :                   }</a>
+<a name="581"><span class="lineNum">     581 </span>            : #endif</a>
+<a name="582"><span class="lineNum">     582 </span>            : </a>
+<a name="583"><span class="lineNum">     583 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="584"><span class="lineNum">     584 </span>            :                depth--;</a>
+<a name="585"><span class="lineNum">     585 </span>            :                global_depth--;</a>
+<a name="586"><span class="lineNum">     586 </span>            : #endif</a>
+<a name="587"><span class="lineNum">     587 </span>            : </a>
+<a name="588"><span class="lineNum">     588 </span>            : #if DEBUG_PRIVATE_TYPE || 0</a>
+<a name="589"><span class="lineNum">     589 </span>            :                printf (&quot;In contains_private_type(SgTemplateArgument*): case SgTemplateArgument::type_argument: DONE calling contains_private_type(templateArgumentType): returnValue = %s \n&quot;,returnValue ? &quot;true&quot; : &quot;false&quot;);</a>
+<a name="590"><span class="lineNum">     590 </span>            : #endif</a>
+<a name="591"><span class="lineNum">     591 </span><span class="lineCov">         23 :                if (returnValue == true)</span></a>
+<a name="592"><span class="lineNum">     592 </span>            :                   {</a>
+<a name="593"><span class="lineNum">     593 </span>            :                  // Find an alternative typedef to use instead.</a>
+<a name="594"><span class="lineNum">     594 </span>            : </a>
+<a name="595"><span class="lineNum">     595 </span>            :                  // Note that this need not be a SgTypedefType (the lists are available in every SgType).</a>
+<a name="596"><span class="lineNum">     596 </span><span class="lineNoCov">          0 :                     SgTypedefType* typedefType = isSgTypedefType(templateArgumentType);</span></a>
+<a name="597"><span class="lineNum">     597 </span>            : </a>
+<a name="598"><span class="lineNum">     598 </span><span class="lineNoCov">          0 :                     if (typedefType == NULL &amp;&amp; isSgModifierType(templateArgumentType) != NULL)</span></a>
+<a name="599"><span class="lineNum">     599 </span>            :                        {</a>
+<a name="600"><span class="lineNum">     600 </span><span class="lineNoCov">          0 :                          SgModifierType* modifierType = isSgModifierType(templateArgumentType);</span></a>
+<a name="601"><span class="lineNum">     601 </span><span class="lineNoCov">          0 :                          SgType* base_type = modifierType-&gt;get_base_type();</span></a>
+<a name="602"><span class="lineNum">     602 </span>            : #if 0</a>
+<a name="603"><span class="lineNum">     603 </span>            :                          printf (&quot;Found SgModifierType: --- base_type = %p = %s \n&quot;,base_type,base_type-&gt;class_name().c_str());</a>
+<a name="604"><span class="lineNum">     604 </span>            :                          SgNamedType* namedType = isSgNamedType(base_type);</a>
+<a name="605"><span class="lineNum">     605 </span>            :                          if (namedType != NULL)</a>
+<a name="606"><span class="lineNum">     606 </span>            :                             {</a>
+<a name="607"><span class="lineNum">     607 </span>            :                               printf (&quot;--- base_type: name = %s \n&quot;,namedType-&gt;get_name().str());</a>
+<a name="608"><span class="lineNum">     608 </span>            :                             }</a>
+<a name="609"><span class="lineNum">     609 </span>            : #endif</a>
+<a name="610"><span class="lineNum">     610 </span>            : #if DEBUG_PRIVATE_TYPE || 0</a>
+<a name="611"><span class="lineNum">     611 </span>            :                          printf (&quot;******* Reset the typedefType to what was found in the modifier type as a base type = %p = %s \n&quot;,base_type,base_type-&gt;class_name().c_str());</a>
+<a name="612"><span class="lineNum">     612 </span>            : #endif</a>
+<a name="613"><span class="lineNum">     613 </span><span class="lineNoCov">          0 :                          typedefType = isSgTypedefType(base_type);</span></a>
+<a name="614"><span class="lineNum">     614 </span>            :                        }</a>
+<a name="615"><span class="lineNum">     615 </span>            : </a>
+<a name="616"><span class="lineNum">     616 </span><span class="lineNoCov">          0 :                     SgTypedefSeq* typedef_table = NULL;</span></a>
+<a name="617"><span class="lineNum">     617 </span><span class="lineNoCov">          0 :                     if (typedefType != NULL)</span></a>
+<a name="618"><span class="lineNum">     618 </span>            :                        {</a>
+<a name="619"><span class="lineNum">     619 </span>            :                       // Check if this is a type from a typedef that is in the same scope as the target declaration (variable declaration).</a>
+<a name="620"><span class="lineNum">     620 </span><span class="lineNoCov">          0 :                          SgTypedefDeclaration* typedefDeclaration = isSgTypedefDeclaration(typedefType-&gt;get_declaration());</span></a>
+<a name="621"><span class="lineNum">     621 </span><span class="lineNoCov">          0 :                          ROSE_ASSERT(typedefDeclaration != NULL);</span></a>
+<a name="622"><span class="lineNum">     622 </span>            : </a>
+<a name="623"><span class="lineNum">     623 </span>            :                       // Test for the matching scope (an even better test would be to make sure that the targetScope is nested in the typedef scope).</a>
+<a name="624"><span class="lineNum">     624 </span><span class="lineNoCov">          0 :                          SgScopeStatement* typedefDeclarationScope = typedefDeclaration-&gt;get_scope();</span></a>
+<a name="625"><span class="lineNum">     625 </span><span class="lineNoCov">          0 :                          ROSE_ASSERT(targetScope != NULL);</span></a>
+<a name="626"><span class="lineNum">     626 </span><span class="lineNoCov">          0 :                          ROSE_ASSERT(typedefDeclarationScope != NULL);</span></a>
+<a name="627"><span class="lineNum">     627 </span>            : #if 0</a>
+<a name="628"><span class="lineNum">     628 </span>            :                          printf (&quot;targetScope             = %p = %s \n&quot;,targetScope,targetScope-&gt;class_name().c_str());</a>
+<a name="629"><span class="lineNum">     629 </span>            :                          printf (&quot;typedefDeclarationScope = %p = %s \n&quot;,typedefDeclarationScope,typedefDeclarationScope-&gt;class_name().c_str());</a>
+<a name="630"><span class="lineNum">     630 </span>            :                          if (typedefDeclarationScope == targetScope)</a>
+<a name="631"><span class="lineNum">     631 </span>            :                             {</a>
+<a name="632"><span class="lineNum">     632 </span>            :                               printf (&quot;In contains_private_type(SgTemplateArgument*): This is a typedef type from the same scope as the target declaration \n&quot;);</a>
+<a name="633"><span class="lineNum">     633 </span>            :                               ROSE_ABORT();</a>
+<a name="634"><span class="lineNum">     634 </span>            :                             }</a>
+<a name="635"><span class="lineNum">     635 </span>            : #endif</a>
+<a name="636"><span class="lineNum">     636 </span>            : #if DEBUG_PRIVATE_TYPE || 0</a>
+<a name="637"><span class="lineNum">     637 </span>            :                          printf (&quot;Looking at typedef typedefType = %p = %s = %s \n&quot;,typedefType,typedefType-&gt;class_name().c_str(),typedefType-&gt;unparseToString().c_str());</a>
+<a name="638"><span class="lineNum">     638 </span>            : #endif</a>
+<a name="639"><span class="lineNum">     639 </span>            : </a>
+<a name="640"><span class="lineNum">     640 </span>            :                       // Consult the list of alreanative typedefs.</a>
+<a name="641"><span class="lineNum">     641 </span><span class="lineNoCov">          0 :                          typedef_table = typedefType-&gt;get_typedefs();</span></a>
+<a name="642"><span class="lineNum">     642 </span>            :                        }</a>
+<a name="643"><span class="lineNum">     643 </span>            :                       else</a>
+<a name="644"><span class="lineNum">     644 </span>            :                        {</a>
+<a name="645"><span class="lineNum">     645 </span>            :                       // DQ (3/2/2019): We need to select an alternative type to support a non-un-named and non-private type as a template argument.</a>
+<a name="646"><span class="lineNum">     646 </span><span class="lineNoCov">          0 :                          typedef_table = templateArgumentType-&gt;get_typedefs();</span></a>
+<a name="647"><span class="lineNum">     647 </span>            :                        }</a>
+<a name="648"><span class="lineNum">     648 </span>            : </a>
+<a name="649"><span class="lineNum">     649 </span>            :                  // Consult the list of alternative typedefs.</a>
+<a name="650"><span class="lineNum">     650 </span>            :                  // SgTypedefSeq* typedef_table = typedefType-&gt;get_typedefs();</a>
+<a name="651"><span class="lineNum">     651 </span><span class="lineNoCov">          0 :                     ROSE_ASSERT(typedef_table != NULL);</span></a>
+<a name="652"><span class="lineNum">     652 </span>            : </a>
+<a name="653"><span class="lineNum">     653 </span><span class="lineNoCov">          0 :                     SgTypePtrList &amp; typedefList = typedef_table-&gt;get_typedefs();</span></a>
+<a name="654"><span class="lineNum">     654 </span>            : </a>
+<a name="655"><span class="lineNum">     655 </span><span class="lineNoCov">          0 :                     bool foundNonPrivateTypeAlias = false;</span></a>
+<a name="656"><span class="lineNum">     656 </span><span class="lineNoCov">          0 :                     SgType* suitableTypeAlias = NULL;</span></a>
+<a name="657"><span class="lineNum">     657 </span>            : </a>
+<a name="658"><span class="lineNum">     658 </span><span class="lineNoCov">          0 :                     int counter = 0;</span></a>
+<a name="659"><span class="lineNum">     659 </span><span class="lineNoCov">          0 :                     SgTypePtrList::iterator i = typedefList.begin();</span></a>
+<a name="660"><span class="lineNum">     660 </span><span class="lineNoCov">          0 :                     while (foundNonPrivateTypeAlias == false &amp;&amp; i != typedefList.end())</span></a>
+<a name="661"><span class="lineNum">     661 </span>            :                       {</a>
+<a name="662"><span class="lineNum">     662 </span><span class="lineNoCov">          0 :                         ROSE_ASSERT(*i != NULL);</span></a>
+<a name="663"><span class="lineNum">     663 </span>            : #if DEBUG_PRIVATE_TYPE || 0</a>
+<a name="664"><span class="lineNum">     664 </span>            :                         printf (&quot;Looking for suitable type alias (#%d): *i = %p = %s = %s \n&quot;,counter,*i,(*i)-&gt;class_name().c_str(),(*i)-&gt;unparseToString().c_str());</a>
+<a name="665"><span class="lineNum">     665 </span>            : #endif</a>
+<a name="666"><span class="lineNum">     666 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="667"><span class="lineNum">     667 </span>            :                         global_depth++;</a>
+<a name="668"><span class="lineNum">     668 </span>            : #endif</a>
+<a name="669"><span class="lineNum">     669 </span><span class="lineNoCov">          0 :                         bool isPrivateType = contains_private_type(*i,targetScope);</span></a>
+<a name="670"><span class="lineNum">     670 </span>            : </a>
+<a name="671"><span class="lineNum">     671 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="672"><span class="lineNum">     672 </span>            :                         global_depth--;</a>
+<a name="673"><span class="lineNum">     673 </span>            : #endif</a>
+<a name="674"><span class="lineNum">     674 </span><span class="lineNoCov">          0 :                         if (isPrivateType == false)</span></a>
+<a name="675"><span class="lineNum">     675 </span>            :                            {</a>
+<a name="676"><span class="lineNum">     676 </span><span class="lineNoCov">          0 :                              suitableTypeAlias = *i;</span></a>
+<a name="677"><span class="lineNum">     677 </span><span class="lineNoCov">          0 :                              foundNonPrivateTypeAlias = true;</span></a>
+<a name="678"><span class="lineNum">     678 </span>            :                            }</a>
+<a name="679"><span class="lineNum">     679 </span>            : </a>
+<a name="680"><span class="lineNum">     680 </span>            :                      // foundNonPrivateTypeAlias = !isPrivateType;</a>
+<a name="681"><span class="lineNum">     681 </span>            : </a>
+<a name="682"><span class="lineNum">     682 </span><span class="lineNoCov">          0 :                         i++;</span></a>
+<a name="683"><span class="lineNum">     683 </span><span class="lineNoCov">          0 :                         counter++;</span></a>
+<a name="684"><span class="lineNum">     684 </span>            :                       }</a>
+<a name="685"><span class="lineNum">     685 </span>            : #if 0</a>
+<a name="686"><span class="lineNum">     686 </span>            :                     printf (&quot;foundNonPrivateTypeAlias = %s \n&quot;,foundNonPrivateTypeAlias ? &quot;true&quot; : &quot;false&quot;);</a>
+<a name="687"><span class="lineNum">     687 </span>            : #endif</a>
+<a name="688"><span class="lineNum">     688 </span><span class="lineNoCov">          0 :                     if (foundNonPrivateTypeAlias == true)</span></a>
+<a name="689"><span class="lineNum">     689 </span>            :                        {</a>
+<a name="690"><span class="lineNum">     690 </span><span class="lineNoCov">          0 :                          ROSE_ASSERT(suitableTypeAlias != NULL);</span></a>
+<a name="691"><span class="lineNum">     691 </span>            : #if 0</a>
+<a name="692"><span class="lineNum">     692 </span>            : #if DEBUG_PRIVATE_TYPE_TRANSFORMATION || 0</a>
+<a name="693"><span class="lineNum">     693 </span>            :                          printf (&quot;targetScope             = %p = %s \n&quot;,targetScope,targetScope-&gt;class_name().c_str());</a>
+<a name="694"><span class="lineNum">     694 </span>            :                          printf (&quot;typedefDeclarationScope = %p = %s \n&quot;,typedefDeclarationScope,typedefDeclarationScope-&gt;class_name().c_str());</a>
+<a name="695"><span class="lineNum">     695 </span>            :                          targetScope-&gt;get_file_info()-&gt;display(&quot;targetScope: debug&quot;);</a>
+<a name="696"><span class="lineNum">     696 </span>            :                          typedefDeclarationScope-&gt;get_file_info()-&gt;display(&quot;typedefDeclarationScope: debug&quot;);</a>
+<a name="697"><span class="lineNum">     697 </span>            : </a>
+<a name="698"><span class="lineNum">     698 </span>            :                          printf (&quot;Found private type to be replaced: typedefType       = %p = %s = %s \n&quot;,typedefType,typedefType-&gt;class_name().c_str(),typedefType-&gt;unparseToString().c_str());</a>
+<a name="699"><span class="lineNum">     699 </span>            :                          printf (&quot;Found suitable type alias:         suitableTypeAlias = %p = %s = %s \n&quot;,suitableTypeAlias,suitableTypeAlias-&gt;class_name().c_str(),suitableTypeAlias-&gt;unparseToString().c_str());</a>
+<a name="700"><span class="lineNum">     700 </span>            : #endif</a>
+<a name="701"><span class="lineNum">     701 </span>            : #endif</a>
+<a name="702"><span class="lineNum">     702 </span>            : #if 0</a>
+<a name="703"><span class="lineNum">     703 </span>            :                          printf (&quot;SageInterface::whereAmI(targetScope): \n&quot;);</a>
+<a name="704"><span class="lineNum">     704 </span>            :                          SageInterface::whereAmI(targetScope);</a>
+<a name="705"><span class="lineNum">     705 </span>            :                          printf (&quot;SageInterface::whereAmI(typedefDeclaration): \n&quot;);</a>
+<a name="706"><span class="lineNum">     706 </span>            :                          SageInterface::whereAmI(typedefDeclaration);</a>
+<a name="707"><span class="lineNum">     707 </span>            : #endif</a>
+<a name="708"><span class="lineNum">     708 </span>            : #if 0</a>
+<a name="709"><span class="lineNum">     709 </span>            :                          printf (&quot;Selecting alternative type to use for unparsing: \n&quot;);</a>
+<a name="710"><span class="lineNum">     710 </span>            :                          printf (&quot;--- were going to use: %s \n&quot;,templateArgument-&gt;unparseToString().c_str());</a>
+<a name="711"><span class="lineNum">     711 </span>            :                          printf (&quot;--- selecing instead : %s \n&quot;,suitableTypeAlias-&gt;unparseToString().c_str());</a>
+<a name="712"><span class="lineNum">     712 </span>            : #endif</a>
+<a name="713"><span class="lineNum">     713 </span>            : </a>
+<a name="714"><span class="lineNum">     714 </span>            :                       // TV (10/05/2018): (ROSE-1431) Traverse the chain of all associated template arguments (coming from the same EDG template argument)</a>
+<a name="715"><span class="lineNum">     715 </span><span class="lineNoCov">          0 :                          SgTemplateArgument * templateArgument_it = templateArgument;</span></a>
+<a name="716"><span class="lineNum">     716 </span><span class="lineNoCov">          0 :                          while (templateArgument_it-&gt;get_previous_instance() != NULL) </span></a>
+<a name="717"><span class="lineNum">     717 </span>            :                             {</a>
+<a name="718"><span class="lineNum">     718 </span><span class="lineNoCov">          0 :                               templateArgument_it = templateArgument_it-&gt;get_previous_instance();</span></a>
+<a name="719"><span class="lineNum">     719 </span>            :                             }</a>
+<a name="720"><span class="lineNum">     720 </span><span class="lineNoCov">          0 :                          ROSE_ASSERT(templateArgument_it != NULL &amp;&amp; templateArgument_it-&gt;get_previous_instance() == NULL);</span></a>
+<a name="721"><span class="lineNum">     721 </span><span class="lineNoCov">          0 :                          do {</span></a>
+<a name="722"><span class="lineNum">     722 </span>            : #if 0</a>
+<a name="723"><span class="lineNum">     723 </span>            :                               printf (&quot;  Update templateArgument = %p\n&quot;, templateArgument);</a>
+<a name="724"><span class="lineNum">     724 </span>            : #endif</a>
+<a name="725"><span class="lineNum">     725 </span><span class="lineNoCov">          0 :                               templateArgument_it-&gt;set_unparsable_type_alias(suitableTypeAlias);</span></a>
+<a name="726"><span class="lineNum">     726 </span>            : </a>
+<a name="727"><span class="lineNum">     727 </span>            :                            // DQ (1/9/2017): Also set the return result from get_type() so that the name qualification will be handled correctly.</a>
+<a name="728"><span class="lineNum">     728 </span><span class="lineNoCov">          0 :                               templateArgument_it-&gt;set_type(suitableTypeAlias);</span></a>
+<a name="729"><span class="lineNum">     729 </span>            : </a>
+<a name="730"><span class="lineNum">     730 </span><span class="lineNoCov">          0 :                               templateArgument_it = templateArgument_it-&gt;get_next_instance();</span></a>
+<a name="731"><span class="lineNum">     731 </span>            :                             }</a>
+<a name="732"><span class="lineNum">     732 </span><span class="lineNoCov">          0 :                          while (templateArgument_it != NULL);</span></a>
+<a name="733"><span class="lineNum">     733 </span>            : </a>
+<a name="734"><span class="lineNum">     734 </span><span class="lineNoCov">          0 :                          ROSE_ASSERT(templateArgument_it == NULL);</span></a>
+<a name="735"><span class="lineNum">     735 </span>            : </a>
+<a name="736"><span class="lineNum">     736 </span>            : // #if DEBUG_PRIVATE_TYPE_TRANSFORMATION</a>
+<a name="737"><span class="lineNum">     737 </span>            : #if 0</a>
+<a name="738"><span class="lineNum">     738 </span>            :                          string typedefType_typeName       = generate_string_name (typedefType,NULL);</a>
+<a name="739"><span class="lineNum">     739 </span>            :                          printf (&quot;typedefType_typeName size = %zu \n&quot;,typedefType_typeName.length());</a>
+<a name="740"><span class="lineNum">     740 </span>            :                          printf (&quot;typedefType_typeName       = %s \n&quot;,typedefType_typeName.c_str());</a>
+<a name="741"><span class="lineNum">     741 </span>            : </a>
+<a name="742"><span class="lineNum">     742 </span>            :                          string suitableTypeAlias_typeName = generate_string_name (suitableTypeAlias,NULL);</a>
+<a name="743"><span class="lineNum">     743 </span>            :                          printf (&quot;suitableTypeAlias_typeName size = %zu \n&quot;,suitableTypeAlias_typeName.length());</a>
+<a name="744"><span class="lineNum">     744 </span>            :                          printf (&quot;suitableTypeAlias_typeName size = %s \n&quot;,suitableTypeAlias_typeName.c_str());</a>
+<a name="745"><span class="lineNum">     745 </span>            : </a>
+<a name="746"><span class="lineNum">     746 </span>            :                          ROSE_ASSERT(suitableTypeAlias_typeName.length() &lt; typedefType_typeName.length() * 100);</a>
+<a name="747"><span class="lineNum">     747 </span>            :                          ROSE_ASSERT(suitableTypeAlias_typeName.length() &lt; 40000);</a>
+<a name="748"><span class="lineNum">     748 </span>            : #endif</a>
+<a name="749"><span class="lineNum">     749 </span>            :                        }</a>
+<a name="750"><span class="lineNum">     750 </span>            : </a>
+<a name="751"><span class="lineNum">     751 </span>            : #if 0</a>
+<a name="752"><span class="lineNum">     752 </span>            :                  // DQ (3/1/2019): We now handle the case where the typedef is NULL.</a>
+<a name="753"><span class="lineNum">     753 </span>            :                       else</a>
+<a name="754"><span class="lineNum">     754 </span>            :                        {</a>
+<a name="755"><span class="lineNum">     755 </span>            : #if DEBUG_PRIVATE_TYPE</a>
+<a name="756"><span class="lineNum">     756 </span>            :                          printf (&quot;Alternative types not searched for in nontypedef types (not implemented) \n&quot;);</a>
+<a name="757"><span class="lineNum">     757 </span>            : #endif</a>
+<a name="758"><span class="lineNum">     758 </span>            : #if 0</a>
+<a name="759"><span class="lineNum">     759 </span>            :                          printf (&quot;####### Alternative types not searched: templateArgumentType = %p = %s \n&quot;,templateArgumentType,templateArgumentType-&gt;class_name().c_str());</a>
+<a name="760"><span class="lineNum">     760 </span>            :                          if (isSgModifierType(templateArgumentType) != NULL)</a>
+<a name="761"><span class="lineNum">     761 </span>            :                             {</a>
+<a name="762"><span class="lineNum">     762 </span>            :                               SgModifierType* modifierType = isSgModifierType(templateArgumentType);</a>
+<a name="763"><span class="lineNum">     763 </span>            :                               SgType* base_type = modifierType-&gt;get_base_type();</a>
+<a name="764"><span class="lineNum">     764 </span>            :                               printf (&quot;--- base_type = %p = %s \n&quot;,base_type,base_type-&gt;class_name().c_str());</a>
+<a name="765"><span class="lineNum">     765 </span>            :                               SgNamedType* namedType = isSgNamedType(base_type);</a>
+<a name="766"><span class="lineNum">     766 </span>            :                               if (namedType != NULL)</a>
+<a name="767"><span class="lineNum">     767 </span>            :                                  {</a>
+<a name="768"><span class="lineNum">     768 </span>            :                                    printf (&quot;--- base_type: name = %s \n&quot;,namedType-&gt;get_name().str());</a>
+<a name="769"><span class="lineNum">     769 </span>            :                                  }</a>
+<a name="770"><span class="lineNum">     770 </span>            :                             }</a>
+<a name="771"><span class="lineNum">     771 </span>            : #endif</a>
+<a name="772"><span class="lineNum">     772 </span>            :                        }</a>
+<a name="773"><span class="lineNum">     773 </span>            : #endif</a>
+<a name="774"><span class="lineNum">     774 </span>            :                   }</a>
+<a name="775"><span class="lineNum">     775 </span>            : </a>
+<a name="776"><span class="lineNum">     776 </span>            :                break;</a>
+<a name="777"><span class="lineNum">     777 </span>            :              }</a>
+<a name="778"><span class="lineNum">     778 </span>            : </a>
+<a name="779"><span class="lineNum">     779 </span><span class="lineCov">         23 :           default:</span></a>
+<a name="780"><span class="lineNum">     780 </span><span class="lineCov">         23 :              {</span></a>
+<a name="781"><span class="lineNum">     781 </span>            : #if DEBUG_PRIVATE_TYPE</a>
+<a name="782"><span class="lineNum">     782 </span>            :                printf (&quot;Ignoring non-type template arguments \n&quot;);</a>
+<a name="783"><span class="lineNum">     783 </span>            : #endif</a>
+<a name="784"><span class="lineNum">     784 </span>            :              }</a>
+<a name="785"><span class="lineNum">     785 </span>            :         }</a>
+<a name="786"><span class="lineNum">     786 </span>            : </a>
+<a name="787"><span class="lineNum">     787 </span>            : #if DEBUG_PRIVATE_TYPE</a>
+<a name="788"><span class="lineNum">     788 </span>            :      printf (&quot;Leaving contains_private_type(SgTemplateArgument*): templateArgument = %p = %s = %s \n&quot;,templateArgument,templateArgument-&gt;class_name().c_str(),templateArgument-&gt;unparseToString().c_str());</a>
+<a name="789"><span class="lineNum">     789 </span>            : #endif</a>
+<a name="790"><span class="lineNum">     790 </span>            : </a>
+<a name="791"><span class="lineNum">     791 </span>            :   // templateArgumentList.pop_back();</a>
+<a name="792"><span class="lineNum">     792 </span><span class="lineCov">         23 :      templateArgumentSet.erase(templateArgument);</span></a>
+<a name="793"><span class="lineNum">     793 </span>            : </a>
+<a name="794"><span class="lineNum">     794 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="795"><span class="lineNum">     795 </span>            :      printf (&quot;--- pop templateArgument = %p templateArgumentSet.size() = %zu \n&quot;,templateArgument,templateArgumentSet.size());</a>
+<a name="796"><span class="lineNum">     796 </span>            : #endif</a>
+<a name="797"><span class="lineNum">     797 </span>            : </a>
+<a name="798"><span class="lineNum">     798 </span>            : #if 0</a>
+<a name="799"><span class="lineNum">     799 </span>            :      printf (&quot;Leaving contains_private_type(SgTemplateArgument): templateArgument = %p returnValue = %s \n&quot;,templateArgument,returnValue ? &quot;true&quot; : &quot;false&quot;);</a>
+<a name="800"><span class="lineNum">     800 </span>            : #endif</a>
+<a name="801"><span class="lineNum">     801 </span>            : </a>
+<a name="802"><span class="lineNum">     802 </span><span class="lineCov">         23 :      return returnValue;</span></a>
+<a name="803"><span class="lineNum">     803 </span>            :    }</a>
+<a name="804"><span class="lineNum">     804 </span>            : </a>
+<a name="805"><span class="lineNum">     805 </span>            : </a>
+<a name="806"><span class="lineNum">     806 </span>            : #if 0</a>
+<a name="807"><span class="lineNum">     807 </span>            : string</a>
+<a name="808"><span class="lineNum">     808 </span>            : FixupTemplateArguments::generate_string_name (SgType* type, SgNode* nodeReferenceToType)</a>
+<a name="809"><span class="lineNum">     809 </span>            :    {</a>
+<a name="810"><span class="lineNum">     810 </span>            :   // DQ (2/11/2017): This function has been added to support debugging.  It is a current problem that</a>
+<a name="811"><span class="lineNum">     811 </span>            :   // the substitution of private types in template arguments with type aliases not containing private </a>
+<a name="812"><span class="lineNum">     812 </span>            :   // types, is that the typename can be generated to be extremely large (e.g 803+ million characters long).</a>
+<a name="813"><span class="lineNum">     813 </span>            : </a>
+<a name="814"><span class="lineNum">     814 </span>            :      SgUnparse_Info* unparseInfoPointer = new SgUnparse_Info();</a>
+<a name="815"><span class="lineNum">     815 </span>            :      ROSE_ASSERT (unparseInfoPointer != NULL);</a>
+<a name="816"><span class="lineNum">     816 </span>            :      unparseInfoPointer-&gt;set_outputCompilerGeneratedStatements();</a>
+<a name="817"><span class="lineNum">     817 </span>            : </a>
+<a name="818"><span class="lineNum">     818 </span>            :   // Avoid unpasing the class definition when unparseing the type.</a>
+<a name="819"><span class="lineNum">     819 </span>            :      unparseInfoPointer-&gt;set_SkipClassDefinition();</a>
+<a name="820"><span class="lineNum">     820 </span>            : </a>
+<a name="821"><span class="lineNum">     821 </span>            :   // DQ (5/8/2013): Added specification to skip enum definitions also (see test2012_202.C).</a>
+<a name="822"><span class="lineNum">     822 </span>            :      unparseInfoPointer-&gt;set_SkipEnumDefinition();</a>
+<a name="823"><span class="lineNum">     823 </span>            : </a>
+<a name="824"><span class="lineNum">     824 </span>            :   // Associate the unparsing of this type with the statement or scope where it occures.</a>
+<a name="825"><span class="lineNum">     825 </span>            :   // This is the key to use in the lookup of the qualified name. But this is the correct key....</a>
+<a name="826"><span class="lineNum">     826 </span>            :   // unparseInfoPointer-&gt;set_reference_node_for_qualification(positionStatement);</a>
+<a name="827"><span class="lineNum">     827 </span>            :   // unparseInfoPointer-&gt;set_reference_node_for_qualification(currentScope);</a>
+<a name="828"><span class="lineNum">     828 </span>            :      unparseInfoPointer-&gt;set_reference_node_for_qualification(nodeReferenceToType);</a>
+<a name="829"><span class="lineNum">     829 </span>            : </a>
+<a name="830"><span class="lineNum">     830 </span>            :   // DQ (5/7/2013): A problem with this is that it combines the first and second parts of the </a>
+<a name="831"><span class="lineNum">     831 </span>            :   // type into a single string (e.g. the array type will include two parts &quot;base_type&quot; &lt;array name&gt; &quot;[index]&quot;.</a>
+<a name="832"><span class="lineNum">     832 </span>            :   // When this is combined for types that have two parts (most types don't) the result is an error</a>
+<a name="833"><span class="lineNum">     833 </span>            :   // when the type is unparsed.  It is not clear, but a solution might be for this to be built here</a>
+<a name="834"><span class="lineNum">     834 </span>            :   // as just the 1st part, and let the second part be generated when the array type is unparsed.</a>
+<a name="835"><span class="lineNum">     835 </span>            :   // BTW, the reason why it is computed here is that there may be many nested types that require </a>
+<a name="836"><span class="lineNum">     836 </span>            :   // name qualifications and so it is required that we save the whole string.  However, name </a>
+<a name="837"><span class="lineNum">     837 </span>            :   // qualification might only apply to the first part of types.  So we need to investigate this.</a>
+<a name="838"><span class="lineNum">     838 </span>            :   // This is a problem demonstrated in test2013_156.C and test2013_158.C.</a>
+<a name="839"><span class="lineNum">     839 </span>            : </a>
+<a name="840"><span class="lineNum">     840 </span>            :   // DQ (5/8/2013): Set the SgUnparse_Info so that only the first part will be unparsed.</a>
+<a name="841"><span class="lineNum">     841 </span>            :      unparseInfoPointer-&gt;set_isTypeFirstPart();</a>
+<a name="842"><span class="lineNum">     842 </span>            : </a>
+<a name="843"><span class="lineNum">     843 </span>            :   // DQ (8/19/2013): Added specification to skip class specifier (fixes problem with test2013_306.C).</a>
+<a name="844"><span class="lineNum">     844 </span>            :      unparseInfoPointer-&gt;set_SkipClassSpecifier();</a>
+<a name="845"><span class="lineNum">     845 </span>            : </a>
+<a name="846"><span class="lineNum">     846 </span>            :      string typeNameString = globalUnparseToString(type,unparseInfoPointer);</a>
+<a name="847"><span class="lineNum">     847 </span>            : </a>
+<a name="848"><span class="lineNum">     848 </span>            :      return typeNameString;</a>
+<a name="849"><span class="lineNum">     849 </span>            :    }</a>
+<a name="850"><span class="lineNum">     850 </span>            : #endif</a>
+<a name="851"><span class="lineNum">     851 </span>            : </a>
+<a name="852"><span class="lineNum">     852 </span>            : // void FixupTemplateArguments::visit ( SgNode* node )</a>
+<a name="853"><span class="lineNum">     853 </span>            : void</a>
+<a name="854"><span class="lineNum">     854 </span><span class="lineNoCov">          0 : FixupTemplateArguments::processTemplateArgument ( SgTemplateArgument* templateArgument, SgScopeStatement* targetScope )</span></a>
+<a name="855"><span class="lineNum">     855 </span>            :    {</a>
+<a name="856"><span class="lineNum">     856 </span>            :   // ROSE_ASSERT(node != NULL);</a>
+<a name="857"><span class="lineNum">     857 </span><span class="lineNoCov">          0 :      ROSE_ASSERT(templateArgument != NULL);</span></a>
+<a name="858"><span class="lineNum">     858 </span>            : </a>
+<a name="859"><span class="lineNum">     859 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="860"><span class="lineNum">     860 </span>            :   // For debugging, keep track of the recursive depth.</a>
+<a name="861"><span class="lineNum">     861 </span>            :      printf (&quot;In FixupTemplateArguments::visit: global_depth = %zu \n&quot;,global_depth);</a>
+<a name="862"><span class="lineNum">     862 </span>            :      ROSE_ASSERT(global_depth &lt; 50);</a>
+<a name="863"><span class="lineNum">     863 </span>            : #endif</a>
+<a name="864"><span class="lineNum">     864 </span>            : </a>
+<a name="865"><span class="lineNum">     865 </span>            :   // DQ (2/11/2017): Change this traversal to not use memory pools.</a>
+<a name="866"><span class="lineNum">     866 </span>            :   // SgTemplateArgument* templateArgument = isSgTemplateArgument(node);</a>
+<a name="867"><span class="lineNum">     867 </span><span class="lineNoCov">          0 :      ROSE_ASSERT(templateArgument != NULL);</span></a>
+<a name="868"><span class="lineNum">     868 </span>            : </a>
+<a name="869"><span class="lineNum">     869 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="870"><span class="lineNum">     870 </span>            :      global_depth++;</a>
+<a name="871"><span class="lineNum">     871 </span>            : #endif</a>
+<a name="872"><span class="lineNum">     872 </span>            : </a>
+<a name="873"><span class="lineNum">     873 </span><span class="lineNoCov">          0 :      bool result = contains_private_type(templateArgument,targetScope);</span></a>
+<a name="874"><span class="lineNum">     874 </span>            : </a>
+<a name="875"><span class="lineNum">     875 </span>            : #if DEBUGGING_USING_RECURSIVE_DEPTH</a>
+<a name="876"><span class="lineNum">     876 </span>            :      global_depth--;</a>
+<a name="877"><span class="lineNum">     877 </span>            : #endif</a>
+<a name="878"><span class="lineNum">     878 </span>            : </a>
+<a name="879"><span class="lineNum">     879 </span><span class="lineNoCov">          0 :      if (result == true)</span></a>
+<a name="880"><span class="lineNum">     880 </span>            :         {</a>
+<a name="881"><span class="lineNum">     881 </span>            :        // This type will be a problem to unparse, because it contains parts that are private (or protected).</a>
+<a name="882"><span class="lineNum">     882 </span>            : #if DEBUG_VISIT_PRIVATE_TYPE</a>
+<a name="883"><span class="lineNum">     883 </span>            :           printf (&quot;\n\nWARNING: This template parameter can NOT be unparsed (contains references to private types): templateArgument = %p = %s \n&quot;,templateArgument,templateArgument-&gt;unparseToString().c_str());</a>
+<a name="884"><span class="lineNum">     884 </span>            :           SgNode* parent = templateArgument-&gt;get_parent();</a>
+<a name="885"><span class="lineNum">     885 </span>            :           SgDeclarationStatement* parentDeclaration = isSgDeclarationStatement(parent);</a>
+<a name="886"><span class="lineNum">     886 </span>            :           if (parentDeclaration != NULL)</a>
+<a name="887"><span class="lineNum">     887 </span>            :              {</a>
+<a name="888"><span class="lineNum">     888 </span>            :                if (parentDeclaration-&gt;get_file_info() != NULL)</a>
+<a name="889"><span class="lineNum">     889 </span>            :                   {</a>
+<a name="890"><span class="lineNum">     890 </span>            : #if 0</a>
+<a name="891"><span class="lineNum">     891 </span>            :                     parentDeclaration-&gt;get_file_info()-&gt;display(&quot;location of parent non-defining declaration using templateArgument: debug&quot;);</a>
+<a name="892"><span class="lineNum">     892 </span>            :                     SgDeclarationStatement* parentDefiningDeclaration = isSgDeclarationStatement(parentDeclaration-&gt;get_definingDeclaration());</a>
+<a name="893"><span class="lineNum">     893 </span>            :                     if (parentDefiningDeclaration != NULL)</a>
+<a name="894"><span class="lineNum">     894 </span>            :                        {</a>
+<a name="895"><span class="lineNum">     895 </span>            :                          parentDefiningDeclaration-&gt;get_file_info()-&gt;display(&quot;location of parent defining declaration using templateArgument: debug&quot;);</a>
+<a name="896"><span class="lineNum">     896 </span>            :                        }</a>
+<a name="897"><span class="lineNum">     897 </span>            : #endif</a>
+<a name="898"><span class="lineNum">     898 </span>            :                   }</a>
+<a name="899"><span class="lineNum">     899 </span>            :              }</a>
+<a name="900"><span class="lineNum">     900 </span>            :             else</a>
+<a name="901"><span class="lineNum">     901 </span>            :              {</a>
+<a name="902"><span class="lineNum">     902 </span>            :                if (parent-&gt;get_file_info() != NULL)</a>
+<a name="903"><span class="lineNum">     903 </span>            :                   {</a>
+<a name="904"><span class="lineNum">     904 </span>            : #if 0</a>
+<a name="905"><span class="lineNum">     905 </span>            :                     parent-&gt;get_file_info()-&gt;display(&quot;location of parent node using templateArgument: debug&quot;);</a>
+<a name="906"><span class="lineNum">     906 </span>            : #endif</a>
+<a name="907"><span class="lineNum">     907 </span>            :                   }</a>
+<a name="908"><span class="lineNum">     908 </span>            :              }</a>
+<a name="909"><span class="lineNum">     909 </span>            : #endif</a>
+<a name="910"><span class="lineNum">     910 </span>            :         }</a>
+<a name="911"><span class="lineNum">     911 </span>            :        else</a>
+<a name="912"><span class="lineNum">     912 </span>            :         {</a>
+<a name="913"><span class="lineNum">     913 </span>            :        // This type is fine to unparse</a>
+<a name="914"><span class="lineNum">     914 </span>            : #if DEBUG_PRIVATE_TYPE</a>
+<a name="915"><span class="lineNum">     915 </span>            :           printf (&quot;Template parameter CAN be unparsed (no private types) \n\n&quot;);</a>
+<a name="916"><span class="lineNum">     916 </span>            : #endif</a>
+<a name="917"><span class="lineNum">     917 </span>            :         }</a>
+<a name="918"><span class="lineNum">     918 </span><span class="lineNoCov">          0 :    }</span></a>
+<a name="919"><span class="lineNum">     919 </span>            : </a>
+<a name="920"><span class="lineNum">     920 </span>            : </a>
+<a name="921"><span class="lineNum">     921 </span>            : void</a>
+<a name="922"><span class="lineNum">     922 </span><span class="lineCov">    6121880 : FixupTemplateArguments::visit ( SgNode* node )</span></a>
+<a name="923"><span class="lineNum">     923 </span>            :    {</a>
+<a name="924"><span class="lineNum">     924 </span><span class="lineCov">    6121880 :      ROSE_ASSERT(node != NULL);</span></a>
+<a name="925"><span class="lineNum">     925 </span>            : </a>
+<a name="926"><span class="lineNum">     926 </span><span class="lineCov">    6121880 :      SgVariableDeclaration* variableDeclaration = isSgVariableDeclaration(node);</span></a>
+<a name="927"><span class="lineNum">     927 </span><span class="lineCov">    6121880 :      if (variableDeclaration != NULL)</span></a>
+<a name="928"><span class="lineNum">     928 </span>            :         {</a>
+<a name="929"><span class="lineNum">     929 </span>            :        // Check the type of the variable declaration, and any template arguments if it is a template type with template arguments.</a>
+<a name="930"><span class="lineNum">     930 </span>            :        // SgType* type = variableDeclaration-&gt;get_type();</a>
+<a name="931"><span class="lineNum">     931 </span>            :        // ROSE_ASSERT(type != NULL);</a>
+<a name="932"><span class="lineNum">     932 </span><span class="lineCov">      33011 :           SgInitializedName* initializedName = SageInterface::getFirstInitializedName(variableDeclaration);</span></a>
+<a name="933"><span class="lineNum">     933 </span><span class="lineCov">      33011 :           ROSE_ASSERT(initializedName != NULL);</span></a>
+<a name="934"><span class="lineNum">     934 </span><span class="lineCov">      33011 :           SgType* type = initializedName-&gt;get_type();</span></a>
+<a name="935"><span class="lineNum">     935 </span><span class="lineCov">      33011 :           ROSE_ASSERT(type != NULL);</span></a>
+<a name="936"><span class="lineNum">     936 </span>            : #if 0</a>
+<a name="937"><span class="lineNum">     937 </span>            :           printf (&quot;\n**************************************************************************** \n&quot;);</a>
+<a name="938"><span class="lineNum">     938 </span>            :           printf (&quot;FixupTemplateArguments::visit(): variableDeclaration = %p = %s initializedName = %s \n&quot;,variableDeclaration,variableDeclaration-&gt;class_name().c_str(),initializedName-&gt;get_name().str());</a>
+<a name="939"><span class="lineNum">     939 </span>            :           printf (&quot;   --- type = %p = %s \n&quot;,type,type-&gt;class_name().c_str());</a>
+<a name="940"><span class="lineNum">     940 </span>            :           string filename = initializedName-&gt;get_file_info()-&gt;get_filename();</a>
+<a name="941"><span class="lineNum">     941 </span>            :           int linenumber  = initializedName-&gt;get_file_info()-&gt;get_line();</a>
+<a name="942"><span class="lineNum">     942 </span>            :           printf (&quot;   --- filename = %s line = %d \n&quot;,filename.c_str(),linenumber);</a>
+<a name="943"><span class="lineNum">     943 </span>            : #endif</a>
+<a name="944"><span class="lineNum">     944 </span><span class="lineCov">      33011 :           SgScopeStatement* targetScope = variableDeclaration-&gt;get_scope();</span></a>
+<a name="945"><span class="lineNum">     945 </span><span class="lineCov">      33011 :           ROSE_ASSERT(targetScope != NULL);</span></a>
+<a name="946"><span class="lineNum">     946 </span>            : #if 0</a>
+<a name="947"><span class="lineNum">     947 </span>            :           printf (&quot;In FixupTemplateArguments::visit(): targetScope for variableDeclaration = %p = %s \n&quot;,targetScope,targetScope-&gt;class_name().c_str());</a>
+<a name="948"><span class="lineNum">     948 </span>            : #endif</a>
+<a name="949"><span class="lineNum">     949 </span>            : </a>
+<a name="950"><span class="lineNum">     950 </span>            :        // DQ (2/16/2017): Don't process code in template instantiations.</a>
+<a name="951"><span class="lineNum">     951 </span><span class="lineCov">      33011 :           SgTemplateInstantiationDefn*               templateInstantiationDefn              = isSgTemplateInstantiationDefn(targetScope);</span></a>
+<a name="952"><span class="lineNum">     952 </span><span class="lineCov">      33011 :           SgFunctionDeclaration*                     functionDeclaration                    = TransformationSupport::getFunctionDeclaration(targetScope);</span></a>
+<a name="953"><span class="lineNum">     953 </span><span class="lineCov">      33011 :           SgTemplateInstantiationFunctionDecl*       templateInstantiationFunctionDec       = isSgTemplateInstantiationFunctionDecl(functionDeclaration);</span></a>
+<a name="954"><span class="lineNum">     954 </span><span class="lineCov">      33011 :           SgTemplateInstantiationMemberFunctionDecl* templateInstantiationMemberFunctionDec = isSgTemplateInstantiationMemberFunctionDecl(functionDeclaration);</span></a>
+<a name="955"><span class="lineNum">     955 </span>            :        // if (templateInstantiationDefn == NULL)</a>
+<a name="956"><span class="lineNum">     956 </span><span class="lineCov">      33011 :           if (templateInstantiationDefn == NULL &amp;&amp; templateInstantiationFunctionDec == NULL &amp;&amp; templateInstantiationMemberFunctionDec == NULL)</span></a>
+<a name="957"><span class="lineNum">     957 </span>            :              {</a>
+<a name="958"><span class="lineNum">     958 </span>            : #if 1</a>
+<a name="959"><span class="lineNum">     959 </span>            :             // DQ (2/15/2017): When this is run, we cause transformations that cause ROSE to have an infinte loop.</a>
+<a name="960"><span class="lineNum">     960 </span>            :             // Since this is a second (redundant) invocaion, we likely should just not run this.  But it is not </a>
+<a name="961"><span class="lineNum">     961 </span>            :             // clear if this truely fixes the problem that I am seeing.</a>
+<a name="962"><span class="lineNum">     962 </span><span class="lineCov">      31084 :                bool result = contains_private_type(type,targetScope);</span></a>
+<a name="963"><span class="lineNum">     963 </span>            : </a>
+<a name="964"><span class="lineNum">     964 </span>            :             // DQ (3/25/2017): Added a trivial use to eliminate Clang warning about the return value not being used.</a>
+<a name="965"><span class="lineNum">     965 </span>            :             // But it might be that we should not run the function, however this is a complex subject from last month </a>
+<a name="966"><span class="lineNum">     966 </span>            :             // that I don't wish to revisit at the moment while being focused om eliminating warnings from Clang.</a>
+<a name="967"><span class="lineNum">     967 </span><span class="lineCov">      31084 :                ROSE_ASSERT(result == true || result == false);</span></a>
+<a name="968"><span class="lineNum">     968 </span>            : #endif</a>
+<a name="969"><span class="lineNum">     969 </span>            : #if 0</a>
+<a name="970"><span class="lineNum">     970 </span>            :                if (result == true)</a>
+<a name="971"><span class="lineNum">     971 </span>            :                   {</a>
+<a name="972"><span class="lineNum">     972 </span>            :                     printf (&quot;******** contains private type: variableDeclaration = %p = %s initializedName = %s \n&quot;,variableDeclaration,variableDeclaration-&gt;class_name().c_str(),initializedName-&gt;get_name().str());</a>
+<a name="973"><span class="lineNum">     973 </span>            :                   }</a>
+<a name="974"><span class="lineNum">     974 </span>            : #endif</a>
+<a name="975"><span class="lineNum">     975 </span>            :              }</a>
+<a name="976"><span class="lineNum">     976 </span>            : #if 0</a>
+<a name="977"><span class="lineNum">     977 </span>            :           printf (&quot;DONE: FixupTemplateArguments::visit(): variableDeclaration = %p = %s initializedName = %s \n&quot;,variableDeclaration,variableDeclaration-&gt;class_name().c_str(),initializedName-&gt;get_name().str());</a>
+<a name="978"><span class="lineNum">     978 </span>            : #endif</a>
+<a name="979"><span class="lineNum">     979 </span>            : #if 0</a>
+<a name="980"><span class="lineNum">     980 </span>            :           printf (&quot;Exiting as a test! \n&quot;);</a>
+<a name="981"><span class="lineNum">     981 </span>            :           ROSE_ABORT();</a>
+<a name="982"><span class="lineNum">     982 </span>            : #endif</a>
+<a name="983"><span class="lineNum">     983 </span>            :         }</a>
+<a name="984"><span class="lineNum">     984 </span><span class="lineCov">    6121880 :    }</span></a>
+<a name="985"><span class="lineNum">     985 </span>            : </a>
+<a name="986"><span class="lineNum">     986 </span>            : // void fixupTemplateArguments()</a>
+<a name="987"><span class="lineNum">     987 </span><span class="lineCov">        320 : void fixupTemplateArguments( SgNode* node )</span></a>
+<a name="988"><span class="lineNum">     988 </span>            :    {</a>
+<a name="989"><span class="lineNum">     989 </span>            :   // DQ (7/7/2005): Introduce tracking of performance of ROSE.</a>
+<a name="990"><span class="lineNum">     990 </span><span class="lineCov">        320 :      TimingPerformance fixupTemplateArguments_timer (&quot;Add reference to non-private template arguments (for unparsing):&quot;);</span></a>
+<a name="991"><span class="lineNum">     991 </span>            : </a>
+<a name="992"><span class="lineNum">     992 </span>            : #if 0</a>
+<a name="993"><span class="lineNum">     993 </span>            :      printf (&quot;Inside of fixupTemplateArguments() \n&quot;);</a>
+<a name="994"><span class="lineNum">     994 </span>            : #endif</a>
+<a name="995"><span class="lineNum">     995 </span>            : </a>
+<a name="996"><span class="lineNum">     996 </span>            : #if 1</a>
+<a name="997"><span class="lineNum">     997 </span>            :   // DQ (2/10/2017): The default should be for this to be on, but it needs to be fixed to allow some of the later test codes to also pass.</a>
+<a name="998"><span class="lineNum">     998 </span>            :   // DQ (2/9/2017): This is causing type names to be too long (over 400K), so it causes tests/CompileTests/RoseExample_tests/testRoseHeaders_03.C</a>
+<a name="999"><span class="lineNum">     999 </span>            :   // to fails (along with several other of the ROSE specific test codes in that directory (tests 3,4,5,and 6)).</a>
+<a name="1000"><span class="lineNum">    1000 </span>            : </a>
+<a name="1001"><span class="lineNum">    1001 </span>            :   // DQ (1/15/2017): Since this is a fix for GNU 4.9 and greater backend compilers, and Intel and Clang compilers, </a>
+<a name="1002"><span class="lineNum">    1002 </span>            :   // we only want to test fixing it there initially. Later we can apply the fix more uniformally.</a>
+<a name="1003"><span class="lineNum">    1003 </span>            :   // DQ (11/27/2016): We only want to support calling this fixup where I am testing it with the GNU 6.x compilers.</a>
+<a name="1004"><span class="lineNum">    1004 </span>            :   // #if (BACKEND_CXX_COMPILER_MAJOR_VERSION_NUMBER &gt;= 6)</a>
+<a name="1005"><span class="lineNum">    1005 </span>            : #if defined(BACKEND_CXX_IS_GNU_COMPILER) &amp;&amp; ((BACKEND_CXX_COMPILER_MAJOR_VERSION_NUMBER == 4 &amp;&amp; BACKEND_CXX_COMPILER_MINOR_VERSION_NUMBER == 9) || BACKEND_CXX_COMPILER_MAJOR_VERSION_NUMBER &gt;= 5 )</a>
+<a name="1006"><span class="lineNum">    1006 </span><span class="lineCov">        640 :      FixupTemplateArguments t;</span></a>
+<a name="1007"><span class="lineNum">    1007 </span>            :   // SgTemplateArgument::traverseMemoryPoolNodes(t);</a>
+<a name="1008"><span class="lineNum">    1008 </span>            :   // t.traverse(node,preorder);</a>
+<a name="1009"><span class="lineNum">    1009 </span><span class="lineCov">        320 :      t.traverse(node,preorder);</span></a>
+<a name="1010"><span class="lineNum">    1010 </span>            : #else</a>
+<a name="1011"><span class="lineNum">    1011 </span>            : // DQ (1/15/2017): And apply this fix for all versions of Intel and Clang backend compilers as well.</a>
+<a name="1012"><span class="lineNum">    1012 </span>            :    #if defined(BACKEND_CXX_IS_INTEL_COMPILER) || defined (BACKEND_CXX_IS_CLANG_COMPILER)</a>
+<a name="1013"><span class="lineNum">    1013 </span>            :      FixupTemplateArguments t;</a>
+<a name="1014"><span class="lineNum">    1014 </span>            :   // SgTemplateArgument::traverseMemoryPoolNodes(t);</a>
+<a name="1015"><span class="lineNum">    1015 </span>            :      t.traverse(node,preorder);</a>
+<a name="1016"><span class="lineNum">    1016 </span>            :    #endif</a>
+<a name="1017"><span class="lineNum">    1017 </span>            : #endif</a>
+<a name="1018"><span class="lineNum">    1018 </span>            : </a>
+<a name="1019"><span class="lineNum">    1019 </span>            : #endif</a>
+<a name="1020"><span class="lineNum">    1020 </span>            : </a>
+<a name="1021"><span class="lineNum">    1021 </span>            : #if 0</a>
+<a name="1022"><span class="lineNum">    1022 </span>            : // #if DEBUG_PRIVATE_TYPE</a>
+<a name="1023"><span class="lineNum">    1023 </span>            :      printf (&quot;DONE: Inside of fixupTemplateArguments() \n&quot;);</a>
+<a name="1024"><span class="lineNum">    1024 </span>            : #endif</a>
+<a name="1025"><span class="lineNum">    1025 </span>            : </a>
+<a name="1026"><span class="lineNum">    1026 </span>            : #if 0</a>
+<a name="1027"><span class="lineNum">    1027 </span>            :      printf (&quot;Exiting as a test! \n&quot;);</a>
+<a name="1028"><span class="lineNum">    1028 </span>            :      ROSE_ABORT();</a>
+<a name="1029"><span class="lineNum">    1029 </span>            : #endif</a>
+<a name="1030"><span class="lineNum">    1030 </span><span class="lineCov">        320 :    }</span></a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

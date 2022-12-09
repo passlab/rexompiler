@@ -1,0 +1,7 @@
+<map id="Sawyer::Container::BitVectorSupport::toInteger" name="Sawyer::Container::BitVectorSupport::toInteger">
+<area shape="rect" id="node1" title="Convert a bit vector to an integer." alt="" coords="5,119,185,161"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Interval.html#a136b9afce8c48871c21c58dc9ecdc48f" title="Construct an interval from one endpoint and a size." alt="" coords="243,5,381,61"/>
+<area shape="rect" id="node3" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#aff6810c441e283e64b214bd4d9bbc0a6" title="Copy some bits." alt="" coords="233,86,391,127"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Interval.html#abb62f08552ec4762be55510d97e7a233" title="Returns lower limit." alt="" coords="243,151,381,193"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Interval.html#a75d8ca4e63b1180f6d2194a0ec79440d" title="Size of interval." alt="" coords="243,217,381,258"/>
+</map>

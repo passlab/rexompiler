@@ -1,0 +1,5 @@
+<map id="SgStatement" name="SgStatement">
+<area shape="rect" id="node1" title="This class represents the notion of a statement." alt="" coords="83,95,181,121"/>
+<area shape="rect" id="node2" href="$classSgLocatedNode.html" title="This class represents the notion of an expression or statement which has a position within the source..." alt="" coords="5,5,120,32"/>
+<area shape="rect" id="node3" href="$classSgLabelRefExp.html" title=" " alt="" coords="145,5,258,32"/>
+</map>

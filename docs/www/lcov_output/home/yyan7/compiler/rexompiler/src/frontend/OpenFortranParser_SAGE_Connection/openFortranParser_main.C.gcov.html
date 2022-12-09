@@ -1,0 +1,375 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /home/yyan7/compiler/rexompiler/src/frontend/OpenFortranParser_SAGE_Connection/openFortranParser_main.C</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">home/yyan7/compiler/rexompiler/src/frontend/OpenFortranParser_SAGE_Connection</a> - openFortranParser_main.C<span style="font-size: 80%;"> (source / <a href="openFortranParser_main.C.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntryLo">72.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /**</a>
+<a name="2"><span class="lineNum">       2 </span>            :  * Copyright (c) 2005, 2006 Los Alamos National Security, LLC.  This</a>
+<a name="3"><span class="lineNum">       3 </span>            :  * material was produced under U.S. Government contract DE-</a>
+<a name="4"><span class="lineNum">       4 </span>            :  * AC52-06NA25396 for Los Alamos National Laboratory (LANL), which is</a>
+<a name="5"><span class="lineNum">       5 </span>            :  * operated by the Los Alamos National Security, LLC (LANS) for the</a>
+<a name="6"><span class="lineNum">       6 </span>            :  * U.S. Department of Energy. The U.S. Government has rights to use,</a>
+<a name="7"><span class="lineNum">       7 </span>            :  * reproduce, and distribute this software. NEITHER THE GOVERNMENT NOR</a>
+<a name="8"><span class="lineNum">       8 </span>            :  * LANS MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR ASSUMES ANY</a>
+<a name="9"><span class="lineNum">       9 </span>            :  * LIABILITY FOR THE USE OF THIS SOFTWARE. If software is modified to</a>
+<a name="10"><span class="lineNum">      10 </span>            :  * produce derivative works, such modified software should be clearly</a>
+<a name="11"><span class="lineNum">      11 </span>            :  * marked, so as not to confuse it with the version available from</a>
+<a name="12"><span class="lineNum">      12 </span>            :  * LANL.</a>
+<a name="13"><span class="lineNum">      13 </span>            :  *  </a>
+<a name="14"><span class="lineNum">      14 </span>            :  * Additionally, this program and the accompanying materials are made</a>
+<a name="15"><span class="lineNum">      15 </span>            :  * available under the terms of the Eclipse Public License v1.0 which</a>
+<a name="16"><span class="lineNum">      16 </span>            :  * accompanies this distribution, and is available at</a>
+<a name="17"><span class="lineNum">      17 </span>            :  * http://www.eclipse.org/legal/epl-v10.html</a>
+<a name="18"><span class="lineNum">      18 </span>            :  */</a>
+<a name="19"><span class="lineNum">      19 </span>            : </a>
+<a name="20"><span class="lineNum">      20 </span>            : /* Based on examples/docs from:</a>
+<a name="21"><span class="lineNum">      21 </span>            :  *      http://java.sun.com/j2se/1.4.2/docs/guide/jni/spec/invocation.html#wp9502</a>
+<a name="22"><span class="lineNum">      22 </span>            :  * http://java.sun.com/j2se/1.4.2/docs/guide/jni/spec/jniTOC.html</a>
+<a name="23"><span class="lineNum">      23 </span>            :  * http://java.sun.com/docs/books/jni/html/invoke.html </a>
+<a name="24"><span class="lineNum">      24 </span>            :  */</a>
+<a name="25"><span class="lineNum">      25 </span>            : #include &quot;sage3basic.h&quot;</a>
+<a name="26"><span class="lineNum">      26 </span>            : </a>
+<a name="27"><span class="lineNum">      27 </span>            : #include &lt;string.h&gt;</a>
+<a name="28"><span class="lineNum">      28 </span>            : #include &lt;string&gt;</a>
+<a name="29"><span class="lineNum">      29 </span>            : #include &lt;stdlib.h&gt;</a>
+<a name="30"><span class="lineNum">      30 </span>            : #include &lt;stdio.h&gt;</a>
+<a name="31"><span class="lineNum">      31 </span>            : #include &quot;rose_config.h&quot;</a>
+<a name="32"><span class="lineNum">      32 </span>            : #include &quot;rose_paths.h&quot;</a>
+<a name="33"><span class="lineNum">      33 </span>            : #include &quot;commandline_processing.h&quot;</a>
+<a name="34"><span class="lineNum">      34 </span>            : #include &quot;assert.h&quot;</a>
+<a name="35"><span class="lineNum">      35 </span>            : #include &quot;fortran_error_handler.h&quot;</a>
+<a name="36"><span class="lineNum">      36 </span>            : #include &quot;ofp.h&quot;</a>
+<a name="37"><span class="lineNum">      37 </span>            : </a>
+<a name="38"><span class="lineNum">      38 </span>            : /* This is defined if ROSE is configured to use the Java Open Fortran Parser */</a>
+<a name="39"><span class="lineNum">      39 </span>            : #ifndef USE_ROSE_JAVA_SUPPORT</a>
+<a name="40"><span class="lineNum">      40 </span>            : #error &quot;openFortranParser_main.C should not be compiled when Java support is disabled&quot;</a>
+<a name="41"><span class="lineNum">      41 </span>            : #endif</a>
+<a name="42"><span class="lineNum">      42 </span>            : </a>
+<a name="43"><span class="lineNum">      43 </span>            : </a>
+<a name="44"><span class="lineNum">      44 </span>            : using namespace std;</a>
+<a name="45"><span class="lineNum">      45 </span>            : </a>
+<a name="46"><span class="lineNum">      46 </span>            : // DQ (9/6/2010): Allow this to be commented out to simplify debugging using gdb.</a>
+<a name="47"><span class="lineNum">      47 </span>            : // #define ENABLE_FORTRAN_ERROR_HANDLER</a>
+<a name="48"><span class="lineNum">      48 </span>            : </a>
+<a name="49"><span class="lineNum">      49 </span>            : </a>
+<a name="50"><span class="lineNum">      50 </span>            : /* This is critical to permitting the correct library (the one just built by the user)</a>
+<a name="51"><span class="lineNum">      51 </span>            : // to be used instead of requiring the LD_LIBRARY_PATH to beexplicitly set by the user</a>
+<a name="52"><span class="lineNum">      52 </span>            : // before running any tests.  It is alos important to proper testing using &quot;make distcheck&quot;</a>
+<a name="53"><span class="lineNum">      53 </span>            : // since we want the new library built using that rule to be tested over any other.</a>
+<a name="54"><span class="lineNum">      54 </span>            : */</a>
+<a name="55"><span class="lineNum">      55 </span>            : #define OVERWRITE_LD_LIBRARY_PATH 1</a>
+<a name="56"><span class="lineNum">      56 </span>            : </a>
+<a name="57"><span class="lineNum">      57 </span>            : </a>
+<a name="58"><span class="lineNum">      58 </span><span class="lineCov">         37 : int openFortranParser_main(int argc, char **argv)</span></a>
+<a name="59"><span class="lineNum">      59 </span>            :   {</a>
+<a name="60"><span class="lineNum">      60 </span>            :  /* To use different versions of the LD_LIBRARY_PATH, get the value, </a>
+<a name="61"><span class="lineNum">      61 </span>            :     change it to the path in the build tree, and then reset it to the </a>
+<a name="62"><span class="lineNum">      62 </span>            :     old value after the call to JVM.  We need to do this because the</a>
+<a name="63"><span class="lineNum">      63 </span>            :     libparser_java_FortranParserActionJNI.so that we need is in the </a>
+<a name="64"><span class="lineNum">      64 </span>            :     build tree and it is specific to the configuration of ROSE (else </a>
+<a name="65"><span class="lineNum">      65 </span>            :     V_&lt;class name&gt; enum values will be different as a result of </a>
+<a name="66"><span class="lineNum">      66 </span>            :     configuration options that might trigger different numbers of IR </a>
+<a name="67"><span class="lineNum">      67 </span>            :     nodes to be use.</a>
+<a name="68"><span class="lineNum">      68 </span>            :   */</a>
+<a name="69"><span class="lineNum">      69 </span>            : </a>
+<a name="70"><span class="lineNum">      70 </span>            :  /* Overwite to a new value. It is not clear when to use the install path and when to use the build path! */</a>
+<a name="71"><span class="lineNum">      71 </span>            :     #ifdef USE_CMAKE</a>
+<a name="72"><span class="lineNum">      72 </span>            :     string new_value = findRoseSupportPathFromBuild(&quot;lib&quot;, &quot;lib&quot;);</a>
+<a name="73"><span class="lineNum">      73 </span>            :     #else</a>
+<a name="74"><span class="lineNum">      74 </span><span class="lineCov">         74 :     string new_value = findRoseSupportPathFromBuild(&quot;src/frontend/OpenFortranParser_SAGE_Connection/.libs&quot;, &quot;lib&quot;);</span></a>
+<a name="75"><span class="lineNum">      75 </span>            :     #endif</a>
+<a name="76"><span class="lineNum">      76 </span>            : </a>
+<a name="77"><span class="lineNum">      77 </span>            :  /* Save the old value */</a>
+<a name="78"><span class="lineNum">      78 </span><span class="lineCov">         37 :     const char* old_value = getenv(ROSE_SHLIBPATH_VAR); // Might be null</span></a>
+<a name="79"><span class="lineNum">      79 </span>            : </a>
+<a name="80"><span class="lineNum">      80 </span>            : #if OVERWRITE_LD_LIBRARY_PATH</a>
+<a name="81"><span class="lineNum">      81 </span><span class="lineCov">         37 :     int overwrite = 1;</span></a>
+<a name="82"><span class="lineNum">      82 </span><span class="lineCov">         37 :     int env_status = setenv(ROSE_SHLIBPATH_VAR,new_value.c_str(),overwrite);</span></a>
+<a name="83"><span class="lineNum">      83 </span><span class="lineCov">         37 :     assert(env_status == 0);</span></a>
+<a name="84"><span class="lineNum">      84 </span>            : #endif</a>
+<a name="85"><span class="lineNum">      85 </span>            : </a>
+<a name="86"><span class="lineNum">      86 </span><span class="lineCov">         37 :     if (SgProject::get_verbose() &gt; 0)</span></a>
+<a name="87"><span class="lineNum">      87 </span>            :        {</a>
+<a name="88"><span class="lineNum">      88 </span><span class="lineNoCov">          0 :          printf (&quot;Call the function that will start a JVM and call the OFP \n\n&quot;);</span></a>
+<a name="89"><span class="lineNum">      89 </span><span class="lineNoCov">          0 :          string JVM_command_line = CommandlineProcessing::generateStringFromArgList(CommandlineProcessing::generateArgListFromArgcArgv(argc, argv));</span></a>
+<a name="90"><span class="lineNum">      90 </span><span class="lineNoCov">          0 :          printf (&quot;Java JVM commandline = %s \n&quot;,JVM_command_line.c_str());</span></a>
+<a name="91"><span class="lineNum">      91 </span><span class="lineNoCov">          0 :          printf (&quot;ROSE modified %s = %s \n&quot;,ROSE_SHLIBPATH_VAR,new_value.c_str());</span></a>
+<a name="92"><span class="lineNum">      92 </span>            :        }</a>
+<a name="93"><span class="lineNum">      93 </span>            : </a>
+<a name="94"><span class="lineNum">      94 </span>            : #ifdef ENABLE_FORTRAN_ERROR_HANDLER</a>
+<a name="95"><span class="lineNum">      95 </span>            :     fortran_error_handler_begin();</a>
+<a name="96"><span class="lineNum">      96 </span>            : #endif</a>
+<a name="97"><span class="lineNum">      97 </span>            : </a>
+<a name="98"><span class="lineNum">      98 </span><span class="lineCov">         37 :     int status = Rose::Frontend::Fortran::Ofp::jvm_ofp_processing(argc, argv);</span></a>
+<a name="99"><span class="lineNum">      99 </span>            : </a>
+<a name="100"><span class="lineNum">     100 </span>            : #ifdef ENABLE_FORTRAN_ERROR_HANDLER</a>
+<a name="101"><span class="lineNum">     101 </span>            :     fortran_error_handler_end();</a>
+<a name="102"><span class="lineNum">     102 </span>            : #endif</a>
+<a name="103"><span class="lineNum">     103 </span>            : </a>
+<a name="104"><span class="lineNum">     104 </span><span class="lineCov">         37 :     if (SgProject::get_verbose() &gt; 0)</span></a>
+<a name="105"><span class="lineNum">     105 </span>            :        {</a>
+<a name="106"><span class="lineNum">     106 </span><span class="lineNoCov">          0 :          printf (&quot;JVM processing done.\n\n&quot;);</span></a>
+<a name="107"><span class="lineNum">     107 </span>            :        }</a>
+<a name="108"><span class="lineNum">     108 </span>            : </a>
+<a name="109"><span class="lineNum">     109 </span>            :  /* Reset to the saved value */</a>
+<a name="110"><span class="lineNum">     110 </span>            : #if OVERWRITE_LD_LIBRARY_PATH</a>
+<a name="111"><span class="lineNum">     111 </span>            :  // DQ (9/12/2011): Note that old_value can be NULL and if so then we don't want it to be dereferenced.</a>
+<a name="112"><span class="lineNum">     112 </span>            :  // env_status = setenv(ROSE_SHLIBPATH_VAR,old_value,overwrite);</a>
+<a name="113"><span class="lineNum">     113 </span><span class="lineCov">         37 :     if (old_value != NULL)</span></a>
+<a name="114"><span class="lineNum">     114 </span><span class="lineCov">         37 :           env_status = setenv(ROSE_SHLIBPATH_VAR,old_value,overwrite);</span></a>
+<a name="115"><span class="lineNum">     115 </span>            : </a>
+<a name="116"><span class="lineNum">     116 </span><span class="lineCov">         37 :     assert(env_status == 0);</span></a>
+<a name="117"><span class="lineNum">     117 </span>            : #endif</a>
+<a name="118"><span class="lineNum">     118 </span>            : </a>
+<a name="119"><span class="lineNum">     119 </span><span class="lineCov">         74 :          return status;</span></a>
+<a name="120"><span class="lineNum">     120 </span>            :   }</a>
+<a name="121"><span class="lineNum">     121 </span>            : </a>
+<a name="122"><span class="lineNum">     122 </span>            : </a>
+<a name="123"><span class="lineNum">     123 </span>            : #if 0</a>
+<a name="124"><span class="lineNum">     124 </span>            : #if 0</a>
+<a name="125"><span class="lineNum">     125 </span>            : int</a>
+<a name="126"><span class="lineNum">     126 </span>            : experimental_openFortranParser_main(int argc, char **argv)</a>
+<a name="127"><span class="lineNum">     127 </span>            :    {</a>
+<a name="128"><span class="lineNum">     128 </span>            :   // This function does not need to call the JVM.</a>
+<a name="129"><span class="lineNum">     129 </span>            :      int status = 0;</a>
+<a name="130"><span class="lineNum">     130 </span>            : </a>
+<a name="131"><span class="lineNum">     131 </span>            :      printf (&quot;ERROR: This function is defined in openFortranParser_main.C of the src/frontend/OpenFortranParser_SAGE_Connection directory (the experimental fortran frontend has not been enabled) \n&quot;);</a>
+<a name="132"><span class="lineNum">     132 </span>            :      ROSE_ABORT();</a>
+<a name="133"><span class="lineNum">     133 </span>            :    }</a>
+<a name="134"><span class="lineNum">     134 </span>            : #else</a>
+<a name="135"><span class="lineNum">     135 </span>            : int</a>
+<a name="136"><span class="lineNum">     136 </span>            : experimental_openFortranParser_main(int argc, char **argv)</a>
+<a name="137"><span class="lineNum">     137 </span>            :    {</a>
+<a name="138"><span class="lineNum">     138 </span>            :   // This function does not need to call the JVM.</a>
+<a name="139"><span class="lineNum">     139 </span>            : </a>
+<a name="140"><span class="lineNum">     140 </span>            : #if 0</a>
+<a name="141"><span class="lineNum">     141 </span>            :      printf (&quot;In experimental_openFortranParser_main(): Put the call the the new SDF Open Fortran Parser here... argc = %d \n&quot;,argc);</a>
+<a name="142"><span class="lineNum">     142 </span>            : #endif</a>
+<a name="143"><span class="lineNum">     143 </span>            : </a>
+<a name="144"><span class="lineNum">     144 </span>            :      int i, err;</a>
+<a name="145"><span class="lineNum">     145 </span>            :   // char parse_table[128];</a>
+<a name="146"><span class="lineNum">     146 </span>            :      string parse_table;</a>
+<a name="147"><span class="lineNum">     147 </span>            : </a>
+<a name="148"><span class="lineNum">     148 </span>            :   // parse_table[0] = '\0';</a>
+<a name="149"><span class="lineNum">     149 </span>            : </a>
+<a name="150"><span class="lineNum">     150 </span>            :      if (argc &lt; 4) </a>
+<a name="151"><span class="lineNum">     151 </span>            :         {</a>
+<a name="152"><span class="lineNum">     152 </span>            :           printf(&quot;usage: fortran_parser --parseTable parse_table_path filename(s)\n&quot;);</a>
+<a name="153"><span class="lineNum">     153 </span>            :           return 1;</a>
+<a name="154"><span class="lineNum">     154 </span>            :         }</a>
+<a name="155"><span class="lineNum">     155 </span>            : </a>
+<a name="156"><span class="lineNum">     156 </span>            :      string commandString = &quot;sglri &quot;;</a>
+<a name="157"><span class="lineNum">     157 </span>            : </a>
+<a name="158"><span class="lineNum">     158 </span>            : #if 0</a>
+<a name="159"><span class="lineNum">     159 </span>            :      printf (&quot;In experimental_openFortranParser_main(): before loop over args: commandString = %s \n&quot;,commandString.c_str());</a>
+<a name="160"><span class="lineNum">     160 </span>            : #endif</a>
+<a name="161"><span class="lineNum">     161 </span>            : </a>
+<a name="162"><span class="lineNum">     162 </span>            :   // Parse each filename (args not associated with &quot;--parseTable&quot;, &quot;--&quot; or &quot;-I&quot;)</a>
+<a name="163"><span class="lineNum">     163 </span>            :      for (i = 1; i &lt; argc; i++)</a>
+<a name="164"><span class="lineNum">     164 </span>            :         {</a>
+<a name="165"><span class="lineNum">     165 </span>            : #if 0</a>
+<a name="166"><span class="lineNum">     166 </span>            :           printf (&quot;In experimental_openFortranParser_main(): i = %d argv[%d] = %s \n&quot;,i,i,argv[i]);</a>
+<a name="167"><span class="lineNum">     167 </span>            : #endif</a>
+<a name="168"><span class="lineNum">     168 </span>            :           if (strncmp(argv[i], &quot;--parseTable&quot;, 12) == 0) </a>
+<a name="169"><span class="lineNum">     169 </span>            :              {</a>
+<a name="170"><span class="lineNum">     170 </span>            : #if 0</a>
+<a name="171"><span class="lineNum">     171 </span>            :                printf (&quot;In experimental_openFortranParser_main(): argv[i+1 = %d] = %s \n&quot;,i+1,argv[i+1]);</a>
+<a name="172"><span class="lineNum">     172 </span>            : #endif</a>
+<a name="173"><span class="lineNum">     173 </span>            : #if 0</a>
+<a name="174"><span class="lineNum">     174 </span>            :                printf (&quot;In experimental_openFortranParser_main(): --parseTable: START: commandString = %s \n&quot;,commandString.c_str());</a>
+<a name="175"><span class="lineNum">     175 </span>            : #endif</a>
+<a name="176"><span class="lineNum">     176 </span>            :                commandString += &quot;-p &quot;;</a>
+<a name="177"><span class="lineNum">     177 </span>            :                commandString += argv[i+1];</a>
+<a name="178"><span class="lineNum">     178 </span>            :                commandString += &quot; &quot;;</a>
+<a name="179"><span class="lineNum">     179 </span>            : </a>
+<a name="180"><span class="lineNum">     180 </span>            : #if 0</a>
+<a name="181"><span class="lineNum">     181 </span>            :                printf (&quot;In experimental_openFortranParser_main(): --parseTable: before sprintf: commandString = %s \n&quot;,commandString.c_str());</a>
+<a name="182"><span class="lineNum">     182 </span>            : #endif</a>
+<a name="183"><span class="lineNum">     183 </span>            :             // sprintf(parse_table, &quot;%s&quot;, argv[i+1]);</a>
+<a name="184"><span class="lineNum">     184 </span>            :                parse_table = string(argv[i+1]);</a>
+<a name="185"><span class="lineNum">     185 </span>            :                i += 1;</a>
+<a name="186"><span class="lineNum">     186 </span>            :             // continue;</a>
+<a name="187"><span class="lineNum">     187 </span>            : #if 0</a>
+<a name="188"><span class="lineNum">     188 </span>            :                printf (&quot;In experimental_openFortranParser_main(): --parseTable: END: parse_table   = %s \n&quot;,parse_table.c_str());</a>
+<a name="189"><span class="lineNum">     189 </span>            :                printf (&quot;In experimental_openFortranParser_main(): --parseTable: END: commandString = %s \n&quot;,commandString.c_str());</a>
+<a name="190"><span class="lineNum">     190 </span>            : #endif</a>
+<a name="191"><span class="lineNum">     191 </span>            :              }</a>
+<a name="192"><span class="lineNum">     192 </span>            :             else</a>
+<a name="193"><span class="lineNum">     193 </span>            :              {</a>
+<a name="194"><span class="lineNum">     194 </span>            :             // This skips over commands line arguments that begin with &quot;--&quot; (this does not appears to be meaningful).</a>
+<a name="195"><span class="lineNum">     195 </span>            :                if (strncmp(argv[i], &quot;--&quot;, 2) == 0) </a>
+<a name="196"><span class="lineNum">     196 </span>            :                   {</a>
+<a name="197"><span class="lineNum">     197 </span>            :                 // skip args that are not files</a>
+<a name="198"><span class="lineNum">     198 </span>            :                    i += 1;</a>
+<a name="199"><span class="lineNum">     199 </span>            :                    continue;</a>
+<a name="200"><span class="lineNum">     200 </span>            :                   }</a>
+<a name="201"><span class="lineNum">     201 </span>            :                  else</a>
+<a name="202"><span class="lineNum">     202 </span>            :                   {</a>
+<a name="203"><span class="lineNum">     203 </span>            :                  // This only skips over the options that begin with &quot;-I&quot; but not &quot;-I &lt;path&gt;&quot; (where the &quot;-I&quot; and the path are seperated by a space).</a>
+<a name="204"><span class="lineNum">     204 </span>            :                     if (strncmp(argv[i], &quot;-I&quot;, 2) == 0)</a>
+<a name="205"><span class="lineNum">     205 </span>            :                        {</a>
+<a name="206"><span class="lineNum">     206 </span>            :                       // Skip the include dir stuff; it's handled by the lexer.</a>
+<a name="207"><span class="lineNum">     207 </span>            :                       // TODO - not currently true, so skip arg for now? </a>
+<a name="208"><span class="lineNum">     208 </span>            :                          i += 1;</a>
+<a name="209"><span class="lineNum">     209 </span>            :                          continue;</a>
+<a name="210"><span class="lineNum">     210 </span>            :                        }</a>
+<a name="211"><span class="lineNum">     211 </span>            :                       else</a>
+<a name="212"><span class="lineNum">     212 </span>            :                        {</a>
+<a name="213"><span class="lineNum">     213 </span>            :                       // All other options are ignored.</a>
+<a name="214"><span class="lineNum">     214 </span>            :                       // commandString += argv[i];</a>
+<a name="215"><span class="lineNum">     215 </span>            : #if 0</a>
+<a name="216"><span class="lineNum">     216 </span>            :                          printf (&quot;In experimental_openFortranParser_main(): ignoring -- argv[i = %d] = %s \n&quot;,i,argv[i]);</a>
+<a name="217"><span class="lineNum">     217 </span>            : #endif</a>
+<a name="218"><span class="lineNum">     218 </span>            :                        }</a>
+<a name="219"><span class="lineNum">     219 </span>            :                   }</a>
+<a name="220"><span class="lineNum">     220 </span>            :              }</a>
+<a name="221"><span class="lineNum">     221 </span>            : #if 0</a>
+<a name="222"><span class="lineNum">     222 </span>            :           printf (&quot;In experimental_openFortranParser_main(): end of loop over args: commandString = %s \n&quot;,commandString.c_str());</a>
+<a name="223"><span class="lineNum">     223 </span>            : #endif</a>
+<a name="224"><span class="lineNum">     224 </span>            :         }</a>
+<a name="225"><span class="lineNum">     225 </span>            : </a>
+<a name="226"><span class="lineNum">     226 </span>            :   // string filename = argv[argc-1];</a>
+<a name="227"><span class="lineNum">     227 </span>            :      string filenameWithPath    = argv[argc-1];</a>
+<a name="228"><span class="lineNum">     228 </span>            : </a>
+<a name="229"><span class="lineNum">     229 </span>            : #if 0</a>
+<a name="230"><span class="lineNum">     230 </span>            :      printf (&quot;In experimental_openFortranParser_main(): filenameWithPath = %s \n&quot;,filenameWithPath.c_str());</a>
+<a name="231"><span class="lineNum">     231 </span>            : #endif</a>
+<a name="232"><span class="lineNum">     232 </span>            : </a>
+<a name="233"><span class="lineNum">     233 </span>            :      string filenameWithoutPath = StringUtility::stripPathFromFileName(filenameWithPath);</a>
+<a name="234"><span class="lineNum">     234 </span>            : </a>
+<a name="235"><span class="lineNum">     235 </span>            : #if 0</a>
+<a name="236"><span class="lineNum">     236 </span>            :      printf (&quot;In experimental_openFortranParser_main(): filenameWithoutPath = %s \n&quot;,filenameWithoutPath.c_str());</a>
+<a name="237"><span class="lineNum">     237 </span>            :      printf (&quot;In experimental_openFortranParser_main(): commandString = %s \n&quot;,commandString.c_str());</a>
+<a name="238"><span class="lineNum">     238 </span>            : #endif</a>
+<a name="239"><span class="lineNum">     239 </span>            : </a>
+<a name="240"><span class="lineNum">     240 </span>            :      commandString += &quot; -i &quot;;</a>
+<a name="241"><span class="lineNum">     241 </span>            :      commandString += filenameWithPath;</a>
+<a name="242"><span class="lineNum">     242 </span>            :      commandString += &quot; -o &quot;;</a>
+<a name="243"><span class="lineNum">     243 </span>            :      commandString += filenameWithoutPath;</a>
+<a name="244"><span class="lineNum">     244 </span>            :      commandString += &quot;.aterm&quot;;</a>
+<a name="245"><span class="lineNum">     245 </span>            : </a>
+<a name="246"><span class="lineNum">     246 </span>            : #if 0</a>
+<a name="247"><span class="lineNum">     247 </span>            :      printf (&quot;filenameWithPath    = %s \n&quot;,filenameWithPath.c_str());</a>
+<a name="248"><span class="lineNum">     248 </span>            :      printf (&quot;filenameWithoutPath = %s \n&quot;,filenameWithoutPath.c_str());</a>
+<a name="249"><span class="lineNum">     249 </span>            : #endif</a>
+<a name="250"><span class="lineNum">     250 </span>            : </a>
+<a name="251"><span class="lineNum">     251 </span>            :   // make sure there is a parse table</a>
+<a name="252"><span class="lineNum">     252 </span>            :   // if (parse_table[0] == '\0')</a>
+<a name="253"><span class="lineNum">     253 </span>            :      if (parse_table.empty() == true)</a>
+<a name="254"><span class="lineNum">     254 </span>            :         {</a>
+<a name="255"><span class="lineNum">     255 </span>            :           fprintf(stderr, &quot;fortran_parser: no parse table provided, use option --parseTable\n&quot;);</a>
+<a name="256"><span class="lineNum">     256 </span>            :           return -1;</a>
+<a name="257"><span class="lineNum">     257 </span>            :         }</a>
+<a name="258"><span class="lineNum">     258 </span>            : </a>
+<a name="259"><span class="lineNum">     259 </span>            :   // parse the file</a>
+<a name="260"><span class="lineNum">     260 </span>            :   // sprintf(cmd, &quot;sglri -p %s -i %s -o %s.ptree&quot;, parse_table, argv[i], argv[i]);</a>
+<a name="261"><span class="lineNum">     261 </span>            : </a>
+<a name="262"><span class="lineNum">     262 </span>            : #if 1</a>
+<a name="263"><span class="lineNum">     263 </span>            :      printf (&quot;In experimental_openFortranParser_main(): commandString = %s \n&quot;,commandString.c_str());</a>
+<a name="264"><span class="lineNum">     264 </span>            : #endif</a>
+<a name="265"><span class="lineNum">     265 </span>            : </a>
+<a name="266"><span class="lineNum">     266 </span>            :   // err = system(cmd);</a>
+<a name="267"><span class="lineNum">     267 </span>            :      err = system(commandString.c_str());</a>
+<a name="268"><span class="lineNum">     268 </span>            : </a>
+<a name="269"><span class="lineNum">     269 </span>            :      if (err)</a>
+<a name="270"><span class="lineNum">     270 </span>            :         {</a>
+<a name="271"><span class="lineNum">     271 </span>            :           fprintf(stderr, &quot;fortran_parser: error parsing file %s\n&quot;, argv[i]);</a>
+<a name="272"><span class="lineNum">     272 </span>            :           return err;</a>
+<a name="273"><span class="lineNum">     273 </span>            :         }</a>
+<a name="274"><span class="lineNum">     274 </span>            : </a>
+<a name="275"><span class="lineNum">     275 </span>            :   // At this point we have a valid aterm file in the working (current) directory.</a>
+<a name="276"><span class="lineNum">     276 </span>            :   // We have to read that aterm file and generate an uninterpreted AST, then iterate</a>
+<a name="277"><span class="lineNum">     277 </span>            :   // on the uninterpreted AST to resolve types, disambiguate function calls and </a>
+<a name="278"><span class="lineNum">     278 </span>            :   // array references, etc.; until we have a correctly formed AST.  These operations</a>
+<a name="279"><span class="lineNum">     279 </span>            :   // will be seperate passes over the AST which should build a simpler frontend to</a>
+<a name="280"><span class="lineNum">     280 </span>            :   // use as a basis for fortran research and also permit a better design for the</a>
+<a name="281"><span class="lineNum">     281 </span>            :   // frontend to maintain and develop cooperatively with community support.</a>
+<a name="282"><span class="lineNum">     282 </span>            : </a>
+<a name="283"><span class="lineNum">     283 </span>            :   // ******************************************************</a>
+<a name="284"><span class="lineNum">     284 </span>            :   // Put the call the the new SDF Open Fortran Parser here.</a>
+<a name="285"><span class="lineNum">     285 </span>            :   // ******************************************************</a>
+<a name="286"><span class="lineNum">     286 </span>            : </a>
+<a name="287"><span class="lineNum">     287 </span>            :      return 0;</a>
+<a name="288"><span class="lineNum">     288 </span>            :    }</a>
+<a name="289"><span class="lineNum">     289 </span>            : #endif</a>
+<a name="290"><span class="lineNum">     290 </span>            : #endif</a>
+<a name="291"><span class="lineNum">     291 </span>            : </a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

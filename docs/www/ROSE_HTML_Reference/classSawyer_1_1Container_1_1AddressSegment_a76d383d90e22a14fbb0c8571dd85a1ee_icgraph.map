@@ -1,0 +1,7 @@
+<map id="Sawyer::Container::AddressSegment::AddressSegment" name="Sawyer::Container::AddressSegment::AddressSegment">
+<area shape="rect" id="node1" title="Default constructor." alt="" coords="260,133,491,174"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1AddressSegment.html#a3f153c5d12e5ba1d1feb956fc10cf5da" title="Create a segment with no backing store." alt="" coords="5,5,212,61"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1AddressSegment.html#a09db806ef68637c5b44271cc9eca865f" title="Map a file into an address space." alt="" coords="17,85,200,141"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1AddressSegment.html#a03dba60b3e167f95db911bc6ec8fc75a" title="Create a segment that points to no data." alt="" coords="17,165,200,221"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1AddressSegment.html#acf2c6ac9df6aeacd7cdfe6cc16efc6f7" title="Create a segment that points to a static buffer." alt="" coords="17,245,200,301"/>
+</map>

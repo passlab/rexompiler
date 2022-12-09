@@ -1,0 +1,425 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /usr/include/boost/thread/pthread/condition_variable_fwd.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost/thread/pthread</a> - condition_variable_fwd.hpp<span style="font-size: 80%;"> (source / <a href="condition_variable_fwd.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #ifndef BOOST_THREAD_PTHREAD_CONDITION_VARIABLE_FWD_HPP</a>
+<a name="2"><span class="lineNum">       2 </span>            : #define BOOST_THREAD_PTHREAD_CONDITION_VARIABLE_FWD_HPP</a>
+<a name="3"><span class="lineNum">       3 </span>            : // Distributed under the Boost Software License, Version 1.0. (See</a>
+<a name="4"><span class="lineNum">       4 </span>            : // accompanying file LICENSE_1_0.txt or copy at</a>
+<a name="5"><span class="lineNum">       5 </span>            : // http://www.boost.org/LICENSE_1_0.txt)</a>
+<a name="6"><span class="lineNum">       6 </span>            : // (C) Copyright 2007-8 Anthony Williams</a>
+<a name="7"><span class="lineNum">       7 </span>            : // (C) Copyright 2011-2012 Vicente J. Botet Escriba</a>
+<a name="8"><span class="lineNum">       8 </span>            : </a>
+<a name="9"><span class="lineNum">       9 </span>            : #include &lt;boost/assert.hpp&gt;</a>
+<a name="10"><span class="lineNum">      10 </span>            : #include &lt;boost/throw_exception.hpp&gt;</a>
+<a name="11"><span class="lineNum">      11 </span>            : #include &lt;pthread.h&gt;</a>
+<a name="12"><span class="lineNum">      12 </span>            : #include &lt;boost/thread/cv_status.hpp&gt;</a>
+<a name="13"><span class="lineNum">      13 </span>            : #include &lt;boost/thread/mutex.hpp&gt;</a>
+<a name="14"><span class="lineNum">      14 </span>            : #include &lt;boost/thread/lock_types.hpp&gt;</a>
+<a name="15"><span class="lineNum">      15 </span>            : #include &lt;boost/thread/thread_time.hpp&gt;</a>
+<a name="16"><span class="lineNum">      16 </span>            : #include &lt;boost/thread/detail/platform_time.hpp&gt;</a>
+<a name="17"><span class="lineNum">      17 </span>            : #include &lt;boost/thread/pthread/pthread_helpers.hpp&gt;</a>
+<a name="18"><span class="lineNum">      18 </span>            : </a>
+<a name="19"><span class="lineNum">      19 </span>            : #if defined BOOST_THREAD_USES_DATETIME</a>
+<a name="20"><span class="lineNum">      20 </span>            : #include &lt;boost/thread/xtime.hpp&gt;</a>
+<a name="21"><span class="lineNum">      21 </span>            : #endif</a>
+<a name="22"><span class="lineNum">      22 </span>            : </a>
+<a name="23"><span class="lineNum">      23 </span>            : #ifdef BOOST_THREAD_USES_CHRONO</a>
+<a name="24"><span class="lineNum">      24 </span>            : #include &lt;boost/chrono/system_clocks.hpp&gt;</a>
+<a name="25"><span class="lineNum">      25 </span>            : #include &lt;boost/chrono/ceil.hpp&gt;</a>
+<a name="26"><span class="lineNum">      26 </span>            : #endif</a>
+<a name="27"><span class="lineNum">      27 </span>            : #include &lt;boost/thread/detail/delete.hpp&gt;</a>
+<a name="28"><span class="lineNum">      28 </span>            : #include &lt;boost/date_time/posix_time/posix_time_duration.hpp&gt;</a>
+<a name="29"><span class="lineNum">      29 </span>            : </a>
+<a name="30"><span class="lineNum">      30 </span>            : #include &lt;algorithm&gt;</a>
+<a name="31"><span class="lineNum">      31 </span>            : </a>
+<a name="32"><span class="lineNum">      32 </span>            : #include &lt;boost/config/abi_prefix.hpp&gt;</a>
+<a name="33"><span class="lineNum">      33 </span>            : </a>
+<a name="34"><span class="lineNum">      34 </span>            : namespace boost</a>
+<a name="35"><span class="lineNum">      35 </span>            : {</a>
+<a name="36"><span class="lineNum">      36 </span>            :     class condition_variable</a>
+<a name="37"><span class="lineNum">      37 </span>            :     {</a>
+<a name="38"><span class="lineNum">      38 </span>            :     private:</a>
+<a name="39"><span class="lineNum">      39 </span>            : //#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS</a>
+<a name="40"><span class="lineNum">      40 </span>            :         pthread_mutex_t internal_mutex;</a>
+<a name="41"><span class="lineNum">      41 </span>            : //#endif</a>
+<a name="42"><span class="lineNum">      42 </span>            :         pthread_cond_t cond;</a>
+<a name="43"><span class="lineNum">      43 </span>            : </a>
+<a name="44"><span class="lineNum">      44 </span>            :     public:</a>
+<a name="45"><span class="lineNum">      45 </span>            :     //private: // used by boost::thread::try_join_until</a>
+<a name="46"><span class="lineNum">      46 </span>            : </a>
+<a name="47"><span class="lineNum">      47 </span>            :         bool do_wait_until(</a>
+<a name="48"><span class="lineNum">      48 </span>            :             unique_lock&lt;mutex&gt;&amp; lock,</a>
+<a name="49"><span class="lineNum">      49 </span>            :             detail::internal_platform_timepoint const &amp;timeout);</a>
+<a name="50"><span class="lineNum">      50 </span>            : </a>
+<a name="51"><span class="lineNum">      51 </span>            :     public:</a>
+<a name="52"><span class="lineNum">      52 </span>            :       BOOST_THREAD_NO_COPYABLE(condition_variable)</a>
+<a name="53"><span class="lineNum">      53 </span>            :         condition_variable()</a>
+<a name="54"><span class="lineNum">      54 </span>            :         {</a>
+<a name="55"><span class="lineNum">      55 </span>            :             int res;</a>
+<a name="56"><span class="lineNum">      56 </span>            : //#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS</a>
+<a name="57"><span class="lineNum">      57 </span>            :             // Even if it is not used, the internal_mutex exists (see</a>
+<a name="58"><span class="lineNum">      58 </span>            :             // above) and must be initialized (etc) in case some</a>
+<a name="59"><span class="lineNum">      59 </span>            :             // compilation units provide interruptions and others</a>
+<a name="60"><span class="lineNum">      60 </span>            :             // don't.</a>
+<a name="61"><span class="lineNum">      61 </span>            :             res=posix::pthread_mutex_init(&amp;internal_mutex);</a>
+<a name="62"><span class="lineNum">      62 </span>            :             if(res)</a>
+<a name="63"><span class="lineNum">      63 </span>            :             {</a>
+<a name="64"><span class="lineNum">      64 </span>            :                 boost::throw_exception(thread_resource_error(res, &quot;boost::condition_variable::condition_variable() constructor failed in pthread_mutex_init&quot;));</a>
+<a name="65"><span class="lineNum">      65 </span>            :             }</a>
+<a name="66"><span class="lineNum">      66 </span>            : //#endif</a>
+<a name="67"><span class="lineNum">      67 </span>            :             res = posix::pthread_cond_init(&amp;cond);</a>
+<a name="68"><span class="lineNum">      68 </span>            :             if (res)</a>
+<a name="69"><span class="lineNum">      69 </span>            :             {</a>
+<a name="70"><span class="lineNum">      70 </span>            : //#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS</a>
+<a name="71"><span class="lineNum">      71 </span>            :                 // ditto</a>
+<a name="72"><span class="lineNum">      72 </span>            :                 BOOST_VERIFY(!posix::pthread_mutex_destroy(&amp;internal_mutex));</a>
+<a name="73"><span class="lineNum">      73 </span>            : //#endif</a>
+<a name="74"><span class="lineNum">      74 </span>            :                 boost::throw_exception(thread_resource_error(res, &quot;boost::condition_variable::condition_variable() constructor failed in pthread_cond_init&quot;));</a>
+<a name="75"><span class="lineNum">      75 </span>            :             }</a>
+<a name="76"><span class="lineNum">      76 </span>            :         }</a>
+<a name="77"><span class="lineNum">      77 </span><span class="lineNoCov">          0 :         ~condition_variable()</span></a>
+<a name="78"><span class="lineNum">      78 </span><span class="lineNoCov">          0 :         {</span></a>
+<a name="79"><span class="lineNum">      79 </span>            : //#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS</a>
+<a name="80"><span class="lineNum">      80 </span>            :             // ditto</a>
+<a name="81"><span class="lineNum">      81 </span><span class="lineNoCov">          0 :             BOOST_VERIFY(!posix::pthread_mutex_destroy(&amp;internal_mutex));</span></a>
+<a name="82"><span class="lineNum">      82 </span>            : //#endif</a>
+<a name="83"><span class="lineNum">      83 </span><span class="lineNoCov">          0 :             BOOST_VERIFY(!posix::pthread_cond_destroy(&amp;cond));</span></a>
+<a name="84"><span class="lineNum">      84 </span><span class="lineNoCov">          0 :         }</span></a>
+<a name="85"><span class="lineNum">      85 </span>            : </a>
+<a name="86"><span class="lineNum">      86 </span>            :         void wait(unique_lock&lt;mutex&gt;&amp; m);</a>
+<a name="87"><span class="lineNum">      87 </span>            : </a>
+<a name="88"><span class="lineNum">      88 </span>            :         template&lt;typename predicate_type&gt;</a>
+<a name="89"><span class="lineNum">      89 </span><span class="lineNoCov">          0 :         void wait(unique_lock&lt;mutex&gt;&amp; m,predicate_type pred)</span></a>
+<a name="90"><span class="lineNum">      90 </span>            :         {</a>
+<a name="91"><span class="lineNum">      91 </span><span class="lineNoCov">          0 :             while (!pred())</span></a>
+<a name="92"><span class="lineNum">      92 </span>            :             {</a>
+<a name="93"><span class="lineNum">      93 </span><span class="lineNoCov">          0 :                 wait(m);</span></a>
+<a name="94"><span class="lineNum">      94 </span>            :             }</a>
+<a name="95"><span class="lineNum">      95 </span><span class="lineNoCov">          0 :         }</span></a>
+<a name="96"><span class="lineNum">      96 </span>            : </a>
+<a name="97"><span class="lineNum">      97 </span>            : #if defined BOOST_THREAD_USES_DATETIME</a>
+<a name="98"><span class="lineNum">      98 </span>            :         bool timed_wait(</a>
+<a name="99"><span class="lineNum">      99 </span>            :             unique_lock&lt;mutex&gt;&amp; m,</a>
+<a name="100"><span class="lineNum">     100 </span>            :             boost::system_time const&amp; abs_time)</a>
+<a name="101"><span class="lineNum">     101 </span>            :         {</a>
+<a name="102"><span class="lineNum">     102 </span>            : #if defined BOOST_THREAD_WAIT_BUG</a>
+<a name="103"><span class="lineNum">     103 </span>            :             const detail::real_platform_timepoint ts(abs_time + BOOST_THREAD_WAIT_BUG);</a>
+<a name="104"><span class="lineNum">     104 </span>            : #else</a>
+<a name="105"><span class="lineNum">     105 </span>            :             const detail::real_platform_timepoint ts(abs_time);</a>
+<a name="106"><span class="lineNum">     106 </span>            : #endif</a>
+<a name="107"><span class="lineNum">     107 </span>            : #if defined BOOST_THREAD_INTERNAL_CLOCK_IS_MONO</a>
+<a name="108"><span class="lineNum">     108 </span>            :             // The system time may jump while this function is waiting. To compensate for this and time</a>
+<a name="109"><span class="lineNum">     109 </span>            :             // out near the correct time, we could call do_wait_until() in a loop with a short timeout</a>
+<a name="110"><span class="lineNum">     110 </span>            :             // and recheck the time remaining each time through the loop. However, because we can't</a>
+<a name="111"><span class="lineNum">     111 </span>            :             // check the predicate each time do_wait_until() completes, this introduces the possibility</a>
+<a name="112"><span class="lineNum">     112 </span>            :             // of not exiting the function when a notification occurs, since do_wait_until() may report</a>
+<a name="113"><span class="lineNum">     113 </span>            :             // that it timed out even though a notification was received. The best this function can do</a>
+<a name="114"><span class="lineNum">     114 </span>            :             // is report correctly whether or not it reached the timeout time.</a>
+<a name="115"><span class="lineNum">     115 </span>            :             const detail::platform_duration d(ts - detail::real_platform_clock::now());</a>
+<a name="116"><span class="lineNum">     116 </span>            :             do_wait_until(m, detail::internal_platform_clock::now() + d);</a>
+<a name="117"><span class="lineNum">     117 </span>            :             return ts &gt; detail::real_platform_clock::now();</a>
+<a name="118"><span class="lineNum">     118 </span>            : #else</a>
+<a name="119"><span class="lineNum">     119 </span>            :             return do_wait_until(m, ts);</a>
+<a name="120"><span class="lineNum">     120 </span>            : #endif</a>
+<a name="121"><span class="lineNum">     121 </span>            :         }</a>
+<a name="122"><span class="lineNum">     122 </span>            :         bool timed_wait(</a>
+<a name="123"><span class="lineNum">     123 </span>            :             unique_lock&lt;mutex&gt;&amp; m,</a>
+<a name="124"><span class="lineNum">     124 </span>            :             ::boost::xtime const&amp; abs_time)</a>
+<a name="125"><span class="lineNum">     125 </span>            :         {</a>
+<a name="126"><span class="lineNum">     126 </span>            :             return timed_wait(m,system_time(abs_time));</a>
+<a name="127"><span class="lineNum">     127 </span>            :         }</a>
+<a name="128"><span class="lineNum">     128 </span>            : </a>
+<a name="129"><span class="lineNum">     129 </span>            :         template&lt;typename duration_type&gt;</a>
+<a name="130"><span class="lineNum">     130 </span>            :         bool timed_wait(</a>
+<a name="131"><span class="lineNum">     131 </span>            :             unique_lock&lt;mutex&gt;&amp; m,</a>
+<a name="132"><span class="lineNum">     132 </span>            :             duration_type const&amp; wait_duration)</a>
+<a name="133"><span class="lineNum">     133 </span>            :         {</a>
+<a name="134"><span class="lineNum">     134 </span>            :             if (wait_duration.is_pos_infinity())</a>
+<a name="135"><span class="lineNum">     135 </span>            :             {</a>
+<a name="136"><span class="lineNum">     136 </span>            :                 wait(m);</a>
+<a name="137"><span class="lineNum">     137 </span>            :                 return true;</a>
+<a name="138"><span class="lineNum">     138 </span>            :             }</a>
+<a name="139"><span class="lineNum">     139 </span>            :             if (wait_duration.is_special())</a>
+<a name="140"><span class="lineNum">     140 </span>            :             {</a>
+<a name="141"><span class="lineNum">     141 </span>            :                 return true;</a>
+<a name="142"><span class="lineNum">     142 </span>            :             }</a>
+<a name="143"><span class="lineNum">     143 </span>            :             detail::platform_duration d(wait_duration);</a>
+<a name="144"><span class="lineNum">     144 </span>            : #if defined(BOOST_THREAD_HAS_MONO_CLOCK) &amp;&amp; !defined(BOOST_THREAD_INTERNAL_CLOCK_IS_MONO)</a>
+<a name="145"><span class="lineNum">     145 </span>            :             // The system time may jump while this function is waiting. To compensate for this and time</a>
+<a name="146"><span class="lineNum">     146 </span>            :             // out near the correct time, we could call do_wait_until() in a loop with a short timeout</a>
+<a name="147"><span class="lineNum">     147 </span>            :             // and recheck the time remaining each time through the loop. However, because we can't</a>
+<a name="148"><span class="lineNum">     148 </span>            :             // check the predicate each time do_wait_until() completes, this introduces the possibility</a>
+<a name="149"><span class="lineNum">     149 </span>            :             // of not exiting the function when a notification occurs, since do_wait_until() may report</a>
+<a name="150"><span class="lineNum">     150 </span>            :             // that it timed out even though a notification was received. The best this function can do</a>
+<a name="151"><span class="lineNum">     151 </span>            :             // is report correctly whether or not it reached the timeout time.</a>
+<a name="152"><span class="lineNum">     152 </span>            :             const detail::mono_platform_timepoint ts(detail::mono_platform_clock::now() + d);</a>
+<a name="153"><span class="lineNum">     153 </span>            :             do_wait_until(m, detail::internal_platform_clock::now() + d);</a>
+<a name="154"><span class="lineNum">     154 </span>            :             return ts &gt; detail::mono_platform_clock::now();</a>
+<a name="155"><span class="lineNum">     155 </span>            : #else</a>
+<a name="156"><span class="lineNum">     156 </span>            :             return do_wait_until(m, detail::internal_platform_clock::now() + d);</a>
+<a name="157"><span class="lineNum">     157 </span>            : #endif</a>
+<a name="158"><span class="lineNum">     158 </span>            :         }</a>
+<a name="159"><span class="lineNum">     159 </span>            : </a>
+<a name="160"><span class="lineNum">     160 </span>            :         template&lt;typename predicate_type&gt;</a>
+<a name="161"><span class="lineNum">     161 </span>            :         bool timed_wait(</a>
+<a name="162"><span class="lineNum">     162 </span>            :             unique_lock&lt;mutex&gt;&amp; m,</a>
+<a name="163"><span class="lineNum">     163 </span>            :             boost::system_time const&amp; abs_time,predicate_type pred)</a>
+<a name="164"><span class="lineNum">     164 </span>            :         {</a>
+<a name="165"><span class="lineNum">     165 </span>            : #if defined BOOST_THREAD_WAIT_BUG</a>
+<a name="166"><span class="lineNum">     166 </span>            :             const detail::real_platform_timepoint ts(abs_time + BOOST_THREAD_WAIT_BUG);</a>
+<a name="167"><span class="lineNum">     167 </span>            : #else</a>
+<a name="168"><span class="lineNum">     168 </span>            :             const detail::real_platform_timepoint ts(abs_time);</a>
+<a name="169"><span class="lineNum">     169 </span>            : #endif</a>
+<a name="170"><span class="lineNum">     170 </span>            :             while (!pred())</a>
+<a name="171"><span class="lineNum">     171 </span>            :             {</a>
+<a name="172"><span class="lineNum">     172 </span>            : #if defined BOOST_THREAD_INTERNAL_CLOCK_IS_MONO</a>
+<a name="173"><span class="lineNum">     173 </span>            :                 // The system time may jump while this function is waiting. To compensate for this</a>
+<a name="174"><span class="lineNum">     174 </span>            :                 // and time out near the correct time, we call do_wait_until() in a loop with a</a>
+<a name="175"><span class="lineNum">     175 </span>            :                 // short timeout and recheck the time remaining each time through the loop.</a>
+<a name="176"><span class="lineNum">     176 </span>            :                 detail::platform_duration d(ts - detail::real_platform_clock::now());</a>
+<a name="177"><span class="lineNum">     177 </span>            :                 if (d &lt;= detail::platform_duration::zero()) break; // timeout occurred</a>
+<a name="178"><span class="lineNum">     178 </span>            :                 d = (std::min)(d, detail::platform_milliseconds(BOOST_THREAD_POLL_INTERVAL_MILLISECONDS));</a>
+<a name="179"><span class="lineNum">     179 </span>            :                 do_wait_until(m, detail::internal_platform_clock::now() + d);</a>
+<a name="180"><span class="lineNum">     180 </span>            : #else</a>
+<a name="181"><span class="lineNum">     181 </span>            :                 if (!do_wait_until(m, ts)) break; // timeout occurred</a>
+<a name="182"><span class="lineNum">     182 </span>            : #endif</a>
+<a name="183"><span class="lineNum">     183 </span>            :             }</a>
+<a name="184"><span class="lineNum">     184 </span>            :             return pred();</a>
+<a name="185"><span class="lineNum">     185 </span>            :         }</a>
+<a name="186"><span class="lineNum">     186 </span>            : </a>
+<a name="187"><span class="lineNum">     187 </span>            :         template&lt;typename predicate_type&gt;</a>
+<a name="188"><span class="lineNum">     188 </span>            :         bool timed_wait(</a>
+<a name="189"><span class="lineNum">     189 </span>            :             unique_lock&lt;mutex&gt;&amp; m,</a>
+<a name="190"><span class="lineNum">     190 </span>            :             ::boost::xtime const&amp; abs_time,predicate_type pred)</a>
+<a name="191"><span class="lineNum">     191 </span>            :         {</a>
+<a name="192"><span class="lineNum">     192 </span>            :             return timed_wait(m,system_time(abs_time),pred);</a>
+<a name="193"><span class="lineNum">     193 </span>            :         }</a>
+<a name="194"><span class="lineNum">     194 </span>            : </a>
+<a name="195"><span class="lineNum">     195 </span>            :         template&lt;typename duration_type,typename predicate_type&gt;</a>
+<a name="196"><span class="lineNum">     196 </span>            :         bool timed_wait(</a>
+<a name="197"><span class="lineNum">     197 </span>            :             unique_lock&lt;mutex&gt;&amp; m,</a>
+<a name="198"><span class="lineNum">     198 </span>            :             duration_type const&amp; wait_duration,predicate_type pred)</a>
+<a name="199"><span class="lineNum">     199 </span>            :         {</a>
+<a name="200"><span class="lineNum">     200 </span>            :             if (wait_duration.is_pos_infinity())</a>
+<a name="201"><span class="lineNum">     201 </span>            :             {</a>
+<a name="202"><span class="lineNum">     202 </span>            :                 while (!pred())</a>
+<a name="203"><span class="lineNum">     203 </span>            :                 {</a>
+<a name="204"><span class="lineNum">     204 </span>            :                     wait(m);</a>
+<a name="205"><span class="lineNum">     205 </span>            :                 }</a>
+<a name="206"><span class="lineNum">     206 </span>            :                 return true;</a>
+<a name="207"><span class="lineNum">     207 </span>            :             }</a>
+<a name="208"><span class="lineNum">     208 </span>            :             if (wait_duration.is_special())</a>
+<a name="209"><span class="lineNum">     209 </span>            :             {</a>
+<a name="210"><span class="lineNum">     210 </span>            :                 return pred();</a>
+<a name="211"><span class="lineNum">     211 </span>            :             }</a>
+<a name="212"><span class="lineNum">     212 </span>            :             detail::platform_duration d(wait_duration);</a>
+<a name="213"><span class="lineNum">     213 </span>            : #if defined(BOOST_THREAD_HAS_MONO_CLOCK) &amp;&amp; !defined(BOOST_THREAD_INTERNAL_CLOCK_IS_MONO)</a>
+<a name="214"><span class="lineNum">     214 </span>            :             // The system time may jump while this function is waiting. To compensate for this</a>
+<a name="215"><span class="lineNum">     215 </span>            :             // and time out near the correct time, we call do_wait_until() in a loop with a</a>
+<a name="216"><span class="lineNum">     216 </span>            :             // short timeout and recheck the time remaining each time through the loop.</a>
+<a name="217"><span class="lineNum">     217 </span>            :             const detail::mono_platform_timepoint ts(detail::mono_platform_clock::now() + d);</a>
+<a name="218"><span class="lineNum">     218 </span>            :             while (!pred())</a>
+<a name="219"><span class="lineNum">     219 </span>            :             {</a>
+<a name="220"><span class="lineNum">     220 </span>            :                 if (d &lt;= detail::platform_duration::zero()) break; // timeout occurred</a>
+<a name="221"><span class="lineNum">     221 </span>            :                 d = (std::min)(d, detail::platform_milliseconds(BOOST_THREAD_POLL_INTERVAL_MILLISECONDS));</a>
+<a name="222"><span class="lineNum">     222 </span>            :                 do_wait_until(m, detail::internal_platform_clock::now() + d);</a>
+<a name="223"><span class="lineNum">     223 </span>            :                 d = ts - detail::mono_platform_clock::now();</a>
+<a name="224"><span class="lineNum">     224 </span>            :             }</a>
+<a name="225"><span class="lineNum">     225 </span>            : #else</a>
+<a name="226"><span class="lineNum">     226 </span>            :             const detail::internal_platform_timepoint ts(detail::internal_platform_clock::now() + d);</a>
+<a name="227"><span class="lineNum">     227 </span>            :             while (!pred())</a>
+<a name="228"><span class="lineNum">     228 </span>            :             {</a>
+<a name="229"><span class="lineNum">     229 </span>            :                 if (!do_wait_until(m, ts)) break; // timeout occurred</a>
+<a name="230"><span class="lineNum">     230 </span>            :             }</a>
+<a name="231"><span class="lineNum">     231 </span>            : #endif</a>
+<a name="232"><span class="lineNum">     232 </span>            :             return pred();</a>
+<a name="233"><span class="lineNum">     233 </span>            :         }</a>
+<a name="234"><span class="lineNum">     234 </span>            : #endif</a>
+<a name="235"><span class="lineNum">     235 </span>            : </a>
+<a name="236"><span class="lineNum">     236 </span>            : #ifdef BOOST_THREAD_USES_CHRONO</a>
+<a name="237"><span class="lineNum">     237 </span>            : </a>
+<a name="238"><span class="lineNum">     238 </span>            :         template &lt;class Duration&gt;</a>
+<a name="239"><span class="lineNum">     239 </span>            :         cv_status</a>
+<a name="240"><span class="lineNum">     240 </span>            :         wait_until(</a>
+<a name="241"><span class="lineNum">     241 </span>            :                 unique_lock&lt;mutex&gt;&amp; lock,</a>
+<a name="242"><span class="lineNum">     242 </span>            :                 const chrono::time_point&lt;detail::internal_chrono_clock, Duration&gt;&amp; t)</a>
+<a name="243"><span class="lineNum">     243 </span>            :         {</a>
+<a name="244"><span class="lineNum">     244 </span>            :             const detail::internal_platform_timepoint ts(t);</a>
+<a name="245"><span class="lineNum">     245 </span>            :             if (do_wait_until(lock, ts)) return cv_status::no_timeout;</a>
+<a name="246"><span class="lineNum">     246 </span>            :             else return cv_status::timeout;</a>
+<a name="247"><span class="lineNum">     247 </span>            :         }</a>
+<a name="248"><span class="lineNum">     248 </span>            : </a>
+<a name="249"><span class="lineNum">     249 </span>            :         template &lt;class Clock, class Duration&gt;</a>
+<a name="250"><span class="lineNum">     250 </span>            :         cv_status</a>
+<a name="251"><span class="lineNum">     251 </span>            :         wait_until(</a>
+<a name="252"><span class="lineNum">     252 </span>            :                 unique_lock&lt;mutex&gt;&amp; lock,</a>
+<a name="253"><span class="lineNum">     253 </span>            :                 const chrono::time_point&lt;Clock, Duration&gt;&amp; t)</a>
+<a name="254"><span class="lineNum">     254 </span>            :         {</a>
+<a name="255"><span class="lineNum">     255 </span>            :             // The system time may jump while this function is waiting. To compensate for this and time</a>
+<a name="256"><span class="lineNum">     256 </span>            :             // out near the correct time, we could call do_wait_until() in a loop with a short timeout</a>
+<a name="257"><span class="lineNum">     257 </span>            :             // and recheck the time remaining each time through the loop. However, because we can't</a>
+<a name="258"><span class="lineNum">     258 </span>            :             // check the predicate each time do_wait_until() completes, this introduces the possibility</a>
+<a name="259"><span class="lineNum">     259 </span>            :             // of not exiting the function when a notification occurs, since do_wait_until() may report</a>
+<a name="260"><span class="lineNum">     260 </span>            :             // that it timed out even though a notification was received. The best this function can do</a>
+<a name="261"><span class="lineNum">     261 </span>            :             // is report correctly whether or not it reached the timeout time.</a>
+<a name="262"><span class="lineNum">     262 </span>            :             typedef typename common_type&lt;Duration, typename Clock::duration&gt;::type common_duration;</a>
+<a name="263"><span class="lineNum">     263 </span>            :             common_duration d(t - Clock::now());</a>
+<a name="264"><span class="lineNum">     264 </span>            :             do_wait_until(lock, detail::internal_chrono_clock::now() + d);</a>
+<a name="265"><span class="lineNum">     265 </span>            :             if (t &gt; Clock::now()) return cv_status::no_timeout;</a>
+<a name="266"><span class="lineNum">     266 </span>            :             else return cv_status::timeout;</a>
+<a name="267"><span class="lineNum">     267 </span>            :         }</a>
+<a name="268"><span class="lineNum">     268 </span>            : </a>
+<a name="269"><span class="lineNum">     269 </span>            :         template &lt;class Rep, class Period&gt;</a>
+<a name="270"><span class="lineNum">     270 </span>            :         cv_status</a>
+<a name="271"><span class="lineNum">     271 </span>            :         wait_for(</a>
+<a name="272"><span class="lineNum">     272 </span>            :                 unique_lock&lt;mutex&gt;&amp; lock,</a>
+<a name="273"><span class="lineNum">     273 </span>            :                 const chrono::duration&lt;Rep, Period&gt;&amp; d)</a>
+<a name="274"><span class="lineNum">     274 </span>            :         {</a>
+<a name="275"><span class="lineNum">     275 </span>            :             return wait_until(lock, chrono::steady_clock::now() + d);</a>
+<a name="276"><span class="lineNum">     276 </span>            :         }</a>
+<a name="277"><span class="lineNum">     277 </span>            : </a>
+<a name="278"><span class="lineNum">     278 </span>            :         template &lt;class Duration, class Predicate&gt;</a>
+<a name="279"><span class="lineNum">     279 </span>            :         bool</a>
+<a name="280"><span class="lineNum">     280 </span>            :         wait_until(</a>
+<a name="281"><span class="lineNum">     281 </span>            :                 unique_lock&lt;mutex&gt;&amp; lock,</a>
+<a name="282"><span class="lineNum">     282 </span>            :                 const chrono::time_point&lt;detail::internal_chrono_clock, Duration&gt;&amp; t,</a>
+<a name="283"><span class="lineNum">     283 </span>            :                 Predicate pred)</a>
+<a name="284"><span class="lineNum">     284 </span>            :         {</a>
+<a name="285"><span class="lineNum">     285 </span>            :             const detail::internal_platform_timepoint ts(t);</a>
+<a name="286"><span class="lineNum">     286 </span>            :             while (!pred())</a>
+<a name="287"><span class="lineNum">     287 </span>            :             {</a>
+<a name="288"><span class="lineNum">     288 </span>            :                 if (!do_wait_until(lock, ts)) break; // timeout occurred</a>
+<a name="289"><span class="lineNum">     289 </span>            :             }</a>
+<a name="290"><span class="lineNum">     290 </span>            :             return pred();</a>
+<a name="291"><span class="lineNum">     291 </span>            :         }</a>
+<a name="292"><span class="lineNum">     292 </span>            : </a>
+<a name="293"><span class="lineNum">     293 </span>            :         template &lt;class Clock, class Duration, class Predicate&gt;</a>
+<a name="294"><span class="lineNum">     294 </span>            :         bool</a>
+<a name="295"><span class="lineNum">     295 </span>            :         wait_until(</a>
+<a name="296"><span class="lineNum">     296 </span>            :                 unique_lock&lt;mutex&gt;&amp; lock,</a>
+<a name="297"><span class="lineNum">     297 </span>            :                 const chrono::time_point&lt;Clock, Duration&gt;&amp; t,</a>
+<a name="298"><span class="lineNum">     298 </span>            :                 Predicate pred)</a>
+<a name="299"><span class="lineNum">     299 </span>            :         {</a>
+<a name="300"><span class="lineNum">     300 </span>            :             // The system time may jump while this function is waiting. To compensate for this</a>
+<a name="301"><span class="lineNum">     301 </span>            :             // and time out near the correct time, we call do_wait_until() in a loop with a</a>
+<a name="302"><span class="lineNum">     302 </span>            :             // short timeout and recheck the time remaining each time through the loop.</a>
+<a name="303"><span class="lineNum">     303 </span>            :             typedef typename common_type&lt;Duration, typename Clock::duration&gt;::type common_duration;</a>
+<a name="304"><span class="lineNum">     304 </span>            :             while (!pred())</a>
+<a name="305"><span class="lineNum">     305 </span>            :             {</a>
+<a name="306"><span class="lineNum">     306 </span>            :                 common_duration d(t - Clock::now());</a>
+<a name="307"><span class="lineNum">     307 </span>            :                 if (d &lt;= common_duration::zero()) break; // timeout occurred</a>
+<a name="308"><span class="lineNum">     308 </span>            :                 d = (std::min)(d, common_duration(chrono::milliseconds(BOOST_THREAD_POLL_INTERVAL_MILLISECONDS)));</a>
+<a name="309"><span class="lineNum">     309 </span>            :                 do_wait_until(lock, detail::internal_platform_clock::now() + detail::platform_duration(d));</a>
+<a name="310"><span class="lineNum">     310 </span>            :             }</a>
+<a name="311"><span class="lineNum">     311 </span>            :             return pred();</a>
+<a name="312"><span class="lineNum">     312 </span>            :         }</a>
+<a name="313"><span class="lineNum">     313 </span>            : </a>
+<a name="314"><span class="lineNum">     314 </span>            :         template &lt;class Rep, class Period, class Predicate&gt;</a>
+<a name="315"><span class="lineNum">     315 </span>            :         bool</a>
+<a name="316"><span class="lineNum">     316 </span>            :         wait_for(</a>
+<a name="317"><span class="lineNum">     317 </span>            :                 unique_lock&lt;mutex&gt;&amp; lock,</a>
+<a name="318"><span class="lineNum">     318 </span>            :                 const chrono::duration&lt;Rep, Period&gt;&amp; d,</a>
+<a name="319"><span class="lineNum">     319 </span>            :                 Predicate pred)</a>
+<a name="320"><span class="lineNum">     320 </span>            :         {</a>
+<a name="321"><span class="lineNum">     321 </span>            :             return wait_until(lock, chrono::steady_clock::now() + d, boost::move(pred));</a>
+<a name="322"><span class="lineNum">     322 </span>            :         }</a>
+<a name="323"><span class="lineNum">     323 </span>            : #endif</a>
+<a name="324"><span class="lineNum">     324 </span>            : </a>
+<a name="325"><span class="lineNum">     325 </span>            : #define BOOST_THREAD_DEFINES_CONDITION_VARIABLE_NATIVE_HANDLE</a>
+<a name="326"><span class="lineNum">     326 </span>            :         typedef pthread_cond_t* native_handle_type;</a>
+<a name="327"><span class="lineNum">     327 </span>            :         native_handle_type native_handle()</a>
+<a name="328"><span class="lineNum">     328 </span>            :         {</a>
+<a name="329"><span class="lineNum">     329 </span>            :             return &amp;cond;</a>
+<a name="330"><span class="lineNum">     330 </span>            :         }</a>
+<a name="331"><span class="lineNum">     331 </span>            : </a>
+<a name="332"><span class="lineNum">     332 </span>            :         void notify_one() BOOST_NOEXCEPT;</a>
+<a name="333"><span class="lineNum">     333 </span>            :         void notify_all() BOOST_NOEXCEPT;</a>
+<a name="334"><span class="lineNum">     334 </span>            :     };</a>
+<a name="335"><span class="lineNum">     335 </span>            : </a>
+<a name="336"><span class="lineNum">     336 </span>            :     BOOST_THREAD_DECL void notify_all_at_thread_exit(condition_variable&amp; cond, unique_lock&lt;mutex&gt; lk);</a>
+<a name="337"><span class="lineNum">     337 </span>            : }</a>
+<a name="338"><span class="lineNum">     338 </span>            : </a>
+<a name="339"><span class="lineNum">     339 </span>            : #include &lt;boost/config/abi_suffix.hpp&gt;</a>
+<a name="340"><span class="lineNum">     340 </span>            : </a>
+<a name="341"><span class="lineNum">     341 </span>            : #endif</a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

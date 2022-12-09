@@ -1,0 +1,13 @@
+<map id="Sawyer::Container::Map::erase" name="Sawyer::Container::Map::erase">
+<area shape="rect" id="node1" title="Remove a node with specified key." alt="" coords="237,365,376,407"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1BiMap.html#af049e66ade4a63f35f154639f8463db6" title="Erase a specific map entry." alt="" coords="28,5,167,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1GraphBimapIndex.html#a6ccf34a07f4b055848b47a03c5f41a5a" title="Erase an element from the map." alt="" coords="14,71,181,112"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Map.html#a79cec986e2f985ca3c480cad47bf57a2" title="Remove a node by iterator." alt="" coords="5,136,189,207"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Map.html#a34fe48c96d473c1bb89e96a17f20ad14" title="Remove multiple nodes by iterator range." alt="" coords="5,231,189,301"/>
+<area shape="rect" id="node6" href="$classSawyer_1_1Attribute_1_1Storage.html#a5a79e661eb48d0b9548bd0dacc63daba" title="Erase an attribute." alt="" coords="19,325,175,367"/>
+<area shape="rect" id="node7" href="$classSawyer_1_1Container_1_1Map.html#a23a8cb45a2bde6aa2d21456e821ec255" title="Remove keys stored in another Map." alt="" coords="5,391,189,461"/>
+<area shape="rect" id="node8" href="$classSawyer_1_1Container_1_1BiMap.html#a39a5f019afc35305b8acc88eea21bdf2" title="Erase domain value and its associated range value." alt="" coords="27,485,167,527"/>
+<area shape="rect" id="node9" href="$classSawyer_1_1Container_1_1BiMap.html#a657c436b0449be1a00c1595767386902" title="Erase range value and its associated domain value." alt="" coords="28,551,167,592"/>
+<area shape="rect" id="node10" href="$classSawyer_1_1Container_1_1DistinctList.html#add964b1303070a70008d86e5700acf75" title="Return and erase item at back of list." alt="" coords="24,616,171,657"/>
+<area shape="rect" id="node11" href="$classSawyer_1_1Container_1_1DistinctList.html#a3de8967eef9ec9840892d51526614a35" title="Return and erase item at front of list." alt="" coords="24,681,171,723"/>
+</map>

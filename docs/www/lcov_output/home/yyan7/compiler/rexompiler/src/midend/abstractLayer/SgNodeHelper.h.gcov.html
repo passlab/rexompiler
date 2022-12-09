@@ -1,0 +1,692 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /home/yyan7/compiler/rexompiler/src/midend/abstractLayer/SgNodeHelper.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">home/yyan7/compiler/rexompiler/src/midend/abstractLayer</a> - SgNodeHelper.h<span style="font-size: 80%;"> (source / <a href="SgNodeHelper.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #ifndef SgNodeHelper_H</a>
+<a name="2"><span class="lineNum">       2 </span>            : #define SgNodeHelper_H</a>
+<a name="3"><span class="lineNum">       3 </span>            : </a>
+<a name="4"><span class="lineNum">       4 </span>            : #include &lt;set&gt;</a>
+<a name="5"><span class="lineNum">       5 </span>            : #include &lt;list&gt;</a>
+<a name="6"><span class="lineNum">       6 </span>            : #include &lt;vector&gt;</a>
+<a name="7"><span class="lineNum">       7 </span>            : #include &lt;string&gt;</a>
+<a name="8"><span class="lineNum">       8 </span>            : </a>
+<a name="9"><span class="lineNum">       9 </span>            : class SgNode;</a>
+<a name="10"><span class="lineNum">      10 </span>            : class SgProject;</a>
+<a name="11"><span class="lineNum">      11 </span>            : class SgLocatedNode;</a>
+<a name="12"><span class="lineNum">      12 </span>            : </a>
+<a name="13"><span class="lineNum">      13 </span>            : class SgStatement;</a>
+<a name="14"><span class="lineNum">      14 </span>            : </a>
+<a name="15"><span class="lineNum">      15 </span>            : class SgScopeStatement;</a>
+<a name="16"><span class="lineNum">      16 </span>            : class SgGlobal;</a>
+<a name="17"><span class="lineNum">      17 </span>            : class SgFunctionDefinition;</a>
+<a name="18"><span class="lineNum">      18 </span>            : </a>
+<a name="19"><span class="lineNum">      19 </span>            : class SgDeclarationStatement;</a>
+<a name="20"><span class="lineNum">      20 </span>            : class SgVariableDeclaration;</a>
+<a name="21"><span class="lineNum">      21 </span>            : class SgFunctionDeclaration;</a>
+<a name="22"><span class="lineNum">      22 </span>            : class SgInitializedName;</a>
+<a name="23"><span class="lineNum">      23 </span>            : class SgClassDeclaration;</a>
+<a name="24"><span class="lineNum">      24 </span>            : </a>
+<a name="25"><span class="lineNum">      25 </span>            : class SgExpression;</a>
+<a name="26"><span class="lineNum">      26 </span>            : class SgVarRefExp;</a>
+<a name="27"><span class="lineNum">      27 </span>            : class SgFunctionRefExp;</a>
+<a name="28"><span class="lineNum">      28 </span>            : class SgFunctionCallExp;</a>
+<a name="29"><span class="lineNum">      29 </span>            : </a>
+<a name="30"><span class="lineNum">      30 </span>            : class SgSymbol;</a>
+<a name="31"><span class="lineNum">      31 </span>            : class SgVariableSymbol;</a>
+<a name="32"><span class="lineNum">      32 </span>            : class SgFunctionSymbol;</a>
+<a name="33"><span class="lineNum">      33 </span>            : </a>
+<a name="34"><span class="lineNum">      34 </span>            : class SgType;</a>
+<a name="35"><span class="lineNum">      35 </span>            : class SgPointerType;</a>
+<a name="36"><span class="lineNum">      36 </span>            : class SgReferenceType;</a>
+<a name="37"><span class="lineNum">      37 </span>            : class SgRvalueReferenceType;</a>
+<a name="38"><span class="lineNum">      38 </span>            : class SgFunctionType;</a>
+<a name="39"><span class="lineNum">      39 </span>            : </a>
+<a name="40"><span class="lineNum">      40 </span>            : class SgContinueStmt;</a>
+<a name="41"><span class="lineNum">      41 </span>            : class SgCaseOptionStmt;</a>
+<a name="42"><span class="lineNum">      42 </span>            : class SgDefaultOptionStmt;</a>
+<a name="43"><span class="lineNum">      43 </span>            : </a>
+<a name="44"><span class="lineNum">      44 </span>            : class SgPragmaDeclaration;</a>
+<a name="45"><span class="lineNum">      45 </span>            : class SgUpirFieldBodyStatement;</a>
+<a name="46"><span class="lineNum">      46 </span>            : </a>
+<a name="47"><span class="lineNum">      47 </span>            : namespace SgNodeHelper {</a>
+<a name="48"><span class="lineNum">      48 </span>            : </a>
+<a name="49"><span class="lineNum">      49 </span>            : /*! \brief Functions for simplifying access to SgNode information</a>
+<a name="50"><span class="lineNum">      50 </span>            : </a>
+<a name="51"><span class="lineNum">      51 </span>            :   * \author Markus Schordan</a>
+<a name="52"><span class="lineNum">      52 </span>            :   * \date 2012, 2013.</a>
+<a name="53"><span class="lineNum">      53 </span>            : </a>
+<a name="54"><span class="lineNum">      54 </span>            :   \details A collection of functions which simplify access to SgNode</a>
+<a name="55"><span class="lineNum">      55 </span>            :   information. All functions are side-effect free and do not store any</a>
+<a name="56"><span class="lineNum">      56 </span>            :   data. All data is returned as pointer to data which already existed</a>
+<a name="57"><span class="lineNum">      57 </span>            :   before calling this function or it is returned by value.</a>
+<a name="58"><span class="lineNum">      58 </span>            : </a>
+<a name="59"><span class="lineNum">      59 </span>            : </a>
+<a name="60"><span class="lineNum">      60 </span>            :  */</a>
+<a name="61"><span class="lineNum">      61 </span>            :   typedef std::pair&lt;int,int&gt; LineColPair;</a>
+<a name="62"><span class="lineNum">      62 </span>            : </a>
+<a name="63"><span class="lineNum">      63 </span>            :   //! returns true if the declaration has an assign initializer (e.g. char[2]=&quot;&quot;;)</a>
+<a name="64"><span class="lineNum">      64 </span>            :   bool hasAssignInitializer(SgVariableDeclaration* decl);</a>
+<a name="65"><span class="lineNum">      65 </span>            : </a>
+<a name="66"><span class="lineNum">      66 </span>            :   //! returns true if the declaration has an initializer list (e.g. char[2]={'a',0};</a>
+<a name="67"><span class="lineNum">      67 </span>            :   bool isAggregateDeclarationWithInitializerList(SgVariableDeclaration* decl);</a>
+<a name="68"><span class="lineNum">      68 </span>            : </a>
+<a name="69"><span class="lineNum">      69 </span>            :   //! returns the initializer expression of a variable declaration. If no initializer exists it returns 0.</a>
+<a name="70"><span class="lineNum">      70 </span>            :   SgExpression* getInitializerExpressionOfVariableDeclaration(SgVariableDeclaration* decl);</a>
+<a name="71"><span class="lineNum">      71 </span>            : </a>
+<a name="72"><span class="lineNum">      72 </span>            :   //! returns the initialized name object of a variable declaration. Otherwise it throws an exception.</a>
+<a name="73"><span class="lineNum">      73 </span>            :   SgInitializedName* getInitializedNameOfVariableDeclaration(SgVariableDeclaration* decl);</a>
+<a name="74"><span class="lineNum">      74 </span>            : </a>
+<a name="75"><span class="lineNum">      75 </span>            :   //! returns the declaration statement found for a given variable symbol.</a>
+<a name="76"><span class="lineNum">      76 </span>            :   SgDeclarationStatement* findVariableDeclarationWithVariableSymbol(SgNode* node);</a>
+<a name="77"><span class="lineNum">      77 </span>            : </a>
+<a name="78"><span class="lineNum">      78 </span>            :   //! returns the function declaration statement found for a given function symbol.</a>
+<a name="79"><span class="lineNum">      79 </span>            :   SgFunctionDeclaration* findFunctionDeclarationWithFunctionSymbol(SgNode* node);</a>
+<a name="80"><span class="lineNum">      80 </span>            : </a>
+<a name="81"><span class="lineNum">      81 </span>            :   //! returns filename+line+column information of AST fragment in format &quot;filename:line:column&quot;. Used for generating readable output</a>
+<a name="82"><span class="lineNum">      82 </span>            :   std::string sourceFilenameLineColumnToString(SgNode* node);</a>
+<a name="83"><span class="lineNum">      83 </span>            : </a>
+<a name="84"><span class="lineNum">      84 </span>            :   //! returns a std::pair of line and column number. If no file info exists at this node it returns  (-1,-1).</a>
+<a name="85"><span class="lineNum">      85 </span>            :   SgNodeHelper::LineColPair lineColumnPair(SgNode* node);</a>
+<a name="86"><span class="lineNum">      86 </span>            : </a>
+<a name="87"><span class="lineNum">      87 </span>            :   //! returns filename as stored in AST node. Used for generating readable output.</a>
+<a name="88"><span class="lineNum">      88 </span>            :   std::string sourceFilenameToString(SgNode* node);</a>
+<a name="89"><span class="lineNum">      89 </span>            : </a>
+<a name="90"><span class="lineNum">      90 </span>            :   //! returns filename followed by line:column in one string. Used for generating readable output.</a>
+<a name="91"><span class="lineNum">      91 </span>            :   std::string sourceLineColumnToString(SgNode* node);</a>
+<a name="92"><span class="lineNum">      92 </span>            :   //! returns filename followed by line, separator, and column in one string. Used for generating readable output.</a>
+<a name="93"><span class="lineNum">      93 </span>            :   std::string sourceLineColumnToString(SgNode* node, std::string separator);</a>
+<a name="94"><span class="lineNum">      94 </span>            : </a>
+<a name="95"><span class="lineNum">      95 </span>            :   //! returns line, column, and unparsed node in one string.</a>
+<a name="96"><span class="lineNum">      96 </span>            :   std::string lineColumnAndSourceCodeToString(SgNode* node);</a>
+<a name="97"><span class="lineNum">      97 </span>            : </a>
+<a name="98"><span class="lineNum">      98 </span>            :   //! returns location (consisting of filename, line, column)</a>
+<a name="99"><span class="lineNum">      99 </span>            :   std::string locationToString(SgNode* node);</a>
+<a name="100"><span class="lineNum">     100 </span>            : </a>
+<a name="101"><span class="lineNum">     101 </span>            :   //! returns location (consisting of filename, line, column)</a>
+<a name="102"><span class="lineNum">     102 </span>            :   //! Abbreviates fileName if too long, max file name length can be set</a>
+<a name="103"><span class="lineNum">     103 </span>            :   std::string abbreviatedLocationToString(SgNode* node, size_t maxFileNameLength=30);</a>
+<a name="104"><span class="lineNum">     104 </span>            : </a>
+<a name="105"><span class="lineNum">     105 </span>            :   //! returns location (consisting of filename, line, column) and source code of unparsed node in one string.</a>
+<a name="106"><span class="lineNum">     106 </span>            :   //! Abbreviates fileName and unparsed source if too long (defaults are 30,20)</a>
+<a name="107"><span class="lineNum">     107 </span>            :   std::string locationAndSourceCodeToString(SgNode* node, size_t maxFileNameLength=30, size_t maxSourceLength=20);</a>
+<a name="108"><span class="lineNum">     108 </span>            : </a>
+<a name="109"><span class="lineNum">     109 </span>            :   //! determines all VarRefExp in the subtree of 'node'. The order in the vector corresponds to the traversal order on the AST.</a>
+<a name="110"><span class="lineNum">     110 </span>            :   std::vector&lt;SgVarRefExp*&gt; determineVariablesInSubtree(SgNode* node);</a>
+<a name="111"><span class="lineNum">     111 </span>            : </a>
+<a name="112"><span class="lineNum">     112 </span>            :   /*! computes a list representing the nesting structure of classes (including structs and unions).</a>
+<a name="113"><span class="lineNum">     113 </span>            :     It traverses the AST upwards and collects SgClassDeclaration(s) only. This covers nested classes, nested structs, and nested unions,</a>
+<a name="114"><span class="lineNum">     114 </span>            :     and combinations of those.</a>
+<a name="115"><span class="lineNum">     115 </span>            :   */</a>
+<a name="116"><span class="lineNum">     116 </span>            :   std::list&lt;SgClassDeclaration*&gt; classDeclarationNestingSequence(SgDeclarationStatement*);</a>
+<a name="117"><span class="lineNum">     117 </span>            : </a>
+<a name="118"><span class="lineNum">     118 </span>            :   /*! computes for a given node at which scope nesting level this node is in its AST */</a>
+<a name="119"><span class="lineNum">     119 </span>            :   int scopeNestingLevel(SgNode* node);</a>
+<a name="120"><span class="lineNum">     120 </span>            : </a>
+<a name="121"><span class="lineNum">     121 </span>            :   /*! computes for a given node at which scope nesting level this node is in its AST */</a>
+<a name="122"><span class="lineNum">     122 </span>            :   int scopeSequenceNumber(SgNode* node);</a>
+<a name="123"><span class="lineNum">     123 </span>            : </a>
+<a name="124"><span class="lineNum">     124 </span>            :   /*! computes for a given node the index number of it from the parent.</a>
+<a name="125"><span class="lineNum">     125 </span>            :     e.g. node1(node2,node3,node4) : node4 has index 2 (starting at 0)</a>
+<a name="126"><span class="lineNum">     126 </span>            :     For the root node of an AST (e.g. SgProject) this function returns -1.</a>
+<a name="127"><span class="lineNum">     127 </span>            :    */</a>
+<a name="128"><span class="lineNum">     128 </span>            :   size_t determineChildIndex(SgNode* node);</a>
+<a name="129"><span class="lineNum">     129 </span>            : </a>
+<a name="130"><span class="lineNum">     130 </span>            : </a>
+<a name="131"><span class="lineNum">     131 </span>            :   //! returns the initializer-list of For.</a>
+<a name="132"><span class="lineNum">     132 </span>            :   std::vector&lt;SgStatement *&gt; &amp; getForInitList(SgNode* node);</a>
+<a name="133"><span class="lineNum">     133 </span>            : </a>
+<a name="134"><span class="lineNum">     134 </span>            :   //! returns the incr/derc-expr of For.</a>
+<a name="135"><span class="lineNum">     135 </span>            :   SgExpression * getForIncExpr(SgNode* node);</a>
+<a name="136"><span class="lineNum">     136 </span>            : </a>
+<a name="137"><span class="lineNum">     137 </span>            :   //! determines whether a node is the root node of an AST representing the inc-expr</a>
+<a name="138"><span class="lineNum">     138 </span>            :   //! in a SgForStatement. This function is helpful to deal with this special case</a>
+<a name="139"><span class="lineNum">     139 </span>            :   //! in the ROSE AST where an expression does not have a root node which can be</a>
+<a name="140"><span class="lineNum">     140 </span>            :   //! easily determined to be a root node of an expression (i.e. here it can be *any* binary or unary node</a>
+<a name="141"><span class="lineNum">     141 </span>            :   //! in constrast to all other expressions in the ROSE AST which are either a SgExprStatement or have a SgExpressionRoot node.</a>
+<a name="142"><span class="lineNum">     142 </span>            :   bool isForIncExpr(SgNode* node);</a>
+<a name="143"><span class="lineNum">     143 </span>            : </a>
+<a name="144"><span class="lineNum">     144 </span>            :   //! returns the root node representing the AST of the condition of If, While, DoWhile, For, CondOperator, switch.</a>
+<a name="145"><span class="lineNum">     145 </span>            :   SgNode* getCond(SgNode* node);</a>
+<a name="146"><span class="lineNum">     146 </span>            : </a>
+<a name="147"><span class="lineNum">     147 </span>            :   //! returns the string representing the condition (removes trailing ';')</a>
+<a name="148"><span class="lineNum">     148 </span>            :   std::string unparseCond(SgNode* node);</a>
+<a name="149"><span class="lineNum">     149 </span>            : </a>
+<a name="150"><span class="lineNum">     150 </span>            :   //! returns the root node representing the AST of the true branch of If, CondOperator.</a>
+<a name="151"><span class="lineNum">     151 </span>            :   SgNode* getTrueBranch(SgNode* node);</a>
+<a name="152"><span class="lineNum">     152 </span>            : </a>
+<a name="153"><span class="lineNum">     153 </span>            :   //! returns the root node representing the AST of the false branch of If, CondOperator.</a>
+<a name="154"><span class="lineNum">     154 </span>            :   SgNode* getFalseBranch(SgNode* node);</a>
+<a name="155"><span class="lineNum">     155 </span>            : </a>
+<a name="156"><span class="lineNum">     156 </span>            :   //! returns the root node representing the AST of the loop body of While, DoWhile, For.</a>
+<a name="157"><span class="lineNum">     157 </span>            :   SgNode* getLoopBody(SgNode* node);</a>
+<a name="158"><span class="lineNum">     158 </span>            : </a>
+<a name="159"><span class="lineNum">     159 </span>            :   //! returns the first Statement of SgBasicBlock (throws exception if numChildren==0)</a>
+<a name="160"><span class="lineNum">     160 </span>            :   SgNode* getFirstOfBlock(SgNode* node);</a>
+<a name="161"><span class="lineNum">     161 </span>            : </a>
+<a name="162"><span class="lineNum">     162 </span>            :   //! returns the last Statement of SgBasicBlock (throws exception if numChildren==0)</a>
+<a name="163"><span class="lineNum">     163 </span>            :   SgNode* getLastOfBlock(SgNode* node);</a>
+<a name="164"><span class="lineNum">     164 </span>            : </a>
+<a name="165"><span class="lineNum">     165 </span>            :   //! returns the label name of a SgLabelStatement without trailing &quot;:&quot;</a>
+<a name="166"><span class="lineNum">     166 </span>            :   std::string getLabelName(SgNode* node);</a>
+<a name="167"><span class="lineNum">     167 </span>            : </a>
+<a name="168"><span class="lineNum">     168 </span>            :   //! returns function name of SgFunctionDefinition, SgFunctionDeclaration, SgFunctionCall.</a>
+<a name="169"><span class="lineNum">     169 </span>            :   std::string getFunctionName(SgNode* node);</a>
+<a name="170"><span class="lineNum">     170 </span>            : </a>
+<a name="171"><span class="lineNum">     171 </span>            :   /*! This function determines for a given function-call-expression</a>
+<a name="172"><span class="lineNum">     172 </span>            :      its corresponding function-definition (by using</a>
+<a name="173"><span class="lineNum">     173 </span>            :      get_definingDeclaration).  This function has constant</a>
+<a name="174"><span class="lineNum">     174 </span>            :      complexity. It does not perform a search, but uses the</a>
+<a name="175"><span class="lineNum">     175 </span>            :      information as present in the AST. If this information is not</a>
+<a name="176"><span class="lineNum">     176 </span>            :      sufficient to determine the definition of a function it returns</a>
+<a name="177"><span class="lineNum">     177 </span>            :      0. For a consistent AST this will find all definitions in the</a>
+<a name="178"><span class="lineNum">     178 </span>            :      same file, but not in a other SgFile.</a>
+<a name="179"><span class="lineNum">     179 </span>            : </a>
+<a name="180"><span class="lineNum">     180 </span>            :      For an inter-procedural analysis a more elaborate mechanism is</a>
+<a name="181"><span class="lineNum">     181 </span>            :      required to perform a static function call lresolution (also</a>
+<a name="182"><span class="lineNum">     182 </span>            :      handling function pointers and virtual functions).</a>
+<a name="183"><span class="lineNum">     183 </span>            :   */</a>
+<a name="184"><span class="lineNum">     184 </span>            :   SgFunctionDefinition* determineFunctionDefinition(SgFunctionCallExp* fCall);</a>
+<a name="185"><span class="lineNum">     185 </span>            : </a>
+<a name="186"><span class="lineNum">     186 </span>            :   //! Determines whether a provided function declaration is a forward declaration</a>
+<a name="187"><span class="lineNum">     187 </span>            :   bool isForwardFunctionDeclaration(SgNode* declaration);</a>
+<a name="188"><span class="lineNum">     188 </span>            : </a>
+<a name="189"><span class="lineNum">     189 </span>            :   /*! this function should only be called for a node in the subtree of</a>
+<a name="190"><span class="lineNum">     190 </span>            :      a SgFunctionDefinition node. For a given 'node' it determines the</a>
+<a name="191"><span class="lineNum">     191 </span>            :      correspondnig functionDefinition node when searching upwards</a>
+<a name="192"><span class="lineNum">     192 </span>            :      in the AST for such a SgFunctionDefinition node. It is useful as a</a>
+<a name="193"><span class="lineNum">     193 </span>            :      simple lookup function from inside the AST subtree of a</a>
+<a name="194"><span class="lineNum">     194 </span>            :      SgFunctionDefinition.  Returns 0 if no SgFunctionDefinition is found (e.g. global scope).</a>
+<a name="195"><span class="lineNum">     195 </span>            :   */</a>
+<a name="196"><span class="lineNum">     196 </span>            :   SgFunctionDefinition* correspondingSgFunctionDefinition(SgNode* node);</a>
+<a name="197"><span class="lineNum">     197 </span>            : </a>
+<a name="198"><span class="lineNum">     198 </span>            :   //! checks whether the node 'node' is the root node of the AST by using the get_parent function.</a>
+<a name="199"><span class="lineNum">     199 </span>            :   bool isAstRoot(SgNode* node);</a>
+<a name="200"><span class="lineNum">     200 </span>            : </a>
+<a name="201"><span class="lineNum">     201 </span>            :   //! is true if 'node' is the root node of the AST representing a Loop construct (While, DoWhile, For).</a>
+<a name="202"><span class="lineNum">     202 </span>            :   bool isLoopStmt(SgNode* node);</a>
+<a name="203"><span class="lineNum">     203 </span>            : </a>
+<a name="204"><span class="lineNum">     204 </span>            :   //! is true if 'node' is the root node of the AST representing the condition of a Loop construct (While, DoWhile, For).</a>
+<a name="205"><span class="lineNum">     205 </span>            :   bool isLoopCond(SgNode* node);</a>
+<a name="206"><span class="lineNum">     206 </span>            : </a>
+<a name="207"><span class="lineNum">     207 </span>            :   //! is true if 'node' is the root node of the AST representing If, While, DoWhile, For, switch, CondExp.</a>
+<a name="208"><span class="lineNum">     208 </span>            :   bool isCondStmtOrExpr(SgNode* node);</a>
+<a name="209"><span class="lineNum">     209 </span>            : </a>
+<a name="210"><span class="lineNum">     210 </span>            :   //! is true if 'node' is the root node of the AST representing If, While, DoWhile, For, switch.</a>
+<a name="211"><span class="lineNum">     211 </span>            :   bool isCondStmt(SgNode* node);</a>
+<a name="212"><span class="lineNum">     212 </span>            : </a>
+<a name="213"><span class="lineNum">     213 </span>            :   //! is true if 'node' is the root node of the AST representing the condition of If, While, DoWhile, For, switch.</a>
+<a name="214"><span class="lineNum">     214 </span>            :   bool isCondInBranchStmt(SgNode* node);</a>
+<a name="215"><span class="lineNum">     215 </span>            : </a>
+<a name="216"><span class="lineNum">     216 </span>            :   //! is true if 'node' is the root node of the AST representing the condition of If, While, DoWhile, For, switch, CondExp.</a>
+<a name="217"><span class="lineNum">     217 </span>            :   bool isCond(SgNode* node);</a>
+<a name="218"><span class="lineNum">     218 </span>            : </a>
+<a name="219"><span class="lineNum">     219 </span>            :   //! sets 'cond' as the root node of the AST representing the condition in statements if, while, dowhile, for, switch.</a>
+<a name="220"><span class="lineNum">     220 </span>            :   void setCond(SgStatement* stmt, SgNode* cond);</a>
+<a name="221"><span class="lineNum">     221 </span>            : </a>
+<a name="222"><span class="lineNum">     222 </span>            : </a>
+<a name="223"><span class="lineNum">     223 </span>            :   //! returns true for --Expr and ++Expr, otherwise false.</a>
+<a name="224"><span class="lineNum">     224 </span>            :   bool isPrefixIncDecOp(SgNode* node);</a>
+<a name="225"><span class="lineNum">     225 </span>            : </a>
+<a name="226"><span class="lineNum">     226 </span>            :   //! returns true for Expr-- and Expr--, otherwise false;</a>
+<a name="227"><span class="lineNum">     227 </span>            :   bool isPostfixIncDecOp(SgNode* node);</a>
+<a name="228"><span class="lineNum">     228 </span>            : </a>
+<a name="229"><span class="lineNum">     229 </span>            :   //! returns the SgSymbol* of the variable in a variable declaration</a>
+<a name="230"><span class="lineNum">     230 </span>            :   SgSymbol* getSymbolOfVariableDeclaration(SgVariableDeclaration* decl);</a>
+<a name="231"><span class="lineNum">     231 </span>            : </a>
+<a name="232"><span class="lineNum">     232 </span>            :   //! returns the SgSymbol* of the variable in a function declaration</a>
+<a name="233"><span class="lineNum">     233 </span>            :   SgFunctionSymbol* getSymbolOfFunctionDeclaration(SgFunctionDeclaration* decl);</a>
+<a name="234"><span class="lineNum">     234 </span>            : </a>
+<a name="235"><span class="lineNum">     235 </span>            :   //! returns the SgSymbol* of the variable in a SgVarRefExp</a>
+<a name="236"><span class="lineNum">     236 </span>            :   SgSymbol* getSymbolOfVariable(SgVarRefExp* varRefExp);</a>
+<a name="237"><span class="lineNum">     237 </span>            : </a>
+<a name="238"><span class="lineNum">     238 </span>            :   //! returns the SgSymbol* of the function in a SgFunctionRefExp</a>
+<a name="239"><span class="lineNum">     239 </span>            :   SgFunctionSymbol* getSymbolOfFunction(SgFunctionRefExp* funcRefExp);</a>
+<a name="240"><span class="lineNum">     240 </span>            : </a>
+<a name="241"><span class="lineNum">     241 </span>            :   //! returns the SgSymbol* of a SgInitializedName</a>
+<a name="242"><span class="lineNum">     242 </span>            :   SgSymbol* getSymbolOfInitializedName(SgInitializedName* initName);</a>
+<a name="243"><span class="lineNum">     243 </span>            : </a>
+<a name="244"><span class="lineNum">     244 </span>            :   //! returns name of symbol as string</a>
+<a name="245"><span class="lineNum">     245 </span>            :   std::string symbolToString(SgSymbol* symbol);</a>
+<a name="246"><span class="lineNum">     246 </span>            : </a>
+<a name="247"><span class="lineNum">     247 </span>            :   /*! \brief Creates a long unique variable name for a given node of type SgVariableDeclaration or SgVarRefExp</a>
+<a name="248"><span class="lineNum">     248 </span>            : </a>
+<a name="249"><span class="lineNum">     249 </span>            :      If node is not one of those two types an exception is thrown</a>
+<a name="250"><span class="lineNum">     250 </span>            :      The long variable name consists $functionName$scopeLevel$varName</a>
+<a name="251"><span class="lineNum">     251 </span>            :      In case of global scope functionName is empty, giving a string: $$scopeLevel$varName</a>
+<a name="252"><span class="lineNum">     252 </span>            :      Note: this function only considers C-functions. Classes are recognized.</a>
+<a name="253"><span class="lineNum">     253 </span>            :   */</a>
+<a name="254"><span class="lineNum">     254 </span>            :   std::string uniqueLongVariableName(SgNode* node);</a>
+<a name="255"><span class="lineNum">     255 </span>            : </a>
+<a name="256"><span class="lineNum">     256 </span>            :   /*! \brief returns a set of SgNode where each node is a break node, but</a>
+<a name="257"><span class="lineNum">     257 </span>            :      properly excludes all nested loops.</a>
+<a name="258"><span class="lineNum">     258 </span>            : </a>
+<a name="259"><span class="lineNum">     259 </span>            :      @param [in] node can point directly to the AST construct (e.g. SgIfStatement) or a basic block of the respective loop construct.</a>
+<a name="260"><span class="lineNum">     260 </span>            : </a>
+<a name="261"><span class="lineNum">     261 </span>            :      The only property this function maintains during traversal of the</a>
+<a name="262"><span class="lineNum">     262 </span>            :      AST is that it does not collect break nodes from nested loops but</a>
+<a name="263"><span class="lineNum">     263 </span>            :      only from the current scope. Only those breaks are loop-relevant,</a>
+<a name="264"><span class="lineNum">     264 </span>            :      meaning only those can force an exit of the loop. Break</a>
+<a name="265"><span class="lineNum">     265 </span>            :      statements inside if statements or Conditional Expressions inside</a>
+<a name="266"><span class="lineNum">     266 </span>            :      the loop are handled properly. Excluded are only constructs where</a>
+<a name="267"><span class="lineNum">     267 </span>            :      a break statement refers to that nested loop but not the current</a>
+<a name="268"><span class="lineNum">     268 </span>            :      (=relevant) loop. This function can be used for:</a>
+<a name="269"><span class="lineNum">     269 </span>            :      SgWhile,SgDoWhile,SgForStatement, SgSwitch.</a>
+<a name="270"><span class="lineNum">     270 </span>            :   */</a>
+<a name="271"><span class="lineNum">     271 </span>            :   std::set&lt;SgNode*&gt; loopRelevantBreakStmtNodes(SgNode* node);</a>
+<a name="272"><span class="lineNum">     272 </span>            :   std::set&lt;SgContinueStmt*&gt; loopRelevantContinueStmtNodes(SgNode* node);</a>
+<a name="273"><span class="lineNum">     273 </span>            : </a>
+<a name="274"><span class="lineNum">     274 </span>            :   //! collects all case labels from the switch it started in (excludes</a>
+<a name="275"><span class="lineNum">     275 </span>            :   //! nested switch stmts). This function also works for Duff's device</a>
+<a name="276"><span class="lineNum">     276 </span>            :   //! code where 'case' labels can be inside nested loop/if</a>
+<a name="277"><span class="lineNum">     277 </span>            :   //! constructs.</a>
+<a name="278"><span class="lineNum">     278 </span>            :   std::set&lt;SgCaseOptionStmt*&gt; switchRelevantCaseStmtNodes(SgNode* node);</a>
+<a name="279"><span class="lineNum">     279 </span>            : </a>
+<a name="280"><span class="lineNum">     280 </span>            :   /*! returns the default stmt if it exists. Otherwise return 0 and</a>
+<a name="281"><span class="lineNum">     281 </span>            :      can be used to test whether a default stmt exists in a given</a>
+<a name="282"><span class="lineNum">     282 </span>            :      switch stmt. This function also works for Duff's device</a>
+<a name="283"><span class="lineNum">     283 </span>            :      code. code where 'default' labels can be inside nested loop/if</a>
+<a name="284"><span class="lineNum">     284 </span>            :      constructs. */</a>
+<a name="285"><span class="lineNum">     285 </span>            :   SgDefaultOptionStmt* switchRelevantDefaultStmtNode(SgNode* node);</a>
+<a name="286"><span class="lineNum">     286 </span>            : </a>
+<a name="287"><span class="lineNum">     287 </span>            :   //! returns the first child of an arbitrary AST node (throws exception if numChildren==0)</a>
+<a name="288"><span class="lineNum">     288 </span>            :   SgNode* getFirstChild(SgNode* node);</a>
+<a name="289"><span class="lineNum">     289 </span>            : </a>
+<a name="290"><span class="lineNum">     290 </span>            :   //! return a function-call's argument list</a>
+<a name="291"><span class="lineNum">     291 </span>            :   std::vector&lt;SgExpression *&gt; &amp; getFunctionCallActualParameterList(SgNode* node);</a>
+<a name="292"><span class="lineNum">     292 </span>            : </a>
+<a name="293"><span class="lineNum">     293 </span>            :   // schroder3 (2016-07-27): Returns the callee of the given call expression</a>
+<a name="294"><span class="lineNum">     294 </span>            :   SgExpression* getCalleeOfCall(/*const*/ SgFunctionCallExp* call);</a>
+<a name="295"><span class="lineNum">     295 </span>            : </a>
+<a name="296"><span class="lineNum">     296 </span>            :   // schroder3 (2016-06-24): Returns the function type of the callee of the given call expression</a>
+<a name="297"><span class="lineNum">     297 </span>            :   SgFunctionType* getCalleeFunctionType(/*const*/SgFunctionCallExp* call);</a>
+<a name="298"><span class="lineNum">     298 </span>            : </a>
+<a name="299"><span class="lineNum">     299 </span>            :   //! return a function-definition's list of formal paramters</a>
+<a name="300"><span class="lineNum">     300 </span>            :   std::vector&lt;SgInitializedName *&gt; &amp; getFunctionDefinitionFormalParameterList(SgNode* node);</a>
+<a name="301"><span class="lineNum">     301 </span>            : </a>
+<a name="302"><span class="lineNum">     302 </span>            :   //! return a function-definition's return type</a>
+<a name="303"><span class="lineNum">     303 </span>            :   SgType* getFunctionReturnType(SgNode* node);</a>
+<a name="304"><span class="lineNum">     304 </span>            : </a>
+<a name="305"><span class="lineNum">     305 </span>            :   //! returns the set of all local variable-declarations of a function</a>
+<a name="306"><span class="lineNum">     306 </span>            :   std::set&lt;SgVariableDeclaration*&gt; localVariableDeclarationsOfFunction(SgFunctionDefinition* funDef);</a>
+<a name="307"><span class="lineNum">     307 </span>            : </a>
+<a name="308"><span class="lineNum">     308 </span>            :   //! schroder3 (2016-07-22): Returns the closest function definition that contains the given node</a>
+<a name="309"><span class="lineNum">     309 </span>            :   SgFunctionDefinition* getClosestParentFunctionDefinitionOfLocatedNode(SgLocatedNode* locatedNode);</a>
+<a name="310"><span class="lineNum">     310 </span>            : </a>
+<a name="311"><span class="lineNum">     311 </span>            :   //! returns the child of SgExprStatement (which is guaranteed to be unique and to exist)</a>
+<a name="312"><span class="lineNum">     312 </span>            :   SgNode* getExprStmtChild(SgNode* node);</a>
+<a name="313"><span class="lineNum">     313 </span>            : </a>
+<a name="314"><span class="lineNum">     314 </span>            :   //! returns the child of SgExpressionRoot (which is guaranteed to be unique and to exist)</a>
+<a name="315"><span class="lineNum">     315 </span>            :   SgNode* getExprRootChild(SgNode* node);</a>
+<a name="316"><span class="lineNum">     316 </span>            : </a>
+<a name="317"><span class="lineNum">     317 </span>            :   //! returns the child of a SgUnaryExp (which is guaranteed to be unique and to exist)</a>
+<a name="318"><span class="lineNum">     318 </span>            :   SgNode* getUnaryOpChild(SgNode* node);</a>
+<a name="319"><span class="lineNum">     319 </span>            : </a>
+<a name="320"><span class="lineNum">     320 </span>            :   /*! returns the number of children as int (intentionally not as t_size)</a>
+<a name="321"><span class="lineNum">     321 </span>            :      ensures that the number of children fits into an int, otherwise throws exception.</a>
+<a name="322"><span class="lineNum">     322 </span>            :   */</a>
+<a name="323"><span class="lineNum">     323 </span>            :   int numChildren(SgNode* node);</a>
+<a name="324"><span class="lineNum">     324 </span>            : </a>
+<a name="325"><span class="lineNum">     325 </span>            :   /*! computes a new string from s1 where each doublequote is replaced with a backslash followed by the doublequote. This is helpful when printing</a>
+<a name="326"><span class="lineNum">     326 </span>            :    * unparsed program fragments which contain doublequoted strings to a dot file (used by nodeToString).</a>
+<a name="327"><span class="lineNum">     327 </span>            :    * This function also replaces &lt;,&lt;=,&gt;=,&gt; with the corresponding HTML codes.</a>
+<a name="328"><span class="lineNum">     328 </span>            :    */</a>
+<a name="329"><span class="lineNum">     329 </span>            :   std::string doubleQuotedEscapedString(std::string s1);</a>
+<a name="330"><span class="lineNum">     330 </span>            : </a>
+<a name="331"><span class="lineNum">     331 </span>            :   /*!</a>
+<a name="332"><span class="lineNum">     332 </span>            :     Same as doubleQuotedEscapedString but also replaces &lt;,&lt;=,&gt;=,&gt; with the corresponding HTML codes.</a>
+<a name="333"><span class="lineNum">     333 </span>            :     This is required when printing program code inside HTML tables of a dot file.</a>
+<a name="334"><span class="lineNum">     334 </span>            :   */</a>
+<a name="335"><span class="lineNum">     335 </span>            :   std::string doubleQuotedEscapedHTMLString(std::string s1);</a>
+<a name="336"><span class="lineNum">     336 </span>            : </a>
+<a name="337"><span class="lineNum">     337 </span>            :   //! checks whether a SgVariableSymbol is representing a variable in</a>
+<a name="338"><span class="lineNum">     338 </span>            :   //a forward declaration. This case no declaration for the variable</a>
+<a name="339"><span class="lineNum">     339 </span>            :   //exists. This is currently not possible in the ROSE AST.</a>
+<a name="340"><span class="lineNum">     340 </span>            :   bool isVariableSymbolInFunctionForwardDeclaration(SgNode* node);</a>
+<a name="341"><span class="lineNum">     341 </span>            : </a>
+<a name="342"><span class="lineNum">     342 </span>            :   //! checks whether a SgVariableSymbol is representing a function parameter (this does not apply for forward declarations)</a>
+<a name="343"><span class="lineNum">     343 </span>            :   SgVariableSymbol* isFunctionParameterVariableSymbol(SgNode* node);</a>
+<a name="344"><span class="lineNum">     344 </span>            : </a>
+<a name="345"><span class="lineNum">     345 </span>            :   //! returns a string representing the node (excluding the subtree)</a>
+<a name="346"><span class="lineNum">     346 </span>            :   std::string nodeToString(SgNode* node);</a>
+<a name="347"><span class="lineNum">     347 </span>            : </a>
+<a name="348"><span class="lineNum">     348 </span>            :   //! return lhs of a binary node (if it is not a binary node it throws an exception)</a>
+<a name="349"><span class="lineNum">     349 </span>            :   SgNode* getLhs(SgNode* node);</a>
+<a name="350"><span class="lineNum">     350 </span>            : </a>
+<a name="351"><span class="lineNum">     351 </span>            :   //! return rhs of a binary node (if it is not a binary node it throws an exception)</a>
+<a name="352"><span class="lineNum">     352 </span>            :   SgNode* getRhs(SgNode* node);</a>
+<a name="353"><span class="lineNum">     353 </span>            : </a>
+<a name="354"><span class="lineNum">     354 </span>            :   /*! returns the parent of a node. Essentially a wrapper function of the ROSE get_parent() function, but throws</a>
+<a name="355"><span class="lineNum">     355 </span>            :      an exception if no parent exists. For SgProject node  no exception is thrown if no parent exists because it is the root node of a ROSE AST.</a>
+<a name="356"><span class="lineNum">     356 </span>            :   */</a>
+<a name="357"><span class="lineNum">     357 </span>            :   SgNode* getParent(SgNode* node);</a>
+<a name="358"><span class="lineNum">     358 </span>            : </a>
+<a name="359"><span class="lineNum">     359 </span>            :   /*! searches in the provided Project for SgGlobal nodes */</a>
+<a name="360"><span class="lineNum">     360 </span>            :   std::list&lt;SgGlobal*&gt; listOfSgGlobal(SgProject* project);</a>
+<a name="361"><span class="lineNum">     361 </span>            : </a>
+<a name="362"><span class="lineNum">     362 </span>            :   /*! identifies the list of global variables</a>
+<a name="363"><span class="lineNum">     363 </span>            :      Note: static/external can be resolved by further processing those objects</a>
+<a name="364"><span class="lineNum">     364 </span>            :    */</a>
+<a name="365"><span class="lineNum">     365 </span>            :   std::list&lt;SgVariableDeclaration*&gt; listOfGlobalVars(SgProject* project);</a>
+<a name="366"><span class="lineNum">     366 </span>            : #if __cplusplus &gt; 199711L</a>
+<a name="367"><span class="lineNum">     367 </span>            :   std::list&lt;SgVariableDeclaration*&gt; listOfGlobalFields(SgProject* project);</a>
+<a name="368"><span class="lineNum">     368 </span>            : #endif</a>
+<a name="369"><span class="lineNum">     369 </span>            :   /*! identifies the list of global variables</a>
+<a name="370"><span class="lineNum">     370 </span>            :      Note: static/external can be resolved by further processing those objects</a>
+<a name="371"><span class="lineNum">     371 </span>            :    */</a>
+<a name="372"><span class="lineNum">     372 </span>            :   std::list&lt;SgVariableDeclaration*&gt; listOfGlobalVars(SgGlobal* global);</a>
+<a name="373"><span class="lineNum">     373 </span>            : #if __cplusplus &gt; 199711L</a>
+<a name="374"><span class="lineNum">     374 </span>            :   std::list&lt;SgVariableDeclaration*&gt; listOfGlobalFields(SgGlobal* global);</a>
+<a name="375"><span class="lineNum">     375 </span>            : #endif</a>
+<a name="376"><span class="lineNum">     376 </span>            : </a>
+<a name="377"><span class="lineNum">     377 </span>            :   std::list&lt;SgFunctionDefinition*&gt; listOfFunctionDefinitions(SgNode* node);</a>
+<a name="378"><span class="lineNum">     378 </span>            : #if __cplusplus &gt; 199711L</a>
+<a name="379"><span class="lineNum">     379 </span>            :   std::list&lt;SgFunctionDeclaration*&gt; listOfFunctionDeclarations(SgNode* node);</a>
+<a name="380"><span class="lineNum">     380 </span>            : #endif</a>
+<a name="381"><span class="lineNum">     381 </span>            :   std::list&lt;SgVarRefExp*&gt; listOfUsedVarsInFunctions(SgProject* SgProject);</a>
+<a name="382"><span class="lineNum">     382 </span>            : </a>
+<a name="383"><span class="lineNum">     383 </span>            :   /*! identifies the list of SgFunctionDefinitions in global scope</a>
+<a name="384"><span class="lineNum">     384 </span>            :      Functions/methods of classes are NOT included in this list.</a>
+<a name="385"><span class="lineNum">     385 </span>            :      Note: static/external can be resolved by further processing those objects</a>
+<a name="386"><span class="lineNum">     386 </span>            :   */</a>
+<a name="387"><span class="lineNum">     387 </span>            :   std::list&lt;SgFunctionDefinition*&gt; listOfGlobalFunctionDefinitions(SgGlobal* global);</a>
+<a name="388"><span class="lineNum">     388 </span>            : </a>
+<a name="389"><span class="lineNum">     389 </span>            :   /*!</a>
+<a name="390"><span class="lineNum">     390 </span>            :     Determines if a variable is declared in global name space</a>
+<a name="391"><span class="lineNum">     391 </span>            :    */</a>
+<a name="392"><span class="lineNum">     392 </span>            :   bool isGlobalVariableDeclarationSymbol(SgSymbol* varDecl);</a>
+<a name="393"><span class="lineNum">     393 </span>            :   bool isGlobalVariableDeclaration(SgVariableDeclaration* varDecl);</a>
+<a name="394"><span class="lineNum">     394 </span>            : </a>
+<a name="395"><span class="lineNum">     395 </span>            :   /*!</a>
+<a name="396"><span class="lineNum">     396 </span>            :     checks whether the expression 'node' represents an assignment to an array's element</a>
+<a name="397"><span class="lineNum">     397 </span>            :     considers all assignment operators and arrays of any size</a>
+<a name="398"><span class="lineNum">     398 </span>            :   */</a>
+<a name="399"><span class="lineNum">     399 </span>            :   bool isArrayElementAssignment(SgNode* node);</a>
+<a name="400"><span class="lineNum">     400 </span>            :   bool isFloatingPointAssignment(SgNode* exp);</a>
+<a name="401"><span class="lineNum">     401 </span>            :   bool isArrayAccess(SgNode* node);</a>
+<a name="402"><span class="lineNum">     402 </span>            :   bool isPointerVariable(SgVarRefExp* var);</a>
+<a name="403"><span class="lineNum">     403 </span>            : </a>
+<a name="404"><span class="lineNum">     404 </span>            :   // checks for float, double, long double</a>
+<a name="405"><span class="lineNum">     405 </span>            :   bool isFloatingPointType(SgType* type);</a>
+<a name="406"><span class="lineNum">     406 </span>            : </a>
+<a name="407"><span class="lineNum">     407 </span>            :   // schroder3 (2016-07-22): Modified version of SageInterface::isPointerType(...) that returns the</a>
+<a name="408"><span class="lineNum">     408 </span>            :   //  underlying pointer type.</a>
+<a name="409"><span class="lineNum">     409 </span>            :   const SgPointerType* isPointerType(const SgType* t);</a>
+<a name="410"><span class="lineNum">     410 </span>            : </a>
+<a name="411"><span class="lineNum">     411 </span>            :   // schroder3 (2016-08-17): Added support for rvalue reference types. See isLvalueReferenceType(...)</a>
+<a name="412"><span class="lineNum">     412 </span>            :   //  if only lvalue references are desired.</a>
+<a name="413"><span class="lineNum">     413 </span>            :   // schroder3 (2016-07-22): Modified version of SageInterface::isReferenceType(...) that</a>
+<a name="414"><span class="lineNum">     414 </span>            :   //  returns the underlying reference type.</a>
+<a name="415"><span class="lineNum">     415 </span>            :   //</a>
+<a name="416"><span class="lineNum">     416 </span>            :   // Returns the underlying (without typedefs and mofifiers) rvalue OR lvalue reference type if the</a>
+<a name="417"><span class="lineNum">     417 </span>            :   //  given type is such a reference type. Returns 0 otherwise.</a>
+<a name="418"><span class="lineNum">     418 </span>            :   const SgType* isReferenceType(const SgType* t);</a>
+<a name="419"><span class="lineNum">     419 </span>            : </a>
+<a name="420"><span class="lineNum">     420 </span>            :   // schroder3 (2016-08-22): Modified version of SageInterface::isReferenceType(...) that</a>
+<a name="421"><span class="lineNum">     421 </span>            :   //  returns the underlying LVALUE reference type.</a>
+<a name="422"><span class="lineNum">     422 </span>            :   const SgReferenceType* isLvalueReferenceType(const SgType* t);</a>
+<a name="423"><span class="lineNum">     423 </span>            : </a>
+<a name="424"><span class="lineNum">     424 </span>            :   // schroder3 (2016-08-22): Returns the underlying RVALUE reference type if the given type is a</a>
+<a name="425"><span class="lineNum">     425 </span>            :   //  rvalue reference type. Returns 0 otherwise.</a>
+<a name="426"><span class="lineNum">     426 </span>            :   const SgRvalueReferenceType* isRvalueReferenceType(const SgType* t);</a>
+<a name="427"><span class="lineNum">     427 </span>            : </a>
+<a name="428"><span class="lineNum">     428 </span>            :   // schroder3 (2016-08-22): Wrapper around SgReferenceType::get_base_type(...) and</a>
+<a name="429"><span class="lineNum">     429 </span>            :   //  SgRvalueReferenceType::get_base_type(...) that works for both reference types.</a>
+<a name="430"><span class="lineNum">     430 </span>            :   //  (This is a workaround for the missing mutual base class of SgReferenceType and</a>
+<a name="431"><span class="lineNum">     431 </span>            :   //  SgRvalueReferenceType.)</a>
+<a name="432"><span class="lineNum">     432 </span>            :   SgType* getReferenceBaseType(const SgType* t);</a>
+<a name="433"><span class="lineNum">     433 </span>            : </a>
+<a name="434"><span class="lineNum">     434 </span>            :   // schroder3 (2016-07-26): Returns the given type as a SgPointerType if it is a</a>
+<a name="435"><span class="lineNum">     435 </span>            :   //  function pointer type. Returns 0 otherwise.</a>
+<a name="436"><span class="lineNum">     436 </span>            :   const SgPointerType* isFunctionPointerType(const SgType* type);</a>
+<a name="437"><span class="lineNum">     437 </span>            : </a>
+<a name="438"><span class="lineNum">     438 </span>            :   // schroder3 (2016-07-26): Returns the (underlying) function type of the given type if the given</a>
+<a name="439"><span class="lineNum">     439 </span>            :   //  type is eligible for function-to-pointer conversion. Returns 0 otherwise.</a>
+<a name="440"><span class="lineNum">     440 </span>            :   const SgFunctionType* isTypeEligibleForFunctionToPointerConversion(const SgType* type);</a>
+<a name="441"><span class="lineNum">     441 </span>            : </a>
+<a name="442"><span class="lineNum">     442 </span>            :   // schroder3 (2016-07-27): Returns the underlying function type of the given expression if it</a>
+<a name="443"><span class="lineNum">     443 </span>            :   //  is callable. Returns 0 otherwise.</a>
+<a name="444"><span class="lineNum">     444 </span>            :   SgFunctionType* isCallableExpression(/*const*/ SgExpression* expr);</a>
+<a name="445"><span class="lineNum">     445 </span>            : </a>
+<a name="446"><span class="lineNum">     446 </span>            :   // schroder3 (2016-07-27): Returns the underlying function type if the given type</a>
+<a name="447"><span class="lineNum">     447 </span>            :   //  is callable i.e. a expression of this type could be called. Returns 0 otherwise.</a>
+<a name="448"><span class="lineNum">     448 </span>            :   SgFunctionType* isCallableType(/*const*/ SgType* type);</a>
+<a name="449"><span class="lineNum">     449 </span>            : </a>
+<a name="450"><span class="lineNum">     450 </span>            :   // determines whether decl declares an array</a>
+<a name="451"><span class="lineNum">     451 </span>            :   bool isArrayDeclaration(SgVariableDeclaration* decl);</a>
+<a name="452"><span class="lineNum">     452 </span>            : </a>
+<a name="453"><span class="lineNum">     453 </span>            :   // determines whether decl is an array or a struct</a>
+<a name="454"><span class="lineNum">     454 </span>            :   bool isAggregateDeclaration(SgVariableDeclaration* decl);</a>
+<a name="455"><span class="lineNum">     455 </span>            : </a>
+<a name="456"><span class="lineNum">     456 </span>            :   // returns the list of initializers of an array or struct (e.g. for int a[]={1,2,3} it return the list 1,2,3)</a>
+<a name="457"><span class="lineNum">     457 </span>            :   std::vector&lt;SgExpression *&gt; &amp; getInitializerListOfAggregateDeclaration(SgVariableDeclaration* decl);</a>
+<a name="458"><span class="lineNum">     458 </span>            : </a>
+<a name="459"><span class="lineNum">     459 </span>            :   /*! replaces expression e1 by expression e2. Currently it uses the</a>
+<a name="460"><span class="lineNum">     460 </span>            :      SageInterface::rewriteExpression function but wraps around some</a>
+<a name="461"><span class="lineNum">     461 </span>            :      addtional checks that significantly improve performance of the</a>
+<a name="462"><span class="lineNum">     462 </span>            :      replace operation.</a>
+<a name="463"><span class="lineNum">     463 </span>            :   */</a>
+<a name="464"><span class="lineNum">     464 </span>            :   void replaceExpression(SgExpression* e1, SgExpression* e2, bool mode=false);</a>
+<a name="465"><span class="lineNum">     465 </span>            : </a>
+<a name="466"><span class="lineNum">     466 </span>            :   /*! replaces the ast with root 'node' with the string 's'. The</a>
+<a name="467"><span class="lineNum">     467 </span>            :      string is attached to the AST and the unparser uses string s</a>
+<a name="468"><span class="lineNum">     468 </span>            :      instead of unparsing this substree. This function can be used to</a>
+<a name="469"><span class="lineNum">     469 </span>            :      generate C++ extensions.</a>
+<a name="470"><span class="lineNum">     470 </span>            :   */</a>
+<a name="471"><span class="lineNum">     471 </span>            :   void replaceAstWithString(SgNode* node, std::string s);</a>
+<a name="472"><span class="lineNum">     472 </span>            : </a>
+<a name="473"><span class="lineNum">     473 </span>            :   /*! collects all pragmas with name 'pragmaName' and creates a list</a>
+<a name="474"><span class="lineNum">     474 </span>            :      of all pragma strings (with stripped off prefix) and the</a>
+<a name="475"><span class="lineNum">     475 </span>            :      associated SgNode. */</a>
+<a name="476"><span class="lineNum">     476 </span>            :   typedef std::list&lt;std::pair&lt;std::string,SgNode*&gt; &gt; PragmaList;</a>
+<a name="477"><span class="lineNum">     477 </span>            :   PragmaList collectPragmaLines(std::string pragmaName,SgNode* root);</a>
+<a name="478"><span class="lineNum">     478 </span>            : </a>
+<a name="479"><span class="lineNum">     479 </span>            :   /*! return the verbatim pragma string as it is found in the source</a>
+<a name="480"><span class="lineNum">     480 </span>            :      code this string includes the leading &quot;#pragma&quot;.</a>
+<a name="481"><span class="lineNum">     481 </span>            :   */</a>
+<a name="482"><span class="lineNum">     482 </span>            :   std::string getPragmaDeclarationString(SgPragmaDeclaration* pragmaDecl);</a>
+<a name="483"><span class="lineNum">     483 </span>            : </a>
+<a name="484"><span class="lineNum">     484 </span>            :   //! replace in string 'str' each string 'from' with string 'to'.</a>
+<a name="485"><span class="lineNum">     485 </span>            :   void replaceString(std::string&amp; str, const std::string&amp; from, const std::string&amp; to);</a>
+<a name="486"><span class="lineNum">     486 </span>            : </a>
+<a name="487"><span class="lineNum">     487 </span>            :   //! checks whether prefix 'prefix' is a prefix in string 's'.</a>
+<a name="488"><span class="lineNum">     488 </span>            :   bool isPrefix(const std::string&amp; prefix, const std::string&amp; s);</a>
+<a name="489"><span class="lineNum">     489 </span>            : </a>
+<a name="490"><span class="lineNum">     490 </span>            :   //! checks whether 'elem' is the last child (in traversal order) of node 'parent'.</a>
+<a name="491"><span class="lineNum">     491 </span>            :   bool isLastChildOf(SgNode* elem, SgNode* parent);</a>
+<a name="492"><span class="lineNum">     492 </span>            : </a>
+<a name="493"><span class="lineNum">     493 </span>            :   /*! Returns for a given class/struct/union a list with the variable declarations of the member variables.</a>
+<a name="494"><span class="lineNum">     494 </span>            :     Note this is a filtered list returned by the SgType::returnDataMemberPointers function which also returns</a>
+<a name="495"><span class="lineNum">     495 </span>            :     pointers to methods</a>
+<a name="496"><span class="lineNum">     496 </span>            :    */</a>
+<a name="497"><span class="lineNum">     497 </span>            :   std::list&lt;SgVariableDeclaration*&gt; memberVariableDeclarationsList(SgClassType* sgType);</a>
+<a name="498"><span class="lineNum">     498 </span>            : </a>
+<a name="499"><span class="lineNum">     499 </span>            : #if __cplusplus &gt; 199711L</a>
+<a name="500"><span class="lineNum">     500 </span>            :   //! Checks if an OpenMP construct is marked with a nowait clause</a>
+<a name="501"><span class="lineNum">     501 </span>            :   bool hasOmpNoWait(SgUpirFieldBodyStatement *ompNode);</a>
+<a name="502"><span class="lineNum">     502 </span>            : </a>
+<a name="503"><span class="lineNum">     503 </span>            :   typedef std::vector&lt;SgOmpSectionStatement *&gt; OmpSectionList;</a>
+<a name="504"><span class="lineNum">     504 </span>            :   OmpSectionList getOmpSectionList(SgOmpSectionsStatement *sectionsStmt);</a>
+<a name="505"><span class="lineNum">     505 </span>            : #endif</a>
+<a name="506"><span class="lineNum">     506 </span>            : </a>
+<a name="507"><span class="lineNum">     507 </span>            :   //! Provides functions which match a certain AST pattern and return a pointer to a node of interest inside that pattern.</a>
+<a name="508"><span class="lineNum">     508 </span>            :   namespace Pattern {</a>
+<a name="509"><span class="lineNum">     509 </span>            :     //! tests several patterns and returns pointer to FunctionCallExp inside that matched pattern, otherwise 0.</a>
+<a name="510"><span class="lineNum">     510 </span>            :     SgFunctionCallExp* matchFunctionCall(SgNode*);</a>
+<a name="511"><span class="lineNum">     511 </span>            :     //! tests pattern SgReturnStmt(FunctionCallExp) and returns pointer to FunctionCallExp, otherwise 0.</a>
+<a name="512"><span class="lineNum">     512 </span>            :     SgFunctionCallExp* matchReturnStmtFunctionCallExp(SgNode*);</a>
+<a name="513"><span class="lineNum">     513 </span>            : </a>
+<a name="514"><span class="lineNum">     514 </span>            :     //! tests pattern SgExprStatement(FunctionCallExp) and returns pointer to FunctionCallExp, otherwise 0.</a>
+<a name="515"><span class="lineNum">     515 </span>            :     SgFunctionCallExp* matchExprStmtFunctionCallExp(SgNode*);</a>
+<a name="516"><span class="lineNum">     516 </span>            : </a>
+<a name="517"><span class="lineNum">     517 </span>            :     //! tests pattern SgExprStatement(SgAssignOp(VarRefExp,FunctionCallExp)) and returns pointer to FunctionCallExp otherwise 0.</a>
+<a name="518"><span class="lineNum">     518 </span>            :     SgFunctionCallExp* matchExprStmtAssignOpVarRefExpFunctionCallExp(SgNode*);</a>
+<a name="519"><span class="lineNum">     519 </span>            : </a>
+<a name="520"><span class="lineNum">     520 </span>            :     //! tests pattern for function call in variable declaration and returns pointer to FunctionCallExp otherwise 0.</a>
+<a name="521"><span class="lineNum">     521 </span>            :     SgFunctionCallExp* matchFunctionCallExpInVariableDeclaration(SgNode* node);</a>
+<a name="522"><span class="lineNum">     522 </span>            : </a>
+<a name="523"><span class="lineNum">     523 </span>            :     //! checks variable declaration with function call, returns variable declaration. Otherwise 0. e.g. int x=f();</a>
+<a name="524"><span class="lineNum">     524 </span>            :     SgVariableDeclaration* matchVariableDeclarationWithFunctionCall(SgNode* node);</a>
+<a name="525"><span class="lineNum">     525 </span>            :     //! checks variable declaration with function call, returns both in a pair, or a with (0,0).</a>
+<a name="526"><span class="lineNum">     526 </span>            :     std::pair&lt;SgVariableDeclaration*,SgFunctionCallExp*&gt; matchVariableDeclarationWithFunctionCall2(SgNode* node);</a>
+<a name="527"><span class="lineNum">     527 </span>            : </a>
+<a name="528"><span class="lineNum">     528 </span>            :     std::pair&lt;SgVarRefExp*,SgFunctionCallExp*&gt; matchExprStmtAssignOpVarRefExpFunctionCallExp2(SgNode* node);</a>
+<a name="529"><span class="lineNum">     529 </span>            : </a>
+<a name="530"><span class="lineNum">     530 </span>            :     //! tests pattern for an assert</a>
+<a name="531"><span class="lineNum">     531 </span>            :     bool matchAssertExpr(SgNode* node);</a>
+<a name="532"><span class="lineNum">     532 </span>            : </a>
+<a name="533"><span class="lineNum">     533 </span>            :     //! tests pattern SgFunctionCall(...) where the name of the function is scanf with 2 params</a>
+<a name="534"><span class="lineNum">     534 </span>            :     SgVarRefExp* matchSingleVarScanf(SgNode* node);</a>
+<a name="535"><span class="lineNum">     535 </span>            :     //! tests pattern SgFunctionCall(...) where the name of the function is printf with 2 params</a>
+<a name="536"><span class="lineNum">     536 </span>            :     SgVarRefExp* matchSingleVarPrintf(SgNode* node);</a>
+<a name="537"><span class="lineNum">     537 </span>            :     //! tests pattern SgFunctionCall(...) where the name of the function is fprintf with 3 params</a>
+<a name="538"><span class="lineNum">     538 </span>            :     SgVarRefExp* matchSingleVarFPrintf(SgNode* node,bool showWarnings=false);</a>
+<a name="539"><span class="lineNum">     539 </span>            : </a>
+<a name="540"><span class="lineNum">     540 </span>            :     struct OutputTarget {</a>
+<a name="541"><span class="lineNum">     541 </span>            :       bool isKnown();</a>
+<a name="542"><span class="lineNum">     542 </span>            :       enum OType { VAR,INT,UNKNOWNPRINTF,UNKNOWNOPERATION};</a>
+<a name="543"><span class="lineNum">     543 </span><span class="lineNoCov">          0 :       OutputTarget():varRef(0),intVal(0),outType(UNKNOWNOPERATION){}</span></a>
+<a name="544"><span class="lineNum">     544 </span>            :       SgVarRefExp* varRef;</a>
+<a name="545"><span class="lineNum">     545 </span>            :       int intVal;</a>
+<a name="546"><span class="lineNum">     546 </span>            :       OType outType;</a>
+<a name="547"><span class="lineNum">     547 </span>            :     };</a>
+<a name="548"><span class="lineNum">     548 </span>            :     OutputTarget matchSingleVarOrValuePrintf(SgNode* node);</a>
+<a name="549"><span class="lineNum">     549 </span>            : </a>
+<a name="550"><span class="lineNum">     550 </span>            : </a>
+<a name="551"><span class="lineNum">     551 </span>            :   } // end of namespace Pattern</a>
+<a name="552"><span class="lineNum">     552 </span>            : </a>
+<a name="553"><span class="lineNum">     553 </span>            :   //! \deprecated use lineColumnAndSourceCodeToString instead</a>
+<a name="554"><span class="lineNum">     554 </span>            :   std::string lineColumnNodeToString(SgNode* node);</a>
+<a name="555"><span class="lineNum">     555 </span>            : </a>
+<a name="556"><span class="lineNum">     556 </span>            :   //! \deprecated use locationAndSourceCodeToString instead</a>
+<a name="557"><span class="lineNum">     557 </span>            :   std::string sourceLocationAndNodeToString(SgNode* node);</a>
+<a name="558"><span class="lineNum">     558 </span>            : </a>
+<a name="559"><span class="lineNum">     559 </span>            : #if __cplusplus &gt; 199711L</a>
+<a name="560"><span class="lineNum">     560 </span>            :   // Can a given node be changed? (aka transformed)</a>
+<a name="561"><span class="lineNum">     561 </span>            :   bool nodeCanBeChanged(SgLocatedNode * lnode);</a>
+<a name="562"><span class="lineNum">     562 </span>            : #endif</a>
+<a name="563"><span class="lineNum">     563 </span>            : </a>
+<a name="564"><span class="lineNum">     564 </span>            : </a>
+<a name="565"><span class="lineNum">     565 </span>            :   /// Result structure of extended C++ function call matching @ref matchExtendedNormalizedCall</a>
+<a name="566"><span class="lineNum">     566 </span>            :   /// \details</a>
+<a name="567"><span class="lineNum">     567 </span>            :   ///   extended matches function, constructor (on stack and w/new), and destructor calls.</a>
+<a name="568"><span class="lineNum">     568 </span>            :   struct ExtendedCallInfo</a>
+<a name="569"><span class="lineNum">     569 </span>            :   {</a>
+<a name="570"><span class="lineNum">     570 </span>            :       /// no-match constructor</a>
+<a name="571"><span class="lineNum">     571 </span><span class="lineNoCov">          0 :       ExtendedCallInfo()</span></a>
+<a name="572"><span class="lineNum">     572 </span><span class="lineNoCov">          0 :       : rep(NULL)</span></a>
+<a name="573"><span class="lineNum">     573 </span>            :       {}</a>
+<a name="574"><span class="lineNum">     574 </span>            : </a>
+<a name="575"><span class="lineNum">     575 </span>            :       /// node @ref callnode contanins some function call</a>
+<a name="576"><span class="lineNum">     576 </span><span class="lineNoCov">          0 :       ExtendedCallInfo(SgLocatedNode&amp; callnode)</span></a>
+<a name="577"><span class="lineNum">     577 </span>            :       : rep(&amp;callnode)</a>
+<a name="578"><span class="lineNum">     578 </span>            :       {}</a>
+<a name="579"><span class="lineNum">     579 </span>            : </a>
+<a name="580"><span class="lineNum">     580 </span>            :       /// the call or a parent node (e.g., new expression)</a>
+<a name="581"><span class="lineNum">     581 </span>            :       SgLocatedNode*            representativeNode() const;</a>
+<a name="582"><span class="lineNum">     582 </span>            : </a>
+<a name="583"><span class="lineNum">     583 </span>            :       /// returns the call expression if this represents a &quot;normal&quot; call</a>
+<a name="584"><span class="lineNum">     584 </span>            :       /// or nullptr otherwise.</a>
+<a name="585"><span class="lineNum">     585 </span>            :       SgFunctionCallExp*        callExpression()     const;</a>
+<a name="586"><span class="lineNum">     586 </span>            : </a>
+<a name="587"><span class="lineNum">     587 </span>            :       /// returns the constructor initialization node</a>
+<a name="588"><span class="lineNum">     588 </span>            :       /// or nullptr.</a>
+<a name="589"><span class="lineNum">     589 </span>            :       SgConstructorInitializer* ctorInitializer()    const;</a>
+<a name="590"><span class="lineNum">     590 </span>            : </a>
+<a name="591"><span class="lineNum">     591 </span>            :       /// returns the function pointer expression representing the target</a>
+<a name="592"><span class="lineNum">     592 </span>            :       ///  (if this is a function pointer call)</a>
+<a name="593"><span class="lineNum">     593 </span>            :       //  or the nullptr otherise.</a>
+<a name="594"><span class="lineNum">     594 </span>            :       SgExpression*             functionPointer()    const;</a>
+<a name="595"><span class="lineNum">     595 </span>            : </a>
+<a name="596"><span class="lineNum">     596 </span>            :       /// true iff this structure represents a match</a>
+<a name="597"><span class="lineNum">     597 </span><span class="lineNoCov">          0 :       operator bool() const { return rep != NULL; }</span></a>
+<a name="598"><span class="lineNum">     598 </span>            : </a>
+<a name="599"><span class="lineNum">     599 </span>            :     private:</a>
+<a name="600"><span class="lineNum">     600 </span>            :       SgLocatedNode* rep;</a>
+<a name="601"><span class="lineNum">     601 </span>            :   };</a>
+<a name="602"><span class="lineNum">     602 </span>            : </a>
+<a name="603"><span class="lineNum">     603 </span>            :   /// matches C and C++ function calls (also ctor and dtor)</a>
+<a name="604"><span class="lineNum">     604 </span>            :   ExtendedCallInfo</a>
+<a name="605"><span class="lineNum">     605 </span>            :   matchExtendedNormalizedCall(SgNode*);</a>
+<a name="606"><span class="lineNum">     606 </span>            : } // end of namespace SgNodeHelper</a>
+<a name="607"><span class="lineNum">     607 </span>            : </a>
+<a name="608"><span class="lineNum">     608 </span>            : #endif</a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

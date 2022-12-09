@@ -1,0 +1,6 @@
+<map id="Sawyer::Container::BitVector::mostSignificantSetBit" name="Sawyer::Container::BitVector::mostSignificantSetBit">
+<area shape="rect" id="node1" title="Find the most significant set bit." alt="" coords="5,63,180,119"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1BitVector.html#a01cec791efd731cfbe2157d7721b7dfe" title="Raw data for vector." alt="" coords="268,5,407,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1BitVector.html#a6cd958a91e697da6ae26aa3cc91b2ba9" title="Interval representing the entire vector." alt="" coords="268,71,407,112"/>
+<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a380d93333246bb33e609b898ccc9e3e8" title="Index of most significant set bit." alt="" coords="228,137,447,193"/>
+</map>

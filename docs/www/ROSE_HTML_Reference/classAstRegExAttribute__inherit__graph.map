@@ -1,0 +1,4 @@
+<map id="AstRegExAttribute" name="AstRegExAttribute">
+<area shape="rect" id="node1" title="Attribute containing a regex expression as a string." alt="" coords="5,80,136,107"/>
+<area shape="rect" id="node2" href="$classAstAttribute.html" title="Base class for all IR node attribute values." alt="" coords="25,5,116,32"/>
+</map>

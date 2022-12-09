@@ -1,0 +1,338 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /usr/include/boost/date_time/time_system_counted.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/include/boost/date_time</a> - time_system_counted.hpp<span style="font-size: 80%;"> (source / <a href="time_system_counted.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">39</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #ifndef DATE_TIME_TIME_SYSTEM_COUNTED_HPP</a>
+<a name="2"><span class="lineNum">       2 </span>            : #define DATE_TIME_TIME_SYSTEM_COUNTED_HPP</a>
+<a name="3"><span class="lineNum">       3 </span>            : </a>
+<a name="4"><span class="lineNum">       4 </span>            : /* Copyright (c) 2002,2003 CrystalClear Software, Inc.</a>
+<a name="5"><span class="lineNum">       5 </span>            :  * Use, modification and distribution is subject to the </a>
+<a name="6"><span class="lineNum">       6 </span>            :  * Boost Software License, Version 1.0. (See accompanying</a>
+<a name="7"><span class="lineNum">       7 </span>            :  * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)</a>
+<a name="8"><span class="lineNum">       8 </span>            :  * Author: Jeff Garland, Bart Garst</a>
+<a name="9"><span class="lineNum">       9 </span>            :  * $Date$</a>
+<a name="10"><span class="lineNum">      10 </span>            :  */</a>
+<a name="11"><span class="lineNum">      11 </span>            : </a>
+<a name="12"><span class="lineNum">      12 </span>            : </a>
+<a name="13"><span class="lineNum">      13 </span>            : </a>
+<a name="14"><span class="lineNum">      14 </span>            : #include &quot;boost/date_time/time_defs.hpp&quot;</a>
+<a name="15"><span class="lineNum">      15 </span>            : #include &lt;string&gt;</a>
+<a name="16"><span class="lineNum">      16 </span>            : </a>
+<a name="17"><span class="lineNum">      17 </span>            : </a>
+<a name="18"><span class="lineNum">      18 </span>            : namespace boost {</a>
+<a name="19"><span class="lineNum">      19 </span>            : namespace date_time {</a>
+<a name="20"><span class="lineNum">      20 </span>            : </a>
+<a name="21"><span class="lineNum">      21 </span>            :   //! Time representation that uses a single integer count</a>
+<a name="22"><span class="lineNum">      22 </span>            :   template&lt;class config&gt;</a>
+<a name="23"><span class="lineNum">      23 </span>            :   struct counted_time_rep</a>
+<a name="24"><span class="lineNum">      24 </span>            :   {</a>
+<a name="25"><span class="lineNum">      25 </span>            :     typedef typename config::int_type   int_type;</a>
+<a name="26"><span class="lineNum">      26 </span>            :     typedef typename config::date_type  date_type;</a>
+<a name="27"><span class="lineNum">      27 </span>            :     typedef typename config::impl_type  impl_type;</a>
+<a name="28"><span class="lineNum">      28 </span>            :     typedef typename date_type::duration_type date_duration_type;</a>
+<a name="29"><span class="lineNum">      29 </span>            :     typedef typename date_type::calendar_type calendar_type;</a>
+<a name="30"><span class="lineNum">      30 </span>            :     typedef typename date_type::ymd_type ymd_type;</a>
+<a name="31"><span class="lineNum">      31 </span>            :     typedef typename config::time_duration_type time_duration_type;</a>
+<a name="32"><span class="lineNum">      32 </span>            :     typedef typename config::resolution_traits   resolution_traits;</a>
+<a name="33"><span class="lineNum">      33 </span>            :     </a>
+<a name="34"><span class="lineNum">      34 </span><span class="lineNoCov">          0 :     counted_time_rep(const date_type&amp; d, const time_duration_type&amp; time_of_day) </span></a>
+<a name="35"><span class="lineNum">      35 </span><span class="lineNoCov">          0 :       : time_count_(1)</span></a>
+<a name="36"><span class="lineNum">      36 </span>            :     {</a>
+<a name="37"><span class="lineNum">      37 </span><span class="lineNoCov">          0 :       if(d.is_infinity() || d.is_not_a_date() || time_of_day.is_special()) {</span></a>
+<a name="38"><span class="lineNum">      38 </span><span class="lineNoCov">          0 :         time_count_ = time_of_day.get_rep() + d.day_count();</span></a>
+<a name="39"><span class="lineNum">      39 </span>            :         //std::cout &lt;&lt; time_count_ &lt;&lt; std::endl;</a>
+<a name="40"><span class="lineNum">      40 </span>            :       }</a>
+<a name="41"><span class="lineNum">      41 </span>            :       else {    </a>
+<a name="42"><span class="lineNum">      42 </span><span class="lineNoCov">          0 :         time_count_ = (d.day_number() * frac_sec_per_day()) + time_of_day.ticks();</span></a>
+<a name="43"><span class="lineNum">      43 </span>            :       }</a>
+<a name="44"><span class="lineNum">      44 </span><span class="lineNoCov">          0 :     }</span></a>
+<a name="45"><span class="lineNum">      45 </span>            :     explicit counted_time_rep(int_type count) :</a>
+<a name="46"><span class="lineNum">      46 </span>            :       time_count_(count)</a>
+<a name="47"><span class="lineNum">      47 </span>            :     {}</a>
+<a name="48"><span class="lineNum">      48 </span>            :     explicit counted_time_rep(impl_type count) :</a>
+<a name="49"><span class="lineNum">      49 </span>            :       time_count_(count)</a>
+<a name="50"><span class="lineNum">      50 </span>            :     {}</a>
+<a name="51"><span class="lineNum">      51 </span><span class="lineNoCov">          0 :     date_type date() const</span></a>
+<a name="52"><span class="lineNum">      52 </span>            :     {</a>
+<a name="53"><span class="lineNum">      53 </span><span class="lineNoCov">          0 :       if(time_count_.is_special()) {</span></a>
+<a name="54"><span class="lineNum">      54 </span><span class="lineNoCov">          0 :         return date_type(time_count_.as_special());</span></a>
+<a name="55"><span class="lineNum">      55 </span>            :       }</a>
+<a name="56"><span class="lineNum">      56 </span>            :       else {</a>
+<a name="57"><span class="lineNum">      57 </span><span class="lineNoCov">          0 :         typename calendar_type::date_int_type dc = static_cast&lt;typename calendar_type::date_int_type&gt;(day_count());</span></a>
+<a name="58"><span class="lineNum">      58 </span>            :         //std::cout &lt;&lt; &quot;time_rep here:&quot; &lt;&lt; dc &lt;&lt; std::endl;</a>
+<a name="59"><span class="lineNum">      59 </span><span class="lineNoCov">          0 :         ymd_type ymd = calendar_type::from_day_number(dc);</span></a>
+<a name="60"><span class="lineNum">      60 </span><span class="lineNoCov">          0 :         return date_type(ymd);</span></a>
+<a name="61"><span class="lineNum">      61 </span>            :       }</a>
+<a name="62"><span class="lineNum">      62 </span>            :     }</a>
+<a name="63"><span class="lineNum">      63 </span>            :     //int_type day_count() const</a>
+<a name="64"><span class="lineNum">      64 </span><span class="lineNoCov">          0 :     unsigned long day_count() const</span></a>
+<a name="65"><span class="lineNum">      65 </span>            :     {</a>
+<a name="66"><span class="lineNum">      66 </span>            :       /* resolution_traits::as_number returns a boost::int64_t &amp; </a>
+<a name="67"><span class="lineNum">      67 </span>            :        * frac_sec_per_day is also a boost::int64_t so, naturally, </a>
+<a name="68"><span class="lineNum">      68 </span>            :        * the division operation returns a boost::int64_t. </a>
+<a name="69"><span class="lineNum">      69 </span>            :        * The static_cast to an unsigned long is ok (results in no data loss) </a>
+<a name="70"><span class="lineNum">      70 </span>            :        * because frac_sec_per_day is either the number of </a>
+<a name="71"><span class="lineNum">      71 </span>            :        * microseconds per day, or the number of nanoseconds per day. </a>
+<a name="72"><span class="lineNum">      72 </span>            :        * Worst case scenario: resolution_traits::as_number returns the </a>
+<a name="73"><span class="lineNum">      73 </span>            :        * maximum value an int64_t can hold and frac_sec_per_day </a>
+<a name="74"><span class="lineNum">      74 </span>            :        * is microseconds per day (lowest possible value). </a>
+<a name="75"><span class="lineNum">      75 </span>            :        * The division operation will then return a value of 106751991 - </a>
+<a name="76"><span class="lineNum">      76 </span>            :        * easily fitting in an unsigned long. </a>
+<a name="77"><span class="lineNum">      77 </span>            :        */</a>
+<a name="78"><span class="lineNum">      78 </span><span class="lineNoCov">          0 :       return static_cast&lt;unsigned long&gt;(resolution_traits::as_number(time_count_) / frac_sec_per_day());</span></a>
+<a name="79"><span class="lineNum">      79 </span>            :     }</a>
+<a name="80"><span class="lineNum">      80 </span>            :     int_type time_count() const</a>
+<a name="81"><span class="lineNum">      81 </span>            :     {</a>
+<a name="82"><span class="lineNum">      82 </span>            :       return resolution_traits::as_number(time_count_);</a>
+<a name="83"><span class="lineNum">      83 </span>            :     }</a>
+<a name="84"><span class="lineNum">      84 </span><span class="lineNoCov">          0 :     int_type tod() const</span></a>
+<a name="85"><span class="lineNum">      85 </span>            :     {</a>
+<a name="86"><span class="lineNum">      86 </span><span class="lineNoCov">          0 :       return resolution_traits::as_number(time_count_) % frac_sec_per_day();</span></a>
+<a name="87"><span class="lineNum">      87 </span>            :     }</a>
+<a name="88"><span class="lineNum">      88 </span><span class="lineNoCov">          0 :     static int_type frac_sec_per_day()</span></a>
+<a name="89"><span class="lineNum">      89 </span>            :     {</a>
+<a name="90"><span class="lineNum">      90 </span><span class="lineNoCov">          0 :       int_type seconds_per_day = 60*60*24;</span></a>
+<a name="91"><span class="lineNum">      91 </span><span class="lineNoCov">          0 :       int_type fractional_sec_per_sec(resolution_traits::res_adjust());</span></a>
+<a name="92"><span class="lineNum">      92 </span>            :       return seconds_per_day*fractional_sec_per_sec;</a>
+<a name="93"><span class="lineNum">      93 </span>            :     }</a>
+<a name="94"><span class="lineNum">      94 </span><span class="lineNoCov">          0 :     bool is_pos_infinity()const</span></a>
+<a name="95"><span class="lineNum">      95 </span>            :     {</a>
+<a name="96"><span class="lineNum">      96 </span><span class="lineNoCov">          0 :       return impl_type::is_pos_inf(time_count_.as_number());</span></a>
+<a name="97"><span class="lineNum">      97 </span>            :     }</a>
+<a name="98"><span class="lineNum">      98 </span><span class="lineNoCov">          0 :     bool is_neg_infinity()const</span></a>
+<a name="99"><span class="lineNum">      99 </span>            :     {</a>
+<a name="100"><span class="lineNum">     100 </span><span class="lineNoCov">          0 :       return impl_type::is_neg_inf(time_count_.as_number());</span></a>
+<a name="101"><span class="lineNum">     101 </span>            :     }</a>
+<a name="102"><span class="lineNum">     102 </span><span class="lineNoCov">          0 :     bool is_not_a_date_time()const</span></a>
+<a name="103"><span class="lineNum">     103 </span>            :     {</a>
+<a name="104"><span class="lineNum">     104 </span><span class="lineNoCov">          0 :       return impl_type::is_not_a_number(time_count_.as_number());</span></a>
+<a name="105"><span class="lineNum">     105 </span>            :     }</a>
+<a name="106"><span class="lineNum">     106 </span><span class="lineNoCov">          0 :     bool is_special()const</span></a>
+<a name="107"><span class="lineNum">     107 </span>            :     {</a>
+<a name="108"><span class="lineNum">     108 </span><span class="lineNoCov">          0 :       return time_count_.is_special();</span></a>
+<a name="109"><span class="lineNum">     109 </span>            :     }</a>
+<a name="110"><span class="lineNum">     110 </span><span class="lineNoCov">          0 :     impl_type get_rep()const</span></a>
+<a name="111"><span class="lineNum">     111 </span>            :     {</a>
+<a name="112"><span class="lineNum">     112 </span>            :       return time_count_;</a>
+<a name="113"><span class="lineNum">     113 </span>            :     }</a>
+<a name="114"><span class="lineNum">     114 </span>            :   private:</a>
+<a name="115"><span class="lineNum">     115 </span>            :     impl_type time_count_;</a>
+<a name="116"><span class="lineNum">     116 </span>            :   };</a>
+<a name="117"><span class="lineNum">     117 </span>            : </a>
+<a name="118"><span class="lineNum">     118 </span>            :   //! An unadjusted time system implementation.</a>
+<a name="119"><span class="lineNum">     119 </span>            :   template&lt;class time_rep&gt;</a>
+<a name="120"><span class="lineNum">     120 </span>            :   class counted_time_system</a>
+<a name="121"><span class="lineNum">     121 </span>            :   {</a>
+<a name="122"><span class="lineNum">     122 </span>            :    public:</a>
+<a name="123"><span class="lineNum">     123 </span>            :     typedef time_rep time_rep_type;</a>
+<a name="124"><span class="lineNum">     124 </span>            :     typedef typename time_rep_type::impl_type impl_type;</a>
+<a name="125"><span class="lineNum">     125 </span>            :     typedef typename time_rep_type::time_duration_type time_duration_type;</a>
+<a name="126"><span class="lineNum">     126 </span>            :     typedef typename time_duration_type::fractional_seconds_type fractional_seconds_type;</a>
+<a name="127"><span class="lineNum">     127 </span>            :     typedef typename time_rep_type::date_type date_type;</a>
+<a name="128"><span class="lineNum">     128 </span>            :     typedef typename time_rep_type::date_duration_type date_duration_type;</a>
+<a name="129"><span class="lineNum">     129 </span>            : </a>
+<a name="130"><span class="lineNum">     130 </span>            : </a>
+<a name="131"><span class="lineNum">     131 </span><span class="lineNoCov">          0 :     template&lt;class T&gt; static void unused_var(const T&amp;) {}</span></a>
+<a name="132"><span class="lineNum">     132 </span>            : </a>
+<a name="133"><span class="lineNum">     133 </span><span class="lineNoCov">          0 :     static time_rep_type get_time_rep(const date_type&amp; day,</span></a>
+<a name="134"><span class="lineNum">     134 </span>            :                                       const time_duration_type&amp; tod,</a>
+<a name="135"><span class="lineNum">     135 </span>            :                                       date_time::dst_flags dst=not_dst)</a>
+<a name="136"><span class="lineNum">     136 </span>            :     {</a>
+<a name="137"><span class="lineNum">     137 </span>            :       unused_var(dst);</a>
+<a name="138"><span class="lineNum">     138 </span><span class="lineNoCov">          0 :       return time_rep_type(day, tod);</span></a>
+<a name="139"><span class="lineNum">     139 </span>            :     }</a>
+<a name="140"><span class="lineNum">     140 </span>            : </a>
+<a name="141"><span class="lineNum">     141 </span>            :     static time_rep_type get_time_rep(special_values sv)</a>
+<a name="142"><span class="lineNum">     142 </span>            :     {</a>
+<a name="143"><span class="lineNum">     143 </span>            :       switch (sv) {</a>
+<a name="144"><span class="lineNum">     144 </span>            :       case not_a_date_time:</a>
+<a name="145"><span class="lineNum">     145 </span>            :         return time_rep_type(date_type(not_a_date_time),</a>
+<a name="146"><span class="lineNum">     146 </span>            :                              time_duration_type(not_a_date_time));</a>
+<a name="147"><span class="lineNum">     147 </span>            :       case pos_infin:</a>
+<a name="148"><span class="lineNum">     148 </span>            :         return time_rep_type(date_type(pos_infin), </a>
+<a name="149"><span class="lineNum">     149 </span>            :                              time_duration_type(pos_infin));</a>
+<a name="150"><span class="lineNum">     150 </span>            :       case neg_infin:</a>
+<a name="151"><span class="lineNum">     151 </span>            :         return time_rep_type(date_type(neg_infin), </a>
+<a name="152"><span class="lineNum">     152 </span>            :                              time_duration_type(neg_infin));</a>
+<a name="153"><span class="lineNum">     153 </span>            :       case max_date_time: {</a>
+<a name="154"><span class="lineNum">     154 </span>            :         time_duration_type td = time_duration_type(24,0,0,0) - time_duration_type(0,0,0,1);</a>
+<a name="155"><span class="lineNum">     155 </span>            :         return time_rep_type(date_type(max_date_time), td);</a>
+<a name="156"><span class="lineNum">     156 </span>            :       }</a>
+<a name="157"><span class="lineNum">     157 </span>            :       case min_date_time:</a>
+<a name="158"><span class="lineNum">     158 </span>            :         return time_rep_type(date_type(min_date_time), time_duration_type(0,0,0,0));</a>
+<a name="159"><span class="lineNum">     159 </span>            : </a>
+<a name="160"><span class="lineNum">     160 </span>            :       default:</a>
+<a name="161"><span class="lineNum">     161 </span>            :         return time_rep_type(date_type(not_a_date_time),</a>
+<a name="162"><span class="lineNum">     162 </span>            :                              time_duration_type(not_a_date_time));</a>
+<a name="163"><span class="lineNum">     163 </span>            :         </a>
+<a name="164"><span class="lineNum">     164 </span>            :       }</a>
+<a name="165"><span class="lineNum">     165 </span>            : </a>
+<a name="166"><span class="lineNum">     166 </span>            :     }</a>
+<a name="167"><span class="lineNum">     167 </span>            : </a>
+<a name="168"><span class="lineNum">     168 </span><span class="lineNoCov">          0 :     static date_type get_date(const time_rep_type&amp; val)</span></a>
+<a name="169"><span class="lineNum">     169 </span>            :     {</a>
+<a name="170"><span class="lineNum">     170 </span><span class="lineNoCov">          0 :       return val.date();</span></a>
+<a name="171"><span class="lineNum">     171 </span>            :     }</a>
+<a name="172"><span class="lineNum">     172 </span><span class="lineNoCov">          0 :     static time_duration_type get_time_of_day(const time_rep_type&amp; val)</span></a>
+<a name="173"><span class="lineNum">     173 </span>            :     {</a>
+<a name="174"><span class="lineNum">     174 </span><span class="lineNoCov">          0 :       if(val.is_special()) {</span></a>
+<a name="175"><span class="lineNum">     175 </span><span class="lineNoCov">          0 :         return time_duration_type(val.get_rep().as_special());</span></a>
+<a name="176"><span class="lineNum">     176 </span>            :       }</a>
+<a name="177"><span class="lineNum">     177 </span>            :       else{</a>
+<a name="178"><span class="lineNum">     178 </span><span class="lineNoCov">          0 :         return time_duration_type(0,0,0,val.tod()); </span></a>
+<a name="179"><span class="lineNum">     179 </span>            :       }</a>
+<a name="180"><span class="lineNum">     180 </span>            :     }</a>
+<a name="181"><span class="lineNum">     181 </span><span class="lineNoCov">          0 :     static std::string zone_name(const time_rep_type&amp;)</span></a>
+<a name="182"><span class="lineNum">     182 </span>            :     {</a>
+<a name="183"><span class="lineNum">     183 </span><span class="lineNoCov">          0 :       return &quot;&quot;;</span></a>
+<a name="184"><span class="lineNum">     184 </span>            :     }</a>
+<a name="185"><span class="lineNum">     185 </span>            :     static bool is_equal(const time_rep_type&amp; lhs, const time_rep_type&amp; rhs)</a>
+<a name="186"><span class="lineNum">     186 </span>            :     {</a>
+<a name="187"><span class="lineNum">     187 </span>            :       return (lhs.time_count() == rhs.time_count());</a>
+<a name="188"><span class="lineNum">     188 </span>            :     }</a>
+<a name="189"><span class="lineNum">     189 </span>            :     static bool is_less(const time_rep_type&amp; lhs, const time_rep_type&amp; rhs)</a>
+<a name="190"><span class="lineNum">     190 </span>            :     {</a>
+<a name="191"><span class="lineNum">     191 </span>            :       return (lhs.time_count() &lt; rhs.time_count());</a>
+<a name="192"><span class="lineNum">     192 </span>            :     }</a>
+<a name="193"><span class="lineNum">     193 </span>            :     static time_rep_type add_days(const time_rep_type&amp; base,</a>
+<a name="194"><span class="lineNum">     194 </span>            :                                   const date_duration_type&amp; dd)</a>
+<a name="195"><span class="lineNum">     195 </span>            :     {</a>
+<a name="196"><span class="lineNum">     196 </span>            :       if(base.is_special() || dd.is_special()) {</a>
+<a name="197"><span class="lineNum">     197 </span>            :         return(time_rep_type(base.get_rep() + dd.get_rep()));</a>
+<a name="198"><span class="lineNum">     198 </span>            :       }</a>
+<a name="199"><span class="lineNum">     199 </span>            :       else {</a>
+<a name="200"><span class="lineNum">     200 </span>            :         return time_rep_type(base.time_count() + (dd.days() * time_rep_type::frac_sec_per_day()));</a>
+<a name="201"><span class="lineNum">     201 </span>            :       }</a>
+<a name="202"><span class="lineNum">     202 </span>            :     }</a>
+<a name="203"><span class="lineNum">     203 </span>            :     static time_rep_type subtract_days(const time_rep_type&amp; base,</a>
+<a name="204"><span class="lineNum">     204 </span>            :                                        const date_duration_type&amp; dd)</a>
+<a name="205"><span class="lineNum">     205 </span>            :     {</a>
+<a name="206"><span class="lineNum">     206 </span>            :       if(base.is_special() || dd.is_special()) {</a>
+<a name="207"><span class="lineNum">     207 </span>            :         return(time_rep_type(base.get_rep() - dd.get_rep()));</a>
+<a name="208"><span class="lineNum">     208 </span>            :       }</a>
+<a name="209"><span class="lineNum">     209 </span>            :       else{</a>
+<a name="210"><span class="lineNum">     210 </span>            :         return time_rep_type(base.time_count() - (dd.days() * time_rep_type::frac_sec_per_day()));</a>
+<a name="211"><span class="lineNum">     211 </span>            :       }</a>
+<a name="212"><span class="lineNum">     212 </span>            :     }</a>
+<a name="213"><span class="lineNum">     213 </span>            :     static time_rep_type subtract_time_duration(const time_rep_type&amp; base,</a>
+<a name="214"><span class="lineNum">     214 </span>            :                                                 const time_duration_type&amp; td)</a>
+<a name="215"><span class="lineNum">     215 </span>            :     {</a>
+<a name="216"><span class="lineNum">     216 </span>            :       if(base.is_special() || td.is_special()) {</a>
+<a name="217"><span class="lineNum">     217 </span>            :         return(time_rep_type(base.get_rep() - td.get_rep()));</a>
+<a name="218"><span class="lineNum">     218 </span>            :       }</a>
+<a name="219"><span class="lineNum">     219 </span>            :       else {</a>
+<a name="220"><span class="lineNum">     220 </span>            :         return time_rep_type(base.time_count() - td.ticks());</a>
+<a name="221"><span class="lineNum">     221 </span>            :       }</a>
+<a name="222"><span class="lineNum">     222 </span>            :     }</a>
+<a name="223"><span class="lineNum">     223 </span>            :     static time_rep_type add_time_duration(const time_rep_type&amp; base,</a>
+<a name="224"><span class="lineNum">     224 </span>            :                                            time_duration_type td)</a>
+<a name="225"><span class="lineNum">     225 </span>            :     {</a>
+<a name="226"><span class="lineNum">     226 </span>            :       if(base.is_special() || td.is_special()) {</a>
+<a name="227"><span class="lineNum">     227 </span>            :         return(time_rep_type(base.get_rep() + td.get_rep()));</a>
+<a name="228"><span class="lineNum">     228 </span>            :       }</a>
+<a name="229"><span class="lineNum">     229 </span>            :       else {</a>
+<a name="230"><span class="lineNum">     230 </span>            :         return time_rep_type(base.time_count() + td.ticks());</a>
+<a name="231"><span class="lineNum">     231 </span>            :       }</a>
+<a name="232"><span class="lineNum">     232 </span>            :     }</a>
+<a name="233"><span class="lineNum">     233 </span>            :     static time_duration_type subtract_times(const time_rep_type&amp; lhs,</a>
+<a name="234"><span class="lineNum">     234 </span>            :                                              const time_rep_type&amp; rhs)</a>
+<a name="235"><span class="lineNum">     235 </span>            :     {</a>
+<a name="236"><span class="lineNum">     236 </span>            :       if(lhs.is_special() || rhs.is_special()) {</a>
+<a name="237"><span class="lineNum">     237 </span>            :         return(time_duration_type(</a>
+<a name="238"><span class="lineNum">     238 </span>            :           impl_type::to_special((lhs.get_rep() - rhs.get_rep()).as_number())));</a>
+<a name="239"><span class="lineNum">     239 </span>            :       }</a>
+<a name="240"><span class="lineNum">     240 </span>            :       else {</a>
+<a name="241"><span class="lineNum">     241 </span>            :         fractional_seconds_type fs = lhs.time_count() - rhs.time_count();</a>
+<a name="242"><span class="lineNum">     242 </span>            :         return time_duration_type(0,0,0,fs); </a>
+<a name="243"><span class="lineNum">     243 </span>            :       }</a>
+<a name="244"><span class="lineNum">     244 </span>            :     }</a>
+<a name="245"><span class="lineNum">     245 </span>            :     </a>
+<a name="246"><span class="lineNum">     246 </span>            :   };</a>
+<a name="247"><span class="lineNum">     247 </span>            : </a>
+<a name="248"><span class="lineNum">     248 </span>            : </a>
+<a name="249"><span class="lineNum">     249 </span>            : } } //namespace date_time</a>
+<a name="250"><span class="lineNum">     250 </span>            : </a>
+<a name="251"><span class="lineNum">     251 </span>            : </a>
+<a name="252"><span class="lineNum">     252 </span>            : </a>
+<a name="253"><span class="lineNum">     253 </span>            : #endif</a>
+<a name="254"><span class="lineNum">     254 </span>            : </a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

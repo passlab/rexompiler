@@ -1,0 +1,4 @@
+<map id="AbstractHandle::roseNode" name="AbstractHandle::roseNode">
+<area shape="rect" id="node1" title="Concrete roseNode derived from abstract_node." alt="" coords="19,80,195,107"/>
+<area shape="rect" id="node2" href="$classAbstractHandle_1_1abstract__node.html" title="Users should provide a concrete node implementation especially a constructor/builder to avoid duplica..." alt="" coords="5,5,208,32"/>
+</map>

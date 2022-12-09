@@ -1,0 +1,5 @@
+<map id="SgFunctionTypeTable" name="SgFunctionTypeTable">
+<area shape="rect" id="node1" title="This class represents the function type table (stores all function types so that they can be shared i..." alt="" coords="47,95,193,121"/>
+<area shape="rect" id="node2" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="5,5,104,32"/>
+<area shape="rect" id="node3" href="$classSgSymbolTable.html" title="This class represents the symbol tables used in both SgScopeStatement and the SgFunctionTypeSymbolTab..." alt="" coords="129,5,242,32"/>
+</map>

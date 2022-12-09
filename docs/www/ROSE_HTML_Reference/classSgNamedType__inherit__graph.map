@@ -1,0 +1,8 @@
+<map id="SgNamedType" name="SgNamedType">
+<area shape="rect" id="node1" title=" " alt="" coords="189,80,297,107"/>
+<area shape="rect" id="node3" href="$classSgClassType.html" title=" " alt="" coords="5,155,105,181"/>
+<area shape="rect" id="node4" href="$classSgEnumType.html" title=" " alt="" coords="129,155,229,181"/>
+<area shape="rect" id="node5" href="$classSgNonrealType.html" title=" " alt="" coords="253,155,364,181"/>
+<area shape="rect" id="node6" href="$classSgTypedefType.html" title=" " alt="" coords="389,155,501,181"/>
+<area shape="rect" id="node2" href="$classSgType.html" title="This class represents the base class for all types." alt="" coords="210,5,277,32"/>
+</map>

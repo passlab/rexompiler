@@ -1,0 +1,5 @@
+<map id="SgTryStmt" name="SgTryStmt">
+<area shape="rect" id="node1" title="This class represents the concept of try statement within the try&#45;catch support for exception handlin..." alt="" coords="12,188,97,215"/>
+<area shape="rect" id="node2" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="5,5,104,32"/>
+<area shape="rect" id="node3" href="$classSgCatchStatementSeq.html" title="This class represents the concept of a C++ sequence of catch statements." alt="" coords="163,90,319,117"/>
+</map>

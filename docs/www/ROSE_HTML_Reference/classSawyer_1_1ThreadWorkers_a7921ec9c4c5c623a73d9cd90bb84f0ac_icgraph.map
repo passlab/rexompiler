@@ -1,0 +1,6 @@
+<map id="Sawyer::ThreadWorkers::nWorkers" name="Sawyer::ThreadWorkers::nWorkers">
+<area shape="rect" id="node1" title="Number of worker threads." alt="" coords="663,25,825,66"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1ThreadWorkers.html#a35920c84ba82dee177bdf951f785afde" title="Synchronously processes tasks." alt="" coords="216,32,404,59"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1ThreadWorkers.html#a763a0cb3798458238162a21a99db6512" title="Constructor that synchronously runs the work." alt="" coords="5,54,168,95"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1ThreadWorkers.html#af94e460493129094b387e9ddbffd11a7" title="Start workers and return." alt="" coords="452,25,615,66"/>
+</map>

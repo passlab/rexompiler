@@ -1,0 +1,413 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /usr/include/boost/format/format_implementation.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/include/boost/format</a> - format_implementation.hpp<span style="font-size: 80%;"> (source / <a href="format_implementation.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">62</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // ----------------------------------------------------------------------------</a>
+<a name="2"><span class="lineNum">       2 </span>            : // format_implementation.hpp  Implementation of the basic_format class</a>
+<a name="3"><span class="lineNum">       3 </span>            : // ----------------------------------------------------------------------------</a>
+<a name="4"><span class="lineNum">       4 </span>            : </a>
+<a name="5"><span class="lineNum">       5 </span>            : //  Copyright Samuel Krempp 2003. Use, modification, and distribution are</a>
+<a name="6"><span class="lineNum">       6 </span>            : //  subject to the Boost Software License, Version 1.0. (See accompanying</a>
+<a name="7"><span class="lineNum">       7 </span>            : //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)</a>
+<a name="8"><span class="lineNum">       8 </span>            : </a>
+<a name="9"><span class="lineNum">       9 </span>            : //  See http://www.boost.org/libs/format for library home page</a>
+<a name="10"><span class="lineNum">      10 </span>            : </a>
+<a name="11"><span class="lineNum">      11 </span>            : </a>
+<a name="12"><span class="lineNum">      12 </span>            : // ----------------------------------------------------------------------------</a>
+<a name="13"><span class="lineNum">      13 </span>            : </a>
+<a name="14"><span class="lineNum">      14 </span>            : #ifndef BOOST_FORMAT_IMPLEMENTATION_HPP</a>
+<a name="15"><span class="lineNum">      15 </span>            : #define BOOST_FORMAT_IMPLEMENTATION_HPP</a>
+<a name="16"><span class="lineNum">      16 </span>            : </a>
+<a name="17"><span class="lineNum">      17 </span>            : #include &lt;boost/config.hpp&gt;</a>
+<a name="18"><span class="lineNum">      18 </span>            : #include &lt;boost/throw_exception.hpp&gt;</a>
+<a name="19"><span class="lineNum">      19 </span>            : #include &lt;boost/assert.hpp&gt;</a>
+<a name="20"><span class="lineNum">      20 </span>            : #include &lt;boost/format/format_class.hpp&gt;</a>
+<a name="21"><span class="lineNum">      21 </span>            : #include &lt;algorithm&gt; // std::swap</a>
+<a name="22"><span class="lineNum">      22 </span>            : </a>
+<a name="23"><span class="lineNum">      23 </span>            : namespace boost {</a>
+<a name="24"><span class="lineNum">      24 </span>            : </a>
+<a name="25"><span class="lineNum">      25 </span>            : // ---  basic_format implementation -----------------------------------------//</a>
+<a name="26"><span class="lineNum">      26 </span>            : </a>
+<a name="27"><span class="lineNum">      27 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;</a>
+<a name="28"><span class="lineNum">      28 </span><span class="lineNoCov">          0 :     basic_format&lt;Ch, Tr, Alloc&gt;:: basic_format(const Ch* s)</span></a>
+<a name="29"><span class="lineNum">      29 </span>            :         : style_(0), cur_arg_(0), num_args_(0), dumped_(false),</a>
+<a name="30"><span class="lineNum">      30 </span><span class="lineNoCov">          0 :           exceptions_(io::all_error_bits)</span></a>
+<a name="31"><span class="lineNum">      31 </span>            :     {</a>
+<a name="32"><span class="lineNum">      32 </span><span class="lineNoCov">          0 :         if( s)</span></a>
+<a name="33"><span class="lineNum">      33 </span><span class="lineNoCov">          0 :             parse( s );</span></a>
+<a name="34"><span class="lineNum">      34 </span><span class="lineNoCov">          0 :     }</span></a>
+<a name="35"><span class="lineNum">      35 </span>            : </a>
+<a name="36"><span class="lineNum">      36 </span>            : #if !defined(BOOST_NO_STD_LOCALE)</a>
+<a name="37"><span class="lineNum">      37 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;</a>
+<a name="38"><span class="lineNum">      38 </span>            :     basic_format&lt;Ch, Tr, Alloc&gt;:: basic_format(const Ch* s, const std::locale &amp; loc)</a>
+<a name="39"><span class="lineNum">      39 </span>            :         : style_(0), cur_arg_(0), num_args_(0), dumped_(false),</a>
+<a name="40"><span class="lineNum">      40 </span>            :           exceptions_(io::all_error_bits), loc_(loc)</a>
+<a name="41"><span class="lineNum">      41 </span>            :     {</a>
+<a name="42"><span class="lineNum">      42 </span>            :         if(s) parse( s );</a>
+<a name="43"><span class="lineNum">      43 </span>            :     }</a>
+<a name="44"><span class="lineNum">      44 </span>            : </a>
+<a name="45"><span class="lineNum">      45 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;</a>
+<a name="46"><span class="lineNum">      46 </span>            :     basic_format&lt;Ch, Tr, Alloc&gt;:: basic_format(const string_type&amp; s, const std::locale &amp; loc)</a>
+<a name="47"><span class="lineNum">      47 </span>            :         : style_(0), cur_arg_(0), num_args_(0), dumped_(false),</a>
+<a name="48"><span class="lineNum">      48 </span>            :           exceptions_(io::all_error_bits), loc_(loc)</a>
+<a name="49"><span class="lineNum">      49 </span>            :     {</a>
+<a name="50"><span class="lineNum">      50 </span>            :         parse(s);  </a>
+<a name="51"><span class="lineNum">      51 </span>            :     }</a>
+<a name="52"><span class="lineNum">      52 </span>            : #endif // ! BOOST_NO_STD_LOCALE</a>
+<a name="53"><span class="lineNum">      53 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;</a>
+<a name="54"><span class="lineNum">      54 </span><span class="lineNoCov">          0 :     io::detail::locale_t basic_format&lt;Ch, Tr, Alloc&gt;:: </span></a>
+<a name="55"><span class="lineNum">      55 </span>            :     getloc() const {</a>
+<a name="56"><span class="lineNum">      56 </span><span class="lineNoCov">          0 :         return loc_ ? loc_.get() : io::detail::locale_t(); </span></a>
+<a name="57"><span class="lineNum">      57 </span>            :     }</a>
+<a name="58"><span class="lineNum">      58 </span>            : </a>
+<a name="59"><span class="lineNum">      59 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;</a>
+<a name="60"><span class="lineNum">      60 </span><span class="lineNoCov">          0 :     basic_format&lt;Ch, Tr, Alloc&gt;:: basic_format(const string_type&amp; s)</span></a>
+<a name="61"><span class="lineNum">      61 </span>            :         : style_(0), cur_arg_(0), num_args_(0), dumped_(false),</a>
+<a name="62"><span class="lineNum">      62 </span><span class="lineNoCov">          0 :           exceptions_(io::all_error_bits)</span></a>
+<a name="63"><span class="lineNum">      63 </span>            :     {</a>
+<a name="64"><span class="lineNum">      64 </span><span class="lineNoCov">          0 :         parse(s);  </span></a>
+<a name="65"><span class="lineNum">      65 </span><span class="lineNoCov">          0 :     }</span></a>
+<a name="66"><span class="lineNum">      66 </span>            : </a>
+<a name="67"><span class="lineNum">      67 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt; // just don't copy the buf_ member</a>
+<a name="68"><span class="lineNum">      68 </span>            :     basic_format&lt;Ch, Tr, Alloc&gt;:: basic_format(const basic_format&amp; x)</a>
+<a name="69"><span class="lineNum">      69 </span>            :         : items_(x.items_), bound_(x.bound_), style_(x.style_),</a>
+<a name="70"><span class="lineNum">      70 </span>            :           cur_arg_(x.cur_arg_), num_args_(x.num_args_), dumped_(x.dumped_),</a>
+<a name="71"><span class="lineNum">      71 </span>            :           prefix_(x.prefix_), exceptions_(x.exceptions_), loc_(x.loc_)</a>
+<a name="72"><span class="lineNum">      72 </span>            :     {</a>
+<a name="73"><span class="lineNum">      73 </span>            :     }</a>
+<a name="74"><span class="lineNum">      74 </span>            : </a>
+<a name="75"><span class="lineNum">      75 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;  // just don't copy the buf_ member</a>
+<a name="76"><span class="lineNum">      76 </span>            :     basic_format&lt;Ch, Tr, Alloc&gt;&amp; basic_format&lt;Ch, Tr, Alloc&gt;:: </a>
+<a name="77"><span class="lineNum">      77 </span>            :     operator= (const basic_format&amp; x) {</a>
+<a name="78"><span class="lineNum">      78 </span>            :         if(this == &amp;x)</a>
+<a name="79"><span class="lineNum">      79 </span>            :             return *this;</a>
+<a name="80"><span class="lineNum">      80 </span>            :         (basic_format&lt;Ch, Tr, Alloc&gt;(x)).swap(*this);</a>
+<a name="81"><span class="lineNum">      81 </span>            :         return *this;</a>
+<a name="82"><span class="lineNum">      82 </span>            :     }</a>
+<a name="83"><span class="lineNum">      83 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;</a>
+<a name="84"><span class="lineNum">      84 </span>            :     void  basic_format&lt;Ch, Tr, Alloc&gt;:: </a>
+<a name="85"><span class="lineNum">      85 </span>            :     swap (basic_format &amp; x) {</a>
+<a name="86"><span class="lineNum">      86 </span>            :         std::swap(exceptions_, x.exceptions_);</a>
+<a name="87"><span class="lineNum">      87 </span>            :         std::swap(style_, x.style_); </a>
+<a name="88"><span class="lineNum">      88 </span>            :         std::swap(cur_arg_, x.cur_arg_); </a>
+<a name="89"><span class="lineNum">      89 </span>            :         std::swap(num_args_, x.num_args_);</a>
+<a name="90"><span class="lineNum">      90 </span>            :         std::swap(dumped_, x.dumped_);</a>
+<a name="91"><span class="lineNum">      91 </span>            : </a>
+<a name="92"><span class="lineNum">      92 </span>            :         items_.swap(x.items_);</a>
+<a name="93"><span class="lineNum">      93 </span>            :         prefix_.swap(x.prefix_);</a>
+<a name="94"><span class="lineNum">      94 </span>            :         bound_.swap(x.bound_);</a>
+<a name="95"><span class="lineNum">      95 </span>            :     }</a>
+<a name="96"><span class="lineNum">      96 </span>            : </a>
+<a name="97"><span class="lineNum">      97 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;</a>
+<a name="98"><span class="lineNum">      98 </span><span class="lineNoCov">          0 :     unsigned char basic_format&lt;Ch,Tr, Alloc&gt;:: exceptions() const {</span></a>
+<a name="99"><span class="lineNum">      99 </span>            :         return exceptions_; </a>
+<a name="100"><span class="lineNum">     100 </span>            :     }</a>
+<a name="101"><span class="lineNum">     101 </span>            : </a>
+<a name="102"><span class="lineNum">     102 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;</a>
+<a name="103"><span class="lineNum">     103 </span>            :     unsigned char basic_format&lt;Ch,Tr, Alloc&gt;:: exceptions(unsigned char newexcept) { </a>
+<a name="104"><span class="lineNum">     104 </span>            :         unsigned char swp = exceptions_; </a>
+<a name="105"><span class="lineNum">     105 </span>            :         exceptions_ = newexcept; </a>
+<a name="106"><span class="lineNum">     106 </span>            :         return swp; </a>
+<a name="107"><span class="lineNum">     107 </span>            :     }</a>
+<a name="108"><span class="lineNum">     108 </span>            : </a>
+<a name="109"><span class="lineNum">     109 </span>            :     template&lt;class Ch, class Tr, class Alloc&gt;</a>
+<a name="110"><span class="lineNum">     110 </span><span class="lineNoCov">          0 :     void basic_format&lt;Ch, Tr, Alloc&gt;:: </span></a>
+<a name="111"><span class="lineNum">     111 </span>            :     make_or_reuse_data (std::size_t nbitems) {</a>
+<a name="112"><span class="lineNum">     112 </span>            : #if !defined(BOOST_NO_STD_LOCALE)</a>
+<a name="113"><span class="lineNum">     113 </span><span class="lineNoCov">          0 :         Ch fill = ( BOOST_USE_FACET(std::ctype&lt;Ch&gt;, getloc()) ). widen(' ');</span></a>
+<a name="114"><span class="lineNum">     114 </span>            : #else</a>
+<a name="115"><span class="lineNum">     115 </span>            :         Ch fill = ' ';</a>
+<a name="116"><span class="lineNum">     116 </span>            : #endif</a>
+<a name="117"><span class="lineNum">     117 </span><span class="lineNoCov">          0 :         if(items_.size() == 0)</span></a>
+<a name="118"><span class="lineNum">     118 </span><span class="lineNoCov">          0 :             items_.assign( nbitems, format_item_t(fill) );</span></a>
+<a name="119"><span class="lineNum">     119 </span>            :         else {</a>
+<a name="120"><span class="lineNum">     120 </span><span class="lineNoCov">          0 :             if(nbitems&gt;items_.size())</span></a>
+<a name="121"><span class="lineNum">     121 </span><span class="lineNoCov">          0 :                 items_.resize(nbitems, format_item_t(fill));</span></a>
+<a name="122"><span class="lineNum">     122 </span><span class="lineNoCov">          0 :             bound_.resize(0);</span></a>
+<a name="123"><span class="lineNum">     123 </span><span class="lineNoCov">          0 :             for(std::size_t i=0; i &lt; nbitems; ++i)</span></a>
+<a name="124"><span class="lineNum">     124 </span><span class="lineNoCov">          0 :                 items_[i].reset(fill); //  strings are resized, instead of reallocated</span></a>
+<a name="125"><span class="lineNum">     125 </span>            :         }</a>
+<a name="126"><span class="lineNum">     126 </span><span class="lineNoCov">          0 :         prefix_.resize(0);</span></a>
+<a name="127"><span class="lineNum">     127 </span><span class="lineNoCov">          0 :     }</span></a>
+<a name="128"><span class="lineNum">     128 </span>            : </a>
+<a name="129"><span class="lineNum">     129 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;</a>
+<a name="130"><span class="lineNum">     130 </span><span class="lineNoCov">          0 :     basic_format&lt;Ch,Tr, Alloc&gt;&amp; basic_format&lt;Ch,Tr, Alloc&gt;:: </span></a>
+<a name="131"><span class="lineNum">     131 </span>            :     clear () {</a>
+<a name="132"><span class="lineNum">     132 </span>            :         // empty the string buffers (except bound arguments)</a>
+<a name="133"><span class="lineNum">     133 </span>            :         // and make the format object ready for formatting a new set of arguments</a>
+<a name="134"><span class="lineNum">     134 </span>            : </a>
+<a name="135"><span class="lineNum">     135 </span><span class="lineNoCov">          0 :         BOOST_ASSERT( bound_.size()==0 || num_args_ == static_cast&lt;int&gt;(bound_.size()) );</span></a>
+<a name="136"><span class="lineNum">     136 </span>            : </a>
+<a name="137"><span class="lineNum">     137 </span><span class="lineNoCov">          0 :         for(unsigned long i=0; i&lt;items_.size(); ++i) {</span></a>
+<a name="138"><span class="lineNum">     138 </span>            :             // clear converted strings only if the corresponding argument is not  bound :</a>
+<a name="139"><span class="lineNum">     139 </span><span class="lineNoCov">          0 :             if( bound_.size()==0 || items_[i].argN_&lt;0 || !bound_[ items_[i].argN_ ] )</span></a>
+<a name="140"><span class="lineNum">     140 </span><span class="lineNoCov">          0 :                 items_[i].res_.resize(0);</span></a>
+<a name="141"><span class="lineNum">     141 </span>            :         }</a>
+<a name="142"><span class="lineNum">     142 </span><span class="lineNoCov">          0 :         cur_arg_=0; dumped_=false;</span></a>
+<a name="143"><span class="lineNum">     143 </span>            :         // maybe first arg is bound:</a>
+<a name="144"><span class="lineNum">     144 </span><span class="lineNoCov">          0 :         if(bound_.size() != 0) {</span></a>
+<a name="145"><span class="lineNum">     145 </span><span class="lineNoCov">          0 :             for(; cur_arg_ &lt; num_args_ &amp;&amp; bound_[cur_arg_]; ++cur_arg_)</span></a>
+<a name="146"><span class="lineNum">     146 </span>            :                 {}</a>
+<a name="147"><span class="lineNum">     147 </span>            :         }</a>
+<a name="148"><span class="lineNum">     148 </span><span class="lineNoCov">          0 :         return *this;</span></a>
+<a name="149"><span class="lineNum">     149 </span>            :     }</a>
+<a name="150"><span class="lineNum">     150 </span>            : </a>
+<a name="151"><span class="lineNum">     151 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;</a>
+<a name="152"><span class="lineNum">     152 </span>            :     basic_format&lt;Ch,Tr, Alloc&gt;&amp; basic_format&lt;Ch,Tr, Alloc&gt;:: </a>
+<a name="153"><span class="lineNum">     153 </span>            :     clear_binds () {</a>
+<a name="154"><span class="lineNum">     154 </span>            :         // remove all binds, then clear()</a>
+<a name="155"><span class="lineNum">     155 </span>            :         bound_.resize(0);</a>
+<a name="156"><span class="lineNum">     156 </span>            :         clear();</a>
+<a name="157"><span class="lineNum">     157 </span>            :         return *this;</a>
+<a name="158"><span class="lineNum">     158 </span>            :     }</a>
+<a name="159"><span class="lineNum">     159 </span>            : </a>
+<a name="160"><span class="lineNum">     160 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;</a>
+<a name="161"><span class="lineNum">     161 </span>            :     basic_format&lt;Ch,Tr, Alloc&gt;&amp; basic_format&lt;Ch,Tr, Alloc&gt;:: </a>
+<a name="162"><span class="lineNum">     162 </span>            :     clear_bind (int argN) {</a>
+<a name="163"><span class="lineNum">     163 </span>            :         // remove the bind of ONE argument then clear()</a>
+<a name="164"><span class="lineNum">     164 </span>            :         if(argN&lt;1 || argN &gt; num_args_ || bound_.size()==0 || !bound_[argN-1] ) {</a>
+<a name="165"><span class="lineNum">     165 </span>            :             if( exceptions() &amp; io::out_of_range_bit)</a>
+<a name="166"><span class="lineNum">     166 </span>            :                 boost::throw_exception(io::out_of_range(argN, 1, num_args_+1 ) ); </a>
+<a name="167"><span class="lineNum">     167 </span>            :             else return *this;</a>
+<a name="168"><span class="lineNum">     168 </span>            :         }</a>
+<a name="169"><span class="lineNum">     169 </span>            :         bound_[argN-1]=false;</a>
+<a name="170"><span class="lineNum">     170 </span>            :         clear();</a>
+<a name="171"><span class="lineNum">     171 </span>            :         return *this;</a>
+<a name="172"><span class="lineNum">     172 </span>            :     }</a>
+<a name="173"><span class="lineNum">     173 </span>            : </a>
+<a name="174"><span class="lineNum">     174 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;</a>
+<a name="175"><span class="lineNum">     175 </span>            :     int basic_format&lt;Ch,Tr, Alloc&gt;::</a>
+<a name="176"><span class="lineNum">     176 </span>            :     bound_args() const {</a>
+<a name="177"><span class="lineNum">     177 </span>            :         if(bound_.size()==0)</a>
+<a name="178"><span class="lineNum">     178 </span>            :             return 0;</a>
+<a name="179"><span class="lineNum">     179 </span>            :         int n=0;</a>
+<a name="180"><span class="lineNum">     180 </span>            :         for(int i=0; i&lt;num_args_ ; ++i)</a>
+<a name="181"><span class="lineNum">     181 </span>            :             if(bound_[i])</a>
+<a name="182"><span class="lineNum">     182 </span>            :                 ++n;</a>
+<a name="183"><span class="lineNum">     183 </span>            :         return n;</a>
+<a name="184"><span class="lineNum">     184 </span>            :     }</a>
+<a name="185"><span class="lineNum">     185 </span>            : </a>
+<a name="186"><span class="lineNum">     186 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;</a>
+<a name="187"><span class="lineNum">     187 </span>            :     int basic_format&lt;Ch,Tr, Alloc&gt;::</a>
+<a name="188"><span class="lineNum">     188 </span>            :     fed_args() const {</a>
+<a name="189"><span class="lineNum">     189 </span>            :         if(bound_.size()==0)</a>
+<a name="190"><span class="lineNum">     190 </span>            :             return cur_arg_;</a>
+<a name="191"><span class="lineNum">     191 </span>            :         int n=0;</a>
+<a name="192"><span class="lineNum">     192 </span>            :         for(int i=0; i&lt;cur_arg_ ; ++i)</a>
+<a name="193"><span class="lineNum">     193 </span>            :             if(!bound_[i])</a>
+<a name="194"><span class="lineNum">     194 </span>            :                 ++n;</a>
+<a name="195"><span class="lineNum">     195 </span>            :         return n;</a>
+<a name="196"><span class="lineNum">     196 </span>            :     }</a>
+<a name="197"><span class="lineNum">     197 </span>            : </a>
+<a name="198"><span class="lineNum">     198 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;</a>
+<a name="199"><span class="lineNum">     199 </span>            :     int basic_format&lt;Ch,Tr, Alloc&gt;::</a>
+<a name="200"><span class="lineNum">     200 </span>            :     cur_arg() const {</a>
+<a name="201"><span class="lineNum">     201 </span>            :       return cur_arg_+1; }</a>
+<a name="202"><span class="lineNum">     202 </span>            : </a>
+<a name="203"><span class="lineNum">     203 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;</a>
+<a name="204"><span class="lineNum">     204 </span>            :     int basic_format&lt;Ch,Tr, Alloc&gt;::</a>
+<a name="205"><span class="lineNum">     205 </span>            :     remaining_args() const {</a>
+<a name="206"><span class="lineNum">     206 </span>            :         if(bound_.size()==0)</a>
+<a name="207"><span class="lineNum">     207 </span>            :             return num_args_-cur_arg_;</a>
+<a name="208"><span class="lineNum">     208 </span>            :         int n=0;</a>
+<a name="209"><span class="lineNum">     209 </span>            :         for(int i=cur_arg_; i&lt;num_args_ ; ++i)</a>
+<a name="210"><span class="lineNum">     210 </span>            :             if(!bound_[i])</a>
+<a name="211"><span class="lineNum">     211 </span>            :                 ++n;</a>
+<a name="212"><span class="lineNum">     212 </span>            :         return n;</a>
+<a name="213"><span class="lineNum">     213 </span>            :     }</a>
+<a name="214"><span class="lineNum">     214 </span>            : </a>
+<a name="215"><span class="lineNum">     215 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;</a>
+<a name="216"><span class="lineNum">     216 </span>            :     typename basic_format&lt;Ch, Tr, Alloc&gt;::string_type </a>
+<a name="217"><span class="lineNum">     217 </span><span class="lineNoCov">          0 :     basic_format&lt;Ch,Tr, Alloc&gt;:: </span></a>
+<a name="218"><span class="lineNum">     218 </span>            :     str () const {</a>
+<a name="219"><span class="lineNum">     219 </span><span class="lineNoCov">          0 :         if(items_.size()==0)</span></a>
+<a name="220"><span class="lineNum">     220 </span><span class="lineNoCov">          0 :             return prefix_;</span></a>
+<a name="221"><span class="lineNum">     221 </span><span class="lineNoCov">          0 :         if( cur_arg_ &lt; num_args_)</span></a>
+<a name="222"><span class="lineNum">     222 </span><span class="lineNoCov">          0 :             if( exceptions() &amp; io::too_few_args_bit )</span></a>
+<a name="223"><span class="lineNum">     223 </span>            :                 // not enough variables supplied</a>
+<a name="224"><span class="lineNum">     224 </span><span class="lineNoCov">          0 :                 boost::throw_exception(io::too_few_args(cur_arg_, num_args_)); </span></a>
+<a name="225"><span class="lineNum">     225 </span>            : </a>
+<a name="226"><span class="lineNum">     226 </span>            :         unsigned long i;</a>
+<a name="227"><span class="lineNum">     227 </span><span class="lineNoCov">          0 :         string_type res;</span></a>
+<a name="228"><span class="lineNum">     228 </span><span class="lineNoCov">          0 :         res.reserve(size());</span></a>
+<a name="229"><span class="lineNum">     229 </span><span class="lineNoCov">          0 :         res += prefix_;</span></a>
+<a name="230"><span class="lineNum">     230 </span><span class="lineNoCov">          0 :         for(i=0; i &lt; items_.size(); ++i) {</span></a>
+<a name="231"><span class="lineNum">     231 </span><span class="lineNoCov">          0 :             const format_item_t&amp; item = items_[i];</span></a>
+<a name="232"><span class="lineNum">     232 </span><span class="lineNoCov">          0 :             res += item.res_;</span></a>
+<a name="233"><span class="lineNum">     233 </span><span class="lineNoCov">          0 :             if( item.argN_ == format_item_t::argN_tabulation) { </span></a>
+<a name="234"><span class="lineNum">     234 </span><span class="lineNoCov">          0 :                 BOOST_ASSERT( item.pad_scheme_ &amp; format_item_t::tabulation);</span></a>
+<a name="235"><span class="lineNum">     235 </span><span class="lineNoCov">          0 :                 if( static_cast&lt;size_type&gt;(item.fmtstate_.width_) &gt; res.size() )</span></a>
+<a name="236"><span class="lineNum">     236 </span><span class="lineNoCov">          0 :                     res.append( static_cast&lt;size_type&gt;(item.fmtstate_.width_) - res.size(),</span></a>
+<a name="237"><span class="lineNum">     237 </span><span class="lineNoCov">          0 :                                         item.fmtstate_.fill_ );</span></a>
+<a name="238"><span class="lineNum">     238 </span>            :             }</a>
+<a name="239"><span class="lineNum">     239 </span><span class="lineNoCov">          0 :             res += item.appendix_;</span></a>
+<a name="240"><span class="lineNum">     240 </span>            :         }</a>
+<a name="241"><span class="lineNum">     241 </span><span class="lineNoCov">          0 :         dumped_=true;</span></a>
+<a name="242"><span class="lineNum">     242 </span><span class="lineNoCov">          0 :         return res;</span></a>
+<a name="243"><span class="lineNum">     243 </span>            :     }</a>
+<a name="244"><span class="lineNum">     244 </span>            :     template&lt; class Ch, class Tr, class Alloc&gt;</a>
+<a name="245"><span class="lineNum">     245 </span><span class="lineNoCov">          0 :     typename std::basic_string&lt;Ch, Tr, Alloc&gt;::size_type  basic_format&lt;Ch,Tr, Alloc&gt;:: </span></a>
+<a name="246"><span class="lineNum">     246 </span>            :     size () const {</a>
+<a name="247"><span class="lineNum">     247 </span>            : #ifdef BOOST_MSVC</a>
+<a name="248"><span class="lineNum">     248 </span>            :        // If std::min&lt;unsigned&gt; or std::max&lt;unsigned&gt; are already instantiated</a>
+<a name="249"><span class="lineNum">     249 </span>            :        // at this point then we get a blizzard of warning messages when we call</a>
+<a name="250"><span class="lineNum">     250 </span>            :        // those templates with std::size_t as arguments.  Weird and very annoyning...</a>
+<a name="251"><span class="lineNum">     251 </span>            : #pragma warning(push)</a>
+<a name="252"><span class="lineNum">     252 </span>            : #pragma warning(disable:4267)</a>
+<a name="253"><span class="lineNum">     253 </span>            : #endif</a>
+<a name="254"><span class="lineNum">     254 </span>            :         BOOST_USING_STD_MAX();</a>
+<a name="255"><span class="lineNum">     255 </span><span class="lineNoCov">          0 :         size_type sz = prefix_.size();</span></a>
+<a name="256"><span class="lineNum">     256 </span>            :         unsigned long i;</a>
+<a name="257"><span class="lineNum">     257 </span><span class="lineNoCov">          0 :         for(i=0; i &lt; items_.size(); ++i) {</span></a>
+<a name="258"><span class="lineNum">     258 </span><span class="lineNoCov">          0 :             const format_item_t&amp; item = items_[i];</span></a>
+<a name="259"><span class="lineNum">     259 </span><span class="lineNoCov">          0 :             sz += item.res_.size();</span></a>
+<a name="260"><span class="lineNum">     260 </span><span class="lineNoCov">          0 :             if( item.argN_ == format_item_t::argN_tabulation)</span></a>
+<a name="261"><span class="lineNum">     261 </span><span class="lineNoCov">          0 :                 sz = max BOOST_PREVENT_MACRO_SUBSTITUTION (sz,</span></a>
+<a name="262"><span class="lineNum">     262 </span><span class="lineNoCov">          0 :                                         static_cast&lt;size_type&gt;(item.fmtstate_.width_) );</span></a>
+<a name="263"><span class="lineNum">     263 </span><span class="lineNoCov">          0 :             sz += item.appendix_.size();</span></a>
+<a name="264"><span class="lineNum">     264 </span>            :         }</a>
+<a name="265"><span class="lineNum">     265 </span><span class="lineNoCov">          0 :         return sz;</span></a>
+<a name="266"><span class="lineNum">     266 </span>            : #ifdef BOOST_MSVC</a>
+<a name="267"><span class="lineNum">     267 </span>            : #pragma warning(pop)</a>
+<a name="268"><span class="lineNum">     268 </span>            : #endif</a>
+<a name="269"><span class="lineNum">     269 </span>            :     }</a>
+<a name="270"><span class="lineNum">     270 </span>            : </a>
+<a name="271"><span class="lineNum">     271 </span>            : namespace io {</a>
+<a name="272"><span class="lineNum">     272 </span>            : namespace detail {</a>
+<a name="273"><span class="lineNum">     273 </span>            : </a>
+<a name="274"><span class="lineNum">     274 </span>            :     template&lt;class Ch, class Tr, class Alloc, class T&gt; </a>
+<a name="275"><span class="lineNum">     275 </span>            :     basic_format&lt;Ch, Tr, Alloc&gt;&amp;  </a>
+<a name="276"><span class="lineNum">     276 </span>            :     bind_arg_body (basic_format&lt;Ch, Tr, Alloc&gt;&amp; self, int argN, const T&amp; val) {</a>
+<a name="277"><span class="lineNum">     277 </span>            :         // bind one argument to a fixed value</a>
+<a name="278"><span class="lineNum">     278 </span>            :         // this is persistent over clear() calls, thus also over str() and &lt;&lt;</a>
+<a name="279"><span class="lineNum">     279 </span>            :         if(self.dumped_) </a>
+<a name="280"><span class="lineNum">     280 </span>            :             self.clear(); // needed because we will modify cur_arg_</a>
+<a name="281"><span class="lineNum">     281 </span>            :         if(argN&lt;1 || argN &gt; self.num_args_) {</a>
+<a name="282"><span class="lineNum">     282 </span>            :             if( self.exceptions() &amp; io::out_of_range_bit )</a>
+<a name="283"><span class="lineNum">     283 </span>            :                 boost::throw_exception(io::out_of_range(argN, 1, self.num_args_+1 ) );</a>
+<a name="284"><span class="lineNum">     284 </span>            :             else return self;</a>
+<a name="285"><span class="lineNum">     285 </span>            :         }</a>
+<a name="286"><span class="lineNum">     286 </span>            :         if(self.bound_.size()==0) </a>
+<a name="287"><span class="lineNum">     287 </span>            :             self.bound_.assign(self.num_args_,false);</a>
+<a name="288"><span class="lineNum">     288 </span>            :         else </a>
+<a name="289"><span class="lineNum">     289 </span>            :             BOOST_ASSERT( self.num_args_ == static_cast&lt;signed int&gt;(self.bound_.size()) );</a>
+<a name="290"><span class="lineNum">     290 </span>            :         int o_cur_arg = self.cur_arg_;</a>
+<a name="291"><span class="lineNum">     291 </span>            :         self.cur_arg_ = argN-1; // arrays begin at 0</a>
+<a name="292"><span class="lineNum">     292 </span>            : </a>
+<a name="293"><span class="lineNum">     293 </span>            :         self.bound_[self.cur_arg_]=false; // if already set, we unset and re-sets..</a>
+<a name="294"><span class="lineNum">     294 </span>            :         self.operator%(val); // put val at the right place, because cur_arg is set</a>
+<a name="295"><span class="lineNum">     295 </span>            :     </a>
+<a name="296"><span class="lineNum">     296 </span>            : </a>
+<a name="297"><span class="lineNum">     297 </span>            :         // Now re-position cur_arg before leaving :</a>
+<a name="298"><span class="lineNum">     298 </span>            :         self.cur_arg_ = o_cur_arg; </a>
+<a name="299"><span class="lineNum">     299 </span>            :         self.bound_[argN-1]=true;</a>
+<a name="300"><span class="lineNum">     300 </span>            :         if(self.cur_arg_ == argN-1 ) {</a>
+<a name="301"><span class="lineNum">     301 </span>            :             // hum, now this arg is bound, so move to next free arg</a>
+<a name="302"><span class="lineNum">     302 </span>            :             while(self.cur_arg_ &lt; self.num_args_ &amp;&amp; self.bound_[self.cur_arg_])   </a>
+<a name="303"><span class="lineNum">     303 </span>            :                 ++self.cur_arg_;</a>
+<a name="304"><span class="lineNum">     304 </span>            :         }</a>
+<a name="305"><span class="lineNum">     305 </span>            :         // In any case, we either have all args, or are on an unbound arg :</a>
+<a name="306"><span class="lineNum">     306 </span>            :         BOOST_ASSERT( self.cur_arg_ &gt;= self.num_args_ || ! self.bound_[self.cur_arg_]);</a>
+<a name="307"><span class="lineNum">     307 </span>            :         return self;</a>
+<a name="308"><span class="lineNum">     308 </span>            :     }</a>
+<a name="309"><span class="lineNum">     309 </span>            : </a>
+<a name="310"><span class="lineNum">     310 </span>            :     template&lt;class Ch, class Tr, class Alloc, class T&gt; basic_format&lt;Ch, Tr, Alloc&gt;&amp;</a>
+<a name="311"><span class="lineNum">     311 </span>            :     modify_item_body (basic_format&lt;Ch, Tr, Alloc&gt;&amp; self, int itemN, T manipulator) {</a>
+<a name="312"><span class="lineNum">     312 </span>            :         // applies a manipulator to the format_item describing a given directive.</a>
+<a name="313"><span class="lineNum">     313 </span>            :         // this is a permanent change, clear or reset won't cancel that.</a>
+<a name="314"><span class="lineNum">     314 </span>            :         if(itemN&lt;1 || itemN &gt; static_cast&lt;signed int&gt;(self.items_.size() )) {</a>
+<a name="315"><span class="lineNum">     315 </span>            :             if( self.exceptions() &amp; io::out_of_range_bit ) </a>
+<a name="316"><span class="lineNum">     316 </span>            :                 boost::throw_exception(io::out_of_range(itemN, 1, static_cast&lt;int&gt;(self.items_.size()) ));</a>
+<a name="317"><span class="lineNum">     317 </span>            :             else return self;</a>
+<a name="318"><span class="lineNum">     318 </span>            :         }</a>
+<a name="319"><span class="lineNum">     319 </span>            :         self.items_[itemN-1].fmtstate_. template apply_manip&lt;T&gt; ( manipulator );</a>
+<a name="320"><span class="lineNum">     320 </span>            :         return self;</a>
+<a name="321"><span class="lineNum">     321 </span>            :     }</a>
+<a name="322"><span class="lineNum">     322 </span>            : </a>
+<a name="323"><span class="lineNum">     323 </span>            : } // namespace detail</a>
+<a name="324"><span class="lineNum">     324 </span>            : } // namespace io</a>
+<a name="325"><span class="lineNum">     325 </span>            : } // namespace boost</a>
+<a name="326"><span class="lineNum">     326 </span>            : </a>
+<a name="327"><span class="lineNum">     327 </span>            : </a>
+<a name="328"><span class="lineNum">     328 </span>            : </a>
+<a name="329"><span class="lineNum">     329 </span>            : #endif  // BOOST_FORMAT_IMPLEMENTATION_HPP</a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

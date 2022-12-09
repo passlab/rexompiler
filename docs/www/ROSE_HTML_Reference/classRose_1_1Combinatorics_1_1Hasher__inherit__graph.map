@@ -1,0 +1,6 @@
+<map id="Rose::Combinatorics::Hasher" name="Rose::Combinatorics::Hasher">
+<area shape="rect" id="node1" title="Hash interface." alt="" coords="5,71,151,112"/>
+<area shape="rect" id="node2" href="$classRose_1_1Combinatorics_1_1HasherFnv.html" title="Fowler&#45;Noll&#45;Vo hashing using the Hasher interface." alt="" coords="241,5,386,47"/>
+<area shape="rect" id="node3" href="$classRose_1_1Combinatorics_1_1HasherGcrypt.html" title="Hasher for any libgcrypt hash algorithm." alt="" coords="199,71,428,112"/>
+<area shape="rect" id="node4" href="$classRose_1_1Combinatorics_1_1HasherSha256Builtin.html" title="Built&#45;in SHA&#45;256 hasher." alt="" coords="237,136,389,177"/>
+</map>

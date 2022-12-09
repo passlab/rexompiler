@@ -1,0 +1,8 @@
+<map id="Sawyer::Container::BitVectorSupport::multiply10" name="Sawyer::Container::BitVectorSupport::multiply10">
+<area shape="rect" id="node1" title="Multiply by 10." alt="" coords="5,115,193,156"/>
+<area shape="rect" id="node2" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#ab0f84b9c0638d1b4785b9a9884420375" title="Add bits." alt="" coords="254,5,405,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Interval.html#a136b9afce8c48871c21c58dc9ecdc48f" title="Construct an interval from one endpoint and a size." alt="" coords="475,61,613,117"/>
+<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#aff6810c441e283e64b214bd4d9bbc0a6" title="Copy some bits." alt="" coords="465,145,623,187"/>
+<area shape="rect" id="node5" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a2b3367be46207c33fbf910613c4a4ebf" title="Shift bits left." alt="" coords="241,173,417,215"/>
+<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1Interval.html#a75d8ca4e63b1180f6d2194a0ec79440d" title="Size of interval." alt="" coords="475,217,613,259"/>
+</map>

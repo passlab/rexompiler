@@ -1,0 +1,4 @@
+<map id="Sawyer::Exception::NotFound" name="Sawyer::Exception::NotFound">
+<area shape="rect" id="node1" title="Error for non&#45;existing values." alt="" coords="5,95,145,136"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Exception_1_1DomainError.html" title="Base class for Sawyer domain errors." alt="" coords="5,5,145,47"/>
+</map>

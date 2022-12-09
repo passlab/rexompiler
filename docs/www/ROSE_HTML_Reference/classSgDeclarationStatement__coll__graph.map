@@ -1,0 +1,7 @@
+<map id="SgDeclarationStatement" name="SgDeclarationStatement">
+<area shape="rect" id="node1" title="This class represents the concept of a declaration statement." alt="" coords="129,276,293,303"/>
+<area shape="rect" id="node2" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="5,184,104,211"/>
+<area shape="rect" id="node3" href="$classSgDeclarationModifier.html" title="This class represents modifiers for SgDeclaration (declaration statements)." alt="" coords="270,184,421,211"/>
+<area shape="rect" id="node4" title="STL class." alt="" coords="133,5,213,32"/>
+<area shape="rect" id="node5" href="$classSgDeclarationScope.html" title=" " alt="" coords="445,184,587,211"/>
+</map>

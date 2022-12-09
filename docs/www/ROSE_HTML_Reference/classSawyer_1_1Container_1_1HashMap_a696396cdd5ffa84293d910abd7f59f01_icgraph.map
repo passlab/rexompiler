@@ -1,0 +1,6 @@
+<map id="Sawyer::Container::HashMap::erase" name="Sawyer::Container::HashMap::erase">
+<area shape="rect" id="node1" title="Remove a node with specified key." alt="" coords="229,71,368,112"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1HashMap.html#af30ba6a5131a8c2ded260063ce228ece" title="Remove a node by iterator." alt="" coords="24,5,163,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1HashMap.html#aca646abaf8526c16cce694ddffa80176" title="Remove multiple nodes by iterator range." alt="" coords="5,71,181,112"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1HashMap.html#a2823dc6b403a756b51c8247b4e0ed39d" title="Remove keys stored in another HashMap." alt="" coords="12,136,175,177"/>
+</map>

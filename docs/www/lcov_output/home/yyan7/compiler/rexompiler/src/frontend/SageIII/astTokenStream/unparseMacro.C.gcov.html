@@ -1,0 +1,366 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /home/yyan7/compiler/rexompiler/src/frontend/SageIII/astTokenStream/unparseMacro.C</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../../index.html">top level</a> - <a href="index.html">home/yyan7/compiler/rexompiler/src/frontend/SageIII/astTokenStream</a> - unparseMacro.C<span style="font-size: 80%;"> (source / <a href="unparseMacro.C.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">91</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // tps (01/14/2010) : Switching from rose.h to sage3.</a>
+<a name="2"><span class="lineNum">       2 </span>            : #include &quot;sage3basic.h&quot;</a>
+<a name="3"><span class="lineNum">       3 </span>            : </a>
+<a name="4"><span class="lineNum">       4 </span>            : #include &quot;unparseMacro.h&quot;</a>
+<a name="5"><span class="lineNum">       5 </span>            : </a>
+<a name="6"><span class="lineNum">       6 </span>            : // DQ (10/14/2010):  This should only be included by source files that require it.</a>
+<a name="7"><span class="lineNum">       7 </span>            : // This fixed a reported bug which caused conflicts with autoconf macros (e.g. PACKAGE_BUGREPORT).</a>
+<a name="8"><span class="lineNum">       8 </span>            : // Interestingly it must be at the top of the list of include files.</a>
+<a name="9"><span class="lineNum">       9 </span>            : #include &quot;rose_config.h&quot;</a>
+<a name="10"><span class="lineNum">      10 </span>            : </a>
+<a name="11"><span class="lineNum">      11 </span>            : </a>
+<a name="12"><span class="lineNum">      12 </span>            : //Preorder travesal to find smallest subtrees containing macro call</a>
+<a name="13"><span class="lineNum">      13 </span>            : // Build an inherited attribute for the tree traversal to test the rewrite mechanism</a>
+<a name="14"><span class="lineNum">      14 </span>            : </a>
+<a name="15"><span class="lineNum">      15 </span>            : class FindSmallestStatementsInh</a>
+<a name="16"><span class="lineNum">      16 </span>            : {</a>
+<a name="17"><span class="lineNum">      17 </span>            :   public:</a>
+<a name="18"><span class="lineNum">      18 </span>            :     //This variable communicates to subtree that the topmost node has already been found</a>
+<a name="19"><span class="lineNum">      19 </span>            :     bool inSubtreeOfStatement;</a>
+<a name="20"><span class="lineNum">      20 </span>            : </a>
+<a name="21"><span class="lineNum">      21 </span>            :     FindSmallestStatementsInh () : inSubtreeOfStatement(false) {};</a>
+<a name="22"><span class="lineNum">      22 </span>            : </a>
+<a name="23"><span class="lineNum">      23 </span><span class="lineNoCov">          0 :     FindSmallestStatementsInh (bool inSubtree = false) : inSubtreeOfStatement(inSubtree) {};</span></a>
+<a name="24"><span class="lineNum">      24 </span><span class="lineNoCov">          0 :     FindSmallestStatementsInh ( const FindSmallestStatementsInh &amp; X ) : inSubtreeOfStatement(X.inSubtreeOfStatement){};</span></a>
+<a name="25"><span class="lineNum">      25 </span>            : };</a>
+<a name="26"><span class="lineNum">      26 </span>            : </a>
+<a name="27"><span class="lineNum">      27 </span>            : //Find set of topmost nodes that match a macro call. By topmost nodes we mean the first nodes that are encountered in</a>
+<a name="28"><span class="lineNum">      28 </span>            : //a subtree from the macro call.</a>
+<a name="29"><span class="lineNum">      29 </span><span class="lineNoCov">          0 : class FindSmallestStatements : public AstTopDownProcessing&lt;FindSmallestStatementsInh&gt;</span></a>
+<a name="30"><span class="lineNum">      30 </span>            : {</a>
+<a name="31"><span class="lineNum">      31 </span>            :   public:</a>
+<a name="32"><span class="lineNum">      32 </span>            :     bool find_all;</a>
+<a name="33"><span class="lineNum">      33 </span>            :     //Set of nodes matching macro call</a>
+<a name="34"><span class="lineNum">      34 </span>            :     std::vector&lt;SgNode*&gt; matchingCalls;</a>
+<a name="35"><span class="lineNum">      35 </span>            :     //The position info that we should find the topmost nodes for</a>
+<a name="36"><span class="lineNum">      36 </span>            :     Sg_File_Info* macroCallInfo;</a>
+<a name="37"><span class="lineNum">      37 </span>            :     virtual FindSmallestStatementsInh evaluateInheritedAttribute(SgNode* n, FindSmallestStatementsInh inheritedAttribute);</a>
+<a name="38"><span class="lineNum">      38 </span>            : </a>
+<a name="39"><span class="lineNum">      39 </span>            :     std::vector&lt;SgNode*&gt; traverseSubTree(SgNode* n, PreprocessingInfo* macroCall );</a>
+<a name="40"><span class="lineNum">      40 </span>            :     </a>
+<a name="41"><span class="lineNum">      41 </span>            : </a>
+<a name="42"><span class="lineNum">      42 </span>            : </a>
+<a name="43"><span class="lineNum">      43 </span>            : };</a>
+<a name="44"><span class="lineNum">      44 </span>            : </a>
+<a name="45"><span class="lineNum">      45 </span>            : FindSmallestStatementsInh</a>
+<a name="46"><span class="lineNum">      46 </span><span class="lineNoCov">          0 : FindSmallestStatements::evaluateInheritedAttribute(SgNode* n, FindSmallestStatementsInh inheritedAttribute)</span></a>
+<a name="47"><span class="lineNum">      47 </span>            : {</a>
+<a name="48"><span class="lineNum">      48 </span>            : </a>
+<a name="49"><span class="lineNum">      49 </span>            : </a>
+<a name="50"><span class="lineNum">      50 </span>            : </a>
+<a name="51"><span class="lineNum">      51 </span>            :   //If the node should be consired as a topmost node</a>
+<a name="52"><span class="lineNum">      52 </span><span class="lineNoCov">          0 :   if(inheritedAttribute.inSubtreeOfStatement == false &amp;&amp; isSgLocatedNode(n))</span></a>
+<a name="53"><span class="lineNum">      53 </span>            :   {</a>
+<a name="54"><span class="lineNum">      54 </span>            : </a>
+<a name="55"><span class="lineNum">      55 </span><span class="lineNoCov">          0 :     Sg_File_Info*  thisNodePos = n-&gt;get_file_info();</span></a>
+<a name="56"><span class="lineNum">      56 </span>            : #if 0</a>
+<a name="57"><span class="lineNum">      57 </span>            : </a>
+<a name="58"><span class="lineNum">      58 </span>            :     std::string pos;</a>
+<a name="59"><span class="lineNum">      59 </span>            :     thisNodePos-&gt;display(pos);</a>
+<a name="60"><span class="lineNum">      60 </span>            : </a>
+<a name="61"><span class="lineNum">      61 </span>            :     std::cerr  &lt;&lt; &quot;************************\n&quot;;</a>
+<a name="62"><span class="lineNum">      62 </span>            :     std::cerr &lt;&lt; &quot;NodePosDisp &quot; &lt;&lt; n-&gt;class_name() &lt;&lt; pos &lt;&lt;  std::endl;</a>
+<a name="63"><span class="lineNum">      63 </span>            :     std::cerr  &lt;&lt; &quot;************************\n&quot;;</a>
+<a name="64"><span class="lineNum">      64 </span>            : </a>
+<a name="65"><span class="lineNum">      65 </span>            : #endif</a>
+<a name="66"><span class="lineNum">      66 </span>            :     //If positions are the same add to list of statements</a>
+<a name="67"><span class="lineNum">      67 </span><span class="lineNoCov">          0 :     switch(n-&gt;variantT())</span></a>
+<a name="68"><span class="lineNum">      68 </span>            :     {</a>
+<a name="69"><span class="lineNum">      69 </span><span class="lineNoCov">          0 :       case V_SgExprStatement:</span></a>
+<a name="70"><span class="lineNum">      70 </span><span class="lineNoCov">          0 :         std::cout &lt;&lt; &quot;Skipping this node&quot; &lt;&lt; std::endl;</span></a>
+<a name="71"><span class="lineNum">      71 </span>            :         break;</a>
+<a name="72"><span class="lineNum">      72 </span><span class="lineNoCov">          0 :       default:</span></a>
+<a name="73"><span class="lineNum">      73 </span><span class="lineNoCov">          0 :         {</span></a>
+<a name="74"><span class="lineNum">      74 </span><span class="lineNoCov">          0 :           if( macroCallInfo-&gt;get_file_id() == thisNodePos-&gt;get_file_id() &amp;&amp;</span></a>
+<a name="75"><span class="lineNum">      75 </span><span class="lineNoCov">          0 :               macroCallInfo-&gt;get_line()    == thisNodePos-&gt;get_line()    &amp;&amp;</span></a>
+<a name="76"><span class="lineNum">      76 </span><span class="lineNoCov">          0 :               macroCallInfo-&gt;get_col()     == thisNodePos-&gt;get_col()</span></a>
+<a name="77"><span class="lineNum">      77 </span>            :             )</a>
+<a name="78"><span class="lineNum">      78 </span>            :           {</a>
+<a name="79"><span class="lineNum">      79 </span><span class="lineNoCov">          0 :             if( find_all == false )</span></a>
+<a name="80"><span class="lineNum">      80 </span><span class="lineNoCov">          0 :               inheritedAttribute.inSubtreeOfStatement = true;</span></a>
+<a name="81"><span class="lineNum">      81 </span><span class="lineNoCov">          0 :             matchingCalls.push_back(n);</span></a>
+<a name="82"><span class="lineNum">      82 </span>            :           }</a>
+<a name="83"><span class="lineNum">      83 </span>            :           break;</a>
+<a name="84"><span class="lineNum">      84 </span>            :         }</a>
+<a name="85"><span class="lineNum">      85 </span>            : </a>
+<a name="86"><span class="lineNum">      86 </span>            : </a>
+<a name="87"><span class="lineNum">      87 </span>            :     }</a>
+<a name="88"><span class="lineNum">      88 </span>            : </a>
+<a name="89"><span class="lineNum">      89 </span>            : </a>
+<a name="90"><span class="lineNum">      90 </span>            :   }</a>
+<a name="91"><span class="lineNum">      91 </span>            : </a>
+<a name="92"><span class="lineNum">      92 </span><span class="lineNoCov">          0 :   return inheritedAttribute;</span></a>
+<a name="93"><span class="lineNum">      93 </span>            : }</a>
+<a name="94"><span class="lineNum">      94 </span>            : </a>
+<a name="95"><span class="lineNum">      95 </span>            : std::vector&lt;SgNode*&gt; </a>
+<a name="96"><span class="lineNum">      96 </span><span class="lineNoCov">          0 : FindSmallestStatements::traverseSubTree(SgNode* n, PreprocessingInfo* macroCall)</span></a>
+<a name="97"><span class="lineNum">      97 </span>            : {</a>
+<a name="98"><span class="lineNum">      98 </span>            : </a>
+<a name="99"><span class="lineNum">      99 </span><span class="lineNoCov">          0 :   macroCallInfo = macroCall-&gt;get_file_info();</span></a>
+<a name="100"><span class="lineNum">     100 </span>            : </a>
+<a name="101"><span class="lineNum">     101 </span><span class="lineNoCov">          0 :   FindSmallestStatementsInh inh(false);</span></a>
+<a name="102"><span class="lineNum">     102 </span><span class="lineNoCov">          0 :   this-&gt;traverse(n, inh);</span></a>
+<a name="103"><span class="lineNum">     103 </span>            : </a>
+<a name="104"><span class="lineNum">     104 </span>            :  </a>
+<a name="105"><span class="lineNum">     105 </span><span class="lineNoCov">          0 :   return matchingCalls;</span></a>
+<a name="106"><span class="lineNum">     106 </span>            : }</a>
+<a name="107"><span class="lineNum">     107 </span>            : </a>
+<a name="108"><span class="lineNum">     108 </span>            : //Preorder travesal to find the nodes PreprocessingInfo pairs.</a>
+<a name="109"><span class="lineNum">     109 </span><span class="lineNoCov">          0 : class findPreprocInfo : public AstSimpleProcessing</span></a>
+<a name="110"><span class="lineNum">     110 </span>            : {</a>
+<a name="111"><span class="lineNum">     111 </span>            :   public:</a>
+<a name="112"><span class="lineNum">     112 </span>            :     std::vector&lt; std::pair&lt;SgNode*, PreprocessingInfo*&gt; &gt; wherePreprocIsAttached;</a>
+<a name="113"><span class="lineNum">     113 </span>            :     virtual void visit(SgNode* n);</a>
+<a name="114"><span class="lineNum">     114 </span>            : };</a>
+<a name="115"><span class="lineNum">     115 </span>            : </a>
+<a name="116"><span class="lineNum">     116 </span><span class="lineNoCov">          0 : void findPreprocInfo::visit(SgNode* n)</span></a>
+<a name="117"><span class="lineNum">     117 </span>            : {</a>
+<a name="118"><span class="lineNum">     118 </span>            : </a>
+<a name="119"><span class="lineNum">     119 </span>            :   // Add in the information from the current node</a>
+<a name="120"><span class="lineNum">     120 </span><span class="lineNoCov">          0 :   SgLocatedNode* locatedNode = isSgLocatedNode(n);</span></a>
+<a name="121"><span class="lineNum">     121 </span><span class="lineNoCov">          0 :   if (locatedNode != NULL)</span></a>
+<a name="122"><span class="lineNum">     122 </span>            :   {</a>
+<a name="123"><span class="lineNum">     123 </span><span class="lineNoCov">          0 :     AttachedPreprocessingInfoType* commentsAndDirectives = locatedNode-&gt;getAttachedPreprocessingInfo();</span></a>
+<a name="124"><span class="lineNum">     124 </span>            : </a>
+<a name="125"><span class="lineNum">     125 </span><span class="lineNoCov">          0 :     if (commentsAndDirectives != NULL)</span></a>
+<a name="126"><span class="lineNum">     126 </span>            :     {</a>
+<a name="127"><span class="lineNum">     127 </span>            :       // printf (&quot;Found attached comments (to IR node at %p of type: %s): \n&quot;,locatedNode,locatedNode-&gt;class_name().c_str());</a>
+<a name="128"><span class="lineNum">     128 </span>            :       // int counter = 0;</a>
+<a name="129"><span class="lineNum">     129 </span>            : </a>
+<a name="130"><span class="lineNum">     130 </span>            :       // Use a reverse iterator so that we preserve the order when using push_front to add each directive to the accumulatedList</a>
+<a name="131"><span class="lineNum">     131 </span><span class="lineNoCov">          0 :       AttachedPreprocessingInfoType::reverse_iterator i;</span></a>
+<a name="132"><span class="lineNum">     132 </span><span class="lineNoCov">          0 :       for (i = commentsAndDirectives-&gt;rbegin(); i != commentsAndDirectives-&gt;rend(); i++)</span></a>
+<a name="133"><span class="lineNum">     133 </span>            :       {</a>
+<a name="134"><span class="lineNum">     134 </span>            :         // The different classifications of comments and directives are in ROSE/src/frontend/SageIII/rose_attributes_list.h</a>
+<a name="135"><span class="lineNum">     135 </span><span class="lineNoCov">          0 :         if ((*i)-&gt;getTypeOfDirective() == PreprocessingInfo::CMacroCall)</span></a>
+<a name="136"><span class="lineNum">     136 </span>            :         {</a>
+<a name="137"><span class="lineNum">     137 </span><span class="lineNoCov">          0 :           wherePreprocIsAttached.push_back(std::pair&lt;SgNode*,PreprocessingInfo*&gt;(n,*i) );</span></a>
+<a name="138"><span class="lineNum">     138 </span>            :         }</a>
+<a name="139"><span class="lineNum">     139 </span>            :       }</a>
+<a name="140"><span class="lineNum">     140 </span>            :     }</a>
+<a name="141"><span class="lineNum">     141 </span>            :   }</a>
+<a name="142"><span class="lineNum">     142 </span>            : </a>
+<a name="143"><span class="lineNum">     143 </span>            : </a>
+<a name="144"><span class="lineNum">     144 </span><span class="lineNoCov">          0 : }</span></a>
+<a name="145"><span class="lineNum">     145 </span>            : </a>
+<a name="146"><span class="lineNum">     146 </span>            : </a>
+<a name="147"><span class="lineNum">     147 </span>            : </a>
+<a name="148"><span class="lineNum">     148 </span>            : namespace UnparseMacro {</a>
+<a name="149"><span class="lineNum">     149 </span>            : </a>
+<a name="150"><span class="lineNum">     150 </span><span class="lineNoCov">          0 :   bool matchMacroToSubtrees(SgNode* searchTree, PreprocessingInfo* macroCall, std::vector&lt;SgNode*&gt;&amp; matchingSubtree)</span></a>
+<a name="151"><span class="lineNum">     151 </span>            :   {</a>
+<a name="152"><span class="lineNum">     152 </span><span class="lineNoCov">          0 :     bool macroMatchesSubtrees = true;</span></a>
+<a name="153"><span class="lineNum">     153 </span>            : </a>
+<a name="154"><span class="lineNum">     154 </span>            : #ifndef CXX_IS_ROSE_CODE_GENERATION</a>
+<a name="155"><span class="lineNum">     155 </span><span class="lineNoCov">          0 :     using namespace std;</span></a>
+<a name="156"><span class="lineNum">     156 </span>            : </a>
+<a name="157"><span class="lineNum">     157 </span>            :     //Find topmost nodes</a>
+<a name="158"><span class="lineNum">     158 </span><span class="lineNoCov">          0 :     bool find_all = false;</span></a>
+<a name="159"><span class="lineNum">     159 </span><span class="lineNoCov">          0 :     FindSmallestStatements stmtMatch;</span></a>
+<a name="160"><span class="lineNum">     160 </span><span class="lineNoCov">          0 :     stmtMatch.find_all = find_all;</span></a>
+<a name="161"><span class="lineNum">     161 </span><span class="lineNoCov">          0 :     matchingSubtree = stmtMatch.traverseSubTree(searchTree, macroCall);</span></a>
+<a name="162"><span class="lineNum">     162 </span>            : </a>
+<a name="163"><span class="lineNum">     163 </span>            :     //Find nodes containing more than one topmost node bounded by statement boundaries</a>
+<a name="164"><span class="lineNum">     164 </span>            : </a>
+<a name="165"><span class="lineNum">     165 </span><span class="lineNoCov">          0 : did_removal:</span></a>
+<a name="166"><span class="lineNum">     166 </span>            : </a>
+<a name="167"><span class="lineNum">     167 </span><span class="lineNoCov">          0 :     std::cout &lt;&lt; &quot;Size of subtree:&quot; &lt;&lt; matchingSubtree.size() &lt;&lt; std::endl;</span></a>
+<a name="168"><span class="lineNum">     168 </span><span class="lineNoCov">          0 :     for(unsigned int i = 0 ; i &lt; matchingSubtree.size(); i++)</span></a>
+<a name="169"><span class="lineNum">     169 </span><span class="lineNoCov">          0 :         std::cout  &lt;&lt; matchingSubtree[i]-&gt;unparseToString() &lt;&lt; std::endl;</span></a>
+<a name="170"><span class="lineNum">     170 </span>            : </a>
+<a name="171"><span class="lineNum">     171 </span>            : </a>
+<a name="172"><span class="lineNum">     172 </span><span class="lineNoCov">          0 :     for(unsigned int i = 0 ; i &lt; matchingSubtree.size(); i++)</span></a>
+<a name="173"><span class="lineNum">     173 </span>            :     {</a>
+<a name="174"><span class="lineNum">     174 </span><span class="lineNoCov">          0 :       SgNode* parent =  matchingSubtree[i]-&gt;get_parent();</span></a>
+<a name="175"><span class="lineNum">     175 </span><span class="lineNoCov">          0 :       while( isSgStatement(parent) == NULL )</span></a>
+<a name="176"><span class="lineNum">     176 </span>            :       {</a>
+<a name="177"><span class="lineNum">     177 </span>            : </a>
+<a name="178"><span class="lineNum">     178 </span><span class="lineNoCov">          0 :         stmtMatch.matchingCalls.clear();</span></a>
+<a name="179"><span class="lineNum">     179 </span><span class="lineNoCov">          0 :         stmtMatch.traverseSubTree(parent, macroCall);</span></a>
+<a name="180"><span class="lineNum">     180 </span><span class="lineNoCov">          0 :         stmtMatch.find_all = true;</span></a>
+<a name="181"><span class="lineNum">     181 </span><span class="lineNoCov">          0 :         std::vector&lt;SgNode*&gt;&amp; nodeAtPosInSubTree = stmtMatch.matchingCalls;</span></a>
+<a name="182"><span class="lineNum">     182 </span>            : </a>
+<a name="183"><span class="lineNum">     183 </span><span class="lineNoCov">          0 :         sort(nodeAtPosInSubTree.begin(),nodeAtPosInSubTree.end());</span></a>
+<a name="184"><span class="lineNum">     184 </span><span class="lineNoCov">          0 :         sort(matchingSubtree.begin(),matchingSubtree.end());</span></a>
+<a name="185"><span class="lineNum">     185 </span>            : </a>
+<a name="186"><span class="lineNum">     186 </span><span class="lineNoCov">          0 :         std::vector&lt;SgNode*&gt; temp;</span></a>
+<a name="187"><span class="lineNum">     187 </span><span class="lineNoCov">          0 :         set_intersection(nodeAtPosInSubTree.begin(),nodeAtPosInSubTree.end(), matchingSubtree.begin(), matchingSubtree.end(),</span></a>
+<a name="188"><span class="lineNum">     188 </span><span class="lineNoCov">          0 :             inserter(temp, temp.begin()));</span></a>
+<a name="189"><span class="lineNum">     189 </span>            :         //The subtree of parent must contain at least two nodes from matchingSubtree</a>
+<a name="190"><span class="lineNum">     190 </span><span class="lineNoCov">          0 :         if( temp.size() &gt; 1 )</span></a>
+<a name="191"><span class="lineNum">     191 </span>            :         {</a>
+<a name="192"><span class="lineNum">     192 </span>            : </a>
+<a name="193"><span class="lineNum">     193 </span><span class="lineNoCov">          0 :           temp.clear();</span></a>
+<a name="194"><span class="lineNum">     194 </span><span class="lineNoCov">          0 :           set_difference(nodeAtPosInSubTree.begin(),nodeAtPosInSubTree.end(), matchingSubtree.begin(), matchingSubtree.end(),</span></a>
+<a name="195"><span class="lineNum">     195 </span><span class="lineNoCov">          0 :             inserter(temp, temp.begin()));</span></a>
+<a name="196"><span class="lineNum">     196 </span>            : </a>
+<a name="197"><span class="lineNum">     197 </span><span class="lineNoCov">          0 :           matchingSubtree = temp;</span></a>
+<a name="198"><span class="lineNum">     198 </span><span class="lineNoCov">          0 :           matchingSubtree.push_back(parent);</span></a>
+<a name="199"><span class="lineNum">     199 </span>            : </a>
+<a name="200"><span class="lineNum">     200 </span><span class="lineNoCov">          0 :           parent =  parent-&gt;get_parent();</span></a>
+<a name="201"><span class="lineNum">     201 </span>            : </a>
+<a name="202"><span class="lineNum">     202 </span><span class="lineNoCov">          0 :           goto did_removal;</span></a>
+<a name="203"><span class="lineNum">     203 </span>            : </a>
+<a name="204"><span class="lineNum">     204 </span>            :         }</a>
+<a name="205"><span class="lineNum">     205 </span>            : </a>
+<a name="206"><span class="lineNum">     206 </span><span class="lineNoCov">          0 :         parent =  parent-&gt;get_parent();</span></a>
+<a name="207"><span class="lineNum">     207 </span>            :       }</a>
+<a name="208"><span class="lineNum">     208 </span>            : </a>
+<a name="209"><span class="lineNum">     209 </span>            :     }</a>
+<a name="210"><span class="lineNum">     210 </span>            : </a>
+<a name="211"><span class="lineNum">     211 </span>            : #endif</a>
+<a name="212"><span class="lineNum">     212 </span>            : </a>
+<a name="213"><span class="lineNum">     213 </span>            :     //Do some fancy check to see if macro really matches either a subtree or a set of subtrees</a>
+<a name="214"><span class="lineNum">     214 </span>            : </a>
+<a name="215"><span class="lineNum">     215 </span>            : </a>
+<a name="216"><span class="lineNum">     216 </span>            : </a>
+<a name="217"><span class="lineNum">     217 </span><span class="lineNoCov">          0 :    return macroMatchesSubtrees;</span></a>
+<a name="218"><span class="lineNum">     218 </span>            :   };</a>
+<a name="219"><span class="lineNum">     219 </span>            : </a>
+<a name="220"><span class="lineNum">     220 </span>            :   //Replace the unparsing of expanded macro calls with the actual macro call wherever possible</a>
+<a name="221"><span class="lineNum">     221 </span><span class="lineNoCov">          0 :   void unparseMacroCalls(SgNode* searchTree)</span></a>
+<a name="222"><span class="lineNum">     222 </span>            :   {</a>
+<a name="223"><span class="lineNum">     223 </span>            :     //Traverse AST to find all macro calls and the nodes they are attached to</a>
+<a name="224"><span class="lineNum">     224 </span><span class="lineNoCov">          0 :     findPreprocInfo findPre;</span></a>
+<a name="225"><span class="lineNum">     225 </span><span class="lineNoCov">          0 :     findPre.traverse(searchTree, preorder);</span></a>
+<a name="226"><span class="lineNum">     226 </span>            : </a>
+<a name="227"><span class="lineNum">     227 </span><span class="lineNoCov">          0 :     std::vector&lt; std::pair&lt;SgNode*, PreprocessingInfo*&gt; &gt;&amp; wherePreprocIsAttached = findPre.wherePreprocIsAttached;</span></a>
+<a name="228"><span class="lineNum">     228 </span>            : </a>
+<a name="229"><span class="lineNum">     229 </span>            :     //Replace expanded macro calls with actual macro call from pre-cpp wherever possible</a>
+<a name="230"><span class="lineNum">     230 </span><span class="lineNoCov">          0 :     for( std::vector&lt; std::pair&lt;SgNode*, PreprocessingInfo*&gt; &gt;::iterator iItr = wherePreprocIsAttached.begin(); </span></a>
+<a name="231"><span class="lineNum">     231 </span><span class="lineNoCov">          0 :         iItr != wherePreprocIsAttached.end(); ++iItr)</span></a>
+<a name="232"><span class="lineNum">     232 </span>            :     {</a>
+<a name="233"><span class="lineNum">     233 </span><span class="lineNoCov">          0 :       SgStatement*       currentNode = isSgStatement( (*iItr).first );</span></a>
+<a name="234"><span class="lineNum">     234 </span><span class="lineNoCov">          0 :       PreprocessingInfo* curPreproc  = (*iItr).second;</span></a>
+<a name="235"><span class="lineNum">     235 </span>            : </a>
+<a name="236"><span class="lineNum">     236 </span><span class="lineNoCov">          0 :       ROSE_ASSERT(currentNode != NULL);</span></a>
+<a name="237"><span class="lineNum">     237 </span>            : </a>
+<a name="238"><span class="lineNum">     238 </span><span class="lineNoCov">          0 :       std::vector&lt;SgNode*&gt; matchingSubTree;</span></a>
+<a name="239"><span class="lineNum">     239 </span>            : </a>
+<a name="240"><span class="lineNum">     240 </span><span class="lineNoCov">          0 :       if ( matchMacroToSubtrees(currentNode-&gt;get_scope(), curPreproc, matchingSubTree) )</span></a>
+<a name="241"><span class="lineNum">     241 </span>            :       {</a>
+<a name="242"><span class="lineNum">     242 </span><span class="lineNoCov">          0 :         for(unsigned int i = 0; i &lt; matchingSubTree.size(); i++)</span></a>
+<a name="243"><span class="lineNum">     243 </span>            :         {</a>
+<a name="244"><span class="lineNum">     244 </span><span class="lineNoCov">          0 :           SgLocatedNode* macroNode = isSgLocatedNode(matchingSubTree[i]);</span></a>
+<a name="245"><span class="lineNum">     245 </span><span class="lineNoCov">          0 :           ROSE_ASSERT(macroNode != NULL);</span></a>
+<a name="246"><span class="lineNum">     246 </span><span class="lineNoCov">          0 :           std::string replacementString = ( i ==0 ? curPreproc-&gt;getString() : &quot;&quot; );</span></a>
+<a name="247"><span class="lineNum">     247 </span>            : </a>
+<a name="248"><span class="lineNum">     248 </span><span class="lineNoCov">          0 :           if( isSgExpression(macroNode) == NULL )</span></a>
+<a name="249"><span class="lineNum">     249 </span>            :           {</a>
+<a name="250"><span class="lineNum">     250 </span>            : #ifndef USE_ROSE</a>
+<a name="251"><span class="lineNum">     251 </span>            : #ifndef ROSE_SKIP_COMPILATION_OF_WAVE</a>
+<a name="252"><span class="lineNum">     252 </span>            :          // If we are using ROSE to compile ROSE source code then the Wave support is not present.</a>
+<a name="253"><span class="lineNum">     253 </span><span class="lineNoCov">          0 :             PreprocessingInfo::rose_macro_call* macroCall = curPreproc-&gt;get_macro_call();</span></a>
+<a name="254"><span class="lineNum">     254 </span>            : </a>
+<a name="255"><span class="lineNum">     255 </span><span class="lineNoCov">          0 :             if(macroCall-&gt;expanded_macro.size() &gt; 0 &amp;&amp; boost::wave::token_id(macroCall-&gt;expanded_macro.back()) != boost::wave::T_COLON)</span></a>
+<a name="256"><span class="lineNum">     256 </span><span class="lineNoCov">          0 :               replacementString +=&quot;;&quot;;</span></a>
+<a name="257"><span class="lineNum">     257 </span>            : #endif</a>
+<a name="258"><span class="lineNum">     258 </span>            : #endif</a>
+<a name="259"><span class="lineNum">     259 </span>            :           }</a>
+<a name="260"><span class="lineNum">     260 </span>            : </a>
+<a name="261"><span class="lineNum">     261 </span><span class="lineNoCov">          0 :           std::cout &lt;&lt; &quot;Doing line replacement &quot; &lt;&lt; macroNode-&gt;unparseToString() &lt;&lt; &quot; with &quot; &lt;&lt; replacementString &lt;&lt; std::endl;</span></a>
+<a name="262"><span class="lineNum">     262 </span>            : </a>
+<a name="263"><span class="lineNum">     263 </span>            : #if 0</a>
+<a name="264"><span class="lineNum">     264 </span>            :           std::string pos;</a>
+<a name="265"><span class="lineNum">     265 </span>            :           curPreproc-&gt;display(pos);</a>
+<a name="266"><span class="lineNum">     266 </span>            :           std::cout &lt;&lt; macroNode-&gt;class_name() &lt;&lt; &quot; &quot;&lt;&lt;  pos &lt;&lt; std::endl;</a>
+<a name="267"><span class="lineNum">     267 </span>            : #endif</a>
+<a name="268"><span class="lineNum">     268 </span>            : </a>
+<a name="269"><span class="lineNum">     269 </span><span class="lineNoCov">          0 :           macroNode-&gt;addToAttachedPreprocessingInfo(new PreprocessingInfo(PreprocessingInfo::LineReplacement,</span></a>
+<a name="270"><span class="lineNum">     270 </span><span class="lineNoCov">          0 :                 replacementString,macroNode-&gt;get_file_info()-&gt;get_filenameString(),1,1,1,PreprocessingInfo::before));</span></a>
+<a name="271"><span class="lineNum">     271 </span>            :         }</a>
+<a name="272"><span class="lineNum">     272 </span>            : </a>
+<a name="273"><span class="lineNum">     273 </span>            :         </a>
+<a name="274"><span class="lineNum">     274 </span><span class="lineNoCov">          0 :       };</span></a>
+<a name="275"><span class="lineNum">     275 </span>            : </a>
+<a name="276"><span class="lineNum">     276 </span>            :        </a>
+<a name="277"><span class="lineNum">     277 </span>            : </a>
+<a name="278"><span class="lineNum">     278 </span>            :     }</a>
+<a name="279"><span class="lineNum">     279 </span>            :     </a>
+<a name="280"><span class="lineNum">     280 </span><span class="lineNoCov">          0 :   };</span></a>
+<a name="281"><span class="lineNum">     281 </span>            : </a>
+<a name="282"><span class="lineNum">     282 </span>            : }</a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

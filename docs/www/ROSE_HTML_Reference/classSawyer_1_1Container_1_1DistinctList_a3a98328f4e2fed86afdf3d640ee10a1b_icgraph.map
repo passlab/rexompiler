@@ -1,0 +1,5 @@
+<map id="Sawyer::Container::DistinctList::pushBack" name="Sawyer::Container::DistinctList::pushBack">
+<area shape="rect" id="node1" title="Insert item at back of list if distinct." alt="" coords="216,39,371,80"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1DistinctList.html#a3040d071554b357fb59b5c0da825f5ce" title="Copy&#45;construct a list." alt="" coords="5,5,168,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1DistinctList.html#ad5b717f6b47ba9d33a1eec5143ef9f5d" title="Assign one list to another." alt="" coords="11,71,162,112"/>
+</map>

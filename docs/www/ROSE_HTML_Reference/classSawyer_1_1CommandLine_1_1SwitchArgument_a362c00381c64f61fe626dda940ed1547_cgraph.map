@@ -1,0 +1,4 @@
+<map id="Sawyer::CommandLine::SwitchArgument::isRequired" name="Sawyer::CommandLine::SwitchArgument::isRequired">
+<area shape="rect" id="node1" title="Returns true if this argument is required." alt="" coords="5,5,201,47"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1CommandLine_1_1ParsedValue.html#a0a841130ded2ec80ba6c3cc94fef476b" title="True if the value is void." alt="" coords="249,5,408,47"/>
+</map>

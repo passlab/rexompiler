@@ -1,0 +1,7 @@
+<map id="SgNode" name="SgNode">
+<area shape="rect" id="node1" title="This class represents the base class for all IR nodes within Sage III." alt="" coords="204,5,273,32"/>
+<area shape="rect" id="node2" href="$classSgLocatedNode.html" title="This class represents the notion of an expression or statement which has a position within the source..." alt="" coords="5,80,120,107"/>
+<area shape="rect" id="node3" href="$classSgSupport.html" title="This class represents the base class of a numbr of IR nodes that don&#39;t otherwise fit into the existin..." alt="" coords="144,80,227,107"/>
+<area shape="rect" id="node4" href="$classSgSymbol.html" title="This class represents the concept of a name within the compiler." alt="" coords="251,80,333,107"/>
+<area shape="rect" id="node5" href="$classSgType.html" title="This class represents the base class for all types." alt="" coords="357,80,424,107"/>
+</map>

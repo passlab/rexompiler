@@ -1,0 +1,4 @@
+<map id="Rose::metaprog::details::is_iterable_t&lt; T, void_t&lt; decltype(std::begin(std::declval&lt; T &gt;())), decltype(std::end(std::declval&lt; T &gt;())) &gt; &gt;" name="Rose::metaprog::details::is_iterable_t&lt; T, void_t&lt; decltype(std::begin(std::declval&lt; T &gt;())), decltype(std::end(std::declval&lt; T &gt;())) &gt; &gt;">
+<area shape="rect" id="node1" title=" " alt="" coords="5,80,221,165"/>
+<area shape="rect" id="node2" title=" " alt="" coords="62,5,165,32"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="SgLocatedNode" name="SgLocatedNode">
+<area shape="rect" id="node1" title="This class represents the notion of an expression or statement which has a position within the source..." alt="" coords="225,112,340,139"/>
+<area shape="rect" id="node2" href="$classSgNode.html" title="This class represents the base class for all IR nodes within Sage III." alt="" coords="5,7,75,33"/>
+<area shape="rect" id="node3" href="$classAstAttributeMechanism.html" title="Stores named attributes in Sage IR nodes." alt="" coords="203,7,362,33"/>
+<area shape="rect" id="node4" href="$classSg__File__Info.html" title="This class represents the location of the code associated with the IR node in the original source cod..." alt="" coords="399,7,494,33"/>
+</map>

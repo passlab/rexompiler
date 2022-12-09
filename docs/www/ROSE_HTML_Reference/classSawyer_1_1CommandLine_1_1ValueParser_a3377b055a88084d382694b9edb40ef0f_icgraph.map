@@ -1,0 +1,13 @@
+<map id="Sawyer::CommandLine::ValueParser::valueSaver" name="Sawyer::CommandLine::ValueParser::valueSaver">
+<area shape="rect" id="node1" title="Property: functor responsible for saving a parsed value in user storage." alt="" coords="237,320,411,361"/>
+<area shape="rect" id="node2" href="$classRose_1_1CommandLine_1_1IntervalParser.html#a04c702f837a959b2cecc97eb013fe224" title="Allocating constructor." alt="" coords="17,5,177,47"/>
+<area shape="rect" id="node3" href="$classRose_1_1CommandLine_1_1SuffixMultiplierParser.html#a93a19de392ef39c90ae70dd3e95d3864" title="Allocating constructor." alt="" coords="21,71,174,127"/>
+<area shape="rect" id="node4" href="$classRose_1_1Color_1_1ColorizationParser.html#aaf2e14013a6a73e693d546d332a47d8c" title="Allocating constructor." alt="" coords="13,152,182,193"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1CommandLine_1_1AnyParser.html#a6c00e663b326044287c65f4a4fdea1eb" title="Allocating constructor." alt="" coords="18,217,177,259"/>
+<area shape="rect" id="node6" href="$classSawyer_1_1CommandLine_1_1IntegerParser.html#a7d5b718bab0ce73b26710ba2a2e2eaff" title="Allocating constructor." alt="" coords="15,283,180,324"/>
+<area shape="rect" id="node7" href="$classSawyer_1_1CommandLine_1_1NonNegativeIntegerParser.html#afbb6a18cff8f2361988b159711079f40" title="Allocating constructor." alt="" coords="5,349,189,405"/>
+<area shape="rect" id="node8" href="$classSawyer_1_1CommandLine_1_1PositiveIntegerParser.html#a6720dd7d8ac064480152f0a09a12158c" title="Allocating constructor." alt="" coords="18,429,177,485"/>
+<area shape="rect" id="node9" href="$classSawyer_1_1CommandLine_1_1RealNumberParser.html#a67cc52667f2a947ced4f584d686bfff2" title="Allocating constructor." alt="" coords="18,509,177,565"/>
+<area shape="rect" id="node10" href="$classSawyer_1_1CommandLine_1_1BooleanParser.html#a498fb1297e5d67c1924d7fe5ab4a5142" title="Allocating constructor." alt="" coords="11,589,183,631"/>
+<area shape="rect" id="node11" href="$classSawyer_1_1CommandLine_1_1EnumParser.html#ad0479cbf39d22bac41626ee3be096c8a" title="Allocating constructor." alt="" coords="18,655,177,696"/>
+</map>

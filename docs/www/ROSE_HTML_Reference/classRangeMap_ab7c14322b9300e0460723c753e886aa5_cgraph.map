@@ -1,0 +1,8 @@
+<map id="RangeMap::select_overlapping_ranges" name="RangeMap::select_overlapping_ranges">
+<area shape="rect" id="node1" title="Select ranges overlapping selector range." alt="" coords="5,99,207,141"/>
+<area shape="rect" id="node2" href="$classRangeMap.html#adb1c2cb143b8d68961dbaf7debbf84e5" title="End&#45;item iterator." alt="" coords="281,5,395,32"/>
+<area shape="rect" id="node3" href="$classRangeMap.html#adf8ef8a1ea1d08b513487c6043ec0d8d" title="Insert a range/value pair into the map." alt="" coords="275,56,401,83"/>
+<area shape="rect" id="node4" href="$classRange.html#a8235f297331f655a89d44c3930cc6ec5" title="Is this range left of the argument range?" alt="" coords="286,107,390,133"/>
+<area shape="rect" id="node5" href="$classRangeMap.html#ad59ac92205fde7c48fb73e6a28ff62c3" title="Finds the first range ending above the specified value." alt="" coords="255,157,421,184"/>
+<area shape="rect" id="node6" href="$classRange.html#acf652e7f98ecb33841f68933837b74fd" title="Does this range overlap with the argument range?" alt="" coords="279,208,397,235"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="SgTemplateMemberFunctionDeclaration" name="SgTemplateMemberFunctionDeclaration">
+<area shape="rect" id="node1" title=" " alt="" coords="208,95,396,136"/>
+<area shape="rect" id="node2" href="$classSgMemberFunctionDeclaration.html" title="This class represents the concept of a member function declaration statement." alt="" coords="5,5,207,32"/>
+<area shape="rect" id="node3" href="$classSgDeclarationScope.html" title=" " alt="" coords="231,5,373,32"/>
+<area shape="rect" id="node4" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="429,5,503,32"/>
+</map>

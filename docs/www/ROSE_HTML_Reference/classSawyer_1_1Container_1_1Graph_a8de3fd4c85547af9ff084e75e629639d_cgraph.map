@@ -1,0 +1,7 @@
+<map id="Sawyer::Container::Graph::eraseVertex" name="Sawyer::Container::Graph::eraseVertex">
+<area shape="rect" id="node1" title="Erases a vertex and its incident edges." alt="" coords="5,31,144,72"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#ae86b2b0fa4d18f2e2b26163abc2bc049" title="Erases a vertex and its incident edges." alt="" coords="192,60,331,101"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Graph.html#a7f5c8eef7ec4d3399518437f5dd22b68" title="Determines whether the vertex iterator is valid." alt="" coords="379,35,520,76"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Graph.html#a3f256b70a465482d53478b84941dc8b5" title="Finds the vertex with specified ID number." alt="" coords="568,5,707,47"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Graph_1_1Vertex.html#af8439ff325ea20ab17e0418268546fbf" title="Unique vertex ID number." alt="" coords="568,92,707,133"/>
+</map>

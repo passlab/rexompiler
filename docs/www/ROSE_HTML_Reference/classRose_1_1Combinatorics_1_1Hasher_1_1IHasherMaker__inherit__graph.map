@@ -1,0 +1,4 @@
+<map id="Rose::Combinatorics::Hasher::IHasherMaker" name="Rose::Combinatorics::Hasher::IHasherMaker">
+<area shape="rect" id="node1" title="Common subclass all the classes that construct Hashers (for the HasherFactory)" alt="" coords="19,5,182,47"/>
+<area shape="rect" id="node2" href="$classRose_1_1Combinatorics_1_1Hasher_1_1HasherMaker.html" title="Templated to create any Hasher and register it with HasherFactory." alt="" coords="5,95,196,136"/>
+</map>

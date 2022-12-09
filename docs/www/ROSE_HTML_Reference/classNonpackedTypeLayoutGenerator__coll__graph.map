@@ -1,0 +1,4 @@
+<map id="NonpackedTypeLayoutGenerator" name="NonpackedTypeLayoutGenerator">
+<area shape="rect" id="node1" title="Layout generator for i386 ABI&#45;like struct layout." alt="" coords="5,84,217,111"/>
+<area shape="rect" id="node2" href="$classChainableTypeLayoutGenerator.html" title="Basic type layout engine – handles bookkeeping, plus handing typedefs and." alt="" coords="9,7,213,33"/>
+</map>

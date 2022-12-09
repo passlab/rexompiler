@@ -1,0 +1,4 @@
+<map id="Sawyer::Message::FileSink" name="Sawyer::Message::FileSink">
+<area shape="rect" id="node1" title="Send free&#45;format messages to a C FILE pointer." alt="" coords="31,80,213,107"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Message_1_1UnformattedSink.html" title="Base class for final destinations that are free&#45;format." alt="" coords="5,5,239,32"/>
+</map>

@@ -1,0 +1,10 @@
+<map id="Sawyer::Container::Map::clear" name="Sawyer::Container::Map::clear">
+<area shape="rect" id="node1" title="Remove all nodes." alt="" coords="237,201,376,243"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1DistinctList.html#a19331973e1cb74c3abd7b266b9e1a5d6" title="Clear the list." alt="" coords="28,5,167,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1BiMap.html#a3b4dd2eb3314cdacf17e11cca08293b7" title="Erase all mappings." alt="" coords="28,71,167,112"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1GraphBimapIndex.html#a78cc675955f5cc05b07e2c8277a5dd2c" title="Erase all data from this index." alt="" coords="16,136,179,177"/>
+<area shape="rect" id="node5" href="$classRose_1_1Color_1_1Gradient.html#a554e76afa60201724d74d7ffd1e7245e" title="Remove all points from the gradient." alt="" coords="23,201,172,243"/>
+<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1IntervalMap.html#a2fd736a589e045f795c917a9d16c33d2" title="Empties the container." alt="" coords="23,267,172,323"/>
+<area shape="rect" id="node7" href="$classSawyer_1_1Attribute_1_1Storage.html#ab9276a22e706c4e76d65d45e715051e0" title="Erase all attributes." alt="" coords="18,348,177,389"/>
+<area shape="rect" id="node8" href="$classSawyer_1_1Container_1_1Map.html#ad20cbd4386c9434d952e342d9dba007c" title="Make this map be a copy of another map." alt="" coords="5,413,189,484"/>
+</map>

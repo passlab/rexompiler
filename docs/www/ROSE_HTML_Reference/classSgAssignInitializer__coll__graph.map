@@ -1,0 +1,6 @@
+<map id="SgAssignInitializer" name="SgAssignInitializer">
+<area shape="rect" id="node1" title="This class represents the rhs of a variable declaration which includes an optional assignment (e...." alt="" coords="78,184,208,211"/>
+<area shape="rect" id="node2" href="$classSgInitializer.html" title="This class represents the notion of an initializer for a variable declaration or expression in a func..." alt="" coords="98,95,188,121"/>
+<area shape="rect" id="node3" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="92,5,194,32"/>
+<area shape="rect" id="node4" href="$classSgType.html" title="This class represents the base class for all types." alt="" coords="212,95,279,121"/>
+</map>

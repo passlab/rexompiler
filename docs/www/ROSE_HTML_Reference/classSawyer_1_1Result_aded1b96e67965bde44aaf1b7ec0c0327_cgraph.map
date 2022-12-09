@@ -1,0 +1,5 @@
+<map id="Sawyer::Result::andThen" name="Sawyer::Result::andThen">
+<area shape="rect" id="node1" title="Returns the contained Error value, or calls a function." alt="" coords="5,5,176,32"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Result.html#afbbcca14fb893c413c5fc3b06993eb20" title="Returns true if the result is okay." alt="" coords="407,5,553,32"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Result.html#a332f4548ca61b807a9dff4d9260f461e" title="Convert to Optional&lt;T&gt;." alt="" coords="224,31,359,57"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="Sawyer::Container::BitVector::decrement" name="Sawyer::Container::BitVector::decrement">
+<area shape="rect" id="node1" title="Decrement bits as integer." alt="" coords="5,71,151,112"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1BitVector.html#a01cec791efd731cfbe2157d7721b7dfe" title="Raw data for vector." alt="" coords="225,5,363,47"/>
+<area shape="rect" id="node3" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a222fbcde16e4d71e886ac1094aac0d2e" title="Decrement." alt="" coords="199,71,389,112"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1BitVector.html#a6cd958a91e697da6ae26aa3cc91b2ba9" title="Interval representing the entire vector." alt="" coords="225,136,363,177"/>
+</map>

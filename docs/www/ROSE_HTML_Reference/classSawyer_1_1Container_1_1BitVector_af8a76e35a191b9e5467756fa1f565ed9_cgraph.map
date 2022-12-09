@@ -1,0 +1,6 @@
+<map id="Sawyer::Container::BitVector::mostSignificantClearBit" name="Sawyer::Container::BitVector::mostSignificantClearBit">
+<area shape="rect" id="node1" title="Find the most significant clear bit." alt="" coords="5,63,180,119"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1BitVector.html#a01cec791efd731cfbe2157d7721b7dfe" title="Raw data for vector." alt="" coords="268,5,407,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1BitVector.html#a6cd958a91e697da6ae26aa3cc91b2ba9" title="Interval representing the entire vector." alt="" coords="268,71,407,112"/>
+<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a0a497a549e34a27cff5b31183e3a053d" title="Index of most significant clear bit." alt="" coords="228,137,447,193"/>
+</map>

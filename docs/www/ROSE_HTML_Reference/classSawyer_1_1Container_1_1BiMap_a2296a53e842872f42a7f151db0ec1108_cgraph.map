@@ -1,0 +1,6 @@
+<map id="Sawyer::Container::BiMap::BiMap" name="Sawyer::Container::BiMap::BiMap">
+<area shape="rect" id="node1" title="Construct a new map by composition of two maps." alt="" coords="5,71,144,112"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Map.html#a4e0130d82c5890b18ba8f70497c53c72" title="Determine if a key exists." alt="" coords="192,5,331,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Map.html#aa966f345ed4157539fdb8d5dfdd8cd0b" title="Insert or update a key/value pair." alt="" coords="192,71,331,112"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Map.html#ac84f9aa7542c3a97d4e8c15f6abb0472" title="Iterators for container nodes." alt="" coords="192,136,331,177"/>
+</map>

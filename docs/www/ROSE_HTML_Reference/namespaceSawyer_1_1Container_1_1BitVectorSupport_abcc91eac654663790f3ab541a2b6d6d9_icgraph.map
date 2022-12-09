@@ -1,0 +1,5 @@
+<map id="Sawyer::Container::BitVectorSupport::fromInteger" name="Sawyer::Container::BitVectorSupport::fromInteger">
+<area shape="rect" id="node1" title="Assign an unsigned value to a bit range." alt="" coords="256,39,451,80"/>
+<area shape="rect" id="node2" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a44dce682e900925e0043015663657450" title="Obtain bits from a decimal representation." alt="" coords="5,5,208,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1BitVector.html#aebed4f7627e6ce957b20c263d4ad60c3" title="Obtain bits from an integer." alt="" coords="31,71,182,112"/>
+</map>

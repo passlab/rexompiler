@@ -1,0 +1,6 @@
+<map id="Sawyer::Container::Map::getOptional" name="Sawyer::Container::Map::getOptional">
+<area shape="rect" id="node1" title="Lookup and return a value or nothing." alt="" coords="225,71,364,112"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Attribute_1_1Storage.html#a921b9ff8dc5cd78f751517bc22127496" title="Return an attribute or a specified value." alt="" coords="10,5,173,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Attribute_1_1Storage.html#ae39391002b59fc46db71a536cbe3e075" title="Get an attribute that is known to exist." alt="" coords="20,71,163,112"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1GraphBimapIndex.html#a960b100ae184b39275fa0fb773f91925" title="Lookup iterator for vertex or edge key." alt="" coords="5,136,177,177"/>
+</map>

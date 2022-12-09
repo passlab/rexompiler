@@ -1,0 +1,5 @@
+<map id="Sawyer::Result::assignTo" name="Sawyer::Result::assignTo">
+<area shape="rect" id="node1" title="Conditionally save a value." alt="" coords="5,31,177,57"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Result.html#afbbcca14fb893c413c5fc3b06993eb20" title="Returns true if the result is okay." alt="" coords="233,5,380,32"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Result.html#ae2e546a39756aef5a45c3f61b454e141" title="Returns the success value or throws an exception." alt="" coords="225,56,388,83"/>
+</map>

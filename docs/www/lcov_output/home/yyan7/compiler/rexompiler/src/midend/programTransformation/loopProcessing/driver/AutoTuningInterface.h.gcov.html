@@ -1,0 +1,506 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /home/yyan7/compiler/rexompiler/src/midend/programTransformation/loopProcessing/driver/AutoTuningInterface.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../../../index.html">top level</a> - <a href="index.html">home/yyan7/compiler/rexompiler/src/midend/programTransformation/loopProcessing/driver</a> - AutoTuningInterface.h<span style="font-size: 80%;"> (source / <a href="AutoTuningInterface.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">35</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">17</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #ifndef TUNING_H</a>
+<a name="2"><span class="lineNum">       2 </span>            : #define TUNING_H</a>
+<a name="3"><span class="lineNum">       3 </span>            : </a>
+<a name="4"><span class="lineNum">       4 </span>            : #include &lt;map&gt;</a>
+<a name="5"><span class="lineNum">       5 </span>            : #include &lt;string&gt;</a>
+<a name="6"><span class="lineNum">       6 </span>            : #include &lt;list&gt;</a>
+<a name="7"><span class="lineNum">       7 </span>            : #include &lt;AstInterface.h&gt;</a>
+<a name="8"><span class="lineNum">       8 </span>            : #include &lt;LoopTree.h&gt;</a>
+<a name="9"><span class="lineNum">       9 </span>            : #include &lt;LoopTreeTransform.h&gt;</a>
+<a name="10"><span class="lineNum">      10 </span>            : class POETProgram;</a>
+<a name="11"><span class="lineNum">      11 </span>            : class XformVar;</a>
+<a name="12"><span class="lineNum">      12 </span>            : class CodeVar;</a>
+<a name="13"><span class="lineNum">      13 </span>            : class LocalVar;</a>
+<a name="14"><span class="lineNum">      14 </span>            : class POETCode;</a>
+<a name="15"><span class="lineNum">      15 </span>            : class LoopTreeNode;</a>
+<a name="16"><span class="lineNum">      16 </span>            : class LoopBlocking; </a>
+<a name="17"><span class="lineNum">      17 </span>            : class ParallelizeLoop;</a>
+<a name="18"><span class="lineNum">      18 </span>            : class ArrayAbstractionInterface;</a>
+<a name="19"><span class="lineNum">      19 </span>            : class CopyArrayConfig;</a>
+<a name="20"><span class="lineNum">      20 </span>            : </a>
+<a name="21"><span class="lineNum">      21 </span>            : /*QY: map loop tree nodes and AST nodes to tracing variables in POET */</a>
+<a name="22"><span class="lineNum">      22 </span>            : class LoopTreeCodeGenInfo;</a>
+<a name="23"><span class="lineNum">      23 </span>            : class HandleMap : public LoopTreeObserver, public AstObserver</a>
+<a name="24"><span class="lineNum">      24 </span>            : {</a>
+<a name="25"><span class="lineNum">      25 </span>            :   public: typedef std::map&lt;const void*, LocalVar*&gt;  AstMapType;</a>
+<a name="26"><span class="lineNum">      26 </span>            : </a>
+<a name="27"><span class="lineNum">      27 </span>            :   private:</a>
+<a name="28"><span class="lineNum">      28 </span>            :    int loopindex, bodyindex;</a>
+<a name="29"><span class="lineNum">      29 </span>            :    std::vector&lt;LocalVar*&gt; topHandles;</a>
+<a name="30"><span class="lineNum">      30 </span>            : </a>
+<a name="31"><span class="lineNum">      31 </span>            :    std::map&lt;const LoopTreeNode*,LocalVar*&gt; loopMap;</a>
+<a name="32"><span class="lineNum">      32 </span>            :    std::map&lt;LocalVar*,LocalVar*&gt; bodyMap;</a>
+<a name="33"><span class="lineNum">      33 </span>            :    AstMapType astMap;</a>
+<a name="34"><span class="lineNum">      34 </span>            : </a>
+<a name="35"><span class="lineNum">      35 </span>            :    LocalVar* NewLoopHandle();</a>
+<a name="36"><span class="lineNum">      36 </span>            :    LocalVar* NewBodyHandle();</a>
+<a name="37"><span class="lineNum">      37 </span>            :    virtual void UpdateCodeGen(const LoopTreeCodeGenInfo&amp; info);</a>
+<a name="38"><span class="lineNum">      38 </span>            :    virtual void UpdateDeleteNode(const LoopTreeNode* n);</a>
+<a name="39"><span class="lineNum">      39 </span>            :    virtual void ObserveCopyAst(AstInterfaceImpl&amp; fa, const AstNodePtr&amp; orig, const AstNodePtr&amp; n);</a>
+<a name="40"><span class="lineNum">      40 </span>            : </a>
+<a name="41"><span class="lineNum">      41 </span>            :  public:</a>
+<a name="42"><span class="lineNum">      42 </span>            :    ~HandleMap();</a>
+<a name="43"><span class="lineNum">      43 </span>            :     HandleMap() :loopindex(0),bodyindex(0) {}</a>
+<a name="44"><span class="lineNum">      44 </span>            : </a>
+<a name="45"><span class="lineNum">      45 </span>            :    /*QY: return the number of loop handles created*/</a>
+<a name="46"><span class="lineNum">      46 </span>            :    int NumOfLoops() { return loopindex; }</a>
+<a name="47"><span class="lineNum">      47 </span>            :    int NumOfBodies() { return bodyindex; }</a>
+<a name="48"><span class="lineNum">      48 </span>            :    std::string to_string() const;</a>
+<a name="49"><span class="lineNum">      49 </span>            : </a>
+<a name="50"><span class="lineNum">      50 </span>            :    /*QY:return a POET trace handle for the given AST or loop tree node*/</a>
+<a name="51"><span class="lineNum">      51 </span>            :    LocalVar* GetLoopHandle(AstInterface&amp; fa, const AstNodePtr&amp; loop);</a>
+<a name="52"><span class="lineNum">      52 </span>            :    LocalVar* GetLoopHandle(LoopTreeNode* loop);</a>
+<a name="53"><span class="lineNum">      53 </span>            :    LocalVar* GetBodyHandle(LoopTreeNode* loop, LocalVar* loopHandle);</a>
+<a name="54"><span class="lineNum">      54 </span>            :    /*QY:sort all the loop nest handles with AST root; return the top handles*/</a>
+<a name="55"><span class="lineNum">      55 </span>            :    const std::vector&lt;LocalVar*&gt;&amp; GetTopTraceHandles() { return topHandles; }</a>
+<a name="56"><span class="lineNum">      56 </span>            :    void GenTraceHandles(POETProgram&amp; poet, AstInterface&amp; fa);</a>
+<a name="57"><span class="lineNum">      57 </span>            :    void GenTraceHandles(POETProgram&amp; poet, LoopTreeNode* r);</a>
+<a name="58"><span class="lineNum">      58 </span>            :    LocalVar* HasBodyHandle(LocalVar* loopHandle)</a>
+<a name="59"><span class="lineNum">      59 </span>            :       { std::map&lt;LocalVar*,LocalVar*&gt;::const_iterator p = </a>
+<a name="60"><span class="lineNum">      60 </span>            :               bodyMap.find(loopHandle);</a>
+<a name="61"><span class="lineNum">      61 </span>            :         if (p == bodyMap.end()) return 0;</a>
+<a name="62"><span class="lineNum">      62 </span>            :         return (*p).second;</a>
+<a name="63"><span class="lineNum">      63 </span>            :       }</a>
+<a name="64"><span class="lineNum">      64 </span>            :    /*QY: return trace handle for extra-top and decl of transformations*/</a>
+<a name="65"><span class="lineNum">      65 </span>            :    static LocalVar* GetTraceTarget();</a>
+<a name="66"><span class="lineNum">      66 </span>            :    static LocalVar* GetTraceTop(const std::string&amp; handleName);</a>
+<a name="67"><span class="lineNum">      67 </span>            :    static LocalVar* GetTraceDecl(LocalVar* top);</a>
+<a name="68"><span class="lineNum">      68 </span>            :    static LocalVar* GetTracePrivate(LocalVar* top);</a>
+<a name="69"><span class="lineNum">      69 </span>            :    static LocalVar* FindTracePrivate(LocalVar* top);</a>
+<a name="70"><span class="lineNum">      70 </span>            :    static LocalVar* GetTraceInclude();</a>
+<a name="71"><span class="lineNum">      71 </span>            :    static LocalVar* FindTraceInclude();</a>
+<a name="72"><span class="lineNum">      72 </span>            :    static LocalVar* GetTraceCleanup(LocalVar* top);</a>
+<a name="73"><span class="lineNum">      73 </span>            :    static LocalVar* FindTraceCleanup(LocalVar* top);</a>
+<a name="74"><span class="lineNum">      74 </span>            : </a>
+<a name="75"><span class="lineNum">      75 </span>            :    static LocalVar* DeclareTraceInclude(POETProgram&amp; poet, int&amp; lineNo);</a>
+<a name="76"><span class="lineNum">      76 </span>            : </a>
+<a name="77"><span class="lineNum">      77 </span>            :    /*QY: generate commands to start tracing; return the top trace handle */ </a>
+<a name="78"><span class="lineNum">      78 </span>            :    static LocalVar* GenTraceCommand(POETProgram&amp; poet, </a>
+<a name="79"><span class="lineNum">      79 </span>            :         const std::vector&lt;LocalVar*&gt;&amp; handles, LocalVar* target, int&amp; lineNo); </a>
+<a name="80"><span class="lineNum">      80 </span>            : };</a>
+<a name="81"><span class="lineNum">      81 </span>            : </a>
+<a name="82"><span class="lineNum">      82 </span>            : class AutoTuningInterface;</a>
+<a name="83"><span class="lineNum">      83 </span>            : /*QY: specification of program transformations to be implemented in POET*/</a>
+<a name="84"><span class="lineNum">      84 </span>            : class OptSpec {</a>
+<a name="85"><span class="lineNum">      85 </span>            :  protected:</a>
+<a name="86"><span class="lineNum">      86 </span>            :    POETCode* target;</a>
+<a name="87"><span class="lineNum">      87 </span>            :    std::string targetName;</a>
+<a name="88"><span class="lineNum">      88 </span><span class="lineNoCov">          0 :    OptSpec(POETCode* _target, const std::string&amp; _name)</span></a>
+<a name="89"><span class="lineNum">      89 </span><span class="lineNoCov">          0 :    : target(_target), targetName(_name) {}</span></a>
+<a name="90"><span class="lineNum">      90 </span>            :  protected:</a>
+<a name="91"><span class="lineNum">      91 </span><span class="lineNoCov">          0 :    struct LoopInfo { LocalVar* handle; std::string ivarname;</span></a>
+<a name="92"><span class="lineNum">      92 </span>            :                      LoopInfo(LocalVar* _handle=0, const std::string&amp; name=&quot;&quot;)</a>
+<a name="93"><span class="lineNum">      93 </span>            :                       : handle(_handle),ivarname(name) {}</a>
+<a name="94"><span class="lineNum">      94 </span>            :                    };</a>
+<a name="95"><span class="lineNum">      95 </span>            :  public:</a>
+<a name="96"><span class="lineNum">      96 </span>            :   typedef enum {PARLOOP, BLOCK, UNROLL, COPY_ARRAY, BLOCK_COPY_ARRAY, FINITE_DIFF,OPT_ENUM_SIZE} OptEnum;</a>
+<a name="97"><span class="lineNum">      97 </span>            :   typedef enum {OPT_NONE=0,OPT_PAR_LEVEL = 1,OPT_CACHE_LEVEL = 2, OPT_PAR_CACHE_LEVEL=3, OPT_REG_LEVEL = 4, OPT_CACHE_REG_LEVEL=6, OPT_PROC_LEVEL=8, OPT_POST_PAR_LEVEL=16, OPT_CLEANUP_LEVEL=32, OPT_CACHE_CLEANUP_LEVEL=34, OPT_CACHE_REG_CLEANUP_LEVEL=38, OPT_CACHE_PROC_CLEANUP_LEVEL=42, OPT_ALL=63, OPT_LEVEL_MAX=32} OptLevel;</a>
+<a name="98"><span class="lineNum">      98 </span>            :  typedef std::vector&lt;OptSpec*&gt;::const_iterator OptIterator;</a>
+<a name="99"><span class="lineNum">      99 </span>            : </a>
+<a name="100"><span class="lineNum">     100 </span>            :   POETCode* get_target() const { return target; }</a>
+<a name="101"><span class="lineNum">     101 </span>            :   std::string get_targetName() const { return targetName; }</a>
+<a name="102"><span class="lineNum">     102 </span><span class="lineNoCov">          0 :   virtual ~OptSpec() {}</span></a>
+<a name="103"><span class="lineNum">     103 </span>            :   virtual OptEnum get_enum() const = 0;</a>
+<a name="104"><span class="lineNum">     104 </span>            :   virtual OptLevel get_opt_level() const = 0;</a>
+<a name="105"><span class="lineNum">     105 </span>            :   virtual std::string get_opt_prefix(OptLevel optLevel) = 0;</a>
+<a name="106"><span class="lineNum">     106 </span>            :   virtual std::string to_string(OptLevel level) = 0;</a>
+<a name="107"><span class="lineNum">     107 </span>            : </a>
+<a name="108"><span class="lineNum">     108 </span>            :   /*QY: return xform declaration; modify lineNo;</a>
+<a name="109"><span class="lineNum">     109 </span>            :         append traceMod with variables that need to be kept track of; */</a>
+<a name="110"><span class="lineNum">     110 </span><span class="lineNoCov">          0 :   virtual void insert_xformDecl(POETProgram&amp; poet, LocalVar* top, POETCode*&amp; traceMod, int&amp; lineNo) {}</span></a>
+<a name="111"><span class="lineNum">     111 </span>            :   /*QY: return xform evaluation; modify lineNo with new line number */</a>
+<a name="112"><span class="lineNum">     112 </span>            :   virtual POETCode* gen_xformEval(POETProgram&amp; poet, LocalVar* top, </a>
+<a name="113"><span class="lineNum">     113 </span>            :                    POETCode* traceMod, OptLevel optLevel, int&amp; lineNo) = 0;</a>
+<a name="114"><span class="lineNum">     114 </span>            :   /*QY: insert parameter decl; modify lineNo with new line number; </a>
+<a name="115"><span class="lineNum">     115 </span>            :         return constrains on parameter values */</a>
+<a name="116"><span class="lineNum">     116 </span><span class="lineNoCov">          0 :   virtual POETCode* insert_paramDecl(AutoTuningInterface&amp; tune,</span></a>
+<a name="117"><span class="lineNum">     117 </span><span class="lineNoCov">          0 :             POETProgram&amp; poet, OptLevel optLevel, int&amp; lineNo) { return NULL; }</span></a>
+<a name="118"><span class="lineNum">     118 </span>            : friend class AutoTuningInterface;</a>
+<a name="119"><span class="lineNum">     119 </span>            : </a>
+<a name="120"><span class="lineNum">     120 </span>            :   protected:</a>
+<a name="121"><span class="lineNum">     121 </span>            : };</a>
+<a name="122"><span class="lineNum">     122 </span>            : </a>
+<a name="123"><span class="lineNum">     123 </span>            : /*QY: used for specifying non-perfect loops in loop blocking */</a>
+<a name="124"><span class="lineNum">     124 </span><span class="lineNoCov">          0 : struct FuseLoopInfo</span></a>
+<a name="125"><span class="lineNum">     125 </span>            : {</a>
+<a name="126"><span class="lineNum">     126 </span>            :   typedef std::pair&lt;LoopTreeNode*,int&gt; Entry;</a>
+<a name="127"><span class="lineNum">     127 </span>            :   std::vector&lt;Entry&gt; loops; /*QY: the loops being fused*/</a>
+<a name="128"><span class="lineNum">     128 </span>            :   LoopTreeNode *pivotLoop; /*QY: the pivot loop*/</a>
+<a name="129"><span class="lineNum">     129 </span>            :   </a>
+<a name="130"><span class="lineNum">     130 </span><span class="lineNoCov">          0 :   FuseLoopInfo(LoopTreeNode* _pivot=0) : pivotLoop(_pivot) {}</span></a>
+<a name="131"><span class="lineNum">     131 </span>            :   static POETCode* toPOET(HandleMap&amp; handleMap, const FuseLoopInfo&amp; info);</a>
+<a name="132"><span class="lineNum">     132 </span>            : };</a>
+<a name="133"><span class="lineNum">     133 </span>            : </a>
+<a name="134"><span class="lineNum">     134 </span>            : class BlockSpec;</a>
+<a name="135"><span class="lineNum">     135 </span>            : /*QY: interface for POET-code generation*/</a>
+<a name="136"><span class="lineNum">     136 </span>            : class AutoTuningInterface </a>
+<a name="137"><span class="lineNum">     137 </span>            : {</a>
+<a name="138"><span class="lineNum">     138 </span>            :    HandleMap handleMap; </a>
+<a name="139"><span class="lineNum">     139 </span>            :    std::vector&lt;OptSpec*&gt; optvec;</a>
+<a name="140"><span class="lineNum">     140 </span>            :    std::string inputName;</a>
+<a name="141"><span class="lineNum">     141 </span>            :    POETProgram* poet;</a>
+<a name="142"><span class="lineNum">     142 </span>            :    int lineNo;</a>
+<a name="143"><span class="lineNum">     143 </span>            :    LocalVar* target;</a>
+<a name="144"><span class="lineNum">     144 </span>            : </a>
+<a name="145"><span class="lineNum">     145 </span>            :    static ArrayAbstractionInterface* arrayInfo;</a>
+<a name="146"><span class="lineNum">     146 </span>            :    static POETCode* arrayAccess;</a>
+<a name="147"><span class="lineNum">     147 </span>            : </a>
+<a name="148"><span class="lineNum">     148 </span>            :    void BuildPOETProgram();</a>
+<a name="149"><span class="lineNum">     149 </span>            :    void Gen_POET_opt();</a>
+<a name="150"><span class="lineNum">     150 </span>            :   public:</a>
+<a name="151"><span class="lineNum">     151 </span>            :     AutoTuningInterface(const std::string&amp; _fname) </a>
+<a name="152"><span class="lineNum">     152 </span>            :        : inputName(_fname), poet(0), lineNo(-1), target(0) {}</a>
+<a name="153"><span class="lineNum">     153 </span>            :     ~AutoTuningInterface() ;</a>
+<a name="154"><span class="lineNum">     154 </span>            : </a>
+<a name="155"><span class="lineNum">     155 </span>            :     void set_astInterface(AstInterface&amp; fa);</a>
+<a name="156"><span class="lineNum">     156 </span>            :     static void set_arrayInfo( ArrayAbstractionInterface&amp; arrayInfo);</a>
+<a name="157"><span class="lineNum">     157 </span>            :     static POETCode* CreateArrayRef(POETProgram&amp; poet, POETCode* arr, POETCode* subscript, int dim);</a>
+<a name="158"><span class="lineNum">     158 </span>            :     static POETCode* Access2Subscript(POETProgram&amp; poet, POETCode* ref, int dim);</a>
+<a name="159"><span class="lineNum">     159 </span>            :     static POETCode* Access2Array(POETProgram&amp; poet, POETCode* ref, int dim);</a>
+<a name="160"><span class="lineNum">     160 </span>            : </a>
+<a name="161"><span class="lineNum">     161 </span>            :     LocalVar* get_target() { return target; }</a>
+<a name="162"><span class="lineNum">     162 </span>            : </a>
+<a name="163"><span class="lineNum">     163 </span>            :     /*QY: whether loop has been blocked; if yes, at which level*/</a>
+<a name="164"><span class="lineNum">     164 </span>            :     BlockSpec* LoopBlocked(LocalVar* loop, unsigned* index=0); </a>
+<a name="165"><span class="lineNum">     165 </span>            : </a>
+<a name="166"><span class="lineNum">     166 </span>            :     void UnrollLoop(AstInterface&amp; fa, const AstNodePtr&amp; loop, int unrollsize);</a>
+<a name="167"><span class="lineNum">     167 </span>            : </a>
+<a name="168"><span class="lineNum">     168 </span>            :     void BlockLoops(LoopTreeNode* outerLoop, LoopTreeNode* innerLoop, LoopBlocking* config, const std::vector&lt;FuseLoopInfo&gt;* nonperfect= 0);</a>
+<a name="169"><span class="lineNum">     169 </span>            : </a>
+<a name="170"><span class="lineNum">     170 </span>            :     void ParallelizeLoop(LoopTreeNode* outerLoop, int bsize);</a>
+<a name="171"><span class="lineNum">     171 </span>            : </a>
+<a name="172"><span class="lineNum">     172 </span>            :     void CopyArray( CopyArrayConfig&amp; config, LoopTreeNode* repl);</a>
+<a name="173"><span class="lineNum">     173 </span>            : </a>
+<a name="174"><span class="lineNum">     174 </span>            : </a>
+<a name="175"><span class="lineNum">     175 </span>            :     bool ApplyOpt(LoopTreeNode* root);</a>
+<a name="176"><span class="lineNum">     176 </span>            :     bool ApplyOpt(AstInterface&amp; fa);</a>
+<a name="177"><span class="lineNum">     177 </span>            : </a>
+<a name="178"><span class="lineNum">     178 </span>            :     void GenOutput();</a>
+<a name="179"><span class="lineNum">     179 </span>            :     void gen_specification();</a>
+<a name="180"><span class="lineNum">     180 </span>            : </a>
+<a name="181"><span class="lineNum">     181 </span>            : };</a>
+<a name="182"><span class="lineNum">     182 </span>            : </a>
+<a name="183"><span class="lineNum">     183 </span>            : /*QY: loop unrolling optimization*/</a>
+<a name="184"><span class="lineNum">     184 </span>            : class UnrollSpec : public OptSpec</a>
+<a name="185"><span class="lineNum">     185 </span>            : {</a>
+<a name="186"><span class="lineNum">     186 </span>            : #if 0 // [Robb Matzke 2021-03-17]: unused</a>
+<a name="187"><span class="lineNum">     187 </span>            :    /*QY: relevant POET invocation names </a>
+<a name="188"><span class="lineNum">     188 </span>            :          (need to be consistent with POET/lib/opt.pi*/</a>
+<a name="189"><span class="lineNum">     189 </span>            :    LocalVar* paramVar;</a>
+<a name="190"><span class="lineNum">     190 </span>            : #endif</a>
+<a name="191"><span class="lineNum">     191 </span>            : </a>
+<a name="192"><span class="lineNum">     192 </span>            :  public:</a>
+<a name="193"><span class="lineNum">     193 </span>            :   UnrollSpec(LocalVar* handle, int unrollSize); </a>
+<a name="194"><span class="lineNum">     194 </span><span class="lineNoCov">          0 :   virtual OptEnum get_enum() const { return UNROLL; }</span></a>
+<a name="195"><span class="lineNum">     195 </span><span class="lineNoCov">          0 :   virtual OptLevel get_opt_level() const { return OPT_PROC_LEVEL; }</span></a>
+<a name="196"><span class="lineNum">     196 </span><span class="lineNoCov">          0 :   virtual std::string get_opt_prefix(OptLevel optLevel) { return &quot;unroll&quot;; }</span></a>
+<a name="197"><span class="lineNum">     197 </span>            :   virtual std::string to_string(OptLevel level);</a>
+<a name="198"><span class="lineNum">     198 </span>            : </a>
+<a name="199"><span class="lineNum">     199 </span>            :   /*QY: insert parameter decl; modify lineNo with new line number; </a>
+<a name="200"><span class="lineNum">     200 </span>            :         return constrains on parameter values */</a>
+<a name="201"><span class="lineNum">     201 </span>            :   virtual POETCode* </a>
+<a name="202"><span class="lineNum">     202 </span>            :   insert_paramDecl(AutoTuningInterface&amp; tune, </a>
+<a name="203"><span class="lineNum">     203 </span>            :             POETProgram&amp; poet, OptLevel optlevel, int&amp; lineno);</a>
+<a name="204"><span class="lineNum">     204 </span>            : </a>
+<a name="205"><span class="lineNum">     205 </span>            :   virtual POETCode* gen_xformEval(POETProgram&amp; poet, LocalVar* top, </a>
+<a name="206"><span class="lineNum">     206 </span>            :                    POETCode* traceMod, OptLevel optLevel, int&amp; lineNo);</a>
+<a name="207"><span class="lineNum">     207 </span>            : </a>
+<a name="208"><span class="lineNum">     208 </span>            :   /*QY: return a unique name that save relevant info. for a loop unroll optimization*/</a>
+<a name="209"><span class="lineNum">     209 </span>            :   static LocalVar* get_unrollSizeVar(const std::string&amp; handleName);</a>
+<a name="210"><span class="lineNum">     210 </span>            :   </a>
+<a name="211"><span class="lineNum">     211 </span>            : };</a>
+<a name="212"><span class="lineNum">     212 </span>            : </a>
+<a name="213"><span class="lineNum">     213 </span>            : class ParLoopSpec : public OptSpec</a>
+<a name="214"><span class="lineNum">     214 </span>            : {</a>
+<a name="215"><span class="lineNum">     215 </span>            : #if 0 // [Robb Matzke 2021-03-17]: unused</a>
+<a name="216"><span class="lineNum">     216 </span>            :   POETCode* privateVars;</a>
+<a name="217"><span class="lineNum">     217 </span>            :   POETCode* ivarName, *bvarName;</a>
+<a name="218"><span class="lineNum">     218 </span>            :   LocalVar* parVar, *parblockVar;</a>
+<a name="219"><span class="lineNum">     219 </span>            : #endif</a>
+<a name="220"><span class="lineNum">     220 </span>            :  public:</a>
+<a name="221"><span class="lineNum">     221 </span>            :   ParLoopSpec(LocalVar* outerHandle, LoopTreeNode* loop, int bsize);</a>
+<a name="222"><span class="lineNum">     222 </span><span class="lineNoCov">          0 :   virtual OptEnum get_enum() const { return PARLOOP; }</span></a>
+<a name="223"><span class="lineNum">     223 </span><span class="lineNoCov">          0 :   virtual OptLevel get_opt_level() const { return OPT_PAR_LEVEL; }</span></a>
+<a name="224"><span class="lineNum">     224 </span><span class="lineNoCov">          0 :   virtual std::string get_opt_prefix(OptLevel optLevel) { return &quot;par&quot;; }</span></a>
+<a name="225"><span class="lineNum">     225 </span>            :   virtual std::string to_string(OptLevel level);</a>
+<a name="226"><span class="lineNum">     226 </span>            : </a>
+<a name="227"><span class="lineNum">     227 </span>            :   /*QY: insert parameter decl; </a>
+<a name="228"><span class="lineNum">     228 </span>            :         modify lineNo with new line number; </a>
+<a name="229"><span class="lineNum">     229 </span>            :         return constrains on parameter values */</a>
+<a name="230"><span class="lineNum">     230 </span>            :   virtual POETCode* insert_paramDecl(AutoTuningInterface&amp; tune, </a>
+<a name="231"><span class="lineNum">     231 </span>            :             POETProgram&amp; poet, OptLevel optlevel, int&amp; lineno);</a>
+<a name="232"><span class="lineNum">     232 </span>            : </a>
+<a name="233"><span class="lineNum">     233 </span>            :   virtual void insert_xformDecl(POETProgram&amp; poet, LocalVar* top, POETCode*&amp; traceMod, int&amp; lineNo); </a>
+<a name="234"><span class="lineNum">     234 </span>            : </a>
+<a name="235"><span class="lineNum">     235 </span>            :   virtual POETCode* gen_xformEval(POETProgram&amp; poet, LocalVar* top, </a>
+<a name="236"><span class="lineNum">     236 </span>            :                    POETCode* traceMod, OptLevel optLevel, int&amp; lineNo);</a>
+<a name="237"><span class="lineNum">     237 </span>            : };</a>
+<a name="238"><span class="lineNum">     238 </span>            : </a>
+<a name="239"><span class="lineNum">     239 </span>            : /*QY: loop blocking optimization*/</a>
+<a name="240"><span class="lineNum">     240 </span>            : class BlockSpec : public OptSpec</a>
+<a name="241"><span class="lineNum">     241 </span>            : {</a>
+<a name="242"><span class="lineNum">     242 </span>            :    std::vector&lt;LoopInfo&gt; loopVec; /*QY: the loops to block */ </a>
+<a name="243"><span class="lineNum">     243 </span>            : #if 0 // [Robb Matzke 2021-03-17]: unused</a>
+<a name="244"><span class="lineNum">     244 </span>            :    POETCode* nonperfect; /*QY: the non-perfect loops*/</a>
+<a name="245"><span class="lineNum">     245 </span>            :    LocalVar* blockPar, *ujPar;</a>
+<a name="246"><span class="lineNum">     246 </span>            :    HandleMap&amp; handleMap;</a>
+<a name="247"><span class="lineNum">     247 </span>            : #endif</a>
+<a name="248"><span class="lineNum">     248 </span>            :    unsigned loopnum;</a>
+<a name="249"><span class="lineNum">     249 </span>            : </a>
+<a name="250"><span class="lineNum">     250 </span>            :    /*QY: compute the blocking dimension configuration */</a>
+<a name="251"><span class="lineNum">     251 </span>            :    POETCode* compute_blockDim(LocalVar* paramVar);</a>
+<a name="252"><span class="lineNum">     252 </span>            : </a>
+<a name="253"><span class="lineNum">     253 </span>            :  public:</a>
+<a name="254"><span class="lineNum">     254 </span>            :   BlockSpec(HandleMap&amp; handleMap, LocalVar* outerHandle, LoopTreeNode* innerLoop, LoopBlocking* config, const std::vector&lt;FuseLoopInfo&gt;* nonperfect=0); </a>
+<a name="255"><span class="lineNum">     255 </span><span class="lineNoCov">          0 :   virtual OptEnum get_enum() const { return BLOCK; }</span></a>
+<a name="256"><span class="lineNum">     256 </span><span class="lineNoCov">          0 :   virtual OptLevel get_opt_level() const { return OPT_CACHE_REG_CLEANUP_LEVEL; }</span></a>
+<a name="257"><span class="lineNum">     257 </span><span class="lineNoCov">          0 :   virtual std::string get_opt_prefix(OptLevel optLevel) </span></a>
+<a name="258"><span class="lineNum">     258 </span>            :    { </a>
+<a name="259"><span class="lineNum">     259 </span><span class="lineNoCov">          0 :      switch (optLevel) {</span></a>
+<a name="260"><span class="lineNum">     260 </span><span class="lineNoCov">          0 :        case OPT_CACHE_LEVEL: return &quot;block&quot;;</span></a>
+<a name="261"><span class="lineNum">     261 </span><span class="lineNoCov">          0 :        case OPT_REG_LEVEL: return &quot;unrolljam&quot;;</span></a>
+<a name="262"><span class="lineNum">     262 </span><span class="lineNoCov">          0 :        case OPT_CLEANUP_LEVEL: return &quot;cleanup&quot;;</span></a>
+<a name="263"><span class="lineNum">     263 </span><span class="lineNoCov">          0 :        default: return &quot;&quot;;</span></a>
+<a name="264"><span class="lineNum">     264 </span>            :      }</a>
+<a name="265"><span class="lineNum">     265 </span>            :    }</a>
+<a name="266"><span class="lineNum">     266 </span>            :   virtual std::string to_string(OptLevel level);</a>
+<a name="267"><span class="lineNum">     267 </span>            : </a>
+<a name="268"><span class="lineNum">     268 </span>            :   unsigned get_loopnum() const { return loopnum; }</a>
+<a name="269"><span class="lineNum">     269 </span>            :   const LoopInfo&amp; get_loop(int i) const { return loopVec[i]; }</a>
+<a name="270"><span class="lineNum">     270 </span>            : </a>
+<a name="271"><span class="lineNum">     271 </span>            :   /*QY: insert parameter decl; </a>
+<a name="272"><span class="lineNum">     272 </span>            :         modify lineNo with new line number; </a>
+<a name="273"><span class="lineNum">     273 </span>            :         return constrains on parameter values */</a>
+<a name="274"><span class="lineNum">     274 </span>            :   virtual POETCode* insert_paramDecl(AutoTuningInterface&amp; tune, </a>
+<a name="275"><span class="lineNum">     275 </span>            :             POETProgram&amp; poet, OptLevel optlevel, int&amp; lineno);</a>
+<a name="276"><span class="lineNum">     276 </span>            : </a>
+<a name="277"><span class="lineNum">     277 </span>            :   /*QY: return xform declaration; modify lineNo;</a>
+<a name="278"><span class="lineNum">     278 </span>            :         append traceMod with variables that need to be kept track of; */</a>
+<a name="279"><span class="lineNum">     279 </span>            :   virtual void insert_xformDecl(POETProgram&amp; poet, LocalVar* top, POETCode*&amp; traceMod, int&amp; lineNo); </a>
+<a name="280"><span class="lineNum">     280 </span>            : </a>
+<a name="281"><span class="lineNum">     281 </span>            :   virtual POETCode* gen_xformEval(POETProgram&amp; poet, LocalVar* top, </a>
+<a name="282"><span class="lineNum">     282 </span>            :                    POETCode* traceMod, OptLevel optLevel, int&amp; lineNo);</a>
+<a name="283"><span class="lineNum">     283 </span>            : </a>
+<a name="284"><span class="lineNum">     284 </span>            :   /*QY: return unique names that save relevant info. for a blocking opt*/</a>
+<a name="285"><span class="lineNum">     285 </span>            :   static LocalVar* get_blockSizeVar(const std::string&amp; handleName);</a>
+<a name="286"><span class="lineNum">     286 </span>            :   static LocalVar* get_unrollJamSizeVar(const std::string&amp; handleName);</a>
+<a name="287"><span class="lineNum">     287 </span>            :   static LocalVar* get_blockDimVar(const std::string&amp; handleName);</a>
+<a name="288"><span class="lineNum">     288 </span>            :   static LocalVar* get_blockTileVar(const std::string&amp; handleName);</a>
+<a name="289"><span class="lineNum">     289 </span>            :   static LocalVar* get_blockSplitVar(const std::string&amp; handleName);</a>
+<a name="290"><span class="lineNum">     290 </span>            : </a>
+<a name="291"><span class="lineNum">     291 </span>            :   static POETCode* get_blockSize(const std::string&amp; handleName, int level);</a>
+<a name="292"><span class="lineNum">     292 </span>            :   static POETCode* get_ujSize(const std::string&amp; handleName, int level);</a>
+<a name="293"><span class="lineNum">     293 </span>            : };</a>
+<a name="294"><span class="lineNum">     294 </span>            : </a>
+<a name="295"><span class="lineNum">     295 </span>            : /*QY: array copy */</a>
+<a name="296"><span class="lineNum">     296 </span>            : class CopyArraySpec : public OptSpec</a>
+<a name="297"><span class="lineNum">     297 </span>            : {</a>
+<a name="298"><span class="lineNum">     298 </span>            :    std::vector&lt;SymbolicVal&gt; subscriptVec;</a>
+<a name="299"><span class="lineNum">     299 </span>            :    void compute_copySubscript(LocalVar* dimVar=0);</a>
+<a name="300"><span class="lineNum">     300 </span>            :  protected:</a>
+<a name="301"><span class="lineNum">     301 </span>            :    /*QY: relevant POET invocation names </a>
+<a name="302"><span class="lineNum">     302 </span>            :          (need to be consistent with POET/lib/opt.pi*/</a>
+<a name="303"><span class="lineNum">     303 </span>            :    static int index;</a>
+<a name="304"><span class="lineNum">     304 </span>            : </a>
+<a name="305"><span class="lineNum">     305 </span>            :    SelectArray sel; /*QY: which array elements to copy*/</a>
+<a name="306"><span class="lineNum">     306 </span>            :    CopyArrayOpt opt; /*QY: alloc/init/save/free configurations */</a>
+<a name="307"><span class="lineNum">     307 </span>            :    std::vector&lt;LoopInfo&gt; loopVec; /*QY: the surrounding loops*/ </a>
+<a name="308"><span class="lineNum">     308 </span>            : </a>
+<a name="309"><span class="lineNum">     309 </span>            :    std::vector&lt;int&gt; placeVec; /* QY: placement of loop dim*/</a>
+<a name="310"><span class="lineNum">     310 </span>            :    POETCode* permute; /* permutation of array dimension*/</a>
+<a name="311"><span class="lineNum">     311 </span>            :    std::string cur_id;</a>
+<a name="312"><span class="lineNum">     312 </span>            : </a>
+<a name="313"><span class="lineNum">     313 </span>            :    int get_loopLevel(const SelectArray::ArrayDim&amp; cur);</a>
+<a name="314"><span class="lineNum">     314 </span>            : </a>
+<a name="315"><span class="lineNum">     315 </span>            :    /* QY: return the subscript pattern for the array references. </a>
+<a name="316"><span class="lineNum">     316 </span>            :           beforeCopy: before or after the copy optimization is done */</a>
+<a name="317"><span class="lineNum">     317 </span>            :    POETCode* compute_copySubscript(POETProgram&amp; poet, bool afterCopy);</a>
+<a name="318"><span class="lineNum">     318 </span>            :    /* QY: return a list of copy dimensions */</a>
+<a name="319"><span class="lineNum">     319 </span>            :    POETCode* compute_copyDim(POETProgram&amp; poet, bool scalar);</a>
+<a name="320"><span class="lineNum">     320 </span>            :    /* QY: compute internal info for copy; need to be done in constructor*/</a>
+<a name="321"><span class="lineNum">     321 </span>            :    void compute_config();</a>
+<a name="322"><span class="lineNum">     322 </span>            : </a>
+<a name="323"><span class="lineNum">     323 </span>            :    POETCode* gen_copyInvoke(POETProgram&amp; poet, POETCode* cphandle, </a>
+<a name="324"><span class="lineNum">     324 </span>            :             LocalVar* top, POETCode* cpblock, bool scalar, </a>
+<a name="325"><span class="lineNum">     325 </span>            :             POETCode* traceMod, int&amp; lineNo);</a>
+<a name="326"><span class="lineNum">     326 </span>            : </a>
+<a name="327"><span class="lineNum">     327 </span>            :   /*QY: insert parameter decl; </a>
+<a name="328"><span class="lineNum">     328 </span>            :         modify lineNo with new line number; </a>
+<a name="329"><span class="lineNum">     329 </span>            :         return constrains on parameter values */</a>
+<a name="330"><span class="lineNum">     330 </span>            :   virtual POETCode* insert_paramDecl(AutoTuningInterface&amp; tune, </a>
+<a name="331"><span class="lineNum">     331 </span>            :             POETProgram&amp; poet, OptLevel optLevel, int&amp; lineNo); </a>
+<a name="332"><span class="lineNum">     332 </span><span class="lineNoCov">          0 :   CopyArraySpec(POETCode* input, const std::string&amp; name, </span></a>
+<a name="333"><span class="lineNum">     333 </span>            :                 CopyArrayConfig&amp; config)</a>
+<a name="334"><span class="lineNum">     334 </span><span class="lineNoCov">          0 :      :OptSpec(input,name),sel(config.get_arr()),opt(config.get_opt()),permute(0)</span></a>
+<a name="335"><span class="lineNum">     335 </span><span class="lineNoCov">          0 :        {}</span></a>
+<a name="336"><span class="lineNum">     336 </span>            : </a>
+<a name="337"><span class="lineNum">     337 </span>            :  public:</a>
+<a name="338"><span class="lineNum">     338 </span>            :   CopyArraySpec(HandleMap&amp; handleMap,POETCode* input,const std::string&amp; name, CopyArrayConfig&amp; config, LoopTreeNode* root);</a>
+<a name="339"><span class="lineNum">     339 </span><span class="lineNoCov">          0 :   virtual OptEnum get_enum() const { return COPY_ARRAY; }</span></a>
+<a name="340"><span class="lineNum">     340 </span><span class="lineNoCov">          0 :   virtual OptLevel get_opt_level() const { return OPT_REG_LEVEL; }</span></a>
+<a name="341"><span class="lineNum">     341 </span>            : </a>
+<a name="342"><span class="lineNum">     342 </span>            :   /*QY: insert xform declaration; append traceMod with variables that need to be kept track of;</a>
+<a name="343"><span class="lineNum">     343 </span>            :         return the new line number */</a>
+<a name="344"><span class="lineNum">     344 </span>            :   virtual void insert_xformDecl(POETProgram&amp; poet, LocalVar* top, </a>
+<a name="345"><span class="lineNum">     345 </span>            :                                POETCode*&amp; traceMod, int&amp; lineNo);</a>
+<a name="346"><span class="lineNum">     346 </span>            :   virtual POETCode* gen_xformEval(POETProgram&amp; poet, LocalVar* top, </a>
+<a name="347"><span class="lineNum">     347 </span>            :                    POETCode* traceMod, OptLevel optLevel, int&amp; lineNo);</a>
+<a name="348"><span class="lineNum">     348 </span>            : </a>
+<a name="349"><span class="lineNum">     349 </span>            :   static bool do_scalarRepl(OptLevel optLevel)</a>
+<a name="350"><span class="lineNum">     350 </span>            :   {</a>
+<a name="351"><span class="lineNum">     351 </span>            :     switch (optLevel) {</a>
+<a name="352"><span class="lineNum">     352 </span>            :     case OPT_CACHE_LEVEL: return false;</a>
+<a name="353"><span class="lineNum">     353 </span>            :     case OPT_REG_LEVEL: return true;</a>
+<a name="354"><span class="lineNum">     354 </span>            :     default: ROSE_ABORT();</a>
+<a name="355"><span class="lineNum">     355 </span>            :     }</a>
+<a name="356"><span class="lineNum">     356 </span>            :   }</a>
+<a name="357"><span class="lineNum">     357 </span><span class="lineNoCov">          0 :   std::string get_opt_prefix(OptLevel optLevel)</span></a>
+<a name="358"><span class="lineNum">     358 </span>            :   {</a>
+<a name="359"><span class="lineNum">     359 </span><span class="lineNoCov">          0 :     switch (optLevel) {</span></a>
+<a name="360"><span class="lineNum">     360 </span><span class="lineNoCov">          0 :     case OPT_CACHE_LEVEL: return &quot;copy&quot;+cur_id;</span></a>
+<a name="361"><span class="lineNum">     361 </span><span class="lineNoCov">          0 :     case OPT_REG_LEVEL: return &quot;scalar&quot;+cur_id;</span></a>
+<a name="362"><span class="lineNum">     362 </span><span class="lineNoCov">          0 :     default: ROSE_ABORT();</span></a>
+<a name="363"><span class="lineNum">     363 </span>            :     }</a>
+<a name="364"><span class="lineNum">     364 </span>            :   }</a>
+<a name="365"><span class="lineNum">     365 </span>            :   virtual std::string to_string(OptLevel level);</a>
+<a name="366"><span class="lineNum">     366 </span>            : </a>
+<a name="367"><span class="lineNum">     367 </span>            :   /* QY: global variable for tracing array dimension and ref exp */</a>
+<a name="368"><span class="lineNum">     368 </span>            :   LocalVar* get_dimVar(POETProgram&amp; poet, const std::string&amp; arrname);</a>
+<a name="369"><span class="lineNum">     369 </span>            :   LocalVar* get_arrVar(POETProgram&amp; poet, const std::string&amp; arrname);</a>
+<a name="370"><span class="lineNum">     370 </span>            : </a>
+<a name="371"><span class="lineNum">     371 </span>            :   /*copy buffer name*/</a>
+<a name="372"><span class="lineNum">     372 </span>            :   std::string get_bufName(const std::string&amp; arrname, bool scalar) </a>
+<a name="373"><span class="lineNum">     373 </span>            :      { return (scalar)? arrname+&quot;_&quot;+cur_id+&quot;_scalar&quot; : arrname+&quot;_buf&quot;; } </a>
+<a name="374"><span class="lineNum">     374 </span>            :   /* QY: copy induction variable name */</a>
+<a name="375"><span class="lineNum">     375 </span>            :   std::string get_cpIvarName(const std::string&amp; arrname, int sel_index) </a>
+<a name="376"><span class="lineNum">     376 </span>            :     {  </a>
+<a name="377"><span class="lineNum">     377 </span>            :        assert( sel_index &gt;= 0);</a>
+<a name="378"><span class="lineNum">     378 </span>            :        std::string copyIvar = targetName +  &quot;_&quot; + cur_id+&quot;_&quot;+arrname + &quot;_cp&quot;;</a>
+<a name="379"><span class="lineNum">     379 </span>            :        copyIvar.push_back('0' + sel_index);</a>
+<a name="380"><span class="lineNum">     380 </span>            :        return copyIvar;</a>
+<a name="381"><span class="lineNum">     381 </span>            :     }</a>
+<a name="382"><span class="lineNum">     382 </span>            :   /*QY: declaring copy induction variables*/</a>
+<a name="383"><span class="lineNum">     383 </span>            :   POETCode* gen_cpIvarDecl(POETProgram&amp; poet, LocalVar* top, </a>
+<a name="384"><span class="lineNum">     384 </span>            :                const std::string&amp; arrname, int dim, bool cpblock);</a>
+<a name="385"><span class="lineNum">     385 </span>            : </a>
+<a name="386"><span class="lineNum">     386 </span>            :   /*QY: the copy invocation*/</a>
+<a name="387"><span class="lineNum">     387 </span>            :   POETCode* </a>
+<a name="388"><span class="lineNum">     388 </span>            :   gen_copyInvoke(POETProgram&amp; poet, POETCode* handle,LocalVar* top, </a>
+<a name="389"><span class="lineNum">     389 </span>            :         const std::string&amp; arrname, POETCode* arrelemType, CopyArrayOpt opt, </a>
+<a name="390"><span class="lineNum">     390 </span>            :         POETCode* cpDim, POETCode*  cpblock, bool scalar, POETCode* traceMod);</a>
+<a name="391"><span class="lineNum">     391 </span>            : };</a>
+<a name="392"><span class="lineNum">     392 </span>            : </a>
+<a name="393"><span class="lineNum">     393 </span>            : /*QY: array copy associated with blocking */</a>
+<a name="394"><span class="lineNum">     394 </span>            : class BlockCopyArraySpec : public CopyArraySpec</a>
+<a name="395"><span class="lineNum">     395 </span>            : {</a>
+<a name="396"><span class="lineNum">     396 </span>            :    /*QY: relevant POET invocation names </a>
+<a name="397"><span class="lineNum">     397 </span>            :          (need to be consistent with POET/lib/opt.pi*/</a>
+<a name="398"><span class="lineNum">     398 </span>            : </a>
+<a name="399"><span class="lineNum">     399 </span>            :    POETCode* AfterCopy_dimSize(POETProgram&amp; poet);</a>
+<a name="400"><span class="lineNum">     400 </span>            :    POETCode* compute_copyBlock(POETProgram&amp; poet);</a>
+<a name="401"><span class="lineNum">     401 </span>            :     /*QY: return handle for scalar repl*/</a>
+<a name="402"><span class="lineNum">     402 </span>            :    LocalVar* scalarRepl_handle(POETProgram&amp; poet);</a>
+<a name="403"><span class="lineNum">     403 </span>            : </a>
+<a name="404"><span class="lineNum">     404 </span>            :   static std::string get_fdName(const std::string&amp; arrname)</a>
+<a name="405"><span class="lineNum">     405 </span>            :         { return arrname+&quot;_fd&quot;; } /*finite difference var name*/</a>
+<a name="406"><span class="lineNum">     406 </span>            : </a>
+<a name="407"><span class="lineNum">     407 </span>            :    /*QY:compute strenghth reduction dimension configuration</a>
+<a name="408"><span class="lineNum">     408 </span>            :        : return outermost loop level to start reduction */</a>
+<a name="409"><span class="lineNum">     409 </span>            :    int compute_fdConfig(POETProgram&amp; poet, POETCode* handle, bool scalar,</a>
+<a name="410"><span class="lineNum">     410 </span>            :            std::vector&lt;POETCode*&gt;&amp; expDimVec_cp, /*QY: to go with copying */</a>
+<a name="411"><span class="lineNum">     411 </span>            :            std::vector&lt;POETCode*&gt;&amp; expDimVec_nocp);/*QY: to go without copying*/</a>
+<a name="412"><span class="lineNum">     412 </span>            :  public:</a>
+<a name="413"><span class="lineNum">     413 </span>            :   BlockCopyArraySpec(LocalVar* handle, CopyArrayConfig&amp; config, </a>
+<a name="414"><span class="lineNum">     414 </span>            :                      BlockSpec&amp; _block);</a>
+<a name="415"><span class="lineNum">     415 </span>            : </a>
+<a name="416"><span class="lineNum">     416 </span><span class="lineNoCov">          0 :   virtual OptEnum get_enum() const { return BLOCK_COPY_ARRAY; }</span></a>
+<a name="417"><span class="lineNum">     417 </span><span class="lineNoCov">          0 :   virtual OptLevel get_opt_level() const { return OPT_CACHE_REG_LEVEL; }</span></a>
+<a name="418"><span class="lineNum">     418 </span>            :   virtual POETCode* gen_xformEval(POETProgram&amp; poet, LocalVar* top, </a>
+<a name="419"><span class="lineNum">     419 </span>            :                    POETCode* traceMod, OptLevel optLevel, int&amp; lineNo);</a>
+<a name="420"><span class="lineNum">     420 </span>            : };</a>
+<a name="421"><span class="lineNum">     421 </span>            : </a>
+<a name="422"><span class="lineNum">     422 </span>            : #endif</a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

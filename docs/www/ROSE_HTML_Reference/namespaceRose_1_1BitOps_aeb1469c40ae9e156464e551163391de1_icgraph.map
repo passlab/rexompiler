@@ -1,0 +1,8 @@
+<map id="Rose::BitOps::bit" name="Rose::BitOps::bit">
+<area shape="rect" id="node1" title="Extract a single bit." alt="" coords="248,107,371,133"/>
+<area shape="rect" id="node2" href="$namespaceRose_1_1BitOps.html#ab415c9e5092d228a0467a3169cbd2c0e" title="Index of the highest set bit." alt="" coords="9,5,196,32"/>
+<area shape="rect" id="node3" href="$namespaceRose_1_1BitOps.html#a783a1aebad1bb0912713ec77c0a776df" title="Most significant bit." alt="" coords="35,56,170,83"/>
+<area shape="rect" id="node4" href="$namespaceRose_1_1BitOps.html#a900e85ca0be624ba118ee2f20d6e7a27" title="Most significant bit within lsb region." alt="" coords="25,107,180,133"/>
+<area shape="rect" id="node5" href="$namespaceRose_1_1BitOps.html#a2bb9db120c89d6d57a819ee5d6585d4a" title="Sign extend part of value without affecting other bits." alt="" coords="5,157,200,184"/>
+<area shape="rect" id="node6" href="$namespaceRose_1_1StringUtility.html#a26d3122f20a16d509654a756887a5bde" title="Convert a number to a binary string." alt="" coords="38,209,167,250"/>
+</map>

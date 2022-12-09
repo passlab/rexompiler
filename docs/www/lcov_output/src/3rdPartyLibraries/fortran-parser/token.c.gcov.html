@@ -1,0 +1,265 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - src/3rdPartyLibraries/fortran-parser/token.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/3rdPartyLibraries/fortran-parser</a> - token.c<span style="font-size: 80%;"> (source / <a href="token.c.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">31</td>
+            <td class="headerCovTableEntry">62</td>
+            <td class="headerCovTableEntryLo">50.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryLo">50.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /******************************************************************************</a>
+<a name="2"><span class="lineNum">       2 </span>            :  * Copyright (c) 2005, 2006 Los Alamos National Security, LLC.  This</a>
+<a name="3"><span class="lineNum">       3 </span>            :  * material was produced under U.S. Government contract</a>
+<a name="4"><span class="lineNum">       4 </span>            :  * DE-AC52-06NA25396 for Los Alamos National Laboratory (LANL), which</a>
+<a name="5"><span class="lineNum">       5 </span>            :  * is operated by the Los Alamos National Security, LLC (LANS) for the</a>
+<a name="6"><span class="lineNum">       6 </span>            :  * U.S. Department of Energy. The U.S. Government has rights to use,</a>
+<a name="7"><span class="lineNum">       7 </span>            :  * reproduce, and distribute this software. NEITHER THE GOVERNMENT NOR</a>
+<a name="8"><span class="lineNum">       8 </span>            :  * LANS MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR ASSUMES ANY</a>
+<a name="9"><span class="lineNum">       9 </span>            :  * LIABILITY FOR THE USE OF THIS SOFTWARE. If software is modified to</a>
+<a name="10"><span class="lineNum">      10 </span>            :  * produce derivative works, such modified software should be clearly</a>
+<a name="11"><span class="lineNum">      11 </span>            :  * marked, so as not to confuse it with the version available from</a>
+<a name="12"><span class="lineNum">      12 </span>            :  * LANL.</a>
+<a name="13"><span class="lineNum">      13 </span>            :  *</a>
+<a name="14"><span class="lineNum">      14 </span>            :  * Additionally, this program and the accompanying materials</a>
+<a name="15"><span class="lineNum">      15 </span>            :  * are made available under the terms of the Eclipse Public License v1.0</a>
+<a name="16"><span class="lineNum">      16 </span>            :  * which accompanies this distribution, and is available at</a>
+<a name="17"><span class="lineNum">      17 </span>            :  * http://www.eclipse.org/legal/epl-v10.html</a>
+<a name="18"><span class="lineNum">      18 </span>            :  *****************************************************************************/</a>
+<a name="19"><span class="lineNum">      19 </span>            : </a>
+<a name="20"><span class="lineNum">      20 </span>            : #ifdef __cplusplus</a>
+<a name="21"><span class="lineNum">      21 </span>            : extern &quot;C&quot; {</a>
+<a name="22"><span class="lineNum">      22 </span>            : #endif</a>
+<a name="23"><span class="lineNum">      23 </span>            : </a>
+<a name="24"><span class="lineNum">      24 </span>            : #include &lt;stdlib.h&gt;</a>
+<a name="25"><span class="lineNum">      25 </span>            : #include &lt;stdio.h&gt;</a>
+<a name="26"><span class="lineNum">      26 </span>            : #include &lt;limits.h&gt;</a>
+<a name="27"><span class="lineNum">      27 </span>            : #include &lt;string.h&gt;</a>
+<a name="28"><span class="lineNum">      28 </span>            : #include &quot;token.h&quot;</a>
+<a name="29"><span class="lineNum">      29 </span>            : //#include &quot;fortran_error_handler.h&quot;</a>
+<a name="30"><span class="lineNum">      30 </span>            : </a>
+<a name="31"><span class="lineNum">      31 </span>            : #define INIT_TOKEN_LIST_SIZE 1024</a>
+<a name="32"><span class="lineNum">      32 </span>            : </a>
+<a name="33"><span class="lineNum">      33 </span>            :   Token_t **token_list   = NULL;</a>
+<a name="34"><span class="lineNum">      34 </span>            :   Token_t *token_current = NULL;</a>
+<a name="35"><span class="lineNum">      35 </span>            :   int token_list_size = 0;</a>
+<a name="36"><span class="lineNum">      36 </span>            :   int num_tokens = 0;</a>
+<a name="37"><span class="lineNum">      37 </span>            :   </a>
+<a name="38"><span class="lineNum">      38 </span><span class="lineNoCov">          0 :   Token_t *create_token(int line, int col, int type, const char *text)</span></a>
+<a name="39"><span class="lineNum">      39 </span>            :   {</a>
+<a name="40"><span class="lineNum">      40 </span><span class="lineNoCov">          0 :          Token_t *tmp_token = NULL;</span></a>
+<a name="41"><span class="lineNum">      41 </span>            : </a>
+<a name="42"><span class="lineNum">      42 </span><span class="lineNoCov">          0 :          tmp_token = (Token_t*)malloc(sizeof(Token_t));</span></a>
+<a name="43"><span class="lineNum">      43 </span><span class="lineNoCov">          0 :          tmp_token-&gt;line = line;</span></a>
+<a name="44"><span class="lineNum">      44 </span><span class="lineNoCov">          0 :          tmp_token-&gt;col = col;</span></a>
+<a name="45"><span class="lineNum">      45 </span><span class="lineNoCov">          0 :          tmp_token-&gt;type = type;</span></a>
+<a name="46"><span class="lineNum">      46 </span>            :          /* Make a copy of our own to make sure it isn't freed on us.  */</a>
+<a name="47"><span class="lineNum">      47 </span><span class="lineNoCov">          0 :          if(text != NULL)</span></a>
+<a name="48"><span class="lineNum">      48 </span><span class="lineNoCov">          0 :                 tmp_token-&gt;text = strdup(text);</span></a>
+<a name="49"><span class="lineNum">      49 </span>            :          else</a>
+<a name="50"><span class="lineNum">      50 </span><span class="lineNoCov">          0 :                 tmp_token-&gt;text = NULL;</span></a>
+<a name="51"><span class="lineNum">      51 </span>            : </a>
+<a name="52"><span class="lineNum">      52 </span><span class="lineNoCov">          0 :          return tmp_token;</span></a>
+<a name="53"><span class="lineNum">      53 </span>            :   }</a>
+<a name="54"><span class="lineNum">      54 </span>            : </a>
+<a name="55"><span class="lineNum">      55 </span><span class="lineCov">       5234 :   void free_token(Token_t *tmp_token)</span></a>
+<a name="56"><span class="lineNum">      56 </span>            :   {</a>
+<a name="57"><span class="lineNum">      57 </span>            :          /* Nothing to do.  */</a>
+<a name="58"><span class="lineNum">      58 </span><span class="lineCov">       5234 :          if(tmp_token == NULL)</span></a>
+<a name="59"><span class="lineNum">      59 </span>            :                 return;</a>
+<a name="60"><span class="lineNum">      60 </span>            :   </a>
+<a name="61"><span class="lineNum">      61 </span>            :          /* Free up the memory allocated for the string.  */</a>
+<a name="62"><span class="lineNum">      62 </span><span class="lineCov">       5234 :          if(tmp_token-&gt;text != NULL)</span></a>
+<a name="63"><span class="lineNum">      63 </span><span class="lineCov">       5234 :                 free(tmp_token-&gt;text);</span></a>
+<a name="64"><span class="lineNum">      64 </span>            :          /* Free up the token memory itself.  */</a>
+<a name="65"><span class="lineNum">      65 </span><span class="lineCov">       5234 :          free(tmp_token);</span></a>
+<a name="66"><span class="lineNum">      66 </span>            :   }</a>
+<a name="67"><span class="lineNum">      67 </span>            : </a>
+<a name="68"><span class="lineNum">      68 </span><span class="lineCov">         37 :   void free_token_list()</span></a>
+<a name="69"><span class="lineNum">      69 </span>            :   {</a>
+<a name="70"><span class="lineNum">      70 </span><span class="lineCov">         37 :      int i;</span></a>
+<a name="71"><span class="lineNum">      71 </span>            : </a>
+<a name="72"><span class="lineNum">      72 </span>            :      /* Laksono 2009.12.15: free the error handler */</a>
+<a name="73"><span class="lineNum">      73 </span>            :      //  fortran_error_handler_end();</a>
+<a name="74"><span class="lineNum">      74 </span>            : </a>
+<a name="75"><span class="lineNum">      75 </span><span class="lineCov">       5271 :      for (i = 0; i &lt; num_tokens; i++) {</span></a>
+<a name="76"><span class="lineNum">      76 </span><span class="lineCov">       5234 :         if (token_list[i] != NULL) {</span></a>
+<a name="77"><span class="lineNum">      77 </span><span class="lineCov">       5234 :            free_token(token_list[i]);</span></a>
+<a name="78"><span class="lineNum">      78 </span>            :         }</a>
+<a name="79"><span class="lineNum">      79 </span>            :      }</a>
+<a name="80"><span class="lineNum">      80 </span>            : </a>
+<a name="81"><span class="lineNum">      81 </span><span class="lineCov">         37 :      if (token_list != NULL) {</span></a>
+<a name="82"><span class="lineNum">      82 </span><span class="lineCov">         34 :         num_tokens = 0;</span></a>
+<a name="83"><span class="lineNum">      83 </span><span class="lineCov">         34 :         token_list_size = 0;</span></a>
+<a name="84"><span class="lineNum">      84 </span><span class="lineCov">         34 :         free(token_list);</span></a>
+<a name="85"><span class="lineNum">      85 </span><span class="lineCov">         34 :         token_list = NULL;</span></a>
+<a name="86"><span class="lineNum">      86 </span>            :      }</a>
+<a name="87"><span class="lineNum">      87 </span>            : </a>
+<a name="88"><span class="lineNum">      88 </span><span class="lineCov">         37 :      return;</span></a>
+<a name="89"><span class="lineNum">      89 </span>            :   }</a>
+<a name="90"><span class="lineNum">      90 </span>            : </a>
+<a name="91"><span class="lineNum">      91 </span><span class="lineCov">       5234 :   void register_token(Token_t *tmp_token)</span></a>
+<a name="92"><span class="lineNum">      92 </span>            :   {</a>
+<a name="93"><span class="lineNum">      93 </span><span class="lineCov">       5234 :          if(token_list == NULL)</span></a>
+<a name="94"><span class="lineNum">      94 </span>            :          {</a>
+<a name="95"><span class="lineNum">      95 </span><span class="lineCov">         34 :                 int i;</span></a>
+<a name="96"><span class="lineNum">      96 </span>            :                 </a>
+<a name="97"><span class="lineNum">      97 </span>            :                 /* We haven't allocated a token list yet.  This is done here because</a>
+<a name="98"><span class="lineNum">      98 </span>            :                         we currently don't have a single entry point into the actions, so we</a>
+<a name="99"><span class="lineNum">      99 </span>            :                         don't have a place to do this.  We could expect the user to call an</a>
+<a name="100"><span class="lineNum">     100 </span>            :                         init routine, as one option....  */</a>
+<a name="101"><span class="lineNum">     101 </span><span class="lineCov">         34 :                 token_list = (Token_t**)malloc(INIT_TOKEN_LIST_SIZE * sizeof(Token_t *));</span></a>
+<a name="102"><span class="lineNum">     102 </span><span class="lineCov">         34 :                 if(token_list == NULL)</span></a>
+<a name="103"><span class="lineNum">     103 </span>            :                 {</a>
+<a name="104"><span class="lineNum">     104 </span><span class="lineNoCov">          0 :                   fprintf(stderr, &quot;Error: Unable to allocate token_list!\n&quot;);</span></a>
+<a name="105"><span class="lineNum">     105 </span><span class="lineNoCov">          0 :                   exit(1);</span></a>
+<a name="106"><span class="lineNum">     106 </span>            :                 }</a>
+<a name="107"><span class="lineNum">     107 </span><span class="lineCov">         34 :                 token_list_size = INIT_TOKEN_LIST_SIZE;</span></a>
+<a name="108"><span class="lineNum">     108 </span>            : </a>
+<a name="109"><span class="lineNum">     109 </span>            :                 /* Initialize the array pointers to NULL.  */</a>
+<a name="110"><span class="lineNum">     110 </span><span class="lineCov">      34850 :                 for(i = 0; i &lt; token_list_size; i++)</span></a>
+<a name="111"><span class="lineNum">     111 </span><span class="lineCov">      34816 :                   token_list[i] = NULL;</span></a>
+<a name="112"><span class="lineNum">     112 </span>            : </a>
+<a name="113"><span class="lineNum">     113 </span>            :                 /* Laksono 2009.12.05:  intercept SIGABRT */</a>
+<a name="114"><span class="lineNum">     114 </span>            :                 //fortran_error_handler_begin();</a>
+<a name="115"><span class="lineNum">     115 </span>            : </a>
+<a name="116"><span class="lineNum">     116 </span>            :          }</a>
+<a name="117"><span class="lineNum">     117 </span><span class="lineCov">       5200 :          else if(num_tokens == token_list_size)</span></a>
+<a name="118"><span class="lineNum">     118 </span>            :          {</a>
+<a name="119"><span class="lineNum">     119 </span><span class="lineNoCov">          0 :                 int i;</span></a>
+<a name="120"><span class="lineNum">     120 </span><span class="lineNoCov">          0 :                 int orig_size = token_list_size;</span></a>
+<a name="121"><span class="lineNum">     121 </span>            :                 </a>
+<a name="122"><span class="lineNum">     122 </span>            :                 /* The list is full so reallocate to twice it's current size.  */</a>
+<a name="123"><span class="lineNum">     123 </span><span class="lineNoCov">          0 :                 token_list = (Token_t**)realloc(token_list,(token_list_size &lt;&lt; 1) * sizeof(Token_t *));</span></a>
+<a name="124"><span class="lineNum">     124 </span><span class="lineNoCov">          0 :                 if(token_list == NULL)</span></a>
+<a name="125"><span class="lineNum">     125 </span>            :                 {</a>
+<a name="126"><span class="lineNum">     126 </span><span class="lineNoCov">          0 :                   fprintf(stderr, &quot;Error: Out of memory for token_list\n&quot;);</span></a>
+<a name="127"><span class="lineNum">     127 </span><span class="lineNoCov">          0 :                   exit(1);</span></a>
+<a name="128"><span class="lineNum">     128 </span>            :                 }</a>
+<a name="129"><span class="lineNum">     129 </span><span class="lineNoCov">          0 :                 token_list_size = token_list_size &lt;&lt; 1;</span></a>
+<a name="130"><span class="lineNum">     130 </span>            : </a>
+<a name="131"><span class="lineNum">     131 </span>            :                 /* Initialize all new elements to NULL.  */</a>
+<a name="132"><span class="lineNum">     132 </span><span class="lineNoCov">          0 :                 for(i = orig_size; i &lt; token_list_size; i++)</span></a>
+<a name="133"><span class="lineNum">     133 </span><span class="lineNoCov">          0 :                   token_list[i] = NULL;</span></a>
+<a name="134"><span class="lineNum">     134 </span>            :          }</a>
+<a name="135"><span class="lineNum">     135 </span>            : </a>
+<a name="136"><span class="lineNum">     136 </span>            :          /* The list is allocated and there is enough room for the new element.  */</a>
+<a name="137"><span class="lineNum">     137 </span><span class="lineCov">       5234 :          token_list[num_tokens] = tmp_token;</span></a>
+<a name="138"><span class="lineNum">     138 </span><span class="lineCov">       5234 :          num_tokens++;</span></a>
+<a name="139"><span class="lineNum">     139 </span><span class="lineCov">       5234 :          if (tmp_token-&gt;line &gt;0)</span></a>
+<a name="140"><span class="lineNum">     140 </span><span class="lineCov">       5234 :             token_current = tmp_token;</span></a>
+<a name="141"><span class="lineNum">     141 </span>            :          //printf(&quot;token %d: l=%d t=%d s=%s\n&quot;, num_tokens, tmp_token-&gt;line, tmp_token-&gt;type, tmp_token-&gt;text);</a>
+<a name="142"><span class="lineNum">     142 </span>            : </a>
+<a name="143"><span class="lineNum">     143 </span><span class="lineCov">       5234 :          if(num_tokens &gt;= INT_MAX)</span></a>
+<a name="144"><span class="lineNum">     144 </span>            :          {</a>
+<a name="145"><span class="lineNum">     145 </span><span class="lineNoCov">          0 :                 fprintf(stderr, &quot;Error: Maximum number of tokens reached!\n&quot;);</span></a>
+<a name="146"><span class="lineNum">     146 </span><span class="lineNoCov">          0 :                 exit(1);</span></a>
+<a name="147"><span class="lineNum">     147 </span>            :          }</a>
+<a name="148"><span class="lineNum">     148 </span>            : </a>
+<a name="149"><span class="lineNum">     149 </span><span class="lineCov">       5234 :          return;</span></a>
+<a name="150"><span class="lineNum">     150 </span>            :   }</a>
+<a name="151"><span class="lineNum">     151 </span>            : </a>
+<a name="152"><span class="lineNum">     152 </span><span class="lineNoCov">          0 :   void print_token(Token_t *tmp_token)</span></a>
+<a name="153"><span class="lineNum">     153 </span>            :   {</a>
+<a name="154"><span class="lineNum">     154 </span>            :          /* The fields of these are printed in a form similar to what ANTLR would</a>
+<a name="155"><span class="lineNum">     155 </span>            :                  print for a Token printed as a String.  However, we don't copy all of</a>
+<a name="156"><span class="lineNum">     156 </span>            :                  ANLTR's internal info for the Token, so the first field (@0) and the</a>
+<a name="157"><span class="lineNum">     157 </span>            :                  '0:0=' part of the second field have no meaning for our C tokens but</a>
+<a name="158"><span class="lineNum">     158 </span>            :                  are there for similarity.  */</a>
+<a name="159"><span class="lineNum">     159 </span><span class="lineNoCov">          0 :          printf(&quot;[@0, '0:0=%s', &lt;%d&gt;, %d:%d]\n&quot;, </span></a>
+<a name="160"><span class="lineNum">     160 </span><span class="lineNoCov">          0 :                           (tmp_token-&gt;text == NULL ? &quot;null&quot; : tmp_token-&gt;text),</span></a>
+<a name="161"><span class="lineNum">     161 </span>            :                           tmp_token-&gt;type, tmp_token-&gt;line, tmp_token-&gt;col);</a>
+<a name="162"><span class="lineNum">     162 </span><span class="lineNoCov">          0 :   }</span></a>
+<a name="163"><span class="lineNum">     163 </span>            : </a>
+<a name="164"><span class="lineNum">     164 </span><span class="lineNoCov">          0 :   Token_t *get_latest_token()</span></a>
+<a name="165"><span class="lineNum">     165 </span>            :   {</a>
+<a name="166"><span class="lineNum">     166 </span><span class="lineNoCov">          0 :      int ltok = num_tokens-1;</span></a>
+<a name="167"><span class="lineNum">     167 </span><span class="lineNoCov">          0 :      Token_t *current_token = token_current;</span></a>
+<a name="168"><span class="lineNum">     168 </span>            : /*</a>
+<a name="169"><span class="lineNum">     169 </span>            :      if (token_list == NULL) return NULL;</a>
+<a name="170"><span class="lineNum">     170 </span>            :      do {</a>
+<a name="171"><span class="lineNum">     171 </span>            :         current_token = token_list[ltok];</a>
+<a name="172"><span class="lineNum">     172 </span>            :         ltok--; </a>
+<a name="173"><span class="lineNum">     173 </span>            :      } while (ltok&gt;=0 &amp;&amp; current_token != NULL &amp;&amp; current_token-&gt;line == 0);</a>
+<a name="174"><span class="lineNum">     174 </span>            : */</a>
+<a name="175"><span class="lineNum">     175 </span>            :      //printf(&quot;&gt;&gt; get_latest_token %d %d:'%s'\n&quot;, ltok, current_token-&gt;line, current_token-&gt;text);</a>
+<a name="176"><span class="lineNum">     176 </span><span class="lineNoCov">          0 :      return current_token;</span></a>
+<a name="177"><span class="lineNum">     177 </span>            :   }</a>
+<a name="178"><span class="lineNum">     178 </span>            : </a>
+<a name="179"><span class="lineNum">     179 </span>            : #ifdef __cplusplus</a>
+<a name="180"><span class="lineNum">     180 </span>            : } /* End extern C. */</a>
+<a name="181"><span class="lineNum">     181 </span>            : #endif</a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

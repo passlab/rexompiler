@@ -1,0 +1,7 @@
+<map id="Sawyer::Container::Algorithm::CommonSubgraphIsomorphism::run" name="Sawyer::Container::Algorithm::CommonSubgraphIsomorphism::run">
+<area shape="rect" id="node1" title="Perform the common subgraph isomorphism analysis." alt="" coords="285,130,580,171"/>
+<area shape="rect" id="node2" href="$namespaceSawyer_1_1Container_1_1Algorithm.html#a125e6d3b75c1f45be000702427b39a0f" title="Find common isomorphic subgraphs." alt="" coords="10,5,233,61"/>
+<area shape="rect" id="node3" href="$namespaceSawyer_1_1Container_1_1Algorithm.html#a79f3b4db6da4e57a5a1d5ff7ff39b3f7" title="Determine whether a common subgraph exists." alt="" coords="29,85,214,141"/>
+<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1Algorithm.html#abdfddcc3c0de62ffb90d868264b20483" title="Find an isomorphic subgraph." alt="" coords="5,166,237,207"/>
+<area shape="rect" id="node5" href="$namespaceSawyer_1_1Container_1_1Algorithm.html#af893c884305001ca91a0ef56a6c2f1b6" title="Find maximum common isomorphic subgraphs." alt="" coords="13,232,229,288"/>
+</map>

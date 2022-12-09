@@ -1,0 +1,5 @@
+<map id="SgFunctionParameterRefExp" name="SgFunctionParameterRefExp">
+<area shape="rect" id="node1" title=" " alt="" coords="5,184,197,211"/>
+<area shape="rect" id="node2" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="50,5,153,32"/>
+<area shape="rect" id="node3" href="$classSgType.html" title="This class represents the base class for all types." alt="" coords="272,95,339,121"/>
+</map>

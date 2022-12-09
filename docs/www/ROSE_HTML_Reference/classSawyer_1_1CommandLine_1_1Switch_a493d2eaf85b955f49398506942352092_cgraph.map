@@ -1,0 +1,5 @@
+<map id="Sawyer::CommandLine::Switch::intrinsicValue" name="Sawyer::CommandLine::Switch::intrinsicValue">
+<area shape="rect" id="node1" title="Property: value for a switch that has no declared arguments." alt="" coords="5,39,164,80"/>
+<area shape="rect" id="node2" href="$group__sawyer__parser__factories.html#gac4ddbbf3e4156d1e93de3d5f85502484" title="Factory for value parsers." alt="" coords="228,5,387,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1CommandLine_1_1ParsedValue.html#ad876f9098fc00a3e795303902b9ce7d6" title="Property: command&#45;line location from whence this value came." alt="" coords="212,71,403,112"/>
+</map>

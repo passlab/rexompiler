@@ -1,0 +1,13 @@
+<map id="SgInitializedName" name="SgInitializedName">
+<area shape="rect" id="node1" title="This class represents the notion of a declared variable." alt="" coords="585,356,713,383"/>
+<area shape="rect" id="node2" href="$classSgLocatedNodeSupport.html" title=" " alt="" coords="229,5,389,32"/>
+<area shape="rect" id="node3" href="$classSgNode.html" title="This class represents the base class for all IR nodes within Sage III." alt="" coords="11,104,80,131"/>
+<area shape="rect" id="node8" href="$classSgType.html" title="This class represents the base class for all types." alt="" coords="275,148,342,175"/>
+<area shape="rect" id="node4" href="$classSgInitializer.html" title="This class represents the notion of an initializer for a variable declaration or expression in a func..." alt="" coords="263,199,354,225"/>
+<area shape="rect" id="node5" href="$classSgStorageModifier.html" title="This class represents modifiers specific to storage." alt="" coords="244,249,373,276"/>
+<area shape="rect" id="node6" title="STL class." alt="" coords="5,524,85,551"/>
+<area shape="rect" id="node10" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="272,524,345,551"/>
+<area shape="rect" id="node11" href="$classSgDeclarationStatement.html" title="This class represents the concept of a declaration statement." alt="" coords="227,628,391,655"/>
+<area shape="rect" id="node7" href="$classSgScopeStatement.html" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="241,679,376,705"/>
+<area shape="rect" id="node9" title=" " alt="" coords="243,733,375,760"/>
+</map>

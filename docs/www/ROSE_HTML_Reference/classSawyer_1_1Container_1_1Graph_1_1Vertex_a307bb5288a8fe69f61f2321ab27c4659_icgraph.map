@@ -1,0 +1,6 @@
+<map id="Sawyer::Container::Graph::Vertex::inEdges" name="Sawyer::Container::Graph::Vertex::inEdges">
+<area shape="rect" id="node1" title="List of incoming edges." alt="" coords="259,79,417,120"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#a36cb4f69c729552dcbd8a530eacec8ce" title="Erase all edges targeting a vertex." alt="" coords="37,5,179,47"/>
+<area shape="rect" id="node3" href="$namespaceSawyer_1_1Container_1_1Algorithm.html#a004e957c997090ef76a78a40bf27b3ea" title="Find all connected components of a graph." alt="" coords="5,71,211,127"/>
+<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1Algorithm.html#a61fe8c4aaae390361068b47d7be07ce6" title="Test whether a graph is connected." alt="" coords="13,152,203,193"/>
+</map>

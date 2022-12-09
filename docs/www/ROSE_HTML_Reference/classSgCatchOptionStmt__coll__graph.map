@@ -1,0 +1,7 @@
+<map id="SgCatchOptionStmt" name="SgCatchOptionStmt">
+<area shape="rect" id="node1" title="This class represents the concept of a catch within a try&#45;catch construct used in C++ exception handl..." alt="" coords="155,213,294,240"/>
+<area shape="rect" id="node2" href="$classSgScopeStatement.html" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="73,124,208,151"/>
+<area shape="rect" id="node3" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="114,5,213,32"/>
+<area shape="rect" id="node4" href="$classSgTryStmt.html" title="This class represents the concept of try statement within the try&#45;catch support for exception handlin..." alt="" coords="233,124,318,151"/>
+<area shape="rect" id="node5" href="$classSgVariableDeclaration.html" title="This class represents the concept of a C or C++ variable declaration." alt="" coords="343,124,493,151"/>
+</map>

@@ -1,0 +1,1567 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ROSE - /home/yyan7/compiler/rexompiler/src/frontend/CxxFrontend/EDG/EDG_5.0/src/fixed_pt.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../../../../index.html">top level</a> - <a href="index.html">home/yyan7/compiler/rexompiler/src/frontend/CxxFrontend/EDG/EDG_5.0/src</a> - fixed_pt.c<span style="font-size: 80%;"> (source / <a href="fixed_pt.c.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ROSE</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">561</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-12-08 13:48:47</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">30</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /******************************************************************************</a>
+<a name="2"><span class="lineNum">       2 </span>            : *                                                             \  ___  /       *</a>
+<a name="3"><span class="lineNum">       3 </span>            : *                                                               /   \         *</a>
+<a name="4"><span class="lineNum">       4 </span>            : * Edison Design Group C++/C Front End                        - | \^/ | -      *</a>
+<a name="5"><span class="lineNum">       5 </span>            : *                                                               \   /         *</a>
+<a name="6"><span class="lineNum">       6 </span>            : * Proprietary information of Edison Design Group Inc.         /  | |  \       *</a>
+<a name="7"><span class="lineNum">       7 </span>            : * Copyright 2003-2018 Edison Design Group Inc.                   [_]          *</a>
+<a name="8"><span class="lineNum">       8 </span>            : *                                                                             *</a>
+<a name="9"><span class="lineNum">       9 </span>            : ******************************************************************************/</a>
+<a name="10"><span class="lineNum">      10 </span>            : /*</a>
+<a name="11"><span class="lineNum">      11 </span>            : </a>
+<a name="12"><span class="lineNum">      12 </span>            : fixed_pt.c -- Routines that manipulate internal fixed-point quantities.</a>
+<a name="13"><span class="lineNum">      13 </span>            : </a>
+<a name="14"><span class="lineNum">      14 </span>            : The versions in this file are for prototyping only, and should be replaced</a>
+<a name="15"><span class="lineNum">      15 </span>            : for a production version.</a>
+<a name="16"><span class="lineNum">      16 </span>            : </a>
+<a name="17"><span class="lineNum">      17 </span>            : */</a>
+<a name="18"><span class="lineNum">      18 </span>            : </a>
+<a name="19"><span class="lineNum">      19 </span>            : /* Header files common to all files. */</a>
+<a name="20"><span class="lineNum">      20 </span>            : #include &quot;fe_common.h&quot;</a>
+<a name="21"><span class="lineNum">      21 </span>            : </a>
+<a name="22"><span class="lineNum">      22 </span>            : #ifdef PCH_PRAGMA_GUARD</a>
+<a name="23"><span class="lineNum">      23 </span>            : /* Mark the end of the sequence of headers subject to precompiled header</a>
+<a name="24"><span class="lineNum">      24 </span>            :    processing. */</a>
+<a name="25"><span class="lineNum">      25 </span>            : #pragma hdrstop</a>
+<a name="26"><span class="lineNum">      26 </span>            : #endif /* ifdef PCH_PRAGMA_GUARD */</a>
+<a name="27"><span class="lineNum">      27 </span>            : </a>
+<a name="28"><span class="lineNum">      28 </span>            : #if FIXED_POINT_ALLOWED</a>
+<a name="29"><span class="lineNum">      29 </span>            : </a>
+<a name="30"><span class="lineNum">      30 </span>            : #include &quot;folding.h&quot;</a>
+<a name="31"><span class="lineNum">      31 </span>            : </a>
+<a name="32"><span class="lineNum">      32 </span><span class="lineNoCov">          0 : a_boolean fxp_value_is_zero(a_fixed_point_value  *value)</span></a>
+<a name="33"><span class="lineNum">      33 </span>            : /*</a>
+<a name="34"><span class="lineNum">      34 </span>            : Return TRUE if and only if the given fixed-point value is zero.</a>
+<a name="35"><span class="lineNum">      35 </span>            : */</a>
+<a name="36"><span class="lineNum">      36 </span>            : {</a>
+<a name="37"><span class="lineNum">      37 </span><span class="lineNoCov">          0 :   an_integer_value  zero;</span></a>
+<a name="38"><span class="lineNum">      38 </span>            : </a>
+<a name="39"><span class="lineNum">      39 </span><span class="lineNoCov">          0 :   set_integer_value(&amp;zero, (a_host_large_integer)0);</span></a>
+<a name="40"><span class="lineNum">      40 </span>            :   /* Use the integer comparison routine.  Note that signedness doesn't</a>
+<a name="41"><span class="lineNum">      41 </span>            :      matter for the zero case. */</a>
+<a name="42"><span class="lineNum">      42 </span><span class="lineNoCov">          0 :   return (cmp_integer_values(value, /*op_1_signed=*/FALSE,</span></a>
+<a name="43"><span class="lineNum">      43 </span><span class="lineNoCov">          0 :                              &amp;zero, /*op_2_signed=*/FALSE) == 0);</span></a>
+<a name="44"><span class="lineNum">      44 </span>            : }  /* fxp_value_is_zero */</a>
+<a name="45"><span class="lineNum">      45 </span>            : </a>
+<a name="46"><span class="lineNum">      46 </span>            : #if !STANDALONE_UTILITY_PROGRAM</a>
+<a name="47"><span class="lineNum">      47 </span>            : </a>
+<a name="48"><span class="lineNum">      48 </span><span class="lineNoCov">          0 : void fxp_init_value(a_fixed_point_value  *value)</span></a>
+<a name="49"><span class="lineNum">      49 </span>            : /*</a>
+<a name="50"><span class="lineNum">      50 </span>            : Initialize the given fixed-point value to zero.</a>
+<a name="51"><span class="lineNum">      51 </span>            : */</a>
+<a name="52"><span class="lineNum">      52 </span>            : {</a>
+<a name="53"><span class="lineNum">      53 </span><span class="lineNoCov">          0 :   set_integer_value(value, (a_host_large_integer)0);</span></a>
+<a name="54"><span class="lineNum">      54 </span><span class="lineNoCov">          0 : }  /* fxp_init_value */</span></a>
+<a name="55"><span class="lineNum">      55 </span>            : </a>
+<a name="56"><span class="lineNum">      56 </span>            : </a>
+<a name="57"><span class="lineNum">      57 </span><span class="lineNoCov">          0 : static int value_bits_for_fixed_point(a_fixed_point_type_descr  *fxp_descr)</span></a>
+<a name="58"><span class="lineNum">      58 </span>            : /*</a>
+<a name="59"><span class="lineNum">      59 </span>            : Return the number of data bits in a fixed-point value (i.e., the number of</a>
+<a name="60"><span class="lineNum">      60 </span>            : bits excluding the sign bit).</a>
+<a name="61"><span class="lineNum">      61 </span>            : */</a>
+<a name="62"><span class="lineNum">      62 </span>            : {</a>
+<a name="63"><span class="lineNum">      63 </span><span class="lineNoCov">          0 :   int   bits;</span></a>
+<a name="64"><span class="lineNum">      64 </span>            : </a>
+<a name="65"><span class="lineNum">      65 </span><span class="lineNoCov">          0 :   bits = (int)targ_sizeof_fixed_point[fxp_descr-&gt;is_unsigned]</span></a>
+<a name="66"><span class="lineNum">      66 </span><span class="lineNoCov">          0 :                                      [(int)fxp_descr-&gt;precision]</span></a>
+<a name="67"><span class="lineNum">      67 </span><span class="lineNoCov">          0 :                                      [fxp_descr-&gt;is_fract_type] * CHAR_BIT;</span></a>
+<a name="68"><span class="lineNum">      68 </span><span class="lineNoCov">          0 :   if (!fxp_descr-&gt;is_unsigned) bits--;</span></a>
+<a name="69"><span class="lineNum">      69 </span><span class="lineNoCov">          0 :   return bits;</span></a>
+<a name="70"><span class="lineNum">      70 </span>            : }  /* value_bits_for_fixed_point */</a>
+<a name="71"><span class="lineNum">      71 </span>            : </a>
+<a name="72"><span class="lineNum">      72 </span>            : </a>
+<a name="73"><span class="lineNum">      73 </span><span class="lineNoCov">          0 : static int sizeof_fixed_point(a_fixed_point_type_descr  *fxp_descr)</span></a>
+<a name="74"><span class="lineNum">      74 </span>            : /*</a>
+<a name="75"><span class="lineNum">      75 </span>            : Return the number of bytes in a fixed-point value.</a>
+<a name="76"><span class="lineNum">      76 </span>            : */</a>
+<a name="77"><span class="lineNum">      77 </span>            : {</a>
+<a name="78"><span class="lineNum">      78 </span><span class="lineNoCov">          0 :   int   size;</span></a>
+<a name="79"><span class="lineNum">      79 </span>            : </a>
+<a name="80"><span class="lineNum">      80 </span><span class="lineNoCov">          0 :   size = (int)targ_sizeof_fixed_point[fxp_descr-&gt;is_unsigned]</span></a>
+<a name="81"><span class="lineNum">      81 </span><span class="lineNoCov">          0 :                                      [(int)fxp_descr-&gt;precision]</span></a>
+<a name="82"><span class="lineNum">      82 </span><span class="lineNoCov">          0 :                                      [fxp_descr-&gt;is_fract_type];</span></a>
+<a name="83"><span class="lineNum">      83 </span><span class="lineNoCov">          0 :   return size;</span></a>
+<a name="84"><span class="lineNum">      84 </span>            : }  /* sizeof_fixed_point */</a>
+<a name="85"><span class="lineNum">      85 </span>            : </a>
+<a name="86"><span class="lineNum">      86 </span>            : </a>
+<a name="87"><span class="lineNum">      87 </span><span class="lineNoCov">          0 : int non_fractional_bits_for_fixed_point(a_fixed_point_type_descr *fxp_descr)</span></a>
+<a name="88"><span class="lineNum">      88 </span>            : /*</a>
+<a name="89"><span class="lineNum">      89 </span>            : Return the number of bits in the non-fractional part of a fixed-point value.</a>
+<a name="90"><span class="lineNum">      90 </span>            : The sign bit (if any) is included in the non-fractional bits.</a>
+<a name="91"><span class="lineNum">      91 </span>            : */</a>
+<a name="92"><span class="lineNum">      92 </span>            : {</a>
+<a name="93"><span class="lineNum">      93 </span><span class="lineNoCov">          0 :   int   fract_bits;</span></a>
+<a name="94"><span class="lineNum">      94 </span><span class="lineNoCov">          0 :   int   total_bits;</span></a>
+<a name="95"><span class="lineNum">      95 </span>            : </a>
+<a name="96"><span class="lineNum">      96 </span><span class="lineNoCov">          0 :   fract_bits = targ_fractional_bits_for_fixed_point[fxp_descr-&gt;is_unsigned]</span></a>
+<a name="97"><span class="lineNum">      97 </span><span class="lineNoCov">          0 :                                                    [(int)fxp_descr-&gt;precision]</span></a>
+<a name="98"><span class="lineNum">      98 </span><span class="lineNoCov">          0 :                                                    [fxp_descr-&gt;is_fract_type];</span></a>
+<a name="99"><span class="lineNum">      99 </span><span class="lineNoCov">          0 :   total_bits = (int)targ_sizeof_fixed_point[fxp_descr-&gt;is_unsigned]</span></a>
+<a name="100"><span class="lineNum">     100 </span>            :                                            [(int)fxp_descr-&gt;precision]</a>
+<a name="101"><span class="lineNum">     101 </span><span class="lineNoCov">          0 :                                            [fxp_descr-&gt;is_fract_type] *</span></a>
+<a name="102"><span class="lineNum">     102 </span>            :                                                                       CHAR_BIT;</a>
+<a name="103"><span class="lineNum">     103 </span><span class="lineNoCov">          0 :   return total_bits - fract_bits;</span></a>
+<a name="104"><span class="lineNum">     104 </span>            : }  /* non_fractional_bits_for_fixed_point */</a>
+<a name="105"><span class="lineNum">     105 </span>            : </a>
+<a name="106"><span class="lineNum">     106 </span>            : </a>
+<a name="107"><span class="lineNum">     107 </span><span class="lineNoCov">          0 : a_fixed_point_type_descr *fxp_descr_for_constant(a_constant_ptr cp)</span></a>
+<a name="108"><span class="lineNum">     108 </span>            : /*</a>
+<a name="109"><span class="lineNum">     109 </span>            : Return the fixed-point descriptor pointer for the specified constant.</a>
+<a name="110"><span class="lineNum">     110 </span>            : */</a>
+<a name="111"><span class="lineNum">     111 </span>            : {</a>
+<a name="112"><span class="lineNum">     112 </span><span class="lineNoCov">          0 :   a_type_ptr    type = skip_typerefs(cp-&gt;type);</span></a>
+<a name="113"><span class="lineNum">     113 </span><span class="lineNoCov">          0 :   check_assertion(type-&gt;kind == (a_type_kind)tk_fixed_point);</span></a>
+<a name="114"><span class="lineNum">     114 </span><span class="lineNoCov">          0 :   return &amp;type-&gt;variant.fixed_point;</span></a>
+<a name="115"><span class="lineNum">     115 </span>            : }  /* fxp_descr_for_constant */</a>
+<a name="116"><span class="lineNum">     116 </span>            : </a>
+<a name="117"><span class="lineNum">     117 </span>            : </a>
+<a name="118"><span class="lineNum">     118 </span>            : static void set_fixed_point_to_saturated_value(</a>
+<a name="119"><span class="lineNum">     119 </span>            :                                 a_fixed_point_value             *value,</a>
+<a name="120"><span class="lineNum">     120 </span>            :                                 int                             value_bits,</a>
+<a name="121"><span class="lineNum">     121 </span>            :                                 a_boolean                       is_negative,</a>
+<a name="122"><span class="lineNum">     122 </span>            :                                 a_fixed_point_type_descr        *fxp_descr)</a>
+<a name="123"><span class="lineNum">     123 </span>            : /*</a>
+<a name="124"><span class="lineNum">     124 </span>            : Set value to the representation used for a saturated fixed-point</a>
+<a name="125"><span class="lineNum">     125 </span>            : value.  is_negative is TRUE if the value should be the saturated negative</a>
+<a name="126"><span class="lineNum">     126 </span>            : value.  The positive value is all 1 bits, except for the sign bit.  The</a>
+<a name="127"><span class="lineNum">     127 </span>            : negative value has just the sign bit set.  value_bits is the number of bits</a>
+<a name="128"><span class="lineNum">     128 </span>            : used to represent an fxp_descr value.  Note that it does not include the</a>
+<a name="129"><span class="lineNum">     129 </span>            : sign bit.</a>
+<a name="130"><span class="lineNum">     130 </span>            : */</a>
+<a name="131"><span class="lineNum">     131 </span>            : {</a>
+<a name="132"><span class="lineNum">     132 </span>            :   int   shift_count;</a>
+<a name="133"><span class="lineNum">     133 </span>            : </a>
+<a name="134"><span class="lineNum">     134 </span>            :   /* Set all of the bits. */</a>
+<a name="135"><span class="lineNum">     135 </span>            :   set_integer_value(value, (a_host_large_integer)-1);</a>
+<a name="136"><span class="lineNum">     136 </span>            :   if (!fxp_descr-&gt;is_unsigned) {</a>
+<a name="137"><span class="lineNum">     137 </span>            :     /* Clear the sign bit. */</a>
+<a name="138"><span class="lineNum">     138 </span>            :     shift_right_integer_value(value, 1,</a>
+<a name="139"><span class="lineNum">     139 </span>            :                              /*is_signed=*/FALSE, /*sign_extend=*/FALSE);</a>
+<a name="140"><span class="lineNum">     140 </span>            :     /* For a negative value, only the sign bit should be set. */</a>
+<a name="141"><span class="lineNum">     141 </span>            :     if (is_negative) complement_integer_value(value);</a>
+<a name="142"><span class="lineNum">     142 </span>            :     /* Update value_bits to reflect the bit used for the sign. */</a>
+<a name="143"><span class="lineNum">     143 </span>            :     value_bits++;</a>
+<a name="144"><span class="lineNum">     144 </span>            :   }  /* if */</a>
+<a name="145"><span class="lineNum">     145 </span>            :   /* Shift the saturated value to just fill the portion of the integer</a>
+<a name="146"><span class="lineNum">     146 </span>            :      value actually used to the representation. */</a>
+<a name="147"><span class="lineNum">     147 </span>            :   shift_count = BITS_IN_AN_INTEGER_VALUE - value_bits;</a>
+<a name="148"><span class="lineNum">     148 </span>            :   if (shift_count &gt; 0) {</a>
+<a name="149"><span class="lineNum">     149 </span>            :     shift_right_integer_value(value, shift_count,</a>
+<a name="150"><span class="lineNum">     150 </span>            :                               /*is_signed=*/!fxp_descr-&gt;is_unsigned,</a>
+<a name="151"><span class="lineNum">     151 </span>            :                               /*sign_extend=*/TRUE);</a>
+<a name="152"><span class="lineNum">     152 </span>            :   }  /* if */</a>
+<a name="153"><span class="lineNum">     153 </span>            : }  /* set_fixed_point_to_saturated_value */</a>
+<a name="154"><span class="lineNum">     154 </span>            : </a>
+<a name="155"><span class="lineNum">     155 </span>            : </a>
+<a name="156"><span class="lineNum">     156 </span><span class="lineNoCov">          0 : static void negate_fixed_point_value(a_fixed_point_value        *op_1,</span></a>
+<a name="157"><span class="lineNum">     157 </span>            :                                      a_boolean                  *err)</a>
+<a name="158"><span class="lineNum">     158 </span>            : /*</a>
+<a name="159"><span class="lineNum">     159 </span>            : Negate a fixed-point value.  The result is returned in the first operand</a>
+<a name="160"><span class="lineNum">     160 </span>            : (op_1 = -op_1).  err is TRUE if an overflow occurred.</a>
+<a name="161"><span class="lineNum">     161 </span>            : </a>
+<a name="162"><span class="lineNum">     162 </span>            : This routine requires that a_fixed_point_value be an_integer_value.  Note</a>
+<a name="163"><span class="lineNum">     163 </span>            : that this routine only checks for error cases that cannot be represented</a>
+<a name="164"><span class="lineNum">     164 </span>            : by an_integer_value.  Range checking for specific fixed-point types must</a>
+<a name="165"><span class="lineNum">     165 </span>            : be done by the caller.  fxp_negate is a more general version of this</a>
+<a name="166"><span class="lineNum">     166 </span>            : routine.</a>
+<a name="167"><span class="lineNum">     167 </span>            : */</a>
+<a name="168"><span class="lineNum">     168 </span>            : {</a>
+<a name="169"><span class="lineNum">     169 </span><span class="lineNoCov">          0 :   negate_integer_value(op_1, err);</span></a>
+<a name="170"><span class="lineNum">     170 </span>            : }  /* negate_fixed_point_value */</a>
+<a name="171"><span class="lineNum">     171 </span>            : </a>
+<a name="172"><span class="lineNum">     172 </span>            : </a>
+<a name="173"><span class="lineNum">     173 </span>            : /*</a>
+<a name="174"><span class="lineNum">     174 </span>            : Return TRUE if the fixed-point value is negative.  The caller is responsible</a>
+<a name="175"><span class="lineNum">     175 </span>            : for checking that the fixed-point type is signed.</a>
+<a name="176"><span class="lineNum">     176 </span>            : </a>
+<a name="177"><span class="lineNum">     177 </span>            : This macro requires that a_fixed_point_value be an_integer_value.</a>
+<a name="178"><span class="lineNum">     178 </span>            : */</a>
+<a name="179"><span class="lineNum">     179 </span>            : #define fxp_sign_of(value) (sign_of(value))</a>
+<a name="180"><span class="lineNum">     180 </span>            : </a>
+<a name="181"><span class="lineNum">     181 </span>            : #if INTEGER_VALUE_REPR_IS_A_HOST_INTEGER</a>
+<a name="182"><span class="lineNum">     182 </span>            : </a>
+<a name="183"><span class="lineNum">     183 </span>            : /*</a>
+<a name="184"><span class="lineNum">     184 </span>            : Return the byte offset of a given logical byte of an integer value.  This is</a>
+<a name="185"><span class="lineNum">     185 </span>            : a no-op when an integer value is a host integer.</a>
+<a name="186"><span class="lineNum">     186 </span>            : </a>
+<a name="187"><span class="lineNum">     187 </span>            : This is only used on little-endian systems.</a>
+<a name="188"><span class="lineNum">     188 </span>            : */</a>
+<a name="189"><span class="lineNum">     189 </span>            : #define byte_offset_in_integer_value(i) (i)</a>
+<a name="190"><span class="lineNum">     190 </span>            : </a>
+<a name="191"><span class="lineNum">     191 </span>            : #else /* INTEGER_VALUE_REPR_IS_A_HOST_INTEGER */</a>
+<a name="192"><span class="lineNum">     192 </span>            : </a>
+<a name="193"><span class="lineNum">     193 </span>            : static int byte_offset_in_integer_value(unsigned int    byte)</a>
+<a name="194"><span class="lineNum">     194 </span>            : /*</a>
+<a name="195"><span class="lineNum">     195 </span>            : Return the byte offset of a given logical byte of an integer value.</a>
+<a name="196"><span class="lineNum">     196 </span>            : </a>
+<a name="197"><span class="lineNum">     197 </span>            : This is only used on little-endian systems.</a>
+<a name="198"><span class="lineNum">     198 </span>            : */</a>
+<a name="199"><span class="lineNum">     199 </span>            : {</a>
+<a name="200"><span class="lineNum">     200 </span>            :   int           int_value_part;</a>
+<a name="201"><span class="lineNum">     201 </span>            :   int           offset;</a>
+<a name="202"><span class="lineNum">     202 </span>            : </a>
+<a name="203"><span class="lineNum">     203 </span>            :   int_value_part = INT_VALUE_PARTS_PER_INTEGER_VALUE - </a>
+<a name="204"><span class="lineNum">     204 </span>            :                    (byte / SIZEOF_INT_VALUE_PART) - 1;</a>
+<a name="205"><span class="lineNum">     205 </span>            :   offset = (int_value_part * SIZEOF_INT_VALUE_PART) +</a>
+<a name="206"><span class="lineNum">     206 </span>            :            (byte % SIZEOF_INT_VALUE_PART);</a>
+<a name="207"><span class="lineNum">     207 </span>            :   return offset;</a>
+<a name="208"><span class="lineNum">     208 </span>            : }  /* byte_offset_in_integer_value */</a>
+<a name="209"><span class="lineNum">     209 </span>            : </a>
+<a name="210"><span class="lineNum">     210 </span>            : #endif /* INTEGER_VALUE_REPR_IS_A_HOST_INTEGER */</a>
+<a name="211"><span class="lineNum">     211 </span>            : </a>
+<a name="212"><span class="lineNum">     212 </span>            : </a>
+<a name="213"><span class="lineNum">     213 </span><span class="lineNoCov">          0 : static void store_hex_fxp_value(</span></a>
+<a name="214"><span class="lineNum">     214 </span>            :                                 a_mantissa_ptr                  mp,</a>
+<a name="215"><span class="lineNum">     215 </span>            :                                 a_fixed_point_type_descr        *fxp_descr,</a>
+<a name="216"><span class="lineNum">     216 </span>            :                                 a_fixed_point_value             *value)</a>
+<a name="217"><span class="lineNum">     217 </span>            : /*</a>
+<a name="218"><span class="lineNum">     218 </span>            : Store the value represented by mp in the fixed-point value &quot;value&quot;.</a>
+<a name="219"><span class="lineNum">     219 </span>            : fxp_descr describes the format of the value being stored.</a>
+<a name="220"><span class="lineNum">     220 </span>            : */</a>
+<a name="221"><span class="lineNum">     221 </span>            : {</a>
+<a name="222"><span class="lineNum">     222 </span><span class="lineNoCov">          0 :   unsigned int  parts_to_copy;</span></a>
+<a name="223"><span class="lineNum">     223 </span><span class="lineNoCov">          0 :   unsigned int  source_size;</span></a>
+<a name="224"><span class="lineNum">     224 </span><span class="lineNoCov">          0 :   unsigned int  part_offset;</span></a>
+<a name="225"><span class="lineNum">     225 </span>            : </a>
+<a name="226"><span class="lineNum">     226 </span>            :   /* Zero the memory so that all of the space occupied by &quot;value&quot;</a>
+<a name="227"><span class="lineNum">     227 </span>            :      is cleared, even if we are not storing all of the bytes of the value. */</a>
+<a name="228"><span class="lineNum">     228 </span><span class="lineNoCov">          0 :   memzero((char *)value, sizeof(a_fixed_point_value));</span></a>
+<a name="229"><span class="lineNum">     229 </span><span class="lineNoCov">          0 :   source_size = sizeof_fixed_point(fxp_descr);</span></a>
+<a name="230"><span class="lineNum">     230 </span><span class="lineNoCov">          0 :   parts_to_copy = (source_size + sizeof(an_fp_value_part) - 1) /</span></a>
+<a name="231"><span class="lineNum">     231 </span>            :                    sizeof(an_fp_value_part);</a>
+<a name="232"><span class="lineNum">     232 </span>            :   /* In most cases, an entire fp_value_part is copied.  If the target is just</a>
+<a name="233"><span class="lineNum">     233 </span>            :      a 1 or 2 byte value, however, only the high-order bytes of the source</a>
+<a name="234"><span class="lineNum">     234 </span>            :      fp_value_part are copied. */</a>
+<a name="235"><span class="lineNum">     235 </span><span class="lineNoCov">          0 :   part_offset = source_size &lt; sizeof(an_fp_value_part)</span></a>
+<a name="236"><span class="lineNum">     236 </span>            :                                      ? source_size  : sizeof(an_fp_value_part);</a>
+<a name="237"><span class="lineNum">     237 </span><span class="lineNoCov">          0 :   part_offset = sizeof(an_fp_value_part) - part_offset;</span></a>
+<a name="238"><span class="lineNum">     238 </span>            :   /* The source value is in the upper source_size bytes of the mantissa.</a>
+<a name="239"><span class="lineNum">     239 </span>            :      This needs to be copied to the low order bytes of the fixed-point</a>
+<a name="240"><span class="lineNum">     240 </span>            :      value. */</a>
+<a name="241"><span class="lineNum">     241 </span><span class="lineNoCov">          0 :   if (host_little_endian) {</span></a>
+<a name="242"><span class="lineNum">     242 </span>            :     /* For a typical system where an_fp_value_part is 4 bytes and an</a>
+<a name="243"><span class="lineNum">     243 </span>            :        integer value is 8 bytes, a short value is copied:</a>
+<a name="244"><span class="lineNum">     244 </span>            :          from 2 to 0</a>
+<a name="245"><span class="lineNum">     245 </span>            :          from 3 to 1</a>
+<a name="246"><span class="lineNum">     246 </span>            :        A 64 bit value is copied:</a>
+<a name="247"><span class="lineNum">     247 </span>            :          from 4 to 0</a>
+<a name="248"><span class="lineNum">     248 </span>            :          from 5 to 1</a>
+<a name="249"><span class="lineNum">     249 </span>            :          from 6 to 2</a>
+<a name="250"><span class="lineNum">     250 </span>            :          from 7 to 3</a>
+<a name="251"><span class="lineNum">     251 </span>            :          from 0 to 4</a>
+<a name="252"><span class="lineNum">     252 </span>            :          from 1 to 5</a>
+<a name="253"><span class="lineNum">     253 </span>            :          from 2 to 6</a>
+<a name="254"><span class="lineNum">     254 </span>            :          from 3 to 7</a>
+<a name="255"><span class="lineNum">     255 </span>            :     */</a>
+<a name="256"><span class="lineNum">     256 </span>            :     unsigned int i;</a>
+<a name="257"><span class="lineNum">     257 </span><span class="lineNoCov">          0 :     for (i = 0; i &lt; source_size; ++i) {</span></a>
+<a name="258"><span class="lineNum">     258 </span><span class="lineNoCov">          0 :       char      *source;</span></a>
+<a name="259"><span class="lineNum">     259 </span><span class="lineNoCov">          0 :       char      *dest;</span></a>
+<a name="260"><span class="lineNum">     260 </span><span class="lineNoCov">          0 :       int       source_part;</span></a>
+<a name="261"><span class="lineNum">     261 </span><span class="lineNoCov">          0 :       int       source_byte;</span></a>
+<a name="262"><span class="lineNum">     262 </span><span class="lineNoCov">          0 :       dest = &amp;((char*)value)[byte_offset_in_integer_value(i)];</span></a>
+<a name="263"><span class="lineNum">     263 </span><span class="lineNoCov">          0 :       source_part = (parts_to_copy - 1) - (i / sizeof(an_fp_value_part));</span></a>
+<a name="264"><span class="lineNum">     264 </span><span class="lineNoCov">          0 :       source_byte = (i % sizeof(an_fp_value_part)) + part_offset;</span></a>
+<a name="265"><span class="lineNum">     265 </span><span class="lineNoCov">          0 :       source = (char*)&amp;(mp-&gt;parts[source_part]) + source_byte;</span></a>
+<a name="266"><span class="lineNum">     266 </span><span class="lineNoCov">          0 :       *dest = *source;</span></a>
+<a name="267"><span class="lineNum">     267 </span>            : #if DEBUG</a>
+<a name="268"><span class="lineNum">     268 </span><span class="lineNoCov">          0 :       if (db_flag_is_set(&quot;fxp_store&quot;)) {</span></a>
+<a name="269"><span class="lineNum">     269 </span><span class="lineNoCov">          0 :         long  source_offset, dest_offset;</span></a>
+<a name="270"><span class="lineNum">     270 </span><span class="lineNoCov">          0 :         source_offset = (long)(source - (char *)(&amp;mp-&gt;parts[0]));</span></a>
+<a name="271"><span class="lineNum">     271 </span><span class="lineNoCov">          0 :         dest_offset = (long)(dest - (char*)&amp;value[0]);</span></a>
+<a name="272"><span class="lineNum">     272 </span><span class="lineNoCov">          0 :         fprintf(f_debug, &quot;fxp copy from %ld to %ld, value=%x\n&quot;,</span></a>
+<a name="273"><span class="lineNum">     273 </span><span class="lineNoCov">          0 :                 source_offset, dest_offset, *dest);</span></a>
+<a name="274"><span class="lineNum">     274 </span>            :       }  /* if */</a>
+<a name="275"><span class="lineNum">     275 </span>            : #endif /* DEBUG */</a>
+<a name="276"><span class="lineNum">     276 </span>            :     }  /* for */</a>
+<a name="277"><span class="lineNum">     277 </span>            :   } else {</a>
+<a name="278"><span class="lineNum">     278 </span>            :     /* Copy the value from the mantissa to the low order bytes of the</a>
+<a name="279"><span class="lineNum">     279 </span>            :        fixed-point value. */</a>
+<a name="280"><span class="lineNum">     280 </span><span class="lineNoCov">          0 :     memcpy((char*)value + sizeof(a_fixed_point_value) - source_size,</span></a>
+<a name="281"><span class="lineNum">     281 </span><span class="lineNoCov">          0 :            (char*)&amp;mp-&gt;parts[0], size_t_arg(source_size));</span></a>
+<a name="282"><span class="lineNum">     282 </span>            :   }  /* if */</a>
+<a name="283"><span class="lineNum">     283 </span><span class="lineNoCov">          0 : }  /* store_hex_fxp_value */</span></a>
+<a name="284"><span class="lineNum">     284 </span>            : </a>
+<a name="285"><span class="lineNum">     285 </span>            : </a>
+<a name="286"><span class="lineNum">     286 </span><span class="lineNoCov">          0 : static void load_hex_fxp_value(a_fixed_point_value      *value,</span></a>
+<a name="287"><span class="lineNum">     287 </span>            :                                a_fixed_point_type_descr *fxp_descr,</a>
+<a name="288"><span class="lineNum">     288 </span>            :                                a_mantissa_ptr           mp,</a>
+<a name="289"><span class="lineNum">     289 </span>            :                                long                     *exponent,</a>
+<a name="290"><span class="lineNum">     290 </span>            :                                a_boolean                *is_negative)</a>
+<a name="291"><span class="lineNum">     291 </span>            : </a>
+<a name="292"><span class="lineNum">     292 </span>            : /*</a>
+<a name="293"><span class="lineNum">     293 </span>            : Create mantissa (mp), exponent, and is_negative from a_fixed_point_value</a>
+<a name="294"><span class="lineNum">     294 </span>            : (value).  fxp_descr describes the format of the fixed-point value.</a>
+<a name="295"><span class="lineNum">     295 </span>            : */</a>
+<a name="296"><span class="lineNum">     296 </span>            : {</a>
+<a name="297"><span class="lineNum">     297 </span><span class="lineNoCov">          0 :   unsigned int          parts_to_copy;</span></a>
+<a name="298"><span class="lineNum">     298 </span><span class="lineNoCov">          0 :   unsigned int          dest_size;</span></a>
+<a name="299"><span class="lineNum">     299 </span><span class="lineNoCov">          0 :   unsigned int          part_offset;</span></a>
+<a name="300"><span class="lineNum">     300 </span><span class="lineNoCov">          0 :   a_fixed_point_value   local_value;</span></a>
+<a name="301"><span class="lineNum">     301 </span>            : </a>
+<a name="302"><span class="lineNum">     302 </span><span class="lineNoCov">          0 :   init_mantissa(mp);</span></a>
+<a name="303"><span class="lineNum">     303 </span><span class="lineNoCov">          0 :   *is_negative = !fxp_descr-&gt;is_unsigned &amp;&amp; fxp_sign_of(*value);</span></a>
+<a name="304"><span class="lineNum">     304 </span><span class="lineNoCov">          0 :   if (*is_negative) {</span></a>
+<a name="305"><span class="lineNum">     305 </span><span class="lineNoCov">          0 :     a_boolean   local_err;</span></a>
+<a name="306"><span class="lineNum">     306 </span><span class="lineNoCov">          0 :     local_value = *value;</span></a>
+<a name="307"><span class="lineNum">     307 </span><span class="lineNoCov">          0 :     negate_fixed_point_value(&amp;local_value, &amp;local_err);</span></a>
+<a name="308"><span class="lineNum">     308 </span>            :     /* An error should only occur on negating the smallest integer.  In</a>
+<a name="309"><span class="lineNum">     309 </span>            :        that case, just use the original value. */</a>
+<a name="310"><span class="lineNum">     310 </span><span class="lineNoCov">          0 :     if (!local_err) value = &amp;local_value;</span></a>
+<a name="311"><span class="lineNum">     311 </span>            :   }  /* if */</a>
+<a name="312"><span class="lineNum">     312 </span><span class="lineNoCov">          0 :   dest_size = sizeof_fixed_point(fxp_descr);</span></a>
+<a name="313"><span class="lineNum">     313 </span><span class="lineNoCov">          0 :   parts_to_copy = (dest_size + sizeof(an_fp_value_part) - 1) /</span></a>
+<a name="314"><span class="lineNum">     314 </span>            :                    sizeof(an_fp_value_part);</a>
+<a name="315"><span class="lineNum">     315 </span>            :   /* In most cases, an entire fp_value_part is copied.  If the target is just</a>
+<a name="316"><span class="lineNum">     316 </span>            :      a 1 or 2 byte value, however, only the high-order bytes of the dest</a>
+<a name="317"><span class="lineNum">     317 </span>            :      fp_value_part are copied. */</a>
+<a name="318"><span class="lineNum">     318 </span><span class="lineNoCov">          0 :   part_offset = dest_size &lt; sizeof(an_fp_value_part)</span></a>
+<a name="319"><span class="lineNum">     319 </span>            :                                      ? dest_size  : sizeof(an_fp_value_part);</a>
+<a name="320"><span class="lineNum">     320 </span><span class="lineNoCov">          0 :   part_offset = sizeof(an_fp_value_part) - part_offset;</span></a>
+<a name="321"><span class="lineNum">     321 </span>            :   /* The destination value is in the upper dest_size bytes of the mantissa.</a>
+<a name="322"><span class="lineNum">     322 </span>            :      This needs to be copied from the low order bytes of the fixed-point</a>
+<a name="323"><span class="lineNum">     323 </span>            :      value.  See the comments in store_hex_fxp_value for more information. */</a>
+<a name="324"><span class="lineNum">     324 </span><span class="lineNoCov">          0 :   if (host_little_endian) {</span></a>
+<a name="325"><span class="lineNum">     325 </span>            :     unsigned int i;</a>
+<a name="326"><span class="lineNum">     326 </span><span class="lineNoCov">          0 :     for (i = 0; i &lt; dest_size; ++i) {</span></a>
+<a name="327"><span class="lineNum">     327 </span><span class="lineNoCov">          0 :       char      *dest;</span></a>
+<a name="328"><span class="lineNum">     328 </span><span class="lineNoCov">          0 :       char      *source;</span></a>
+<a name="329"><span class="lineNum">     329 </span><span class="lineNoCov">          0 :       int       dest_part;</span></a>
+<a name="330"><span class="lineNum">     330 </span><span class="lineNoCov">          0 :       int       dest_byte;</span></a>
+<a name="331"><span class="lineNum">     331 </span><span class="lineNoCov">          0 :       source = &amp;((char*)value)[byte_offset_in_integer_value(i)];</span></a>
+<a name="332"><span class="lineNum">     332 </span><span class="lineNoCov">          0 :       dest_part = (parts_to_copy - 1) - (i / sizeof(an_fp_value_part));</span></a>
+<a name="333"><span class="lineNum">     333 </span><span class="lineNoCov">          0 :       dest_byte = (i % sizeof(an_fp_value_part)) + part_offset;</span></a>
+<a name="334"><span class="lineNum">     334 </span><span class="lineNoCov">          0 :       dest = (char*)&amp;(mp-&gt;parts[dest_part]) + dest_byte;</span></a>
+<a name="335"><span class="lineNum">     335 </span><span class="lineNoCov">          0 :       *dest = *source;</span></a>
+<a name="336"><span class="lineNum">     336 </span>            :     }  /* for */</a>
+<a name="337"><span class="lineNum">     337 </span>            :   } else {</a>
+<a name="338"><span class="lineNum">     338 </span>            :     /* Copy the value from the low order bytes for the fixed-point value</a>
+<a name="339"><span class="lineNum">     339 </span>            :        to the mantissa. */</a>
+<a name="340"><span class="lineNum">     340 </span><span class="lineNoCov">          0 :     memcpy((char*)&amp;mp-&gt;parts[0],</span></a>
+<a name="341"><span class="lineNum">     341 </span><span class="lineNoCov">          0 :            (char*)value + sizeof(a_fixed_point_value) - dest_size,</span></a>
+<a name="342"><span class="lineNum">     342 </span>            :            size_t_arg(dest_size));</a>
+<a name="343"><span class="lineNum">     343 </span>            :   }  /* if */</a>
+<a name="344"><span class="lineNum">     344 </span>            :   /* The exponent is the number of non-fractional bits of the value. */</a>
+<a name="345"><span class="lineNum">     345 </span><span class="lineNoCov">          0 :   *exponent = non_fractional_bits_for_fixed_point(fxp_descr);</span></a>
+<a name="346"><span class="lineNum">     346 </span><span class="lineNoCov">          0 : }  /* load_hex_fxp_value */</span></a>
+<a name="347"><span class="lineNum">     347 </span>            : </a>
+<a name="348"><span class="lineNum">     348 </span>            : </a>
+<a name="349"><span class="lineNum">     349 </span><span class="lineNoCov">          0 : static void normalize_mantissa(a_mantissa_ptr   mp,</span></a>
+<a name="350"><span class="lineNum">     350 </span>            :                                long             *exponent)</a>
+<a name="351"><span class="lineNum">     351 </span>            : /*</a>
+<a name="352"><span class="lineNum">     352 </span>            : Normalize the mantissa value so that it occupies the high-order bits</a>
+<a name="353"><span class="lineNum">     353 </span>            : of &quot;mp&quot;.  Adjust the exponent accordingly.</a>
+<a name="354"><span class="lineNum">     354 </span>            : */</a>
+<a name="355"><span class="lineNum">     355 </span>            : {</a>
+<a name="356"><span class="lineNum">     356 </span><span class="lineNoCov">          0 :   if (!mantissa_is_zero(mp)) {</span></a>
+<a name="357"><span class="lineNum">     357 </span>            :     /* Adjust the mantissa so that it is normalized in the high-order bits</a>
+<a name="358"><span class="lineNum">     358 </span>            :        of the mantissa. */</a>
+<a name="359"><span class="lineNum">     359 </span><span class="lineNoCov">          0 :     while ((mp-&gt;parts[0] &amp; 0x80000000) == 0) {</span></a>
+<a name="360"><span class="lineNum">     360 </span><span class="lineNoCov">          0 :       shift_left_mantissa(mp, 1);</span></a>
+<a name="361"><span class="lineNum">     361 </span><span class="lineNoCov">          0 :       (*exponent)--;</span></a>
+<a name="362"><span class="lineNum">     362 </span>            :     }  /* while */</a>
+<a name="363"><span class="lineNum">     363 </span>            :   } else {</a>
+<a name="364"><span class="lineNum">     364 </span>            :     /* Clear the exponent if the mantissa is zero. */</a>
+<a name="365"><span class="lineNum">     365 </span><span class="lineNoCov">          0 :     *exponent = 0;</span></a>
+<a name="366"><span class="lineNum">     366 </span>            :   }  /* if */</a>
+<a name="367"><span class="lineNum">     367 </span><span class="lineNoCov">          0 : }  /* normalize_mantissa */</span></a>
+<a name="368"><span class="lineNum">     368 </span>            : </a>
+<a name="369"><span class="lineNum">     369 </span>            : </a>
+<a name="370"><span class="lineNum">     370 </span><span class="lineNoCov">          0 : static void make_mantissa_from_integer_value(</span></a>
+<a name="371"><span class="lineNum">     371 </span>            :                                 an_integer_value                *value,</a>
+<a name="372"><span class="lineNum">     372 </span>            :                                 a_boolean                       is_negative,</a>
+<a name="373"><span class="lineNum">     373 </span>            :                                 a_mantissa_ptr                  mp,</a>
+<a name="374"><span class="lineNum">     374 </span>            :                                 long                            *exponent)</a>
+<a name="375"><span class="lineNum">     375 </span>            : /*</a>
+<a name="376"><span class="lineNum">     376 </span>            : Create a mantissa (mp) and exponent from an_integer_value (value).  If</a>
+<a name="377"><span class="lineNum">     377 </span>            : value is negative, is_negative will be TRUE.</a>
+<a name="378"><span class="lineNum">     378 </span>            : */</a>
+<a name="379"><span class="lineNum">     379 </span>            : {</a>
+<a name="380"><span class="lineNum">     380 </span><span class="lineNoCov">          0 :   int                   parts_to_copy;</span></a>
+<a name="381"><span class="lineNum">     381 </span><span class="lineNoCov">          0 :   an_integer_value      local_value;</span></a>
+<a name="382"><span class="lineNum">     382 </span>            : </a>
+<a name="383"><span class="lineNum">     383 </span>            : #if CHECKING</a>
+<a name="384"><span class="lineNum">     384 </span>            :   { /* Make sure an_integer_value can be copied into a_mantissa. */</a>
+<a name="385"><span class="lineNum">     385 </span><span class="lineNoCov">          0 :     a_boolean   okay = sizeof(an_integer_value) &lt;= sizeof(mp-&gt;parts);</span></a>
+<a name="386"><span class="lineNum">     386 </span><span class="lineNoCov">          0 :     check_assertion(okay);</span></a>
+<a name="387"><span class="lineNum">     387 </span>            :   }</a>
+<a name="388"><span class="lineNum">     388 </span>            : #endif /* CHECKING */</a>
+<a name="389"><span class="lineNum">     389 </span>            :   /* Clear the mantissa. */</a>
+<a name="390"><span class="lineNum">     390 </span><span class="lineNoCov">          0 :   init_mantissa(mp);</span></a>
+<a name="391"><span class="lineNum">     391 </span><span class="lineNoCov">          0 :   *exponent = 0;</span></a>
+<a name="392"><span class="lineNum">     392 </span><span class="lineNoCov">          0 :   if (is_negative) {</span></a>
+<a name="393"><span class="lineNum">     393 </span>            :     /* If the source value is negative, get the positive version for the</a>
+<a name="394"><span class="lineNum">     394 </span>            :        conversion. */</a>
+<a name="395"><span class="lineNum">     395 </span><span class="lineNoCov">          0 :     a_boolean   err;</span></a>
+<a name="396"><span class="lineNum">     396 </span><span class="lineNoCov">          0 :     local_value = *value;</span></a>
+<a name="397"><span class="lineNum">     397 </span><span class="lineNoCov">          0 :     negate_integer_value(&amp;local_value, &amp;err);</span></a>
+<a name="398"><span class="lineNum">     398 </span>            :     /* An error should only occur on negating the smallest integer.  In</a>
+<a name="399"><span class="lineNum">     399 </span>            :        that case, just use the original value. */</a>
+<a name="400"><span class="lineNum">     400 </span><span class="lineNoCov">          0 :     if (!err) value = &amp;local_value;</span></a>
+<a name="401"><span class="lineNum">     401 </span>            :   }  /* if */</a>
+<a name="402"><span class="lineNum">     402 </span><span class="lineNoCov">          0 :   parts_to_copy = (sizeof(an_integer_value) + sizeof(an_fp_value_part) - 1) /</span></a>
+<a name="403"><span class="lineNum">     403 </span>            :                    sizeof(an_fp_value_part);</a>
+<a name="404"><span class="lineNum">     404 </span>            :   /* The source value is in the low order bytes of the integer value.</a>
+<a name="405"><span class="lineNum">     405 </span>            :      This needs to be copied to the high order bytes of the mantissa. */</a>
+<a name="406"><span class="lineNum">     406 </span><span class="lineNoCov">          0 :   if (host_little_endian) {</span></a>
+<a name="407"><span class="lineNum">     407 </span>            :     unsigned int i;</a>
+<a name="408"><span class="lineNum">     408 </span><span class="lineNoCov">          0 :     for (i = 0; i &lt; sizeof(an_integer_value); ++i) {</span></a>
+<a name="409"><span class="lineNum">     409 </span><span class="lineNoCov">          0 :       char      *source;</span></a>
+<a name="410"><span class="lineNum">     410 </span><span class="lineNoCov">          0 :       char      *dest;</span></a>
+<a name="411"><span class="lineNum">     411 </span><span class="lineNoCov">          0 :       source = &amp;((char*)value)[byte_offset_in_integer_value(i)];</span></a>
+<a name="412"><span class="lineNum">     412 </span><span class="lineNoCov">          0 :       dest = (char*)&amp;(mp-&gt;parts[(parts_to_copy - 1) -</span></a>
+<a name="413"><span class="lineNum">     413 </span><span class="lineNoCov">          0 :                                   (i / sizeof(an_fp_value_part))]) +</span></a>
+<a name="414"><span class="lineNum">     414 </span><span class="lineNoCov">          0 :                        (i % sizeof(an_fp_value_part));</span></a>
+<a name="415"><span class="lineNum">     415 </span><span class="lineNoCov">          0 :        *dest = *source;</span></a>
+<a name="416"><span class="lineNum">     416 </span>            :     }  /* for */</a>
+<a name="417"><span class="lineNum">     417 </span>            :   } else {</a>
+<a name="418"><span class="lineNum">     418 </span>            :     /* Copy the value from the high-order bytes of the mantissa. */</a>
+<a name="419"><span class="lineNum">     419 </span><span class="lineNoCov">          0 :     memcpy((char*)&amp;mp-&gt;parts[0], (char*)value, sizeof(an_integer_value));</span></a>
+<a name="420"><span class="lineNum">     420 </span>            :   }  /* if */</a>
+<a name="421"><span class="lineNum">     421 </span><span class="lineNoCov">          0 :   *exponent = BITS_IN_AN_INTEGER_VALUE;</span></a>
+<a name="422"><span class="lineNum">     422 </span>            :   /* Adjust the mantissa so that it is normalized in the high-order bits</a>
+<a name="423"><span class="lineNum">     423 </span>            :      of the mantissa. */</a>
+<a name="424"><span class="lineNum">     424 </span><span class="lineNoCov">          0 :   normalize_mantissa(mp, exponent);</span></a>
+<a name="425"><span class="lineNum">     425 </span><span class="lineNoCov">          0 : }  /* make_mantissa_from_integer_value */</span></a>
+<a name="426"><span class="lineNum">     426 </span>            : </a>
+<a name="427"><span class="lineNum">     427 </span>            : </a>
+<a name="428"><span class="lineNum">     428 </span><span class="lineNoCov">          0 : static void make_integer_value_from_mantissa(</span></a>
+<a name="429"><span class="lineNum">     429 </span>            :                                 an_integer_value                *value,</a>
+<a name="430"><span class="lineNum">     430 </span>            :                                 a_boolean                       is_negative,</a>
+<a name="431"><span class="lineNum">     431 </span>            :                                 a_mantissa_ptr                  mp,</a>
+<a name="432"><span class="lineNum">     432 </span>            :                                 long                            exponent,</a>
+<a name="433"><span class="lineNum">     433 </span>            :                                 a_boolean                       *err)</a>
+<a name="434"><span class="lineNum">     434 </span>            : /*</a>
+<a name="435"><span class="lineNum">     435 </span>            : Create an_integer_value from a mantissa (mp) and exponent.  If the value is</a>
+<a name="436"><span class="lineNum">     436 </span>            : negative, is_negative will be TRUE.</a>
+<a name="437"><span class="lineNum">     437 </span>            : */</a>
+<a name="438"><span class="lineNum">     438 </span>            : {</a>
+<a name="439"><span class="lineNum">     439 </span><span class="lineNoCov">          0 :   int   parts_to_copy;</span></a>
+<a name="440"><span class="lineNum">     440 </span><span class="lineNoCov">          0 :   int   shift_count;</span></a>
+<a name="441"><span class="lineNum">     441 </span>            : </a>
+<a name="442"><span class="lineNum">     442 </span><span class="lineNoCov">          0 :   *err = FALSE;</span></a>
+<a name="443"><span class="lineNum">     443 </span>            :   /* Compute the number of bits to shift the mantissa so that any fractional</a>
+<a name="444"><span class="lineNum">     444 </span>            :      bits will be discarded. */</a>
+<a name="445"><span class="lineNum">     445 </span><span class="lineNoCov">          0 :   shift_count = BITS_IN_AN_INTEGER_VALUE - exponent;</span></a>
+<a name="446"><span class="lineNum">     446 </span><span class="lineNoCov">          0 :   if (shift_count &gt;= 0) {</span></a>
+<a name="447"><span class="lineNum">     447 </span><span class="lineNoCov">          0 :     if (shift_count &gt; 0) shift_right_mantissa(mp, shift_count);</span></a>
+<a name="448"><span class="lineNum">     448 </span>            :   } else {</a>
+<a name="449"><span class="lineNum">     449 </span>            :     /* The value will not fit in an integer value. */</a>
+<a name="450"><span class="lineNum">     450 </span><span class="lineNoCov">          0 :     *err = TRUE;</span></a>
+<a name="451"><span class="lineNum">     451 </span><span class="lineNoCov">          0 :     goto done;</span></a>
+<a name="452"><span class="lineNum">     452 </span>            :   }  /* if */</a>
+<a name="453"><span class="lineNum">     453 </span><span class="lineNoCov">          0 :   parts_to_copy = (sizeof(an_integer_value) + sizeof(an_fp_value_part) - 1) /</span></a>
+<a name="454"><span class="lineNum">     454 </span>            :                    sizeof(an_fp_value_part);</a>
+<a name="455"><span class="lineNum">     455 </span>            :   /* The destination value is in the low order bytes of the integer value.</a>
+<a name="456"><span class="lineNum">     456 </span>            :      This needs to be copied from the high order bytes of the mantissa. */</a>
+<a name="457"><span class="lineNum">     457 </span><span class="lineNoCov">          0 :   if (host_little_endian) {</span></a>
+<a name="458"><span class="lineNum">     458 </span>            :     unsigned int i;</a>
+<a name="459"><span class="lineNum">     459 </span><span class="lineNoCov">          0 :     for (i = 0; i &lt; sizeof(an_integer_value); ++i) {</span></a>
+<a name="460"><span class="lineNum">     460 </span><span class="lineNoCov">          0 :       char      *dest;</span></a>
+<a name="461"><span class="lineNum">     461 </span><span class="lineNoCov">          0 :       char      *source;</span></a>
+<a name="462"><span class="lineNum">     462 </span><span class="lineNoCov">          0 :       dest = &amp;((char*)value)[byte_offset_in_integer_value(i)];</span></a>
+<a name="463"><span class="lineNum">     463 </span><span class="lineNoCov">          0 :       source = (char*)&amp;(mp-&gt;parts[(parts_to_copy - 1) -</span></a>
+<a name="464"><span class="lineNum">     464 </span><span class="lineNoCov">          0 :                                   (i / sizeof(an_fp_value_part))]) +</span></a>
+<a name="465"><span class="lineNum">     465 </span><span class="lineNoCov">          0 :                        (i % sizeof(an_fp_value_part));</span></a>
+<a name="466"><span class="lineNum">     466 </span><span class="lineNoCov">          0 :        *dest = *source;</span></a>
+<a name="467"><span class="lineNum">     467 </span>            :     }  /* for */</a>
+<a name="468"><span class="lineNum">     468 </span>            :   } else {</a>
+<a name="469"><span class="lineNum">     469 </span>            :     /* Copy the value to the high order bits of the mantissa. */</a>
+<a name="470"><span class="lineNum">     470 </span><span class="lineNoCov">          0 :     memcpy((char*)value, (char*)&amp;mp-&gt;parts[0], sizeof(an_integer_value));</span></a>
+<a name="471"><span class="lineNum">     471 </span>            :   }  /* if */</a>
+<a name="472"><span class="lineNum">     472 </span><span class="lineNoCov">          0 :   if (is_negative) {</span></a>
+<a name="473"><span class="lineNum">     473 </span>            :     /* If the value should be negative, negate the resulting value. */</a>
+<a name="474"><span class="lineNum">     474 </span><span class="lineNoCov">          0 :     a_boolean           local_err;</span></a>
+<a name="475"><span class="lineNum">     475 </span><span class="lineNoCov">          0 :     an_integer_value    saved_value;</span></a>
+<a name="476"><span class="lineNum">     476 </span><span class="lineNoCov">          0 :     saved_value = *value;</span></a>
+<a name="477"><span class="lineNum">     477 </span><span class="lineNoCov">          0 :     negate_integer_value(value, &amp;local_err);</span></a>
+<a name="478"><span class="lineNum">     478 </span>            :     /* An error should only occur on negating the smallest integer.  In</a>
+<a name="479"><span class="lineNum">     479 </span>            :        that case, just use the original value. */</a>
+<a name="480"><span class="lineNum">     480 </span><span class="lineNoCov">          0 :     if (local_err) *value = saved_value;</span></a>
+<a name="481"><span class="lineNum">     481 </span>            :   }  /* if */</a>
+<a name="482"><span class="lineNum">     482 </span><span class="lineNoCov">          0 : done:</span></a>
+<a name="483"><span class="lineNum">     483 </span><span class="lineNoCov">          0 :   return;</span></a>
+<a name="484"><span class="lineNum">     484 </span>            : }  /* make_integer_value_from_mantissa */</a>
+<a name="485"><span class="lineNum">     485 </span>            : </a>
+<a name="486"><span class="lineNum">     486 </span>            : </a>
+<a name="487"><span class="lineNum">     487 </span><span class="lineNoCov">          0 : static void clear_unused_mantissa_bits(a_mantissa_ptr   mp,</span></a>
+<a name="488"><span class="lineNum">     488 </span>            :                                        int              bits_used)</a>
+<a name="489"><span class="lineNum">     489 </span>            : /*</a>
+<a name="490"><span class="lineNum">     490 </span>            : Zero any bits in the mantissa that are beyond the first N bits specified by</a>
+<a name="491"><span class="lineNum">     491 </span>            : bits_used.</a>
+<a name="492"><span class="lineNum">     492 </span>            : */</a>
+<a name="493"><span class="lineNum">     493 </span>            : {</a>
+<a name="494"><span class="lineNum">     494 </span><span class="lineNoCov">          0 :   int   part;</span></a>
+<a name="495"><span class="lineNum">     495 </span>            : </a>
+<a name="496"><span class="lineNum">     496 </span><span class="lineNoCov">          0 :   for (part = 0; part &lt; MANTISSA_PARTS; part++) {</span></a>
+<a name="497"><span class="lineNum">     497 </span><span class="lineNoCov">          0 :     if (bits_used &gt;= 32) {</span></a>
+<a name="498"><span class="lineNum">     498 </span>            :       /* The whole part is used.  Skip to the next part. */</a>
+<a name="499"><span class="lineNum">     499 </span><span class="lineNoCov">          0 :       bits_used -= 32;</span></a>
+<a name="500"><span class="lineNum">     500 </span><span class="lineNoCov">          0 :       continue;</span></a>
+<a name="501"><span class="lineNum">     501 </span><span class="lineNoCov">          0 :     } else if (bits_used == 0) {</span></a>
+<a name="502"><span class="lineNum">     502 </span>            :       /* None of this part is used.  Clear it. */</a>
+<a name="503"><span class="lineNum">     503 </span><span class="lineNoCov">          0 :       mp-&gt;parts[part] = 0;</span></a>
+<a name="504"><span class="lineNum">     504 </span>            :     } else {</a>
+<a name="505"><span class="lineNum">     505 </span>            :       /* A portion of the part is used.  Clear the unused part. */</a>
+<a name="506"><span class="lineNum">     506 </span><span class="lineNoCov">          0 :       int               bits_to_clear = 32 - bits_used;</span></a>
+<a name="507"><span class="lineNum">     507 </span><span class="lineNoCov">          0 :       an_fp_value_part  mask;</span></a>
+<a name="508"><span class="lineNum">     508 </span><span class="lineNoCov">          0 :       mask = 0xffffffff &lt;&lt; bits_to_clear;</span></a>
+<a name="509"><span class="lineNum">     509 </span><span class="lineNoCov">          0 :       mp-&gt;parts[part] &amp;= mask;</span></a>
+<a name="510"><span class="lineNum">     510 </span><span class="lineNoCov">          0 :       bits_used = 0;</span></a>
+<a name="511"><span class="lineNum">     511 </span>            :     }  /* if */</a>
+<a name="512"><span class="lineNum">     512 </span>            :   }  /* for */</a>
+<a name="513"><span class="lineNum">     513 </span>            : }  /* clear_unused_mantissa_bits */</a>
+<a name="514"><span class="lineNum">     514 </span>            : </a>
+<a name="515"><span class="lineNum">     515 </span>            : </a>
+<a name="516"><span class="lineNum">     516 </span><span class="lineNoCov">          0 : static void conv_mantissa_to_fixed_point(</span></a>
+<a name="517"><span class="lineNum">     517 </span>            :                                 a_mantissa_ptr                  mp,</a>
+<a name="518"><span class="lineNum">     518 </span>            :                                 long                            exponent,</a>
+<a name="519"><span class="lineNum">     519 </span>            :                                 a_boolean                       is_negative,</a>
+<a name="520"><span class="lineNum">     520 </span>            :                                 a_fixed_point_type_descr        *fxp_descr,</a>
+<a name="521"><span class="lineNum">     521 </span>            :                                 a_boolean                       overflow,</a>
+<a name="522"><span class="lineNum">     522 </span>            :                                 a_fixed_point_value             *value,</a>
+<a name="523"><span class="lineNum">     523 </span>            :                                 a_boolean                       *err,</a>
+<a name="524"><span class="lineNum">     524 </span>            :                                 a_boolean                       *inexact)</a>
+<a name="525"><span class="lineNum">     525 </span>            : /*</a>
+<a name="526"><span class="lineNum">     526 </span>            : Given a mantissa (mp) and exponent that represent a fixed-point value, check</a>
+<a name="527"><span class="lineNum">     527 </span>            : that the value is representable in the destination type specified by</a>
+<a name="528"><span class="lineNum">     528 </span>            : fxp_descr and shift the value as needed so that it contains the correct</a>
+<a name="529"><span class="lineNum">     529 </span>            : number of value bits for the destination type.  is_negative is TRUE if the</a>
+<a name="530"><span class="lineNum">     530 </span>            : value to be stored must be created as a negative value.  overflow is TRUE if</a>
+<a name="531"><span class="lineNum">     531 </span>            : the value is already known to be too large.  Set *err on overflow.  Set</a>
+<a name="532"><span class="lineNum">     532 </span>            : *inexact if any bits are lost because of scaling or rounding.</a>
+<a name="533"><span class="lineNum">     533 </span>            : */</a>
+<a name="534"><span class="lineNum">     534 </span>            : {</a>
+<a name="535"><span class="lineNum">     535 </span><span class="lineNoCov">          0 :   int           nonfract_bits = 0;</span></a>
+<a name="536"><span class="lineNum">     536 </span><span class="lineNoCov">          0 :   int           value_bits = 0;</span></a>
+<a name="537"><span class="lineNum">     537 </span><span class="lineNoCov">          0 :   int           shift_count = 0;</span></a>
+<a name="538"><span class="lineNum">     538 </span><span class="lineNoCov">          0 :   int           mantissa_bits = 0;</span></a>
+<a name="539"><span class="lineNum">     539 </span><span class="lineNoCov">          0 :   int           sign_bits = 0;</span></a>
+<a name="540"><span class="lineNum">     540 </span>            : </a>
+<a name="541"><span class="lineNum">     541 </span><span class="lineNoCov">          0 :   *err = FALSE;</span></a>
+<a name="542"><span class="lineNum">     542 </span><span class="lineNoCov">          0 :   *inexact = FALSE;</span></a>
+<a name="543"><span class="lineNum">     543 </span><span class="lineNoCov">          0 :   if (!overflow) {</span></a>
+<a name="544"><span class="lineNum">     544 </span><span class="lineNoCov">          0 :     if (is_negative &amp;&amp; fxp_descr-&gt;is_unsigned) {</span></a>
+<a name="545"><span class="lineNum">     545 </span>            :       /* A negative value being stored in an unsigned value.  Set it to</a>
+<a name="546"><span class="lineNum">     546 </span>            :          zero. */</a>
+<a name="547"><span class="lineNum">     547 </span><span class="lineNoCov">          0 :       init_mantissa(mp);</span></a>
+<a name="548"><span class="lineNum">     548 </span><span class="lineNoCov">          0 :       exponent = 0;</span></a>
+<a name="549"><span class="lineNum">     549 </span>            :     }  /* if */</a>
+<a name="550"><span class="lineNum">     550 </span>            :     /* Adjust the mantissa so that it is normalized in the high-order bits</a>
+<a name="551"><span class="lineNum">     551 </span>            :        of the mantissa. */</a>
+<a name="552"><span class="lineNum">     552 </span><span class="lineNoCov">          0 :     normalize_mantissa(mp, &amp;exponent);</span></a>
+<a name="553"><span class="lineNum">     553 </span>            :     /* Compute the number of bits to shift the mantissa so that it contains</a>
+<a name="554"><span class="lineNum">     554 </span>            :        the right number of fractional and non-fractional bits. */</a>
+<a name="555"><span class="lineNum">     555 </span><span class="lineNoCov">          0 :     nonfract_bits = non_fractional_bits_for_fixed_point(fxp_descr);</span></a>
+<a name="556"><span class="lineNum">     556 </span><span class="lineNoCov">          0 :     value_bits = value_bits_for_fixed_point(fxp_descr);</span></a>
+<a name="557"><span class="lineNum">     557 </span><span class="lineNoCov">          0 :     shift_count = nonfract_bits - exponent;</span></a>
+<a name="558"><span class="lineNum">     558 </span><span class="lineNoCov">          0 :     mantissa_bits = number_of_bits_in_mantissa(mp, /*normalize=*/FALSE);</span></a>
+<a name="559"><span class="lineNum">     559 </span><span class="lineNoCov">          0 :     sign_bits = fxp_descr-&gt;is_unsigned ? 0 : 1;</span></a>
+<a name="560"><span class="lineNum">     560 </span><span class="lineNoCov">          0 :     if (shift_count &gt; 0) shift_right_mantissa(mp, shift_count);</span></a>
+<a name="561"><span class="lineNum">     561 </span>            :     /* See if the result value has more bits of precision than fit into</a>
+<a name="562"><span class="lineNum">     562 </span>            :        the destination type. */</a>
+<a name="563"><span class="lineNum">     563 </span><span class="lineNoCov">          0 :     if (mantissa_bits &gt; value_bits) *inexact = TRUE;</span></a>
+<a name="564"><span class="lineNum">     564 </span>            :     /* Round the value to the nearest representable value. */</a>
+<a name="565"><span class="lineNum">     565 </span><span class="lineNoCov">          0 :     round_hex_fp_value(mp, &amp;exponent, value_bits + sign_bits,</span></a>
+<a name="566"><span class="lineNum">     566 </span><span class="lineNoCov">          0 :                        /*is_fixed_point=*/TRUE, !fxp_descr-&gt;is_unsigned,</span></a>
+<a name="567"><span class="lineNum">     567 </span>            :                        inexact);</a>
+<a name="568"><span class="lineNum">     568 </span>            :     /* Zero any bits in the mantissa that are not actually used in the</a>
+<a name="569"><span class="lineNum">     569 </span>            :        value. */</a>
+<a name="570"><span class="lineNum">     570 </span><span class="lineNoCov">          0 :     clear_unused_mantissa_bits(mp, value_bits + sign_bits);</span></a>
+<a name="571"><span class="lineNum">     571 </span>            :     /* Recompute the shift count and mantissa bits after rounding. */</a>
+<a name="572"><span class="lineNum">     572 </span><span class="lineNoCov">          0 :     shift_count = nonfract_bits - exponent;</span></a>
+<a name="573"><span class="lineNum">     573 </span><span class="lineNoCov">          0 :     mantissa_bits = number_of_bits_in_mantissa(mp, /*normalize=*/TRUE);</span></a>
+<a name="574"><span class="lineNum">     574 </span>            :     /* A shift count of zero represents an overflow for a signed value because</a>
+<a name="575"><span class="lineNum">     575 </span>            :        the sign bit would be needed for the representation. */</a>
+<a name="576"><span class="lineNum">     576 </span><span class="lineNoCov">          0 :     if (shift_count &lt; sign_bits) {</span></a>
+<a name="577"><span class="lineNum">     577 </span>            :       /* We would be shifting bits out of the high end of this mantissa. */</a>
+<a name="578"><span class="lineNum">     578 </span><span class="lineNoCov">          0 :       overflow = TRUE;</span></a>
+<a name="579"><span class="lineNum">     579 </span>            :     }  /* if */</a>
+<a name="580"><span class="lineNum">     580 </span>            :   }  /* if */</a>
+<a name="581"><span class="lineNum">     581 </span>            : #if DEBUG</a>
+<a name="582"><span class="lineNum">     582 </span><span class="lineNoCov">          0 :   if (db_flag_is_set(&quot;fxp_conv&quot;)) {</span></a>
+<a name="583"><span class="lineNum">     583 </span><span class="lineNoCov">          0 :     fprintf(f_debug, &quot;fxp hex value: &quot;);</span></a>
+<a name="584"><span class="lineNum">     584 </span><span class="lineNoCov">          0 :     db_mantissa(mp);</span></a>
+<a name="585"><span class="lineNum">     585 </span><span class="lineNoCov">          0 :     fprintf(f_debug, &quot;exponent=%ld, nonfract=%d, shift=%d\n&quot;,</span></a>
+<a name="586"><span class="lineNum">     586 </span>            :             exponent, nonfract_bits, shift_count);</a>
+<a name="587"><span class="lineNum">     587 </span>            :   }  /* if */</a>
+<a name="588"><span class="lineNum">     588 </span>            : #endif /* DEBUG */</a>
+<a name="589"><span class="lineNum">     589 </span><span class="lineNoCov">          0 :   if (overflow) {</span></a>
+<a name="590"><span class="lineNum">     590 </span>            :     /* On overflow, return an error flag and set the result value to a</a>
+<a name="591"><span class="lineNum">     591 </span>            :        saturated value. */</a>
+<a name="592"><span class="lineNum">     592 </span><span class="lineNoCov">          0 :     if (fxp_descr-&gt;is_fract_type &amp;&amp; mantissa_bits == 1 &amp;&amp; exponent == 1) {</span></a>
+<a name="593"><span class="lineNum">     593 </span>            :       /* The input value is 1 or -1.  Return the saturated value, but don't</a>
+<a name="594"><span class="lineNum">     594 </span>            :          set the error flag. */</a>
+<a name="595"><span class="lineNum">     595 </span><span class="lineNoCov">          0 :     } else if (!fxp_descr-&gt;is_fract_type &amp;&amp;</span></a>
+<a name="596"><span class="lineNum">     596 </span><span class="lineNoCov">          0 :                mantissa_bits == 1 &amp;&amp; exponent == nonfract_bits) {</span></a>
+<a name="597"><span class="lineNum">     597 </span>            :       /* The input is the smallest value of an _Accum type, or the positive</a>
+<a name="598"><span class="lineNum">     598 </span>            :          version of the same value.  Also return the saturated value without</a>
+<a name="599"><span class="lineNum">     599 </span>            :          setting the error flag. */</a>
+<a name="600"><span class="lineNum">     600 </span><span class="lineNoCov">          0 :     } else if (fxp_descr-&gt;saturating) {</span></a>
+<a name="601"><span class="lineNum">     601 </span>            :       /* If this is a saturating type, silently saturate. */</a>
+<a name="602"><span class="lineNum">     602 </span>            :     } else {</a>
+<a name="603"><span class="lineNum">     603 </span>            :       /* Except for the case above, set the error flag on overflow. */</a>
+<a name="604"><span class="lineNum">     604 </span><span class="lineNoCov">          0 :       *err = TRUE;</span></a>
+<a name="605"><span class="lineNum">     605 </span>            :     }  /* if */</a>
+<a name="606"><span class="lineNum">     606 </span><span class="lineNoCov">          0 :     set_fixed_point_to_saturated_value(value, value_bits,</span></a>
+<a name="607"><span class="lineNum">     607 </span>            :                                        is_negative, fxp_descr);</a>
+<a name="608"><span class="lineNum">     608 </span>            :   } else {</a>
+<a name="609"><span class="lineNum">     609 </span>            :     /* No overflow.  Store the result in the appropriate form. */</a>
+<a name="610"><span class="lineNum">     610 </span><span class="lineNoCov">          0 :     store_hex_fxp_value(mp, fxp_descr, value);</span></a>
+<a name="611"><span class="lineNum">     611 </span>            :     /* Negate the value, if necessary.  If the source is negative and the</a>
+<a name="612"><span class="lineNum">     612 </span>            :        destination is unsigned, a diagnostic will be issued by the caller</a>
+<a name="613"><span class="lineNum">     613 </span>            :        and the value set to zero above.  On overflow, the saturated value</a>
+<a name="614"><span class="lineNum">     614 </span>            :        will have already been created with the appropriate sign above. */</a>
+<a name="615"><span class="lineNum">     615 </span><span class="lineNoCov">          0 :     if (is_negative &amp;&amp; !fxp_descr-&gt;is_unsigned) {</span></a>
+<a name="616"><span class="lineNum">     616 </span><span class="lineNoCov">          0 :       a_boolean negate_err;</span></a>
+<a name="617"><span class="lineNum">     617 </span><span class="lineNoCov">          0 :       negate_fixed_point_value(value, &amp;negate_err);</span></a>
+<a name="618"><span class="lineNum">     618 </span><span class="lineNoCov">          0 :       if (negate_err) *err = TRUE;</span></a>
+<a name="619"><span class="lineNum">     619 </span>            :     }  /* if */</a>
+<a name="620"><span class="lineNum">     620 </span>            :   }  /* if */</a>
+<a name="621"><span class="lineNum">     621 </span>            :   /* If an underflow occurred, set the flag that indicates that the resulting</a>
+<a name="622"><span class="lineNum">     622 </span>            :      value is not an exact representation of the specified value. */</a>
+<a name="623"><span class="lineNum">     623 </span><span class="lineNoCov">          0 :   if (mp-&gt;underflow) *inexact = TRUE;</span></a>
+<a name="624"><span class="lineNum">     624 </span><span class="lineNoCov">          0 : }  /* conv_mantissa_to_fixed_point */</span></a>
+<a name="625"><span class="lineNum">     625 </span>            : </a>
+<a name="626"><span class="lineNum">     626 </span>            : </a>
+<a name="627"><span class="lineNum">     627 </span><span class="lineNoCov">          0 : void conv_integer_to_fixed_point(a_constant_ptr         old_constant,</span></a>
+<a name="628"><span class="lineNum">     628 </span>            :                                  a_constant_ptr         new_constant,</a>
+<a name="629"><span class="lineNum">     629 </span>            :                                  an_error_code          *err_code,</a>
+<a name="630"><span class="lineNum">     630 </span>            :                                  an_error_severity      *err_severity)</a>
+<a name="631"><span class="lineNum">     631 </span>            : /*</a>
+<a name="632"><span class="lineNum">     632 </span>            : Convert the integer constant &quot;old_constant&quot; to a fixed-point constant</a>
+<a name="633"><span class="lineNum">     633 </span>            : in &quot;new_constant.  If, as a result of the conversion, a diagnostic should</a>
+<a name="634"><span class="lineNum">     634 </span>            : be issued, set err_code and err_severity to the values for the message</a>
+<a name="635"><span class="lineNum">     635 </span>            : to be issued; otherwise set err_code to ec_no_error.</a>
+<a name="636"><span class="lineNum">     636 </span>            : */</a>
+<a name="637"><span class="lineNum">     637 </span>            : {</a>
+<a name="638"><span class="lineNum">     638 </span><span class="lineNoCov">          0 :   a_mantissa            mantissa;</span></a>
+<a name="639"><span class="lineNum">     639 </span><span class="lineNoCov">          0 :   long                  exponent;</span></a>
+<a name="640"><span class="lineNum">     640 </span><span class="lineNoCov">          0 :   a_boolean             is_negative;</span></a>
+<a name="641"><span class="lineNum">     641 </span><span class="lineNoCov">          0 :   a_boolean             err;</span></a>
+<a name="642"><span class="lineNum">     642 </span><span class="lineNoCov">          0 :   a_boolean             inexact;</span></a>
+<a name="643"><span class="lineNum">     643 </span><span class="lineNoCov">          0 :   an_integer_kind       ikind;</span></a>
+<a name="644"><span class="lineNum">     644 </span><span class="lineNoCov">          0 :   a_boolean             is_signed;</span></a>
+<a name="645"><span class="lineNum">     645 </span><span class="lineNoCov">          0 :   int                   bit_size;</span></a>
+<a name="646"><span class="lineNum">     646 </span><span class="lineNoCov">          0 :   a_fixed_point_type_descr</span></a>
+<a name="647"><span class="lineNum">     647 </span>            :                         *fxp_descr;</a>
+<a name="648"><span class="lineNum">     648 </span>            : </a>
+<a name="649"><span class="lineNum">     649 </span><span class="lineNoCov">          0 :   check_assertion(old_constant-&gt;kind == (a_constant_repr_kind)ck_integer);</span></a>
+<a name="650"><span class="lineNum">     650 </span><span class="lineNoCov">          0 :   set_constant_kind(new_constant, (a_constant_repr_kind)ck_fixed_point);</span></a>
+<a name="651"><span class="lineNum">     651 </span><span class="lineNoCov">          0 :   *err_code = ec_no_error;</span></a>
+<a name="652"><span class="lineNum">     652 </span>            :   /* Determine attributes (size, signedness) of the integer kind. */</a>
+<a name="653"><span class="lineNum">     653 </span><span class="lineNoCov">          0 :   get_integer_attributes(old_constant, &amp;ikind, &amp;is_signed, &amp;bit_size);</span></a>
+<a name="654"><span class="lineNum">     654 </span>            :   /* Determine if the value is negative. */</a>
+<a name="655"><span class="lineNum">     655 </span><span class="lineNoCov">          0 :   is_negative = is_signed &amp;&amp; sign_of_integer_constant(old_constant) &lt; 0;</span></a>
+<a name="656"><span class="lineNum">     656 </span>            :   /* Convert the integer into the internal mantissa representation. */</a>
+<a name="657"><span class="lineNum">     657 </span><span class="lineNoCov">          0 :   make_mantissa_from_integer_value(&amp;old_constant-&gt;variant.integer_value,</span></a>
+<a name="658"><span class="lineNum">     658 </span>            :                                    is_negative, &amp;mantissa, &amp;exponent);</a>
+<a name="659"><span class="lineNum">     659 </span><span class="lineNoCov">          0 :   fxp_descr = fxp_descr_for_constant(new_constant);</span></a>
+<a name="660"><span class="lineNum">     660 </span>            :   /* Convert and store the mantissa as a fixed-point value. */</a>
+<a name="661"><span class="lineNum">     661 </span><span class="lineNoCov">          0 :   conv_mantissa_to_fixed_point(&amp;mantissa, exponent, is_negative,</span></a>
+<a name="662"><span class="lineNum">     662 </span>            :                                fxp_descr,</a>
+<a name="663"><span class="lineNum">     663 </span>            :                                /*overflow=*/FALSE,</a>
+<a name="664"><span class="lineNum">     664 </span>            :                                &amp;new_constant-&gt;variant.fixed_point_value,</a>
+<a name="665"><span class="lineNum">     665 </span>            :                                &amp;err, &amp;inexact);</a>
+<a name="666"><span class="lineNum">     666 </span><span class="lineNoCov">          0 :   if (err) {</span></a>
+<a name="667"><span class="lineNum">     667 </span>            :     /* The conversion to fixed-point does not fit in the result type. */</a>
+<a name="668"><span class="lineNum">     668 </span><span class="lineNoCov">          0 :     *err_code = ec_integer_to_fixed_conversion;</span></a>
+<a name="669"><span class="lineNum">     669 </span><span class="lineNoCov">          0 :     *err_severity = es_error;</span></a>
+<a name="670"><span class="lineNum">     670 </span><span class="lineNoCov">          0 :   } else if (is_negative &amp;&amp; fxp_descr-&gt;is_unsigned) {</span></a>
+<a name="671"><span class="lineNum">     671 </span>            :     /* The conversion results in a negative value being converted to</a>
+<a name="672"><span class="lineNum">     672 </span>            :        unsigned. */</a>
+<a name="673"><span class="lineNum">     673 </span><span class="lineNoCov">          0 :     *err_code = ec_fixed_sign_change;</span></a>
+<a name="674"><span class="lineNum">     674 </span><span class="lineNoCov">          0 :     *err_severity = es_error;</span></a>
+<a name="675"><span class="lineNum">     675 </span><span class="lineNoCov">          0 :   } else if (inexact) {</span></a>
+<a name="676"><span class="lineNum">     676 </span>            :     /* The conversion loses precision.  This doesn't seem like it should be</a>
+<a name="677"><span class="lineNum">     677 </span>            :        possible for an integer to fixed conversion, but is provided for</a>
+<a name="678"><span class="lineNum">     678 </span>            :        in case there is some fixed format where this would be possible. */</a>
+<a name="679"><span class="lineNum">     679 </span><span class="lineNoCov">          0 :     *err_code = ec_inexact_fixed_conversion;</span></a>
+<a name="680"><span class="lineNum">     680 </span><span class="lineNoCov">          0 :     *err_severity = es_warning;</span></a>
+<a name="681"><span class="lineNum">     681 </span>            :   }  /* if */</a>
+<a name="682"><span class="lineNum">     682 </span><span class="lineNoCov">          0 : }  /* conv_integer_to_fixed_point */</span></a>
+<a name="683"><span class="lineNum">     683 </span>            : </a>
+<a name="684"><span class="lineNum">     684 </span>            : </a>
+<a name="685"><span class="lineNum">     685 </span><span class="lineNoCov">          0 : void conv_fixed_point_to_integer(a_constant_ptr         old_constant,</span></a>
+<a name="686"><span class="lineNum">     686 </span>            :                                  a_constant_ptr         new_constant,</a>
+<a name="687"><span class="lineNum">     687 </span>            :                                  an_error_code          *err_code,</a>
+<a name="688"><span class="lineNum">     688 </span>            :                                  an_error_severity      *err_severity)</a>
+<a name="689"><span class="lineNum">     689 </span>            : /*</a>
+<a name="690"><span class="lineNum">     690 </span>            : Convert the fixed-point constant &quot;old_constant&quot; to an integer constant</a>
+<a name="691"><span class="lineNum">     691 </span>            : in &quot;new_constant.  If, as a result of the conversion, a diagnostic should</a>
+<a name="692"><span class="lineNum">     692 </span>            : be issued, set err_code and err_severity to the values for the message</a>
+<a name="693"><span class="lineNum">     693 </span>            : to be issued; otherwise set err_code to ec_no_error.</a>
+<a name="694"><span class="lineNum">     694 </span>            : */</a>
+<a name="695"><span class="lineNum">     695 </span>            : {</a>
+<a name="696"><span class="lineNum">     696 </span><span class="lineNoCov">          0 :   a_mantissa            mantissa;</span></a>
+<a name="697"><span class="lineNum">     697 </span><span class="lineNoCov">          0 :   long                  exponent;</span></a>
+<a name="698"><span class="lineNum">     698 </span><span class="lineNoCov">          0 :   a_boolean             is_negative;</span></a>
+<a name="699"><span class="lineNum">     699 </span><span class="lineNoCov">          0 :   a_boolean             err;</span></a>
+<a name="700"><span class="lineNum">     700 </span><span class="lineNoCov">          0 :   a_fixed_point_type_descr</span></a>
+<a name="701"><span class="lineNum">     701 </span>            :                         *fxp_descr;</a>
+<a name="702"><span class="lineNum">     702 </span><span class="lineNoCov">          0 :   an_integer_value      int_value;</span></a>
+<a name="703"><span class="lineNum">     703 </span><span class="lineNoCov">          0 :   an_integer_kind       ikind;</span></a>
+<a name="704"><span class="lineNum">     704 </span><span class="lineNoCov">          0 :   a_boolean             is_signed;</span></a>
+<a name="705"><span class="lineNum">     705 </span><span class="lineNoCov">          0 :   int                   bit_size;</span></a>
+<a name="706"><span class="lineNum">     706 </span>            : </a>
+<a name="707"><span class="lineNum">     707 </span><span class="lineNoCov">          0 :   check_assertion(old_constant-&gt;kind == (a_constant_repr_kind)ck_fixed_point);</span></a>
+<a name="708"><span class="lineNum">     708 </span><span class="lineNoCov">          0 :   set_constant_kind(new_constant, (a_constant_repr_kind)ck_integer);</span></a>
+<a name="709"><span class="lineNum">     709 </span><span class="lineNoCov">          0 :   *err_code = ec_no_error;</span></a>
+<a name="710"><span class="lineNum">     710 </span><span class="lineNoCov">          0 :   fxp_descr = fxp_descr_for_constant(old_constant);</span></a>
+<a name="711"><span class="lineNum">     711 </span>            :   /* Convert the fixed-point value into the internal mantissa</a>
+<a name="712"><span class="lineNum">     712 </span>            :      representation. */</a>
+<a name="713"><span class="lineNum">     713 </span><span class="lineNoCov">          0 :   load_hex_fxp_value(&amp;old_constant-&gt;variant.fixed_point_value,</span></a>
+<a name="714"><span class="lineNum">     714 </span>            :                      fxp_descr, &amp;mantissa, &amp;exponent, &amp;is_negative);</a>
+<a name="715"><span class="lineNum">     715 </span>            :   /* Convert and store the mantissa as an integer value. */</a>
+<a name="716"><span class="lineNum">     716 </span><span class="lineNoCov">          0 :   make_integer_value_from_mantissa(&amp;int_value, is_negative,</span></a>
+<a name="717"><span class="lineNum">     717 </span>            :                                    &amp;mantissa, exponent, &amp;err);</a>
+<a name="718"><span class="lineNum">     718 </span>            :   /* Determine attributes (size, signedness) of the integer kind. */</a>
+<a name="719"><span class="lineNum">     719 </span><span class="lineNoCov">          0 :   get_integer_attributes(new_constant, &amp;ikind, &amp;is_signed, &amp;bit_size);</span></a>
+<a name="720"><span class="lineNum">     720 </span>            :   /* If the value is negative and the destination is unsigned, issue as</a>
+<a name="721"><span class="lineNum">     721 </span>            :      diagnostic. */</a>
+<a name="722"><span class="lineNum">     722 </span><span class="lineNoCov">          0 :   if (is_negative &amp;&amp; !is_signed) err = TRUE;</span></a>
+<a name="723"><span class="lineNum">     723 </span><span class="lineNoCov">          0 :   if (err) {</span></a>
+<a name="724"><span class="lineNum">     724 </span>            :     /* The conversion to integer does not fit in the result type.  This case</a>
+<a name="725"><span class="lineNum">     725 </span>            :        occurs only if the fixed-point type does not fit in even the largest</a>
+<a name="726"><span class="lineNum">     726 </span>            :        integer type, which is unlikely. */</a>
+<a name="727"><span class="lineNum">     727 </span><span class="lineNoCov">          0 :     *err_code = ec_fixed_to_integer_conversion;</span></a>
+<a name="728"><span class="lineNum">     728 </span><span class="lineNoCov">          0 :     *err_severity = es_error;</span></a>
+<a name="729"><span class="lineNum">     729 </span>            :   } else {</a>
+<a name="730"><span class="lineNum">     730 </span>            :     /* Truncate the value to the size of the destination integer type. */</a>
+<a name="731"><span class="lineNum">     731 </span><span class="lineNoCov">          0 :     trunc_and_set_integer(&amp;int_value, new_constant, /*check_overflow=*/TRUE,</span></a>
+<a name="732"><span class="lineNum">     732 </span>            :                           /*saturate_on_overflow=*/FALSE,</a>
+<a name="733"><span class="lineNum">     733 </span>            :                           err_code, err_severity);</a>
+<a name="734"><span class="lineNum">     734 </span><span class="lineNoCov">          0 :     if (*err_code != ec_no_error) {</span></a>
+<a name="735"><span class="lineNum">     735 </span>            :       /* If an error occurred while storing the value, remap the error code</a>
+<a name="736"><span class="lineNum">     736 </span>            :          into a more appropriate one for this particular case. */</a>
+<a name="737"><span class="lineNum">     737 </span><span class="lineNoCov">          0 :       *err_code = ec_fixed_to_integer_conversion;</span></a>
+<a name="738"><span class="lineNum">     738 </span><span class="lineNoCov">          0 :       *err_severity = es_error;</span></a>
+<a name="739"><span class="lineNum">     739 </span>            :     }  /* if */</a>
+<a name="740"><span class="lineNum">     740 </span>            :   }  /* if */</a>
+<a name="741"><span class="lineNum">     741 </span><span class="lineNoCov">          0 : }  /* conv_fixed_point_to_integer */</span></a>
+<a name="742"><span class="lineNum">     742 </span>            : </a>
+<a name="743"><span class="lineNum">     743 </span>            : </a>
+<a name="744"><span class="lineNum">     744 </span><span class="lineNoCov">          0 : void conv_float_to_fixed_point(a_constant_ptr           old_constant,</span></a>
+<a name="745"><span class="lineNum">     745 </span>            :                                a_constant_ptr           new_constant,</a>
+<a name="746"><span class="lineNum">     746 </span>            :                                an_error_code            *err_code,</a>
+<a name="747"><span class="lineNum">     747 </span>            :                                an_error_severity        *err_severity)</a>
+<a name="748"><span class="lineNum">     748 </span>            : /*</a>
+<a name="749"><span class="lineNum">     749 </span>            : Convert the floating-point constant &quot;old_constant&quot; to a fixed-point constant</a>
+<a name="750"><span class="lineNum">     750 </span>            : in &quot;new_constant.  If, as a result of the conversion, a diagnostic should</a>
+<a name="751"><span class="lineNum">     751 </span>            : be issued, set err_code and err_severity to the values for the message</a>
+<a name="752"><span class="lineNum">     752 </span>            : to be issued; otherwise set err_code to ec_no_error.</a>
+<a name="753"><span class="lineNum">     753 </span>            : */</a>
+<a name="754"><span class="lineNum">     754 </span>            : {</a>
+<a name="755"><span class="lineNum">     755 </span><span class="lineNoCov">          0 :   a_mantissa    mantissa;</span></a>
+<a name="756"><span class="lineNum">     756 </span><span class="lineNoCov">          0 :   long          exponent;</span></a>
+<a name="757"><span class="lineNum">     757 </span><span class="lineNoCov">          0 :   a_boolean     is_negative;</span></a>
+<a name="758"><span class="lineNum">     758 </span><span class="lineNoCov">          0 :   a_boolean     err;</span></a>
+<a name="759"><span class="lineNum">     759 </span><span class="lineNoCov">          0 :   a_boolean     inexact;</span></a>
+<a name="760"><span class="lineNum">     760 </span><span class="lineNoCov">          0 :   a_fixed_point_type_descr</span></a>
+<a name="761"><span class="lineNum">     761 </span>            :                 *fxp_descr;</a>
+<a name="762"><span class="lineNum">     762 </span><span class="lineNoCov">          0 :   a_boolean     overflow = FALSE;</span></a>
+<a name="763"><span class="lineNum">     763 </span><span class="lineNoCov">          0 :   a_type_ptr    float_tp = skip_typerefs(old_constant-&gt;type);</span></a>
+<a name="764"><span class="lineNum">     764 </span><span class="lineNoCov">          0 :   a_float_kind  float_kind = float_tp-&gt;variant.float_kind;</span></a>
+<a name="765"><span class="lineNum">     765 </span><span class="lineNoCov">          0 :   an_internal_float_value</span></a>
+<a name="766"><span class="lineNum">     766 </span>            :                 *float_value;</a>
+<a name="767"><span class="lineNum">     767 </span>            : </a>
+<a name="768"><span class="lineNum">     768 </span>            : #if C99_IL_EXTENSIONS_SUPPORTED</a>
+<a name="769"><span class="lineNum">     769 </span><span class="lineNoCov">          0 :   an_internal_float_value zero;</span></a>
+<a name="770"><span class="lineNum">     770 </span>            : </a>
+<a name="771"><span class="lineNum">     771 </span><span class="lineNoCov">          0 :   if (float_tp-&gt;kind == (a_type_kind)tk_complex) {</span></a>
+<a name="772"><span class="lineNum">     772 </span>            :     /* Converting from complex to fixed-point.  The real part of the</a>
+<a name="773"><span class="lineNum">     773 </span>            :        constant is converted to fixed-point, and the imaginary part is</a>
+<a name="774"><span class="lineNum">     774 </span>            :        discarded. */</a>
+<a name="775"><span class="lineNum">     775 </span><span class="lineNoCov">          0 :     float_value = &amp;old_constant-&gt;variant.complex_value-&gt;real;</span></a>
+<a name="776"><span class="lineNum">     776 </span><span class="lineNoCov">          0 :   } else if (float_tp-&gt;kind == (a_type_kind)tk_imaginary) {</span></a>
+<a name="777"><span class="lineNum">     777 </span>            :     /* Converting from imaginary to fixed-point.  The result is zero. */</a>
+<a name="778"><span class="lineNum">     778 </span><span class="lineNoCov">          0 :     fp_host_large_integer_to_float(float_kind, (a_host_large_integer)0,</span></a>
+<a name="779"><span class="lineNum">     779 </span>            :                                    &amp;zero, &amp;err);</a>
+<a name="780"><span class="lineNum">     780 </span><span class="lineNoCov">          0 :     float_value = &amp;zero;</span></a>
+<a name="781"><span class="lineNum">     781 </span>            :   } else</a>
+<a name="782"><span class="lineNum">     782 </span>            : #endif /* C99_IL_EXTENSIONS_SUPPORTED */</a>
+<a name="783"><span class="lineNum">     783 </span>            :   /* Do not insert code here. */</a>
+<a name="784"><span class="lineNum">     784 </span>            :   {</a>
+<a name="785"><span class="lineNum">     785 </span><span class="lineNoCov">          0 :     check_assertion(old_constant-&gt;kind == (a_constant_repr_kind)ck_float);</span></a>
+<a name="786"><span class="lineNum">     786 </span><span class="lineNoCov">          0 :     float_value = &amp;old_constant-&gt;variant.float_value;</span></a>
+<a name="787"><span class="lineNum">     787 </span>            :   }  /* if */</a>
+<a name="788"><span class="lineNum">     788 </span><span class="lineNoCov">          0 :   set_constant_kind(new_constant, (a_constant_repr_kind)ck_fixed_point);</span></a>
+<a name="789"><span class="lineNum">     789 </span><span class="lineNoCov">          0 :   *err_code = ec_no_error;</span></a>
+<a name="790"><span class="lineNum">     790 </span><span class="lineNoCov">          0 :   fxp_descr = fxp_descr_for_constant(new_constant);</span></a>
+<a name="791"><span class="lineNum">     791 </span>            :   /* Convert the floating-point value into the internal mantissa</a>
+<a name="792"><span class="lineNum">     792 </span>            :      representation.  This is done even in the NaN and infinity case</a>
+<a name="793"><span class="lineNum">     793 </span>            :      to set is_negative flag, etc. */</a>
+<a name="794"><span class="lineNum">     794 </span><span class="lineNoCov">          0 :   load_hex_fp_value(float_value, float_kind,</span></a>
+<a name="795"><span class="lineNum">     795 </span>            :                     &amp;mantissa, &amp;exponent, &amp;is_negative,</a>
+<a name="796"><span class="lineNum">     796 </span>            :                     /*restore_implicit_bit=*/TRUE);</a>
+<a name="797"><span class="lineNum">     797 </span>            : #if TARG_HAS_IEEE_FLOATING_POINT</a>
+<a name="798"><span class="lineNum">     798 </span><span class="lineNoCov">          0 :   if (fp_is_nan_or_infinity(float_value, float_kind)) {</span></a>
+<a name="799"><span class="lineNum">     799 </span>            :     /* Not-a-number or infinity.  Treat this as an overflow. */</a>
+<a name="800"><span class="lineNum">     800 </span><span class="lineNoCov">          0 :     overflow = TRUE;</span></a>
+<a name="801"><span class="lineNum">     801 </span>            :   }  /* if */</a>
+<a name="802"><span class="lineNum">     802 </span>            : #endif /* TARG_HAS_IEEE_FLOATING_POINT */</a>
+<a name="803"><span class="lineNum">     803 </span>            :   /* The fixed-point representation has no negative zero, so clear the</a>
+<a name="804"><span class="lineNum">     804 </span>            :      is_negative flag if the mantissa is zero. */</a>
+<a name="805"><span class="lineNum">     805 </span><span class="lineNoCov">          0 :   if (is_negative &amp;&amp; mantissa_is_zero(&amp;mantissa)) is_negative = FALSE;</span></a>
+<a name="806"><span class="lineNum">     806 </span>            :   /* Convert and store the mantissa as a fixed-point value. */</a>
+<a name="807"><span class="lineNum">     807 </span><span class="lineNoCov">          0 :   conv_mantissa_to_fixed_point(&amp;mantissa, exponent, is_negative,</span></a>
+<a name="808"><span class="lineNum">     808 </span>            :                                fxp_descr, overflow,</a>
+<a name="809"><span class="lineNum">     809 </span>            :                                &amp;new_constant-&gt;variant.fixed_point_value,</a>
+<a name="810"><span class="lineNum">     810 </span>            :                                &amp;err, &amp;inexact);</a>
+<a name="811"><span class="lineNum">     811 </span><span class="lineNoCov">          0 :   if (err) {</span></a>
+<a name="812"><span class="lineNum">     812 </span>            :     /* The conversion to fixed-point does not fit in the result type. */</a>
+<a name="813"><span class="lineNum">     813 </span><span class="lineNoCov">          0 :     *err_code = ec_float_to_fixed_conversion;</span></a>
+<a name="814"><span class="lineNum">     814 </span><span class="lineNoCov">          0 :     *err_severity = es_error;</span></a>
+<a name="815"><span class="lineNum">     815 </span><span class="lineNoCov">          0 :   } else if (is_negative &amp;&amp; fxp_descr-&gt;is_unsigned) {</span></a>
+<a name="816"><span class="lineNum">     816 </span>            :     /* The conversion results in a negative value being converted to</a>
+<a name="817"><span class="lineNum">     817 </span>            :        unsigned. */</a>
+<a name="818"><span class="lineNum">     818 </span><span class="lineNoCov">          0 :     *err_code = ec_fixed_sign_change;</span></a>
+<a name="819"><span class="lineNum">     819 </span><span class="lineNoCov">          0 :     *err_severity = es_error;</span></a>
+<a name="820"><span class="lineNum">     820 </span><span class="lineNoCov">          0 :   } else if (inexact) {</span></a>
+<a name="821"><span class="lineNum">     821 </span>            :     /* The conversion loses precision. */</a>
+<a name="822"><span class="lineNum">     822 </span><span class="lineNoCov">          0 :     *err_code = ec_inexact_fixed_conversion;</span></a>
+<a name="823"><span class="lineNum">     823 </span><span class="lineNoCov">          0 :     *err_severity = es_warning;</span></a>
+<a name="824"><span class="lineNum">     824 </span>            :   }  /* if */</a>
+<a name="825"><span class="lineNum">     825 </span><span class="lineNoCov">          0 : }  /* conv_float_to_fixed_point */</span></a>
+<a name="826"><span class="lineNum">     826 </span>            : </a>
+<a name="827"><span class="lineNum">     827 </span>            : </a>
+<a name="828"><span class="lineNum">     828 </span><span class="lineNoCov">          0 : void conv_fixed_point_to_float(a_constant_ptr           old_constant,</span></a>
+<a name="829"><span class="lineNum">     829 </span>            :                                a_constant_ptr           new_constant,</a>
+<a name="830"><span class="lineNum">     830 </span>            :                                an_error_code            *err_code,</a>
+<a name="831"><span class="lineNum">     831 </span>            :                                an_error_severity        *err_severity)</a>
+<a name="832"><span class="lineNum">     832 </span>            : /*</a>
+<a name="833"><span class="lineNum">     833 </span>            : Convert the fixed-point constant &quot;old_constant&quot; to a floating-point constant</a>
+<a name="834"><span class="lineNum">     834 </span>            : in &quot;new_constant.  If, as a result of the conversion, a diagnostic should</a>
+<a name="835"><span class="lineNum">     835 </span>            : be issued, set err_code and err_severity to the values for the message</a>
+<a name="836"><span class="lineNum">     836 </span>            : to be issued; otherwise set err_code to ec_no_error.</a>
+<a name="837"><span class="lineNum">     837 </span>            : */</a>
+<a name="838"><span class="lineNum">     838 </span>            : {</a>
+<a name="839"><span class="lineNum">     839 </span><span class="lineNoCov">          0 :   a_mantissa            mantissa;</span></a>
+<a name="840"><span class="lineNum">     840 </span><span class="lineNoCov">          0 :   long                  exponent;</span></a>
+<a name="841"><span class="lineNum">     841 </span><span class="lineNoCov">          0 :   a_boolean             is_negative;</span></a>
+<a name="842"><span class="lineNum">     842 </span><span class="lineNoCov">          0 :   a_boolean             err;</span></a>
+<a name="843"><span class="lineNum">     843 </span><span class="lineNoCov">          0 :   a_boolean             inexact;</span></a>
+<a name="844"><span class="lineNum">     844 </span><span class="lineNoCov">          0 :   a_fixed_point_type_descr</span></a>
+<a name="845"><span class="lineNum">     845 </span>            :                         *fxp_descr;</a>
+<a name="846"><span class="lineNum">     846 </span><span class="lineNoCov">          0 :   a_type_ptr            float_tp = skip_typerefs(new_constant-&gt;type);</span></a>
+<a name="847"><span class="lineNum">     847 </span><span class="lineNoCov">          0 :   a_float_kind          float_kind = float_tp-&gt;variant.float_kind;</span></a>
+<a name="848"><span class="lineNum">     848 </span><span class="lineNoCov">          0 :   an_internal_float_value</span></a>
+<a name="849"><span class="lineNum">     849 </span><span class="lineNoCov">          0 :                         *float_value = NULL;</span></a>
+<a name="850"><span class="lineNum">     850 </span><span class="lineNoCov">          0 :   a_boolean             skip_conversion = FALSE;</span></a>
+<a name="851"><span class="lineNum">     851 </span><span class="lineNoCov">          0 :   a_constant_repr_kind  constant_kind = (a_constant_repr_kind)ck_float;</span></a>
+<a name="852"><span class="lineNum">     852 </span>            : </a>
+<a name="853"><span class="lineNum">     853 </span><span class="lineNoCov">          0 :   check_assertion(old_constant-&gt;kind == (a_constant_repr_kind)ck_fixed_point);</span></a>
+<a name="854"><span class="lineNum">     854 </span>            : #if C99_IL_EXTENSIONS_SUPPORTED</a>
+<a name="855"><span class="lineNum">     855 </span>            :   /* We may be converting to a nonreal floating type. */</a>
+<a name="856"><span class="lineNum">     856 </span><span class="lineNoCov">          0 :   if (float_tp-&gt;kind == (a_type_kind)tk_complex) {</span></a>
+<a name="857"><span class="lineNum">     857 </span>            :     constant_kind = (a_constant_repr_kind)ck_complex;</a>
+<a name="858"><span class="lineNum">     858 </span><span class="lineNoCov">          0 :   } else if (float_tp-&gt;kind == (a_type_kind)tk_imaginary) {</span></a>
+<a name="859"><span class="lineNum">     859 </span><span class="lineNoCov">          0 :     constant_kind = (a_constant_repr_kind)ck_imaginary;</span></a>
+<a name="860"><span class="lineNum">     860 </span>            :   }  /* if */</a>
+<a name="861"><span class="lineNum">     861 </span>            : #endif /* C99_IL_EXTENSIONS_SUPPORTED */</a>
+<a name="862"><span class="lineNum">     862 </span><span class="lineNoCov">          0 :   set_constant_kind(new_constant, constant_kind);</span></a>
+<a name="863"><span class="lineNum">     863 </span><span class="lineNoCov">          0 :   *err_code = ec_no_error;</span></a>
+<a name="864"><span class="lineNum">     864 </span><span class="lineNoCov">          0 :   fxp_descr = fxp_descr_for_constant(old_constant);</span></a>
+<a name="865"><span class="lineNum">     865 </span>            : #if C99_IL_EXTENSIONS_SUPPORTED</a>
+<a name="866"><span class="lineNum">     866 </span><span class="lineNoCov">          0 :   if (float_tp-&gt;kind == (a_type_kind)tk_complex) {</span></a>
+<a name="867"><span class="lineNum">     867 </span>            :     /* Converting to complex.  The value is converted into the real</a>
+<a name="868"><span class="lineNum">     868 </span>            :        part, and the imaginary part is set to zero. */</a>
+<a name="869"><span class="lineNum">     869 </span><span class="lineNoCov">          0 :     float_value = &amp;new_constant-&gt;variant.complex_value-&gt;real;</span></a>
+<a name="870"><span class="lineNum">     870 </span><span class="lineNoCov">          0 :     fp_host_large_integer_to_float(float_kind, (a_host_large_integer)0,</span></a>
+<a name="871"><span class="lineNum">     871 </span>            :                                    &amp;new_constant-&gt;variant.complex_value-&gt;imag,</a>
+<a name="872"><span class="lineNum">     872 </span>            :                                    &amp;err);</a>
+<a name="873"><span class="lineNum">     873 </span><span class="lineNoCov">          0 :     check_assertion(!err);</span></a>
+<a name="874"><span class="lineNum">     874 </span><span class="lineNoCov">          0 :   } else if (float_tp-&gt;kind == (a_type_kind)tk_imaginary) {</span></a>
+<a name="875"><span class="lineNum">     875 </span>            :     /* Converting to imaginary.  The result is zero. */</a>
+<a name="876"><span class="lineNum">     876 </span><span class="lineNoCov">          0 :     fp_host_large_integer_to_float(float_kind, (a_host_large_integer)0,</span></a>
+<a name="877"><span class="lineNum">     877 </span>            :                                    &amp;new_constant-&gt;variant.float_value, &amp;err);</a>
+<a name="878"><span class="lineNum">     878 </span><span class="lineNoCov">          0 :     check_assertion(!err);</span></a>
+<a name="879"><span class="lineNum">     879 </span>            :     skip_conversion = TRUE;</a>
+<a name="880"><span class="lineNum">     880 </span>            :   } else</a>
+<a name="881"><span class="lineNum">     881 </span>            : #endif /* C99_IL_EXTENSIONS_SUPPORTED */</a>
+<a name="882"><span class="lineNum">     882 </span>            :   /* Do not insert code here. */</a>
+<a name="883"><span class="lineNum">     883 </span>            :   {</a>
+<a name="884"><span class="lineNum">     884 </span><span class="lineNoCov">          0 :     float_value = &amp;new_constant-&gt;variant.float_value;</span></a>
+<a name="885"><span class="lineNum">     885 </span>            :   }  /* if */</a>
+<a name="886"><span class="lineNum">     886 </span><span class="lineNoCov">          0 :   if (!skip_conversion) {</span></a>
+<a name="887"><span class="lineNum">     887 </span>            :     /* Convert the fixed-point value into the internal mantissa</a>
+<a name="888"><span class="lineNum">     888 </span>            :       representation. */</a>
+<a name="889"><span class="lineNum">     889 </span><span class="lineNoCov">          0 :     load_hex_fxp_value(&amp;old_constant-&gt;variant.fixed_point_value,</span></a>
+<a name="890"><span class="lineNum">     890 </span>            :                        fxp_descr, &amp;mantissa, &amp;exponent, &amp;is_negative);</a>
+<a name="891"><span class="lineNum">     891 </span>            :     /* Convert and store the mantissa as a floating-point value. */</a>
+<a name="892"><span class="lineNum">     892 </span><span class="lineNoCov">          0 :     conv_mantissa_to_floating_point(&amp;mantissa, exponent, is_negative,</span></a>
+<a name="893"><span class="lineNum">     893 </span><span class="lineNoCov">          0 :                                     float_tp-&gt;variant.float_kind,</span></a>
+<a name="894"><span class="lineNum">     894 </span>            :                                     float_value,</a>
+<a name="895"><span class="lineNum">     895 </span>            :                                     /*overflow=*/FALSE, &amp;err, &amp;inexact);</a>
+<a name="896"><span class="lineNum">     896 </span>            :     /* No diagnostic is given for an inexact result. */</a>
+<a name="897"><span class="lineNum">     897 </span><span class="lineNoCov">          0 :     if (err) {</span></a>
+<a name="898"><span class="lineNum">     898 </span>            :       /* The conversion to floating-point does not fit in the result type.</a>
+<a name="899"><span class="lineNum">     899 </span>            :          This should not occur unless there are fixed-point or floating-point</a>
+<a name="900"><span class="lineNum">     900 </span>            :          types with unusual sizes. */</a>
+<a name="901"><span class="lineNum">     901 </span><span class="lineNoCov">          0 :       *err_code = ec_fixed_to_float_conversion;</span></a>
+<a name="902"><span class="lineNum">     902 </span><span class="lineNoCov">          0 :       *err_severity = es_error;</span></a>
+<a name="903"><span class="lineNum">     903 </span>            :     }  /* if */</a>
+<a name="904"><span class="lineNum">     904 </span>            :   }  /* if */</a>
+<a name="905"><span class="lineNum">     905 </span><span class="lineNoCov">          0 : }  /* conv_fixed_point_to_float */</span></a>
+<a name="906"><span class="lineNum">     906 </span>            : </a>
+<a name="907"><span class="lineNum">     907 </span>            : </a>
+<a name="908"><span class="lineNum">     908 </span><span class="lineNoCov">          0 : void conv_fixed_point_to_fixed_point(</span></a>
+<a name="909"><span class="lineNum">     909 </span>            :                                 a_constant_ptr          old_constant,</a>
+<a name="910"><span class="lineNum">     910 </span>            :                                 a_constant_ptr          new_constant,</a>
+<a name="911"><span class="lineNum">     911 </span>            :                                 an_error_code           *err_code,</a>
+<a name="912"><span class="lineNum">     912 </span>            :                                 an_error_severity       *err_severity)</a>
+<a name="913"><span class="lineNum">     913 </span>            : /*</a>
+<a name="914"><span class="lineNum">     914 </span>            : Convert the fixed-point constant &quot;old_constant&quot; to a fixed-point constant</a>
+<a name="915"><span class="lineNum">     915 </span>            : in &quot;new_constant.  If, as a result of the conversion, a diagnostic should</a>
+<a name="916"><span class="lineNum">     916 </span>            : be issued, set err_code and err_severity to the values for the message</a>
+<a name="917"><span class="lineNum">     917 </span>            : to be issued; otherwise set err_code to ec_no_error.</a>
+<a name="918"><span class="lineNum">     918 </span>            : */</a>
+<a name="919"><span class="lineNum">     919 </span>            : {</a>
+<a name="920"><span class="lineNum">     920 </span><span class="lineNoCov">          0 :   a_mantissa    mantissa;</span></a>
+<a name="921"><span class="lineNum">     921 </span><span class="lineNoCov">          0 :   long          exponent;</span></a>
+<a name="922"><span class="lineNum">     922 </span><span class="lineNoCov">          0 :   a_boolean     is_negative;</span></a>
+<a name="923"><span class="lineNum">     923 </span><span class="lineNoCov">          0 :   a_boolean     err;</span></a>
+<a name="924"><span class="lineNum">     924 </span><span class="lineNoCov">          0 :   a_boolean     inexact;</span></a>
+<a name="925"><span class="lineNum">     925 </span><span class="lineNoCov">          0 :   a_fixed_point_type_descr</span></a>
+<a name="926"><span class="lineNum">     926 </span>            :                 *old_fxp_descr;</a>
+<a name="927"><span class="lineNum">     927 </span><span class="lineNoCov">          0 :   a_fixed_point_type_descr</span></a>
+<a name="928"><span class="lineNum">     928 </span>            :                 *new_fxp_descr;</a>
+<a name="929"><span class="lineNum">     929 </span>            : </a>
+<a name="930"><span class="lineNum">     930 </span><span class="lineNoCov">          0 :   check_assertion(old_constant-&gt;kind == (a_constant_repr_kind)ck_fixed_point);</span></a>
+<a name="931"><span class="lineNum">     931 </span><span class="lineNoCov">          0 :   set_constant_kind(new_constant, (a_constant_repr_kind)ck_fixed_point);</span></a>
+<a name="932"><span class="lineNum">     932 </span><span class="lineNoCov">          0 :   *err_code = ec_no_error;</span></a>
+<a name="933"><span class="lineNum">     933 </span><span class="lineNoCov">          0 :   old_fxp_descr = fxp_descr_for_constant(old_constant);</span></a>
+<a name="934"><span class="lineNum">     934 </span><span class="lineNoCov">          0 :   new_fxp_descr = fxp_descr_for_constant(new_constant);</span></a>
+<a name="935"><span class="lineNum">     935 </span>            :   /* Convert the fixed-point value into the internal mantissa</a>
+<a name="936"><span class="lineNum">     936 </span>            :      representation. */</a>
+<a name="937"><span class="lineNum">     937 </span><span class="lineNoCov">          0 :   load_hex_fxp_value(&amp;old_constant-&gt;variant.fixed_point_value,</span></a>
+<a name="938"><span class="lineNum">     938 </span>            :                      old_fxp_descr, &amp;mantissa, &amp;exponent, &amp;is_negative);</a>
+<a name="939"><span class="lineNum">     939 </span>            :   /* Convert and store the mantissa as a fixed-point value. */</a>
+<a name="940"><span class="lineNum">     940 </span><span class="lineNoCov">          0 :   conv_mantissa_to_fixed_point(&amp;mantissa, exponent, is_negative,</span></a>
+<a name="941"><span class="lineNum">     941 </span>            :                                new_fxp_descr, /*overflow=*/FALSE,</a>
+<a name="942"><span class="lineNum">     942 </span>            :                                &amp;new_constant-&gt;variant.fixed_point_value,</a>
+<a name="943"><span class="lineNum">     943 </span>            :                                &amp;err, &amp;inexact);</a>
+<a name="944"><span class="lineNum">     944 </span><span class="lineNoCov">          0 :   if (err) {</span></a>
+<a name="945"><span class="lineNum">     945 </span>            :     /* The conversion to fixed-point does not fit in the result type. */</a>
+<a name="946"><span class="lineNum">     946 </span><span class="lineNoCov">          0 :     *err_code = ec_fixed_to_fixed_conversion;</span></a>
+<a name="947"><span class="lineNum">     947 </span><span class="lineNoCov">          0 :     *err_severity = es_error;</span></a>
+<a name="948"><span class="lineNum">     948 </span><span class="lineNoCov">          0 :   } else if (is_negative &amp;&amp; new_fxp_descr-&gt;is_unsigned) {</span></a>
+<a name="949"><span class="lineNum">     949 </span>            :     /* The conversion results in a negative value being converted to</a>
+<a name="950"><span class="lineNum">     950 </span>            :        unsigned. */</a>
+<a name="951"><span class="lineNum">     951 </span><span class="lineNoCov">          0 :     *err_code = ec_fixed_sign_change;</span></a>
+<a name="952"><span class="lineNum">     952 </span><span class="lineNoCov">          0 :     *err_severity = es_error;</span></a>
+<a name="953"><span class="lineNum">     953 </span>            :   }  /* if */</a>
+<a name="954"><span class="lineNum">     954 </span><span class="lineNoCov">          0 : }  /* conv_fixed_point_to_fixed_point */</span></a>
+<a name="955"><span class="lineNum">     955 </span>            : </a>
+<a name="956"><span class="lineNum">     956 </span>            : </a>
+<a name="957"><span class="lineNum">     957 </span><span class="lineNoCov">          0 : void fxp_hex_string_to_fixed_point(a_fixed_point_type_descr  *fxp_descr,</span></a>
+<a name="958"><span class="lineNum">     958 </span>            :                                    a_const_char              *str,</a>
+<a name="959"><span class="lineNum">     959 </span>            :                                    a_fixed_point_value       *value,</a>
+<a name="960"><span class="lineNum">     960 </span>            :                                    a_boolean                 *err,</a>
+<a name="961"><span class="lineNum">     961 </span>            :                                    a_boolean                 *inexact)</a>
+<a name="962"><span class="lineNum">     962 </span>            : /*</a>
+<a name="963"><span class="lineNum">     963 </span>            : Convert the hexadecimal fixed-point number in the null-terminated string str</a>
+<a name="964"><span class="lineNum">     964 </span>            : to internal form in *value.  The number is known to be syntactically correct,</a>
+<a name="965"><span class="lineNum">     965 </span>            : but may not be representable (it may be too large or too small); if there's</a>
+<a name="966"><span class="lineNum">     966 </span>            : an error, return *err = TRUE.  The specific fixed-point kind is indicated by</a>
+<a name="967"><span class="lineNum">     967 </span>            : *fxp_descr (an will typically affect the representation in *value).</a>
+<a name="968"><span class="lineNum">     968 </span>            : *inexact is set to TRUE if *value does not exactly represent the value</a>
+<a name="969"><span class="lineNum">     969 </span>            : indicated by the given string.  Otherwise, it is set to FALSE.</a>
+<a name="970"><span class="lineNum">     970 </span>            : */</a>
+<a name="971"><span class="lineNum">     971 </span>            : {</a>
+<a name="972"><span class="lineNum">     972 </span><span class="lineNoCov">          0 :   a_boolean     overflow = FALSE;</span></a>
+<a name="973"><span class="lineNum">     973 </span><span class="lineNoCov">          0 :   long          exponent = 0;</span></a>
+<a name="974"><span class="lineNum">     974 </span><span class="lineNoCov">          0 :   a_mantissa    mantissa;</span></a>
+<a name="975"><span class="lineNum">     975 </span>            : </a>
+<a name="976"><span class="lineNum">     976 </span><span class="lineNoCov">          0 :   conv_hex_string_to_mantissa_and_exponent(str, &amp;mantissa, &amp;exponent,</span></a>
+<a name="977"><span class="lineNum">     977 </span>            :                                            &amp;overflow);</a>
+<a name="978"><span class="lineNum">     978 </span><span class="lineNoCov">          0 :   conv_mantissa_to_fixed_point(&amp;mantissa, exponent, /*is_negative=*/FALSE,</span></a>
+<a name="979"><span class="lineNum">     979 </span>            :                                fxp_descr, overflow, value, err, inexact);</a>
+<a name="980"><span class="lineNum">     980 </span><span class="lineNoCov">          0 : }  /* fxp_hex_string_to_fixed_point */</span></a>
+<a name="981"><span class="lineNum">     981 </span>            : </a>
+<a name="982"><span class="lineNum">     982 </span>            : </a>
+<a name="983"><span class="lineNum">     983 </span><span class="lineNoCov">          0 : void fxp_string_to_fixed_point(a_fixed_point_type_descr  *fxp_descr,</span></a>
+<a name="984"><span class="lineNum">     984 </span>            :                                a_const_char              *str,</a>
+<a name="985"><span class="lineNum">     985 </span>            :                                a_fixed_point_value       *value,</a>
+<a name="986"><span class="lineNum">     986 </span>            :                                a_boolean                 *err)</a>
+<a name="987"><span class="lineNum">     987 </span>            : /*</a>
+<a name="988"><span class="lineNum">     988 </span>            : Convert the decimal fixed-point number in the null-terminated string str to</a>
+<a name="989"><span class="lineNum">     989 </span>            : internal form in *value.  The number is known to be syntactically correct,</a>
+<a name="990"><span class="lineNum">     990 </span>            : but may not be representable (it may be too large or too small); if there's</a>
+<a name="991"><span class="lineNum">     991 </span>            : an error, return *err = TRUE.  The specific fixed-point kind is indicated by</a>
+<a name="992"><span class="lineNum">     992 </span>            : *fxp_descr (and will typically affect the representation in *value).</a>
+<a name="993"><span class="lineNum">     993 </span>            : The string need not have a decimal point or exponent (it can look like an</a>
+<a name="994"><span class="lineNum">     994 </span>            : integer).</a>
+<a name="995"><span class="lineNum">     995 </span>            : </a>
+<a name="996"><span class="lineNum">     996 </span>            : This implementation is for demonstration purposes only: It is known to be</a>
+<a name="997"><span class="lineNum">     997 </span>            : imprecise.  Specifically, this implementation scans the string as a floating-</a>
+<a name="998"><span class="lineNum">     998 </span>            : point value.  It relies on a_fixed_point_value being identical to</a>
+<a name="999"><span class="lineNum">     999 </span>            : an_integer_value.</a>
+<a name="1000"><span class="lineNum">    1000 </span>            : */</a>
+<a name="1001"><span class="lineNum">    1001 </span>            : {</a>
+<a name="1002"><span class="lineNum">    1002 </span><span class="lineNoCov">          0 :   an_internal_float_value</span></a>
+<a name="1003"><span class="lineNum">    1003 </span>            :                 fp_value;</a>
+<a name="1004"><span class="lineNum">    1004 </span><span class="lineNoCov">          0 :   a_boolean     inexact;</span></a>
+<a name="1005"><span class="lineNum">    1005 </span><span class="lineNoCov">          0 :   long          exponent;</span></a>
+<a name="1006"><span class="lineNum">    1006 </span><span class="lineNoCov">          0 :   a_boolean     is_negative;</span></a>
+<a name="1007"><span class="lineNum">    1007 </span><span class="lineNoCov">          0 :   a_mantissa    mantissa;</span></a>
+<a name="1008"><span class="lineNum">    1008 </span>            : </a>
+<a name="1009"><span class="lineNum">    1009 </span><span class="lineNoCov">          0 :   *err = FALSE;</span></a>
+<a name="1010"><span class="lineNum">    1010 </span>            :   /* Convert the given string to a floating point value. */</a>
+<a name="1011"><span class="lineNum">    1011 </span><span class="lineNoCov">          0 :   fp_string_to_float((a_float_kind)fk_long_double, str, &amp;fp_value, err);</span></a>
+<a name="1012"><span class="lineNum">    1012 </span><span class="lineNoCov">          0 :   if (!*err) {</span></a>
+<a name="1013"><span class="lineNum">    1013 </span>            :     /* Convert the floating-point value into a fixed-point. */</a>
+<a name="1014"><span class="lineNum">    1014 </span><span class="lineNoCov">          0 :     load_hex_fp_value(&amp;fp_value,</span></a>
+<a name="1015"><span class="lineNum">    1015 </span>            :                       (a_float_kind)fk_long_double,</a>
+<a name="1016"><span class="lineNum">    1016 </span>            :                       &amp;mantissa, &amp;exponent, &amp;is_negative,</a>
+<a name="1017"><span class="lineNum">    1017 </span>            :                       /*restore_implicit_bit=*/TRUE);</a>
+<a name="1018"><span class="lineNum">    1018 </span>            :     /* Convert and store the mantissa as a fixed-point value. */</a>
+<a name="1019"><span class="lineNum">    1019 </span><span class="lineNoCov">          0 :     conv_mantissa_to_fixed_point(&amp;mantissa, exponent, is_negative,</span></a>
+<a name="1020"><span class="lineNum">    1020 </span>            :                                  fxp_descr,</a>
+<a name="1021"><span class="lineNum">    1021 </span>            :                                  /*overflow=*/FALSE,</a>
+<a name="1022"><span class="lineNum">    1022 </span>            :                                  value, err, &amp;inexact);</a>
+<a name="1023"><span class="lineNum">    1023 </span>            :   }  /* if */</a>
+<a name="1024"><span class="lineNum">    1024 </span><span class="lineNoCov">          0 : }  /* fxp_string_to_fixed_point */</span></a>
+<a name="1025"><span class="lineNum">    1025 </span>            : </a>
+<a name="1026"><span class="lineNum">    1026 </span>            : #endif /* !STANDALONE_UTILITY_PROGRAM */</a>
+<a name="1027"><span class="lineNum">    1027 </span>            : </a>
+<a name="1028"><span class="lineNum">    1028 </span><span class="lineNoCov">          0 : static void conv_integer_value_to_long_double_value(</span></a>
+<a name="1029"><span class="lineNum">    1029 </span>            :                                            an_integer_value         *ival,</a>
+<a name="1030"><span class="lineNum">    1030 </span>            :                                            a_boolean                is_signed,</a>
+<a name="1031"><span class="lineNum">    1031 </span>            :                                            an_internal_float_value  *fval,</a>
+<a name="1032"><span class="lineNum">    1032 </span>            :                                            a_boolean                *err)</a>
+<a name="1033"><span class="lineNum">    1033 </span>            : /*</a>
+<a name="1034"><span class="lineNum">    1034 </span>            : Convert the integer value in *ival to a floating-point value (of type long</a>
+<a name="1035"><span class="lineNum">    1035 </span>            : double) in *fval.  Set *err to TRUE if this does not work.</a>
+<a name="1036"><span class="lineNum">    1036 </span>            : </a>
+<a name="1037"><span class="lineNum">    1037 </span>            : (In some cases, the conversion may be done through a conversion to string</a>
+<a name="1038"><span class="lineNum">    1038 </span>            : representation: It may not be exact.  This routine is used for processing</a>
+<a name="1039"><span class="lineNum">    1039 </span>            : the representation of fixed-point values as implicitly scaled integer values.)</a>
+<a name="1040"><span class="lineNum">    1040 </span>            : */</a>
+<a name="1041"><span class="lineNum">    1041 </span>            : {</a>
+<a name="1042"><span class="lineNum">    1042 </span><span class="lineNoCov">          0 :   conv_integer_value_to_float(ival, is_signed, fval,</span></a>
+<a name="1043"><span class="lineNum">    1043 </span>            :                               (a_float_kind)fk_long_double, err);</a>
+<a name="1044"><span class="lineNum">    1044 </span>            : }  /* conv_integer_value_to_long_double_value */</a>
+<a name="1045"><span class="lineNum">    1045 </span>            : </a>
+<a name="1046"><span class="lineNum">    1046 </span>            : </a>
+<a name="1047"><span class="lineNum">    1047 </span><span class="lineNoCov">          0 : static void construct_fxp_scale_factor(a_fixed_point_type_descr  *fxp_descr,</span></a>
+<a name="1048"><span class="lineNum">    1048 </span>            :                                        an_internal_float_value   *fp_scale)</a>
+<a name="1049"><span class="lineNum">    1049 </span>            : /*</a>
+<a name="1050"><span class="lineNum">    1050 </span>            : Construct a long double scaling factor 2^F where F is the number of fractional</a>
+<a name="1051"><span class="lineNum">    1051 </span>            : bits in the fixed-point type represented by fxp_descr.  Place the result in</a>
+<a name="1052"><span class="lineNum">    1052 </span>            : fp_scale.</a>
+<a name="1053"><span class="lineNum">    1053 </span>            : */</a>
+<a name="1054"><span class="lineNum">    1054 </span>            : {</a>
+<a name="1055"><span class="lineNum">    1055 </span><span class="lineNoCov">          0 :   int               fract_bits;</span></a>
+<a name="1056"><span class="lineNum">    1056 </span><span class="lineNoCov">          0 :   an_integer_value  int_scale;  </span></a>
+<a name="1057"><span class="lineNum">    1057 </span><span class="lineNoCov">          0 :   a_boolean         err = FALSE;</span></a>
+<a name="1058"><span class="lineNum">    1058 </span>            : </a>
+<a name="1059"><span class="lineNum">    1059 </span><span class="lineNoCov">          0 :   fract_bits = targ_fractional_bits_for_fixed_point[fxp_descr-&gt;is_unsigned]</span></a>
+<a name="1060"><span class="lineNum">    1060 </span><span class="lineNoCov">          0 :                                                    [(int)fxp_descr-&gt;precision]</span></a>
+<a name="1061"><span class="lineNum">    1061 </span><span class="lineNoCov">          0 :                                                    [fxp_descr-&gt;is_fract_type];</span></a>
+<a name="1062"><span class="lineNum">    1062 </span>            :   /* Shift the value &quot;1&quot; fract_bits to the left and convert the result to</a>
+<a name="1063"><span class="lineNum">    1063 </span>            :      type &quot;long double&quot; using a string as an intermediate representation. */</a>
+<a name="1064"><span class="lineNum">    1064 </span><span class="lineNoCov">          0 :   set_integer_value(&amp;int_scale, (a_host_large_integer)1);</span></a>
+<a name="1065"><span class="lineNum">    1065 </span><span class="lineNoCov">          0 :   shift_left_integer_value(&amp;int_scale, fract_bits, &amp;err);</span></a>
+<a name="1066"><span class="lineNum">    1066 </span><span class="lineNoCov">          0 :   check_assertion(!err);</span></a>
+<a name="1067"><span class="lineNum">    1067 </span><span class="lineNoCov">          0 :   conv_integer_value_to_long_double_value(&amp;int_scale, /*is_signed=*/FALSE,</span></a>
+<a name="1068"><span class="lineNum">    1068 </span>            :                                           fp_scale, &amp;err);</a>
+<a name="1069"><span class="lineNum">    1069 </span><span class="lineNoCov">          0 :   check_assertion(!err);</span></a>
+<a name="1070"><span class="lineNum">    1070 </span><span class="lineNoCov">          0 : }  /* construct_fxp_scale_factor */</span></a>
+<a name="1071"><span class="lineNum">    1071 </span>            : </a>
+<a name="1072"><span class="lineNum">    1072 </span>            : </a>
+<a name="1073"><span class="lineNum">    1073 </span><span class="lineNoCov">          0 : char* fxp_to_string(a_fixed_point_type_descr  *fxp_descr,</span></a>
+<a name="1074"><span class="lineNum">    1074 </span>            :                     a_fixed_point_value       *value)</a>
+<a name="1075"><span class="lineNum">    1075 </span>            : /*</a>
+<a name="1076"><span class="lineNum">    1076 </span>            : Convert the given value with the given fixed-point type description to a</a>
+<a name="1077"><span class="lineNum">    1077 </span>            : decimal (null-terminated) string representation in an internal static array.</a>
+<a name="1078"><span class="lineNum">    1078 </span>            : Return a pointer to that array.  Suffixes are appended as needed.</a>
+<a name="1079"><span class="lineNum">    1079 </span>            : </a>
+<a name="1080"><span class="lineNum">    1080 </span>            : (This implementation assumes a_fixed_point_value is a synonym for</a>
+<a name="1081"><span class="lineNum">    1081 </span>            : an_integer_value and may produce slightly inaccurate results.)</a>
+<a name="1082"><span class="lineNum">    1082 </span>            : */</a>
+<a name="1083"><span class="lineNum">    1083 </span>            : {</a>
+<a name="1084"><span class="lineNum">    1084 </span>            : #define BUF_LENGTH 100</a>
+<a name="1085"><span class="lineNum">    1085 </span><span class="lineNoCov">          0 :   static char  str[BUF_LENGTH];</span></a>
+<a name="1086"><span class="lineNum">    1086 </span>            : </a>
+<a name="1087"><span class="lineNum">    1087 </span><span class="lineNoCov">          0 :   an_internal_float_value</span></a>
+<a name="1088"><span class="lineNum">    1088 </span>            :               fp_scale, fp_value, fp_scaled_value;</a>
+<a name="1089"><span class="lineNum">    1089 </span><span class="lineNoCov">          0 :   a_boolean   depends_on_fp_mode;</span></a>
+<a name="1090"><span class="lineNum">    1090 </span><span class="lineNoCov">          0 :   a_boolean   pos_infinity, neg_infinity, not_a_number;</span></a>
+<a name="1091"><span class="lineNum">    1091 </span><span class="lineNoCov">          0 :   a_boolean   err = FALSE;</span></a>
+<a name="1092"><span class="lineNum">    1092 </span><span class="lineNoCov">          0 :   char        *result_str;</span></a>
+<a name="1093"><span class="lineNum">    1093 </span><span class="lineNoCov">          0 :   sizeof_t    length;</span></a>
+<a name="1094"><span class="lineNum">    1094 </span>            : </a>
+<a name="1095"><span class="lineNum">    1095 </span><span class="lineNoCov">          0 :   construct_fxp_scale_factor(fxp_descr, &amp;fp_scale);</span></a>
+<a name="1096"><span class="lineNum">    1096 </span>            :   /* Treat the given fixed-point as an integer (not yet scaled) and convert</a>
+<a name="1097"><span class="lineNum">    1097 </span>            :      is to type &quot;long double&quot;. */</a>
+<a name="1098"><span class="lineNum">    1098 </span><span class="lineNoCov">          0 :   conv_integer_value_to_long_double_value(value, !fxp_descr-&gt;is_unsigned,</span></a>
+<a name="1099"><span class="lineNum">    1099 </span>            :                                           &amp;fp_value, &amp;err);</a>
+<a name="1100"><span class="lineNum">    1100 </span><span class="lineNoCov">          0 :   check_assertion(!err);</span></a>
+<a name="1101"><span class="lineNum">    1101 </span>            :   /* Scale the result and convert it to a string. */</a>
+<a name="1102"><span class="lineNum">    1102 </span><span class="lineNoCov">          0 :   fp_divide((a_float_kind)fk_long_double,</span></a>
+<a name="1103"><span class="lineNum">    1103 </span>            :             &amp;fp_value, &amp;fp_scale, &amp;fp_scaled_value,</a>
+<a name="1104"><span class="lineNum">    1104 </span>            :             &amp;err, &amp;depends_on_fp_mode);</a>
+<a name="1105"><span class="lineNum">    1105 </span><span class="lineNoCov">          0 :   result_str = fp_to_string((a_float_kind)fk_long_double, &amp;fp_scaled_value,</span></a>
+<a name="1106"><span class="lineNum">    1106 </span>            :                             &amp;pos_infinity, &amp;neg_infinity, &amp;not_a_number);</a>
+<a name="1107"><span class="lineNum">    1107 </span><span class="lineNoCov">          0 :   check_assertion(!(pos_infinity || neg_infinity || not_a_number));</span></a>
+<a name="1108"><span class="lineNum">    1108 </span><span class="lineNoCov">          0 :   length = strlen(result_str);</span></a>
+<a name="1109"><span class="lineNum">    1109 </span><span class="lineNoCov">          0 :   check_assertion(length &lt; BUF_LENGTH - 4);</span></a>
+<a name="1110"><span class="lineNum">    1110 </span><span class="lineNoCov">          0 :   strcpy(str, result_str);</span></a>
+<a name="1111"><span class="lineNum">    1111 </span>            :   /* Add all the needed suffixes. */</a>
+<a name="1112"><span class="lineNum">    1112 </span><span class="lineNoCov">          0 :   if (fxp_descr-&gt;is_unsigned) {</span></a>
+<a name="1113"><span class="lineNum">    1113 </span><span class="lineNoCov">          0 :     str[length++] = 'u';</span></a>
+<a name="1114"><span class="lineNum">    1114 </span><span class="lineNoCov">          0 :   };</span></a>
+<a name="1115"><span class="lineNum">    1115 </span><span class="lineNoCov">          0 :   if (fxp_descr-&gt;precision == (a_fixed_point_precision)fpp_short) {</span></a>
+<a name="1116"><span class="lineNum">    1116 </span><span class="lineNoCov">          0 :     str[length++] = 'h';</span></a>
+<a name="1117"><span class="lineNum">    1117 </span><span class="lineNoCov">          0 :   } else if (fxp_descr-&gt;precision == (a_fixed_point_precision)fpp_long) {</span></a>
+<a name="1118"><span class="lineNum">    1118 </span><span class="lineNoCov">          0 :     str[length++] = 'l';</span></a>
+<a name="1119"><span class="lineNum">    1119 </span><span class="lineNoCov">          0 :   };</span></a>
+<a name="1120"><span class="lineNum">    1120 </span><span class="lineNoCov">          0 :   str[length++] = fxp_descr-&gt;is_fract_type ? 'r' : 'k';</span></a>
+<a name="1121"><span class="lineNum">    1121 </span><span class="lineNoCov">          0 :   str[length] = '\0';</span></a>
+<a name="1122"><span class="lineNum">    1122 </span><span class="lineNoCov">          0 :   return str;</span></a>
+<a name="1123"><span class="lineNum">    1123 </span>            : #undef BUF_LENGTH</a>
+<a name="1124"><span class="lineNum">    1124 </span>            : }  /* fxp_to_string */</a>
+<a name="1125"><span class="lineNum">    1125 </span>            : </a>
+<a name="1126"><span class="lineNum">    1126 </span>            : #if !STANDALONE_UTILITY_PROGRAM</a>
+<a name="1127"><span class="lineNum">    1127 </span>            : </a>
+<a name="1128"><span class="lineNum">    1128 </span><span class="lineNoCov">          0 : static void conv_fixed_point_to_long_double(</span></a>
+<a name="1129"><span class="lineNum">    1129 </span>            :                                 a_fixed_point_value             *fxp_value,</a>
+<a name="1130"><span class="lineNum">    1130 </span>            :                                 a_fixed_point_type_descr        *fxp_descr,</a>
+<a name="1131"><span class="lineNum">    1131 </span>            :                                 an_internal_float_value         *fp_value)</a>
+<a name="1132"><span class="lineNum">    1132 </span>            : /*</a>
+<a name="1133"><span class="lineNum">    1133 </span>            : Convert the fixed-point fxp_value to a long double, stored into fp_value.</a>
+<a name="1134"><span class="lineNum">    1134 </span>            : fxp_descr specifies the format of the fixed-point value.</a>
+<a name="1135"><span class="lineNum">    1135 </span>            : */</a>
+<a name="1136"><span class="lineNum">    1136 </span>            : {</a>
+<a name="1137"><span class="lineNum">    1137 </span><span class="lineNoCov">          0 :   a_mantissa    mantissa;</span></a>
+<a name="1138"><span class="lineNum">    1138 </span><span class="lineNoCov">          0 :   long          exponent;</span></a>
+<a name="1139"><span class="lineNum">    1139 </span><span class="lineNoCov">          0 :   a_boolean     is_negative;</span></a>
+<a name="1140"><span class="lineNum">    1140 </span><span class="lineNoCov">          0 :   a_boolean     err;</span></a>
+<a name="1141"><span class="lineNum">    1141 </span><span class="lineNoCov">          0 :   a_boolean     inexact;</span></a>
+<a name="1142"><span class="lineNum">    1142 </span>            : </a>
+<a name="1143"><span class="lineNum">    1143 </span><span class="lineNoCov">          0 :   load_hex_fxp_value(fxp_value, fxp_descr, &amp;mantissa, &amp;exponent, &amp;is_negative);</span></a>
+<a name="1144"><span class="lineNum">    1144 </span><span class="lineNoCov">          0 :   conv_mantissa_to_floating_point(&amp;mantissa, exponent, is_negative,</span></a>
+<a name="1145"><span class="lineNum">    1145 </span>            :                                   (a_float_kind)fk_long_double, fp_value,</a>
+<a name="1146"><span class="lineNum">    1146 </span>            :                                   /*overflow=*/FALSE, &amp;err, &amp;inexact);</a>
+<a name="1147"><span class="lineNum">    1147 </span><span class="lineNoCov">          0 : }  /* conv_fixed_point_to_long_double */</span></a>
+<a name="1148"><span class="lineNum">    1148 </span>            : </a>
+<a name="1149"><span class="lineNum">    1149 </span>            : </a>
+<a name="1150"><span class="lineNum">    1150 </span>            : </a>
+<a name="1151"><span class="lineNum">    1151 </span>            : </a>
+<a name="1152"><span class="lineNum">    1152 </span><span class="lineNoCov">          0 : static void conv_long_double_to_fixed_point(</span></a>
+<a name="1153"><span class="lineNum">    1153 </span>            :                                 an_internal_float_value         *fp_value,</a>
+<a name="1154"><span class="lineNum">    1154 </span>            :                                 a_fixed_point_value             *fxp_value,</a>
+<a name="1155"><span class="lineNum">    1155 </span>            :                                 a_fixed_point_type_descr        *fxp_descr,</a>
+<a name="1156"><span class="lineNum">    1156 </span>            :                                 a_boolean                       *err)</a>
+<a name="1157"><span class="lineNum">    1157 </span>            : /*</a>
+<a name="1158"><span class="lineNum">    1158 </span>            : Convert the long double fp_value to fixed-point and store it in fxp_value.</a>
+<a name="1159"><span class="lineNum">    1159 </span>            : fxp_descr specifies the format of the fixed-point value.  Set err if</a>
+<a name="1160"><span class="lineNum">    1160 </span>            : the value cannot be converted to the destination type.</a>
+<a name="1161"><span class="lineNum">    1161 </span>            : */</a>
+<a name="1162"><span class="lineNum">    1162 </span>            : {</a>
+<a name="1163"><span class="lineNum">    1163 </span><span class="lineNoCov">          0 :   a_mantissa    mantissa;</span></a>
+<a name="1164"><span class="lineNum">    1164 </span><span class="lineNoCov">          0 :   long          exponent;</span></a>
+<a name="1165"><span class="lineNum">    1165 </span><span class="lineNoCov">          0 :   a_boolean     is_negative;</span></a>
+<a name="1166"><span class="lineNum">    1166 </span><span class="lineNoCov">          0 :   a_boolean     inexact;</span></a>
+<a name="1167"><span class="lineNum">    1167 </span>            : </a>
+<a name="1168"><span class="lineNum">    1168 </span><span class="lineNoCov">          0 :   *err = FALSE;</span></a>
+<a name="1169"><span class="lineNum">    1169 </span><span class="lineNoCov">          0 :   load_hex_fp_value(fp_value, (a_float_kind)fk_long_double, &amp;mantissa,</span></a>
+<a name="1170"><span class="lineNum">    1170 </span>            :                     &amp;exponent, &amp;is_negative, /*restore_implicit_bit=*/TRUE);</a>
+<a name="1171"><span class="lineNum">    1171 </span><span class="lineNoCov">          0 :   conv_mantissa_to_fixed_point(&amp;mantissa, exponent, is_negative, fxp_descr,</span></a>
+<a name="1172"><span class="lineNum">    1172 </span>            :                                /*overflow=*/FALSE, fxp_value, err, &amp;inexact);</a>
+<a name="1173"><span class="lineNum">    1173 </span>            : #if TARG_HAS_IEEE_FLOATING_POINT</a>
+<a name="1174"><span class="lineNum">    1174 </span><span class="lineNoCov">          0 :   if (fp_is_nan_or_infinity(fp_value, (a_float_kind)fk_long_double)) {</span></a>
+<a name="1175"><span class="lineNum">    1175 </span>            :     /* Not-a-number or infinity.  Treat this as an error. */</a>
+<a name="1176"><span class="lineNum">    1176 </span><span class="lineNoCov">          0 :     *err = TRUE;</span></a>
+<a name="1177"><span class="lineNum">    1177 </span>            :   }  /* if */</a>
+<a name="1178"><span class="lineNum">    1178 </span>            : #endif /* TARG_HAS_IEEE_FLOATING_POINT */</a>
+<a name="1179"><span class="lineNum">    1179 </span><span class="lineNoCov">          0 : }  /* conv_long_double_to_fixed_point */</span></a>
+<a name="1180"><span class="lineNum">    1180 </span>            : </a>
+<a name="1181"><span class="lineNum">    1181 </span>            : </a>
+<a name="1182"><span class="lineNum">    1182 </span><span class="lineNoCov">          0 : void fxp_negate(a_fixed_point_value      *value,</span></a>
+<a name="1183"><span class="lineNum">    1183 </span>            :                 a_fixed_point_type_descr *fxp_descr,</a>
+<a name="1184"><span class="lineNum">    1184 </span>            :                 a_fixed_point_value      *result,</a>
+<a name="1185"><span class="lineNum">    1185 </span>            :                 a_fixed_point_type_descr *fxp_descr_result,</a>
+<a name="1186"><span class="lineNum">    1186 </span>            :                 a_boolean                *err)</a>
+<a name="1187"><span class="lineNum">    1187 </span>            : /*</a>
+<a name="1188"><span class="lineNum">    1188 </span>            : Negate the fixed-point value and to store the value in result.  fxp_descr</a>
+<a name="1189"><span class="lineNum">    1189 </span>            : and fxp_descr_result describe the format of the fixed-point values of value,</a>
+<a name="1190"><span class="lineNum">    1190 </span>            : and result.  If an error occurs (e.g., overflow), err is set to TRUE.</a>
+<a name="1191"><span class="lineNum">    1191 </span>            : */</a>
+<a name="1192"><span class="lineNum">    1192 </span>            : {</a>
+<a name="1193"><span class="lineNum">    1193 </span><span class="lineNoCov">          0 :   an_internal_float_value       fp;</span></a>
+<a name="1194"><span class="lineNum">    1194 </span><span class="lineNoCov">          0 :   an_internal_float_value       fp_result;</span></a>
+<a name="1195"><span class="lineNum">    1195 </span><span class="lineNoCov">          0 :   a_boolean                     depends_on_fp_mode;</span></a>
+<a name="1196"><span class="lineNum">    1196 </span><span class="lineNoCov">          0 :   a_boolean                     conv_err;</span></a>
+<a name="1197"><span class="lineNum">    1197 </span>            : </a>
+<a name="1198"><span class="lineNum">    1198 </span><span class="lineNoCov">          0 :   *err = FALSE;</span></a>
+<a name="1199"><span class="lineNum">    1199 </span><span class="lineNoCov">          0 :   conv_fixed_point_to_long_double(value, fxp_descr, &amp;fp);</span></a>
+<a name="1200"><span class="lineNum">    1200 </span><span class="lineNoCov">          0 :   fp_negate((a_float_kind)fk_long_double, &amp;fp, &amp;fp_result, err,</span></a>
+<a name="1201"><span class="lineNum">    1201 </span>            :            &amp;depends_on_fp_mode);</a>
+<a name="1202"><span class="lineNum">    1202 </span><span class="lineNoCov">          0 :   conv_long_double_to_fixed_point(&amp;fp_result, result, fxp_descr_result,</span></a>
+<a name="1203"><span class="lineNum">    1203 </span>            :                                   &amp;conv_err);</a>
+<a name="1204"><span class="lineNum">    1204 </span><span class="lineNoCov">          0 :   if (conv_err) *err = TRUE;</span></a>
+<a name="1205"><span class="lineNum">    1205 </span><span class="lineNoCov">          0 : }  /* fxp_negate */</span></a>
+<a name="1206"><span class="lineNum">    1206 </span>            : </a>
+<a name="1207"><span class="lineNum">    1207 </span>            : </a>
+<a name="1208"><span class="lineNum">    1208 </span><span class="lineNoCov">          0 : static a_boolean conv_constant_to_long_double(a_constant_ptr          cp,</span></a>
+<a name="1209"><span class="lineNum">    1209 </span>            :                                               an_internal_float_value *result)</a>
+<a name="1210"><span class="lineNum">    1210 </span>            : /*</a>
+<a name="1211"><span class="lineNum">    1211 </span>            : Convert the constant &quot;cp&quot; to a long double value in &quot;result&quot;.  Return TRUE</a>
+<a name="1212"><span class="lineNum">    1212 </span>            : if the conversion was successful.  The conversion is only attempted if</a>
+<a name="1213"><span class="lineNum">    1213 </span>            : the constant is a fixed-point or integer value.</a>
+<a name="1214"><span class="lineNum">    1214 </span>            : */</a>
+<a name="1215"><span class="lineNum">    1215 </span>            : {</a>
+<a name="1216"><span class="lineNum">    1216 </span><span class="lineNoCov">          0 :   a_boolean     err;</span></a>
+<a name="1217"><span class="lineNum">    1217 </span><span class="lineNoCov">          0 :   a_boolean     conversion_done = TRUE;</span></a>
+<a name="1218"><span class="lineNum">    1218 </span>            : </a>
+<a name="1219"><span class="lineNum">    1219 </span><span class="lineNoCov">          0 :   if (cp-&gt;kind == (a_constant_repr_kind)ck_fixed_point) {</span></a>
+<a name="1220"><span class="lineNum">    1220 </span><span class="lineNoCov">          0 :     conv_fixed_point_to_long_double(&amp;cp-&gt;variant.fixed_point_value,</span></a>
+<a name="1221"><span class="lineNum">    1221 </span>            :                                     fxp_descr_for_constant(cp), result);</a>
+<a name="1222"><span class="lineNum">    1222 </span><span class="lineNoCov">          0 :   } else if (cp-&gt;kind == (a_constant_repr_kind)ck_integer) {</span></a>
+<a name="1223"><span class="lineNum">    1223 </span><span class="lineNoCov">          0 :     conv_integer_value_to_long_double_value(&amp;cp-&gt;variant.integer_value,</span></a>
+<a name="1224"><span class="lineNum">    1224 </span>            :                                             int_constant_is_signed(cp),</a>
+<a name="1225"><span class="lineNum">    1225 </span>            :                                             result, &amp;err);</a>
+<a name="1226"><span class="lineNum">    1226 </span><span class="lineNoCov">          0 :     check_assertion(!err);</span></a>
+<a name="1227"><span class="lineNum">    1227 </span>            :   } else {</a>
+<a name="1228"><span class="lineNum">    1228 </span>            :     conversion_done = FALSE;</a>
+<a name="1229"><span class="lineNum">    1229 </span>            :   }  /* if */</a>
+<a name="1230"><span class="lineNum">    1230 </span><span class="lineNoCov">          0 :   return conversion_done;</span></a>
+<a name="1231"><span class="lineNum">    1231 </span>            : }  /* conv_constant_to_long_double */</a>
+<a name="1232"><span class="lineNum">    1232 </span>            : </a>
+<a name="1233"><span class="lineNum">    1233 </span>            : </a>
+<a name="1234"><span class="lineNum">    1234 </span><span class="lineNoCov">          0 : void fxp_shift(a_constant               *constant,</span></a>
+<a name="1235"><span class="lineNum">    1235 </span>            :                int                      shift_count,</a>
+<a name="1236"><span class="lineNum">    1236 </span>            :                a_constant               *result,</a>
+<a name="1237"><span class="lineNum">    1237 </span>            :                a_boolean                shift_right,</a>
+<a name="1238"><span class="lineNum">    1238 </span>            :                a_boolean                *err)</a>
+<a name="1239"><span class="lineNum">    1239 </span>            : /*</a>
+<a name="1240"><span class="lineNum">    1240 </span>            : Shift a fixed-point constant by shift_count bits, producing result.  Do</a>
+<a name="1241"><span class="lineNum">    1241 </span>            : a right shift if shift_right is TRUE, left otherwise.  If an error occurs</a>
+<a name="1242"><span class="lineNum">    1242 </span>            : (such as overflow) set err.</a>
+<a name="1243"><span class="lineNum">    1243 </span>            : */</a>
+<a name="1244"><span class="lineNum">    1244 </span>            : {</a>
+<a name="1245"><span class="lineNum">    1245 </span><span class="lineNoCov">          0 :   a_mantissa            mantissa;</span></a>
+<a name="1246"><span class="lineNum">    1246 </span><span class="lineNoCov">          0 :   long                  exponent;</span></a>
+<a name="1247"><span class="lineNum">    1247 </span><span class="lineNoCov">          0 :   a_boolean             is_negative;</span></a>
+<a name="1248"><span class="lineNum">    1248 </span><span class="lineNoCov">          0 :   a_boolean             local_err;</span></a>
+<a name="1249"><span class="lineNum">    1249 </span><span class="lineNoCov">          0 :   a_boolean             inexact;</span></a>
+<a name="1250"><span class="lineNum">    1250 </span><span class="lineNoCov">          0 :   a_fixed_point_type_descr</span></a>
+<a name="1251"><span class="lineNum">    1251 </span>            :                         *fxp_descr;</a>
+<a name="1252"><span class="lineNum">    1252 </span><span class="lineNoCov">          0 :   a_fixed_point_type_descr</span></a>
+<a name="1253"><span class="lineNum">    1253 </span>            :                         *result_fxp_descr;</a>
+<a name="1254"><span class="lineNum">    1254 </span>            : </a>
+<a name="1255"><span class="lineNum">    1255 </span><span class="lineNoCov">          0 :   *err = FALSE;</span></a>
+<a name="1256"><span class="lineNum">    1256 </span><span class="lineNoCov">          0 :   check_assertion(constant-&gt;kind == (a_constant_repr_kind)ck_fixed_point);</span></a>
+<a name="1257"><span class="lineNum">    1257 </span><span class="lineNoCov">          0 :   set_constant_kind(result, (a_constant_repr_kind)ck_fixed_point);</span></a>
+<a name="1258"><span class="lineNum">    1258 </span><span class="lineNoCov">          0 :   fxp_descr = fxp_descr_for_constant(constant);</span></a>
+<a name="1259"><span class="lineNum">    1259 </span><span class="lineNoCov">          0 :   result_fxp_descr = fxp_descr_for_constant(result);</span></a>
+<a name="1260"><span class="lineNum">    1260 </span>            :   /* Convert the fixed-point value into the internal mantissa</a>
+<a name="1261"><span class="lineNum">    1261 </span>            :      representation. */</a>
+<a name="1262"><span class="lineNum">    1262 </span><span class="lineNoCov">          0 :   load_hex_fxp_value(&amp;constant-&gt;variant.fixed_point_value,</span></a>
+<a name="1263"><span class="lineNum">    1263 </span>            :                      fxp_descr, &amp;mantissa, &amp;exponent, &amp;is_negative);</a>
+<a name="1264"><span class="lineNum">    1264 </span>            :   /* Increment or decrement the exponent by the shift count. */</a>
+<a name="1265"><span class="lineNum">    1265 </span><span class="lineNoCov">          0 :   if (shift_right) exponent -= shift_count; else exponent += shift_count;</span></a>
+<a name="1266"><span class="lineNum">    1266 </span>            :   /* Convert and store the mantissa as a fixed-point value. */</a>
+<a name="1267"><span class="lineNum">    1267 </span><span class="lineNoCov">          0 :   conv_mantissa_to_fixed_point(&amp;mantissa, exponent, is_negative,</span></a>
+<a name="1268"><span class="lineNum">    1268 </span>            :                                result_fxp_descr, /*overflow=*/FALSE,</a>
+<a name="1269"><span class="lineNum">    1269 </span>            :                                &amp;result-&gt;variant.fixed_point_value,</a>
+<a name="1270"><span class="lineNum">    1270 </span>            :                                &amp;local_err, &amp;inexact);</a>
+<a name="1271"><span class="lineNum">    1271 </span><span class="lineNoCov">          0 :   if (local_err) {</span></a>
+<a name="1272"><span class="lineNum">    1272 </span>            :     /* If an error (overflow) occurred, indicate that the operation was not</a>
+<a name="1273"><span class="lineNum">    1273 </span>            :        folded. */</a>
+<a name="1274"><span class="lineNum">    1274 </span><span class="lineNoCov">          0 :     *err = TRUE;</span></a>
+<a name="1275"><span class="lineNum">    1275 </span>            :   }  /* if */</a>
+<a name="1276"><span class="lineNum">    1276 </span><span class="lineNoCov">          0 : } /* fxp_shift */</span></a>
+<a name="1277"><span class="lineNum">    1277 </span>            : </a>
+<a name="1278"><span class="lineNum">    1278 </span>            : </a>
+<a name="1279"><span class="lineNum">    1279 </span><span class="lineNoCov">          0 : void fxp_add(a_constant         *constant_1,</span></a>
+<a name="1280"><span class="lineNum">    1280 </span>            :              a_constant         *constant_2,</a>
+<a name="1281"><span class="lineNum">    1281 </span>            :              a_constant         *result,</a>
+<a name="1282"><span class="lineNum">    1282 </span>            :              a_boolean          *did_not_fold,</a>
+<a name="1283"><span class="lineNum">    1283 </span>            :              a_boolean          *err)</a>
+<a name="1284"><span class="lineNum">    1284 </span>            : /*</a>
+<a name="1285"><span class="lineNum">    1285 </span>            : Add the constants value_1 and value_2 and store the value in</a>
+<a name="1286"><span class="lineNum">    1286 </span>            : result.  One or both of the constants are fixed-point values.</a>
+<a name="1287"><span class="lineNum">    1287 </span>            : One of the operands can be an integer.  The result is a fixed-point</a>
+<a name="1288"><span class="lineNum">    1288 </span>            : constant.  If the operation cannot be folded, did_not_fold is set to TRUE.</a>
+<a name="1289"><span class="lineNum">    1289 </span>            : If an error occurs (e.g., overflow), err is set to TRUE.</a>
+<a name="1290"><span class="lineNum">    1290 </span>            : */</a>
+<a name="1291"><span class="lineNum">    1291 </span>            : {</a>
+<a name="1292"><span class="lineNum">    1292 </span><span class="lineNoCov">          0 :   an_internal_float_value       fp_1;</span></a>
+<a name="1293"><span class="lineNum">    1293 </span><span class="lineNoCov">          0 :   an_internal_float_value       fp_2;</span></a>
+<a name="1294"><span class="lineNum">    1294 </span><span class="lineNoCov">          0 :   an_internal_float_value       fp_result;</span></a>
+<a name="1295"><span class="lineNum">    1295 </span><span class="lineNoCov">          0 :   a_boolean                     depends_on_fp_mode;</span></a>
+<a name="1296"><span class="lineNum">    1296 </span><span class="lineNoCov">          0 :   a_boolean                     conv_err;</span></a>
+<a name="1297"><span class="lineNum">    1297 </span>            : </a>
+<a name="1298"><span class="lineNum">    1298 </span><span class="lineNoCov">          0 :   *err = FALSE;</span></a>
+<a name="1299"><span class="lineNum">    1299 </span><span class="lineNoCov">          0 :   check_assertion(result-&gt;kind == (a_constant_repr_kind)ck_fixed_point);</span></a>
+<a name="1300"><span class="lineNum">    1300 </span>            :   /* Convert the operands to long double.  If either of the operands is</a>
+<a name="1301"><span class="lineNum">    1301 </span>            :      of a type that can't be converted, the folding won't be done. */</a>
+<a name="1302"><span class="lineNum">    1302 </span><span class="lineNoCov">          0 :   if (conv_constant_to_long_double(constant_1, &amp;fp_1) &amp;&amp;</span></a>
+<a name="1303"><span class="lineNum">    1303 </span><span class="lineNoCov">          0 :       conv_constant_to_long_double(constant_2, &amp;fp_2)) {</span></a>
+<a name="1304"><span class="lineNum">    1304 </span><span class="lineNoCov">          0 :     fp_add((a_float_kind)fk_long_double, &amp;fp_1, &amp;fp_2, &amp;fp_result, err,</span></a>
+<a name="1305"><span class="lineNum">    1305 </span>            :            &amp;depends_on_fp_mode);</a>
+<a name="1306"><span class="lineNum">    1306 </span><span class="lineNoCov">          0 :     conv_long_double_to_fixed_point(&amp;fp_result,</span></a>
+<a name="1307"><span class="lineNum">    1307 </span>            :                                     &amp;result-&gt;variant.fixed_point_value,</a>
+<a name="1308"><span class="lineNum">    1308 </span>            :                                     fxp_descr_for_constant(result), &amp;conv_err);</a>
+<a name="1309"><span class="lineNum">    1309 </span><span class="lineNoCov">          0 :     if (conv_err) *err = TRUE;</span></a>
+<a name="1310"><span class="lineNum">    1310 </span>            :   } else {</a>
+<a name="1311"><span class="lineNum">    1311 </span><span class="lineNoCov">          0 :     *did_not_fold = TRUE;</span></a>
+<a name="1312"><span class="lineNum">    1312 </span>            :   }  /* if */</a>
+<a name="1313"><span class="lineNum">    1313 </span><span class="lineNoCov">          0 : } /* fxp_add */</span></a>
+<a name="1314"><span class="lineNum">    1314 </span>            : </a>
+<a name="1315"><span class="lineNum">    1315 </span>            : </a>
+<a name="1316"><span class="lineNum">    1316 </span><span class="lineNoCov">          0 : void fxp_subtract(a_constant    *constant_1,</span></a>
+<a name="1317"><span class="lineNum">    1317 </span>            :                   a_constant    *constant_2,</a>
+<a name="1318"><span class="lineNum">    1318 </span>            :                   a_constant    *result,</a>
+<a name="1319"><span class="lineNum">    1319 </span>            :                   a_boolean     *did_not_fold,</a>
+<a name="1320"><span class="lineNum">    1320 </span>            :                   a_boolean     *err)</a>
+<a name="1321"><span class="lineNum">    1321 </span>            : /*</a>
+<a name="1322"><span class="lineNum">    1322 </span>            : Subtract the constants value_1 and value_2 and store the value in</a>
+<a name="1323"><span class="lineNum">    1323 </span>            : result.  One or both of the constants are fixed-point values.</a>
+<a name="1324"><span class="lineNum">    1324 </span>            : One of the operands can be an integer.  The result is a fixed-point</a>
+<a name="1325"><span class="lineNum">    1325 </span>            : constant.  If the operation cannot be folded, did_not_fold is set to TRUE.</a>
+<a name="1326"><span class="lineNum">    1326 </span>            : If an error occurs (e.g., overflow), err is set to TRUE.</a>
+<a name="1327"><span class="lineNum">    1327 </span>            : */</a>
+<a name="1328"><span class="lineNum">    1328 </span>            : {</a>
+<a name="1329"><span class="lineNum">    1329 </span><span class="lineNoCov">          0 :   an_internal_float_value       fp_1;</span></a>
+<a name="1330"><span class="lineNum">    1330 </span><span class="lineNoCov">          0 :   an_internal_float_value       fp_2;</span></a>
+<a name="1331"><span class="lineNum">    1331 </span><span class="lineNoCov">          0 :   an_internal_float_value       fp_result;</span></a>
+<a name="1332"><span class="lineNum">    1332 </span><span class="lineNoCov">          0 :   a_boolean                     depends_on_fp_mode;</span></a>
+<a name="1333"><span class="lineNum">    1333 </span><span class="lineNoCov">          0 :   a_boolean                     conv_err;</span></a>
+<a name="1334"><span class="lineNum">    1334 </span>            : </a>
+<a name="1335"><span class="lineNum">    1335 </span><span class="lineNoCov">          0 :   *err = FALSE;</span></a>
+<a name="1336"><span class="lineNum">    1336 </span><span class="lineNoCov">          0 :   check_assertion(result-&gt;kind == (a_constant_repr_kind)ck_fixed_point);</span></a>
+<a name="1337"><span class="lineNum">    1337 </span>            :   /* Convert the operands to long double.  If either of the operands is</a>
+<a name="1338"><span class="lineNum">    1338 </span>            :      of a type that can't be converted, the folding won't be done. */</a>
+<a name="1339"><span class="lineNum">    1339 </span><span class="lineNoCov">          0 :   if (conv_constant_to_long_double(constant_1, &amp;fp_1) &amp;&amp;</span></a>
+<a name="1340"><span class="lineNum">    1340 </span><span class="lineNoCov">          0 :       conv_constant_to_long_double(constant_2, &amp;fp_2)) {</span></a>
+<a name="1341"><span class="lineNum">    1341 </span><span class="lineNoCov">          0 :     fp_subtract((a_float_kind)fk_long_double, &amp;fp_1, &amp;fp_2, &amp;fp_result, err,</span></a>
+<a name="1342"><span class="lineNum">    1342 </span>            :                 &amp;depends_on_fp_mode);</a>
+<a name="1343"><span class="lineNum">    1343 </span><span class="lineNoCov">          0 :     conv_long_double_to_fixed_point(&amp;fp_result,</span></a>
+<a name="1344"><span class="lineNum">    1344 </span>            :                                     &amp;result-&gt;variant.fixed_point_value,</a>
+<a name="1345"><span class="lineNum">    1345 </span>            :                                     fxp_descr_for_constant(result), &amp;conv_err);</a>
+<a name="1346"><span class="lineNum">    1346 </span><span class="lineNoCov">          0 :     if (conv_err) *err = TRUE;</span></a>
+<a name="1347"><span class="lineNum">    1347 </span>            :   } else {</a>
+<a name="1348"><span class="lineNum">    1348 </span><span class="lineNoCov">          0 :     *did_not_fold = TRUE;</span></a>
+<a name="1349"><span class="lineNum">    1349 </span>            :   }  /* if */</a>
+<a name="1350"><span class="lineNum">    1350 </span><span class="lineNoCov">          0 : } /* fxp_subtract */</span></a>
+<a name="1351"><span class="lineNum">    1351 </span>            : </a>
+<a name="1352"><span class="lineNum">    1352 </span>            : </a>
+<a name="1353"><span class="lineNum">    1353 </span><span class="lineNoCov">          0 : void fxp_multiply(a_constant    *constant_1,</span></a>
+<a name="1354"><span class="lineNum">    1354 </span>            :                   a_constant    *constant_2,</a>
+<a name="1355"><span class="lineNum">    1355 </span>            :                   a_constant    *result,</a>
+<a name="1356"><span class="lineNum">    1356 </span>            :                   a_boolean     *did_not_fold,</a>
+<a name="1357"><span class="lineNum">    1357 </span>            :                   a_boolean     *err)</a>
+<a name="1358"><span class="lineNum">    1358 </span>            : /*</a>
+<a name="1359"><span class="lineNum">    1359 </span>            : Multiply the constants value_1 and value_2 and store the value in</a>
+<a name="1360"><span class="lineNum">    1360 </span>            : result.  One or both of the constants are fixed-point values.</a>
+<a name="1361"><span class="lineNum">    1361 </span>            : One of the operands can be an integer.  The result is a fixed-point</a>
+<a name="1362"><span class="lineNum">    1362 </span>            : constant.  If the operation cannot be folded, did_not_fold is set to TRUE.</a>
+<a name="1363"><span class="lineNum">    1363 </span>            : If an error occurs (e.g., overflow), err is set to TRUE.</a>
+<a name="1364"><span class="lineNum">    1364 </span>            : */</a>
+<a name="1365"><span class="lineNum">    1365 </span>            : {</a>
+<a name="1366"><span class="lineNum">    1366 </span><span class="lineNoCov">          0 :   an_internal_float_value       fp_1;</span></a>
+<a name="1367"><span class="lineNum">    1367 </span><span class="lineNoCov">          0 :   an_internal_float_value       fp_2;</span></a>
+<a name="1368"><span class="lineNum">    1368 </span><span class="lineNoCov">          0 :   an_internal_float_value       fp_result;</span></a>
+<a name="1369"><span class="lineNum">    1369 </span><span class="lineNoCov">          0 :   a_boolean                     depends_on_fp_mode;</span></a>
+<a name="1370"><span class="lineNum">    1370 </span><span class="lineNoCov">          0 :   a_boolean                     conv_err;</span></a>
+<a name="1371"><span class="lineNum">    1371 </span>            : </a>
+<a name="1372"><span class="lineNum">    1372 </span><span class="lineNoCov">          0 :   *err = FALSE;</span></a>
+<a name="1373"><span class="lineNum">    1373 </span><span class="lineNoCov">          0 :   check_assertion(result-&gt;kind == (a_constant_repr_kind)ck_fixed_point);</span></a>
+<a name="1374"><span class="lineNum">    1374 </span>            :   /* Convert the operands to long double.  If either of the operands is</a>
+<a name="1375"><span class="lineNum">    1375 </span>            :      of a type that can't be converted, the folding won't be done. */</a>
+<a name="1376"><span class="lineNum">    1376 </span><span class="lineNoCov">          0 :   if (conv_constant_to_long_double(constant_1, &amp;fp_1) &amp;&amp;</span></a>
+<a name="1377"><span class="lineNum">    1377 </span><span class="lineNoCov">          0 :       conv_constant_to_long_double(constant_2, &amp;fp_2)) {</span></a>
+<a name="1378"><span class="lineNum">    1378 </span><span class="lineNoCov">          0 :     fp_multiply((a_float_kind)fk_long_double, &amp;fp_1, &amp;fp_2, &amp;fp_result, err,</span></a>
+<a name="1379"><span class="lineNum">    1379 </span>            :                 &amp;depends_on_fp_mode);</a>
+<a name="1380"><span class="lineNum">    1380 </span><span class="lineNoCov">          0 :     conv_long_double_to_fixed_point(&amp;fp_result,</span></a>
+<a name="1381"><span class="lineNum">    1381 </span>            :                                     &amp;result-&gt;variant.fixed_point_value,</a>
+<a name="1382"><span class="lineNum">    1382 </span>            :                                     fxp_descr_for_constant(result), &amp;conv_err);</a>
+<a name="1383"><span class="lineNum">    1383 </span><span class="lineNoCov">          0 :     if (conv_err) *err = TRUE;</span></a>
+<a name="1384"><span class="lineNum">    1384 </span>            :   } else {</a>
+<a name="1385"><span class="lineNum">    1385 </span><span class="lineNoCov">          0 :     *did_not_fold = TRUE;</span></a>
+<a name="1386"><span class="lineNum">    1386 </span>            :   }  /* if */</a>
+<a name="1387"><span class="lineNum">    1387 </span><span class="lineNoCov">          0 : } /* fxp_multiply */</span></a>
+<a name="1388"><span class="lineNum">    1388 </span>            : </a>
+<a name="1389"><span class="lineNum">    1389 </span>            : </a>
+<a name="1390"><span class="lineNum">    1390 </span><span class="lineNoCov">          0 : void fxp_divide(a_constant      *constant_1,</span></a>
+<a name="1391"><span class="lineNum">    1391 </span>            :                 a_constant      *constant_2,</a>
+<a name="1392"><span class="lineNum">    1392 </span>            :                 a_constant      *result,</a>
+<a name="1393"><span class="lineNum">    1393 </span>            :                 a_boolean       *did_not_fold,</a>
+<a name="1394"><span class="lineNum">    1394 </span>            :                 a_boolean       *err)</a>
+<a name="1395"><span class="lineNum">    1395 </span>            : /*</a>
+<a name="1396"><span class="lineNum">    1396 </span>            : Divide the constants value_1 and value_2 and store the value in</a>
+<a name="1397"><span class="lineNum">    1397 </span>            : result.  One or both of the constants are fixed-point values.</a>
+<a name="1398"><span class="lineNum">    1398 </span>            : One of the operands can be an integer.  The result is a fixed-point</a>
+<a name="1399"><span class="lineNum">    1399 </span>            : constant.  If the operation cannot be folded, did_not_fold is set to TRUE.</a>
+<a name="1400"><span class="lineNum">    1400 </span>            : If an error occurs (e.g., overflow), err is set to TRUE.</a>
+<a name="1401"><span class="lineNum">    1401 </span>            : */</a>
+<a name="1402"><span class="lineNum">    1402 </span>            : {</a>
+<a name="1403"><span class="lineNum">    1403 </span><span class="lineNoCov">          0 :   an_internal_float_value       fp_1;</span></a>
+<a name="1404"><span class="lineNum">    1404 </span><span class="lineNoCov">          0 :   an_internal_float_value       fp_2;</span></a>
+<a name="1405"><span class="lineNum">    1405 </span><span class="lineNoCov">          0 :   an_internal_float_value       fp_result;</span></a>
+<a name="1406"><span class="lineNum">    1406 </span><span class="lineNoCov">          0 :   a_boolean                     depends_on_fp_mode;</span></a>
+<a name="1407"><span class="lineNum">    1407 </span><span class="lineNoCov">          0 :   a_boolean                     conv_err;</span></a>
+<a name="1408"><span class="lineNum">    1408 </span>            : </a>
+<a name="1409"><span class="lineNum">    1409 </span><span class="lineNoCov">          0 :   *err = FALSE;</span></a>
+<a name="1410"><span class="lineNum">    1410 </span><span class="lineNoCov">          0 :   check_assertion(result-&gt;kind == (a_constant_repr_kind)ck_fixed_point);</span></a>
+<a name="1411"><span class="lineNum">    1411 </span>            :   /* Convert the operands to long double.  If either of the operands is</a>
+<a name="1412"><span class="lineNum">    1412 </span>            :      of a type that can't be converted, the folding won't be done. */</a>
+<a name="1413"><span class="lineNum">    1413 </span><span class="lineNoCov">          0 :   if (conv_constant_to_long_double(constant_1, &amp;fp_1) &amp;&amp;</span></a>
+<a name="1414"><span class="lineNum">    1414 </span><span class="lineNoCov">          0 :       conv_constant_to_long_double(constant_2, &amp;fp_2)) {</span></a>
+<a name="1415"><span class="lineNum">    1415 </span><span class="lineNoCov">          0 :     fp_divide((a_float_kind)fk_long_double, &amp;fp_1, &amp;fp_2, &amp;fp_result, err,</span></a>
+<a name="1416"><span class="lineNum">    1416 </span>            :                 &amp;depends_on_fp_mode);</a>
+<a name="1417"><span class="lineNum">    1417 </span>            :     /* Don't store the result if an error (e.g., divide by zero) occurred. */</a>
+<a name="1418"><span class="lineNum">    1418 </span><span class="lineNoCov">          0 :     if (!*err) {</span></a>
+<a name="1419"><span class="lineNum">    1419 </span><span class="lineNoCov">          0 :       conv_long_double_to_fixed_point(&amp;fp_result,</span></a>
+<a name="1420"><span class="lineNum">    1420 </span>            :                                     &amp;result-&gt;variant.fixed_point_value,</a>
+<a name="1421"><span class="lineNum">    1421 </span>            :                                     fxp_descr_for_constant(result), &amp;conv_err);</a>
+<a name="1422"><span class="lineNum">    1422 </span><span class="lineNoCov">          0 :       if (conv_err) *err = TRUE;</span></a>
+<a name="1423"><span class="lineNum">    1423 </span>            :     }  /* if */</a>
+<a name="1424"><span class="lineNum">    1424 </span>            :   } else {</a>
+<a name="1425"><span class="lineNum">    1425 </span><span class="lineNoCov">          0 :     *did_not_fold = TRUE;</span></a>
+<a name="1426"><span class="lineNum">    1426 </span>            :   }  /* if */</a>
+<a name="1427"><span class="lineNum">    1427 </span><span class="lineNoCov">          0 : } /* fxp_divide */</span></a>
+<a name="1428"><span class="lineNum">    1428 </span>            : </a>
+<a name="1429"><span class="lineNum">    1429 </span>            : </a>
+<a name="1430"><span class="lineNum">    1430 </span><span class="lineNoCov">          0 : int fxp_compare(a_constant      *constant_1,</span></a>
+<a name="1431"><span class="lineNum">    1431 </span>            :                 a_constant      *constant_2)</a>
+<a name="1432"><span class="lineNum">    1432 </span>            : /*</a>
+<a name="1433"><span class="lineNum">    1433 </span>            : Compare two fixed-point values and return</a>
+<a name="1434"><span class="lineNum">    1434 </span>            : </a>
+<a name="1435"><span class="lineNum">    1435 </span>            :        value_1 &gt; value_2   1</a>
+<a name="1436"><span class="lineNum">    1436 </span>            :        value_1 = value_2   0</a>
+<a name="1437"><span class="lineNum">    1437 </span>            :        value_1 &lt; value_2  -1</a>
+<a name="1438"><span class="lineNum">    1438 </span>            : </a>
+<a name="1439"><span class="lineNum">    1439 </span>            : */</a>
+<a name="1440"><span class="lineNum">    1440 </span>            : {</a>
+<a name="1441"><span class="lineNum">    1441 </span><span class="lineNoCov">          0 :   an_internal_float_value       fp_1;</span></a>
+<a name="1442"><span class="lineNum">    1442 </span><span class="lineNoCov">          0 :   an_internal_float_value       fp_2;</span></a>
+<a name="1443"><span class="lineNum">    1443 </span><span class="lineNoCov">          0 :   a_boolean                     unord;</span></a>
+<a name="1444"><span class="lineNum">    1444 </span><span class="lineNoCov">          0 :   int                           result = 0;</span></a>
+<a name="1445"><span class="lineNum">    1445 </span>            : </a>
+<a name="1446"><span class="lineNum">    1446 </span>            :   /* Convert the operands to long double. */</a>
+<a name="1447"><span class="lineNum">    1447 </span><span class="lineNoCov">          0 :   if (conv_constant_to_long_double(constant_1, &amp;fp_1) &amp;&amp;</span></a>
+<a name="1448"><span class="lineNum">    1448 </span><span class="lineNoCov">          0 :       conv_constant_to_long_double(constant_2, &amp;fp_2)) {</span></a>
+<a name="1449"><span class="lineNum">    1449 </span><span class="lineNoCov">          0 :     result = fp_compare((a_float_kind)fk_long_double, &amp;fp_1, &amp;fp_2, &amp;unord);</span></a>
+<a name="1450"><span class="lineNum">    1450 </span><span class="lineNoCov">          0 :     check_assertion(!unord);</span></a>
+<a name="1451"><span class="lineNum">    1451 </span>            :   } else {</a>
+<a name="1452"><span class="lineNum">    1452 </span><span class="lineNoCov">          0 :     unexpected_condition();</span></a>
+<a name="1453"><span class="lineNum">    1453 </span>            :   }  /* if */</a>
+<a name="1454"><span class="lineNum">    1454 </span><span class="lineNoCov">          0 :   return result;</span></a>
+<a name="1455"><span class="lineNum">    1455 </span>            : }  /* fxp_compare */</a>
+<a name="1456"><span class="lineNum">    1456 </span>            : </a>
+<a name="1457"><span class="lineNum">    1457 </span>            : </a>
+<a name="1458"><span class="lineNum">    1458 </span><span class="lineNoCov">          0 : a_hash_value fxp_hash(a_fixed_point_value  *value)</span></a>
+<a name="1459"><span class="lineNum">    1459 </span>            : /*</a>
+<a name="1460"><span class="lineNum">    1460 </span>            : Return a hash value derived from the given fixed-point value.  This is used</a>
+<a name="1461"><span class="lineNum">    1461 </span>            : in building the hash table for shareable constants.  (This implementation</a>
+<a name="1462"><span class="lineNum">    1462 </span>            : assumes a_fixed_point_value is a synonym for an_integer_value.)</a>
+<a name="1463"><span class="lineNum">    1463 </span>            : */</a>
+<a name="1464"><span class="lineNum">    1464 </span>            : {</a>
+<a name="1465"><span class="lineNum">    1465 </span><span class="lineNoCov">          0 :   a_boolean   ovflo;</span></a>
+<a name="1466"><span class="lineNum">    1466 </span>            : </a>
+<a name="1467"><span class="lineNum">    1467 </span><span class="lineNoCov">          0 :   return (a_hash_value)</span></a>
+<a name="1468"><span class="lineNum">    1468 </span><span class="lineNoCov">          0 :                      value_of_integer_value(value, /*is_signed=*/TRUE, &amp;ovflo);</span></a>
+<a name="1469"><span class="lineNum">    1469 </span>            : }  /* fxp_hash */</a>
+<a name="1470"><span class="lineNum">    1470 </span>            : </a>
+<a name="1471"><span class="lineNum">    1471 </span>            : #endif /* !STANDALONE_UTILITY_PROGRAM */</a>
+<a name="1472"><span class="lineNum">    1472 </span>            : </a>
+<a name="1473"><span class="lineNum">    1473 </span>            : #endif /* FIXED_POINT_ALLOWED */</a>
+<a name="1474"><span class="lineNum">    1474 </span>            : </a>
+<a name="1475"><span class="lineNum">    1475 </span>            : /******************************************************************************</a>
+<a name="1476"><span class="lineNum">    1476 </span>            : *                                                             \  ___  /       *</a>
+<a name="1477"><span class="lineNum">    1477 </span>            : *                                                               /   \         *</a>
+<a name="1478"><span class="lineNum">    1478 </span>            : * Edison Design Group C++/C Front End                        - | \^/ | -      *</a>
+<a name="1479"><span class="lineNum">    1479 </span>            : *                                                               \   /         *</a>
+<a name="1480"><span class="lineNum">    1480 </span>            : * Proprietary information of Edison Design Group Inc.         /  | |  \       *</a>
+<a name="1481"><span class="lineNum">    1481 </span>            : * Copyright 2003-2018 Edison Design Group Inc.                   [_]          *</a>
+<a name="1482"><span class="lineNum">    1482 </span>            : *                                                                             *</a>
+<a name="1483"><span class="lineNum">    1483 </span>            : ******************************************************************************/</a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.14</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

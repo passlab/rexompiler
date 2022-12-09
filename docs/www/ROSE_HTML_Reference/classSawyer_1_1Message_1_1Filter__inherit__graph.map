@@ -1,0 +1,7 @@
+<map id="Sawyer::Message::Filter" name="Sawyer::Message::Filter">
+<area shape="rect" id="node1" title="Base class for internal nodes that filter messages." alt="" coords="252,78,416,105"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Message_1_1ImportanceFilter.html" title="Filters messages based on importance level." alt="" coords="464,5,664,47"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Message_1_1SequenceFilter.html" title="Filters messages based on how many messages have been seen." alt="" coords="467,71,661,112"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Message_1_1TimeFilter.html" title="Filters messages based on time." alt="" coords="467,137,661,163"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Message_1_1Multiplexer.html" title="Sends incoming messages to multiple destinations." alt="" coords="5,78,204,105"/>
+</map>
