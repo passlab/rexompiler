@@ -1,1 +1,0 @@
-#pragma omp teams loop  num_teams(n) reduction(+ : res)

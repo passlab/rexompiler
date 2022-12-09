@@ -1,3 +1,0 @@
-#pragma omp parallel 
-#pragma omp master 
-#pragma omp single 

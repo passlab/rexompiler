@@ -1,4 +1,0 @@
-namespace std
-   {
-     int foo();
-   }

@@ -1,5 +1,0 @@
-INTRINSIC :: sin
-INTRINSIC :: exp, mod
-INTRINSIC :: cos
-INTRINSIC :: tan, atan
-END PROGRAM

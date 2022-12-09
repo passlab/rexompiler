@@ -1,4 +1,0 @@
-union ZZZ
-   {
-     int a;
-   };

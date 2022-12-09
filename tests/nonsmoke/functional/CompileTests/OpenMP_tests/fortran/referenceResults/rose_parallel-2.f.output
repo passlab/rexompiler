@@ -1,4 +1,0 @@
-!$omp parallel 
-!$omp parallel 
-!$omp end parallel 
-!$omp end parallel 

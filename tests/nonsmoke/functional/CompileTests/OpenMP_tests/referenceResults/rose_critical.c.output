@@ -1,4 +1,0 @@
-#pragma omp parallel 
-#pragma omp critical (aaa)
-#pragma omp critical (bbb)
-#pragma omp critical 

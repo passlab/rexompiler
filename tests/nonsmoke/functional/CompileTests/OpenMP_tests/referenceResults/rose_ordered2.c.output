@@ -1,3 +1,0 @@
-#pragma omp parallel 
-#pragma omp for  ordered private(t_id)
-#pragma omp ordered 

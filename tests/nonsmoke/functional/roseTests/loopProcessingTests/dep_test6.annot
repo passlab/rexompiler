@@ -1,1 +1,0 @@
-variable Hydro::bc3Nodes { unique_array {}};

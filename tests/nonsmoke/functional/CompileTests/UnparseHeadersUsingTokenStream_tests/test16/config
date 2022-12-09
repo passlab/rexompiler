@@ -1,1 +1,0 @@
-cmd = cd ${TARGET} && ../whiteSpaceTransformation ${ROSE_SWITCHES} ${HDR_ROOT_SWITCHES} ${srcdir}/${TARGET}/Simple16.C

@@ -1,2 +1,0 @@
-!$omp parallel  allocate(user_modi : a,b,c)
-!$omp end parallel 

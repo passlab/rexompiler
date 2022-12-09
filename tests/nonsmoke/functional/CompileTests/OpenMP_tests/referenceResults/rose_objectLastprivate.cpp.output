@@ -1,6 +1,0 @@
-#pragma omp critical 
-#pragma omp critical 
-#pragma omp critical 
-#pragma omp critical 
-#pragma omp parallel 
-#pragma omp for  lastprivate(b)

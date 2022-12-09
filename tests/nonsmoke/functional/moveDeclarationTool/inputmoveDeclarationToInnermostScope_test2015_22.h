@@ -1,4 +1,0 @@
-
-namespace XXX {
-   int x;
-}

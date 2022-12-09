@@ -1,8 +1,0 @@
-#pragma omp target data  map(to : v1[0:N],v2[0:N]) map(from : p[0:N])
-#pragma omp target 
-#pragma omp parallel 
-#pragma omp for 
-#pragma omp target update  to(mapper (default) : v1[0:N],v2[0:N]) from(mapper (default) : v1[0:N],v2[0:N])
-#pragma omp target 
-#pragma omp parallel 
-#pragma omp for 

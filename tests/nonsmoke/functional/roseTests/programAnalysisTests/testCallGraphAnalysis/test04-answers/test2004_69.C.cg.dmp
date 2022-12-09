@@ -1,2 +1,0 @@
-__basic_file < char > ::__basic_file ->
-basic_filebuf < char , char_traits< char > > ::foo ->

@@ -1,2 +1,0 @@
-#pragma omp simd  reduction(inscan, + : scan_a)
-#pragma omp scan  exclusive(r,b,v)

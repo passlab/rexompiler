@@ -1,1 +1,0 @@
-#pragma omp requires  ext_range_bar_only ext_another_warning

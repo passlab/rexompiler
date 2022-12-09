@@ -1,5 +1,0 @@
-
-namespace X
-   {
-     void foo();
-   }

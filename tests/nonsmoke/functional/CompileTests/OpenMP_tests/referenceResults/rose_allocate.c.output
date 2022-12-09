@@ -1,3 +1,0 @@
-#pragma omp parallel 
-#pragma omp single 
-#pragma omp allocate (i) allocator(pteam_mem_alloc)

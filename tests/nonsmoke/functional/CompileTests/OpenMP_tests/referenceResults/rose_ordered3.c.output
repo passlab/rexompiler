@@ -1,3 +1,0 @@
-#pragma omp parallel 
-#pragma omp for  private(myval) ordered(2)
-#pragma omp ordered 

@@ -1,6 +1,0 @@
-
-class foo
-{
-};
-
-void foo();

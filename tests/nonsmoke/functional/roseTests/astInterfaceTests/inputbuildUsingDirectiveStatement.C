@@ -1,4 +1,0 @@
-namespace year 
-{
-   int test; 
-}

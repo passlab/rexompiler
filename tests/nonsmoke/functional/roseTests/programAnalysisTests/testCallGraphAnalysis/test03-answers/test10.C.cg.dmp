@@ -1,5 +1,0 @@
-A < int > ::A -> a_init < int > 
-C < int > ::C ->
-a_init < int >  ->
-main -> user_sysinit
-user_sysinit -> A < int > ::A C < int > ::C

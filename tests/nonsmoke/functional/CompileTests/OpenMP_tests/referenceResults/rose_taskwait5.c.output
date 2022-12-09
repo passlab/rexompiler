@@ -1,6 +1,0 @@
-#pragma omp task  depend(inout : x) shared(x)
-#pragma omp task  shared(y)
-#pragma omp taskwait  depend(in : x)
-#pragma omp taskwait 
-#pragma omp parallel 
-#pragma omp single 

@@ -1,9 +1,0 @@
-#pragma omp simd 
-#pragma omp simd  safelen(16)
-#pragma omp simd  simdlen(16)
-#pragma omp simd  linear(j,k)
-#pragma omp simd  linear(j,k:1)
-#pragma omp simd  aligned(j,k)
-#pragma omp simd  aligned(j,k:1)
-#pragma omp simd  private(tmp) reduction(+ : sum)
-#pragma omp simd  lastprivate(j)

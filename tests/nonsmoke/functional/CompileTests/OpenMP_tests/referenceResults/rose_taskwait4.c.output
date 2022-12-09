@@ -1,3 +1,0 @@
-#pragma omp task  final(pos > 3) mergeable
-#pragma omp task  final(pos > 3) mergeable
-#pragma omp taskwait 

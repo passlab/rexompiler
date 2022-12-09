@@ -1,3 +1,0 @@
-#pragma omp parallel  if(i == 0)
-#pragma omp parallel  if(i != 0)
-#pragma omp single 
