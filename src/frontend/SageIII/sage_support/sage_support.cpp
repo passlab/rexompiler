@@ -2887,7 +2887,7 @@ SgFile::callFrontEnd()
 void
 SgFile::secondaryPassOverSourceFile()
    {
-  // DQ (8/19/2019): We want to optionally seperate this function out over two phases to optimize the support for header file unparsing.
+  // DQ (8/19/2019): We want to optionally separate this function out over two phases to optimize the support for header file unparsing.
   // When not optimized, we process all of the header file with the source file.
   // When we are supporting optimization, we handle the collection of comments and
   // CPP directives and their insertion into the AST in two phases:

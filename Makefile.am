@@ -666,71 +666,76 @@ remove_codecov_files:
 # lcov command to generate the html files.
 lcov:
 	lcov --capture \
--d src/util/.libs \
+-d src/roseSupport/.libs \
+-d src/frontend/CxxFrontend/EDG/edgRose/.libs \
+-d src/frontend/CxxFrontend/EDG/EDG_5.0/src/.libs \
+-d src/frontend/OpenFortranParser_SAGE_Connection/.libs \
+-d src/frontend/SageIII/sage_support/.libs \
+-d src/frontend/SageIII/ompparser/.libs \
+-d src/frontend/SageIII/includeDirectivesProcessing/.libs \
+-d src/frontend/SageIII/astFromString/.libs \
+-d src/frontend/SageIII/astFileIO/.libs \
+-d src/frontend/SageIII/accparser/.libs \
+-d src/frontend/SageIII/sageInterface/.libs \
+-d src/frontend/SageIII/astTokenStream/.libs \
+-d src/frontend/SageIII/astFixup/.libs \
+-d src/frontend/SageIII/astHiddenTypeAndDeclarationLists/.libs \
+-d src/frontend/SageIII/astPostProcessing/.libs \
+-d src/frontend/SageIII/astVisualization/.libs \
+-d src/frontend/SageIII/virtualCFG/.libs \
+-d src/frontend/SageIII/.libs \
+-d src/ROSETTA/src/.libs \
+-d src/util/graphs/.libs \
 -d src/util/stringSupport/.libs \
 -d src/util/commandlineProcessing/.libs \
 -d src/util/support/.libs \
--d src/util/graphs/.libs \
+-d src/util/.libs \
+-d src/util/Sawyer/.libs \
+-d src/backend/.libs \
 -d src/3rdPartyLibraries/MSTL/.libs \
--d src/ROSETTA/src \
--d src/frontend/SageIII/.libs \
--d src/frontend/SageIII/astFixup \
--d src/frontend/SageIII/astPostProcessing \
--d src/frontend/SageIII/astFileIO \
--d src/frontend/SageIII/astMerge \
--d src/frontend/SageIII/sageInterface \
--d src/frontend/SageIII/virtualCFG \
--d src/frontend/SageIII/astTokenStream \
--d src/frontend/SageIII/astHiddenTypeAndDeclarationLists \
--d src/frontend/SageIII/astVisualization \
--d src/frontend/SageIII/astFromString \
--d src/frontend/SageIII/includeDirectivesProcessing \
--d src/frontend/SageIII/astFixup/.libs \
--d src/frontend/SageIII/astPostProcessing/.libs \
--d src/frontend/SageIII/astMerge/.libs \
--d src/frontend/SageIII/sageInterface/.libs \
--d src/frontend/SageIII/virtualCFG/.libs \
--d src/frontend/SageIII/astTokenStream/.libs \
--d src/frontend/SageIII/astVisualization/.libs \
--d src/frontend/SageIII/astFromString/.libs \
--d src/frontend/SageIII/includeDirectivesProcessing/.libs \
--d src/frontend/SageIII/sage_support/.libs \
--d src/frontend/CxxFrontend/EDG/EDG_4.7/misc \
--d src/frontend/CxxFrontend/EDG/EDG_4.7/src/.libs \
--d src/frontend/CxxFrontend/EDG/edgRose/.libs \
--d src/frontend/OpenFortranParser_SAGE_Connection/.libs \
--d src/midend/programAnalysis/.libs \
--d src/midend/programAnalysis/staticSingleAssignment/.libs \
--d src/midend/programAnalysis/ssaUnfilteredCfg/.libs \
--d src/midend/programTransformation/extractFunctionArgumentsNormalization/.libs \
--d src/midend/programTransformation/singleStatementToBlockNormalization/.libs \
--d src/midend/programTransformation/loopProcessing/depInfo/.libs \
--d src/midend/programTransformation/loopProcessing/depGraph/.libs \
--d src/midend/programTransformation/loopProcessing/computation/.libs \
--d src/midend/programTransformation/loopProcessing/outsideInterface/.libs \
--d src/midend/programTransformation/loopProcessing/slicing/.libs \
--d src/midend/programTransformation/loopProcessing/driver/.libs \
--d src/midend/programTransformation/loopProcessing/prepostTransformation/.libs \
--d src/midend/programTransformation/ompLowering/.libs \
--d src/midend/programTransformation/partialRedundancyElimination/.libs \
--d src/midend/programTransformation/finiteDifferencing/.libs \
--d src/midend/programTransformation/functionCallNormalization/.libs \
--d src/midend/programTransformation/constantFolding/.libs \
--d src/midend/programTransformation/implicitCodeGeneration/.libs \
--d src/midend/programTransformation/astInlining/.libs \
--d src/midend/programTransformation/astOutlining/.libs \
--d src/midend/programTransformation/transformationTracking/.libs \
--d src/midend/abstractHandle/.libs \
--d src/midend/abstractLayer/.libs \
--d src/midend/astDiagnostics/.libs \
--d src/midend/astProcessing/.libs \
--d src/midend/astQuery/.libs \
--d src/midend/astRewriteMechanism/.libs \
+-d src/3rdPartyLibraries/libharu-2.1.0/src/.libs \
+-d src/Rose/StringUtility/.libs \
+-d src/Rose/CommandLine/.libs \
+-d src/Rose/CodeGen/.libs \
+-d src/Rose/Diagnostics/.libs \
+-d src/Rose/FileSystem/.libs \
+-d src/Rose/AST/.libs \
+-d src/Rose/Color/.libs \
+-d src/Rose/.libs \
+-d src/.libs \
 -d src/midend/astUtil/annotation/.libs \
 -d src/midend/astUtil/astInterface/.libs \
--d src/midend/astUtil/astSupport/.libs \
 -d src/midend/astUtil/symbolicVal/.libs \
--d src/backend/.libs \
+-d src/midend/astUtil/astSupport/.libs \
+-d src/midend/programTransformation/constantFolding/.libs \
+-d src/midend/programTransformation/extractFunctionArgumentsNormalization/.libs \
+-d src/midend/programTransformation/astOutlining/.libs \
+-d src/midend/programTransformation/partialRedundancyElimination/.libs \
+-d src/midend/programTransformation/ompLowering/.libs \
+-d src/midend/programTransformation/finiteDifferencing/.libs \
+-d src/midend/programTransformation/implicitCodeGeneration/.libs \
+-d src/midend/programTransformation/singleStatementToBlockNormalization/.libs \
+-d src/midend/programTransformation/transformationTracking/.libs \
+-d src/midend/programTransformation/loopProcessing/driver/.libs \
+-d src/midend/programTransformation/loopProcessing/depGraph/.libs \
+-d src/midend/programTransformation/loopProcessing/computation/.libs \
+-d src/midend/programTransformation/loopProcessing/slicing/.libs \
+-d src/midend/programTransformation/loopProcessing/outsideInterface/.libs \
+-d src/midend/programTransformation/loopProcessing/depInfo/.libs \
+-d src/midend/programTransformation/loopProcessing/prepostTransformation/.libs \
+-d src/midend/programTransformation/loopProcessing/.libs \
+-d src/midend/programTransformation/astInlining/.libs \
+-d src/midend/programTransformation/functionCallNormalization/.libs \
+-d src/midend/astDiagnostics/.libs \
+-d src/midend/astRewriteMechanism/.libs \
+-d src/midend/astProcessing/.libs \
+-d src/midend/programAnalysis/ssaUnfilteredCfg/.libs \
+-d src/midend/programAnalysis/staticSingleAssignment/.libs \
+-d src/midend/programAnalysis/.libs \
+-d src/midend/abstractHandle/.libs \
+-d src/midend/.libs \
+-d src/midend/abstractLayer/.libs \
+-d src/midend/astQuery/.libs \
 --output-file coverage.info
 
 # lcov command to generate the html files.
@@ -785,7 +790,7 @@ librose-lcov.info: all-lcov.info
         "$(top_srcdir)/src/midend/programAnalysis/OAWrap/*" \
         "$(top_srcdir)/src/midend/programAnalysis/OpenAnalysis/*" \
         "$(top_srcdir)/src/midend/programAnalysis/genericDataflow/*" \
-        "$(top_srcdir)/src/frontend/CxxFrontend/EDG/EDG_4.9/*" \
+        "$(top_srcdir)/src/frontend/CxxFrontend/EDG/EDG_5.0/*" \
         "$(top_srcdir)/src/midend/astRewriteMechanism/*" \
         "$(top_srcdir)/src/midend/programAnalysis/dominanceAnalysis/*" \
         "$(top_srcdir)/src/midend/programAnalysis/pointerAnal/*" \
@@ -832,7 +837,7 @@ librose_lcov_web_pages: librose-lcov.info
 # src/midend/programAnalysis/OAWrap/*
 # src/midend/programAnalysis/OpenAnalysis/*
 # src/midend/programAnalysis/genericDataflowflow/*
-# src/frontend/CxxFrontend/EDG/EDG_4.9/*
+# src/frontend/CxxFrontend/EDG/EDG_5.0/*
 # src/midend/astRewriteMechanism/*
 # src/midend/programAnalysis/dominanceAnalysis/*
 # src/midend/programAnalysis/pointerAnal/*
