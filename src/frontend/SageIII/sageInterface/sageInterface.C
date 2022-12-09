@@ -4683,6 +4683,12 @@ SageInterface::rebuildSymbolTable ( SgScopeStatement* scope )
 #endif
                         break;
                       }
+                  case V_SgFortranIncludeLine:
+                  	  {
+                  		  //YYH (12/07/2022). Not declaration, but preprocessing directive,
+                  		  // and preprocessing directives are all declaration statement, check ROSETTA/src/statement.C.
+                	  break;
+                  	  }
 
                     default:
                       {
