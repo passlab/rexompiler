@@ -159,7 +159,6 @@ nobase_pkginclude_HEADERS=						\
 	Rose/GraphUtility.h						\
 	Rose/Initialize.h						\
 	Rose/Location.h							\
-	Rose/metaprog.h							\
 	Rose/Progress.h							\
 	Rose/RecursionCounter.h						\
 	Rose/SourceLocation.h						\
@@ -171,16 +170,6 @@ nobase_pkginclude_HEADERS=						\
 	Rose/StringUtility/Predicate.h					\
 	Rose/StringUtility/SplitJoin.h					\
 	Rose/StringUtility/StringToNumber.h				\
-	Rose/Traits.h							\
-	Rose/Traits/Describe.h						\
-	Rose/Traits/describe/declarations.h				\
-	Rose/Traits/describe/fields.h					\
-	Rose/Traits/describe/nodes.h					\
-	Rose/Traits/describe/predicates.h				\
-	Rose/Traits/grammar/lists.h					\
-	Rose/Traits/grammar/predicates.h				\
-	Rose/Traits/grammar/traversal.h					\
-	Rose/Traits/Traversal.h						\
 	Rose/Yaml.h
 
 ########################################################################################################################

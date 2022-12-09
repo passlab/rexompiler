@@ -1,6 +1,6 @@
 
-#ifndef Rose_CodeGen_factory_classes_txx
-#define Rose_CodeGen_factory_classes_txx
+#ifndef ROSE_CODEGEN_FACTORY_CLASSES_TXX
+#define ROSE_CODEGEN_FACTORY_CLASSES_TXX
 
 namespace Rose { namespace CodeGen {
 
@@ -49,5 +49,5 @@ reference_t<Object::a_class> * __factory_helper_t<CRT, API, Object::a_class>::re
 
 } }
 
-#endif /* Rose_CodeGen_factory_classes_txx */
+#endif /*  ROSE_CODEGEN_FACTORY_CLASSES_TXX */
 

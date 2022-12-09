@@ -31,7 +31,6 @@ set(CxxGrammarMetaProgram_SRCS
   poolBasedTraversal.C
   node.C
   buildAstFileIO.C
-  buildRoseTraits.C
   buildStorageClasses.C
   buildConstructorsWithoutSourcePositionInformation.C
   outputClassesAndFields.C
@@ -123,7 +122,6 @@ else()
     COMMAND ${CMAKE_COMMAND}  -E copy_directory  ${ROSE_TOP_SRC_DIR}/src/ROSETTA/Grammar ${ROSE_TOP_BINARY_DIR}/src/ROSETTA/Grammar
     # create this directory is needed since a few generated files will be put there        
     COMMAND ${CMAKE_COMMAND}  -E make_directory  ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/astFileIO
-    COMMAND ${CMAKE_COMMAND}  -E make_directory  ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/Rose/Traits
     # COMMAND echo  "META_EXE_LOC =  ${META_EXE_LOC} ARGS ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/"
     # STRING(REGEX REPLACE "\\\\" "/" META_EXE_LOC ${META_EXE_LOC} )
     # COMMAND echo  "META_EXE_LOC =  ${META_EXE_LOC} ARGS ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/"

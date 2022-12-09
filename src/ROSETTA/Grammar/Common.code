@@ -321,6 +321,7 @@ HEADER_START
 
       /*! \brief friend class declaration to support AST File I/O */
           friend class AstSpecificDataManagingClassStorageClass;
+
     public:
       /*! \brief IR node constructor to support AST File I/O */
           $CLASSNAME( const $CLASSNAMEStorageClass& source );

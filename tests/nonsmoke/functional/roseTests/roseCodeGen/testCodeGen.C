@@ -1,7 +1,9 @@
 
 #include "sage3basic.h"
 
-#include "Rose/CodeGen.h"
+#include "Rose/CodeGen/Driver.h"
+#include "Rose/CodeGen/API.h"
+#include "Rose/CodeGen/Factory.h"
 
 #ifndef MY_HEADER_PATH
 #  error "MY_HEADER_PATH must be set!"

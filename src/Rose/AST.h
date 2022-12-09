@@ -11,4 +11,4 @@ namespace AST {}
 #include <Rose/AST/Checker.h>
 #include <Rose/AST/Utils.h>
 
-#endif
+#endif /* ROSE_AST_H */

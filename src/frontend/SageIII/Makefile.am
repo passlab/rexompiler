@@ -318,9 +318,6 @@ nodist_pkginclude_HEADERS = \
    AstQueryMemoryPool.h \
    astFileIO/AstSpecificDataManagingClass.h
 
-libRoseTraits_includedir = $(prefix)/include/Rose/Traits
-libRoseTraits_include_HEADERS = Rose/Traits/generated.h
-
 BUILT_SOURCES = $(GENERATED_SOURCE) omp_exprparser_parser.cc omp_exprparser_parser.hh omp_exprparser_lexer.cc
 
 # DQ (9/9/2007): Put C++_include_files.h back into place

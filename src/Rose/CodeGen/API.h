@@ -8,7 +8,12 @@
 #include <map>
 #include <string>
 
-namespace Rose { namespace CodeGen {
+namespace Rose {
+
+/**
+ * \brief Collection of classes/functions to facilitate generation of source-code (esp. C/C++)
+ */
+namespace CodeGen {
 
 /**
  * \brief permits to gather types and symbols to extract an API from a set of headers.

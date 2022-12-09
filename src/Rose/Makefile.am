@@ -4,7 +4,7 @@
 include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 AUTOMAKE_OPTIONS = nostdinc subdir-objects
 
-SUBDIRS=AST CodeGen Traits
+SUBDIRS=AST CodeGen
 
 # LicenseString.h is included by CommandLine/License.C but is not installed.
 #
@@ -37,8 +37,5 @@ librose_partial_la_SOURCES =								\
 	StringUtility/SplitJoin.C							\
 	StringUtility/StringToNumber.C							\
 	Yaml.C
-
-rose_metaprog_h_includedir = $(prefix)/include/Rose
-rose_metaprog_h_include_HEADERS = metaprog.h
 
 # Public header files are installed from parent makefiles.

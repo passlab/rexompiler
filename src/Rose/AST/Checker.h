@@ -2,7 +2,8 @@
 #ifndef ROSE_AST_Checker_H
 #define ROSE_AST_Checker_H
 
-namespace Rose { namespace AST {
+namespace Rose {
+namespace AST {
 
 /**
  * \brief Checking function that apply to the whole AST
