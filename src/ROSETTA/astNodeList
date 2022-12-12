@@ -404,7 +404,7 @@ SgOmpParallelClause
 SgOmpSectionsClause
 SgOmpForClause
 SgOmpTaskgroupClause
-SgUpirNumUnitsField
+SgOmpNumThreadsClause
 SgOmpNumTeamsClause
 SgOmpGrainsizeClause
 SgOmpDetachClause

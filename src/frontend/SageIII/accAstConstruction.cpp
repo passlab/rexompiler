@@ -170,7 +170,7 @@ SgOmpExpressionClause *convertOpenACCExpressionClause(
     break;
   }
   case ACCC_num_workers: {
-    result = new SgUpirNumUnitsField(clause_expression);
+    result = new SgOmpNumThreadsClause(clause_expression);
     printf("num_units Clause added!\n");
     break;
   }
