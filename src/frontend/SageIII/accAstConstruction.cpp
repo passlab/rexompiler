@@ -71,7 +71,7 @@ convertOpenACCDirective(std::pair<SgPragmaDeclaration *, OpenACCDirective *>
   return result;
 }
 
-SgUpirBodyStatement *
+SgOmpBodyStatement *
 convertOpenACCBodyDirective(std::pair<SgPragmaDeclaration *, OpenACCDirective *>
                                 current_OpenACCIR_to_SageIII) {
 
@@ -82,7 +82,7 @@ convertOpenACCBodyDirective(std::pair<SgPragmaDeclaration *, OpenACCDirective *>
   SgStatement *body =
       SageInterface::getNextStatement(current_OpenACCIR_to_SageIII.first);
   SageInterface::removeStatement(body, false);
-  SgUpirBodyStatement *result = NULL;
+  SgOmpBodyStatement *result = NULL;
   OpenACCClauseKind clause_kind;
 
   switch (directive_kind) {

@@ -3445,7 +3445,7 @@ bool SageInterface::isOmpStatement(SgNode* n)
   ROSE_ASSERT (n != NULL);
   bool result = false;
   if (isSgOmpBarrierStatement(n)||
-      isSgUpirBodyStatement(n)||
+      isSgOmpBodyStatement(n)||
       isSgOmpDeclareSimdStatement(n) ||
       isSgOmpFlushStatement(n)||
       isSgOmpThreadprivateStatement(n)||
@@ -14130,7 +14130,7 @@ void SageInterface::insertStatement(SgStatement *targetStmt, SgStatement* newStm
                             }
                            else
                             {
-                              if (SgUpirBodyStatement * p = isSgUpirBodyStatement (parent))
+                              if (SgOmpBodyStatement * p = isSgOmpBodyStatement (parent))
                                  {
                                    SgBasicBlock* newparent = buildBasicBlock (targetStmt);
                                    p->set_body(newparent);
@@ -17157,7 +17157,7 @@ void SageInterface::cleanupNontransformedBasicBlockNode()
     return isSgBasicBlock(b);
   }
 
-SgBasicBlock* SageInterface::ensureBasicBlockAsBodyOfOmpBodyStmt(SgUpirBodyStatement* fs)
+SgBasicBlock* SageInterface::ensureBasicBlockAsBodyOfOmpBodyStmt(SgOmpBodyStatement* fs)
 {
   SgStatement* b = fs->get_body();
   if (!isSgBasicBlock(b)) {
@@ -17237,7 +17237,7 @@ bool SageInterface::isBodyStatement (SgStatement* s)
       }
     default:
       {
-        if (isSgUpirBodyStatement(p))
+        if (isSgOmpBodyStatement(p))
           rt = true;
         break;
       }
@@ -17322,9 +17322,9 @@ SgBasicBlock * SageInterface::makeSingleStatementBodyToBlock(SgStatement* single
       }
     default:
       {
-        if (isSgUpirBodyStatement(p))
+        if (isSgOmpBodyStatement(p))
         {
-          rt = ensureBasicBlockAsBodyOfOmpBodyStmt(isSgUpirBodyStatement(p));
+          rt = ensureBasicBlockAsBodyOfOmpBodyStmt(isSgOmpBodyStatement(p));
         }
         break;
       }
@@ -17423,9 +17423,9 @@ SgLocatedNode* SageInterface::ensureBasicBlockAsParent(SgStatement* s)
                 }
                 default:
                 {
-                        if (isSgUpirBodyStatement(p))
+                        if (isSgOmpBodyStatement(p))
                         {
-                                return ensureBasicBlockAsBodyOfOmpBodyStmt(isSgUpirBodyStatement(p));
+                                return ensureBasicBlockAsBodyOfOmpBodyStmt(isSgOmpBodyStatement(p));
                         }
                         else
                                 // Liao, 7/3/2008 We allow other conditions to fall through,
@@ -17499,8 +17499,8 @@ SgLocatedNode* SageInterface::ensureBasicBlockAsParent(SgStatement* s)
 
           default:
             {
-              if (isSgUpirBodyStatement(n))
-                ensureBasicBlockAsBodyOfOmpBodyStmt(isSgUpirBodyStatement(n));
+              if (isSgOmpBodyStatement(n))
+                ensureBasicBlockAsBodyOfOmpBodyStmt(isSgOmpBodyStatement(n));
               break;
             }
         }

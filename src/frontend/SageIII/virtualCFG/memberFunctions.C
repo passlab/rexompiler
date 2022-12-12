@@ -5210,27 +5210,27 @@ SgInitializedName::cfgInEdges(unsigned int idx) {
 }
 // Liao, 6/11/2009 support for OpenMP nodes
 unsigned int
-SgUpirBodyStatement::cfgIndexForEnd() const {
+SgOmpBodyStatement::cfgIndexForEnd() const {
   return 1;
 }
 
-std::vector<CFGEdge> SgUpirBodyStatement::cfgOutEdges(unsigned int idx) {
+std::vector<CFGEdge> SgOmpBodyStatement::cfgOutEdges(unsigned int idx) {
   std::vector<CFGEdge> result;
   switch (idx) {
     case 0: makeEdge(CFGNode(this, idx), this->get_body()->cfgForBeginning(), result); break;
     case 1: makeEdge(CFGNode(this, idx), getNodeJustAfterInContainer(this), result); break;
-    default: ROSE_ASSERT (!"Bad index for SgUpirBodyStatement");
+    default: ROSE_ASSERT (!"Bad index for SgOmpBodyStatement");
   }
   return result;
 }
 
-std::vector<CFGEdge> SgUpirBodyStatement::cfgInEdges(unsigned int idx) {
+std::vector<CFGEdge> SgOmpBodyStatement::cfgInEdges(unsigned int idx) {
   std::vector<CFGEdge> result;
   addIncomingFortranGotos(this, idx, result);
   switch (idx) {
     case 0: makeEdge(getNodeJustBeforeInContainer(this), CFGNode(this, idx), result); break;
     case 1: makeEdge(this->get_body()->cfgForEnd(), CFGNode(this, idx), result); break;
-    default: ROSE_ASSERT (!"Bad index for SgUpirBodyStatement");
+    default: ROSE_ASSERT (!"Bad index for SgOmpBodyStatement");
   }
   return result;
 }
