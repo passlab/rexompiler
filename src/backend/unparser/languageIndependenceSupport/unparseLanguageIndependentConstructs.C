@@ -3784,7 +3784,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpOrderedStatement:
                     case V_SgOmpOrderedDependStatement:
                     case V_SgOmpSectionsStatement:
-                    case V_SgUpirSpmdStatement:
+                    case V_SgOmpParallelStatement:
                     case V_SgOmpTaskwaitStatement:
                     case V_SgOmpTeamsStatement:
                     case V_SgOmpCancellationPointStatement:
@@ -11592,7 +11592,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         curprint(string ("metadirective "));
         break;
       }
-    case V_SgUpirSpmdStatement:
+    case V_SgOmpParallelStatement:
       {
         curprint(string ("parallel "));
         break;

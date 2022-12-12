@@ -88,7 +88,7 @@ convertOpenACCBodyDirective(std::pair<SgPragmaDeclaration *, OpenACCDirective *>
   switch (directive_kind) {
   // TODO: insert SgUpirTaskStatement first
   case ACCD_parallel: {
-    result = new SgUpirSpmdStatement(NULL, body);
+    result = new SgOmpParallelStatement(NULL, body);
     // not correct
     // should be target teams + parallel
     break;

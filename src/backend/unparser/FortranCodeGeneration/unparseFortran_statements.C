@@ -6061,7 +6061,7 @@ void FortranCodeGeneration_locatedNode::unparseOmpEndDirectivePrefixAndName (SgS
   unp->u_sage->curprint_newline();
   switch (stmt->variantT())
   {
-    case V_SgUpirSpmdStatement:
+    case V_SgOmpParallelStatement:
       {
         unparseOmpPrefix(info);
         curprint(string ("end parallel "));
