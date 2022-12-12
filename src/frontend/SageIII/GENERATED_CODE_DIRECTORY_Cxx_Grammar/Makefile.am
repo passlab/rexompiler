@@ -166,7 +166,7 @@ SgBoolValExp.C                             SgFunctionCallExp.C                  
 SgBreakStmt.C                              SgFunctionDeclaration.C               SgOmpBarrierStatement.C                 SgTemplateInstantiationDefn.C                SgWriteStatement.C \
 SgCaseOptionStmt.C                         SgFunctionDefinition.C                SgOmpBodyStatement.C                   SgTemplateInstantiationDirectiveStatement.C  SgXorAssignOp.C \
 SgUpirBaseStatement.C                      SgUpirLoopStatement.C                 SgUpirLoopParallelStatement.C \
-SgCastExp.C                                SgFunctionModifier.C                  SgUpirFieldBodyStatement.C              SgTemplateInstantiationFunctionDecl.C        SgHeaderFileBody.C
+SgCastExp.C                                SgFunctionModifier.C                  SgOmpClauseBodyStatement.C              SgTemplateInstantiationFunctionDecl.C        SgHeaderFileBody.C
 
 
 

@@ -6010,9 +6010,9 @@ FortranCodeGeneration_locatedNode::unparseOmpBeginDirectiveClauses (SgStatement*
 {
   ASSERT_not_null(stmt);
   // optional clauses
-  if (isSgUpirFieldBodyStatement(stmt) || isSgDeclarationStatement(stmt))
+  if (isSgOmpClauseBodyStatement(stmt) || isSgDeclarationStatement(stmt))
   {
-    const SgOmpClausePtrList& clause_ptr_list = isSgUpirFieldBodyStatement(stmt)->get_clauses();
+    const SgOmpClausePtrList& clause_ptr_list = isSgOmpClauseBodyStatement(stmt)->get_clauses();
     SgOmpClausePtrList::const_iterator i;
     for (i= clause_ptr_list.begin(); i!= clause_ptr_list.end(); i++)
     {
@@ -6041,9 +6041,9 @@ FortranCodeGeneration_locatedNode::unparseOmpEndDirectiveClauses(SgStatement* st
 {
   ASSERT_not_null(stmt);
   // optional clauses
-  if (isSgUpirFieldBodyStatement(stmt))
+  if (isSgOmpClauseBodyStatement(stmt))
   {
-    const SgOmpClausePtrList& clause_ptr_list = isSgUpirFieldBodyStatement(stmt)->get_clauses();
+    const SgOmpClausePtrList& clause_ptr_list = isSgOmpClauseBodyStatement(stmt)->get_clauses();
     SgOmpClausePtrList::const_iterator i;
     for (i= clause_ptr_list.begin(); i!= clause_ptr_list.end(); i++)
     {

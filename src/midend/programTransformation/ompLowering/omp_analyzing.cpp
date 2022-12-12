@@ -491,7 +491,7 @@ int patchUpFirstprivateVariables(SgFile *file) {
           new SgUpirDataItemField(variable_symbol);
       upir_data_item->set_sharing_property(
           SgOmpClause::e_upir_data_sharing_firstprivate);
-      addUpirDataVariable(isSgUpirFieldBodyStatement(target), upir_data_item);
+      addUpirDataVariable(isSgOmpClauseBodyStatement(target), upir_data_item);
 
       result++;
     } // end for each variable reference
@@ -518,8 +518,8 @@ int patchUpImplicitMappingVariables(SgFile *file) {
 
   Rose_STL_Container<SgNode *>::iterator iter = node_list.begin();
   for (iter = node_list.begin(); iter != node_list.end(); iter++) {
-    SgUpirFieldBodyStatement *target = NULL;
-    target = isSgUpirFieldBodyStatement(*iter);
+    SgOmpClauseBodyStatement *target = NULL;
+    target = isSgOmpClauseBodyStatement(*iter);
     SgScopeStatement *directive_scope = target->get_scope();
     SgStatement *body = target->get_body();
     ROSE_ASSERT(body != NULL);
@@ -649,8 +649,8 @@ int unifyUpirTaskMappingVariables(SgFile *file) {
 
   Rose_STL_Container<SgNode *>::iterator iter;
   for (iter = node_list.begin(); iter != node_list.end(); iter++) {
-    SgUpirFieldBodyStatement *target = NULL;
-    target = isSgUpirFieldBodyStatement(*iter);
+    SgOmpClauseBodyStatement *target = NULL;
+    target = isSgOmpClauseBodyStatement(*iter);
     SgStatement *body = target->get_body();
     ROSE_ASSERT(body != NULL);
 
@@ -732,8 +732,8 @@ SgUpirDataItemField *isInUpirDataList(SgOmpClause *target, SgSymbol *variable) {
 }
 
 SgUpirDataField *getUpirDataField(SgStatement *target) {
-  SgUpirFieldBodyStatement *target_directive =
-      isSgUpirFieldBodyStatement(target);
+  SgOmpClauseBodyStatement *target_directive =
+      isSgOmpClauseBodyStatement(target);
   SgUpirDataField *data_field = NULL;
   Rose_STL_Container<SgOmpClause *> data_fields =
       getClause(target_directive, V_SgUpirDataField);

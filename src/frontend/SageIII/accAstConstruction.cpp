@@ -116,7 +116,7 @@ convertOpenACCBodyDirective(std::pair<SgPragmaDeclaration *, OpenACCDirective *>
     case ACCC_num_gangs:
     case ACCC_num_workers:
     case ACCC_vector_length: {
-      convertOpenACCExpressionClause(isSgUpirFieldBodyStatement(result),
+      convertOpenACCExpressionClause(isSgOmpClauseBodyStatement(result),
                                      current_OpenACCIR_to_SageIII,
                                      *clause_iter);
       break;
@@ -124,7 +124,7 @@ convertOpenACCBodyDirective(std::pair<SgPragmaDeclaration *, OpenACCDirective *>
     case ACCC_copyin:
     case ACCC_copyout:
     case ACCC_copy: {
-      convertOpenACCClause(isSgUpirFieldBodyStatement(result),
+      convertOpenACCClause(isSgOmpClauseBodyStatement(result),
                            current_OpenACCIR_to_SageIII, *clause_iter);
       break;
     }
@@ -186,7 +186,7 @@ SgOmpExpressionClause *convertOpenACCExpressionClause(
   SageInterface::setOneSourcePositionForTransformation(result);
 
   SgOmpClause *sg_clause = result;
-  ((SgUpirFieldBodyStatement *)directive)->get_clauses().push_back(sg_clause);
+  ((SgOmpClauseBodyStatement *)directive)->get_clauses().push_back(sg_clause);
 
   sg_clause->set_parent(directive);
 
@@ -200,7 +200,7 @@ convertOpenACCClause(SgStatement *directive,
                      OpenACCClause *current_acc_clause) {
   printf("accparser variables clause is ready.\n");
   SgOmpClause *result = NULL;
-  SgUpirFieldBodyStatement *target = isSgUpirFieldBodyStatement(directive);
+  SgOmpClauseBodyStatement *target = isSgOmpClauseBodyStatement(directive);
   ROSE_ASSERT(target != NULL);
 
   OpenACCClauseKind clause_kind = current_acc_clause->getKind();

@@ -289,7 +289,7 @@ SgNullifyStatement
 SgOmpAtomicStatement
 SgOmpBarrierStatement
 SgOmpCriticalStatement
-SgUpirFieldBodyStatement
+SgOmpClauseBodyStatement
 SgOmpBodyStatement
 SgUpirFieldStatement
 SgOmpDoStatement
