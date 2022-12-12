@@ -1708,7 +1708,7 @@ Algorithm:
     SgNode* grand_parent = parent->get_parent();
     ROSE_ASSERT (grand_parent != NULL);
     SgOmpParallelStatement* parent_parallel = isSgOmpParallelStatement (parent) ;
-    SgUpirTaskStatement* grand_target = isSgUpirTaskStatement(grand_parent);
+    SgOmpTargetStatement* grand_target = isSgOmpTargetStatement(grand_parent);
     ROSE_ASSERT (parent_parallel !=NULL);
     ROSE_ASSERT (grand_target !=NULL);
 
@@ -1885,7 +1885,7 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
     grand_parent = grand_parent->get_parent();
   ROSE_ASSERT (grand_parent != NULL);
   SgOmpParallelStatement* parent_parallel = isSgOmpParallelStatement (parent) ;
-  SgUpirTaskStatement* grand_target = isSgUpirTaskStatement(grand_parent);
+  SgOmpTargetStatement* grand_target = isSgOmpTargetStatement(grand_parent);
   ROSE_ASSERT (parent_parallel !=NULL);
   ROSE_ASSERT (grand_target !=NULL);
 
@@ -2993,7 +2993,7 @@ static int generate_mapping_variable_type (
   //    6. copy GPU_copy back to CPU variables
   //    7. de-allocate the GPU variables
   //
-  //   Step 1,2,3 and 6, 7 should generate statements before or after the SgUpirTaskStatement
+  //   Step 1,2,3 and 6, 7 should generate statements before or after the SgOmpTargetStatement
   //   Step 4 and 5 should change the body of the affected SgOmpParallelStatement
   // Revised Algorithm (version 3)    1/23/2015, optionally use device data environment (DDE) functions to manage data automatically.
   // Instead of generate explicit data allocation, copy, free functions, using the following three DDE functions:
@@ -3315,7 +3315,7 @@ static void generateMappedArrayMemoryHandling(
   //    6. copy GPU_copy back to CPU variables
   //    7. de-allocate the GPU variables
   //
-  //   Step 1,2,3 and 6, 7 should generate statements before or after the SgUpirTaskStatement
+  //   Step 1,2,3 and 6, 7 should generate statements before or after the SgOmpTargetStatement
   //   Step 4 and 5 should change the body of the affected SgOmpParallelStatement
   //
   //  Algorithm 1:
@@ -3352,7 +3352,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
   ROSE_ASSERT  (all_syms.size() == 0); // it should be empty
 
   SgOmpParallelStatement* target_parallel_stmt = NULL;
-  SgUpirTaskStatement* target_directive_stmt = NULL;
+  SgOmpTargetStatement* target_directive_stmt = NULL;
   SgOmpTargetDataStatement * target_data_stmt = NULL;
   SgOmpTargetParallelForStatement* target_parallel_for_stmt = NULL;
   SgOmpTargetTeamsDistributeParallelForStatement* target_teams_distribute_parallel_for_stmt = NULL;
@@ -3360,7 +3360,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
   target_parallel_stmt = isSgOmpParallelStatement(target_data_or_target_parallel_stmt);
   target_data_stmt = isSgOmpTargetDataStatement(target_data_or_target_parallel_stmt);
   target_parallel_for_stmt = isSgOmpTargetParallelForStatement(target_data_or_target_parallel_stmt);
-  target_directive_stmt = isSgUpirTaskStatement(target_data_or_target_parallel_stmt);
+  target_directive_stmt = isSgOmpTargetStatement(target_data_or_target_parallel_stmt);
   target_teams_distribute_parallel_for_stmt = isSgOmpTargetTeamsDistributeParallelForStatement(target_data_or_target_parallel_stmt);
 
   // the parallel directive must be combined with target directive
@@ -3371,7 +3371,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* target_data_or_target_pa
     ROSE_ASSERT (parent != NULL);
    if (isSgBasicBlock(parent)) //skip the possible block in between
       parent = parent->get_parent();
-    target_directive_stmt = isSgUpirTaskStatement(parent);
+    target_directive_stmt = isSgOmpTargetStatement(parent);
     ROSE_ASSERT (target_directive_stmt != NULL);
   }
 
@@ -3856,7 +3856,7 @@ ASTtools::VarSymSet_t transUpirDataMappingVariables (SgStatement* target_directi
       if (isSgBasicBlock(parent)) { //skip the possible block in between
           parent = parent->get_parent();
       }
-      target = isSgUpirTaskStatement(parent);
+      target = isSgOmpTargetStatement(parent);
   }
   ROSE_ASSERT (target != NULL);
 
@@ -3930,7 +3930,7 @@ ASTtools::VarSymSet_t transUpirDataMappingVariables (SgStatement* target_directi
   SgBasicBlock* insertion_scope = NULL;
   SgStatement* insertion_anchor_stmt = NULL;
   // set the scope and anchor statement we will focus on based on the availability of an enclosing target data region
-  if (isSgUpirTaskStatement(target)) {
+  if (isSgOmpTargetStatement(target)) {
       insertion_scope = isSgBasicBlock(target->get_scope());
       insertion_anchor_stmt = target;
   }
@@ -4132,7 +4132,7 @@ ASTtools::VarSymSet_t transUpirDataMappingVariables (SgStatement* target_directi
     ROSE_ASSERT (parent != NULL);
    if (isSgBasicBlock(parent)) //skip the possible block in between
       parent = parent->get_parent();
-    SgUpirTaskStatement* target_directive_stmt = isSgUpirTaskStatement(parent);
+    SgOmpTargetStatement* target_directive_stmt = isSgOmpTargetStatement(parent);
     ROSE_ASSERT (target_directive_stmt != NULL);
 
     // device expression
@@ -4399,7 +4399,7 @@ ASTtools::VarSymSet_t transUpirDataMappingVariables (SgStatement* target_directi
   {
     // Sanity check first
     ROSE_ASSERT(node != NULL);
-    SgUpirTaskStatement* target = isSgUpirTaskStatement(node);
+    SgOmpTargetStatement* target = isSgOmpTargetStatement(node);
     ROSE_ASSERT (target != NULL);
 
     // device expression
@@ -7140,7 +7140,7 @@ void transOmpCollapse(SgStatement* node)
   patchUpPrivateVariables (node);
 
   /*
-   *Winnie, we need to add the new variables into the map in list, if there is a SgUpirTaskStatement
+   *Winnie, we need to add the new variables into the map in list, if there is a SgOmpTargetStatement
    */
   /*For OmpTarget, we need to create SgOmpMapClause if there is no such clause in the original code.
    *   target_stmt, #pragma omp target
@@ -7151,7 +7151,7 @@ void transOmpCollapse(SgStatement* node)
    *         we have to move the corresponding variable declarations to be in front of the directive containing map().
    */
   SgStatement * target_stmt = isSgStatement(node->get_parent()->get_parent());
-  if(isSgUpirTaskStatement(target_stmt))
+  if(isSgOmpTargetStatement(target_stmt))
   {
     Rose_STL_Container<SgOmpClause*> map_clauses;
     SgOmpMapClause * map_to = NULL;
@@ -7286,7 +7286,7 @@ void lower_omp(SgSourceFile* file)
           ROSE_ASSERT (parent != NULL);
           if (isSgBasicBlock(parent)) // skip the padding block in between.
             parent= parent->get_parent();
-          if (isSgUpirTaskStatement(parent))
+          if (isSgOmpTargetStatement(parent))
             transOmpTargetParallel(node);
           else
             transOmpParallel(node);
@@ -7319,7 +7319,7 @@ void lower_omp(SgSourceFile* file)
             grand_parent = grand_parent->get_parent();
           ROSE_ASSERT (grand_parent != NULL);
 
-          if (isSgOmpParallelStatement (parent) && isSgUpirTaskStatement(grand_parent) )
+          if (isSgOmpParallelStatement (parent) && isSgOmpTargetStatement(grand_parent) )
             is_target_loop = true;
 
           if (is_target_loop)
@@ -7384,7 +7384,7 @@ void lower_omp(SgSourceFile* file)
           transOmpCritical(node);
           break;
         }
-      case V_SgUpirTaskStatement:
+      case V_SgOmpTargetStatement:
         {
           transOmpTarget(node);
           break;

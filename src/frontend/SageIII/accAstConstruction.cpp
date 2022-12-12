@@ -86,7 +86,7 @@ convertOpenACCBodyDirective(std::pair<SgPragmaDeclaration *, OpenACCDirective *>
   OpenACCClauseKind clause_kind;
 
   switch (directive_kind) {
-  // TODO: insert SgUpirTaskStatement first
+  // TODO: insert SgOmpTargetStatement first
   case ACCD_parallel: {
     result = new SgOmpParallelStatement(NULL, body);
     // not correct

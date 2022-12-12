@@ -302,7 +302,7 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpAtomicStatement,    "OmpAtomicStatement",    "OMP_ATOMIC_STMT" );
      // experimental omp target directive, Liao 1/22/2012
      // use for testing OpenMP accelerator model
-    NEW_TERMINAL_MACRO (UpirTaskStatement,  "UpirTaskStatement",   "UPIR_TASK_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetStatement,  "OmpTargetStatement",   "OMP_TARGET_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetDataStatement,  "OmpTargetDataStatement",   "OMP_TARGET_DATA_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetParallelForStatement,  "OmpTargetParallelForStatement",   "OMP_TARGET_PARALLEL_FOR_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetParallelStatement,  "OmpTargetParallelStatement",   "OMP_TARGET_PARALLEL_STMT" );
@@ -348,7 +348,7 @@ Grammar::setUpStatements ()
     // We treat OmpSectionsStatement separatedly by move the body to a list of SgOmpSectionStatement
     // sensitive to
     NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement | OmpOrderedStatement | OmpTaskgroupStatement | OmpTaskloopStatement | OmpDepobjStatement | OmpTargetEnterDataStatement | OmpTargetExitDataStatement | OmpParallelMasterStatement | OmpMasterTaskloopStatement |
-              OmpTaskStatement | OmpDoStatement | OmpSectionsStatement | UpirTaskStatement | OmpTargetDataStatement | OmpTargetParallelForStatement | OmpParallelLoopStatement |
+              OmpTaskStatement | OmpDoStatement | OmpSectionsStatement | OmpTargetStatement | OmpTargetDataStatement | OmpTargetParallelForStatement | OmpParallelLoopStatement |
               OmpTargetParallelStatement | OmpTargetParallelForSimdStatement | OmpTargetParallelLoopStatement | OmpTargetSimdStatement | OmpTargetTeamsStatement | OmpTargetTeamsDistributeStatement | OmpTargetTeamsDistributeSimdStatement | OmpTargetTeamsLoopStatement | OmpTargetTeamsDistributeParallelForStatement | OmpTargetTeamsDistributeParallelForSimdStatement | OmpDistributeSimdStatement | OmpDistributeParallelForStatement | OmpDistributeParallelForSimdStatement | OmpTaskloopSimdStatement |
               OmpMasterTaskloopSimdStatement | OmpParallelMasterTaskloopStatement | OmpParallelMasterTaskloopSimdStatement | OmpTeamsDistributeStatement | OmpTeamsDistributeSimdStatement | OmpTeamsDistributeParallelForStatement | OmpTeamsDistributeParallelForSimdStatement | OmpTeamsLoopStatement |
               OmpForSimdStatement | OmpCriticalStatement | OmpDistributeStatement | OmpUnrollStatement | OmpTileStatement | UpirLoopStatement,
@@ -4329,7 +4329,7 @@ Grammar::setUpStatements ()
     OmpTaskyieldStatement.setFunctionSource            ("SOURCE_OMP_TASKYIELD_STATEMENT", "../Grammar/Statement.code" );
     OmpOrderedStatement.setFunctionSource            ("SOURCE_OMP_ORDERED_STATEMENT", "../Grammar/Statement.code" );
 
-    UpirTaskStatement.setFunctionSource            ("SOURCE_UPIR_TASK_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetStatement.setFunctionSource            ("SOURCE_OMP_TARGET_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetDataStatement.setFunctionSource            ("SOURCE_OMP_TARGET_DATA_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetParallelForStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_FOR_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetParallelStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_STATEMENT", "../Grammar/Statement.code" );

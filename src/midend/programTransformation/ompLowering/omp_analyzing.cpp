@@ -503,7 +503,7 @@ int patchUpImplicitMappingVariables(SgFile *file) {
   int result = 0;
   ROSE_ASSERT(file != NULL);
   Rose_STL_Container<SgNode *> node_list1 =
-      NodeQuery::querySubTree(file, V_SgUpirTaskStatement);
+      NodeQuery::querySubTree(file, V_SgOmpTargetStatement);
 
   // TODO: implement a helper function to collect all the nodes into one list
   Rose_STL_Container<SgNode *> node_list2 =
@@ -557,7 +557,7 @@ int patchUpImplicitMappingVariables(SgFile *file) {
       if (isSharedInEnclosingConstructs(init_var, target))
         continue;
       // Now it should be a shared variable
-      if (isSgUpirTaskStatement(target) ||
+      if (isSgOmpTargetStatement(target) ||
           isSgOmpTargetParallelForStatement(target)) {
         SgVariableSymbol *sym = var_ref->get_symbol();
         ROSE_ASSERT(sym != NULL);
@@ -645,7 +645,7 @@ int unifyUpirTaskMappingVariables(SgFile *file) {
   int result = 0;
   ROSE_ASSERT(file != NULL);
   Rose_STL_Container<SgNode *> node_list =
-      NodeQuery::querySubTree(file, V_SgUpirTaskStatement);
+      NodeQuery::querySubTree(file, V_SgOmpTargetStatement);
 
   Rose_STL_Container<SgNode *>::iterator iter;
   for (iter = node_list.begin(); iter != node_list.end(); iter++) {
