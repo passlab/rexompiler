@@ -4121,7 +4121,7 @@ SgOmpExpressionClause* convertExpressionClause(SgStatement* directive, std::pair
         }
         case OMPC_num_threads: {
             SgExpression* num_threads_expression = checkOmpExpressionClause(clause_expression, global, e_num_threads);
-            result = new SgUpirNumUnitsField(num_threads_expression);
+            result = new SgOmpNumThreadsClause(num_threads_expression);
             printf("Num_threads Clause added!\n");
             break;
         }
