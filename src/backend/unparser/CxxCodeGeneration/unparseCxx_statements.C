@@ -13000,7 +13000,7 @@ Unparse_ExprStmt::unparseOmpBeginDirectiveClauses (SgStatement* stmt,     SgUnpa
   SgOmpFlushStatement* flush_stmt= isSgOmpFlushStatement(stmt);
   SgOmpAllocateStatement* allocate_stmt= isSgOmpAllocateStatement(stmt);
   //if (bodystmt||simdstmt)
-  SgUpirFieldStatement* clausestmt= isSgUpirFieldStatement(stmt);
+  SgOmpClauseStatement* clausestmt= isSgOmpClauseStatement(stmt);
   if (bodystmt||simdstmt||clausestmt||requires_stmt||taskwait_stmt||allocate_stmt)
   {
     //const SgOmpClausePtrList& clause_ptr_list = bodystmt?bodystmt->get_clauses():simdstmt->get_clauses();
