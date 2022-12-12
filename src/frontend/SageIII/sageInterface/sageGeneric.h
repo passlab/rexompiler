@@ -370,7 +370,7 @@ namespace sg
     GEN_VISIT(SgOmpForSimdStatement)
     GEN_VISIT(SgOmpDoStatement)
     GEN_VISIT(SgOmpSectionsStatement)
-    GEN_VISIT(SgUpirFieldBodyStatement)
+    GEN_VISIT(SgOmpClauseBodyStatement)
     GEN_VISIT(SgOmpAtomicStatement)
     GEN_VISIT(SgOmpMasterStatement)
     GEN_VISIT(SgOmpTaskyieldStatement)

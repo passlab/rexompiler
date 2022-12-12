@@ -12993,7 +12993,7 @@ Unparse_ExprStmt::unparseOmpBeginDirectiveClauses (SgStatement* stmt,     SgUnpa
 {
   ASSERT_not_null(stmt);
   // optional clauses
-  SgUpirFieldBodyStatement* bodystmt= isSgUpirFieldBodyStatement(stmt);
+  SgOmpClauseBodyStatement* bodystmt= isSgOmpClauseBodyStatement(stmt);
   SgOmpDeclareSimdStatement* simdstmt= isSgOmpDeclareSimdStatement(stmt);
   SgOmpRequiresStatement* requires_stmt= isSgOmpRequiresStatement(stmt);
   SgOmpTaskwaitStatement* taskwait_stmt= isSgOmpTaskwaitStatement(stmt);

@@ -3812,7 +3812,7 @@ Grammar::GrammarNodeInfo Grammar::getGrammarNodeInfo(AstNodeClass* grammarnode) 
         ||nodeName == "SgUpirBaseStatement"
         ||nodeName == "SgUpirLoopStatement"
         ||nodeName == "SgUpirLoopParallelStatement"
-        ||nodeName == "SgUpirFieldBodyStatement"
+        ||nodeName == "SgOmpClauseBodyStatement"
         ||nodeName == "SgUpirFieldStatement"
         ||nodeName == "SgOmpMetadirectiveStatement"
         ||nodeName == "SgUpirSpmdStatement"
@@ -4161,9 +4161,9 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                                << "else return p_variables[idx-1];\n";
                   }
                 // Liao, 5/30/2009
-               // More exceptional cases for SgUpirFieldBodyStatement and its derived classes
+               // More exceptional cases for SgOmpClauseBodyStatement and its derived classes
               // We allow them to have mixed members (simple member and container member)
-               else if (string(node.getName()) == "SgUpirFieldBodyStatement"
+               else if (string(node.getName()) == "SgOmpClauseBodyStatement"
                  ||string(node.getName()) == "SgOmpMetadirectiveStatement"
                  ||string(node.getName()) == "SgUpirSpmdStatement"
                  ||string(node.getName()) == "SgOmpTeamsStatement"
@@ -4321,9 +4321,9 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                                << "else return (size_t) -1;\n"
                                << "}\n";
                   }
-               // More exceptional cases for SgUpirFieldBodyStatement and its derived classes
+               // More exceptional cases for SgOmpClauseBodyStatement and its derived classes
               // We allow them to have mixed members
-               else if (string(node.getName()) == "SgUpirFieldBodyStatement"
+               else if (string(node.getName()) == "SgOmpClauseBodyStatement"
                  ||string(node.getName()) == "SgOmpMetadirectiveStatement"
                  ||string(node.getName()) == "SgUpirSpmdStatement"
                  ||string(node.getName()) == "SgOmpTeamsStatement"
