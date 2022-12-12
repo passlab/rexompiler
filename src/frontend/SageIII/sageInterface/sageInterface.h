@@ -2395,8 +2395,8 @@ ROSE_DLL_API SgBasicBlock* ensureBasicBlockAsFalseBodyOfIf(SgIfStmt* ifs, bool c
 //! Check if the body of a 'catch' statement is a SgBasicBlock, create one if not.
 ROSE_DLL_API SgBasicBlock* ensureBasicBlockAsBodyOfCatch(SgCatchOptionStmt* cos);
 
-//! Check if the body of a SgUpirBodyStatement is a SgBasicBlock, create one if not
-ROSE_DLL_API SgBasicBlock* ensureBasicBlockAsBodyOfOmpBodyStmt(SgUpirBodyStatement* ompbodyStmt);
+//! Check if the body of a SgOmpBodyStatement is a SgBasicBlock, create one if not
+ROSE_DLL_API SgBasicBlock* ensureBasicBlockAsBodyOfOmpBodyStmt(SgOmpBodyStatement* ompbodyStmt);
 
 // DQ (1/18/2015): This is added to support better quality token-based unparsing.
 //! Remove unused basic block IR nodes added as part of normalization.
@@ -2410,7 +2410,7 @@ ROSE_DLL_API void recordNormalizations(SgStatement* s);
 //! switch, If, Catch, OmpBodyStmt, etc
 bool isBodyStatement (SgStatement* s);
 
-//! Fix up ifs, loops, while, switch, Catch, UpirBodyStatement, etc. to have blocks as body components. It also adds an empty else body to if statements that don't have them.
+//! Fix up ifs, loops, while, switch, Catch, OmpBodyStatement, etc. to have blocks as body components. It also adds an empty else body to if statements that don't have them.
 void changeAllBodiesToBlocks(SgNode* top, bool createEmptyBody = true);
 
 // The same as changeAllBodiesToBlocks(SgNode* top). Phased out.

@@ -379,7 +379,7 @@ namespace sg
     GEN_VISIT(SgOmpOrderedDependStatement)
     GEN_VISIT(SgOmpWorkshareStatement)
     GEN_VISIT(SgOmpCriticalStatement)
-    GEN_VISIT(SgUpirBodyStatement)
+    GEN_VISIT(SgOmpBodyStatement)
     GEN_VISIT(SgFortranIncludeLine)
     GEN_VISIT(SgFortranNonblockedDo)
     GEN_VISIT(SgFuncDecl_attr)

@@ -344,7 +344,7 @@ namespace OmpSupport
     ROSE_ASSERT (var_sym!= NULL);
 
     SgInitializedName* iname = isSgInitializedName( var_sym->get_declaration() );
-    //TODO: what to do with SgOmpWorkshareStatement ?  it is a region/SgUpirBodyStatement, but it does not belong to UpirFieldBodyStatement
+    //TODO: what to do with SgOmpWorkshareStatement ?  it is a region/SgOmpBodyStatement, but it does not belong to UpirFieldBodyStatement
 
     // obtain the enclosing OpenMP clause body statement: SgUpirWorksharingStatement, parallel, sections, single, target, target data, task, etc.
     // TODO: this may not be reliable:  region {stmtlist ;  loop; stmtlist; }

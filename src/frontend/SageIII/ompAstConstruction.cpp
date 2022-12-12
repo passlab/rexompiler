@@ -40,7 +40,7 @@ static bool checkOpenMPIR(OpenMPDirective*);
 static SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertVariantDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
-static SgUpirBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
+static SgOmpBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertOmpDeclareSimdDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
 static SgStatement* convertOmpFlushDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*>);
@@ -142,8 +142,8 @@ bool copyEndFileInfo (SgNode* src, SgNode* dest)
   bool result = false;
   ROSE_ASSERT (src && dest);
   
-  if (isSgUpirBodyStatement(dest))
-    src = isSgUpirBodyStatement(dest)->get_body();
+  if (isSgOmpBodyStatement(dest))
+    src = isSgOmpBodyStatement(dest)->get_body();
 
   // same src and dest, no copy is needed
   if (src == dest) return true;
@@ -2027,11 +2027,11 @@ SgStatement* convertVariantDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
     return result;
 }
 
-SgUpirBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
+SgOmpBodyStatement* convertCombinedBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
     
     OpenMPDirectiveKind directive_kind = current_OpenMPIR_to_SageIII.second->getKind();
     // directives like parallel and for have a following code block beside the pragma itself.
-    SgUpirBodyStatement* result = NULL;
+    SgOmpBodyStatement* result = NULL;
 
     switch (directive_kind) {
         case OMPD_parallel_do:

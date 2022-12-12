@@ -54,7 +54,7 @@ void analyzeOmpMetadirective(SgNode *node) {
     SgExprStatement *condition_statement =
         buildExprStatement(condition_expression);
     variant_directive = when_clause->get_variant_directive();
-    ((SgUpirBodyStatement *)variant_directive)->set_body(variant_body);
+    ((SgOmpBodyStatement *)variant_directive)->set_body(variant_body);
     setOneSourcePositionForTransformation(variant_directive);
     if (variant_directive) {
       variant_body->set_parent(variant_directive);
@@ -71,7 +71,7 @@ void analyzeOmpMetadirective(SgNode *node) {
       variant_directive = when_clause->get_variant_directive();
       variant_directive->set_parent(target->get_parent());
       variant_body = copyStatement(body);
-      ((SgUpirBodyStatement *)variant_directive)->set_body(variant_body);
+      ((SgOmpBodyStatement *)variant_directive)->set_body(variant_body);
       setOneSourcePositionForTransformation(variant_directive);
       ROSE_ASSERT(variant_body != NULL);
       if (variant_directive) {

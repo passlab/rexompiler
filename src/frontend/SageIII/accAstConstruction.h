@@ -4,7 +4,7 @@
 bool checkOpenACCIR(OpenACCDirective *);
 SgStatement *convertOpenACCDirective(
     std::pair<SgPragmaDeclaration *, OpenACCDirective *>);
-SgUpirBodyStatement *convertOpenACCBodyDirective(
+SgOmpBodyStatement *convertOpenACCBodyDirective(
     std::pair<SgPragmaDeclaration *, OpenACCDirective *>);
 SgOmpExpressionClause *convertOpenACCExpressionClause(
     SgStatement *, std::pair<SgPragmaDeclaration *, OpenACCDirective *>,
