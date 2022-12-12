@@ -19031,6 +19031,11 @@ SgOmpOrderedDependStatement::post_construction_initialization()
    {}
 SOURCE_OMP_ORDERED_DEPEND_STATEMENT_END
 
+HEADER_OMP_DECLARE_MAPPER_STATEMENT_START
+//! Required for any declaration statement
+     virtual SgName get_mangled_name(void) const override;
+HEADER_OMP_DECLARE_MAPPER_STATEMENT_END
+
 SOURCE_OMP_DECLARE_MAPPER_STATEMENT_START
 void
 SgOmpDeclareMapperStatement::post_construction_initialization()

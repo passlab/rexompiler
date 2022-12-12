@@ -2047,7 +2047,6 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
             result = convertCombinedBodyDirective(current_OpenMPIR_to_SageIII);
             break;
         }
-        case OMPD_declare_mapper:
         case OMPD_cancellation_point:
         case OMPD_target_update:
         case OMPD_cancel: {
@@ -2288,10 +2287,6 @@ SgStatement* convertNonBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirec
     switch (directive_kind) {
         case OMPD_cancellation_point: {
             result = new SgOmpCancellationPointStatement();
-            break;
-        }
-        case OMPD_declare_mapper: {
-            result = new SgOmpDeclareMapperStatement();
             break;
         }
         case OMPD_cancel: {
@@ -2881,22 +2876,17 @@ SgStatement* convertOmpDeclareMapperDirective(std::pair<SgPragmaDeclaration*, Op
     std::string type = current_ir->getType();
     std::string var = current_ir->getVar();
     
-    std::vector<std::string>* current_expressions = current_ir->getFlushList();
-    if (current_expressions->size() != 0) {
-        std::vector<std::string>::iterator iter;
-        for (iter = current_expressions->begin(); iter != current_expressions->end(); iter++) {
-            std::string expr_string = std::string() + "varlist " + *iter + "\n";
-            omp_exprparser_parser_init(current_OpenMPIR_to_SageIII.first, expr_string.c_str());
-            omp_exprparser_parse();
-        }
-    }
     result->set_type = type;
     result->set_var = var;
 
     OpenMPDeclareMapperDirectiveIdentifier identifier = current_ir->getIdentifier();
     SgDeclareMapperIdentifier::declare_mapper_identifier_enum sg_identifier = toSgOmpClauseDeclareMapperIdentifier(identifier);
-        
-        
+    if (sg_identifier == SgOmpClause::e_omp_declare_mapper_identifier_user) {
+        std::string user_defined_identifier = current_ir -> getUserDefinedIdentifier();
+        SgName _user_defined_identifier = SgName(user_defined_identifier); 
+    }
+    result->set_identifier = identifier;
+    result->set_user_defined_identifier = _user_defined_identifier;            
     return result;
 }
 
@@ -3109,7 +3099,6 @@ SgOmpDefaultmapClause* convertDefaultmapClause(SgUpirFieldBodyStatement* clause_
 
 SgOmpUsesAllocatorsClause* convertUsesAllocatorsClause(SgUpirFieldBodyStatement* clause_body, std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII, OpenMPClause* current_omp_clause) {
 
-//budui, allocator yinggai he array duiyingqilai , yinggai you henduo allocators
     printf("ompparser uses_allocators clause is ready.\n");
     SgOmpUsesAllocatorsClause* result = NULL;
     SgOmpUsesAllocatorsDefination* uses_allocators_defination = NULL;
