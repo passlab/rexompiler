@@ -303,7 +303,7 @@ SgOmpTaskyieldStatement
 SgOmpMetadirectiveStatement
 SgOmpOrderedStatement
 SgOmpOrderedDependStatement
-SgUpirSpmdStatement
+SgOmpParallelStatement
 SgOmpTeamsStatement
 SgOmpCancellationPointStatement
 SgOmpDeclareMapperStatement

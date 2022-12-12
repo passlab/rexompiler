@@ -3784,7 +3784,7 @@ Grammar::GrammarNodeInfo Grammar::getGrammarNodeInfo(AstNodeClass* grammarnode) 
         ||nodeName == "SgOmpClauseBodyStatement"
         ||nodeName == "SgOmpClauseStatement"
         ||nodeName == "SgOmpMetadirectiveStatement"
-        ||nodeName == "SgUpirSpmdStatement"
+        ||nodeName == "SgOmpParallelStatement"
         ||nodeName == "SgOmpTeamsStatement"
         ||nodeName == "SgOmpCancellationPointStatement"
         ||nodeName == "SgOmpDeclareMapperStatement"
@@ -4134,7 +4134,7 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
               // We allow them to have mixed members (simple member and container member)
                else if (string(node.getName()) == "SgOmpClauseBodyStatement"
                  ||string(node.getName()) == "SgOmpMetadirectiveStatement"
-                 ||string(node.getName()) == "SgUpirSpmdStatement"
+                 ||string(node.getName()) == "SgOmpParallelStatement"
                  ||string(node.getName()) == "SgOmpTeamsStatement"
                  ||string(node.getName()) == "SgOmpCancellationPointStatement"
                  ||string(node.getName()) == "SgOmpDeclareMapperStatement"
@@ -4294,7 +4294,7 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
               // We allow them to have mixed members
                else if (string(node.getName()) == "SgOmpClauseBodyStatement"
                  ||string(node.getName()) == "SgOmpMetadirectiveStatement"
-                 ||string(node.getName()) == "SgUpirSpmdStatement"
+                 ||string(node.getName()) == "SgOmpParallelStatement"
                  ||string(node.getName()) == "SgOmpTeamsStatement"
                  ||string(node.getName()) == "SgOmpCancellationPointStatement"
                  ||string(node.getName()) == "SgOmpDeclareMapperStatement"
