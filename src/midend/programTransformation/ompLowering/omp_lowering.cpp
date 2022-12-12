@@ -2009,8 +2009,8 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
     if (isSgOmpClauseBodyStatement(clause_stmt)) {
         clauses = (isSgOmpClauseBodyStatement(clause_stmt))->get_clauses();
     }
-    else if (isSgUpirFieldStatement(clause_stmt)) {
-        clauses = (isSgUpirFieldStatement(clause_stmt))->get_clauses();
+    else if (isSgOmpClauseStatement(clause_stmt)) {
+        clauses = (isSgOmpClauseStatement(clause_stmt))->get_clauses();
     }
     else {
         ROSE_ASSERT(0);
@@ -2028,8 +2028,8 @@ void transOmpTargetLoop_RoundRobin(SgNode* node)
     if (isSgOmpClauseBodyStatement(clause_stmt)) {
         clauses = (isSgOmpClauseBodyStatement(clause_stmt))->get_clauses();
     }
-    else if (isSgUpirFieldStatement(clause_stmt)) {
-        clauses = (isSgUpirFieldStatement(clause_stmt))->get_clauses();
+    else if (isSgOmpClauseStatement(clause_stmt)) {
+        clauses = (isSgOmpClauseStatement(clause_stmt))->get_clauses();
     }
     else {
         ROSE_ASSERT(0);
@@ -5895,8 +5895,8 @@ void transOmpTargetLoopBlock(SgNode* node)
      if (isSgOmpClauseBodyStatement(clause_stmt)) {
          clauses = (isSgOmpClauseBodyStatement(clause_stmt))->get_clauses();
      }
-     else if (isSgUpirFieldStatement(clause_stmt)) {
-         clauses = (isSgUpirFieldStatement(clause_stmt))->get_clauses();
+     else if (isSgOmpClauseStatement(clause_stmt)) {
+         clauses = (isSgOmpClauseStatement(clause_stmt))->get_clauses();
      }
      else {
          ROSE_ASSERT(0);
@@ -6945,11 +6945,11 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
   int removeClause(SgStatement* clause_stmt, const VariantT& vt)
   {
     ROSE_ASSERT(clause_stmt != NULL);
-    ROSE_ASSERT(isSgOmpClauseBodyStatement(clause_stmt) || isSgUpirFieldStatement(clause_stmt));
+    ROSE_ASSERT(isSgOmpClauseBodyStatement(clause_stmt) || isSgOmpClauseStatement(clause_stmt));
     SgOmpClausePtrList& clause_list
         = (isSgOmpClauseBodyStatement(clause_stmt))
         ? (isSgOmpClauseBodyStatement(clause_stmt))->get_clauses()
-        : (isSgUpirFieldStatement(clause_stmt))->get_clauses();
+        : (isSgOmpClauseStatement(clause_stmt))->get_clauses();
     std::vector< Rose_STL_Container<SgOmpClause*>::iterator > iter_vec;
     Rose_STL_Container<SgOmpClause*>::iterator iter ;
     // collect iterators pointing the matching clauses

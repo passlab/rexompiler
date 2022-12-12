@@ -291,7 +291,7 @@ SgOmpBarrierStatement
 SgOmpCriticalStatement
 SgOmpClauseBodyStatement
 SgOmpBodyStatement
-SgUpirFieldStatement
+SgOmpClauseStatement
 SgOmpDoStatement
 SgOmpFlushStatement
 SgOmpAllocateStatement

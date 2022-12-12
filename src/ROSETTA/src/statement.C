@@ -369,8 +369,8 @@ Grammar::setUpStatements ()
         | OmpSectionStatement | OmpWorkshareStatement  | OmpClauseBodyStatement,
         "OmpBodyStatement",      "OMP_BODY_STMT", false );
 
-    NEW_NONTERMINAL_MACRO (UpirFieldStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement | OmpOrderedDependStatement | UpirSyncStatement | UpirLoopParallelStatement | UpirWorksharingStatement | UpirSimdStatement,
-        "UpirFieldStatement",      "UPIR_FIELD_STMT", false );
+    NEW_NONTERMINAL_MACRO (OmpClauseStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement | OmpOrderedDependStatement | UpirSyncStatement | UpirLoopParallelStatement | UpirWorksharingStatement | UpirSimdStatement,
+        "OmpClauseStatement",      "OMP_CLAUSE_STMT", false );
 
 #endif
 
@@ -564,7 +564,7 @@ Grammar::setUpStatements ()
           "DeclarationStatement", "DECL_STMT", false);
 
      NEW_NONTERMINAL_MACRO (UpirBaseStatement,
-             OmpTaskyieldStatement     | OmpBarrierStatement    | OmpBodyStatement               | UpirFieldStatement    |
+             OmpTaskyieldStatement     | OmpBarrierStatement    | OmpBodyStatement               | OmpClauseStatement    |
              OmpDeclareMapperStatement,
              "UpirBaseStatement","UpirBaseStatementTag", false);
 
@@ -4278,8 +4278,8 @@ Grammar::setUpStatements ()
     OmpClauseBodyStatement.setFunctionPrototype         ( "HEADER_OMP_CLAUSEBODY_STATEMENT", "../Grammar/Statement.code" );
     OmpClauseBodyStatement.setFunctionSource            ("SOURCE_OMP_CLAUSEBODY_STATEMENT", "../Grammar/Statement.code" );
 
-    UpirFieldStatement.setFunctionPrototype         ( "HEADER_UPIR_FIELD_STATEMENT", "../Grammar/Statement.code" );
-    UpirFieldStatement.setFunctionSource            ("SOURCE_UPIR_FIELD_STATEMENT", "../Grammar/Statement.code" );
+    OmpClauseStatement.setFunctionPrototype         ( "HEADER_OMP_CLAUSE_STATEMENT", "../Grammar/Statement.code" );
+    OmpClauseStatement.setFunctionSource            ("SOURCE_OMP_CLAUSE_STATEMENT", "../Grammar/Statement.code" );
 
     UpirBaseStatement.setFunctionSource             ( "SOURCE_UPIR_BASE_STATEMENT", "../Grammar/Statement.code" );
     UpirLoopStatement.setFunctionSource             ( "SOURCE_UPIR_LOOP_STATEMENT", "../Grammar/Statement.code" );
@@ -4395,7 +4395,7 @@ Grammar::setUpStatements ()
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
     OmpBodyStatement.setDataPrototype("SgStatement*", "body", "= NULL",
                               CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-    UpirFieldStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
+    OmpClauseStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
     UpirLoopStatement.setDataPrototype("SgInitializedName*", "induction", "= NULL",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
