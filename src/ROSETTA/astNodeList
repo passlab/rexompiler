@@ -326,7 +326,6 @@ SgOmpWorkshareStatement
 SgUpirTaskStatement
 SgOmpTargetDataStatement
 SgOmpTargetParallelForStatement
-SgOmpDeclareMapperStatement
 SgOmpTargetUpdateStatement
 SgOmpRequiresStatement
 SgOmpTargetParallelStatement

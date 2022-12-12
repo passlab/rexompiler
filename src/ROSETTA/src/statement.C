@@ -4389,7 +4389,7 @@ Grammar::setUpStatements ()
     // omp declare mapper([mapper-identifier:]type var)
     //The mapper identifier should not be SgName, because there is a pre-defined identifier: default.
     OmpDeclareMapperStatement.setDataPrototype( "SgDeclareMapperIdentifier*", "identifier", "=e_omp_declare_mapper_identifier_unknown",
-                                                NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+                                                NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
     OmpDeclareMapperStatement.setDataPrototype( "SgName", "user_defined_identifier", "= \"\"",
                                                 NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);                  
     OmpDeclareMapperStatement.setDataPrototype( "SgType*", "type", "= NULL",

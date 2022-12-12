@@ -3850,7 +3850,6 @@ Grammar::GrammarNodeInfo Grammar::getGrammarNodeInfo(AstNodeClass* grammarnode) 
         ||nodeName == "SgOmpOrderedStatement"
         ||nodeName == "SgOmpOrderedDependStatement"
         ||nodeName == "SgOmpScanStatement"
-        ||nodeName == "SgOmpDeclareMapperStatement"
         ||nodeName == "SgOmpTaskloopStatement"
         ||nodeName == "SgOmpTargetEnterDataStatement"
         ||nodeName == "SgOmpTargetExitDataStatement"
@@ -3895,6 +3894,7 @@ Grammar::GrammarNodeInfo Grammar::getGrammarNodeInfo(AstNodeClass* grammarnode) 
         ||nodeName == "SgOmpAtomicStatement"
         ||nodeName == "SgOmpUnrollStatement"
         ||nodeName == "SgOmpTileStatement"
+        ||nodeName == "SgOmpDeclareMapperStatement"
         ||nodeName == "SgExprListExp");
   }
   return info;
@@ -4192,7 +4192,6 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                  ||string(node.getName()) == "SgUpirSpmdStatement"
                  ||string(node.getName()) == "SgOmpTeamsStatement"
                  ||string(node.getName()) == "SgOmpCancellationPointStatement"
-                 ||string(node.getName()) == "SgOmpDeclareMapperStatement"
                  ||string(node.getName()) == "SgOmpCancelStatement"
                  ||string(node.getName()) == "SgOmpTaskgroupStatement"
                  ||string(node.getName()) == "SgOmpDepobjStatement"
@@ -4352,7 +4351,6 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                  ||string(node.getName()) == "SgUpirSpmdStatement"
                  ||string(node.getName()) == "SgOmpTeamsStatement"
                  ||string(node.getName()) == "SgOmpCancellationPointStatement"
-                 ||string(node.getName()) == "SgOmpDeclareMapperStatement"
                  ||string(node.getName()) == "SgOmpCancelStatement"
                  ||string(node.getName()) == "SgOmpTaskgroupStatement"
                  ||string(node.getName()) == "SgOmpDepobjStatement"

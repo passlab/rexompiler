@@ -19040,7 +19040,22 @@ SOURCE_OMP_DECLARE_MAPPER_STATEMENT_START
 void
 SgOmpDeclareMapperStatement::post_construction_initialization()
    {}
+   
+SgName
+SgOmpDeclareMapperStatement::get_mangled_name(void) const
+   {
+     SgName returnName;
+       // The semantics of get_scope is that it can never be NULL (SgGlobal returns itself as its scope!)
+     SgScopeStatement* scope = get_scope();
+     ROSE_ASSERT(scope != NULL);
+
+     returnName = scope->get_mangled_name() + SgName("_omp_declare_mapper_");
+      //TODO: need more unique name adding clauses, followed function, etc.
+     return returnName;
+   }  
 SOURCE_OMP_DECLARE_MAPPER_STATEMENT_END
+
+
 
 SOURCE_OMP_CANCEL_STATEMENT_START
 void

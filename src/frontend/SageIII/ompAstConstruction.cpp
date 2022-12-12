@@ -2065,10 +2065,10 @@ SgStatement* convertDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> 
             result = new SgOmpBarrierStatement();
             break;
         }
-        case OMPD_declare_simd: {
+        /*case OMPD_declare_simd: {
             result = convertOmpDeclareSimdDirective(current_OpenMPIR_to_SageIII);
             break;
-        }
+        }*/
         case OMPD_flush: {
             result = convertOmpFlushDirective(current_OpenMPIR_to_SageIII);
             break;
@@ -2856,7 +2856,7 @@ SgStatement* convertOmpFlushDirective(std::pair<SgPragmaDeclaration*, OpenMPDire
 }
 
 // Convert an OpenMPIR declare mapper Directive to a ROSE node
-SgStatement* convertOmpDeclareMapperDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
+/*SgStatement* convertOmpDeclareMapperDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
     SgOmpDeclareMapperStatement *result = new SgOmpDeclareMapperStatement();
     result->set_firstNondefiningDeclaration(result);
         
@@ -2876,8 +2876,8 @@ SgStatement* convertOmpDeclareMapperDirective(std::pair<SgPragmaDeclaration*, Op
     std::string type = current_ir->getType();
     std::string var = current_ir->getVar();
     
-    result->set_type = type;
-    result->set_var = var;
+    //result->set_type = type;
+    //result->set_var = var;
 
     OpenMPDeclareMapperDirectiveIdentifier identifier = current_ir->getIdentifier();
     SgDeclareMapperIdentifier::declare_mapper_identifier_enum sg_identifier = toSgOmpClauseDeclareMapperIdentifier(identifier);
@@ -2888,7 +2888,6 @@ SgStatement* convertOmpDeclareMapperDirective(std::pair<SgPragmaDeclaration*, Op
     result->set_identifier = identifier;
     result->set_user_defined_identifier = _user_defined_identifier;            
     return result;
-}
 
 // Convert an OpenMPIR Allocate Directive to a ROSE node
 SgStatement* convertOmpAllocateDirective(std::pair<SgPragmaDeclaration*, OpenMPDirective*> current_OpenMPIR_to_SageIII) {
