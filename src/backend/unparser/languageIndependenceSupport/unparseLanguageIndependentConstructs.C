@@ -3797,7 +3797,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpTaskloopStatement:
                     case V_SgOmpTargetEnterDataStatement:
                     case V_SgOmpTargetExitDataStatement:
-                    case V_SgUpirTaskStatement:
+                    case V_SgOmpTargetStatement:
                     case V_SgOmpTargetDataStatement:
                     case V_SgOmpTargetParallelForStatement:
                     case V_SgOmpTargetParallelStatement:
@@ -11657,7 +11657,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         curprint(string ("target exit data "));
         break;
       }
-    case V_SgUpirTaskStatement:
+    case V_SgOmpTargetStatement:
       {
         curprint(string ("target "));
         break;

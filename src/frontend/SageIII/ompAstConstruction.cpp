@@ -2361,7 +2361,7 @@ SgStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirectiv
             break;
         }
         case OMPD_target: {
-            result = new SgUpirTaskStatement(NULL, body);
+            result = new SgOmpTargetStatement(NULL, body);
             break;
         }
         case OMPD_critical: {
@@ -3142,7 +3142,7 @@ SgStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             break;
         }
         case OMPD_target: {
-            result = new SgUpirTaskStatement(NULL, NULL);
+            result = new SgOmpTargetStatement(NULL, NULL);
             break;
         }
         case OMPD_critical: {

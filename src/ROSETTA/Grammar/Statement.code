@@ -19212,11 +19212,11 @@ SgOmpSectionsStatement::post_construction_initialization()
    {}
 SOURCE_OMP_SECTIONS_STATEMENT_END
 
-SOURCE_UPIR_TASK_STATEMENT_START
+SOURCE_OMP_TARGET_STATEMENT_START
 void
-SgUpirTaskStatement::post_construction_initialization()
+SgOmpTargetStatement::post_construction_initialization()
    {}
-SOURCE_UPIR_TASK_STATEMENT_END
+SOURCE_OMP_TARGET_STATEMENT_END
 
 SOURCE_OMP_TARGET_PARALLEL_FOR_STATEMENT_START
 void

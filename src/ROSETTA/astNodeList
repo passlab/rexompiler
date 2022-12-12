@@ -323,7 +323,7 @@ SgOmpTaskStatement
 SgOmpTaskwaitStatement
 SgOmpThreadprivateStatement
 SgOmpWorkshareStatement
-SgUpirTaskStatement
+SgOmpTargetStatement
 SgOmpTargetDataStatement
 SgOmpTargetParallelForStatement
 SgOmpTargetUpdateStatement
