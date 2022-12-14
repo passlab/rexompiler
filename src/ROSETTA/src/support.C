@@ -8,7 +8,6 @@
 
 #include "ROSETTA_macros.h"
 #include "AstNodeClass.h"
-//#include "OmpAttribute.h"
 
 // What should be the behavior of the default constructor for Grammar
 
@@ -1067,10 +1066,10 @@ Grammar::setUpSupport ()
   // Liao, 10/28/2008: Support for OpenMP 3.0 model for C/C++ pragma, will use it for Fortran later on, changed fortran_openmp to openmp
      File.setDataPrototype         ( "bool", "openmp", "= false",
                                      NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-  // Liao, 5/31/2009: Only invoke the OpenMP C/C++ and Fortran directive parsers and generate OmpAttributes
+  // Liao, 5/31/2009: Only invoke the OpenMP C/C++ and Fortran directive parsers from OpenMPIR
      File.setDataPrototype         ( "bool", "openmp_parse_only", "= false",
                                      NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-  // Only generate SgOmp* nodes from OmpAttributes in AST, no further actions
+  // Only generate SgOmp* nodes from OpenMPIR in AST, no further actions
      File.setDataPrototype         ( "bool", "openmp_ast_only", "= false",
                                      NO_CONSTRUCTOR_PARAMETER, BUILD_FLAG_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
   // Lowering OpenMP directives to code with explicit runtime calls

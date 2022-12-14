@@ -1,7 +1,3 @@
-// Refined OmpAttribute connected to a parser using Bison
-//Liao, 9/18/2008
-//
-
 // tps (01/14/2010) : Switching from rose.h to sage3.
 #include "sage3basic.h"
 #include "sageBuilder.h"
@@ -70,7 +66,7 @@ namespace OmpSupport
       case e_end_parallel_do:result = "end parallel do"; break;
       case e_end_parallel_sections:result = "end parallel sections"; break;
       case e_end_parallel_workshare:result = "end parallel workshare"; break;
-      case e_end_parallel:result = "end parallel"; break;
+      case e_end_parallel:result = "end parallel_support"; break;
       case e_end_sections:result = "end sections"; break;
       case e_end_single:result = "end single"; break;
       case e_end_task:result = "end task"; break;
