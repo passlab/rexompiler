@@ -1410,68 +1410,6 @@ namespace OmpSupport
     return result;
   }
 
-  //! Build a map clause with a given operation type from OmpAttribute
-  // map may have several variants: tofrom, to, from, and alloc. 
-  // the variables for each may have dimension info 
-  /*SgOmpMapClause* buildOmpMapClause(OmpAttribute* att, omp_construct_enum map_op)
-  {
-    ROSE_ASSERT(att !=NULL);
-    ROSE_ASSERT (att->isMapVariant(map_op));
-    if (!att->hasMapVariant(map_op))
-      return NULL;
-    SgOmpClause::omp_map_operator_enum  sg_op = toSgOmpClauseMapOperator(map_op); 
-    SgExprListExp* explist=buildExprListExp();
-    SgOmpMapClause* result = new SgOmpMapClause(explist, sg_op);
-    ROSE_ASSERT(result != NULL);
-    setOneSourcePositionForTransformation(result);
-    explist->set_parent(result);
-
-    // build variable list
-    setClauseVariableList(result, att, map_op); 
-
-    //this is somewhat inefficient. 
-    // since the attribute has dimension info for all map clauses
-    //But we don't want to move the dimension info to directive level 
-    result->set_array_dimensions(att->array_dimensions);
-
-   //A translation from OmpSupport::omp_construct_enum to SgOmpClause::omp_map_dist_data_enum is needed here.
-   std::map<SgSymbol*, std::vector<std::pair<OmpSupport::omp_construct_enum, SgExpression*> > > attDistMap = att->dist_data_policies;
-   std::map<SgSymbol*, std::vector<std::pair<OmpSupport::omp_construct_enum, SgExpression*> > >::iterator iter;
-
-   std::map<SgSymbol*, std::vector<std::pair<SgOmpClause::omp_map_dist_data_enum, SgExpression*> > > convertedDistMap;
-   for (iter= attDistMap.begin(); iter!=attDistMap.end(); iter++)
-   {
-     SgSymbol* s = (*iter).first; 
-     std::vector<std::pair<OmpSupport::omp_construct_enum, SgExpression*> > src_vec = (*iter).second; 
-     std::vector<std::pair<OmpSupport::omp_construct_enum, SgExpression*> >::iterator iter2;
-
-     std::vector<std::pair<SgOmpClause::omp_map_dist_data_enum, SgExpression*> > converted_vec;
-     for (iter2=src_vec.begin(); iter2!=src_vec.end(); iter2 ++ )
-     {
-       std::pair<OmpSupport::omp_construct_enum, SgExpression*>  src_pair = *iter2; 
-       if (src_pair.first == OmpSupport::e_duplicate)
-       {
-         converted_vec.push_back(make_pair(SgOmpClause::e_omp_map_dist_data_duplicate, src_pair.second) );
-       } else 
-       if (src_pair.first == OmpSupport::e_cyclic)
-       {
-         converted_vec.push_back(make_pair(SgOmpClause::e_omp_map_dist_data_cyclic, src_pair.second) );
-       } else 
-       if (src_pair.first == OmpSupport::e_block)
-       {
-         converted_vec.push_back(make_pair(SgOmpClause::e_omp_map_dist_data_block, src_pair.second) );
-       } else 
-       {
-         cerr<<"error. buildOmpMapClause() :unrecognized source dist data policy enum:"<<src_pair.first <<endl;
-         ROSE_ASSERT (false);
-      } // end for iter2
-     } // end for iter
-     convertedDistMap[s]= converted_vec;
-   }
-    result->set_dist_data_policies(convertedDistMap);
-    return result;
-  }*/
-
   //! Convert omp_pragma_list to SgOmpxxx nodes
   void OpenMPIRToSageAST(SgSourceFile *sageFilePtr)
   {
@@ -1594,7 +1532,7 @@ namespace OmpSupport
     //  after converting Fortran comments to Pragmas. 
     // x.  We should not tweak the original text for the pragmas. 
     // x.  We should not remove the end pragma declaration since SgBasicBlock is not unparsed.
-    // In the end , the pragmas don't matter too much, the OmpAttributes attached to them 
+    // In the end , the pragmas don't matter too much, the OpenMPIR attached to them
     // are used to guide translations. 
      removeStatement(end_decl);
     // we should save those useless end pragmas to a list
@@ -1643,13 +1581,13 @@ namespace OmpSupport
 
   //! Convert OpenMP Fortran comments to pragmas
   //  main purpose is to 
-  //     x. Generate pragmas from OmpAttributes and insert them into the right places
+  //     x. Generate pragmas from OpenMPIR and insert them into the right places
   //        since the floating comments are very difficult to work with
   //        we move them to the fake pragmas to ease later translations. 
   //        The backend has been extended to unparse the pragma in order to debug this step.
   //     x. Enclose affected Fortran statement into a basic block
   //     x. Merge clauses from END directives to the begin directive
-  // This will temporarily introduce C/C++-like AST with pragmas attaching OmpAttributes.
+  // This will temporarily introduce C/C++-like AST with pragmas.
   // This should be fine since we have SgBasicBlock in Fortran AST also.
   //
   // The benefit is that pragma-to-AST conversion written for C/C++ can 
@@ -1660,7 +1598,7 @@ namespace OmpSupport
     // We reuse the pragma list for C/C++ here
     //ROSE_ASSERT  (omp_pragma_list.size() ==0);
     ROSE_ASSERT (sageFilePtr != NULL);
-    // step 1: Each OmpAttribute will have a dedicated SgPragmaDeclaration for it
+    // step 1: Each OpenMPIR will have a dedicated SgPragmaDeclaration for it
     std::vector<std::tuple<SgLocatedNode*, PreprocessingInfo*, OpenMPDirective*>>::iterator iter;
     for (iter = fortran_omp_pragma_list.begin(); iter != fortran_omp_pragma_list.end(); iter++)
     {

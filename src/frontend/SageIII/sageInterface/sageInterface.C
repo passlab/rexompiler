@@ -22294,7 +22294,6 @@ static bool isSingleAppearanceReduction(SgVarRefExp* ref1, OmpSupport::omp_const
 //!Recognize and collect reduction variables and operations within a C/C++ loop, following OpenMP 3.0 specification for allowed reduction variable types and operation types.
 /* This code is refactored from project/autoParallelization/autoParSupport.C
   std::vector<SgInitializedName*>
-  RecognizeReduction(SgNode *loop, OmpSupport::OmpAttribute* attribute, std::vector<SgInitializedName*>& candidateVars/)
   * Algorithms:
    *   for each scalar candidate which are both live-in and live-out for the loop body
    *   (We don't use liveness analysis here for simplicity)

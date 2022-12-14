@@ -1,7 +1,7 @@
 /* OpenMP C and C++ Grammar */
 /* Author: Markus Schordan, 2003 */
 /* Modified by Christian Biesinger 2006 for OpenMP 2.0 */
-/* Modified by Chunhua Liao for OpenMP 3.0 and connect to OmpAttribute, 2008 */
+/* Modified by Chunhua Liao for OpenMP 3.0, 2008 */
 /* Updated by Chunhua Liao for OpenMP 4.5,  2017 */
 
 /*
