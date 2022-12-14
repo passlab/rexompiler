@@ -199,11 +199,6 @@ endif
 #else
 #	@echo "Automake conditional ROSE_USE_OPEN_FORTRAN_PARSER: NOT defined"
 #endif
-if ROSE_USE_PPL
-	@echo "Automake conditional ROSE_USE_PPL: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_PPL: NOT defined"
-endif
 if ROSE_USE_SMALLER_GENERATED_FILES
 	@echo "Automake conditional ROSE_USE_SMALLER_GENERATED_FILES: DEFINED"
 else

@@ -371,7 +371,6 @@ ROSE_RPATHS =                                                                   
 if OS_MACOSX
 ROSE_LINK_RPATHS = $(addprefix -Xlinker -rpath -Xlinker , $(filter-out -R , $(ROSE_RPATHS)))
 else
-comma = ,
 ROSE_LINK_RPATHS = $(addprefix -Wl$(comma)-rpath , $(filter-out -R , $(ROSE_RPATHS)))
 endif
 
