@@ -3780,7 +3780,7 @@ Grammar::GrammarNodeInfo Grammar::getGrammarNodeInfo(AstNodeClass* grammarnode) 
         ||nodeName == "SgTemplateVariableDeclaration"
         ||nodeName == "SgUpirBaseStatement"
         ||nodeName == "SgUpirLoopStatement"
-        ||nodeName == "SgUpirLoopParallelStatement"
+        ||nodeName == "SgOmpForStatement"
         ||nodeName == "SgOmpClauseBodyStatement"
         ||nodeName == "SgOmpClauseStatement"
         ||nodeName == "SgOmpMetadirectiveStatement"
@@ -4191,7 +4191,7 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                  ||string(node.getName()) == "SgOmpDoStatement"
                  ||string(node.getName()) == "SgUpirBaseStatement"
                  ||string(node.getName()) == "SgUpirLoopStatement"
-                 ||string(node.getName()) == "SgUpirLoopParallelStatement"
+                 ||string(node.getName()) == "SgOmpForStatement"
                  ||string(node.getName()) == "SgOmpClauseStatement"
                  ||string(node.getName()) == "SgOmpAtomicStatement"
                  )
@@ -4350,7 +4350,7 @@ Grammar::buildTreeTraversalFunctions(AstNodeClass& node, StringUtility::FileWith
                  ||string(node.getName()) == "SgOmpDoStatement"
                  ||string(node.getName()) == "SgUpirBaseStatement"
                  ||string(node.getName()) == "SgUpirLoopStatement"
-                 ||string(node.getName()) == "SgUpirLoopParallelStatement"
+                 ||string(node.getName()) == "SgOmpForStatement"
                  ||string(node.getName()) == "SgOmpClauseStatement"
                  ||string(node.getName()) == "SgOmpAtomicStatement"
                  )

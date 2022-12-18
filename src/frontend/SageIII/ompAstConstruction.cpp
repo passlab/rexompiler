@@ -2211,11 +2211,11 @@ SgStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirectiv
             break;
         }
         case OMPD_for: {
-            result = new SgUpirLoopParallelStatement(NULL);
+            result = new SgOmpForStatement(NULL);
             SgStatement* loop = new SgUpirLoopStatement(NULL, body);
             SgStatement* loop_parallel_statement = new SgUpirWorksharingStatement(NULL);
-            ((SgUpirLoopParallelStatement*)result)->set_loop(loop);
-            ((SgUpirLoopParallelStatement*)result)->set_worksharing(loop_parallel_statement);
+            ((SgOmpForStatement*)result)->set_loop(loop);
+            ((SgOmpForStatement*)result)->set_worksharing(loop_parallel_statement);
             loop->set_parent(result);
             loop_parallel_statement->set_parent(result);
             setOneSourcePositionForTransformation(loop);
@@ -2279,11 +2279,11 @@ SgStatement* convertBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPDirectiv
             break;
         }
         case OMPD_simd: {
-            result = new SgUpirLoopParallelStatement(NULL);
+            result = new SgOmpForStatement(NULL);
             SgStatement* loop = new SgUpirLoopStatement(NULL, body);
             SgStatement* loop_parallel_statement = new SgUpirSimdStatement(NULL);
-            ((SgUpirLoopParallelStatement*)result)->set_loop(loop);
-            ((SgUpirLoopParallelStatement*)result)->set_simd(loop_parallel_statement);
+            ((SgOmpForStatement*)result)->set_loop(loop);
+            ((SgOmpForStatement*)result)->set_simd(loop_parallel_statement);
             loop->set_parent(result);
             loop_parallel_statement->set_parent(result);
             setOneSourcePositionForTransformation(loop);
@@ -3004,11 +3004,11 @@ SgStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             break;
         }
         case OMPD_simd: {
-            result = new SgUpirLoopParallelStatement(NULL);
+            result = new SgOmpForStatement(NULL);
             SgStatement* loop = new SgUpirLoopStatement(NULL, NULL);
             SgStatement* loop_parallel_statement = new SgUpirSimdStatement(NULL);
-            ((SgUpirLoopParallelStatement*)result)->set_loop(loop);
-            ((SgUpirLoopParallelStatement*)result)->set_simd(loop_parallel_statement);
+            ((SgOmpForStatement*)result)->set_loop(loop);
+            ((SgOmpForStatement*)result)->set_simd(loop_parallel_statement);
             loop->set_parent(result);
             loop_parallel_statement->set_parent(result);
             setOneSourcePositionForTransformation(loop);
@@ -3068,11 +3068,11 @@ SgStatement* convertVariantBodyDirective(std::pair<SgPragmaDeclaration*, OpenMPD
             break;
         }
         case OMPD_for: {
-            result = new SgUpirLoopParallelStatement(NULL);
+            result = new SgOmpForStatement(NULL);
             SgStatement* loop = new SgUpirLoopStatement(NULL, NULL);
             SgStatement* loop_parallel_statement = new SgUpirWorksharingStatement(NULL);
-            ((SgUpirLoopParallelStatement*)result)->set_loop(loop);
-            ((SgUpirLoopParallelStatement*)result)->set_worksharing(loop_parallel_statement);
+            ((SgOmpForStatement*)result)->set_loop(loop);
+            ((SgOmpForStatement*)result)->set_worksharing(loop_parallel_statement);
             loop->set_parent(result);
             loop_parallel_statement->set_parent(result);
             setOneSourcePositionForTransformation(loop);
@@ -4257,11 +4257,11 @@ SgOmpParallelStatement* convertOmpParallelStatementFromCombinedDirectives(std::p
         }
       case OMPD_parallel_for:
         {
-          second_stmt = new SgUpirLoopParallelStatement(NULL);
+          second_stmt = new SgOmpForStatement(NULL);
           SgStatement* loop = new SgUpirLoopStatement(NULL, body);
           SgStatement* loop_parallel_statement = new SgUpirWorksharingStatement(NULL);
-          ((SgUpirLoopParallelStatement*)second_stmt)->set_loop(loop);
-          ((SgUpirLoopParallelStatement*)second_stmt)->set_worksharing(loop_parallel_statement);
+          ((SgOmpForStatement*)second_stmt)->set_loop(loop);
+          ((SgOmpForStatement*)second_stmt)->set_worksharing(loop_parallel_statement);
           loop->set_parent(second_stmt);
           loop_parallel_statement->set_parent(second_stmt);
           setOneSourcePositionForTransformation(loop);

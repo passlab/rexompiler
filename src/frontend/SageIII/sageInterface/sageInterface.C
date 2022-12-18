@@ -11495,7 +11495,7 @@ bool SageInterface::loopUnrolling(SgForStatement* target_loop, size_t unrolling_
    // generate the fringe loop
    bool needFringe = true;
    SgForStatement* fringe_loop = deepCopy<SgForStatement>(target_loop);
-   if (target_loop->get_parent()->variantT() == V_SgUpirLoopParallelStatement) {
+   if (target_loop->get_parent()->variantT() == V_SgOmpForStatement) {
        insertStatementAfter(static_cast<SgStatement *>(target_loop->get_parent()),fringe_loop);
    } else {
        insertStatementAfter(target_loop,fringe_loop);
@@ -11519,7 +11519,7 @@ bool SageInterface::loopUnrolling(SgForStatement* target_loop, size_t unrolling_
    ROSE_ASSERT(scope != NULL);
    string fringe_name = "_lu_fringe_"+ StringUtility::numberToString(++gensym_counter);
    SgVariableDeclaration* fringe_decl = buildVariableDeclaration(fringe_name, buildIntType(),buildAssignInitializer(initor), scope);
-   if (target_loop->get_parent()->variantT() == V_SgUpirLoopParallelStatement) {
+   if (target_loop->get_parent()->variantT() == V_SgOmpForStatement) {
        insertStatementBefore(static_cast<SgStatement *>(target_loop->get_parent()),fringe_decl);
    } else {
        insertStatementAfter(target_loop,fringe_decl);
@@ -11766,7 +11766,7 @@ bool SageInterface::loopTiling(SgForStatement* loopNest, size_t targetLevel, siz
   SgVarRefExp *inc_var_ref = NULL;
   
   // Check if the parent is a SIMD statement
-  if (loopNest->get_parent()->variantT() == V_SgUpirLoopParallelStatement) {
+  if (loopNest->get_parent()->variantT() == V_SgOmpForStatement) {
     if (loopNestParent->variantT() == V_SgOmpTileStatement || loopNestParent->variantT() == V_SgOmpUnrollStatement) {
         // If we also have an unroll or tile statement, we should create a variable to hold the loop index
         is_simd = true;
@@ -11839,12 +11839,12 @@ bool SageInterface::loopTiling(SgForStatement* loopNest, size_t targetLevel, siz
     }
     SgForStatement* control_loop = buildForStatement(init_stmt, cond_stmt,incr_exp, buildBasicBlock());
   //insertStatementBefore(loopNest, control_loop);
-  /*if (loopNest->get_parent()->variantT() == V_SgUpirLoopParallelStatement) {
+  /*if (loopNest->get_parent()->variantT() == V_SgOmpForStatement) {
       insertStatementAfter(static_cast<SgStatement *>(loopNest->get_parent()),control_loop);
   } else {
       insertStatementAfter(loopNest,control_loop);
   }*/
-  if (loopNest->get_parent()->variantT() == V_SgUpirLoopParallelStatement) {
+  if (loopNest->get_parent()->variantT() == V_SgOmpForStatement) {
     if (loopNestParent->variantT() == V_SgOmpTileStatement || loopNestParent->variantT() == V_SgOmpUnrollStatement) {
         insertStatementBefore(static_cast<SgStatement *>(loopNestParent),control_loop);
     } else {
@@ -11857,7 +11857,7 @@ bool SageInterface::loopTiling(SgForStatement* loopNest, size_t targetLevel, siz
   }
   
   // move loopNest into the control loop
-  if (loopNest->get_parent()->variantT() != V_SgUpirLoopParallelStatement)
+  if (loopNest->get_parent()->variantT() != V_SgOmpForStatement)
     removeStatement(loopNest);
   appendStatement(loopNest,isSgBasicBlock(control_loop->get_loop_body()));
 

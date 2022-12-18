@@ -407,13 +407,13 @@ namespace OmpSupport
             associated for-loops are lastprivate.
           */
           SgUpirLoopStatement* upir_loop = isSgUpirLoopStatement(omp_clause_body_stmt);
-          if (upir_loop != NULL && ((SgUpirLoopParallelStatement*)(upir_loop->get_upir_parent()))->get_worksharing())
+          if (upir_loop != NULL && ((SgOmpForStatement*)(upir_loop->get_upir_parent()))->get_worksharing())
           // TODO: check other types of constructs here: taskloop, distribute construct
           {
             rt_val = e_private;
             return rt_val;
           }
-          else if (upir_loop != NULL && ((SgUpirLoopParallelStatement*)(upir_loop->get_upir_parent()))->get_simd())
+          else if (upir_loop != NULL && ((SgOmpForStatement*)(upir_loop->get_upir_parent()))->get_simd())
           {
             // if simd+ multiple affected loops:  lastprivate().  We check collapse() to see if multiple loops are affected.
             // TODO: we need to check if collapse(val) val >=1
@@ -1389,7 +1389,7 @@ namespace OmpSupport
   }
 
   void transUpirLoopParallel(SgNode* node) {
-    SgUpirLoopParallelStatement* target = isSgUpirLoopParallelStatement(node);
+    SgOmpForStatement* target = isSgOmpForStatement(node);
     ROSE_ASSERT(target != NULL);
 
     //TODO: for simd combined directive
@@ -1460,7 +1460,7 @@ namespace OmpSupport
   {
     ROSE_ASSERT(node != NULL);
     SgUpirLoopStatement* target = NULL;
-    SgUpirLoopParallelStatement* loop_parallel = isSgUpirLoopParallelStatement(node);
+    SgOmpForStatement* loop_parallel = isSgOmpForStatement(node);
     target = isSgUpirLoopStatement(loop_parallel->get_loop());
 
     ROSE_ASSERT (target != NULL);
@@ -5749,8 +5749,8 @@ void transOmpTargetLoopBlock(SgNode* node)
     
     // Get the for loop
     SgForStatement *for_loop;
-    if (body->variantT() == V_SgUpirLoopParallelStatement) {
-        SgUpirLoopParallelStatement *target2 = isSgUpirLoopParallelStatement(body);
+    if (body->variantT() == V_SgOmpForStatement) {
+        SgOmpForStatement *target2 = isSgOmpForStatement(body);
         SgStatement *b2 =  ((SgUpirLoopStatement*)target2->get_loop())->get_body();
         for_loop = isSgForStatement(b2);
     } else {
@@ -5825,8 +5825,8 @@ void transOmpTargetLoopBlock(SgNode* node)
     
     // Get the for loop
     SgForStatement *for_loop;
-    if (body->variantT() == V_SgUpirLoopParallelStatement) {
-        SgUpirLoopParallelStatement *target2 = isSgUpirLoopParallelStatement(body);
+    if (body->variantT() == V_SgOmpForStatement) {
+        SgOmpForStatement *target2 = isSgOmpForStatement(body);
         SgStatement *b2 =  ((SgUpirLoopStatement*)target2->get_loop())->get_body();
         for_loop = isSgForStatement(b2);
     } else {
@@ -7034,7 +7034,7 @@ int patchUpPrivateVariables(SgStatement* omp_loop)
   ROSE_ASSERT(omp_loop != NULL);
 
   SgUpirLoopStatement* for_node = NULL;
-  SgUpirLoopParallelStatement* loop_parallel = isSgUpirLoopParallelStatement(omp_loop);
+  SgOmpForStatement* loop_parallel = isSgOmpForStatement(omp_loop);
   if (loop_parallel != NULL) {
     for_node = isSgUpirLoopStatement(loop_parallel->get_loop());
   };
@@ -7116,7 +7116,7 @@ int patchUpPrivateVariables(SgStatement* omp_loop)
 void transOmpCollapse(SgStatement* node)
 {
 
-  SgUpirLoopParallelStatement* target = isSgUpirLoopParallelStatement(node);
+  SgOmpForStatement* target = isSgOmpForStatement(node);
   ROSE_ASSERT(target != NULL);
   SgStatement* body = ((SgUpirLoopStatement*)target->get_loop())->get_body();;
   ROSE_ASSERT(body != NULL);
@@ -7303,7 +7303,7 @@ void lower_omp(SgSourceFile* file)
           transOmpTask(node);
           break;
         }
-      case V_SgUpirLoopParallelStatement:
+      case V_SgOmpForStatement:
       case V_SgOmpDoStatement:
         {
           // check if the loop is part of the combined "omp parallel for" under the "omp target" directive

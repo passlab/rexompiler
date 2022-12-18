@@ -54,7 +54,7 @@ checkType (const SgStatement* s)
       case V_SgWhereStatement:
       case V_SgWhileStmt:
       case V_SgWriteStatement: 
-      case V_SgUpirLoopParallelStatement:
+      case V_SgOmpForStatement:
        return true;
       default:
         break;

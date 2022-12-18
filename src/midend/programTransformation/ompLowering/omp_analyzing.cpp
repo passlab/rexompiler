@@ -118,8 +118,8 @@ void analyzeUpirLoop(SgStatement *node) {
 
 void normalizeUpirLoop(SgStatement *node) {
   ROSE_ASSERT(node != NULL);
-  SgUpirLoopParallelStatement *loop_parallel =
-      isSgUpirLoopParallelStatement(node);
+  SgOmpForStatement *loop_parallel =
+      isSgOmpForStatement(node);
   ROSE_ASSERT(loop_parallel != NULL);
   SgUpirLoopStatement *target =
       isSgUpirLoopStatement(loop_parallel->get_loop());
@@ -181,7 +181,7 @@ int patchUpPrivateVariables(SgFile *file) {
   int result = 0;
   ROSE_ASSERT(file != NULL);
   Rose_STL_Container<SgNode *> nodeList_merged =
-      NodeQuery::querySubTree(file, V_SgUpirLoopParallelStatement);
+      NodeQuery::querySubTree(file, V_SgOmpForStatement);
 
   nodeList_merged = mergeSgNodeList(
       nodeList_merged, NodeQuery::querySubTree(file, V_SgOmpDoStatement));
@@ -1055,7 +1055,7 @@ void analyze_omp(SgSourceFile *file) {
     SgUpirBaseStatement *node = isSgUpirBaseStatement(*node_list_iterator);
     ROSE_ASSERT(node != NULL);
     switch (node->variantT()) {
-    case V_SgUpirLoopParallelStatement: {
+    case V_SgOmpForStatement: {
       normalizeUpirLoop(node);
       break;
     }

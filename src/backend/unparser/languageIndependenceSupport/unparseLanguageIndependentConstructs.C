@@ -11829,9 +11829,9 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         }
         break;
       }
-         case V_SgUpirLoopParallelStatement:
+         case V_SgOmpForStatement:
       {
-        SgUpirLoopParallelStatement* upir_node = isSgUpirLoopParallelStatement(stmt);
+        SgOmpForStatement* upir_node = isSgOmpForStatement(stmt);
         if (upir_node->get_worksharing() != NULL) {
           curprint(string ("for "));
         }

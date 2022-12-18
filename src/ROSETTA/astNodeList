@@ -358,7 +358,7 @@ SgOmpTileStatement
 SgUpirSimdStatement
 SgUpirBaseStatement
 SgUpirLoopStatement
-SgUpirLoopParallelStatement
+SgOmpForStatement
 SgUpirSyncStatement
 SgOmpClause
 SgOmpAllocateClause

@@ -263,15 +263,15 @@ collectFortranTarget (SgProject* proj, TargetList_t& targets)
 // The assumption is that OpenMP parsing and AST creation is already turned on. 
 // The AST has normalized #pragma omp parallel for also (split into separated paralle and for AST nodes).
 static size_t
-collectOmpLoops(SgProject* proj, Rose_STL_Container<SgUpirLoopParallelStatement*> & ompfor_stmts)
+collectOmpLoops(SgProject* proj, Rose_STL_Container<SgOmpForStatement*> & ompfor_stmts)
 {
   typedef Rose_STL_Container<SgNode *> NodeList_t;
-  NodeList_t raw_list = NodeQuery::querySubTree (proj, V_SgUpirLoopParallelStatement);
+  NodeList_t raw_list = NodeQuery::querySubTree (proj, V_SgOmpForStatement);
   size_t count = 0;
   for (NodeList_t::reverse_iterator i = raw_list.rbegin ();
       i != raw_list.rend (); ++i)
   {
-    SgUpirLoopParallelStatement* decl = isSgUpirLoopParallelStatement(*i);
+    SgOmpForStatement* decl = isSgOmpForStatement(*i);
     if (decl)
     {
       ompfor_stmts.push_back (decl);
@@ -395,12 +395,12 @@ Outliner::outlineAll (SgProject* project)
     // New interface : OpenMP for loops, for testing purpose, only for C/C++ code
     if (select_omp_loop)
     {
-      Rose_STL_Container<SgUpirLoopParallelStatement*> ompfor_stmts;
+      Rose_STL_Container<SgOmpForStatement*> ompfor_stmts;
       if (collectOmpLoops(project, ompfor_stmts))
       {  
-        for ( Rose_STL_Container<SgUpirLoopParallelStatement*> ::iterator i = ompfor_stmts.begin (); i != ompfor_stmts.end (); ++i)
+        for ( Rose_STL_Container<SgOmpForStatement*> ::iterator i = ompfor_stmts.begin (); i != ompfor_stmts.end (); ++i)
         {  
-          SgUpirLoopParallelStatement* omp_stmt = *i;
+          SgOmpForStatement* omp_stmt = *i;
           SgStatement* body = ((SgUpirLoopStatement*)omp_stmt->get_loop())->get_body();
           string func_name =  generateFuncName(body);
 
