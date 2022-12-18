@@ -341,7 +341,7 @@ Grammar::setUpStatements ()
 
     // UPIR statements
     NEW_TERMINAL_MACRO (UpirLoopStatement, "UpirLoopStatement", "UPIR_LOOP_STMT");
-    NEW_TERMINAL_MACRO (UpirLoopParallelStatement, "UpirLoopParallelStatement", "UPIR_LOOP_PARALLEL_STMT");
+    NEW_TERMINAL_MACRO (OmpForStatement, "OmpForStatement", "OMP_FOR_STMT");
     NEW_TERMINAL_MACRO (UpirSyncStatement, "UpirSyncStatement", "UPIR_SYNC_STMT");
 
     // A base class for the most commonly formed directives with both clauses and a structured body
@@ -369,7 +369,7 @@ Grammar::setUpStatements ()
         | OmpSectionStatement | OmpWorkshareStatement  | OmpClauseBodyStatement,
         "OmpBodyStatement",      "OMP_BODY_STMT", false );
 
-    NEW_NONTERMINAL_MACRO (OmpClauseStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement | OmpOrderedDependStatement | UpirSyncStatement | UpirLoopParallelStatement | UpirWorksharingStatement | UpirSimdStatement,
+    NEW_NONTERMINAL_MACRO (OmpClauseStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement | OmpOrderedDependStatement | UpirSyncStatement | OmpForStatement | UpirWorksharingStatement | UpirSimdStatement,
         "OmpClauseStatement",      "OMP_CLAUSE_STMT", false );
 
 #endif
@@ -4283,8 +4283,8 @@ Grammar::setUpStatements ()
 
     UpirBaseStatement.setFunctionSource             ( "SOURCE_UPIR_BASE_STATEMENT", "../Grammar/Statement.code" );
     UpirLoopStatement.setFunctionSource             ( "SOURCE_UPIR_LOOP_STATEMENT", "../Grammar/Statement.code" );
-    UpirLoopParallelStatement.setFunctionPrototype  ( "HEADER_UPIR_LOOP_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
-    UpirLoopParallelStatement.setFunctionSource     ( "SOURCE_UPIR_LOOP_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
+    OmpForStatement.setFunctionPrototype  ( "HEADER_OMP_FOR_STATEMENT", "../Grammar/Statement.code" );
+    OmpForStatement.setFunctionSource     ( "SOURCE_OMP_FOR_STATEMENT", "../Grammar/Statement.code" );
     UpirSyncStatement.setFunctionSource             ( "SOURCE_UPIR_SYNC_STATEMENT", "../Grammar/Statement.code" );
 
     OmpBodyStatement.setFunctionPrototype         ("HEADER_OMP_BODY_STATEMENT", "../Grammar/Statement.code");
@@ -4407,13 +4407,13 @@ Grammar::setUpStatements ()
                               NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
     UpirLoopStatement.setDataPrototype("bool", "incremental", "= true",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirLoopParallelStatement.setDataPrototype("SgStatement*", "worksharing", "= NULL",
+    OmpForStatement.setDataPrototype("SgStatement*", "worksharing", "= NULL",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirLoopParallelStatement.setDataPrototype("SgStatement*", "simd", "= NULL",
+    OmpForStatement.setDataPrototype("SgStatement*", "simd", "= NULL",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirLoopParallelStatement.setDataPrototype("SgStatement*", "taskloop", "= NULL",
+    OmpForStatement.setDataPrototype("SgStatement*", "taskloop", "= NULL",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirLoopParallelStatement.setDataPrototype("SgStatement*", "loop", "= NULL",
+    OmpForStatement.setDataPrototype("SgStatement*", "loop", "= NULL",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
     // Directive with a body + a name:
         // omp critical [name]  \n structured_block

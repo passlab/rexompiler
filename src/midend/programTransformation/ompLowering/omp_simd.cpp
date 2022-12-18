@@ -272,7 +272,7 @@ void omp_simd_build_3addr(OmpSimdCompiler *cc, SgExpression *rval, SgBasicBlock 
 // If it is found, the modifier (operator) is converted to a char for easier processing, and
 // returned
 //
-char omp_simd_get_reduction_mod(SgUpirLoopParallelStatement *target, SgVarRefExp *var) {
+char omp_simd_get_reduction_mod(SgOmpForStatement *target, SgVarRefExp *var) {
     SgOmpClausePtrList clauses = target->get_clauses();
     for (size_t i = 0; i<clauses.size(); i++) {
         if (clauses.at(i)->variantT() != V_SgOmpReductionClause)
@@ -311,7 +311,7 @@ char omp_simd_get_reduction_mod(SgUpirLoopParallelStatement *target, SgVarRefExp
 // and then converts the statements to 3-address scalar code
 //
 // The main purpose of this function is to break each expression between the load and store
-bool omp_simd_pass1(OmpSimdCompiler *cc, SgUpirLoopParallelStatement *target, SgForStatement *for_loop, SgBasicBlock *new_block, bool isArm = false) {
+bool omp_simd_pass1(OmpSimdCompiler *cc, SgOmpForStatement *target, SgForStatement *for_loop, SgBasicBlock *new_block, bool isArm = false) {
     // Get the loop body
     SgStatement *loop_body = getLoopBody(for_loop);
     Rose_STL_Container<SgNode *> bodyList = NodeQuery::querySubTree(loop_body, V_SgExprStatement);
@@ -609,7 +609,7 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
 // Scans an OMP SIMD statement for a simdlen clause
 // If none is provided, we return -1, which means the compiler should use the default length
 // If we return -2, an error has occurred
-int omp_simd_get_simdlen(SgUpirLoopParallelStatement *target, bool safelen) {
+int omp_simd_get_simdlen(SgOmpForStatement *target, bool safelen) {
     SgOmpClausePtrList clauses = target->get_clauses();
     for (size_t i = 0; i<clauses.size(); i++) {
         if (safelen) {
@@ -648,7 +648,7 @@ int omp_simd_get_simdlen(SgUpirLoopParallelStatement *target, bool safelen) {
 // > 4 <= 8 -> AVX2
 // > 8 <= 16 -> AVX-512
 // For now, ignore anything greater than 16. At some point, we may want to implement some kind of lowering
-int omp_simd_get_length(SgUpirLoopParallelStatement *target) {
+int omp_simd_get_length(SgOmpForStatement *target) {
     int simdlen = omp_simd_get_simdlen(target, false);
     int safelen = omp_simd_get_simdlen(target, true);
     
@@ -684,7 +684,7 @@ void OmpSupport::transOmpSimd(SgNode *node) {
     //insertHeader(file, "arm_sve.h", true, true);
     
     // Make sure the tree is correct
-    SgUpirLoopParallelStatement *target = isSgUpirLoopParallelStatement(node);
+    SgOmpForStatement *target = isSgOmpForStatement(node);
     ROSE_ASSERT(target != NULL);
 
     SgSourceFile *file = getEnclosingSourceFile(node);

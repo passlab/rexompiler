@@ -45,6 +45,6 @@ struct OmpSimdCompiler {
 
 extern SimdType simd_arch;
 
-void omp_simd_write_intel(SgUpirLoopParallelStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block, int simd_length);
-void omp_simd_write_arm(SgUpirLoopParallelStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block);
+void omp_simd_write_intel(SgOmpForStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block, int simd_length);
+void omp_simd_write_arm(SgOmpForStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block);
 
