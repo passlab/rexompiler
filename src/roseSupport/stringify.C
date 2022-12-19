@@ -40533,9 +40533,9 @@ namespace stringify {
             case 289L: return "V_SgOmpAtomicStatement";
             case 290L: return "V_SgOmpBarrierStatement";
             case 291L: return "V_SgOmpCriticalStatement";
-            case 292L: return "V_SgUpirFieldBodyStatement";
-            case 293L: return "V_SgUpirBodyStatement";
-            case 294L: return "V_SgUpirFieldStatement";
+            case 292L: return "V_SgOmpClauseBodyStatement";
+            case 293L: return "V_SgOmpBodyStatement";
+            case 294L: return "V_SgOmpClauseStatement";
             case 295L: return "V_SgOmpDoStatement";
             case 296L: return "V_SgOmpFlushStatement";
             case 297L: return "V_SgOmpAllocateStatement";
@@ -40599,10 +40599,10 @@ namespace stringify {
             case 355L: return "V_SgOmpMasterTaskloopStatement";
             case 356L: return "V_SgOmpUnrollStatement";
             case 357L: return "V_SgOmpTileStatement";
-            case 358L: return "V_SgUpirSimdStatement";
+            case 358L: return "V_SgOmpSimdStatement";
             case 359L: return "V_SgUpirBaseStatement";
             case 360L: return "V_SgUpirLoopStatement";
-            case 361L: return "V_SgUpirLoopParallelStatement";
+            case 361L: return "V_SgOmpForStatement";
             case 362L: return "V_SgUpirSyncStatement";
             case 363L: return "V_SgOmpClause";
             case 364L: return "V_SgOmpAllocateClause";

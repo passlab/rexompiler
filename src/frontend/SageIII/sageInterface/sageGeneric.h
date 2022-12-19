@@ -364,7 +364,7 @@ namespace sg
     GEN_VISIT(SgOmpMasterTaskloopStatement)
     GEN_VISIT(SgOmpParallelLoopStatement)
     GEN_VISIT(SgOmpSingleStatement)
-    GEN_VISIT(SgUpirSimdStatement)
+    GEN_VISIT(SgOmpSimdStatement)
     GEN_VISIT(SgOmpTaskStatement)
     GEN_VISIT(SgUpirWorksharingStatement)
     GEN_VISIT(SgOmpForSimdStatement)

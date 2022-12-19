@@ -3828,6 +3828,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpMasterTaskloopStatement:
                     case V_SgOmpParallelLoopStatement:
                     case V_SgOmpWorkshareStatement:
+                    case V_SgOmpSimdStatement:
                     case V_SgOmpSingleStatement:
                     case V_SgOmpTaskStatement:
                     case V_SgOmpAtomicStatement: // Atomic may have clause now
@@ -11829,18 +11830,17 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         }
         break;
       }
-         case V_SgOmpForStatement:
+        case V_SgOmpForStatement:
       {
-        SgOmpForStatement* upir_node = isSgOmpForStatement(stmt);
-        if (upir_node->get_worksharing() != NULL) {
-          curprint(string ("for "));
-        }
-        else if (upir_node->get_simd() != NULL) {
-          curprint(string ("simd "));
-        };
+        curprint(string ("for "));
         break;
       }
-         case V_SgOmpForSimdStatement:
+        case V_SgOmpSimdStatement:
+      {
+        curprint(string ("simd "));
+        break;
+      }
+        case V_SgOmpForSimdStatement:
       {
         curprint(string ("for simd "));
         break;
@@ -11865,7 +11865,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         curprint(string ("ordered "));
         break;
       }
-    case V_SgOmpWorkshareStatement:
+      case V_SgOmpWorkshareStatement:
       {
         curprint(string ("workshare "));
         break;

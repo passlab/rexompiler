@@ -118,11 +118,8 @@ void analyzeUpirLoop(SgStatement *node) {
 
 void normalizeUpirLoop(SgStatement *node) {
   ROSE_ASSERT(node != NULL);
-  SgOmpForStatement *loop_parallel =
+  SgOmpForStatement *target =
       isSgOmpForStatement(node);
-  ROSE_ASSERT(loop_parallel != NULL);
-  SgUpirLoopStatement *target =
-      isSgUpirLoopStatement(loop_parallel->get_loop());
   ROSE_ASSERT(target != NULL);
 
   analyzeUpirLoop(target);
@@ -168,8 +165,8 @@ void normalizeUpirLoop(SgStatement *node) {
 
     ROSE_ASSERT(sg_clause);
     setOneSourcePositionForTransformation(sg_clause);
-    loop_parallel->get_clauses().push_back(sg_clause);
-    sg_clause->set_parent(loop_parallel);
+    target->get_clauses().push_back(sg_clause);
+    sg_clause->set_parent(target);
     printf("A default schedule clause is added.\n");
   }
 }

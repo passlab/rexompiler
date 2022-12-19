@@ -401,7 +401,7 @@ Outliner::outlineAll (SgProject* project)
         for ( Rose_STL_Container<SgOmpForStatement*> ::iterator i = ompfor_stmts.begin (); i != ompfor_stmts.end (); ++i)
         {  
           SgOmpForStatement* omp_stmt = *i;
-          SgStatement* body = ((SgUpirLoopStatement*)omp_stmt->get_loop())->get_body();
+          SgStatement* body = omp_stmt->get_body();
           string func_name =  generateFuncName(body);
 
           if (outline(body, func_name).isValid ())

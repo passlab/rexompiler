@@ -257,8 +257,8 @@ int CLabeler::numberOfAssociatedLabels(SgNode* node) {
   // omp parallel results in fork/join nodes.
   // for and sections (and currently also SIMD) results in workshare/barrier nodes
   case V_SgOmpForSimdStatement:
-  case V_SgUpirSimdStatement:
-  case V_SgUpirWorksharingStatement:
+  case V_SgOmpSimdStatement:
+  case V_SgOmpForStatement:
   case V_SgOmpSectionsStatement:
   case V_SgOmpParallelStatement:
     return 2;
@@ -371,8 +371,8 @@ void CLabeler::createLabels(SgNode* root) {
         assert(num == 2);
         registerLabel(LabelProperty(*i, LabelProperty::LABEL_FORK));
         registerLabel(LabelProperty(*i, LabelProperty::LABEL_JOIN));
-      } else if(isSgUpirWorksharingStatement(*i) || isSgOmpSectionsStatement(*i)
-                || isSgUpirSimdStatement(*i) || isSgOmpForSimdStatement(*i)) {
+      } else if(isSgOmpForStatement(*i) || isSgOmpSectionsStatement(*i)
+                || isSgOmpSimdStatement(*i) || isSgOmpForSimdStatement(*i)) {
         assert(num == 2);
         registerLabel(LabelProperty(*i, LabelProperty::LABEL_WORKSHARE));
         registerLabel(LabelProperty(*i, LabelProperty::LABEL_BARRIER));
@@ -561,8 +561,8 @@ Label CLabeler::joinLabel(SgNode *node) {
 }
 
 Label CLabeler::workshareLabel(SgNode *node) {
-  ROSE_ASSERT(isSgUpirWorksharingStatement(node) || isSgOmpSectionsStatement(node)
-                || isSgUpirSimdStatement(node) || isSgOmpForSimdStatement(node));
+  ROSE_ASSERT(isSgOmpForStatement(node) || isSgOmpSectionsStatement(node)
+                || isSgOmpSimdStatement(node) || isSgOmpForSimdStatement(node));
   Label lab = getLabel(node);
   return lab;
 }
@@ -572,8 +572,8 @@ Label CLabeler::barrierLabel(SgNode *node) {
     Label lab = getLabel(node);
     return lab;
   }
-  ROSE_ASSERT(isSgUpirWorksharingStatement(node) || isSgOmpSectionsStatement(node)
-                || isSgUpirSimdStatement(node) || isSgOmpForSimdStatement(node));
+  ROSE_ASSERT(isSgOmpForStatement(node) || isSgOmpSectionsStatement(node)
+                || isSgOmpSimdStatement(node) || isSgOmpForSimdStatement(node));
   Label lab = getLabel(node);
   return lab+1;
 }
