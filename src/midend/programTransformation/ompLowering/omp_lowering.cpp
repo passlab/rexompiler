@@ -1440,8 +1440,10 @@ namespace OmpSupport
   void transOmpLoop(SgNode* node)
   {
     ROSE_ASSERT(node != NULL);
-    SgOmpForStatement* target = isSgOmpForStatement(node);
+    SgOmpForStatement* target1 = isSgOmpForStatement(node);
+    SgOmpDoStatement* target2 = isSgOmpDoStatement(node);
 
+    SgOmpClauseBodyStatement* target = (target1!=NULL?(SgOmpClauseBodyStatement*)target1:(SgOmpClauseBodyStatement*)target2);
     ROSE_ASSERT (target != NULL);
 
     SgScopeStatement* p_scope = target->get_scope();
@@ -1469,7 +1471,7 @@ namespace OmpSupport
     else
     {
       cerr<<"error! transOmpLoop(). loop is neither for_loop nor do_loop. Aborting.."<<endl;
-      ROSE_ASSERT (false);
+      ROSE_ABORT ();
     }
 
     SgInitializedName * orig_index = NULL;
@@ -6488,7 +6490,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
       ROSE_ASSERT( clause_stmt!= NULL);
 
       // collect variables
-     SgInitializedNamePtrList var_list = collectAllDataVariables(clause_stmt);
+     SgInitializedNamePtrList var_list = collectAllClauseVariables(clause_stmt);
      // Only keep the unique ones
      sort (var_list.begin(), var_list.end());;
      SgInitializedNamePtrList:: iterator new_end = unique (var_list.begin(), var_list.end());
@@ -6513,24 +6515,16 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
        vvt.push_back(V_SgOmpReductionClause);
        vvt.push_back(V_SgOmpFirstprivateClause);
 
-       // create a set of UPIR data sharing property
-       std::set<SgOmpClause::upir_data_sharing_enum> searching_variants;
-       searching_variants.insert(SgOmpClause::e_upir_data_sharing_private);
-       searching_variants.insert(SgOmpClause::e_upir_data_sharing_firstprivate);
-       searching_variants.insert(SgOmpClause::e_upir_data_sharing_reduction);
-
       //TODO: No such concept of firstprivate and lastprivate in accelerator model??
        if (!isAcceleratorModel) // we actually already has enable_accelerator, but it is too global for handling both CPU and GPU translation
        {
          vvt.push_back(V_SgOmpLastprivateClause);
-         searching_variants.insert(SgOmpClause::e_upir_data_sharing_lastprivate);
        }
 
-      // TODO: add the UPIR version of this code
       // a local private copy
       SgVariableDeclaration* local_decl = NULL;
       SgOmpClause::omp_reduction_identifier_enum r_operator = SgOmpClause::e_omp_reduction_unknown;
-      bool isReductionVar = isInUpirDataSharingList(clause_stmt, orig_symbol, SgOmpClause::e_upir_data_sharing_reduction);
+      bool isReductionVar = isInClauseVariableList(orig_var, clause_stmt,V_SgOmpReductionClause);
 
       // step 1. Insert local declaration for private, firstprivate, lastprivate and reduction
       // Sara, 5/31/2013: if variable is in Function Scope ( a parameter ) and array,
@@ -6552,7 +6546,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
       //   int (**M)[10UL] = (int (**)[10UL])(&(((struct OUT__17__7038___data *)__out_argv) -> M));
       //   (*M)[0][0] = 4;
       // }
-      if (isInUpirDataSharingList(clause_stmt, orig_symbol, searching_variants))
+      if (isInClauseVariableList(orig_var, clause_stmt, vvt))
       {
         if( !(isSgArrayType(orig_type) && isSgFunctionDefinition (orig_var->get_scope ())) )
         {
@@ -6563,7 +6557,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
           // But here is one exception: an array type firstprivate variable should
           // be initialized element-by-element
           // Liao, 4/12/2010
-          if (isInUpirDataSharingList(clause_stmt, orig_symbol, SgOmpClause::e_upir_data_sharing_firstprivate) && !isSgArrayType(orig_type) )
+          if (isInClauseVariableList(orig_var, clause_stmt,V_SgOmpFirstprivateClause) && !isSgArrayType(orig_type) )
           {
             init = buildAssignInitializer(buildVarRefExp(orig_var, bb1));
           }
@@ -6585,8 +6579,6 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
           {
             private_name = "_p_"+orig_name;
             local_decl = buildVariableDeclaration(private_name, orig_type, init, bb1);
-            //ROSE_ASSERT (getFirst);isSgFunctionDefinition (orig_var->get_scope (
-            //   prependStatement(local_decl, bb1);
             front_stmt_list.push_back(local_decl);
           }
           // record the map from old to new symbol
@@ -6598,17 +6590,13 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
         }
       }
       // step 2. Initialize the local copy for array-type firstprivate variables TODO copyin, copyprivate
-#if 1
-      if (isInUpirDataSharingList(clause_stmt, orig_symbol, SgOmpClause::e_upir_data_sharing_firstprivate) &&
+      if (isInClauseVariableList(orig_var, clause_stmt,V_SgOmpFirstprivateClause) &&
           isSgArrayType(orig_type) && !isSgFunctionDefinition (orig_var->get_scope ()))
       {
-        // SgExprStatement* init_stmt = buildAssignStatement(buildVarRefExp(local_decl), buildVarRefExp(orig_var, bb1));
         SgInitializedName* leftArray = getFirstInitializedName(local_decl);
         SgBasicBlock* arrayAssign = generateArrayAssignmentStatements (leftArray, orig_var, bb1);
-       front_stmt_list.push_back(arrayAssign);
+        front_stmt_list.push_back(arrayAssign);
       }
-#endif
-      // TODO: add UPIR version of this code
       if (isReductionVar) // create initial value assignment for the local reduction variable
       {
         r_operator = getReductionOperationType(orig_var, clause_stmt);
@@ -6654,7 +6642,6 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
         // store all reduction variables at the loop level, they will be used later when translating the enclosing "omp target" to help decide on the variables being passed
       }
 
-      // TODO: add UPIR version of this code
       // step 3. Save the value back for lastprivate and reduction
       if (isInClauseVariableList(orig_var, clause_stmt,V_SgOmpLastprivateClause))
       {

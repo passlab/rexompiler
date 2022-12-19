@@ -118,11 +118,10 @@ void analyzeUpirLoop(SgStatement *node) {
 
 void normalizeUpirLoop(SgStatement *node) {
   ROSE_ASSERT(node != NULL);
-  SgOmpForStatement *target =
-      isSgOmpForStatement(node);
+  SgOmpForStatement *target = isSgOmpForStatement(node);
   ROSE_ASSERT(target != NULL);
 
-  analyzeUpirLoop(target);
+  // analyzeUpirLoop(target);
 
   SgScopeStatement *p_scope = target->get_scope();
   ROSE_ASSERT(p_scope != NULL);
@@ -1035,16 +1034,17 @@ void analyze_omp(SgSourceFile *file) {
 
   // convert firstprivate clause in target directive to map clause because
   // later only map clause will be lowered.
-  unifyUpirTaskMappingVariables(file);
+  // unifyUpirTaskMappingVariables(file);
 
   // Generate UPIR data fields based on data sharing properties
-  createUpirDataFields(file);
+  // createUpirDataFields(file);
 
   // Generate UPIR data fields based on map clauses
-  createUpirMappingDataFields(file);
+  // createUpirMappingDataFields(file);
 
-  collectUpirDataQueryInformation(file);
+  // collectUpirDataQueryInformation(file);
 
+  /*
   Rose_STL_Container<SgNode *> node_list =
       NodeQuery::querySubTree(file, V_SgUpirBaseStatement);
   for (node_list_iterator = node_list.begin();
@@ -1061,9 +1061,10 @@ void analyze_omp(SgSourceFile *file) {
     }
     } // switch
   }
+  */
 
   // after passes of analysis and normalization, add the information of UPIR
   // parent and children.
-  createUpirStatementTree(file);
+  // createUpirStatementTree(file);
 }
 } // namespace OmpSupport
