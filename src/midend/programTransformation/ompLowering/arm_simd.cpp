@@ -113,7 +113,7 @@ void arm_normalize_offset(SgPntrArrRefExp *array, SgExpression *inc_fc) {
 }
 
 // Write the Arm intrinsics
-void omp_simd_write_arm(SgOmpForStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block) {
+void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Rose_STL_Container<SgNode *> *ir_block) {
     // Setup the for loop
     SgBasicBlock *new_block = SageBuilder::buildBasicBlock();
     

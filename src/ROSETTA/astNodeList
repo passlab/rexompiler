@@ -355,7 +355,7 @@ SgOmpParallelMasterStatement
 SgOmpMasterTaskloopStatement
 SgOmpUnrollStatement
 SgOmpTileStatement
-SgUpirSimdStatement
+SgOmpSimdStatement
 SgUpirBaseStatement
 SgUpirLoopStatement
 SgOmpForStatement

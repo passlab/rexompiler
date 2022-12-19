@@ -335,7 +335,7 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpUnrollStatement, "OmpUnrollStatement", "OMP_UNROLL_STMT" );
     NEW_TERMINAL_MACRO (OmpTileStatement, "OmpTileStatement", "OMP_TILE_STMT" );
 
-    NEW_TERMINAL_MACRO (UpirSimdStatement,    "UpirSimdStatement",     "UPIR_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpSimdStatement,    "OmpSimdStatement",     "OMP_SIMD_STMT" );
     NEW_TERMINAL_MACRO (OmpCriticalStatement,  "OmpCriticalStatement",   "OMP_CRITICAL_STMT" );
     NEW_TERMINAL_MACRO (OmpOrderedStatement,   "OmpOrderedStatement",   "OMP_ORDERED_STMT" );
 
@@ -348,10 +348,10 @@ Grammar::setUpStatements ()
     // We treat OmpSectionsStatement separatedly by move the body to a list of SgOmpSectionStatement
     // sensitive to
     NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement | OmpOrderedStatement | OmpTaskgroupStatement | OmpTaskloopStatement | OmpDepobjStatement | OmpTargetEnterDataStatement | OmpTargetExitDataStatement | OmpParallelMasterStatement | OmpMasterTaskloopStatement |
-              OmpTaskStatement | OmpDoStatement | OmpSectionsStatement | OmpTargetStatement | OmpTargetDataStatement | OmpTargetParallelForStatement | OmpParallelLoopStatement |
+              OmpTaskStatement | OmpForStatement | OmpDoStatement | OmpSectionsStatement | OmpTargetStatement | OmpTargetDataStatement | OmpTargetParallelForStatement | OmpParallelLoopStatement |
               OmpTargetParallelStatement | OmpTargetParallelForSimdStatement | OmpTargetParallelLoopStatement | OmpTargetSimdStatement | OmpTargetTeamsStatement | OmpTargetTeamsDistributeStatement | OmpTargetTeamsDistributeSimdStatement | OmpTargetTeamsLoopStatement | OmpTargetTeamsDistributeParallelForStatement | OmpTargetTeamsDistributeParallelForSimdStatement | OmpDistributeSimdStatement | OmpDistributeParallelForStatement | OmpDistributeParallelForSimdStatement | OmpTaskloopSimdStatement |
               OmpMasterTaskloopSimdStatement | OmpParallelMasterTaskloopStatement | OmpParallelMasterTaskloopSimdStatement | OmpTeamsDistributeStatement | OmpTeamsDistributeSimdStatement | OmpTeamsDistributeParallelForStatement | OmpTeamsDistributeParallelForSimdStatement | OmpTeamsLoopStatement |
-              OmpForSimdStatement | OmpCriticalStatement | OmpDistributeStatement | OmpUnrollStatement | OmpTileStatement | UpirLoopStatement,
+              OmpSimdStatement | OmpForSimdStatement | OmpCriticalStatement | OmpDistributeStatement | OmpUnrollStatement | OmpTileStatement | UpirLoopStatement,
         "OmpClauseBodyStatement",   "OMP_CLAUSEBODY_STMT", false );
 
     // + a statement / block
@@ -369,7 +369,7 @@ Grammar::setUpStatements ()
         | OmpSectionStatement | OmpWorkshareStatement  | OmpClauseBodyStatement,
         "OmpBodyStatement",      "OMP_BODY_STMT", false );
 
-    NEW_NONTERMINAL_MACRO (OmpClauseStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement | OmpOrderedDependStatement | UpirSyncStatement | OmpForStatement | UpirWorksharingStatement | UpirSimdStatement,
+    NEW_NONTERMINAL_MACRO (OmpClauseStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement | OmpOrderedDependStatement | UpirSyncStatement | UpirWorksharingStatement,
         "OmpClauseStatement",      "OMP_CLAUSE_STMT", false );
 
 #endif
@@ -4283,7 +4283,6 @@ Grammar::setUpStatements ()
 
     UpirBaseStatement.setFunctionSource             ( "SOURCE_UPIR_BASE_STATEMENT", "../Grammar/Statement.code" );
     UpirLoopStatement.setFunctionSource             ( "SOURCE_UPIR_LOOP_STATEMENT", "../Grammar/Statement.code" );
-    OmpForStatement.setFunctionPrototype  ( "HEADER_OMP_FOR_STATEMENT", "../Grammar/Statement.code" );
     OmpForStatement.setFunctionSource     ( "SOURCE_OMP_FOR_STATEMENT", "../Grammar/Statement.code" );
     UpirSyncStatement.setFunctionSource             ( "SOURCE_UPIR_SYNC_STATEMENT", "../Grammar/Statement.code" );
 
@@ -4360,7 +4359,7 @@ Grammar::setUpStatements ()
     OmpParallelLoopStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_LOOP_STATEMENT", "../Grammar/Statement.code" );
     OmpUnrollStatement.setFunctionSource            ("SOURCE_OMP_UNROLL_STATEMENT", "../Grammar/Statement.code");
     OmpTileStatement.setFunctionSource              ("SOURCE_OMP_TILE_STATEMENT", "../Grammar/Statement.code");
-    UpirSimdStatement.setFunctionSource            ("SOURCE_UPIR_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpSimdStatement.setFunctionSource            ("SOURCE_OMP_SIMD_STATEMENT", "../Grammar/Statement.code" );
 
    // sections {section, section} // `containerSuccessors >1 is not allowed in ROSETTA's traversal
    // We hack the code to handle this special case
@@ -4406,14 +4405,6 @@ Grammar::setUpStatements ()
     UpirLoopStatement.setDataPrototype("SgExpression*", "step", "= NULL",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
     UpirLoopStatement.setDataPrototype("bool", "incremental", "= true",
-                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    OmpForStatement.setDataPrototype("SgStatement*", "worksharing", "= NULL",
-                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    OmpForStatement.setDataPrototype("SgStatement*", "simd", "= NULL",
-                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    OmpForStatement.setDataPrototype("SgStatement*", "taskloop", "= NULL",
-                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    OmpForStatement.setDataPrototype("SgStatement*", "loop", "= NULL",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
     // Directive with a body + a name:
         // omp critical [name]  \n structured_block

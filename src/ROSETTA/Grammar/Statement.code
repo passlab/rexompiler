@@ -18994,23 +18994,10 @@ SgUpirLoopStatement::post_construction_initialization()
    {}
 SOURCE_UPIR_LOOP_STATEMENT_END
 
-HEADER_OMP_FOR_STATEMENT_START
-      virtual bool replace_child(SgStatement *,SgStatement *, bool extractListFromBasicBlock = false) override;
-
-      public:
-HEADER_OMP_FOR_STATEMENT_END
-
 SOURCE_OMP_FOR_STATEMENT_START
 void
 SgOmpForStatement::post_construction_initialization()
    {}
-
-bool
-SgOmpForStatement::replace_child(SgStatement *target,SgStatement *newstmt, bool extractBasicBlock)
-   {
-     SgStatement* upir_loop_body = ((SgUpirLoopStatement*)((SgOmpForStatement*)this)->get_loop())->get_body();
-     return ( StatementReplace(this, upir_loop_body, target, newstmt) == true );
-   }
 SOURCE_OMP_FOR_STATEMENT_END
 
 SOURCE_UPIR_SYNC_STATEMENT_START
@@ -19570,11 +19557,11 @@ SgCAFWithTeamStatement::post_construction_initialization()
 
 SOURCE_WITH_TEAM_STATEMEMT_END
 
-SOURCE_UPIR_SIMD_STATEMENT_START
+SOURCE_OMP_SIMD_STATEMENT_START
 void
-SgUpirSimdStatement::post_construction_initialization()
+SgOmpSimdStatement::post_construction_initialization()
    {}
-SOURCE_UPIR_SIMD_STATEMENT_END
+SOURCE_OMP_SIMD_STATEMENT_END
 
 
 SOURCE_MICROSOFT_ATTRIBUTE_DECLARATION_STATEMENT_START

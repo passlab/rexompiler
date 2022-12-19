@@ -12950,7 +12950,7 @@ void Unparse_ExprStmt::unparseOmpForStatement (SgStatement* stmt,     SgUnparse_
   // TODO a better way to new line? and add indentation 
   curprint (string ("\n"));
 
-  SgStatement* body = ((SgUpirLoopStatement*)f_stmt->get_loop())->get_body();
+  SgStatement* body = f_stmt->get_body();
   SgUnparse_Info ninfo(info);
   if (body)
   {
