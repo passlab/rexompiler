@@ -1,3 +1,0 @@
-Bar::Bar ->
-Foo::Foo ->
-main -> Bar::Bar Foo::Foo

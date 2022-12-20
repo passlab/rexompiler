@@ -1,8 +1,0 @@
-!$omp parallel 
-!$omp single 
-!$omp end single 
-!$omp sections 
-!$omp section 
-!$omp section 
-!$omp end sections nowait
-!$omp end parallel 

@@ -1,6 +1,0 @@
------------------------------------------------
-OpenMP region SgOmpParallelStatement @ 50
-"count"@53:5	shared
------------------------------------------------
-OpenMP region SgOmpSingleStatement @ 52
-"count"@53:5	shared

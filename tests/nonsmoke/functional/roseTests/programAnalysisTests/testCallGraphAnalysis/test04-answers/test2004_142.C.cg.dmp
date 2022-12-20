@@ -1,3 +1,0 @@
-SwigValueWrapper < X > ::operator& ->
-X::size ->
-foo -> SwigValueWrapper < X > ::operator& X::size

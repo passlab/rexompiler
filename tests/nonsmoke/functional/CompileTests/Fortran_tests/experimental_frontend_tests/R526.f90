@@ -1,3 +1,0 @@
-10 ALLOCATABLE :: a
-ALLOCATABLE :: B(:,:), C(:), scalar
-END PROGRAM

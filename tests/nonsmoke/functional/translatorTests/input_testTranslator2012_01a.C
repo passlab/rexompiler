@@ -1,4 +1,0 @@
-void foobar()
-   {
-     return;
-   }

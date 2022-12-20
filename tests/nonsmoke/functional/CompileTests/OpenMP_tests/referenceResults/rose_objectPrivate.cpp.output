@@ -1,5 +1,0 @@
-#pragma omp critical 
-#pragma omp critical 
-#pragma omp critical 
-#pragma omp critical 
-#pragma omp parallel  private(b)

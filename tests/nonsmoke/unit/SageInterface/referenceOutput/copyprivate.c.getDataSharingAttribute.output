@@ -1,6 +1,0 @@
------------------------------------------------
-OpenMP region SgOmpSingleStatement @ 14
-"x"@16:5	copyprivate
-"y"@17:5	copyprivate
------------------------------------------------
-OpenMP region SgOmpParallelStatement @ 27

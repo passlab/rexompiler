@@ -1,1 +1,0 @@
-enum { Yes } *xxx, *yyy;

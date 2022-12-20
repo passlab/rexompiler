@@ -1,4 +1,0 @@
-#pragma omp parallel 
-#pragma omp for  reduction(+ : sum)
-#pragma omp for  schedule(dynamic , 5)
-#pragma omp single 

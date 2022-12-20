@@ -1,6 +1,0 @@
-!$omp parallel 
-!$omp critical (xaxis)
-!$omp end critical (xaxis)
-!$omp critical 
-!$omp end critical 
-!$omp end parallel 

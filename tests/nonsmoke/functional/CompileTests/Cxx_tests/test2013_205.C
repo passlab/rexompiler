@@ -1,7 +1,0 @@
-/*
- * Dialog boxes
- */
-
-void winerror()
-   {
-   }

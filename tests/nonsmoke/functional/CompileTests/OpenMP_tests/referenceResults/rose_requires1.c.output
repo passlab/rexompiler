@@ -1,1 +1,0 @@
-#pragma omp requires ext_test ext_test2 reverse_offload

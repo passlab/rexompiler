@@ -1,6 +1,0 @@
-X::operator== ->
-Y::operator== ->
-main -> operator== pair < X , Y > ::pair
-operator== -> X::operator== Y::operator==
-pair < X , Y > ::pair ->
-pair < X , Y > ::pair ->

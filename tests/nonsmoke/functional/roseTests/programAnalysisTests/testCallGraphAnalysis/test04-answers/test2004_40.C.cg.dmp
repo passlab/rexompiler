@@ -1,4 +1,0 @@
-fooAfter ->
-fooBefore ->
-simplelist < int > ::equality ->
-simplelist < int > ::greater_than ->

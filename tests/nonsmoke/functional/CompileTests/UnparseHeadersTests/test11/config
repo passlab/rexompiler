@@ -1,1 +1,0 @@
-cmd = cd ${TARGET} && ../TestUnparseHeaders ${ROSE_SWITCHES} ${HDR_ROOT_SWITCHES} ${srcdir}/${TARGET}/Simple11.C

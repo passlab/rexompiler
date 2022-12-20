@@ -1,6 +1,0 @@
-#pragma omp parallel 
-#pragma omp single 
-#pragma omp taskgroup 
-#pragma omp critical 
-#pragma omp critical 
-#pragma omp critical 

@@ -1,3 +1,0 @@
-add_subdirectory(SageIII)
-add_subdirectory(CxxFrontend)
-add_subdirectory(OpenFortranParser_SAGE_Connection)

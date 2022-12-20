@@ -1,3 +1,0 @@
-#pragma omp parallel  if(i == 0)
-#pragma omp parallel  if(i != 0) num_threads(3)
-#pragma omp single 

@@ -1,6 +1,0 @@
-void foobar()
-   {
-     for(;;)
-        {
-        }
-   }

@@ -1,3 +1,0 @@
-#pragma omp parallel  firstprivate(niter) private(step)
-#pragma omp master 
-#pragma omp master 

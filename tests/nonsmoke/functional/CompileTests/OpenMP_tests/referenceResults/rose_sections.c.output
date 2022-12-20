@@ -1,4 +1,0 @@
-#pragma omp parallel 
-#pragma omp sections  firstprivate(section_count) nowait lastprivate(conditional : section_count)
-#pragma omp section 
-#pragma omp section 

@@ -1,3 +1,0 @@
-#pragma omp parallel  reduction(inscan, + : a,b) reduction(- : a,c)
-#pragma omp parallel  reduction(task, + : a,b,c)
-#pragma omp parallel  reduction(default, - : a,b) reduction(inscan, - : a,c)

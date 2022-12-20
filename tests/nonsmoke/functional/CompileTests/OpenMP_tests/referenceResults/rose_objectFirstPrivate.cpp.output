@@ -1,2 +1,0 @@
-#pragma omp critical 
-#pragma omp parallel  firstprivate(b)

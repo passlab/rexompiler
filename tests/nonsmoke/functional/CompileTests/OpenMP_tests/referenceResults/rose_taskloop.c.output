@@ -1,4 +1,0 @@
-#pragma omp parallel 
-#pragma omp single 
-#pragma omp taskgroup 
-#pragma omp taskloop  collapse(2) nogroup

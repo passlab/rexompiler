@@ -1,5 +1,0 @@
-#pragma omp parallel 
-#pragma omp single 
-//#pragma omp task if (0)
-#pragma omp task 
-//#pragma omp taskwait          

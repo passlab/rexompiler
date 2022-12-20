@@ -1,3 +1,0 @@
-foo < int >  ->
-foobar ->
-main -> foo < int >  foobar
