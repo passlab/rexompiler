@@ -4048,17 +4048,10 @@ FortranCodeGeneration_locatedNode::unparsePragmaDeclStmt (SgStatement* stmt, SgU
   
   string txt = pragma->get_pragma();
   // Check the leading keyword
-  // FIXME: Followed code to remove OmpAttribute leftover should be correct, but it will cause Fortran OpenMP tests fail.
-  // There may be a bug in the OpenMP AST constructor for Fortran.
-  /*
   istringstream istr(txt);
   std::string key;
   istr >> key;
   if (key == "omp")
-  */
-  // Followed code is incorrect, but it happens to make Fortran OpenMP tests pass.
-  AstAttribute* att = stmt->getAttribute("OmpAttributeList"); //TODO: we removed OmpAttribute and this need to be changed
-  if (att)
     curprint("!$");
   else
     curprint("!pragma ");
@@ -4066,60 +4059,6 @@ FortranCodeGeneration_locatedNode::unparsePragmaDeclStmt (SgStatement* stmt, SgU
   curprint("\n");
 }
 
-
-#if 0
-//----------------------------------------------------------------------------
-//  FortranCodeGeneration_locatedNode::unparseAttachedPreprocessingInfo
-//----------------------------------------------------------------------------
-
-// DQ (8/19/2008): This is defined in the base class and is language independent.
-
-void
-FortranCodeGeneration_locatedNode::unparseAttachedPreprocessingInfo(SgStatement* stmt,SgUnparse_Info& info,PreprocessingInfo::RelativePositionType whereToUnparse)
-   {
-     AttachedPreprocessingInfoType *ppInfo = stmt->getAttachedPreprocessingInfo();
-  if (!ppInfo) {
-    return;
-  }
-
-  // Continue only if options indicate
-  if (info.SkipComments()) {
-    return;
-  }
-  
-  // Traverse the container of PreprocessingInfo objects, unparsing if
-  // necessary.
-  AttachedPreprocessingInfoType::iterator i;
-  for (i = ppInfo->begin(); i != ppInfo->end(); ++i) {
-    // Assert that i points to a valid preprocssingInfo object
-    ASSERT_not_null((*i));
-    ROSE_ASSERT ((*i)->getTypeOfDirective()  != PreprocessingInfo::CpreprocessorUnknownDeclaration);
-    ROSE_ASSERT ((*i)->getRelativePosition() == PreprocessingInfo::before || 
-                 (*i)->getRelativePosition() == PreprocessingInfo::after);
-    
-    // Check and see if the statement should be printed.
-    if ((*i)->getRelativePosition() == whereToUnparse) {
-      unp->cur.format(stmt, info, FORMAT_BEFORE_DIRECTIVE);
-      
-      switch ((*i)->getTypeOfDirective()) {
-        // Comments don't have to be further commented
-      case PreprocessingInfo::C_StyleComment:
-      case PreprocessingInfo::CplusplusStyleComment:
-        if ( !info.SkipComments() ) {
-          curprint("! ");
-     curprint((*i)->getString());
-        }
-        break;
-        
-      default:
-        printf ("Error: FortranCodeGeneration_locatedNode::unparseAttachedPreprocessingInfo(): default switch reached\n");
-        ROSE_ABORT();
-      }
-      unp->cur.format(stmt, info, FORMAT_AFTER_DIRECTIVE);      
-    }
-  }
-}
-#endif
 
 //----------------------------------------------------------------------------
 //  Program unit helpers
