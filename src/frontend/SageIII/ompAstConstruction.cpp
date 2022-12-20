@@ -168,26 +168,12 @@ bool copyEndFileInfo (SgNode* src, SgNode* dest)
 
   ldest->set_endOfConstruct(copy);
   copy->set_parent(ldest);
-//  cout<<"debug: set ldest@"<<ldest <<" with file info @"<< copy <<endl;
 
   ROSE_ASSERT (lsrc->get_endOfConstruct()->get_filename() == ldest->get_endOfConstruct()->get_filename());
   ROSE_ASSERT (lsrc->get_endOfConstruct()->get_line()     == ldest->get_endOfConstruct()->get_line());
   ROSE_ASSERT (lsrc->get_endOfConstruct()->get_col()      == ldest->get_endOfConstruct()->get_col());
-
-
   ROSE_ASSERT (ldest->get_endOfConstruct() == copy);
-// Adjustment for Fortran, the AST node attaching the Fortran comment will not actual give out the accurate line number for the comment
-  if (is_Fortran_language())
-  { //TODO fortran support of end file info
-//    cerr<<"Error. ompAstConstruction.cpp: copying end file info is not yet implemented for Fortran."<<endl;
-//    ROSE_ASSERT (false);
-//    ROSE_ASSERT (oa != NULL);
-//    PreprocessingInfo *currentPreprocessingInfoPtr = oa->getPreprocessingInfo();
-//    ROSE_ASSERT (currentPreprocessingInfoPtr != NULL);
-//    int commentLine = currentPreprocessingInfoPtr->getLineNumber(); 
-//    ldest->get_file_info()->set_line(commentLine);
-  }
-    
+
   return result;
 }
 
@@ -1595,10 +1581,12 @@ namespace OmpSupport
   // Liao 10/18/2010
   void convert_Fortran_OMP_Comments_to_Pragmas (SgSourceFile *sageFilePtr)
   {
-    // We reuse the pragma list for C/C++ here
-    //ROSE_ASSERT  (omp_pragma_list.size() ==0);
     ROSE_ASSERT (sageFilePtr != NULL);
     // step 1: Each OpenMPIR will have a dedicated SgPragmaDeclaration for it
+
+    // we record the last pragma inserted after a statement, if any
+    std::map<SgStatement*, SgPragmaDeclaration*> stmt_last_pragma_dict;
+
     std::vector<std::tuple<SgLocatedNode*, PreprocessingInfo*, OpenMPDirective*>>::iterator iter;
     for (iter = fortran_omp_pragma_list.begin(); iter != fortran_omp_pragma_list.end(); iter++)
     {
@@ -1675,14 +1663,23 @@ namespace OmpSupport
       }
       else if (position == PreprocessingInfo::after)
       {
-        insertStatementAfter(stmt, p_decl, false);
+        SgStatement* last= stmt;
+        if (stmt_last_pragma_dict.count(stmt))
+          last = stmt_last_pragma_dict[stmt];
+        // Liao, 3/31/2021
+        // It is possible there are several comments attached after a same statement.
+        // In this case, we should not just insert each generated pragma right after the statement.
+        // We should insert each pragma after the previously inserted pragma to preserve the original order.
+        // Otherwise , we will end up with reversed order of pragmas, causing later pragma pair matching problem.
+
+        insertStatementAfter(last, p_decl, false);
+        stmt_last_pragma_dict[stmt] = p_decl;
       }
       else
       {
         cerr<<"ompAstConstruction.cpp , illegal PreprocessingInfo::RelativePositionType:"<<position<<endl;
         ROSE_ASSERT (false);
       }
-      //cout<<"debug at after appendStmt:"<<stmt <<" " << stmt->getAttachedPreprocessingInfo ()->size() <<endl;
     } // end for omp_comment_list
 
     convert_Fortran_Pragma_Pairs(sageFilePtr);
