@@ -1025,16 +1025,6 @@ AC_SEARCH_LIBS(clock_gettime, [rt], [
 ])
 AC_SUBST(RT_LIBS)
 
-# DQ (9/11/2006): Removed performance tests conditional, the performance tests were
-# removed previously, but we still have the tests/nonsmoke/functional/PerformanceTests directory.
-# AM_CONDITIONAL(ROSE_PERFORMANCE_TESTS,test ! "$with_PERFORMANCE_TESTS" = no)
-
-# DQ (9/11/2006): skipping use of optional_PERFORMANCE_subdirs
-# There is no configure.in in TESTS/PerformanceTests (only in TESTS/PerformanceTests/BenchmarkBase)
-# AC_CONFIG_SUBDIRS(TESTS/PerformanceTests)
-# AC_CONFIG_SUBDIRS(TESTS/PerformanceTests/BenchmarkBase)
-# AC_SUBST(optional_PERFORMANCE_subdirs)
-
 # DQ (12/16/2009): This option is now removed since the developersScratchSpace has been
 # removed from the ROSE's git repository and it is a separate git repository that can be
 # checked out internally by ROSE developers.
@@ -1417,7 +1407,6 @@ tests/nonsmoke/functional/CompilerOptionsTests/testWave/Makefile
 tests/nonsmoke/functional/CompilerOptionsTests/tokenStream_tests/Makefile
 tests/nonsmoke/functional/Makefile
 tests/nonsmoke/functional/moveDeclarationTool/Makefile
-tests/nonsmoke/functional/PerformanceTests/Makefile
 tests/nonsmoke/functional/RunTests/A++Tests/Makefile
 tests/nonsmoke/functional/RunTests/AstDeleteTests/Makefile
 tests/nonsmoke/functional/RunTests/FortranTests/LANL_POP/Makefile
