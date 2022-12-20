@@ -1,0 +1,6 @@
+<map id="SgBaseClass" name="SgBaseClass">
+<area shape="rect" id="node1" title=" " alt="" coords="97,80,199,107"/>
+<area shape="rect" id="node3" href="$classSgExpBaseClass.html" title=" " alt="" coords="5,155,131,181"/>
+<area shape="rect" id="node4" href="$classSgNonrealBaseClass.html" title=" " alt="" coords="155,155,301,181"/>
+<area shape="rect" id="node2" href="$classSgSupport.html" title="This class represents the base class of a numbr of IR nodes that don&#39;t otherwise fit into the existin..." alt="" coords="107,5,189,32"/>
+</map>

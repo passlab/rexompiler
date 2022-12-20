@@ -1,0 +1,7 @@
+<map id="Sawyer::Container::DistinctList::erase" name="Sawyer::Container::DistinctList::erase">
+<area shape="rect" id="node1" title="Erase an item from the list." alt="" coords="5,104,144,145"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Map.html#a79cec986e2f985ca3c480cad47bf57a2" title="Remove a node by iterator." alt="" coords="192,5,331,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Map.html#a22e8858d4e808c2922aa1181bf98cbb2" title="Find a node by key." alt="" coords="192,71,331,112"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Map.html#ac84f9aa7542c3a97d4e8c15f6abb0472" title="Iterators for container nodes." alt="" coords="192,136,331,177"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Map_1_1Node.html#aa7eca3d931f2ca3a2bc77ef7011afe00" title="Value part of key/value node." alt="" coords="192,201,331,243"/>
+</map>

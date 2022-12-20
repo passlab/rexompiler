@@ -1,0 +1,4 @@
+<map id="Rose::BitOps::replicate" name="Rose::BitOps::replicate">
+<area shape="rect" id="node1" title="Replicate low&#45;order bits to fill return value." alt="" coords="232,5,391,32"/>
+<area shape="rect" id="node2" href="$namespaceRose_1_1BitOps.html#a1fd4de80895e6857ea635a1c773eeb79" title="Replicate low&#45;order bits to fill region without affecting other bits." alt="" coords="5,5,184,32"/>
+</map>

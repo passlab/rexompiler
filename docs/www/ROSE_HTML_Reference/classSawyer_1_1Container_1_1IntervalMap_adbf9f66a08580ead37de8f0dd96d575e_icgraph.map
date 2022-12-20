@@ -1,0 +1,9 @@
+<map id="Sawyer::Container::IntervalMap::size" name="Sawyer::Container::IntervalMap::size">
+<area shape="rect" id="node1" title="Returns the number of values represented by this container." alt="" coords="203,213,341,254"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1IntervalMap.html#afa299225e9e0576bc9944dde4b29d569" title="Find the best fit node at or after a starting point." alt="" coords="5,5,155,61"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1IntervalMap.html#a6279404d9a97574a538b3d6a18c7001d" title=" " alt="" coords="5,85,155,141"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1IntervalMap.html#a8da2cba60c620a2c9d4e60f57fe7a530" title="Returns true if element exists." alt="" coords="5,165,155,221"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1IntervalMap.html#a6f05fe11220a1d2c1e75e2fcde5a573d" title="Find the first fit node at or after a starting point." alt="" coords="5,245,155,301"/>
+<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1IntervalMap.html#aab0a866bb43163a34bd4ea8924117ae3" title=" " alt="" coords="5,325,155,381"/>
+<area shape="rect" id="node7" href="$classSawyer_1_1Container_1_1IntervalSet.html#a7878417b4debcb2a16313e9128e13f17" title="Number of scalar elements represented." alt="" coords="10,405,150,461"/>
+</map>

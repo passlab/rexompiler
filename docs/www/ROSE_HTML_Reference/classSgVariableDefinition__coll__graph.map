@@ -1,0 +1,6 @@
+<map id="SgVariableDefinition" name="SgVariableDefinition">
+<area shape="rect" id="node1" title="This class represents the definition (initialization) of a variable." alt="" coords="98,187,237,213"/>
+<area shape="rect" id="node2" href="$classSgDeclarationStatement.html" title="This class represents the concept of a declaration statement." alt="" coords="5,7,169,33"/>
+<area shape="rect" id="node4" href="$classSgInitializedName.html" title="This class represents the notion of a declared variable." alt="" coords="103,97,231,124"/>
+<area shape="rect" id="node3" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="387,97,489,124"/>
+</map>

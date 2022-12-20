@@ -1,0 +1,7 @@
+<map id="Sawyer::Container::Algorithm::findFirstCommonIsomorphicSubgraph" name="Sawyer::Container::Algorithm::findFirstCommonIsomorphicSubgraph">
+<area shape="rect" id="node1" title="Determine whether a common subgraph exists." alt="" coords="5,123,191,179"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Algorithm_1_1CommonSubgraphIsomorphism.html#ab2fcf9fbbfd7a370c3fce69df4583226" title="Property: maximum allowed solution size." alt="" coords="252,5,520,61"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Algorithm_1_1CommonSubgraphIsomorphism.html#aaecdf4256eb655f03557ba236dcb9b40" title="Property: minimum allowed solution size." alt="" coords="252,85,520,141"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Algorithm_1_1CommonSubgraphIsomorphism.html#a795c5207d979a168d4f95814ce62f380" title="Perform the common subgraph isomorphism analysis." alt="" coords="239,166,533,207"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Algorithm_1_1CommonSubgraphIsomorphism.html#abfe2af18d37f66365a12764777912f7a" title="Property: reference to the solution callback." alt="" coords="252,232,520,288"/>
+</map>

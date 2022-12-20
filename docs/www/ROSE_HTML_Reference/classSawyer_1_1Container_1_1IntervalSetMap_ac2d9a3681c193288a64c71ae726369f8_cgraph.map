@@ -1,0 +1,10 @@
+<map id="Sawyer::Container::IntervalSetMap::erase" name="Sawyer::Container::IntervalSetMap::erase">
+<area shape="rect" id="node1" title="Erase specified values from the sets of an interval." alt="" coords="5,217,156,258"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1IntervalMap.html#ab5a821909b63dedab54193fbd4a747c5" title="Find first interval that overlaps with the specified interval." alt="" coords="215,5,354,61"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1IntervalMap.html#a698c1549cbf43028b6cb07721d449405" title=" " alt="" coords="204,86,365,127"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Interval.html#a164457a90e3cc9c898d0eea5a57fca2a" title="Construct an interval from two endpoints." alt="" coords="215,151,354,193"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Map_1_1Node.html#a3a6bfd720946fa7459f32e07a5d6f8f1" title="Key part of key/value node." alt="" coords="215,217,354,258"/>
+<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1IntervalMap.html#a4bcd6255a35955db90ec2d0f939086e2" title="Iterators for traversing nodes." alt="" coords="215,283,354,339"/>
+<area shape="rect" id="node7" href="$classSawyer_1_1Container_1_1IntervalSetMap.html#ace7787385cf7f148de59bd705a29c8c4" title="Replace sets with a new set." alt="" coords="205,363,365,405"/>
+<area shape="rect" id="node8" href="$classSawyer_1_1Container_1_1IntervalMap.html#afe92a3a1fed8440a506b3cde7891a665" title="Iterators for traversing values." alt="" coords="215,429,354,485"/>
+</map>

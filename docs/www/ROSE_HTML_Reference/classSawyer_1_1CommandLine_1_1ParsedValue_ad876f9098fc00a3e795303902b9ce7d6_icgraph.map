@@ -1,0 +1,5 @@
+<map id="Sawyer::CommandLine::ParsedValue::valueLocation" name="Sawyer::CommandLine::ParsedValue::valueLocation">
+<area shape="rect" id="node1" title="Property: command&#45;line location from whence this value came." alt="" coords="284,39,475,80"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1CommandLine_1_1Switch.html#a5d19d1be140aee539e682ca8147ec778" title="Property: value for a switch that has no declared arguments." alt="" coords="41,5,200,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1CommandLine_1_1SwitchArgument.html#a3410983713c62b6835a65a9c81f65a99" title="Construct a new switch optional argument." alt="" coords="5,71,236,112"/>
+</map>

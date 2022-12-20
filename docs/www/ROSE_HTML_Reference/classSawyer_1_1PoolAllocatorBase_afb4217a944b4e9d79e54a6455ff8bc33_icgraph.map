@@ -1,0 +1,5 @@
+<map id="Sawyer::PoolAllocatorBase::cellSize" name="Sawyer::PoolAllocatorBase::cellSize">
+<area shape="rect" id="node1" title="Size of each cell for a given pool." alt="" coords="235,39,416,80"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1PoolAllocatorBase.html#a0b8744ccd7238c7d617a08c49a017e3d" title="Number of cells per chunk." alt="" coords="5,5,187,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1PoolAllocatorBase.html#aecaaa3bfac52078d1078b3dc0c4a8679" title="Print pool allocation information." alt="" coords="5,71,187,112"/>
+</map>

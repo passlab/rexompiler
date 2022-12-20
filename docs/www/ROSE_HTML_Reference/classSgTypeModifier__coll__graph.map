@@ -1,0 +1,9 @@
+<map id="SgTypeModifier" name="SgTypeModifier">
+<area shape="rect" id="node1" title=" " alt="" coords="515,104,627,131"/>
+<area shape="rect" id="node2" href="$classSgModifier.html" title="This class represents the base class of a number of IR nodes define modifiers within the C++ grammar." alt="" coords="5,81,89,108"/>
+<area shape="rect" id="node3" href="$classSgStructureModifier.html" title=" " alt="" coords="157,31,295,57"/>
+<area shape="rect" id="node4" href="$classSgElaboratedTypeModifier.html" title=" " alt="" coords="139,81,313,108"/>
+<area shape="rect" id="node5" href="$classSgConstVolatileModifier.html" title=" " alt="" coords="145,132,307,159"/>
+<area shape="rect" id="node6" href="$classSgUPC__AccessModifier.html" title=" " alt="" coords="144,183,308,209"/>
+<area shape="rect" id="node7" title=" " alt="" coords="160,233,292,260"/>
+</map>

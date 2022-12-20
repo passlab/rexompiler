@@ -1,0 +1,7 @@
+<map id="SgTemplateDeclaration" name="SgTemplateDeclaration">
+<area shape="rect" id="node1" title="This class represents the concept of a template declaration." alt="" coords="171,277,329,304"/>
+<area shape="rect" id="node2" href="$classSgDeclarationStatement.html" title="This class represents the concept of a declaration statement." alt="" coords="288,172,452,199"/>
+<area shape="rect" id="node3" href="$classSgDeclarationScope.html" title=" " alt="" coords="94,81,235,108"/>
+<area shape="rect" id="node4" href="$classSgScopeStatement.html" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="5,5,140,32"/>
+<area shape="rect" id="node5" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="676,172,749,199"/>
+</map>

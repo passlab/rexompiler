@@ -1,0 +1,9 @@
+<map id="Sawyer::Result::unwrap" name="Sawyer::Result::unwrap">
+<area shape="rect" id="node1" title="Returns the success value or throws an exception." alt="" coords="227,132,389,159"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Result.html#abf563ce45a3aab48443e390bfa0adc56" title="Conditionally save a value." alt="" coords="6,5,178,32"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Result.html#a6a06b0b38826728e3f3a38310c3002a3" title="Returns true if this result contains the specified okay value." alt="" coords="7,56,177,83"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Result.html#a633d5dad8b460519b37466b545bf5056" title="Returns the success value or throws an exception." alt="" coords="6,107,178,133"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Result.html#a42ff9b1e8fd715bf3c517d187d281d6b" title="Returns the okay value or a default constructed value." alt="" coords="5,157,179,184"/>
+<area shape="rect" id="node6" href="$classSawyer_1_1Result.html#a0c5b1f2fff7c3bb6f41415c81f746f9c" title="Returns the contained Ok value or a provided default." alt="" coords="13,208,171,235"/>
+<area shape="rect" id="node7" href="$classSawyer_1_1Result.html#a9f92e079c99b8b6f28f80c1627fa40f4" title="Returns the value or throws an exception." alt="" coords="9,259,175,285"/>
+</map>

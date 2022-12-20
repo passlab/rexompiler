@@ -1,0 +1,4 @@
+<map id="SgSupport" name="SgSupport">
+<area shape="rect" id="node1" title="This class represents the base class of a numbr of IR nodes that don&#39;t otherwise fit into the existin..." alt="" coords="5,84,88,111"/>
+<area shape="rect" id="node2" href="$classSgNode.html" title="This class represents the base class for all IR nodes within Sage III." alt="" coords="12,7,81,33"/>
+</map>

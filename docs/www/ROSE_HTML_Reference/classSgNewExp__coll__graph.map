@@ -1,0 +1,8 @@
+<map id="SgNewExp" name="SgNewExp">
+<area shape="rect" id="node1" title="This class represents the concept of a C++ call to the new operator." alt="" coords="167,273,255,300"/>
+<area shape="rect" id="node2" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="25,5,128,32"/>
+<area shape="rect" id="node4" href="$classSgExprListExp.html" title="This class represents the concept of a C and C++ expression list." alt="" coords="186,95,295,121"/>
+<area shape="rect" id="node5" href="$classSgType.html" title="This class represents the base class for all types." alt="" coords="476,95,543,121"/>
+<area shape="rect" id="node3" href="$classSgConstructorInitializer.html" title="This class represents the notion of an initializer for a variable declaration or expression in a func..." alt="" coords="436,184,594,211"/>
+<area shape="rect" id="node6" href="$classSgFunctionDeclaration.html" title="This class represents the concept of a function declaration statement." alt="" coords="98,184,252,211"/>
+</map>

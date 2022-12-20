@@ -1,0 +1,6 @@
+<map id="Sawyer::Container::AddressMapConstraints::prohibit" name="Sawyer::Container::AddressMapConstraints::prohibit">
+<area shape="rect" id="node1" title="Prohibit certain access permissions." alt="" coords="216,79,379,135"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#af4b03e73519e0bbc79686276ca72c07a" title="Require and prohibit certain access permissions." alt="" coords="5,5,168,61"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1AddressMap.html#ae44b092e3f2f17005b055086de062d5c" title="Constraint: prohibited access bits." alt="" coords="14,86,159,127"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1AddressMap.html#aafc28dc1c26b66b2142eefa1bf13f074" title="Writes data from the supplied buffer." alt="" coords="17,151,156,193"/>
+</map>

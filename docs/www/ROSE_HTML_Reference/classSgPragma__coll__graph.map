@@ -1,0 +1,7 @@
+<map id="SgPragma" name="SgPragma">
+<area shape="rect" id="node1" title=" " alt="" coords="206,109,289,136"/>
+<area shape="rect" id="node2" href="$classSgAttribute.html" title=" " alt="" coords="5,5,92,32"/>
+<area shape="rect" id="node3" href="$classSgExprListExp.html" title="This class represents the concept of a C and C++ expression list." alt="" coords="117,5,226,32"/>
+<area shape="rect" id="node4" href="$classAstAttributeMechanism.html" title="Stores named attributes in Sage IR nodes." alt="" coords="251,5,409,32"/>
+<area shape="rect" id="node5" href="$classSg__File__Info.html" title="This class represents the location of the code associated with the IR node in the original source cod..." alt="" coords="440,5,535,32"/>
+</map>

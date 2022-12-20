@@ -1,0 +1,4 @@
+<map id="Sawyer::Exception::SyntaxError" name="Sawyer::Exception::SyntaxError">
+<area shape="rect" id="node1" title="Error in parsing something." alt="" coords="5,95,145,136"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Exception_1_1RuntimeError.html" title="Base class for Sawyer runtime errors." alt="" coords="5,5,145,47"/>
+</map>

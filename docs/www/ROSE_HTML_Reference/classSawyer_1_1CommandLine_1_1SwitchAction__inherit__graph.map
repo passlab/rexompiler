@@ -1,0 +1,11 @@
+<map id="Sawyer::CommandLine::SwitchAction" name="Sawyer::CommandLine::SwitchAction">
+<area shape="rect" id="node1" title="Base class for switch actions." alt="" coords="207,201,365,243"/>
+<area shape="rect" id="node3" href="$classRose_1_1CommandLine_1_1SelfTests.html" title="Run self tests from the command&#45;line, then exit." alt="" coords="430,5,583,47"/>
+<area shape="rect" id="node4" href="$classRose_1_1CommandLine_1_1ShowLicenseAndExit.html" title="Show license text and exit." alt="" coords="430,71,583,112"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1CommandLine_1_1ConfigureDiagnostics.html" title="Functor to configure diagnostics." alt="" coords="427,136,586,177"/>
+<area shape="rect" id="node6" href="$classSawyer_1_1CommandLine_1_1ConfigureDiagnosticsQuiet.html" title="Function to configure diagnostics to quiet mode." alt="" coords="413,201,600,243"/>
+<area shape="rect" id="node7" href="$classSawyer_1_1CommandLine_1_1ShowHelp.html" title="Functor to print the Unix man page." alt="" coords="427,267,586,308"/>
+<area shape="rect" id="node8" href="$classSawyer_1_1CommandLine_1_1ShowVersion.html" title="Functor to print a version string." alt="" coords="427,332,586,373"/>
+<area shape="rect" id="node9" href="$classSawyer_1_1CommandLine_1_1UserAction.html" title="Wrapper around a user functor." alt="" coords="425,397,588,439"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1SharedObject.html" title="Base class for reference counted objects." alt="" coords="5,209,159,235"/>
+</map>

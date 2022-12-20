@@ -1,0 +1,6 @@
+<map id="Sawyer::Container::Interval::baseSizeOverflows" name="Sawyer::Container::Interval::baseSizeOverflows">
+<area shape="rect" id="node1" title="Tests whether a base and size overflows." alt="" coords="192,93,379,134"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Interval.html#a136b9afce8c48871c21c58dc9ecdc48f" title="Construct an interval from one endpoint and a size." alt="" coords="5,5,144,61"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Interval.html#a626ac395fe61aed4d4895c4e5726fe51" title="Construct an interval from one endpoint and size, and clip overflows." alt="" coords="5,85,144,141"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Interval.html#a6a94f54c71c25e3dd10d64029e8e33ef" title="Shift interval upward." alt="" coords="5,165,144,221"/>
+</map>

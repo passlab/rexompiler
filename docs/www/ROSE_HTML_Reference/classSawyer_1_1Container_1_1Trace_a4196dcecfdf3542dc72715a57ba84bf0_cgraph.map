@@ -1,0 +1,5 @@
+<map id="Sawyer::Container::Trace::burstiness" name="Sawyer::Container::Trace::burstiness">
+<area shape="rect" id="node1" title="The burstiness of a trace." alt="" coords="5,35,144,76"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Trace.html#a294eda07967ff8bc797dd9954d29213f" title="Total length of a trace, or the number of times a label appears in a trace." alt="" coords="218,5,357,47"/>
+<area shape="rect" id="node3" href="$group__sawyer__augmenter__factories.html#gaa11ff983720745ac39c3c229f9611187" title="Factory for value agumenter." alt="" coords="192,71,383,98"/>
+</map>

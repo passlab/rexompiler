@@ -1,0 +1,6 @@
+<map id="Sawyer::Container::IntervalSet::isEmpty" name="Sawyer::Container::IntervalSet::isEmpty">
+<area shape="rect" id="node1" title="Determine whether the container is empty." alt="" coords="193,93,335,134"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1IntervalSet.html#ac9e5756f31243e1e8a184dfa9a3c9f97" title="Returns the maximum scalar contained in this set." alt="" coords="5,5,145,61"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1IntervalSet.html#afca59699313a59a31670a329ddc74b63" title="Interset with specified values." alt="" coords="5,85,145,141"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1IntervalSet.html#aa09c3bdef7cd45e3398db8303434d4f3" title="Returns the minimum scalar contained in this set." alt="" coords="5,165,145,221"/>
+</map>

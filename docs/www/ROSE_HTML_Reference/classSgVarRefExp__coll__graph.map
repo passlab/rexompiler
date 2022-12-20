@@ -1,0 +1,5 @@
+<map id="SgVarRefExp" name="SgVarRefExp">
+<area shape="rect" id="node1" title="This class represents the variable refernece in expressions." alt="" coords="27,95,129,121"/>
+<area shape="rect" id="node2" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="5,5,108,32"/>
+<area shape="rect" id="node3" href="$classSgVariableSymbol.html" title="This class represents the concept of a variable name within the compiler (a shared container for the ..." alt="" coords="195,5,323,32"/>
+</map>

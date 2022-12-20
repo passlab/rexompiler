@@ -1,0 +1,5 @@
+<map id="Range::Range" name="Range::Range">
+<area shape="rect" id="node1" title="Create a new range of specified size." alt="" coords="5,31,112,57"/>
+<area shape="rect" id="node2" href="$classRange.html#a05a5b908926e64956b0db27d19b0bd5e" title="Make a range empty." alt="" coords="160,5,256,32"/>
+<area shape="rect" id="node3" href="$classRange.html#add78a5b6d9526306391f1a32d4e35a5f" title="Accessor for the first value of a range." alt="" coords="163,56,253,83"/>
+</map>

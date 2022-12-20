@@ -1,0 +1,8 @@
+<map id="SgNode::set_parent" name="SgNode::set_parent">
+<area shape="rect" id="node1" title="All nodes in the AST contain a reference to a parent node." alt="" coords="301,137,440,163"/>
+<area shape="rect" id="node2" href="$namespaceSageBuilder.html#aa299dc73ad9330e7f465d56d8f187ba4" title="Template function to build a binary expression of type T, taking care of parent pointers,..." alt="" coords="47,5,211,47"/>
+<area shape="rect" id="node3" href="$namespaceSageBuilder.html#ad7604db74c3fec0df689c70fa6e498e9" title="Template function to build a binary expression of type T, taking care of parent pointers,..." alt="" coords="47,71,211,112"/>
+<area shape="rect" id="node4" href="$namespaceSageBuilder.html#acd60645b2544629dcb05d11d5d1e14c6" title="Template function to build a unary expression of type T. Instantiated functions include:buildAddressO..." alt="" coords="16,137,243,163"/>
+<area shape="rect" id="node5" href="$namespaceSageBuilder.html#a004c8c2ac7ad9f616d38350e89852157" title="Template function to build a unary expression of type T with no file info. Instantiated functions inc..." alt="" coords="5,187,253,214"/>
+<area shape="rect" id="node6" href="$namespaceSageInterface.html#aee86b578eadd8dd3b1f35529060a6483" title="Set parameter list for a function declaration, considering existing parameter list etc." alt="" coords="24,238,235,265"/>
+</map>

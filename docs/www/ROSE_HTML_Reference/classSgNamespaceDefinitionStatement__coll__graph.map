@@ -1,0 +1,5 @@
+<map id="SgNamespaceDefinitionStatement" name="SgNamespaceDefinitionStatement">
+<area shape="rect" id="node1" title="This class represents the concept of a namespace definition." alt="" coords="11,90,234,117"/>
+<area shape="rect" id="node3" href="$classSgNamespaceDeclarationStatement.html" title="This class represents the concept of a C++ namespace declaration." alt="" coords="5,188,240,215"/>
+<area shape="rect" id="node2" href="$classSgScopeStatement.html" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="55,5,190,32"/>
+</map>

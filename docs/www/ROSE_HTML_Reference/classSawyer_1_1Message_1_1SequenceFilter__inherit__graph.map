@@ -1,0 +1,4 @@
+<map id="Sawyer::Message::SequenceFilter" name="Sawyer::Message::SequenceFilter">
+<area shape="rect" id="node1" title="Filters messages based on how many messages have been seen." alt="" coords="5,80,199,121"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Message_1_1Filter.html" title="Base class for internal nodes that filter messages." alt="" coords="20,5,184,32"/>
+</map>

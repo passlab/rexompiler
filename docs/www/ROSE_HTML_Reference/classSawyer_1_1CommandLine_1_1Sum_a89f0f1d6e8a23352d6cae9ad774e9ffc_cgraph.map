@@ -1,0 +1,5 @@
+<map id="Sawyer::CommandLine::Sum::operator()" name="Sawyer::CommandLine::Sum::operator()">
+<area shape="rect" id="node1" title="Called when a switch&#39;s value is about to be stored into the ParserResult." alt="" coords="5,27,164,69"/>
+<area shape="rect" id="node2" href="$group__sawyer__augmenter__factories.html#gaa11ff983720745ac39c3c229f9611187" title="Factory for value agumenter." alt="" coords="212,5,403,32"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1CommandLine_1_1ParsedValue.html#ad6dfadf206a8ec59b78e894e7700dfd9" title="Property: the parsed value." alt="" coords="228,57,387,98"/>
+</map>

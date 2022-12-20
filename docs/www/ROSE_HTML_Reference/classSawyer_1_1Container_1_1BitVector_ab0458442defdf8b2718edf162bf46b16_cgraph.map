@@ -1,0 +1,8 @@
+<map id="Sawyer::Container::BitVector::multiply" name="Sawyer::Container::BitVector::multiply">
+<area shape="rect" id="node1" title="Multiply two bit vectors." alt="" coords="5,136,144,177"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1BitVector.html#ad227b36add661119094a305c657b56d2" title="Add bits as integers." alt="" coords="192,5,331,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1BitVector.html#a80b2c635fc6d9f089c5f8336b2ece893" title="Retrieve one bit." alt="" coords="192,71,331,112"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1BitVector.html#a64ce3f91a56a7a3ecd88bc69a3a10dee" title="Change vector size." alt="" coords="192,136,331,177"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1BitVector.html#a9a0bd749865dd7a315992909f6da55fd" title="Shift bits left." alt="" coords="192,201,331,243"/>
+<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1BitVector.html#a49f05ce7f5af5ee0e9869a84db392301" title="Size of vector in bits." alt="" coords="192,267,331,308"/>
+</map>

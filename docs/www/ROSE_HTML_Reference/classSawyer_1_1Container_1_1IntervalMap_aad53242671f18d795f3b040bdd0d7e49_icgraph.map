@@ -1,0 +1,7 @@
+<map id="Sawyer::Container::IntervalMap::findPrior" name="Sawyer::Container::IntervalMap::findPrior">
+<area shape="rect" id="node1" title="Find the last node whose interval starts at or below the specified scalar key." alt="" coords="224,133,371,174"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1IntervalSet.html#a30f04a39feea29ff4662732e17985708" title="Find the last node whose interval starts at or below the specified scalar key." alt="" coords="21,5,161,61"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1IntervalMap.html#a0a7779da0f740c936fdb562087d91152" title="Returns the limited&#45;maximum scalar key." alt="" coords="16,85,165,141"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1IntervalMap.html#a7059f415687b5e7caec66dd7f4b133a2" title="Returns the limited&#45;maximum unmapped scalar key." alt="" coords="5,165,176,221"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1IntervalMap.html#a53ebe1dc48e4f3ef5051c97fb8d44c07" title="Find the last unmapped region." alt="" coords="16,245,165,301"/>
+</map>

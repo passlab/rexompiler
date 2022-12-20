@@ -1,0 +1,4 @@
+<map id="SgNode::get_traversalSuccessorContainer" name="SgNode::get_traversalSuccessorContainer">
+<area shape="rect" id="node1" title="container of pointers to AST successor nodes used in the traversal overridden in every class by gener..." alt="" coords="252,5,467,47"/>
+<area shape="rect" id="node2" href="$namespaceSageInterface.html#abe064065f2f5aea7f9a4cf02883dd41e" title="Topdown traverse a subtree from root to find the first declaration given its name,..." alt="" coords="5,5,204,47"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="Sawyer::Container::Algorithm::graphDirectedDominators" name="Sawyer::Container::Algorithm::graphDirectedDominators">
+<area shape="rect" id="node1" title="Find immediate pre&#45; or post&#45;dominators." alt="" coords="5,143,239,184"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#a3f256b70a465482d53478b84941dc8b5" title="Finds the vertex with specified ID number." alt="" coords="561,5,700,47"/>
+<area shape="rect" id="node3" href="$namespaceSawyer_1_1Container_1_1Algorithm.html#a617753cc017ccac11b19da2d650c8423" title="IDs of vertices reachable from root." alt="" coords="287,227,513,268"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Graph.html#a7f5c8eef7ec4d3399518437f5dd22b68" title="Determines whether the vertex iterator is valid." alt="" coords="329,59,471,100"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Graph.html#a4c5244b7dddd1f511a0a9350fc79e182" title="Total number of vertices." alt="" coords="561,75,700,116"/>
+<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1Graph.html#a9aa5860369a9316640518c1eb3894de0" title="Iterators for all vertices." alt="" coords="561,149,700,191"/>
+<area shape="rect" id="node7" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#a1025261c9abbd3c93ecdbedddeb670f7" title="Restart the traversal at the specified vertex." alt="" coords="313,293,487,349"/>
+</map>

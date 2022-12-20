@@ -1,0 +1,4 @@
+<map id="Range::inin" name="Range::inin">
+<area shape="rect" id="node1" title="Create a new range by giving the first (inclusive) and last value (inclusive)." alt="" coords="220,5,308,32"/>
+<area shape="rect" id="node2" href="$classRangeMap.html#a1a97944c25e824155320715afd71bc3c" title="Create a range map that&#39;s the inverse of some other map." alt="" coords="5,5,172,32"/>
+</map>

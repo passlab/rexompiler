@@ -1,0 +1,4 @@
+<map id="Sawyer::Result::expectError" name="Sawyer::Result::expectError">
+<area shape="rect" id="node1" title="Returns the error value or throws an exception." alt="" coords="5,5,192,32"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Result.html#afbbcca14fb893c413c5fc3b06993eb20" title="Returns true if the result is okay." alt="" coords="240,5,387,32"/>
+</map>

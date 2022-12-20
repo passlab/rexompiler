@@ -1,0 +1,21 @@
+<map id="SgSymbol" name="SgSymbol">
+<area shape="rect" id="node1" title="This class represents the concept of a name within the compiler." alt="" coords="123,411,205,437"/>
+<area shape="rect" id="node3" href="$classSgAliasSymbol.html" title=" " alt="" coords="278,5,389,32"/>
+<area shape="rect" id="node4" href="$classSgClassSymbol.html" title="This class represents the concept of a class name within the compiler." alt="" coords="275,56,391,83"/>
+<area shape="rect" id="node5" href="$classSgCommonSymbol.html" title=" " alt="" coords="266,107,401,133"/>
+<area shape="rect" id="node6" href="$classSgDefaultSymbol.html" title=" " alt="" coords="271,157,395,184"/>
+<area shape="rect" id="node7" href="$classSgEnumFieldSymbol.html" title=" " alt="" coords="261,208,405,235"/>
+<area shape="rect" id="node8" href="$classSgEnumSymbol.html" title=" " alt="" coords="275,259,391,285"/>
+<area shape="rect" id="node9" href="$classSgFunctionSymbol.html" title=" " alt="" coords="267,309,399,336"/>
+<area shape="rect" id="node10" href="$classSgFunctionTypeSymbol.html" title="This class represents the concept of a name and a type. It may be renamed in the future to SgTypeSymb..." alt="" coords="253,360,413,387"/>
+<area shape="rect" id="node11" href="$classSgInterfaceSymbol.html" title=" " alt="" coords="267,411,400,437"/>
+<area shape="rect" id="node12" href="$classSgIntrinsicSymbol.html" title=" " alt="" coords="269,461,397,488"/>
+<area shape="rect" id="node13" href="$classSgLabelSymbol.html" title=" " alt="" coords="277,512,390,539"/>
+<area shape="rect" id="node14" href="$classSgModuleSymbol.html" title=" " alt="" coords="271,563,395,589"/>
+<area shape="rect" id="node15" href="$classSgNamespaceSymbol.html" title="This class represents the concept of a namespace name within the compiler." alt="" coords="257,613,409,640"/>
+<area shape="rect" id="node16" href="$classSgNonrealSymbol.html" title=" " alt="" coords="270,664,397,691"/>
+<area shape="rect" id="node17" href="$classSgTemplateSymbol.html" title=" " alt="" coords="266,715,401,741"/>
+<area shape="rect" id="node18" href="$classSgTypedefSymbol.html" title=" " alt="" coords="269,765,397,792"/>
+<area shape="rect" id="node19" href="$classSgVariableSymbol.html" title="This class represents the concept of a variable name within the compiler (a shared container for the ..." alt="" coords="269,816,397,843"/>
+<area shape="rect" id="node2" href="$classSgNode.html" title="This class represents the base class for all IR nodes within Sage III." alt="" coords="5,411,75,437"/>
+</map>

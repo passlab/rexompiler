@@ -1,0 +1,5 @@
+<map id="Sawyer::CommandLine::sum" name="Sawyer::CommandLine::sum">
+<area shape="rect" id="node1" title="Factory for value agumenter." alt="" coords="212,46,403,73"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Trace.html#a4196dcecfdf3542dc72715a57ba84bf0" title="The burstiness of a trace." alt="" coords="15,5,154,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1CommandLine_1_1Sum.html#a89f0f1d6e8a23352d6cae9ad774e9ffc" title="Called when a switch&#39;s value is about to be stored into the ParserResult." alt="" coords="5,71,164,112"/>
+</map>

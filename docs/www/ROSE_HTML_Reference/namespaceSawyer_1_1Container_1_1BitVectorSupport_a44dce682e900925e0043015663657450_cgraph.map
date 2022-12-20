@@ -1,0 +1,9 @@
+<map id="Sawyer::Container::BitVectorSupport::fromDecimal" name="Sawyer::Container::BitVectorSupport::fromDecimal">
+<area shape="rect" id="node1" title="Obtain bits from a decimal representation." alt="" coords="5,133,208,175"/>
+<area shape="rect" id="node2" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#ab0f84b9c0638d1b4785b9a9884420375" title="Add bits." alt="" coords="502,5,653,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Interval.html#a136b9afce8c48871c21c58dc9ecdc48f" title="Construct an interval from one endpoint and a size." alt="" coords="508,85,647,141"/>
+<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#aff6810c441e283e64b214bd4d9bbc0a6" title="Copy some bits." alt="" coords="499,165,656,207"/>
+<area shape="rect" id="node5" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#abcc91eac654663790f3ab541a2b6d6d9" title="Assign an unsigned value to a bit range." alt="" coords="256,165,451,207"/>
+<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1Interval.html#a75d8ca4e63b1180f6d2194a0ec79440d" title="Size of interval." alt="" coords="508,231,647,272"/>
+<area shape="rect" id="node7" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a2e1a5421e50db760e7711d615688ca79" title="Multiply by 10." alt="" coords="259,100,447,141"/>
+</map>

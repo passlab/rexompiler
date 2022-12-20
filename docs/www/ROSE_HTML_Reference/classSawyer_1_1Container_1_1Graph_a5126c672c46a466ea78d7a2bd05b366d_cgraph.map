@@ -1,0 +1,5 @@
+<map id="Sawyer::Container::Graph::eraseEdge" name="Sawyer::Container::Graph::eraseEdge">
+<area shape="rect" id="node1" title="Erases an edge." alt="" coords="5,39,144,80"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#a113a33fdc000dd6071a918f1c0e1e264" title="Determines whether the edge iterator is valid." alt="" coords="192,5,331,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Graph_1_1Edge.html#a12c981de3360f2ead8f331a8b7d34fbb" title="User&#45;defined value." alt="" coords="192,71,331,112"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="Sawyer::Container::DenseIntegerSet::exists" name="Sawyer::Container::DenseIntegerSet::exists">
+<area shape="rect" id="node1" title="Determines whether a value is stored." alt="" coords="209,133,372,174"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1DenseIntegerSet.html#a185b1a0060ccc17acde9bde3ddc6affc" title="Erase a value." alt="" coords="5,5,161,61"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1DenseIntegerSet.html#a12733d5f09f2f740ff013264e0d0da9a" title="Whether all values exist." alt="" coords="5,85,161,141"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1DenseIntegerSet.html#a627ff3620f03858468f0c7ccc071be5f" title="Whether any value exists." alt="" coords="5,165,161,221"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1DenseIntegerSet.html#af827ca99d5bc1fcfb743144865651022" title="Intersect this set with another." alt="" coords="5,245,161,301"/>
+</map>

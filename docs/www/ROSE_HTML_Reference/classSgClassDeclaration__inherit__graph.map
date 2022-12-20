@@ -1,0 +1,8 @@
+<map id="SgClassDeclaration" name="SgClassDeclaration">
+<area shape="rect" id="node1" title="This class represents the concept of a class declaration statement. It includes the concept of an ins..." alt="" coords="217,81,356,108"/>
+<area shape="rect" id="node3" href="$classSgDerivedTypeStatement.html" title=" " alt="" coords="414,5,585,32"/>
+<area shape="rect" id="node4" href="$classSgModuleStatement.html" title=" " alt="" coords="429,56,569,83"/>
+<area shape="rect" id="node5" href="$classSgTemplateClassDeclaration.html" title=" " alt="" coords="404,107,595,133"/>
+<area shape="rect" id="node6" href="$classSgTemplateInstantiationDecl.html" title="This class represents the concept of an instantiated class template." alt="" coords="405,157,594,184"/>
+<area shape="rect" id="node2" href="$classSgDeclarationStatement.html" title="This class represents the concept of a declaration statement." alt="" coords="5,81,169,108"/>
+</map>

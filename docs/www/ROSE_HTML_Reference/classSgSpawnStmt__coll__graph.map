@@ -1,0 +1,5 @@
+<map id="SgSpawnStmt" name="SgSpawnStmt">
+<area shape="rect" id="node1" title="This class is part of the older CC++ concept. It is not a part of C or C++ (this IR node is not used ..." alt="" coords="72,95,179,121"/>
+<area shape="rect" id="node2" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="5,5,104,32"/>
+<area shape="rect" id="node3" href="$classSgFunctionCallExp.html" title="This class represents the concept of a C++ function call (which is an expression)." alt="" coords="129,5,263,32"/>
+</map>

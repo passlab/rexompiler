@@ -1,0 +1,10 @@
+<map id="Rose::BitOps::select" name="Rose::BitOps::select">
+<area shape="rect" id="node1" title="Combine two values based on a bit mask." alt="" coords="483,157,627,184"/>
+<area shape="rect" id="node2" href="$namespaceRose_1_1BitOps.html#a0d5cc6848c0af420d0d647054d61da09" title="Generate a mask without affecting other bits." alt="" coords="260,5,423,32"/>
+<area shape="rect" id="node3" href="$namespaceRose_1_1BitOps.html#a9331fbc7a6a7b8670b9d35a2bd1859df" title="Generate a single&#45;bit mask without affecting the high&#45;order bits." alt="" coords="254,56,429,83"/>
+<area shape="rect" id="node4" href="$namespaceRose_1_1BitOps.html#a1fd4de80895e6857ea635a1c773eeb79" title="Replicate low&#45;order bits to fill region without affecting other bits." alt="" coords="252,107,431,133"/>
+<area shape="rect" id="node5" href="$namespaceRose_1_1BitOps.html#a83aaca0d4c69f2ccea0760ce9bb7b780" title="Rotate low&#45;order bits left without affecting others." alt="" coords="10,208,195,235"/>
+<area shape="rect" id="node6" href="$namespaceRose_1_1BitOps.html#adeddc6732630a7b864c568c3d9836a15" title="Rotate low&#45;order bits right without affecting others." alt="" coords="5,259,200,285"/>
+<area shape="rect" id="node7" href="$namespaceRose_1_1BitOps.html#a95fe0baf39928aedfa8588c31eff1182" title="Left shift part of a value without affecting the rest." alt="" coords="253,259,430,285"/>
+<area shape="rect" id="node8" href="$namespaceRose_1_1BitOps.html#a669180862a0fec43cc30b7fb74808b7b" title="Right shift part of a value without affecting the rest." alt="" coords="248,208,435,235"/>
+</map>

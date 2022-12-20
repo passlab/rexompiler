@@ -1,0 +1,7 @@
+<map id="Sawyer::Exception::RuntimeError" name="Sawyer::Exception::RuntimeError">
+<area shape="rect" id="node1" title="Base class for Sawyer runtime errors." alt="" coords="177,71,317,112"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Exception_1_1DomainError.html" title="Base class for Sawyer domain errors." alt="" coords="365,5,505,47"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Exception_1_1FilesystemError.html" title="Error related to the file system." alt="" coords="365,71,505,112"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Exception_1_1SyntaxError.html" title="Error in parsing something." alt="" coords="365,136,505,177"/>
+<area shape="rect" id="node2" title="STL class." alt="" coords="5,78,129,105"/>
+</map>

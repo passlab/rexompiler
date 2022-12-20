@@ -1,0 +1,7 @@
+<map id="Sawyer::Container::Graph::insertEdge" name="Sawyer::Container::Graph::insertEdge">
+<area shape="rect" id="node1" title="Insert a new edge." alt="" coords="256,104,395,145"/>
+<area shape="rect" id="node2" href="$namespaceSawyer_1_1Container_1_1Algorithm.html#aec93e4ec85b0e53249e4a71fbdf60976" title="Create a subgraph." alt="" coords="5,5,208,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Graph.html#aca47cbae60d1de95c7e0fcf97ea0b868" title="Insert a new edge." alt="" coords="37,71,176,112"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Graph.html#aa29cc5745a368250b493ec3ba420e30b" title="Insert an edge and its vertex end points." alt="" coords="5,136,208,177"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Graph.html#ab82bc59ee50d3abc71543b59a8983b58" title="Assignment." alt="" coords="37,201,176,243"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="SgModifierNodes" name="SgModifierNodes">
+<area shape="rect" id="node1" title="This class is not used in ROSE, but is intended to represent a list of SgModifierTypes (similar to th..." alt="" coords="5,80,128,107"/>
+<area shape="rect" id="node2" href="$classSgModifier.html" title="This class represents the base class of a number of IR nodes define modifiers within the C++ grammar." alt="" coords="25,5,109,32"/>
+</map>

@@ -1,0 +1,13 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classROSE__VisitorPattern.html" title=" " alt="" coords="5,189,152,215"/>
+<area shape="rect" id="node2" href="$classROSE__VisitorPatternDefaultBase.html" title=" " alt="" coords="200,159,419,186"/>
+<area shape="rect" id="node10" href="$classVisitor__R.html" title=" " alt="" coords="254,214,365,241"/>
+<area shape="rect" id="node3" href="$classIntraDFTransferVisitor.html" title="Apply an analysis A&#39;s transfer function at a particular AST node type." alt="" coords="467,101,617,127"/>
+<area shape="rect" id="node9" href="$structsg_1_1VisitDispatcher.html" title=" " alt="" coords="475,152,609,193"/>
+<area shape="rect" id="node4" href="$classIntraUnitDataflow_1_1DefaultTransfer.html" title=" " alt="" coords="675,5,807,47"/>
+<area shape="rect" id="node5" href="$classLiveDeadVarsTransfer.html" title=" " alt="" coords="665,71,816,98"/>
+<area shape="rect" id="node6" href="$classVariableStateTransfer.html" title=" " alt="" coords="667,123,814,164"/>
+<area shape="rect" id="node7" href="$classVariableStateTransfer.html" title=" " alt="" coords="667,188,814,229"/>
+<area shape="rect" id="node8" href="$classDivAnalysisTransfer.html" title=" " alt="" coords="864,195,1004,222"/>
+<area shape="rect" id="node11" href="$classContextVis__R.html" title="Strategy pattern applied to visitors: serves as a context to a strategy, which itself is a visitor; d..." alt="" coords="473,218,611,245"/>
+</map>

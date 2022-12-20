@@ -1,0 +1,5 @@
+<map id="Rose::BitOps::signExtendLsb" name="Rose::BitOps::signExtendLsb">
+<area shape="rect" id="node1" title="Sign extend part of value without affecting other bits." alt="" coords="5,31,200,57"/>
+<area shape="rect" id="node2" href="$namespaceRose_1_1BitOps.html#aeb1469c40ae9e156464e551163391de1" title="Extract a single bit." alt="" coords="256,5,379,32"/>
+<area shape="rect" id="node3" href="$namespaceRose_1_1BitOps.html#ac58b5abeae90004b5a61a74a7ceebdde" title="Number of bits in a type or value." alt="" coords="248,56,387,83"/>
+</map>

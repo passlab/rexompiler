@@ -1,0 +1,9 @@
+<map id="Sawyer::Container::Algorithm::graphEraseParallelEdges" name="Sawyer::Container::Algorithm::graphEraseParallelEdges">
+<area shape="rect" id="node1" title="Erase parallel edges." alt="" coords="5,149,200,205"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#a5126c672c46a466ea78d7a2bd05b366d" title="Erases an edge." alt="" coords="267,5,405,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Graph_1_1Edge.html#a12c981de3360f2ead8f331a8b7d34fbb" title="User&#45;defined value." alt="" coords="472,35,611,76"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Graph_1_1Vertex.html#abd7c5527e63eb3cbc37f81139325740e" title="Number of outgoing edges." alt="" coords="248,123,424,164"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Graph_1_1Vertex.html#a3df407366de5c601d55c7ee4e8b32558" title="List of outgoing edges." alt="" coords="253,188,419,229"/>
+<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1Graph_1_1Edge.html#acad205ee0450a9915b7e193b442f33b8" title="Target vertex." alt="" coords="267,253,405,295"/>
+<area shape="rect" id="node7" href="$classSawyer_1_1Container_1_1Graph.html#a9aa5860369a9316640518c1eb3894de0" title="Iterators for all vertices." alt="" coords="267,319,405,360"/>
+</map>

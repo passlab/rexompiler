@@ -1,0 +1,21 @@
+<map id="Sawyer::Container::Interval::hull" name="Sawyer::Container::Interval::hull">
+<area shape="rect" id="node1" title="Construct an interval from two endpoints." alt="" coords="237,657,376,698"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Interval.html#a136b9afce8c48871c21c58dc9ecdc48f" title="Construct an interval from one endpoint and a size." alt="" coords="28,5,167,61"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Interval.html#a626ac395fe61aed4d4895c4e5726fe51" title="Construct an interval from one endpoint and size, and clip overflows." alt="" coords="28,85,167,141"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1IntervalSetMap.html#ac2d9a3681c193288a64c71ae726369f8" title="Erase specified values from the sets of an interval." alt="" coords="22,166,173,207"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1IntervalMap.html#a25feb127b25f2d5f7616003a010abdca" title="Find the first unmapped region." alt="" coords="23,232,172,288"/>
+<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1Set.html#a1f307e47428673d4e1cd7c480ab2cf67" title="Range of members." alt="" coords="28,313,167,354"/>
+<area shape="rect" id="node7" href="$classSawyer_1_1Container_1_1Interval.html#ac4f4c8032cb84140ae4d46dd7feb7b89" title="Hull." alt="" coords="15,378,179,419"/>
+<area shape="rect" id="node8" href="$classSawyer_1_1Container_1_1Map.html#a9fa93c6416dfe1cabda60f986fc8fdc3" title="Returns the range of keys in this map." alt="" coords="5,443,189,514"/>
+<area shape="rect" id="node9" href="$classSawyer_1_1Container_1_1IntervalMap.html#a4734abf74cda51aa6252ecfc38342e93" title="Returns the range of values in this map." alt="" coords="23,539,172,595"/>
+<area shape="rect" id="node10" href="$classSawyer_1_1Container_1_1IntervalSetMap.html#a60e6c042ccebcb997d74cbc31f9eba50" title="Insert a set of values into the sets of an interval." alt="" coords="22,619,173,661"/>
+<area shape="rect" id="node11" href="$classSawyer_1_1Container_1_1IntervalMap.html#a1effdf10ccfb80ed11cc999e850ab2bd" title="Insert a key/value pair." alt="" coords="23,685,172,741"/>
+<area shape="rect" id="node12" href="$classSawyer_1_1Container_1_1IntervalSet.html#afca59699313a59a31670a329ddc74b63" title="Interset with specified values." alt="" coords="27,765,167,821"/>
+<area shape="rect" id="node13" href="$classSawyer_1_1Container_1_1Interval.html#a7de3223d382d700bec2771df8318c567" title="Intersection." alt="" coords="28,845,167,901"/>
+<area shape="rect" id="node14" href="$classSawyer_1_1Container_1_1IntervalSet.html#ad401d6914370bca3ca442cc590493297" title="Invert and intersect." alt="" coords="27,925,167,981"/>
+<area shape="rect" id="node15" href="$classSawyer_1_1Container_1_1Interval.html#ac07c65986566577c6c683e7df6676241" title="Creates an interval by joining two adjacent intervals." alt="" coords="15,1006,179,1047"/>
+<area shape="rect" id="node16" href="$classSawyer_1_1Container_1_1IntervalMap.html#a53ebe1dc48e4f3ef5051c97fb8d44c07" title="Find the last unmapped region." alt="" coords="23,1072,172,1128"/>
+<area shape="rect" id="node17" href="$classSawyer_1_1Container_1_1Interval.html#a6a94f54c71c25e3dd10d64029e8e33ef" title="Shift interval upward." alt="" coords="28,1152,167,1208"/>
+<area shape="rect" id="node18" href="$classSawyer_1_1Container_1_1Interval.html#aa2dd696080bc1ef037a265214961d8f7" title="Split interval in two." alt="" coords="28,1232,167,1288"/>
+<area shape="rect" id="node19" href="$classSawyer_1_1Container_1_1Interval.html#afef17d3137598cbd8a997969657d746b" title="Construct an interval that covers the entire domain." alt="" coords="28,1312,167,1368"/>
+</map>

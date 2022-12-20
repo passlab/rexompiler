@@ -1,0 +1,54 @@
+<map id="SgBinaryOp" name="SgBinaryOp">
+<area shape="rect" id="node1" title="This class represents the notion of a binary operator. It is derived from a SgExpression because oper..." alt="" coords="156,1247,248,1273"/>
+<area shape="rect" id="node3" href="$classSgAddOp.html" title=" " alt="" coords="339,5,418,32"/>
+<area shape="rect" id="node4" href="$classSgAndOp.html" title=" " alt="" coords="339,56,418,83"/>
+<area shape="rect" id="node5" href="$classSgArrowExp.html" title=" " alt="" coords="331,107,426,133"/>
+<area shape="rect" id="node6" href="$classSgArrowStarOp.html" title=" " alt="" coords="322,157,435,184"/>
+<area shape="rect" id="node7" href="$classSgAssignOp.html" title=" " alt="" coords="331,208,426,235"/>
+<area shape="rect" id="node8" href="$classSgBitAndOp.html" title=" " alt="" coords="331,259,426,285"/>
+<area shape="rect" id="node9" href="$classSgBitEqvOp.html" title=" " alt="" coords="331,309,426,336"/>
+<area shape="rect" id="node10" href="$classSgBitOrOp.html" title=" " alt="" coords="336,360,421,387"/>
+<area shape="rect" id="node11" href="$classSgBitXorOp.html" title=" " alt="" coords="333,411,424,437"/>
+<area shape="rect" id="node12" href="$classSgCommaOpExp.html" title=" " alt="" coords="317,461,441,488"/>
+<area shape="rect" id="node13" href="$classSgCompoundAssignOp.html" title=" " alt="" coords="299,512,458,539"/>
+<area shape="rect" id="node14" href="$classSgConcatenationOp.html" title=" " alt="" coords="309,563,448,589"/>
+<area shape="rect" id="node15" href="$classSgDivideOp.html" title=" " alt="" coords="333,613,425,640"/>
+<area shape="rect" id="node16" href="$classSgDotExp.html" title=" " alt="" coords="337,664,420,691"/>
+<area shape="rect" id="node17" href="$classSgDotStarOp.html" title=" " alt="" coords="329,715,429,741"/>
+<area shape="rect" id="node18" href="$classSgElementwiseOp.html" title=" " alt="" coords="313,765,444,792"/>
+<area shape="rect" id="node19" href="$classSgEqualityOp.html" title=" " alt="" coords="327,816,430,843"/>
+<area shape="rect" id="node20" href="$classSgExponentiationOp.html" title=" " alt="" coords="308,867,449,893"/>
+<area shape="rect" id="node21" href="$classSgGreaterOrEqualOp.html" title=" " alt="" coords="306,917,451,944"/>
+<area shape="rect" id="node22" href="$classSgGreaterThanOp.html" title=" " alt="" coords="315,968,442,995"/>
+<area shape="rect" id="node23" href="$classSgIntegerDivideOp.html" title=" " alt="" coords="313,1019,445,1045"/>
+<area shape="rect" id="node24" href="$classSgIsNotOp.html" title="This class represents the physical disequality (often called pointer disequality) operator for langua..." alt="" coords="335,1069,422,1096"/>
+<area shape="rect" id="node25" href="$classSgIsOp.html" title="This class represents the physical equality (often called pointer equality) operator for languages th..." alt="" coords="345,1120,412,1147"/>
+<area shape="rect" id="node26" href="$classSgLeftDivideOp.html" title=" " alt="" coords="321,1171,436,1197"/>
+<area shape="rect" id="node27" href="$classSgLessOrEqualOp.html" title=" " alt="" coords="313,1221,444,1248"/>
+<area shape="rect" id="node28" href="$classSgLessThanOp.html" title=" " alt="" coords="323,1272,435,1299"/>
+<area shape="rect" id="node29" href="$classSgLshiftOp.html" title=" " alt="" coords="335,1323,422,1349"/>
+<area shape="rect" id="node30" href="$classSgMembershipOp.html" title=" " alt="" coords="315,1373,442,1400"/>
+<area shape="rect" id="node31" href="$classSgModOp.html" title=" " alt="" coords="339,1424,419,1451"/>
+<area shape="rect" id="node32" href="$classSgMultiplyOp.html" title=" " alt="" coords="329,1475,429,1501"/>
+<area shape="rect" id="node33" href="$classSgNonMembershipOp.html" title=" " alt="" coords="303,1525,454,1552"/>
+<area shape="rect" id="node34" href="$classSgNotEqualOp.html" title=" " alt="" coords="324,1576,433,1603"/>
+<area shape="rect" id="node35" href="$classSgOrOp.html" title=" " alt="" coords="344,1627,413,1653"/>
+<area shape="rect" id="node36" href="$classSgPntrArrRefExp.html" title=" " alt="" coords="317,1677,440,1704"/>
+<area shape="rect" id="node37" href="$classSgPointerAssignOp.html" title="This class represents a Fortran pointer assignment. It is not some weird compound assignment operator..." alt="" coords="311,1728,447,1755"/>
+<area shape="rect" id="node38" href="$classSgPowerOp.html" title=" " alt="" coords="333,1779,425,1805"/>
+<area shape="rect" id="node39" href="$classSgRshiftOp.html" title=" " alt="" coords="333,1829,424,1856"/>
+<area shape="rect" id="node40" href="$classSgScopeOp.html" title="This class was part of CC++ support from a long time ago." alt="" coords="333,1880,425,1907"/>
+<area shape="rect" id="node41" href="$classSgSIMDBinaryOp.html" title=" " alt="" coords="315,1931,442,1957"/>
+<area shape="rect" id="node42" href="$classSgSIMDBroadcast.html" title=" " alt="" coords="313,1981,444,2008"/>
+<area shape="rect" id="node43" href="$classSgSIMDExplicitGather.html" title=" " alt="" coords="301,2032,456,2059"/>
+<area shape="rect" id="node44" href="$classSgSIMDGather.html" title=" " alt="" coords="323,2083,434,2109"/>
+<area shape="rect" id="node45" href="$classSgSIMDLoad.html" title=" " alt="" coords="329,2133,429,2160"/>
+<area shape="rect" id="node46" href="$classSgSIMDPartialStore.html" title=" " alt="" coords="309,2184,449,2211"/>
+<area shape="rect" id="node47" href="$classSgSIMDScalarStore.html" title=" " alt="" coords="309,2235,449,2261"/>
+<area shape="rect" id="node48" href="$classSgSIMDScatter.html" title=" " alt="" coords="321,2285,436,2312"/>
+<area shape="rect" id="node49" href="$classSgSIMDStore.html" title=" " alt="" coords="327,2336,430,2363"/>
+<area shape="rect" id="node50" href="$classSgSpaceshipOp.html" title=" " alt="" coords="321,2387,437,2413"/>
+<area shape="rect" id="node51" href="$classSgSubtractOp.html" title=" " alt="" coords="327,2437,431,2464"/>
+<area shape="rect" id="node52" href="$classSgUserDefinedBinaryOp.html" title=" " alt="" coords="296,2488,461,2515"/>
+<area shape="rect" id="node2" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="5,1247,108,1273"/>
+</map>

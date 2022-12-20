@@ -1,0 +1,15 @@
+<map id="SgIOStatement" name="SgIOStatement">
+<area shape="rect" id="node1" title=" " alt="" coords="152,259,264,285"/>
+<area shape="rect" id="node3" href="$classSgBackspaceStatement.html" title=" " alt="" coords="312,5,475,32"/>
+<area shape="rect" id="node4" href="$classSgCloseStatement.html" title=" " alt="" coords="327,56,459,83"/>
+<area shape="rect" id="node5" href="$classSgEndfileStatement.html" title=" " alt="" coords="324,107,463,133"/>
+<area shape="rect" id="node6" href="$classSgFlushStatement.html" title=" " alt="" coords="328,157,459,184"/>
+<area shape="rect" id="node7" href="$classSgInquireStatement.html" title=" " alt="" coords="325,208,462,235"/>
+<area shape="rect" id="node8" href="$classSgOpenStatement.html" title=" " alt="" coords="329,259,458,285"/>
+<area shape="rect" id="node9" href="$classSgPrintStatement.html" title=" " alt="" coords="331,309,456,336"/>
+<area shape="rect" id="node10" href="$classSgReadStatement.html" title=" " alt="" coords="329,360,458,387"/>
+<area shape="rect" id="node11" href="$classSgRewindStatement.html" title=" " alt="" coords="322,411,465,437"/>
+<area shape="rect" id="node12" href="$classSgWaitStatement.html" title=" " alt="" coords="331,461,455,488"/>
+<area shape="rect" id="node13" href="$classSgWriteStatement.html" title=" " alt="" coords="329,512,457,539"/>
+<area shape="rect" id="node2" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="5,259,104,285"/>
+</map>

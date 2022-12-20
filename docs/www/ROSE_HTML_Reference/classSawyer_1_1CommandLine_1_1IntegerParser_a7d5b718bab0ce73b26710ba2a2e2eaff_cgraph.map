@@ -1,0 +1,5 @@
+<map id="Sawyer::CommandLine::IntegerParser::instance" name="Sawyer::CommandLine::IntegerParser::instance">
+<area shape="rect" id="node1" title="Allocating constructor." alt="" coords="5,39,171,80"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1CommandLine_1_1IntegerParser.html#a747e7b3c26a08fec7c713052182393e6" title="Constructor for derived classes." alt="" coords="219,5,413,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1CommandLine_1_1ValueParser.html#a3377b055a88084d382694b9edb40ef0f" title="Property: functor responsible for saving a parsed value in user storage." alt="" coords="229,71,403,112"/>
+</map>

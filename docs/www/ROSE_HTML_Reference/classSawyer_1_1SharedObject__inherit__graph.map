@@ -1,0 +1,17 @@
+<map id="Sawyer::SharedObject" name="Sawyer::SharedObject">
+<area shape="rect" id="node1" title="Base class for reference counted objects." alt="" coords="5,437,159,464"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Buffer.html" title=" " alt="" coords="608,18,784,59"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Buffer.html" title=" " alt="" coords="624,93,768,149"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Buffer.html" title=" " alt="" coords="621,193,771,234"/>
+<area shape="rect" id="node5" href="$classRose_1_1CommandLine_1_1SelfTest.html" title="Base class for self tests." alt="" coords="232,279,385,321"/>
+<area shape="rect" id="node6" href="$classRose_1_1Progress.html" title="A general, thread&#45;safe way to report progress made on some task." alt="" coords="252,345,365,372"/>
+<area shape="rect" id="node7" href="$classSawyer_1_1CommandLine_1_1SwitchAction.html" title="Base class for switch actions." alt="" coords="229,397,388,438"/>
+<area shape="rect" id="node8" href="$classSawyer_1_1CommandLine_1_1ValueAugmenter.html" title="Base class for value agumentors." alt="" coords="229,462,388,503"/>
+<area shape="rect" id="node9" href="$classSawyer_1_1CommandLine_1_1ValueParser.html" title="Base class parsing a value from input." alt="" coords="229,527,388,569"/>
+<area shape="rect" id="node10" href="$classSawyer_1_1CommandLine_1_1ValueSaver.html" title=" " alt="" coords="229,593,388,634"/>
+<area shape="rect" id="node11" href="$classSawyer_1_1Container_1_1Buffer.html" title="Base class for all buffers." alt="" coords="239,94,378,135"/>
+<area shape="rect" id="node12" href="$classSawyer_1_1Document_1_1Markup_1_1Function.html" title="Base class for markup functions." alt="" coords="216,658,401,699"/>
+<area shape="rect" id="node13" href="$classSawyer_1_1Message_1_1Destination.html" title="Base class for all types of message destinations." alt="" coords="208,724,409,751"/>
+<area shape="rect" id="node14" href="$classSawyer_1_1Message_1_1Gang.html" title=" " alt="" coords="225,775,392,801"/>
+<area shape="rect" id="node15" href="$classSawyer_1_1Message_1_1Prefix.html" title="Information printed at the beginning of each free&#45;format message." alt="" coords="224,825,393,852"/>
+</map>

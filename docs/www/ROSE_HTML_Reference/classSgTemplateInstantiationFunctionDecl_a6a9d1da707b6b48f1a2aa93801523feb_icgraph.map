@@ -1,0 +1,4 @@
+<map id="SgTemplateInstantiationFunctionDecl::get_templateDeclaration" name="SgTemplateInstantiationFunctionDecl::get_templateDeclaration">
+<area shape="rect" id="node1" title="Returns pointer to SgTemplateDeclaration from which instantiation is generated." alt="" coords="296,13,508,54"/>
+<area shape="rect" id="node2" href="$namespaceSageInterface.html#a404510d4e75e1303dbfbfe9ada829802" title="This function detects template instantiations that are relevant when filters are used." alt="" coords="5,5,248,61"/>
+</map>

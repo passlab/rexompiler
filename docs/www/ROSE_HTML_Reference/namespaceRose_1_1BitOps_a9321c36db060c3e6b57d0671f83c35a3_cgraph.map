@@ -1,0 +1,5 @@
+<map id="Rose::BitOps::shiftRightSigned" name="Rose::BitOps::shiftRightSigned">
+<area shape="rect" id="node1" title="Right shift replicating MSB." alt="" coords="5,23,171,65"/>
+<area shape="rect" id="node2" href="$namespaceRose_1_1BitOps.html#a783a1aebad1bb0912713ec77c0a776df" title="Most significant bit." alt="" coords="234,5,369,32"/>
+<area shape="rect" id="node3" href="$namespaceRose_1_1BitOps.html#a414c323f0bf9e11a81b116cfb6efdb59" title="Right shift a value." alt="" coords="219,56,384,83"/>
+</map>

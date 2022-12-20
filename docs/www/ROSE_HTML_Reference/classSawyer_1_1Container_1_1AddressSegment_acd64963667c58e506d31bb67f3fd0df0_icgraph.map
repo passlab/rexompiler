@@ -1,0 +1,7 @@
+<map id="Sawyer::Container::AddressSegment::buffer" name="Sawyer::Container::AddressSegment::buffer">
+<area shape="rect" id="node1" title="Property: buffer." alt="" coords="451,100,613,141"/>
+<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1AddressMap.html#a2ac1bbe4c8188403070b62fbd6e85fa9" title="Copy constructor." alt="" coords="209,5,385,47"/>
+<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1AddressMap.html#a300a26b869a20b7c773f75f7c3d75e04" title="Check map consistency." alt="" coords="192,71,403,112"/>
+<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1AddressMap.html#aafc28dc1c26b66b2142eefa1bf13f074" title="Writes data from the supplied buffer." alt="" coords="5,100,144,141"/>
+<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1AddressSegment.html#acf2c6ac9df6aeacd7cdfe6cc16efc6f7" title="Create a segment that points to a static buffer." alt="" coords="206,187,389,243"/>
+</map>
