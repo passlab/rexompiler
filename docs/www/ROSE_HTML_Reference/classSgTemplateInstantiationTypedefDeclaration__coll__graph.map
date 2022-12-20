@@ -1,6 +1,0 @@
-<map id="SgTemplateInstantiationTypedefDeclaration" name="SgTemplateInstantiationTypedefDeclaration">
-<area shape="rect" id="node1" title=" " alt="" coords="12,288,220,329"/>
-<area shape="rect" id="node2" href="$classSgTypedefDeclaration.html" title="This class represents the notion of a typedef declaration." alt="" coords="47,95,198,121"/>
-<area shape="rect" id="node4" href="$classSgTemplateTypedefDeclaration.html" title=" " alt="" coords="153,199,356,225"/>
-<area shape="rect" id="node3" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="86,5,159,32"/>
-</map>

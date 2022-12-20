@@ -1,8 +1,0 @@
-<map id="SgFortranDo" name="SgFortranDo">
-<area shape="rect" id="node1" title=" " alt="" coords="237,216,333,243"/>
-<area shape="rect" id="node2" href="$classSgScopeStatement.html" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="5,5,140,32"/>
-<area shape="rect" id="node6" href="$classSgBasicBlock.html" title="This class represents the concept of a block (not a basic block from control flow analysis)." alt="" coords="93,118,197,145"/>
-<area shape="rect" id="node3" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="416,5,519,32"/>
-<area shape="rect" id="node4" href="$classSgLabelRefExp.html" title=" " alt="" coords="525,118,639,145"/>
-<area shape="rect" id="node5" title="STL class." alt="" coords="205,5,285,32"/>
-</map>

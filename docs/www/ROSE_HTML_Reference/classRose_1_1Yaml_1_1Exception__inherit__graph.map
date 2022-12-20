@@ -1,7 +1,0 @@
-<map id="Rose::Yaml::Exception" name="Rose::Yaml::Exception">
-<area shape="rect" id="node1" title="Base class for YAML exceptions." alt="" coords="177,56,333,83"/>
-<area shape="rect" id="node3" href="$classRose_1_1Yaml_1_1InternalException.html" title="Internal exception." alt="" coords="388,5,587,32"/>
-<area shape="rect" id="node4" href="$classRose_1_1Yaml_1_1OperationException.html" title="Operation exception." alt="" coords="381,56,593,83"/>
-<area shape="rect" id="node5" href="$classRose_1_1Yaml_1_1ParsingException.html" title="Parsing exception." alt="" coords="387,107,587,133"/>
-<area shape="rect" id="node2" title="STL class." alt="" coords="5,56,129,83"/>
-</map>

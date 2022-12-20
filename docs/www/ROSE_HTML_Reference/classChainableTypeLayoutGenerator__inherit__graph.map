@@ -1,8 +1,0 @@
-<map id="ChainableTypeLayoutGenerator" name="ChainableTypeLayoutGenerator">
-<area shape="rect" id="node1" title="Basic type layout engine – handles bookkeeping, plus handing typedefs and." alt="" coords="5,122,209,149"/>
-<area shape="rect" id="node2" href="$classCustomizedPrimitiveTypeLayoutGenerator.html" title="Layout generator for customized primitive types, mostly for UPC relying on Berkeley runtime library n..." alt="" coords="263,5,474,47"/>
-<area shape="rect" id="node3" href="$classI386PrimitiveTypeLayoutGenerator.html" title="Layout generator for i386 primitive types." alt="" coords="257,71,480,98"/>
-<area shape="rect" id="node4" href="$classNonpackedTypeLayoutGenerator.html" title="Layout generator for i386 ABI&#45;like struct layout." alt="" coords="263,122,475,149"/>
-<area shape="rect" id="node5" href="$classSystemPrimitiveTypeLayoutGenerator.html" title="Layout generator for the native system (uses sizeof)" alt="" coords="276,173,461,215"/>
-<area shape="rect" id="node6" href="$classX86__64PrimitiveTypeLayoutGenerator.html" title="Layout generator for x86&#45;64 primitive types." alt="" coords="277,239,461,280"/>
-</map>

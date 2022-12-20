@@ -1,6 +1,0 @@
-<map id="SgNaryOp" name="SgNaryOp">
-<area shape="rect" id="node1" title="This class represents the notion of an n&#45;ary operator. This node is intended for use with Python." alt="" coords="112,80,195,107"/>
-<area shape="rect" id="node3" href="$classSgNaryBooleanOp.html" title="This class represents the notion of an n&#45;ary boolean operation. This node is intended for use with Py..." alt="" coords="5,155,136,181"/>
-<area shape="rect" id="node4" href="$classSgNaryComparisonOp.html" title="This class represents the notion of an n&#45;ary comparison operation. This node is intended for use with..." alt="" coords="161,155,314,181"/>
-<area shape="rect" id="node2" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="102,5,205,32"/>
-</map>

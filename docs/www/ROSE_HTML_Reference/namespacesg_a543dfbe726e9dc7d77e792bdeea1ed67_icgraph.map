@@ -1,6 +1,0 @@
-<map id="sg::dispatch" name="sg::dispatch">
-<area shape="rect" id="node1" title="uncovers the type of SgNode and passes it to an function &quot;handle&quot; in RoseVisitor." alt="" coords="200,56,293,83"/>
-<area shape="rect" id="node2" href="$namespacesg.html#a0850c99e6499729a88220eebe26ff8f3" title="implements the ancestor search" alt="" coords="28,5,129,32"/>
-<area shape="rect" id="node3" href="$namespacesg.html#a07a8e70871f1b119dc12459530bdd0b4" title="asserts that n has type SageNode" alt="" coords="5,56,152,83"/>
-<area shape="rect" id="node4" href="$structsg_1_1TraversalClass.html#aacb244d73746c7be91783151d61e598a" title="this method is called at every traversed node." alt="" coords="13,107,145,149"/>
-</map>

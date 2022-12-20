@@ -1,5 +1,0 @@
-<map id="Sawyer::Container::DistinctList::position" name="Sawyer::Container::DistinctList::position">
-<area shape="rect" id="node1" title="Determine the position of an item." alt="" coords="5,39,147,80"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Map.html#a4e0130d82c5890b18ba8f70497c53c72" title="Determine if a key exists." alt="" coords="195,5,333,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1DistinctList.html#a53b3d1e38fd5c7e03436b01cf5737b8f" title="Number of items in list." alt="" coords="195,71,333,112"/>
-</map>

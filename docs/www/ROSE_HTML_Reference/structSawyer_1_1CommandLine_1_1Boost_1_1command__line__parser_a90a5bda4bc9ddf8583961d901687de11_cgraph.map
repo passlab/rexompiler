@@ -1,5 +1,0 @@
-<map id="Sawyer::CommandLine::Boost::command_line_parser::run" name="Sawyer::CommandLine::Boost::command_line_parser::run">
-<area shape="rect" id="node1" title="Parse command&#45;line." alt="" coords="5,31,164,87"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1CommandLine_1_1ParserResult.html#af75c7bf22bda158f25eeb38a42e8da3d" title="Saves parsed values in switch&#45;specified locations." alt="" coords="212,5,371,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1CommandLine_1_1Parser.html#acadfcac830d7855ae15b39ef9ce1aebb" title="Parse program arguments." alt="" coords="212,71,371,112"/>
-</map>

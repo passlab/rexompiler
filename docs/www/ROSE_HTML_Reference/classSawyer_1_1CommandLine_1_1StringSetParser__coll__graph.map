@@ -1,4 +1,0 @@
-<map id="Sawyer::CommandLine::StringSetParser" name="Sawyer::CommandLine::StringSetParser">
-<area shape="rect" id="node1" title="Parses any one of a set of strings." alt="" coords="5,95,164,136"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1CommandLine_1_1ValueParser.html" title="Base class parsing a value from input." alt="" coords="5,5,164,47"/>
-</map>

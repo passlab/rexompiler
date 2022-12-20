@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::BitVectorSupport::shiftRight" name="Sawyer::Container::BitVectorSupport::shiftRight">
-<area shape="rect" id="node1" title="Shift bits right." alt="" coords="247,71,432,112"/>
-<area shape="rect" id="node2" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a998f3549a2581b19987078144c8b8180" title="Rotate bits to the right." alt="" coords="5,5,199,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1BitVector.html#a4cae171495eb17cc43aad8c7715dd95a" title="Shift bits right." alt="" coords="32,71,172,112"/>
-<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a47fe4587b61f4f030664a721f7707fb7" title="Shift bits right arithmetically." alt="" coords="9,137,195,193"/>
-</map>

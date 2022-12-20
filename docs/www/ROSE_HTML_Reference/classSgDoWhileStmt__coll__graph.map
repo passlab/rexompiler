@@ -1,5 +1,0 @@
-<map id="SgDoWhileStmt" name="SgDoWhileStmt">
-<area shape="rect" id="node1" title="This class represents the concept of a do&#45;while statement." alt="" coords="29,160,145,187"/>
-<area shape="rect" id="node2" href="$classSgScopeStatement.html" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="130,83,265,109"/>
-<area shape="rect" id="node3" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="5,5,104,32"/>
-</map>

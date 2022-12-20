@@ -1,8 +1,0 @@
-<map id="SgFunctionModifier" name="SgFunctionModifier">
-<area shape="rect" id="node1" title=" " alt="" coords="357,160,492,187"/>
-<area shape="rect" id="node2" href="$classSgModifier.html" title="This class represents the base class of a number of IR nodes define modifiers within the C++ grammar." alt="" coords="35,5,119,32"/>
-<area shape="rect" id="node3" href="$structSgFunctionModifier_1_1opencl__work__group__size__t.html" title=" " alt="" coords="5,56,148,112"/>
-<area shape="rect" id="node4" title="STL class." alt="" coords="37,157,117,184"/>
-<area shape="rect" id="node5" href="$classSgType.html" title="This class represents the base class for all types." alt="" coords="43,208,110,235"/>
-<area shape="rect" id="node6" title=" " alt="" coords="11,259,143,285"/>
-</map>

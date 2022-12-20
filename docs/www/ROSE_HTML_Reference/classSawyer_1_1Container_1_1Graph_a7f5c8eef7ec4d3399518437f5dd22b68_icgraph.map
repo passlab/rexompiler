@@ -1,8 +1,0 @@
-<map id="Sawyer::Container::Graph::isValidVertex" name="Sawyer::Container::Graph::isValidVertex">
-<area shape="rect" id="node1" title="Determines whether the vertex iterator is valid." alt="" coords="287,136,428,177"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#ac256ec051a8f4131b7c9c69714440132" title="Erases all edges connecting two vertices." alt="" coords="53,5,191,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Graph.html#ae86b2b0fa4d18f2e2b26163abc2bc049" title="Erases a vertex and its incident edges." alt="" coords="53,71,191,112"/>
-<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1Algorithm.html#a1b60b61ef69fc5f908ea7c6a80cf8394" title="Find immediate pre&#45; or post&#45;dominators." alt="" coords="5,136,239,177"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Graph.html#aca47cbae60d1de95c7e0fcf97ea0b868" title="Insert a new edge." alt="" coords="53,201,191,243"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1Graph.html#a5619eaf28c45c31baf8082da17bfea15" title="Optionally insert a new edge." alt="" coords="39,267,205,308"/>
-</map>

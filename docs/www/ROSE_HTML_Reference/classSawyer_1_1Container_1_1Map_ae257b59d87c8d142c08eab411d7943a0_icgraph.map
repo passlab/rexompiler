@@ -1,8 +1,0 @@
-<map id="Sawyer::Container::Map::keys" name="Sawyer::Container::Map::keys">
-<area shape="rect" id="node1" title="Iterators for container keys." alt="" coords="237,173,376,215"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Attribute_1_1Storage.html#a213844c7c45851df5ab19a697c7c5f1d" title="Returns ID numbers for all IDs stored in this container." alt="" coords="27,5,167,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Map.html#ae67c479658753dcb4f519bc3d2fc091e" title=" " alt="" coords="5,71,189,141"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1IntervalMap.html#a385bbee53b2f1ba14ad34af9211f067d" title="Returns the maximum scalar key." alt="" coords="23,166,172,222"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1IntervalMap.html#ae4ba034340ba48ff172b39cc80f3dc6e" title="Iterators for traversing keys." alt="" coords="23,246,172,302"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1IntervalMap.html#a6e7d3909845b1efa5c5849f60faa3192" title="Returns the minimum scalar key." alt="" coords="23,326,172,382"/>
-</map>

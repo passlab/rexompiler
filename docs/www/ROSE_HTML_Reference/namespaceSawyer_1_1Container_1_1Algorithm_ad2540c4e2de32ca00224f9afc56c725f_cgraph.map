@@ -1,5 +1,0 @@
-<map id="Sawyer::Container::Algorithm::findCommonIsomorphicSubgraphs" name="Sawyer::Container::Algorithm::findCommonIsomorphicSubgraphs">
-<area shape="rect" id="node1" title="Find common isomorphic subgraphs." alt="" coords="5,35,228,91"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Algorithm_1_1CommonSubgraphIsomorphism.html#a795c5207d979a168d4f95814ce62f380" title="Perform the common subgraph isomorphism analysis." alt="" coords="276,5,571,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Algorithm_1_1CommonSubgraphIsomorphism.html#abfe2af18d37f66365a12764777912f7a" title="Property: reference to the solution callback." alt="" coords="289,71,557,127"/>
-</map>

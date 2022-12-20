@@ -1,5 +1,0 @@
-<map id="SgUnaryOp" name="SgUnaryOp">
-<area shape="rect" id="node1" title="This class represents the notion of a unary operator. It is derived from a SgExpression because opera..." alt="" coords="11,184,102,211"/>
-<area shape="rect" id="node2" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="5,5,108,32"/>
-<area shape="rect" id="node3" href="$classSgType.html" title="This class represents the base class for all types." alt="" coords="155,95,222,121"/>
-</map>

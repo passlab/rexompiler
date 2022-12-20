@@ -1,4 +1,0 @@
-<map id="Transformation Support Library" name="Transformation Support Library">
-<area shape="rect" id="node1" title="General support for transformations." alt="" coords="224,5,383,45"/>
-<area shape="rect" id="node2" href="$group__localNodeQueryLib.html" title="This library simplifies the development of useful queries upon individual nodes of the AST." alt="" coords="5,13,176,38"/>
-</map>

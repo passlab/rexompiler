@@ -1,7 +1,0 @@
-<map id="Rose::CodeGen::Factory::access" name="Rose::CodeGen::Factory::access">
-<area shape="rect" id="node1" title="Build expression to access a member of the parent expression." alt="" coords="5,74,173,115"/>
-<area shape="rect" id="node2" href="$namespaceSageBuilder.html#adba56e2de16e0681dfd75189ca8b9813" title=" " alt="" coords="221,5,405,32"/>
-<area shape="rect" id="node3" href="$namespaceSageBuilder.html#afceffa67624b74b511775d5aef4c084b" title=" " alt="" coords="228,56,399,83"/>
-<area shape="rect" id="node4" href="$classSgExpression.html#a7b1a79435bcd1e3d0a9843fdcb85f910" title="unparsing support for pragmas" alt="" coords="233,107,394,133"/>
-<area shape="rect" id="node5" href="$classRose_1_1CodeGen_1_1Factory.html#a2777d37926e91db7e0ee3fb909b93171" title="Return an expression or type referencing the object." alt="" coords="229,158,397,199"/>
-</map>

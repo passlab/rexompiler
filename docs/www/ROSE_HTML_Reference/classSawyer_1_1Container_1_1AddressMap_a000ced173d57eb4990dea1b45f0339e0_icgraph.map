@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::AddressMap::nodes" name="Sawyer::Container::AddressMap::nodes">
-<area shape="rect" id="node1" title="Iterator range for nodes." alt="" coords="451,64,589,105"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1AddressMap.html#a300a26b869a20b7c773f75f7c3d75e04" title="Check map consistency." alt="" coords="192,5,403,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1AddressMap.html#aafc28dc1c26b66b2142eefa1bf13f074" title="Writes data from the supplied buffer." alt="" coords="5,35,144,76"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1AddressMap.html#a11968c68b0efd523b24e371bff818613" title="Find node containing address." alt="" coords="220,123,375,164"/>
-</map>

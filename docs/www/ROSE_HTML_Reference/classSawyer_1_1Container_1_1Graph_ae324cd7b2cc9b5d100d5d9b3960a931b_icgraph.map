@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::Graph::nEdges" name="Sawyer::Container::Graph::nEdges">
-<area shape="rect" id="node1" title="Total number of edges." alt="" coords="223,71,361,112"/>
-<area shape="rect" id="node2" href="$namespaceSawyer_1_1Container_1_1Algorithm.html#aac379b7e16d94b797e46721fee801ec3" title="IDs of all edges." alt="" coords="5,5,175,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Graph.html#a113a33fdc000dd6071a918f1c0e1e264" title="Determines whether the edge iterator is valid." alt="" coords="21,71,159,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Graph.html#ab82bc59ee50d3abc71543b59a8983b58" title="Assignment." alt="" coords="21,136,159,177"/>
-</map>

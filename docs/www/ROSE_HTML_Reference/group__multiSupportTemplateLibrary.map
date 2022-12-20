@@ -1,6 +1,0 @@
-<map id="Multi&#45;Support Template Library" name="Multi&#45;Support Template Library">
-<area shape="rect" id="node1" href="$group__ROSE__3rdPartyLibrariesGroup.html" title="A number of independent librres used in ROSE." alt="" coords="5,42,176,67"/>
-<area shape="rect" id="node4" title="This library is a separable part of the ROSE project." alt="" coords="224,35,380,75"/>
-<area shape="rect" id="node2" href="$group__DOTGenerationStuff.html" title="This library defines the DOT output (graphical representation) of the AST." alt="" coords="428,5,603,45"/>
-<area shape="rect" id="node3" href="$group__PDFGenerationStuff.html" title="This class defines the PDF output of the AST." alt="" coords="430,70,601,95"/>
-</map>

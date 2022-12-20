@@ -1,5 +1,0 @@
-<map id="SgTypeDefault" name="SgTypeDefault">
-<area shape="rect" id="node1" title="This class represents a default type used for some IR nodes (see below)." alt="" coords="31,95,139,121"/>
-<area shape="rect" id="node2" href="$classSgType.html" title="This class represents the base class for all types." alt="" coords="5,5,72,32"/>
-<area shape="rect" id="node3" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="97,5,170,32"/>
-</map>

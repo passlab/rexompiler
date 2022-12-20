@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::DistinctList::pushFront" name="Sawyer::Container::DistinctList::pushFront">
-<area shape="rect" id="node1" title="Insert item at front of list if distinct." alt="" coords="5,71,160,112"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Map.html#a22e8858d4e808c2922aa1181bf98cbb2" title="Find a node by key." alt="" coords="208,5,347,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Map.html#aa966f345ed4157539fdb8d5dfdd8cd0b" title="Insert or update a key/value pair." alt="" coords="208,71,347,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Map.html#ac84f9aa7542c3a97d4e8c15f6abb0472" title="Iterators for container nodes." alt="" coords="208,136,347,177"/>
-</map>

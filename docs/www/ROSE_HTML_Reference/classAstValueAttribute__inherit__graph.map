@@ -1,7 +1,0 @@
-<map id="AstValueAttribute&lt; T &gt;" name="AstValueAttribute&lt; T &gt;">
-<area shape="rect" id="node1" title="IR node attribute that stores a copyable value." alt="" coords="145,78,300,105"/>
-<area shape="rect" id="node3" href="$classAstValueAttribute.html" title=" " alt="" coords="510,5,641,47"/>
-<area shape="rect" id="node4" href="$classAstValueAttribute.html" title=" " alt="" coords="510,71,641,112"/>
-<area shape="rect" id="node5" href="$classAstValueAttribute.html" title=" " alt="" coords="485,136,665,177"/>
-<area shape="rect" id="node2" href="$classAstAttribute.html" title="Base class for all IR node attribute values." alt="" coords="5,78,96,105"/>
-</map>

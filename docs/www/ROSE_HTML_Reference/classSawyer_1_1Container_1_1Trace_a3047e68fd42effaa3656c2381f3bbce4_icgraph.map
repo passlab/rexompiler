@@ -1,7 +1,0 @@
-<map id="Sawyer::Container::Trace::successors" name="Sawyer::Container::Trace::successors">
-<area shape="rect" id="node1" title="Ordered successors for a label." alt="" coords="192,104,331,145"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Trace.html#adf7a85eab2f24c52217a91c0d3af9edd" title="Append a label to a trace." alt="" coords="5,5,144,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Trace.html#af25aeac54fdeabb14dc9eb14de166527" title="Low&#45;level debugging information." alt="" coords="5,71,144,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Trace.html#abbab034c0954934774e4db4a8fb6a107" title="Total length of a trace, or the number of times a label appears in a trace." alt="" coords="5,136,144,177"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Trace.html#a666bba40697060287978807529d94f47" title="Traversal of the trace labels." alt="" coords="5,201,144,243"/>
-</map>

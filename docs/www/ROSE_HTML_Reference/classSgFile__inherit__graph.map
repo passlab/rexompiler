@@ -1,6 +1,0 @@
-<map id="SgFile" name="SgFile">
-<area shape="rect" id="node1" title="This class represents a source file for a project (which may contian many source files and or directo..." alt="" coords="91,80,150,107"/>
-<area shape="rect" id="node3" href="$classSgSourceFile.html" title=" " alt="" coords="5,155,105,181"/>
-<area shape="rect" id="node4" href="$classSgUnknownFile.html" title=" " alt="" coords="130,155,245,181"/>
-<area shape="rect" id="node2" href="$classSgSupport.html" title="This class represents the base class of a numbr of IR nodes that don&#39;t otherwise fit into the existin..." alt="" coords="79,5,162,32"/>
-</map>

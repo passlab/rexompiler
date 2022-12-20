@@ -1,7 +1,0 @@
-<map id="Sawyer::Container::Graph::Edge::value" name="Sawyer::Container::Graph::Edge::value">
-<area shape="rect" id="node1" title="User&#45;defined value." alt="" coords="499,93,637,135"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#a5126c672c46a466ea78d7a2bd05b366d" title="Erases an edge." alt="" coords="280,5,419,47"/>
-<area shape="rect" id="node3" href="$namespaceSawyer_1_1Container_1_1Algorithm.html#a161193a07d366622dfefaa55cb6eb940" title="Erase parallel edges." alt="" coords="5,27,200,83"/>
-<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1Algorithm.html#aec93e4ec85b0e53249e4a71fbdf60976" title="Create a subgraph." alt="" coords="248,123,451,164"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Graph.html#ab82bc59ee50d3abc71543b59a8983b58" title="Assignment." alt="" coords="280,188,419,229"/>
-</map>

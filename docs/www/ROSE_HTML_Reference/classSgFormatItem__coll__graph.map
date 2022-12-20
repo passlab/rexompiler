@@ -1,6 +1,0 @@
-<map id="SgFormatItem" name="SgFormatItem">
-<area shape="rect" id="node1" title=" " alt="" coords="77,171,182,197"/>
-<area shape="rect" id="node2" href="$classSgSupport.html" title="This class represents the base class of a numbr of IR nodes that don&#39;t otherwise fit into the existin..." alt="" coords="5,5,88,32"/>
-<area shape="rect" id="node4" href="$classSgFormatItemList.html" title=" " alt="" coords="69,81,195,108"/>
-<area shape="rect" id="node3" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="221,81,323,108"/>
-</map>

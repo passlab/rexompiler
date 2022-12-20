@@ -1,8 +1,0 @@
-<map id="SageInterface::getEnclosingNode" name="SageInterface::getEnclosingNode">
-<area shape="rect" id="node1" title="Find a node by type using upward traversal." alt="" coords="5,123,223,149"/>
-<area shape="rect" id="node2" href="$classSgNode.html#aa8723e70f7512769a015e94ca03224d2" title="returns a string representing the class name" alt="" coords="303,5,450,32"/>
-<area shape="rect" id="node3" href="$classSgDeclarationStatement.html#a513421834e1f61e1cc936b02f9562363" title="This is an access function for the SgDeclarationStatement::p_definingDeclaration data member (see tha..." alt="" coords="293,57,460,98"/>
-<area shape="rect" id="node4" href="$classSgNode.html#a1afd70bdff1ae22521e6199f0fddb8e9" title="File information containing filename, line number, column number, and if the SgNode is a part of a ne..." alt="" coords="303,123,450,149"/>
-<area shape="rect" id="node5" href="$classSgDeclarationStatement.html#ac60b5ad6aa43536c27e02840e2b90d92" title="This is an access function for the SgDeclarationStatement::p_firstNondefiningDeclaration data member ..." alt="" coords="271,174,483,215"/>
-<area shape="rect" id="node6" href="$classSgNode.html#a3384eb2fc572b3371cd9681121cbefa3" title="Access function for parent node." alt="" coords="307,240,446,267"/>
-</map>

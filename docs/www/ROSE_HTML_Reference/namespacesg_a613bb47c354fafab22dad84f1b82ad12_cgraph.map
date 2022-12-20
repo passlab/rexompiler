@@ -1,4 +1,0 @@
-<map id="sg::assert_sage_type" name="sg::assert_sage_type">
-<area shape="rect" id="node1" title="asserts that n has type SageNode" alt="" coords="5,5,152,32"/>
-<area shape="rect" id="node2" href="$namespacesg.html#a543dfbe726e9dc7d77e792bdeea1ed67" title="uncovers the type of SgNode and passes it to an function &quot;handle&quot; in RoseVisitor." alt="" coords="200,5,293,32"/>
-</map>

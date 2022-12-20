@@ -1,7 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classSgTreeTraversal.html" title=" " alt="" coords="5,71,235,112"/>
-<area shape="rect" id="node2" href="$classAstBottomUpProcessing.html" title="Attribute Evaluator for synthesized attributes." alt="" coords="283,71,477,112"/>
-<area shape="rect" id="node3" href="$classAstReverseBranchSynProcessing.html" title=" " alt="" coords="525,5,745,47"/>
-<area shape="rect" id="node4" href="$classAstReversePrefixSynProcessing.html" title=" " alt="" coords="529,71,742,112"/>
-<area shape="rect" id="node5" href="$classSgBottomUpProcessing.html" title=" " alt="" coords="538,136,733,177"/>
-</map>

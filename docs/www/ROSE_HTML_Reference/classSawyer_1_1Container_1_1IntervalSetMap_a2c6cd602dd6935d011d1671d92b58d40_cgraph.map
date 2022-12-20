@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::IntervalSetMap::getIntersection" name="Sawyer::Container::IntervalSetMap::getIntersection">
-<area shape="rect" id="node1" title="Intersection of values over an interval of keys." alt="" coords="5,86,209,127"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1IntervalMap.html#acd6f088274649e06edc5911fa74c3379" title="Finds all nodes overlapping the specified interval." alt="" coords="269,5,407,61"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1IntervalMap.html#a698c1549cbf43028b6cb07721d449405" title=" " alt="" coords="257,86,419,127"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Map_1_1Node.html#a3a6bfd720946fa7459f32e07a5d6f8f1" title="Key part of key/value node." alt="" coords="269,151,407,193"/>
-</map>

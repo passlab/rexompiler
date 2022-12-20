@@ -1,7 +1,0 @@
-<map id="SgOmpWhenClause" name="SgOmpWhenClause">
-<area shape="rect" id="node1" title=" " alt="" coords="196,301,337,328"/>
-<area shape="rect" id="node2" href="$classSgOmpClause.html" title=" " alt="" coords="5,95,112,121"/>
-<area shape="rect" id="node3" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="137,95,239,121"/>
-<area shape="rect" id="node4" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="319,5,417,32"/>
-<area shape="rect" id="node5" title=" " alt="" coords="485,95,659,121"/>
-</map>

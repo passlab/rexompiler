@@ -1,4 +1,0 @@
-<map id="Rose::Progress::isFinished" name="Rose::Progress::isFinished">
-<area shape="rect" id="node1" title="Predicate indicating whether the task is finished." alt="" coords="263,5,443,32"/>
-<area shape="rect" id="node2" href="$classRose_1_1Progress.html#a43bc2d7d974fa2682c730c3078f00bc0" title="Invoke the specified function at regular intervals." alt="" coords="5,5,215,32"/>
-</map>

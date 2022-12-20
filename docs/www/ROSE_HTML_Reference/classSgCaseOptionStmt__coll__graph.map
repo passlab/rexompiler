@@ -1,6 +1,0 @@
-<map id="SgCaseOptionStmt" name="SgCaseOptionStmt">
-<area shape="rect" id="node1" title="This class represents the concept of a C and C++ case option (used within a switch statement)." alt="" coords="73,109,207,136"/>
-<area shape="rect" id="node2" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="5,5,104,32"/>
-<area shape="rect" id="node3" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="129,5,231,32"/>
-<area shape="rect" id="node4" title="STL class." alt="" coords="272,5,352,32"/>
-</map>

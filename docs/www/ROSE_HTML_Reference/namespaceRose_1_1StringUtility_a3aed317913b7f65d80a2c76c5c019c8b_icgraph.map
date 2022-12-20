@@ -1,5 +1,0 @@
-<map id="Rose::StringUtility::cEscape" name="Rose::StringUtility::cEscape">
-<area shape="rect" id="node1" title="Escapes characters that are special to C/C++." alt="" coords="207,50,336,91"/>
-<area shape="rect" id="node2" href="$classRose_1_1CommandLine_1_1SuffixMultiplierParser.html#aee92715d76fdd5b61e95473b14692962" title="Parse from a C++ string." alt="" coords="5,5,159,61"/>
-<area shape="rect" id="node3" href="$classRose_1_1CommandLine_1_1IntervalParser.html#a4c7ed7903fdaa2c395fb46855f583c8b" title="Parse an interval from a C++ string." alt="" coords="5,86,159,127"/>
-</map>

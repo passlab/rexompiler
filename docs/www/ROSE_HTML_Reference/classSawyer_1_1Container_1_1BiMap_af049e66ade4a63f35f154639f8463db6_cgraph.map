@@ -1,5 +1,0 @@
-<map id="Sawyer::Container::BiMap::erase" name="Sawyer::Container::BiMap::erase">
-<area shape="rect" id="node1" title="Erase a specific map entry." alt="" coords="5,39,144,80"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Map.html#a1f60680d988c2d7cec0782a8ff8bf1b8" title="Remove a node with specified key." alt="" coords="192,5,331,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Map.html#a4e0130d82c5890b18ba8f70497c53c72" title="Determine if a key exists." alt="" coords="192,71,331,112"/>
-</map>

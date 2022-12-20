@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::BitVector::rotateRight" name="Sawyer::Container::BitVector::rotateRight">
-<area shape="rect" id="node1" title="Rotate bits right." alt="" coords="5,71,153,112"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1BitVector.html#a01cec791efd731cfbe2157d7721b7dfe" title="Raw data for vector." alt="" coords="229,5,367,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1BitVector.html#a6cd958a91e697da6ae26aa3cc91b2ba9" title="Interval representing the entire vector." alt="" coords="229,71,367,112"/>
-<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a998f3549a2581b19987078144c8b8180" title="Rotate bits to the right." alt="" coords="201,136,395,177"/>
-</map>

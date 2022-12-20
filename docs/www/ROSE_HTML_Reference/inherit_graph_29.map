@@ -1,5 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,160,32"/>
-<area shape="rect" id="node2" href="$classAstPrePostOrderTraversal.html" title=" " alt="" coords="208,5,383,32"/>
-<area shape="rect" id="node3" href="$classAstCycleTest.html" title="AstCycleTest is based on the successor information of SgNodes (the same information that is used by t..." alt="" coords="431,5,532,32"/>
-</map>

@@ -1,5 +1,0 @@
-<map id="Rose::BitOps::shiftRightSigned" name="Rose::BitOps::shiftRightSigned">
-<area shape="rect" id="node1" title="Right shift low bits without affecting other bits." alt="" coords="5,23,171,65"/>
-<area shape="rect" id="node2" href="$namespaceRose_1_1BitOps.html#a900e85ca0be624ba118ee2f20d6e7a27" title="Most significant bit within lsb region." alt="" coords="235,5,389,32"/>
-<area shape="rect" id="node3" href="$namespaceRose_1_1BitOps.html#a669180862a0fec43cc30b7fb74808b7b" title="Right shift part of a value without affecting the rest." alt="" coords="219,56,405,83"/>
-</map>

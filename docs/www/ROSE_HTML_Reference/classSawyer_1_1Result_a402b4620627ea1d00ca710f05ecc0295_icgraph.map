@@ -1,9 +1,0 @@
-<map id="Sawyer::Result::error" name="Sawyer::Result::error">
-<area shape="rect" id="node1" title="Convert to Optional&lt;E&gt;." alt="" coords="236,147,383,174"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Result.html#ad6c5bec2dae314b15d9f3e4e74181b15" title="Returns true if this result contains the specified error value." alt="" coords="12,5,181,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Result.html#ad34b2c823b2f3c966d82ec9bd393ef00" title="Test whether this result does not have the specified Error value." alt="" coords="7,71,186,98"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Result.html#a3f38253a64b654c931ad6ac42b5ebbb0" title="Assign an Error value to this result." alt="" coords="9,122,184,149"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Result.html#aa8a6bcd3f032a473e28be2bae09b2093" title="Test whether this result has the specified Error value." alt="" coords="5,173,188,199"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Result.html#a0e76c807b5726e4ec4c2a90f3ee85ca6" title="Returns the contained Ok value, or calls a function." alt="" coords="18,223,175,250"/>
-<area shape="rect" id="node7" href="$classSawyer_1_1Result.html#a9f92e079c99b8b6f28f80c1627fa40f4" title="Returns the value or throws an exception." alt="" coords="13,274,180,301"/>
-</map>

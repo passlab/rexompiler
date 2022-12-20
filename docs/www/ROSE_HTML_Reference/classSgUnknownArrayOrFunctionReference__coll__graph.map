@@ -1,6 +1,0 @@
-<map id="SgUnknownArrayOrFunctionReference" name="SgUnknownArrayOrFunctionReference">
-<area shape="rect" id="node1" title=" " alt="" coords="19,171,207,212"/>
-<area shape="rect" id="node2" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="5,5,108,32"/>
-<area shape="rect" id="node3" href="$classSgExprListExp.html" title="This class represents the concept of a C and C++ expression list." alt="" coords="199,81,309,108"/>
-<area shape="rect" id="node4" title="STL class." alt="" coords="333,81,413,108"/>
-</map>

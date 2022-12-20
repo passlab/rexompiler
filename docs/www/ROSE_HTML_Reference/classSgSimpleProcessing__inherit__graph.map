@@ -1,7 +1,0 @@
-<map id="SgSimpleProcessing" name="SgSimpleProcessing">
-<area shape="rect" id="node1" title=" " alt="" coords="193,80,336,107"/>
-<area shape="rect" id="node3" href="$classAstNodeVisitMapping.html" title=" " alt="" coords="5,155,153,181"/>
-<area shape="rect" id="node4" href="$classAstTextAttributesHandling.html" title=" " alt="" coords="177,155,352,181"/>
-<area shape="rect" id="node5" href="$classNewCallGraph_1_1CallGraph.html" title=" " alt="" coords="377,155,550,181"/>
-<area shape="rect" id="node2" href="$classAstSimpleProcessing.html" title="Class for traversing the AST." alt="" coords="191,5,338,32"/>
-</map>

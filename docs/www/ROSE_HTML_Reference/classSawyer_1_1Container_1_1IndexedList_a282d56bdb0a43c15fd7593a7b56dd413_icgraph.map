@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::IndexedList::pushBack" name="Sawyer::Container::IndexedList::pushBack">
-<area shape="rect" id="node1" title="Insert at the back of the list." alt="" coords="243,86,397,127"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1IndexedList.html#a1fcc2877e661579568ca22bb97f2298b" title="Copy constructor." alt="" coords="5,5,195,61"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Stack.html#a98329791485bbb0f45b543102f166c18" title="Push new item onto stack." alt="" coords="25,86,175,127"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Stack.html#a827f618ecdbe25141c45dc856fa89b17" title="Construct a stack from an iterator range." alt="" coords="21,151,179,193"/>
-</map>

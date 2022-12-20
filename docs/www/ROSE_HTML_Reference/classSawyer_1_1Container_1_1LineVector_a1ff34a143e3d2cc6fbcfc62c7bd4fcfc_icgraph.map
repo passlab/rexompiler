@@ -1,5 +1,0 @@
-<map id="Sawyer::Container::LineVector::nCharacters" name="Sawyer::Container::LineVector::nCharacters">
-<area shape="rect" id="node1" title="Number of characters." alt="" coords="244,39,407,80"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1LineVector.html#a5eb592680bc8c14a7b0f1030ee1fc952" title="Character at file offset." alt="" coords="27,5,174,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Lexer_1_1TokenStream.html#a448b48c324c1155d3a5b7593f25cb894" title="Returns the last line index and character offset." alt="" coords="5,71,196,112"/>
-</map>

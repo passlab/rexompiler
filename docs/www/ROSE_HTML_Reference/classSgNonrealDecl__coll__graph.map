@@ -1,7 +1,0 @@
-<map id="SgNonrealDecl" name="SgNonrealDecl">
-<area shape="rect" id="node1" title=" " alt="" coords="283,187,394,213"/>
-<area shape="rect" id="node2" href="$classSgDeclarationStatement.html" title="This class represents the concept of a declaration statement." alt="" coords="213,96,377,123"/>
-<area shape="rect" id="node3" href="$classSgDeclarationScope.html" title=" " alt="" coords="5,5,147,32"/>
-<area shape="rect" id="node4" href="$classSgNonrealType.html" title=" " alt="" coords="601,96,711,123"/>
-<area shape="rect" id="node5" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="735,96,809,123"/>
-</map>

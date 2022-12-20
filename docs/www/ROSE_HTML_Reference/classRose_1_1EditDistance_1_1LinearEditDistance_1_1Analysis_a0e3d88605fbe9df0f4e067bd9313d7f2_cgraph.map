@@ -1,5 +1,0 @@
-<map id="Rose::EditDistance::LinearEditDistance::Analysis::compute" name="Rose::EditDistance::LinearEditDistance::Analysis::compute">
-<area shape="rect" id="node1" title="Compute edit distance." alt="" coords="5,45,145,101"/>
-<area shape="rect" id="node2" href="$classRose_1_1EditDistance_1_1LinearEditDistance_1_1Analysis.html#a550c2d329390a1192dcb72f7481d1628" title="Compute edit distance." alt="" coords="193,5,333,61"/>
-<area shape="rect" id="node3" href="$classRose_1_1EditDistance_1_1LinearEditDistance_1_1Analysis.html#aeea98b424ccf58f333379d2a1594caf6" title="Associate an AST with this analysis." alt="" coords="193,85,333,141"/>
-</map>

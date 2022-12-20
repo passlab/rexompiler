@@ -1,5 +1,0 @@
-<map id="SgExpression" name="SgExpression">
-<area shape="rect" id="node1" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="36,185,139,212"/>
-<area shape="rect" id="node2" href="$classSgLocatedNode.html" title="This class represents the notion of an expression or statement which has a position within the source..." alt="" coords="169,109,283,136"/>
-<area shape="rect" id="node3" href="$classSg__File__Info.html" title="This class represents the location of the code associated with the IR node in the original source cod..." alt="" coords="5,5,100,32"/>
-</map>

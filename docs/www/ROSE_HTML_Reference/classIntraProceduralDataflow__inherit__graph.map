@@ -1,6 +1,0 @@
-<map id="IntraProceduralDataflow" name="IntraProceduralDataflow">
-<area shape="rect" id="node1" title=" " alt="" coords="78,80,241,107"/>
-<area shape="rect" id="node3" href="$classIntraPartitionDataflow.html" title=" " alt="" coords="5,155,153,181"/>
-<area shape="rect" id="node4" href="$classIntraUnitDataflow.html" title=" " alt="" coords="177,155,301,181"/>
-<area shape="rect" id="node2" href="$classIntraProceduralAnalysis.html" title=" " alt="" coords="79,5,239,32"/>
-</map>

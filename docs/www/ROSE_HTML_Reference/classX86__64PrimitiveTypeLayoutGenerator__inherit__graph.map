@@ -1,5 +1,0 @@
-<map id="X86_64PrimitiveTypeLayoutGenerator" name="X86_64PrimitiveTypeLayoutGenerator">
-<area shape="rect" id="node1" title="Layout generator for x86&#45;64 primitive types." alt="" coords="18,80,202,121"/>
-<area shape="rect" id="node3" href="$classX86__64__VSPrimitiveTypeLayoutGenerator.html" title="Slight modification for Visual Studio – long is 4 bytes, not 8." alt="" coords="5,169,215,211"/>
-<area shape="rect" id="node2" href="$classChainableTypeLayoutGenerator.html" title="Basic type layout engine – handles bookkeeping, plus handing typedefs and." alt="" coords="8,5,212,32"/>
-</map>

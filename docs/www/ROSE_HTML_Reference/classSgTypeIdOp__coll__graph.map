@@ -1,5 +1,0 @@
-<map id="SgTypeIdOp" name="SgTypeIdOp">
-<area shape="rect" id="node1" title=" " alt="" coords="9,184,104,211"/>
-<area shape="rect" id="node2" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="5,5,108,32"/>
-<area shape="rect" id="node3" href="$classSgType.html" title="This class represents the base class for all types." alt="" coords="178,95,245,121"/>
-</map>

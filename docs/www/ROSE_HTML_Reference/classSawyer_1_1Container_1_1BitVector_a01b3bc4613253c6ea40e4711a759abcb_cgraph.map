@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::BitVector::shiftLeft" name="Sawyer::Container::BitVector::shiftLeft">
-<area shape="rect" id="node1" title="Shift bits left." alt="" coords="5,71,144,112"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1BitVector.html#a01cec791efd731cfbe2157d7721b7dfe" title="Raw data for vector." alt="" coords="211,5,349,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1BitVector.html#a6cd958a91e697da6ae26aa3cc91b2ba9" title="Interval representing the entire vector." alt="" coords="211,71,349,112"/>
-<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a2b3367be46207c33fbf910613c4a4ebf" title="Shift bits left." alt="" coords="192,136,368,177"/>
-</map>

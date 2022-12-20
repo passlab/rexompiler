@@ -1,8 +1,0 @@
-<map id="Sawyer::Container::IntervalMap::insert" name="Sawyer::Container::IntervalMap::insert">
-<area shape="rect" id="node1" title="Insert a key/value pair." alt="" coords="203,173,341,214"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1IntervalSet.html#a8ba417febcca9d50fc16258470d6d176" title="Insert specified values." alt="" coords="10,5,150,61"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1IntervalSet.html#ad824ae22039a8d85cfbd0c7592e39928" title=" " alt="" coords="10,85,150,141"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1IntervalMap.html#af596a5898489cd4c86320bd5a1aa4307" title="Insert values from another container." alt="" coords="5,165,155,221"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1IntervalMap.html#a5eec51514347acfef76b9b4a65654bcc" title="Copy constructor." alt="" coords="5,245,155,301"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1IntervalMap.html#a86104e9747b2afce6b47d1fa30ffa5df" title="Assignment operator." alt="" coords="5,325,155,381"/>
-</map>

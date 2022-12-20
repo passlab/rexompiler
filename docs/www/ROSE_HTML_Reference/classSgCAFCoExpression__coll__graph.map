@@ -1,5 +1,0 @@
-<map id="SgCAFCoExpression" name="SgCAFCoExpression">
-<area shape="rect" id="node1" title=" " alt="" coords="5,187,152,213"/>
-<area shape="rect" id="node2" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="53,5,155,32"/>
-<area shape="rect" id="node3" href="$classSgVarRefExp.html" title="This class represents the variable refernece in expressions." alt="" coords="177,96,279,123"/>
-</map>

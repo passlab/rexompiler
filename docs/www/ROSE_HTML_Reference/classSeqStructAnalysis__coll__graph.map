@@ -1,8 +1,0 @@
-<map id="SeqStructAnalysis" name="SeqStructAnalysis">
-<area shape="rect" id="node1" title=" " alt="" coords="777,143,908,169"/>
-<area shape="rect" id="node2" href="$classIntraFWDataflow.html" title=" " alt="" coords="37,5,159,32"/>
-<area shape="rect" id="node3" href="$classConstrGraphAnalysis.html" title=" " alt="" coords="513,91,660,117"/>
-<area shape="rect" id="node5" href="$classDivAnalysis.html" title=" " alt="" coords="301,125,393,152"/>
-<area shape="rect" id="node4" href="$classLiveDeadVarsAnalysis.html" title=" " alt="" coords="21,112,175,139"/>
-<area shape="rect" id="node6" title=" " alt="" coords="5,235,191,261"/>
-</map>

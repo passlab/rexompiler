@@ -1,5 +1,0 @@
-<map id="Sawyer::ThreadWorkers::start" name="Sawyer::ThreadWorkers::start">
-<area shape="rect" id="node1" title="Start workers and return." alt="" coords="241,23,404,65"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1ThreadWorkers.html#a35920c84ba82dee177bdf951f785afde" title="Synchronously processes tasks." alt="" coords="5,5,193,32"/>
-<area shape="rect" id="node3" href="$namespaceSawyer.html#a2915b8557d519cab7eca2bf908682d76" title="Performs work in parallel." alt="" coords="21,56,177,83"/>
-</map>

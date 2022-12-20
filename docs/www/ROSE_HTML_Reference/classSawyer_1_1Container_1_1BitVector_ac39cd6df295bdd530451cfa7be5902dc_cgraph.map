@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::BitVector::nSet" name="Sawyer::Container::BitVector::nSet">
-<area shape="rect" id="node1" title="Number of set bits." alt="" coords="5,71,144,112"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1BitVector.html#a01cec791efd731cfbe2157d7721b7dfe" title="Raw data for vector." alt="" coords="201,5,339,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1BitVector.html#a6cd958a91e697da6ae26aa3cc91b2ba9" title="Interval representing the entire vector." alt="" coords="201,71,339,112"/>
-<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a5ed4cf10f38ee25fa4ac40481563f4be" title="Number of set bits." alt="" coords="192,136,348,177"/>
-</map>

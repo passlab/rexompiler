@@ -1,6 +1,0 @@
-<map id="Rose::BitOps::shiftRightLsb" name="Rose::BitOps::shiftRightLsb">
-<area shape="rect" id="node1" title="Right shift part of a value without affecting the rest." alt="" coords="248,56,435,83"/>
-<area shape="rect" id="node2" href="$namespaceRose_1_1BitOps.html#a83aaca0d4c69f2ccea0760ce9bb7b780" title="Rotate low&#45;order bits left without affecting others." alt="" coords="10,5,195,32"/>
-<area shape="rect" id="node3" href="$namespaceRose_1_1BitOps.html#adeddc6732630a7b864c568c3d9836a15" title="Rotate low&#45;order bits right without affecting others." alt="" coords="5,56,200,83"/>
-<area shape="rect" id="node4" href="$namespaceRose_1_1BitOps.html#a7b67777bac19513082678f5a0846bd0e" title="Right shift low bits without affecting other bits." alt="" coords="20,107,185,149"/>
-</map>

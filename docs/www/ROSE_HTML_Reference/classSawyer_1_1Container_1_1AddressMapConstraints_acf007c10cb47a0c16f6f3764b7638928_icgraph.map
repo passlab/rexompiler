@@ -1,8 +1,0 @@
-<map id="Sawyer::Container::AddressMapConstraints::atOrBefore" name="Sawyer::Container::AddressMapConstraints::atOrBefore">
-<area shape="rect" id="node1" title="Limit addresses." alt="" coords="235,137,397,193"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#affbbd3989a3b740ff8baf475599cec47" title="Anchor at a certain interval." alt="" coords="5,5,187,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1AddressMap.html#a208c19edd648c2a14bdbc0ea3b573f4f" title="Constraint: address upper bound." alt="" coords="13,71,179,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#ad16896935c25c7824c776254f8178855" title="Limit addresses." alt="" coords="15,137,177,193"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#a631a9d37d2f3a6c3f2302646bb29ebaa" title="Limit addreses." alt="" coords="15,217,177,273"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#a0e35e4c4083628449d94d1279c6bc7fd" title="Limit addresses." alt="" coords="15,297,177,353"/>
-</map>

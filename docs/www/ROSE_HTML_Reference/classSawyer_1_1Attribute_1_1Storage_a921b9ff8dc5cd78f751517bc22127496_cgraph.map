@@ -1,6 +1,0 @@
-<map id="Sawyer::Attribute::Storage::attributeOrElse" name="Sawyer::Attribute::Storage::attributeOrElse">
-<area shape="rect" id="node1" title="Return an attribute or a specified value." alt="" coords="5,57,168,98"/>
-<area shape="rect" id="node2" href="$namespaceSawyer.html#ae9d882eb287c9dc0a842c4e6ea0c02cc" title="Check for valid boost version or abort." alt="" coords="228,5,371,32"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Map.html#a42d97cd5a229611a9f6d5fcdcc0fa279" title="Lookup and return a value or nothing." alt="" coords="230,57,369,98"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Optional.html#aa0ffa4543d7dd5f1800f43bf60231856" title="Obtain value or something else." alt="" coords="216,123,383,149"/>
-</map>

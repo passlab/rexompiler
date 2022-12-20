@@ -1,8 +1,0 @@
-<map id="Sawyer::Container::AddressMapConstraints::limit" name="Sawyer::Container::AddressMapConstraints::limit">
-<area shape="rect" id="node1" title="Limit matching length." alt="" coords="208,129,371,185"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1AddressMap.html#a11968c68b0efd523b24e371bff818613" title="Find node containing address." alt="" coords="5,5,160,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1AddressMap.html#ac130692f6531282e29f00bbde4fba4fd" title="Constraint: limit matched size." alt="" coords="13,71,152,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1AddressMap.html#a9c8520e0f4a70e6d310cce43b9e5d146" title="Minimum or maximum address that satisfies constraints." alt="" coords="13,136,152,177"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1AddressMap.html#a9719e774896dcd76f6fc70442ce73d33" title="Reads data into the supplied buffer." alt="" coords="13,201,152,243"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1AddressMap.html#a652030e760430ced6f1a39690e173122" title="Writes data from the supplied buffer." alt="" coords="13,267,152,308"/>
-</map>

@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::GraphIteratorBiMap::GraphIteratorBiMap" name="Sawyer::Container::GraphIteratorBiMap::GraphIteratorBiMap">
-<area shape="rect" id="node1" title="Construct a new map by composition of two maps." alt="" coords="5,71,148,127"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1GraphIteratorMap.html#a955802a2c5cd68caf62307df74eb808a" title="Does the key exist in the map?" alt="" coords="196,5,363,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1GraphIteratorBiMap.html#a31b430b85c1cbe7d3a04f294afc19f4d" title="Insert a mapping from edge or vertex a to edge or vertex b." alt="" coords="208,71,351,127"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1GraphIteratorMap.html#ae7850e242558c2692924f0b800894729" title="Iterators for container nodes." alt="" coords="196,152,363,193"/>
-</map>

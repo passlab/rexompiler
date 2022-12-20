@@ -1,9 +1,0 @@
-<map id="Sawyer::Container::AddressMap::findFreeSpace" name="Sawyer::Container::AddressMap::findFreeSpace">
-<area shape="rect" id="node1" title="Find free space." alt="" coords="5,169,192,211"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Interval.html#a0c203b5387ef72aa3bcf8815ec8b7c16" title="Returns upper limit." alt="" coords="252,5,391,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Interval.html#aab81e29f7ededeac6d008e6dfaa1bf19" title="True if interval is empty." alt="" coords="252,71,391,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Interval.html#abb62f08552ec4762be55510d97e7a233" title="Returns lower limit." alt="" coords="252,136,391,177"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Interval.html#a75d8ca4e63b1180f6d2194a0ec79440d" title="Size of interval." alt="" coords="252,201,391,243"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1AddressMap.html#a216440bf5700dcf32389269e8e1ae1d9" title="Find unmapped interval." alt="" coords="240,267,403,308"/>
-<area shape="rect" id="node7" href="$classSawyer_1_1Container_1_1Interval.html#afef17d3137598cbd8a997969657d746b" title="Construct an interval that covers the entire domain." alt="" coords="252,332,391,373"/>
-</map>

@@ -1,6 +1,0 @@
-<map id="InterProceduralDataflow" name="InterProceduralDataflow">
-<area shape="rect" id="node1" title=" " alt="" coords="151,80,313,107"/>
-<area shape="rect" id="node3" href="$classContextInsensitiveInterProceduralDataflow.html" title=" " alt="" coords="5,155,224,196"/>
-<area shape="rect" id="node4" href="$classUnstructuredPassInterDataflow.html" title=" " alt="" coords="248,162,453,189"/>
-<area shape="rect" id="node2" href="$classInterProceduralAnalysis.html" title=" " alt="" coords="152,5,312,32"/>
-</map>

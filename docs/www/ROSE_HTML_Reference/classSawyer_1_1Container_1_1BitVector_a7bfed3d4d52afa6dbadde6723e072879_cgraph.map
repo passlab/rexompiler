@@ -1,7 +1,0 @@
-<map id="Sawyer::Container::BitVector::equalTo" name="Sawyer::Container::BitVector::equalTo">
-<area shape="rect" id="node1" title="Checks whether the bits of one vector are equal to the bits of the other." alt="" coords="5,104,144,145"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1BitVector.html#a01cec791efd731cfbe2157d7721b7dfe" title="Raw data for vector." alt="" coords="210,5,349,47"/>
-<area shape="rect" id="node3" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#aa34e3f3ec9da5b48f618db562a06899f" title="Compare bits for equality." alt="" coords="192,71,367,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1BitVector.html#a6cd958a91e697da6ae26aa3cc91b2ba9" title="Interval representing the entire vector." alt="" coords="210,136,349,177"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1BitVector.html#a49f05ce7f5af5ee0e9869a84db392301" title="Size of vector in bits." alt="" coords="210,201,349,243"/>
-</map>

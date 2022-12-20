@@ -1,7 +1,0 @@
-<map id="SgSwitchStatement" name="SgSwitchStatement">
-<area shape="rect" id="node1" title="This class represents the concept of a switch." alt="" coords="210,276,349,303"/>
-<area shape="rect" id="node2" href="$classSgScopeStatement.html" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="305,185,440,212"/>
-<area shape="rect" id="node3" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="138,95,237,121"/>
-<area shape="rect" id="node4" href="$classSgLabelRefExp.html" title=" " alt="" coords="5,5,119,32"/>
-<area shape="rect" id="node5" title="STL class." alt="" coords="465,185,545,212"/>
-</map>

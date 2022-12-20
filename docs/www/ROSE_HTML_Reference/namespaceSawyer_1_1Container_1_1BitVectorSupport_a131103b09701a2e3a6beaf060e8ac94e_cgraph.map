@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::BitVectorSupport::rotateLeft" name="Sawyer::Container::BitVectorSupport::rotateLeft">
-<area shape="rect" id="node1" title="Rotate bits to the left." alt="" coords="5,51,189,92"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Interval.html#aab81e29f7ededeac6d008e6dfaa1bf19" title="True if interval is empty." alt="" coords="479,5,617,47"/>
-<area shape="rect" id="node3" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a998f3549a2581b19987078144c8b8180" title="Rotate bits to the right." alt="" coords="237,51,431,92"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Interval.html#a75d8ca4e63b1180f6d2194a0ec79440d" title="Size of interval." alt="" coords="479,84,617,125"/>
-</map>

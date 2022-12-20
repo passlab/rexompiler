@@ -1,5 +1,0 @@
-<map id="SageBuilder::buildBinaryExpression_nfi" name="SageBuilder::buildBinaryExpression_nfi">
-<area shape="rect" id="node1" title="Template function to build a binary expression of type T, taking care of parent pointers,..." alt="" coords="5,27,169,69"/>
-<area shape="rect" id="node2" href="$classSgNode.html#a83017efa378d75b031330739c963749d" title="All nodes in the AST contain a reference to a parent node." alt="" coords="233,5,372,32"/>
-<area shape="rect" id="node3" href="$namespaceSageInterface.html#a4b77d52bd66dc9f133d8e899cd8c5d4f" title="Set the source code positon for the current (input) node." alt="" coords="217,57,388,98"/>
-</map>

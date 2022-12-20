@@ -1,4 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classRose_1_1Combinatorics_1_1Hasher_1_1IHasherMaker.html" title="Common subclass all the classes that construct Hashers (for the HasherFactory)" alt="" coords="5,5,168,47"/>
-<area shape="rect" id="node2" href="$classRose_1_1Combinatorics_1_1Hasher_1_1HasherMaker.html" title="Templated to create any Hasher and register it with HasherFactory." alt="" coords="216,5,407,47"/>
-</map>

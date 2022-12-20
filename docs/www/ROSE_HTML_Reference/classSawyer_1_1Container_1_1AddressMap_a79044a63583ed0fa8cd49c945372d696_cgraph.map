@@ -1,8 +1,0 @@
-<map id="Sawyer::Container::AddressMap::prune" name="Sawyer::Container::AddressMap::prune">
-<area shape="rect" id="node1" title="Prune away addresses that match constraints." alt="" coords="5,209,144,250"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#a5b3e52622c9de8ea77207c7572fece57" title="Construct new constraints from existing address constraints." alt="" coords="238,5,401,61"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1IntervalMap.html#a797f0a6bd63f8debdcd0ccb2fcecf0f3" title="Erase the specified interval." alt="" coords="192,85,447,185"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1IntervalSet.html#a8ba417febcca9d50fc16258470d6d176" title="Insert specified values." alt="" coords="250,209,389,250"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1IntervalSet.html#a0e226046a0d838309882964ee0fe315c" title="Iterator range for all intervals actually stored by this set." alt="" coords="248,274,391,315"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1Map_1_1Node.html#a3a6bfd720946fa7459f32e07a5d6f8f1" title="Key part of key/value node." alt="" coords="250,339,389,381"/>
-</map>

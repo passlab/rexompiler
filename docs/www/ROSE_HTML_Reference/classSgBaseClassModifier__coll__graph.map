@@ -1,5 +1,0 @@
-<map id="SgBaseClassModifier" name="SgBaseClassModifier">
-<area shape="rect" id="node1" title=" " alt="" coords="5,171,153,197"/>
-<area shape="rect" id="node2" href="$classSgModifier.html" title="This class represents the base class of a number of IR nodes define modifiers within the C++ grammar." alt="" coords="32,5,116,32"/>
-<area shape="rect" id="node3" href="$classSgAccessModifier.html" title=" " alt="" coords="95,81,223,108"/>
-</map>

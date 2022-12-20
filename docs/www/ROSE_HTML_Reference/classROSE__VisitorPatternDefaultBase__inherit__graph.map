@@ -1,6 +1,0 @@
-<map id="ROSE_VisitorPatternDefaultBase" name="ROSE_VisitorPatternDefaultBase">
-<area shape="rect" id="node1" title=" " alt="" coords="54,80,273,107"/>
-<area shape="rect" id="node3" href="$classIntraDFTransferVisitor.html" title="Apply an analysis A&#39;s transfer function at a particular AST node type." alt="" coords="5,162,156,189"/>
-<area shape="rect" id="node4" href="$structsg_1_1VisitDispatcher.html" title=" " alt="" coords="181,155,314,196"/>
-<area shape="rect" id="node2" href="$classROSE__VisitorPattern.html" title=" " alt="" coords="90,5,237,32"/>
-</map>

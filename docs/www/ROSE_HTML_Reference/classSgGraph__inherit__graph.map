@@ -1,6 +1,0 @@
-<map id="SgGraph" name="SgGraph">
-<area shape="rect" id="node1" title=" " alt="" coords="162,80,235,107"/>
-<area shape="rect" id="node3" href="$classSgIncidenceDirectedGraph.html" title=" " alt="" coords="5,155,184,181"/>
-<area shape="rect" id="node4" href="$classSgIncidenceUndirectedGraph.html" title=" " alt="" coords="208,155,400,181"/>
-<area shape="rect" id="node2" href="$classSgSupport.html" title="This class represents the base class of a numbr of IR nodes that don&#39;t otherwise fit into the existin..." alt="" coords="157,5,240,32"/>
-</map>

@@ -1,5 +1,0 @@
-<map id="Sawyer::Container::BitVectorSupport::leastSignificantSetBit" name="Sawyer::Container::BitVectorSupport::leastSignificantSetBit">
-<area shape="rect" id="node1" title="Index of least significant set bit." alt="" coords="239,35,457,91"/>
-<area shape="rect" id="node2" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#adfcbf585635b282b0403decf667968b1" title="True if all bits are clear." alt="" coords="5,5,191,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1BitVector.html#adf610e953d43ef062915e4c6c6d0ee14" title="Find the least significant set bit." alt="" coords="11,71,185,127"/>
-</map>

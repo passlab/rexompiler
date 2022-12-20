@@ -1,9 +1,0 @@
-<map id="Sawyer::Container::Buffer::size" name="Sawyer::Container::Buffer::size">
-<area shape="rect" id="node1" title="Size of buffer." alt="" coords="423,135,561,177"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1AllocatingBuffer.html#a8b24c963fee7a128cdc9d256a3e2aee3" title="Create a new copy of buffer data." alt="" coords="5,11,156,53"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1MappedBuffer.html#af35bd1a6a1b47f637643c478c33ba08c" title="Create a new copy of buffer data." alt="" coords="11,106,150,147"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1NullBuffer.html#ab0488456b3a65d5ce49ba3e63f79130a" title="Construct a new buffer." alt="" coords="220,106,359,147"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1AllocatingBuffer.html#a5b72f2883a1d05c2b6c09d8410d7bf93" title="Allocating constructor." alt="" coords="204,41,375,82"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1StaticBuffer.html#a7033524d4f99774a85d6685080b7625a" title="Construct from caller&#45;supplied data." alt="" coords="215,223,363,265"/>
-<area shape="rect" id="node7" href="$classSawyer_1_1Container_1_1MappedBuffer.html#a2f94b8ac39640c69fb9cae2e0e5c94aa" title="Change the size of the buffer." alt="" coords="216,289,363,330"/>
-</map>

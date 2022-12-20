@@ -1,4 +1,0 @@
-<map id="Sawyer::Message::SyslogSink" name="Sawyer::Message::SyslogSink">
-<area shape="rect" id="node1" title="Sends messages to the syslog daemon." alt="" coords="5,80,207,107"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Message_1_1Destination.html" title="Base class for all types of message destinations." alt="" coords="5,5,207,32"/>
-</map>

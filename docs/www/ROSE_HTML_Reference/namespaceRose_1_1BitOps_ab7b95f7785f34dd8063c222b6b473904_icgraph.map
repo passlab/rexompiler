@@ -1,5 +1,0 @@
-<map id="Rose::BitOps::allLsb" name="Rose::BitOps::allLsb">
-<area shape="rect" id="node1" title="Set or clear the low&#45;order &#160;&#160;bits." alt="" coords="240,31,383,57"/>
-<area shape="rect" id="node2" href="$namespaceRose_1_1BitOps.html#a95fe0baf39928aedfa8588c31eff1182" title="Left shift part of a value without affecting the rest." alt="" coords="10,5,187,32"/>
-<area shape="rect" id="node3" href="$namespaceRose_1_1BitOps.html#a669180862a0fec43cc30b7fb74808b7b" title="Right shift part of a value without affecting the rest." alt="" coords="5,56,192,83"/>
-</map>

@@ -1,8 +1,0 @@
-<map id="Sawyer::Container::BitVectorSupport::subtract" name="Sawyer::Container::BitVectorSupport::subtract">
-<area shape="rect" id="node1" title="Subtract bits." alt="" coords="5,152,181,193"/>
-<area shape="rect" id="node2" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#ab0f84b9c0638d1b4785b9a9884420375" title="Add bits." alt="" coords="235,5,385,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Interval.html#a136b9afce8c48871c21c58dc9ecdc48f" title="Construct an interval from one endpoint and a size." alt="" coords="241,71,379,127"/>
-<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#aff6810c441e283e64b214bd4d9bbc0a6" title="Copy some bits." alt="" coords="231,152,389,193"/>
-<area shape="rect" id="node5" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#acbad33ae9f4ca7bfd6bb36e67229a87e" title="Invert bits." alt="" coords="229,217,391,259"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1Interval.html#a75d8ca4e63b1180f6d2194a0ec79440d" title="Size of interval." alt="" coords="241,283,379,324"/>
-</map>

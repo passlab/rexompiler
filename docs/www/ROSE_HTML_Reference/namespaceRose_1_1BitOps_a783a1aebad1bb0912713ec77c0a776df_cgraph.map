@@ -1,5 +1,0 @@
-<map id="Rose::BitOps::msb" name="Rose::BitOps::msb">
-<area shape="rect" id="node1" title="Most significant bit." alt="" coords="5,31,140,57"/>
-<area shape="rect" id="node2" href="$namespaceRose_1_1BitOps.html#aeb1469c40ae9e156464e551163391de1" title="Extract a single bit." alt="" coords="196,5,319,32"/>
-<area shape="rect" id="node3" href="$namespaceRose_1_1BitOps.html#ac58b5abeae90004b5a61a74a7ceebdde" title="Number of bits in a type or value." alt="" coords="188,56,327,83"/>
-</map>

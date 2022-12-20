@@ -1,4 +1,0 @@
-<map id="IntegerOps::signExtend2" name="IntegerOps::signExtend2">
-<area shape="rect" id="node1" title="Sign extend value." alt="" coords="5,5,172,32"/>
-<area shape="rect" id="node2" href="$namespaceIntegerOps.html#a3039e80c1785ef17ef236136e81da469" title="Returns true if the sign bit is set, false if clear." alt="" coords="220,5,361,32"/>
-</map>

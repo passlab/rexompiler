@@ -1,9 +1,0 @@
-<map id="Sawyer::Container::AddressMap::read" name="Sawyer::Container::AddressMap::read">
-<area shape="rect" id="node1" title="Reads data into the supplied buffer." alt="" coords="5,141,144,183"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1AddressMap.html#a300a26b869a20b7c773f75f7c3d75e04" title="Check map consistency." alt="" coords="192,112,403,153"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Map_1_1Node.html#a3a6bfd720946fa7459f32e07a5d6f8f1" title="Key part of key/value node." alt="" coords="451,5,589,47"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Interval.html#abb62f08552ec4762be55510d97e7a233" title="Returns lower limit." alt="" coords="451,72,589,113"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Interval.html#a75d8ca4e63b1180f6d2194a0ec79440d" title="Size of interval." alt="" coords="451,140,589,181"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1Map_1_1Node.html#aa7eca3d931f2ca3a2bc77ef7011afe00" title="Value part of key/value node." alt="" coords="451,211,589,252"/>
-<area shape="rect" id="node7" href="$classSawyer_1_1Container_1_1Interval.html#aab81e29f7ededeac6d008e6dfaa1bf19" title="True if interval is empty." alt="" coords="228,280,367,321"/>
-</map>

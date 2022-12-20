@@ -1,5 +1,0 @@
-<map id="SgCloseStatement" name="SgCloseStatement">
-<area shape="rect" id="node1" title=" " alt="" coords="11,215,143,241"/>
-<area shape="rect" id="node2" href="$classSgIOStatement.html" title=" " alt="" coords="114,139,226,165"/>
-<area shape="rect" id="node3" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="5,5,108,32"/>
-</map>

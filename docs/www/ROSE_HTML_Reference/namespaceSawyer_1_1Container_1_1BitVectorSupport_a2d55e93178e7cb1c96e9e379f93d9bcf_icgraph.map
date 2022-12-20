@@ -1,5 +1,0 @@
-<map id="Sawyer::Container::BitVectorSupport::toInteger" name="Sawyer::Container::BitVectorSupport::toInteger">
-<area shape="rect" id="node1" title="Convert a bit vector to an integer." alt="" coords="228,39,408,80"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1BitVector.html#a2615057433c0ff469c0e7454cf58a1fc" title="Interpret bits as an unsigned integer." alt="" coords="23,5,162,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1BitVector.html#ab6ee12d53023c66fbec2bf0e616d1911" title="Interpret bits as a signed integer." alt="" coords="5,71,180,112"/>
-</map>

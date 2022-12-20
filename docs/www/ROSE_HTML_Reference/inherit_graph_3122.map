@@ -1,9 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,177,144,203"/>
-<area shape="rect" id="node2" href="$classrose__graph__integer__edge__hash__multimap.html" title=" " alt="" coords="201,5,353,47"/>
-<area shape="rect" id="node3" href="$classrose__graph__integerpair__edge__hash__multimap.html" title=" " alt="" coords="201,71,354,112"/>
-<area shape="rect" id="node4" href="$classrose__graph__node__edge__hash__multimap.html" title=" " alt="" coords="199,136,355,177"/>
-<area shape="rect" id="node5" href="$classrose__graph__string__integer__hash__multimap.html" title=" " alt="" coords="192,201,363,243"/>
-<area shape="rect" id="node6" href="$classrose__graph__string__node__hash__multimap.html" title=" " alt="" coords="197,267,357,308"/>
-<area shape="rect" id="node7" href="$classrose__hash__multimap.html" title="Hash table support for symbol tables within ROSE." alt="" coords="206,333,349,359"/>
-</map>

@@ -1,7 +1,0 @@
-<map id="Sawyer::workInParallel" name="Sawyer::workInParallel">
-<area shape="rect" id="node1" title="Performs work in parallel." alt="" coords="5,111,161,138"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1ThreadWorkers.html#a3cf1b56e46c1b5c7d8f56cc412ddf223" title="Number of tasks that have completed." alt="" coords="209,5,372,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1ThreadWorkers.html#a8c7f810043fce98f5f25f5a3a8bec9e1" title="Tasks currently running." alt="" coords="209,71,372,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1ThreadWorkers.html#af94e460493129094b387e9ddbffd11a7" title="Start workers and return." alt="" coords="209,136,372,177"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1ThreadWorkers.html#a28bcb3888dc1b7027f82448b45d11eb3" title="Wait for work to complete." alt="" coords="209,201,372,243"/>
-</map>

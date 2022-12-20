@@ -1,6 +1,0 @@
-<map id="SageInterface::isTemplateInstantiationFromTemplateDeclarationSatisfyingFilter" name="SageInterface::isTemplateInstantiationFromTemplateDeclarationSatisfyingFilter">
-<area shape="rect" id="node1" title="This function detects template instantiations that are relevant when filters are used." alt="" coords="5,63,248,119"/>
-<area shape="rect" id="node2" href="$classSgDeclarationStatement.html#ac60b5ad6aa43536c27e02840e2b90d92" title="This is an access function for the SgDeclarationStatement::p_firstNondefiningDeclaration data member ..." alt="" coords="314,5,526,47"/>
-<area shape="rect" id="node3" href="$classSgTemplateInstantiationMemberFunctionDecl.html#ad9551393bbd65620fef53d3889403667" title="Returns pointer to SgTemplateDeclaration from which instantiation is generated." alt="" coords="296,71,544,112"/>
-<area shape="rect" id="node4" href="$classSgTemplateInstantiationFunctionDecl.html#a6a9d1da707b6b48f1a2aa93801523feb" title="Returns pointer to SgTemplateDeclaration from which instantiation is generated." alt="" coords="314,136,526,177"/>
-</map>

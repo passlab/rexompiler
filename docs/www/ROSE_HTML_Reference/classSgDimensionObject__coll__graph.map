@@ -1,6 +1,0 @@
-<map id="SgDimensionObject" name="SgDimensionObject">
-<area shape="rect" id="node1" title=" " alt="" coords="97,95,236,121"/>
-<area shape="rect" id="node2" href="$classSgSupport.html" title="This class represents the base class of a numbr of IR nodes that don&#39;t otherwise fit into the existin..." alt="" coords="5,5,88,32"/>
-<area shape="rect" id="node3" href="$classSgExprListExp.html" title="This class represents the concept of a C and C++ expression list." alt="" coords="112,5,221,32"/>
-<area shape="rect" id="node4" href="$classSgInitializedName.html" title="This class represents the notion of a declared variable." alt="" coords="245,5,373,32"/>
-</map>

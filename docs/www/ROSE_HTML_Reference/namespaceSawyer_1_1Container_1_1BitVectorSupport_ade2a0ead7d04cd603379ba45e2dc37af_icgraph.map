@@ -1,5 +1,0 @@
-<map id="Sawyer::Container::BitVectorSupport::processWord" name="Sawyer::Container::BitVectorSupport::processWord">
-<area shape="rect" id="node1" title="Invoke the a processor for a vector traversal." alt="" coords="236,39,441,80"/>
-<area shape="rect" id="node2" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#acc438763608a5808fa1d155f013d9e23" title="Traverses a range of bits." alt="" coords="9,5,185,47"/>
-<area shape="rect" id="node3" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a609864a5be23260d53d9a4da675ec412" title="Traverse two ranges of bits from low to high." alt="" coords="5,71,188,112"/>
-</map>

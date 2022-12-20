@@ -1,7 +1,0 @@
-<map id="SgExprListExp" name="SgExprListExp">
-<area shape="rect" id="node1" title="This class represents the concept of a C and C++ expression list." alt="" coords="107,80,216,107"/>
-<area shape="rect" id="node3" href="$classSgListExp.html" title="This class represents a list display." alt="" coords="5,155,88,181"/>
-<area shape="rect" id="node4" href="$classSgMatrixExp.html" title=" " alt="" coords="113,155,210,181"/>
-<area shape="rect" id="node5" href="$classSgTupleExp.html" title=" " alt="" coords="235,155,328,181"/>
-<area shape="rect" id="node2" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="110,5,213,32"/>
-</map>

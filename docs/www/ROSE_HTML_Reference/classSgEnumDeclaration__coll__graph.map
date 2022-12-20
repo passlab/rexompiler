@@ -1,8 +1,0 @@
-<map id="SgEnumDeclaration" name="SgEnumDeclaration">
-<area shape="rect" id="node1" title="This class represents the concept of an enum declaration." alt="" coords="515,112,654,139"/>
-<area shape="rect" id="node2" href="$classSgDeclarationStatement.html" title="This class represents the concept of a declaration statement." alt="" coords="5,7,169,33"/>
-<area shape="rect" id="node3" href="$classSgEnumType.html" title=" " alt="" coords="393,7,493,33"/>
-<area shape="rect" id="node4" href="$classSgScopeStatement.html" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="517,7,652,33"/>
-<area shape="rect" id="node5" href="$classSgType.html" title="This class represents the base class for all types." alt="" coords="677,7,743,33"/>
-<area shape="rect" id="node6" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="788,7,861,33"/>
-</map>

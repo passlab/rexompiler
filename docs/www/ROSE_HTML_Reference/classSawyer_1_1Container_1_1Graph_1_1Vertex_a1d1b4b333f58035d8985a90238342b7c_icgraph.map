@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::Graph::Vertex::value" name="Sawyer::Container::Graph::Vertex::value">
-<area shape="rect" id="node1" title="User&#45;defined value." alt="" coords="256,71,399,112"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#ae86b2b0fa4d18f2e2b26163abc2bc049" title="Erases a vertex and its incident edges." alt="" coords="37,5,176,47"/>
-<area shape="rect" id="node3" href="$namespaceSawyer_1_1Container_1_1Algorithm.html#aec93e4ec85b0e53249e4a71fbdf60976" title="Create a subgraph." alt="" coords="5,71,208,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Graph.html#ab82bc59ee50d3abc71543b59a8983b58" title="Assignment." alt="" coords="37,136,176,177"/>
-</map>

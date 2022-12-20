@@ -1,5 +1,0 @@
-<map id="Sawyer::Container::Graph::findEdgeKey" name="Sawyer::Container::Graph::findEdgeKey">
-<area shape="rect" id="node1" title="Finds an edge given its key." alt="" coords="5,39,144,80"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#a0c04596aa16ca7b324bceed8859f08f4" title="Iterators for all edges." alt="" coords="192,5,331,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Graph.html#a3989ef4e9f30d9210e80a1cb36acfe7b" title="Finds the edge with specified ID number." alt="" coords="192,71,331,112"/>
-</map>

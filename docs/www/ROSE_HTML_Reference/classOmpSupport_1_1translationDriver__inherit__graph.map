@@ -1,4 +1,0 @@
-<map id="OmpSupport::translationDriver" name="OmpSupport::translationDriver">
-<area shape="rect" id="node1" title="A driver to traverse AST trees and invoke individual translators for OpenMP constructs,..." alt="" coords="5,80,204,107"/>
-<area shape="rect" id="node2" href="$classAstSimpleProcessing.html" title="Class for traversing the AST." alt="" coords="31,5,178,32"/>
-</map>

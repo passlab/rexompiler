@@ -1,5 +1,0 @@
-<map id="ContextVis_R&lt; R &gt;" name="ContextVis_R&lt; R &gt;">
-<area shape="rect" id="node1" title="Strategy pattern applied to visitors: serves as a context to a strategy, which itself is a visitor; d..." alt="" coords="36,157,175,184"/>
-<area shape="rect" id="node2" href="$classVisitor__R.html" title=" " alt="" coords="146,81,257,108"/>
-<area shape="rect" id="node3" href="$classROSE__VisitorPattern.html" title=" " alt="" coords="5,5,152,32"/>
-</map>

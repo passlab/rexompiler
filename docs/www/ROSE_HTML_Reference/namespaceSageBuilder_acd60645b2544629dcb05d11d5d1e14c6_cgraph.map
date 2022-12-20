@@ -1,5 +1,0 @@
-<map id="SageBuilder::buildUnaryExpression" name="SageBuilder::buildUnaryExpression">
-<area shape="rect" id="node1" title="Template function to build a unary expression of type T. Instantiated functions include:buildAddressO..." alt="" coords="5,35,232,61"/>
-<area shape="rect" id="node2" href="$classSgNode.html#a83017efa378d75b031330739c963749d" title="All nodes in the AST contain a reference to a parent node." alt="" coords="308,5,447,32"/>
-<area shape="rect" id="node3" href="$namespaceSageInterface.html#aa523e0fdeeb4a8209a85f2ed606afcbd" title="Set current node&#39;s source position as transformation generated." alt="" coords="280,57,475,98"/>
-</map>

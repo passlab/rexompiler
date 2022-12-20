@@ -1,5 +1,0 @@
-<map id="Rose::BitOps::msbLsb" name="Rose::BitOps::msbLsb">
-<area shape="rect" id="node1" title="Most significant bit within lsb region." alt="" coords="228,42,383,69"/>
-<area shape="rect" id="node2" href="$namespaceRose_1_1BitOps.html#a7b67777bac19513082678f5a0846bd0e" title="Right shift low bits without affecting other bits." alt="" coords="10,5,175,47"/>
-<area shape="rect" id="node3" href="$namespaceRose_1_1BitOps.html#a84aacfb61a5964f5f17e484d12922669" title="Sign extend part of a value to the full width of the src type." alt="" coords="5,71,180,98"/>
-</map>

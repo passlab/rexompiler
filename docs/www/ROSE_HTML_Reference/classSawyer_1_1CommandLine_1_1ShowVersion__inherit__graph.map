@@ -1,5 +1,0 @@
-<map id="Sawyer::CommandLine::ShowVersion" name="Sawyer::CommandLine::ShowVersion">
-<area shape="rect" id="node1" title="Functor to print a version string." alt="" coords="5,95,164,136"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1CommandLine_1_1ShowVersionAndExit.html" title="Functor to print a version string and exit." alt="" coords="5,184,164,225"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1CommandLine_1_1SwitchAction.html" title="Base class for switch actions." alt="" coords="5,5,164,47"/>
-</map>

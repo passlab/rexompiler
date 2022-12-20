@@ -1,6 +1,0 @@
-<map id="SgStatementFunctionStatement" name="SgStatementFunctionStatement">
-<area shape="rect" id="node1" title=" " alt="" coords="82,173,290,200"/>
-<area shape="rect" id="node2" href="$classSgDeclarationStatement.html" title="This class represents the concept of a declaration statement." alt="" coords="5,7,169,33"/>
-<area shape="rect" id="node4" href="$classSgFunctionDeclaration.html" title="This class represents the concept of a function declaration statement." alt="" coords="109,84,263,111"/>
-<area shape="rect" id="node3" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="288,84,391,111"/>
-</map>

@@ -1,8 +1,0 @@
-<map id="Sawyer::Container::Algorithm::graphDependentOrder" name="Sawyer::Container::Algorithm::graphDependentOrder">
-<area shape="rect" id="node1" title="Number vertices according to their height from the leaves." alt="" coords="5,136,217,177"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#a3f256b70a465482d53478b84941dc8b5" title="Finds the vertex with specified ID number." alt="" coords="279,5,418,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Graph_1_1Vertex.html#af8439ff325ea20ab17e0418268546fbf" title="Unique vertex ID number." alt="" coords="279,71,418,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Graph.html#a4c5244b7dddd1f511a0a9350fc79e182" title="Total number of vertices." alt="" coords="279,136,418,177"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Graph_1_1Vertex.html#a3df407366de5c601d55c7ee4e8b32558" title="List of outgoing edges." alt="" coords="265,201,432,243"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1Graph_1_1Edge.html#acad205ee0450a9915b7e193b442f33b8" title="Target vertex." alt="" coords="279,267,418,308"/>
-</map>

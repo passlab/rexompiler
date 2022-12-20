@@ -1,6 +1,0 @@
-<map id="DominatorLattice" name="DominatorLattice">
-<area shape="rect" id="node1" title=" " alt="" coords="151,95,273,121"/>
-<area shape="rect" id="node2" href="$classFiniteLattice.html" title=" " alt="" coords="5,5,99,32"/>
-<area shape="rect" id="node3" href="$classVirtualCFG_1_1DataflowNode.html" title=" " alt="" coords="123,5,301,32"/>
-<area shape="rect" id="node4" title=" " alt="" coords="325,5,499,32"/>
-</map>

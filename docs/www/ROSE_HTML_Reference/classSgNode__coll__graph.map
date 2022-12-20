@@ -1,9 +1,0 @@
-<map id="SgNode" name="SgNode">
-<area shape="rect" id="node1" title="This class represents the base class for all IR nodes within Sage III." alt="" coords="411,112,480,139"/>
-<area shape="rect" id="node4" title=" " alt="" coords="1011,100,1160,156"/>
-<area shape="rect" id="node5" title=" " alt="" coords="751,107,896,149"/>
-<area shape="rect" id="node2" href="$classSgFunctionTypeTable.html" title="This class represents the function type table (stores all function types so that they can be shared i..." alt="" coords="26,24,173,51"/>
-<area shape="rect" id="node3" title=" " alt="" coords="26,75,173,117"/>
-<area shape="rect" id="node6" href="$classSgTypeTable.html" title=" " alt="" coords="51,141,148,168"/>
-<area shape="rect" id="node7" title=" " alt="" coords="5,192,193,248"/>
-</map>

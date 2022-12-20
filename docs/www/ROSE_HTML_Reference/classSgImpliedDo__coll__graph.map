@@ -1,6 +1,0 @@
-<map id="SgImpliedDo" name="SgImpliedDo">
-<area shape="rect" id="node1" title=" " alt="" coords="71,188,168,215"/>
-<area shape="rect" id="node2" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="5,5,108,32"/>
-<area shape="rect" id="node3" href="$classSgExprListExp.html" title="This class represents the concept of a C and C++ expression list." alt="" coords="210,90,319,117"/>
-<area shape="rect" id="node4" href="$classSgScopeStatement.html" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="344,90,479,117"/>
-</map>

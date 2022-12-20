@@ -1,6 +1,0 @@
-<map id="SgThisExp" name="SgThisExp">
-<area shape="rect" id="node1" title="This class represents the &quot;this&quot; operator (can be applied to any member data)." alt="" coords="152,95,239,121"/>
-<area shape="rect" id="node2" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="5,5,108,32"/>
-<area shape="rect" id="node3" href="$classSgNonrealSymbol.html" title=" " alt="" coords="132,5,259,32"/>
-<area shape="rect" id="node4" href="$classSgClassSymbol.html" title="This class represents the concept of a class name within the compiler." alt="" coords="283,5,399,32"/>
-</map>

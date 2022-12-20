@@ -1,8 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html" title=" " alt="" coords="5,100,223,171"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphEdgeTraversal.html" title=" " alt="" coords="271,5,488,76"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphVertexTraversal.html" title=" " alt="" coords="271,100,488,171"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1Algorithm_1_1DepthFirstForwardGraphTraversal.html" title="Depth&#45;first, forward traversal for all event types." alt="" coords="283,195,476,251"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Algorithm_1_1DepthFirstForwardEdgeTraversal.html" title="Depth&#45;first, forward traversal for edges." alt="" coords="536,13,729,69"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Algorithm_1_1DepthFirstForwardVertexTraversal.html" title="Depth&#45;first, forward traversal for vertices." alt="" coords="536,107,729,163"/>
-</map>

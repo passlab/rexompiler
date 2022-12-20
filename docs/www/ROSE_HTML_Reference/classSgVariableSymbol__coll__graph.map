@@ -1,5 +1,0 @@
-<map id="SgVariableSymbol" name="SgVariableSymbol">
-<area shape="rect" id="node1" title="This class represents the concept of a variable name within the compiler (a shared container for the ..." alt="" coords="25,95,153,121"/>
-<area shape="rect" id="node2" href="$classSgSymbol.html" title="This class represents the concept of a name within the compiler." alt="" coords="5,5,88,32"/>
-<area shape="rect" id="node3" href="$classSgInitializedName.html" title="This class represents the notion of a declared variable." alt="" coords="112,5,240,32"/>
-</map>

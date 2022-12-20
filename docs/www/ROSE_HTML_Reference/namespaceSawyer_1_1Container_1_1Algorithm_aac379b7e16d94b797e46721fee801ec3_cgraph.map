@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::Algorithm::graphAllEdges" name="Sawyer::Container::Algorithm::graphAllEdges">
-<area shape="rect" id="node1" title="IDs of all edges." alt="" coords="5,79,175,120"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#a0c04596aa16ca7b324bceed8859f08f4" title="Iterators for all edges." alt="" coords="245,5,383,47"/>
-<area shape="rect" id="node3" href="$namespaceSawyer_1_1Container_1_1Algorithm.html#a2dd72b2ccebcd2af6f9e27bb21edfe39" title="Visit all edges of a graph." alt="" coords="223,71,405,127"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Graph.html#ae324cd7b2cc9b5d100d5d9b3960a931b" title="Total number of edges." alt="" coords="245,152,383,193"/>
-</map>

@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::Algorithm::GraphTraversal::edge" name="Sawyer::Container::Algorithm::GraphTraversal::edge">
-<area shape="rect" id="node1" title="Edge to which traversal is pointing." alt="" coords="284,115,495,156"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#a574c3e3db87c283066fd908ef4ab0863" title="Advance traversal to next interesting event." alt="" coords="12,5,229,76"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#a989ef25fbc40095844e2227eec3a86ba" title="True if the edge has been entered." alt="" coords="11,100,230,171"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#aee94c8ea09d9e0fa34d5bd0faad5f09f" title="Call the specified functor for each edge." alt="" coords="5,195,236,265"/>
-</map>

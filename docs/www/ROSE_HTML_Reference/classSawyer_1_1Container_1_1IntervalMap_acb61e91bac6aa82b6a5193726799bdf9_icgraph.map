@@ -1,7 +1,0 @@
-<map id="Sawyer::Container::IntervalMap::isEmpty" name="Sawyer::Container::IntervalMap::isEmpty">
-<area shape="rect" id="node1" title="Determine if the container is empty." alt="" coords="203,133,349,174"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1IntervalMap.html#a385bbee53b2f1ba14ad34af9211f067d" title="Returns the maximum scalar key." alt="" coords="5,5,155,61"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1IntervalMap.html#a4734abf74cda51aa6252ecfc38342e93" title="Returns the range of values in this map." alt="" coords="5,85,155,141"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1IntervalSet.html#a9a77b0d1f5b4b464a69c6e9afda0f893" title="Determine whether the container is empty." alt="" coords="10,165,150,221"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1IntervalMap.html#a6e7d3909845b1efa5c5849f60faa3192" title="Returns the minimum scalar key." alt="" coords="5,245,155,301"/>
-</map>

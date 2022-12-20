@@ -1,7 +1,0 @@
-<map id="Sawyer::Container::BitVector::toSignedInteger" name="Sawyer::Container::BitVector::toSignedInteger">
-<area shape="rect" id="node1" title="Interpret bits as a signed integer." alt="" coords="5,104,180,145"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1BitVector.html#a01cec791efd731cfbe2157d7721b7dfe" title="Raw data for vector." alt="" coords="249,5,387,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1BitVector.html#a6cd958a91e697da6ae26aa3cc91b2ba9" title="Interval representing the entire vector." alt="" coords="249,71,387,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1BitVector.html#a49f05ce7f5af5ee0e9869a84db392301" title="Size of vector in bits." alt="" coords="249,136,387,177"/>
-<area shape="rect" id="node5" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#aa40f95c1c9254e3087db8427d8a96225" title="Convert a bit vector to a signed integer." alt="" coords="228,202,408,258"/>
-</map>

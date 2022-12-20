@@ -1,5 +1,0 @@
-<map id="Sawyer::Container::AddressMapConstraints::require" name="Sawyer::Container::AddressMapConstraints::require">
-<area shape="rect" id="node1" title="Require certain access permissions." alt="" coords="216,43,379,99"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#af4b03e73519e0bbc79686276ca72c07a" title="Require and prohibit certain access permissions." alt="" coords="5,5,168,61"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1AddressMap.html#aa3d023864ebbf9ca4e6f009f36cbac61" title="Constraint: required access bits." alt="" coords="15,86,158,127"/>
-</map>

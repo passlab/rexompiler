@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::AllocatingBuffer::instance" name="Sawyer::Container::AllocatingBuffer::instance">
-<area shape="rect" id="node1" title="Allocating constructor." alt="" coords="204,71,375,112"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1AllocatingBuffer.html#a8b24c963fee7a128cdc9d256a3e2aee3" title="Create a new copy of buffer data." alt="" coords="5,5,156,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1StaticBuffer.html#a0a5039a8ae7298e41a4d055ddec2c58b" title="Create a new copy of buffer data." alt="" coords="11,71,150,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1MappedBuffer.html#af35bd1a6a1b47f637643c478c33ba08c" title="Create a new copy of buffer data." alt="" coords="11,136,150,177"/>
-</map>

@@ -1,6 +1,0 @@
-<map id="SgEnumVal" name="SgEnumVal">
-<area shape="rect" id="node1" title=" " alt="" coords="101,184,192,211"/>
-<area shape="rect" id="node2" href="$classSgValueExp.html" title="This class represents the notion of an value (expression value)." alt="" coords="5,95,99,121"/>
-<area shape="rect" id="node3" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="157,5,230,32"/>
-<area shape="rect" id="node4" href="$classSgEnumDeclaration.html" title="This class represents the concept of an enum declaration." alt="" coords="221,95,360,121"/>
-</map>

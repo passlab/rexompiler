@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::Graph::eraseEdges" name="Sawyer::Container::Graph::eraseEdges">
-<area shape="rect" id="node1" title="Erases all edges connecting two vertices." alt="" coords="5,64,144,105"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#ac256ec051a8f4131b7c9c69714440132" title="Erases all edges connecting two vertices." alt="" coords="192,5,331,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Graph.html#a7f5c8eef7ec4d3399518437f5dd22b68" title="Determines whether the vertex iterator is valid." alt="" coords="379,56,520,97"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Graph.html#a3f256b70a465482d53478b84941dc8b5" title="Finds the vertex with specified ID number." alt="" coords="568,85,707,127"/>
-</map>

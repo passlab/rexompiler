@@ -1,5 +1,0 @@
-<map id="SgEquivalenceStatement" name="SgEquivalenceStatement">
-<area shape="rect" id="node1" title=" " alt="" coords="183,97,352,124"/>
-<area shape="rect" id="node2" href="$classSgDeclarationStatement.html" title="This class represents the concept of a declaration statement." alt="" coords="5,7,169,33"/>
-<area shape="rect" id="node3" href="$classSgExprListExp.html" title="This class represents the concept of a C and C++ expression list." alt="" coords="394,7,503,33"/>
-</map>

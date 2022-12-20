@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::BitVector::rotateLeft" name="Sawyer::Container::BitVector::rotateLeft">
-<area shape="rect" id="node1" title="Rotate bits left." alt="" coords="5,71,144,112"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1BitVector.html#a4aef9f4b51c24193972024d5db21bf51" title="Assert valid range." alt="" coords="205,5,363,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1BitVector.html#a01cec791efd731cfbe2157d7721b7dfe" title="Raw data for vector." alt="" coords="215,71,353,112"/>
-<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a131103b09701a2e3a6beaf060e8ac94e" title="Rotate bits to the left." alt="" coords="192,136,376,177"/>
-</map>

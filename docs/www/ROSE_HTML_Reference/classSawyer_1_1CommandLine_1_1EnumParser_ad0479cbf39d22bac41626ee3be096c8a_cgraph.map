@@ -1,5 +1,0 @@
-<map id="Sawyer::CommandLine::EnumParser::instance" name="Sawyer::CommandLine::EnumParser::instance">
-<area shape="rect" id="node1" title="Allocating constructor." alt="" coords="5,39,164,80"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1CommandLine_1_1EnumParser.html#a56430004eb295177a2849a90880fb053" title="Constructor for derived classes." alt="" coords="212,5,395,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1CommandLine_1_1ValueParser.html#a3377b055a88084d382694b9edb40ef0f" title="Property: functor responsible for saving a parsed value in user storage." alt="" coords="217,71,390,112"/>
-</map>

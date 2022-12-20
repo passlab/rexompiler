@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::BitVector::shiftRightArithmetic" name="Sawyer::Container::BitVector::shiftRightArithmetic">
-<area shape="rect" id="node1" title="Shift bits right." alt="" coords="5,71,204,112"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1BitVector.html#a4aef9f4b51c24193972024d5db21bf51" title="Assert valid range." alt="" coords="266,5,423,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1BitVector.html#a01cec791efd731cfbe2157d7721b7dfe" title="Raw data for vector." alt="" coords="275,71,414,112"/>
-<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a47fe4587b61f4f030664a721f7707fb7" title="Shift bits right arithmetically." alt="" coords="252,137,437,193"/>
-</map>

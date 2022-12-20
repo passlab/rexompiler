@@ -1,5 +1,0 @@
-<map id="AbstractHandle::roseNode" name="AbstractHandle::roseNode">
-<area shape="rect" id="node1" title="Concrete roseNode derived from abstract_node." alt="" coords="69,97,245,124"/>
-<area shape="rect" id="node2" href="$classAbstractHandle_1_1abstract__node.html" title="Users should provide a concrete node implementation especially a constructor/builder to avoid duplica..." alt="" coords="5,7,208,33"/>
-<area shape="rect" id="node3" href="$classSgNode.html" title="This class represents the base class for all IR nodes within Sage III." alt="" coords="232,7,301,33"/>
-</map>

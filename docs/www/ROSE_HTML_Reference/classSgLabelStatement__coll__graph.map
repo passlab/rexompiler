@@ -1,6 +1,0 @@
-<map id="SgLabelStatement" name="SgLabelStatement">
-<area shape="rect" id="node1" title="This class represents the concept of a C or C++ label statement." alt="" coords="43,171,173,197"/>
-<area shape="rect" id="node2" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="5,5,104,32"/>
-<area shape="rect" id="node3" href="$classSgScopeStatement.html" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="157,81,291,108"/>
-<area shape="rect" id="node4" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="315,81,389,108"/>
-</map>

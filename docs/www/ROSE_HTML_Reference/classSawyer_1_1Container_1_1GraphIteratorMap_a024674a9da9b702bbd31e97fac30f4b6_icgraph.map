@@ -1,4 +1,0 @@
-<map id="Sawyer::Container::GraphIteratorMap::insertMaybe" name="Sawyer::Container::GraphIteratorMap::insertMaybe">
-<area shape="rect" id="node1" title="Insert a value only if its key doesn&#39;t already exist." alt="" coords="277,13,480,54"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1GraphIteratorMap.html#a355ce8ccfda47e17c9ad36aff0840e54" title="Insert a default value if its key doesn&#39;t already exist." alt="" coords="5,5,229,61"/>
-</map>

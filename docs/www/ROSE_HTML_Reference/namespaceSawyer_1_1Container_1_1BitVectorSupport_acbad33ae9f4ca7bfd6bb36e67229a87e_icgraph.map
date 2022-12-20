@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::BitVectorSupport::invert" name="Sawyer::Container::BitVectorSupport::invert">
-<area shape="rect" id="node1" title="Invert bits." alt="" coords="229,71,391,112"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1BitVector.html#a5787e290db3247aef9538cbcfb913cf5" title="Invert bits." alt="" coords="24,5,163,47"/>
-<area shape="rect" id="node3" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a168da62308ccdde364a4793eaa675f88" title="Negate bits as an integer." alt="" coords="9,71,177,112"/>
-<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a2e59f3428ec7731a3200b95d54b3fa29" title="Subtract bits." alt="" coords="5,136,181,177"/>
-</map>

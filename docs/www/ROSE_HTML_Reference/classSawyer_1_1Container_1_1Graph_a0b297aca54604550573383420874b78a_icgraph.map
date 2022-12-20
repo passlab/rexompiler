@@ -1,4 +1,0 @@
-<map id="Sawyer::Container::Graph::clearEdges" name="Sawyer::Container::Graph::clearEdges">
-<area shape="rect" id="node1" title="Erase all edges, but leave all vertices." alt="" coords="192,5,331,47"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#ae86b2b0fa4d18f2e2b26163abc2bc049" title="Erases a vertex and its incident edges." alt="" coords="5,5,144,47"/>
-</map>

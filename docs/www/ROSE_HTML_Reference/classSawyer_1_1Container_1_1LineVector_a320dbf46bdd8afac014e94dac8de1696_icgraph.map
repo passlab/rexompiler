@@ -1,5 +1,0 @@
-<map id="Sawyer::Container::LineVector::location" name="Sawyer::Container::LineVector::location">
-<area shape="rect" id="node1" title="Convert a character index to a line and column index." alt="" coords="244,39,383,80"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Lexer_1_1TokenStream.html#a385020f92b67e3cd0600bdbd6601f550" title="Return the line number and offset for an input position." alt="" coords="5,5,196,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Lexer_1_1TokenStream.html#a448b48c324c1155d3a5b7593f25cb894" title="Returns the last line index and character offset." alt="" coords="5,71,196,112"/>
-</map>

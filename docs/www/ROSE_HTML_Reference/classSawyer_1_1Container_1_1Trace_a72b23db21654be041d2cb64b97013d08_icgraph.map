@@ -1,8 +1,0 @@
-<map id="Sawyer::Container::Trace::isEmpty" name="Sawyer::Container::Trace::isEmpty">
-<area shape="rect" id="node1" title="Determines if a trace is empty." alt="" coords="379,114,517,155"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Trace.html#adf7a85eab2f24c52217a91c0d3af9edd" title="Append a label to a trace." alt="" coords="5,78,144,119"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Trace_1_1ConstIterator.html#a5d0c731c61da1811aaf3503ed0191d48" title="Construct iterator pointing to first element of the trace, if any." alt="" coords="192,33,331,89"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Trace.html#af25aeac54fdeabb14dc9eb14de166527" title="Low&#45;level debugging information." alt="" coords="192,114,331,155"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Trace.html#a6e6cfde3b60ef176539365f296a6a39e" title="Determines if a label is present in a trace." alt="" coords="192,179,331,220"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1Trace.html#a666bba40697060287978807529d94f47" title="Traversal of the trace labels." alt="" coords="192,244,331,286"/>
-</map>

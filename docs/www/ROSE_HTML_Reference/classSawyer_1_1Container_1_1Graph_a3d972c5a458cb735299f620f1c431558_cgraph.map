@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::Graph::clearOutEdges" name="Sawyer::Container::Graph::clearOutEdges">
-<area shape="rect" id="node1" title="Erase all edges emanating from a vertex." alt="" coords="5,71,156,112"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#a5126c672c46a466ea78d7a2bd05b366d" title="Erases an edge." alt="" coords="218,5,357,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Graph_1_1Vertex.html#a3df407366de5c601d55c7ee4e8b32558" title="List of outgoing edges." alt="" coords="204,71,371,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Graph.html#a9aa5860369a9316640518c1eb3894de0" title="Iterators for all vertices." alt="" coords="218,136,357,177"/>
-</map>

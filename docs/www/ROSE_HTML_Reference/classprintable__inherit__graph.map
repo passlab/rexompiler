@@ -1,9 +1,0 @@
-<map id="printable" name="printable">
-<area shape="rect" id="node1" title=" " alt="" coords="5,144,76,171"/>
-<area shape="rect" id="node2" href="$classaffineInequality.html" title=" " alt="" coords="137,5,247,32"/>
-<area shape="rect" id="node3" href="$classBaseCFG_1_1iterator.html" title=" " alt="" coords="128,56,256,83"/>
-<area shape="rect" id="node4" href="$classBaseCFG_1_1iterator_1_1checkpoint.html" title=" " alt="" coords="124,107,260,149"/>
-<area shape="rect" id="node5" href="$classLattice.html" title=" " alt="" coords="161,173,223,200"/>
-<area shape="rect" id="node6" href="$classNodeFact.html" title=" " alt="" coords="153,224,231,251"/>
-<area shape="rect" id="node7" href="$classvarAffineInequality.html" title=" " alt="" coords="127,275,257,301"/>
-</map>

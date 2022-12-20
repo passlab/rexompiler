@@ -1,5 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classStaticCFG_1_1CFG.html" title=" " alt="" coords="5,42,125,69"/>
-<area shape="rect" id="node2" href="$classStaticCFG_1_1CustomFilteredCFG.html" title="A CFG implementation with Custom filters." alt="" coords="186,5,367,47"/>
-<area shape="rect" id="node3" href="$classStaticCFG_1_1InterproceduralCFG.html" title=" " alt="" coords="173,71,380,98"/>
-</map>

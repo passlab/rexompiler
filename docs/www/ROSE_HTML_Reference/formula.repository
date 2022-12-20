@@ -1,6 +1,0 @@
-\_form#0:$O(V_s V_t)$
-\_form#1:$O(V_s V_t log(V_s V_t) + E)$
-\_form#2:$V_s$
-\_form#3:$V_t$
-\_form#4:$E$
-\_form#5:$\|cell_i\| = \|cell_0\| + i \Delta$

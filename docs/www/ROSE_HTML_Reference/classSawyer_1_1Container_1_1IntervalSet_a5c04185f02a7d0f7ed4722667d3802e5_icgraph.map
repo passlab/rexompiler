@@ -1,5 +1,0 @@
-<map id="Sawyer::Container::IntervalSet::eraseMultiple" name="Sawyer::Container::IntervalSet::eraseMultiple">
-<area shape="rect" id="node1" title="Remove specified values." alt="" coords="193,53,364,94"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1IntervalSet.html#a10c757a75429f08db58d942247ab23a7" title="Subtract another set from this one." alt="" coords="5,5,145,61"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1IntervalSet.html#ad4df8e2db970cb461fb41409735e47f6" title="In&#45;place subtraction." alt="" coords="5,85,145,141"/>
-</map>

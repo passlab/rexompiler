@@ -1,7 +1,0 @@
-<map id="Sawyer::Message::Destination" name="Sawyer::Message::Destination">
-<area shape="rect" id="node1" title="Base class for all types of message destinations." alt="" coords="324,96,525,123"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1SharedObject.html" title="Base class for reference counted objects." alt="" coords="33,5,187,32"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1SharedFromThis.html" title=" " alt="" coords="25,57,195,98"/>
-<area shape="rect" id="node4" href="$structSawyer_1_1SynchronizationTraits.html" title=" " alt="" coords="5,122,215,163"/>
-<area shape="rect" id="node5" href="$structSawyer_1_1Message_1_1MesgProps.html" title="Properties for messages." alt="" coords="9,188,211,215"/>
-</map>

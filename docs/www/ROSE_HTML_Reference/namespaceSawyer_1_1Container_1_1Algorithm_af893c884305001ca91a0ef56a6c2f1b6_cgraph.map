@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::Algorithm::findMaximumCommonIsomorphicSubgraphs" name="Sawyer::Container::Algorithm::findMaximumCommonIsomorphicSubgraphs">
-<area shape="rect" id="node1" title="Find maximum common isomorphic subgraphs." alt="" coords="5,79,221,135"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Algorithm_1_1CommonSubgraphIsomorphism.html#aeb984b8ea962c1be738a7d094a38fbd4" title="Property: monotonically increasing solution size." alt="" coords="283,5,551,61"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Algorithm_1_1CommonSubgraphIsomorphism.html#a795c5207d979a168d4f95814ce62f380" title="Perform the common subgraph isomorphism analysis." alt="" coords="269,86,564,127"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Algorithm_1_1CommonSubgraphIsomorphism.html#abfe2af18d37f66365a12764777912f7a" title="Property: reference to the solution callback." alt="" coords="283,152,551,208"/>
-</map>

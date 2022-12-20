@@ -1,5 +1,0 @@
-<map id="Sawyer::Container::BitVectorSupport::leastSignificantClearBit" name="Sawyer::Container::BitVectorSupport::leastSignificantClearBit">
-<area shape="rect" id="node1" title="Index of least significant zero bit." alt="" coords="228,35,447,91"/>
-<area shape="rect" id="node2" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a0d3f1a28dce4fdc8606b7295e22e7047" title="True if all bits are set." alt="" coords="5,5,180,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1BitVector.html#aac310d3d9dbd69687b5f823eeb65cc71" title="Find the least significant clear bit." alt="" coords="6,71,179,127"/>
-</map>

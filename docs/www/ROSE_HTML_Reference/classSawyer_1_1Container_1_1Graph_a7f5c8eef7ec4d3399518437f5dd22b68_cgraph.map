@@ -1,7 +1,0 @@
-<map id="Sawyer::Container::Graph::isValidVertex" name="Sawyer::Container::Graph::isValidVertex">
-<area shape="rect" id="node1" title="Determines whether the vertex iterator is valid." alt="" coords="5,104,147,145"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#a3f256b70a465482d53478b84941dc8b5" title="Finds the vertex with specified ID number." alt="" coords="195,5,333,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Graph_1_1Vertex.html#af8439ff325ea20ab17e0418268546fbf" title="Unique vertex ID number." alt="" coords="195,71,333,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Graph.html#a4c5244b7dddd1f511a0a9350fc79e182" title="Total number of vertices." alt="" coords="195,136,333,177"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Graph.html#a9aa5860369a9316640518c1eb3894de0" title="Iterators for all vertices." alt="" coords="195,201,333,243"/>
-</map>

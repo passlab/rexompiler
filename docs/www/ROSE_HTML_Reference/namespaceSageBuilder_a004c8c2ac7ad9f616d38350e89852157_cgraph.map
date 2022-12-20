@@ -1,5 +1,0 @@
-<map id="SageBuilder::buildUnaryExpression_nfi" name="SageBuilder::buildUnaryExpression_nfi">
-<area shape="rect" id="node1" title="Template function to build a unary expression of type T with no file info. Instantiated functions inc..." alt="" coords="5,35,253,61"/>
-<area shape="rect" id="node2" href="$classSgNode.html#a83017efa378d75b031330739c963749d" title="All nodes in the AST contain a reference to a parent node." alt="" coords="317,5,456,32"/>
-<area shape="rect" id="node3" href="$namespaceSageInterface.html#a4b77d52bd66dc9f133d8e899cd8c5d4f" title="Set the source code positon for the current (input) node." alt="" coords="301,57,472,98"/>
-</map>

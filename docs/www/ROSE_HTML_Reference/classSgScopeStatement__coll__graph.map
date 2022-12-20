@@ -1,8 +1,0 @@
-<map id="SgScopeStatement" name="SgScopeStatement">
-<area shape="rect" id="node1" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="191,228,326,255"/>
-<area shape="rect" id="node2" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="5,95,104,121"/>
-<area shape="rect" id="node3" href="$classSgPragma.html" title=" " alt="" coords="128,95,211,121"/>
-<area shape="rect" id="node4" href="$classSgTypeTable.html" title=" " alt="" coords="379,95,477,121"/>
-<area shape="rect" id="node5" href="$classSgSymbolTable.html" title="This class represents the symbol tables used in both SgScopeStatement and the SgFunctionTypeSymbolTab..." alt="" coords="223,5,337,32"/>
-<area shape="rect" id="node6" title=" " alt="" coords="501,95,659,121"/>
-</map>

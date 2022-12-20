@@ -1,4 +1,0 @@
-<map id="CustomizedPrimitiveTypeLayoutGenerator" name="CustomizedPrimitiveTypeLayoutGenerator">
-<area shape="rect" id="node1" title="Layout generator for customized primitive types, mostly for UPC relying on Berkeley runtime library n..." alt="" coords="5,84,216,125"/>
-<area shape="rect" id="node2" href="$classChainableTypeLayoutGenerator.html" title="Basic type layout engine – handles bookkeeping, plus handing typedefs and." alt="" coords="9,7,213,33"/>
-</map>

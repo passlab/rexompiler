@@ -1,5 +1,0 @@
-<map id="Rose::BitOps::msb" name="Rose::BitOps::msb">
-<area shape="rect" id="node1" title="Most significant bit." alt="" coords="245,35,380,61"/>
-<area shape="rect" id="node2" href="$namespaceRose_1_1BitOps.html#af3226313402f3c51cadd640b9fbde62a" title="Sign extend or truncate a value." alt="" coords="5,5,197,32"/>
-<area shape="rect" id="node3" href="$namespaceRose_1_1BitOps.html#a9321c36db060c3e6b57d0671f83c35a3" title="Right shift replicating MSB." alt="" coords="19,57,184,98"/>
-</map>

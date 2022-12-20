@@ -1,5 +1,0 @@
-<map id="Sawyer::Attribute::Storage::attributeIds" name="Sawyer::Attribute::Storage::attributeIds">
-<area shape="rect" id="node1" title="Returns ID numbers for all IDs stored in this container." alt="" coords="5,39,145,80"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Map.html#ae257b59d87c8d142c08eab411d7943a0" title="Iterators for container keys." alt="" coords="193,5,332,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Map.html#a7976fcd86256ca6543e2ebff0b145898" title="Number of nodes, keys, or values in this container." alt="" coords="193,71,332,112"/>
-</map>

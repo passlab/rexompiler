@@ -1,7 +1,0 @@
-<map id="SgUpcForAllStatement" name="SgUpcForAllStatement">
-<area shape="rect" id="node1" title=" " alt="" coords="187,188,343,215"/>
-<area shape="rect" id="node2" href="$classSgScopeStatement.html" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="99,83,233,109"/>
-<area shape="rect" id="node3" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="117,5,215,32"/>
-<area shape="rect" id="node5" href="$classSgForInitStatement.html" title="This class represents the variable declaration or variable initialization withn a for loop." alt="" coords="257,83,392,109"/>
-<area shape="rect" id="node4" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="416,83,519,109"/>
-</map>

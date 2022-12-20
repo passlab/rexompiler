@@ -1,5 +1,0 @@
-<map id="SgUsingDeclarationStatement" name="SgUsingDeclarationStatement">
-<area shape="rect" id="node1" title="This class represents the concept of a C++ using declaration." alt="" coords="5,187,204,213"/>
-<area shape="rect" id="node2" href="$classSgDeclarationStatement.html" title="This class represents the concept of a declaration statement." alt="" coords="23,7,187,33"/>
-<area shape="rect" id="node3" href="$classSgInitializedName.html" title="This class represents the notion of a declared variable." alt="" coords="210,97,338,124"/>
-</map>

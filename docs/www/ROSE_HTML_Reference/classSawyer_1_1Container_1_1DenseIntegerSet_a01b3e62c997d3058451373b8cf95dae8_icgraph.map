@@ -1,9 +1,0 @@
-<map id="Sawyer::Container::DenseIntegerSet::insert" name="Sawyer::Container::DenseIntegerSet::insert">
-<area shape="rect" id="node1" title="Insert a value." alt="" coords="259,203,419,245"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1DenseIntegerSet.html#a7c8664f3bacca960fefe898c4384f3a9" title="Copy constructor." alt="" coords="30,5,186,61"/>
-<area shape="rect" id="node3" href="$namespaceSawyer_1_1Container_1_1Algorithm.html#a004e957c997090ef76a78a40bf27b3ea" title="Find all connected components of a graph." alt="" coords="5,85,211,141"/>
-<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1Algorithm.html#a61fe8c4aaae390361068b47d7be07ce6" title="Test whether a graph is connected." alt="" coords="13,166,203,207"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1DenseIntegerSet.html#a743e05bdc72fd7b960e643d164f89138" title="Insert many values from another set." alt="" coords="30,232,186,288"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1DenseIntegerSet.html#af827ca99d5bc1fcfb743144865651022" title="Intersect this set with another." alt="" coords="30,312,186,368"/>
-<area shape="rect" id="node7" href="$classSawyer_1_1Container_1_1DenseIntegerSet.html#a1de0d952c3ab1ded5d00b6118ce4b142" title="Assignment operator." alt="" coords="30,392,186,448"/>
-</map>

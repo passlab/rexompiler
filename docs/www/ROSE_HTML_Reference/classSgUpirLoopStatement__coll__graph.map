@@ -1,6 +1,0 @@
-<map id="SgUpirLoopStatement" name="SgUpirLoopStatement">
-<area shape="rect" id="node1" title=" " alt="" coords="185,124,336,151"/>
-<area shape="rect" id="node2" href="$classSgUpirFieldBodyStatement.html" title=" " alt="" coords="5,5,185,32"/>
-<area shape="rect" id="node3" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="209,5,312,32"/>
-<area shape="rect" id="node4" href="$classSgInitializedName.html" title="This class represents the notion of a declared variable." alt="" coords="337,5,465,32"/>
-</map>

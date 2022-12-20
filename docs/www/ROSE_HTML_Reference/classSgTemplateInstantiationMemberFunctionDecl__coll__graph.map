@@ -1,6 +1,0 @@
-<map id="SgTemplateInstantiationMemberFunctionDecl" name="SgTemplateInstantiationMemberFunctionDecl">
-<area shape="rect" id="node1" title="This class represents the concept of an instantiation of member function template or a member functio..." alt="" coords="56,199,265,240"/>
-<area shape="rect" id="node2" href="$classSgMemberFunctionDeclaration.html" title="This class represents the concept of a member function declaration statement." alt="" coords="5,5,207,32"/>
-<area shape="rect" id="node3" href="$classSgTemplateMemberFunctionDeclaration.html" title=" " alt="" coords="79,95,267,136"/>
-<area shape="rect" id="node4" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="255,5,328,32"/>
-</map>

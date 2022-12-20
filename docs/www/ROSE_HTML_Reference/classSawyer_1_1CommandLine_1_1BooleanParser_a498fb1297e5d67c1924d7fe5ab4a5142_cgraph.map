@@ -1,5 +1,0 @@
-<map id="Sawyer::CommandLine::BooleanParser::instance" name="Sawyer::CommandLine::BooleanParser::instance">
-<area shape="rect" id="node1" title="Allocating constructor." alt="" coords="5,39,177,80"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1CommandLine_1_1BooleanParser.html#ab1e26b14fc61435e6ea8968bde8e63fe" title="Constructor for derived classes." alt="" coords="225,5,433,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1CommandLine_1_1ValueParser.html#a3377b055a88084d382694b9edb40ef0f" title="Property: functor responsible for saving a parsed value in user storage." alt="" coords="243,71,416,112"/>
-</map>

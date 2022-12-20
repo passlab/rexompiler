@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::BitVector::add" name="Sawyer::Container::BitVector::add">
-<area shape="rect" id="node1" title="Add bits as integers." alt="" coords="5,71,144,112"/>
-<area shape="rect" id="node2" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#ab0f84b9c0638d1b4785b9a9884420375" title="Add bits." alt="" coords="192,5,343,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1BitVector.html#a01cec791efd731cfbe2157d7721b7dfe" title="Raw data for vector." alt="" coords="198,71,337,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1BitVector.html#a6cd958a91e697da6ae26aa3cc91b2ba9" title="Interval representing the entire vector." alt="" coords="198,136,337,177"/>
-</map>

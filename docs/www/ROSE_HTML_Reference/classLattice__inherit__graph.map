@@ -1,7 +1,0 @@
-<map id="Lattice" name="Lattice">
-<area shape="rect" id="node1" title=" " alt="" coords="143,80,204,107"/>
-<area shape="rect" id="node3" href="$classFiniteLattice.html" title=" " alt="" coords="5,155,99,181"/>
-<area shape="rect" id="node4" href="$classInfiniteLattice.html" title=" " alt="" coords="123,155,223,181"/>
-<area shape="rect" id="node5" href="$classProductLattice.html" title=" " alt="" coords="248,155,355,181"/>
-<area shape="rect" id="node2" href="$classprintable.html" title=" " alt="" coords="138,5,209,32"/>
-</map>

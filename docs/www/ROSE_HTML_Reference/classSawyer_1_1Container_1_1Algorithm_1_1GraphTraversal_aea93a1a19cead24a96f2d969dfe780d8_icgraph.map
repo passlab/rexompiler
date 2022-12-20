@@ -1,9 +1,0 @@
-<map id="Sawyer::Container::Algorithm::GraphTraversal::isAtEnd" name="Sawyer::Container::Algorithm::GraphTraversal::isAtEnd">
-<area shape="rect" id="node1" title="Returns true when traversal reaches the end." alt="" coords="295,250,469,306"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#af0be198ab4f35cd7e13fe0dd6582ca59" title="Current event on which traversal is stopped." alt="" coords="17,5,235,76"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#a8cc1cbd65150ce3c8f7ff2ec4cd66a4a" title="Returns true when a traversal can be advanced." alt="" coords="17,100,235,171"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#aee94c8ea09d9e0fa34d5bd0faad5f09f" title="Call the specified functor for each edge." alt="" coords="11,195,241,265"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#a942aeb95d88768409817fda27da57781" title="Call the specified functor for each vertex." alt="" coords="5,289,247,360"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#a76133a6e36e873f391dcb359d4591244" title="Type for Boolean context." alt="" coords="17,385,235,470"/>
-<area shape="rect" id="node7" href="$classSawyer_1_1Container_1_1Algorithm_1_1GraphTraversal.html#a1025261c9abbd3c93ecdbedddeb670f7" title="Restart the traversal at the specified vertex." alt="" coords="17,495,235,565"/>
-</map>

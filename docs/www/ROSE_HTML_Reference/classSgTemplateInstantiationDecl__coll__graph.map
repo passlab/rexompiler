@@ -1,6 +1,0 @@
-<map id="SgTemplateInstantiationDecl" name="SgTemplateInstantiationDecl">
-<area shape="rect" id="node1" title="This class represents the concept of an instantiated class template." alt="" coords="22,291,211,317"/>
-<area shape="rect" id="node2" href="$classSgClassDeclaration.html" title="This class represents the concept of a class declaration statement. It includes the concept of an ins..." alt="" coords="55,96,194,123"/>
-<area shape="rect" id="node4" href="$classSgTemplateClassDeclaration.html" title=" " alt="" coords="154,201,345,228"/>
-<area shape="rect" id="node3" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="88,5,161,32"/>
-</map>

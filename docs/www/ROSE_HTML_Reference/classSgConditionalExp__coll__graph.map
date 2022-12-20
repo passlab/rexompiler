@@ -1,5 +1,0 @@
-<map id="SgConditionalExp" name="SgConditionalExp">
-<area shape="rect" id="node1" title="This class represents the concept of a C trinary conditional expression (e.g. &quot;test ?..." alt="" coords="5,201,132,228"/>
-<area shape="rect" id="node2" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="17,5,120,32"/>
-<area shape="rect" id="node3" href="$classSgType.html" title="This class represents the base class for all types." alt="" coords="202,103,269,130"/>
-</map>

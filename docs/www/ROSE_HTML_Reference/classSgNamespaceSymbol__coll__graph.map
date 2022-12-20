@@ -1,7 +1,0 @@
-<map id="SgNamespaceSymbol" name="SgNamespaceSymbol">
-<area shape="rect" id="node1" title="This class represents the concept of a namespace name within the compiler." alt="" coords="975,81,1127,108"/>
-<area shape="rect" id="node2" href="$classSgSymbol.html" title="This class represents the concept of a name within the compiler." alt="" coords="672,5,755,32"/>
-<area shape="rect" id="node3" href="$classSgNamespaceAliasDeclarationStatement.html" title="This class represents the concept of a C++ namespace alias declaration statement." alt="" coords="612,146,815,187"/>
-<area shape="rect" id="node4" href="$classSgNamespaceDeclarationStatement.html" title="This class represents the concept of a C++ namespace declaration." alt="" coords="177,179,412,205"/>
-<area shape="rect" id="node5" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="5,117,79,144"/>
-</map>

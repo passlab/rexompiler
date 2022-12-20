@@ -1,5 +1,0 @@
-<map id="Sawyer::ThreadWorkers::wait" name="Sawyer::ThreadWorkers::wait">
-<area shape="rect" id="node1" title="Wait for work to complete." alt="" coords="241,27,404,69"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1ThreadWorkers.html#a35920c84ba82dee177bdf951f785afde" title="Synchronously processes tasks." alt="" coords="5,5,193,32"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1ThreadWorkers.html#ad51f6a6422b1de36ca1b642ae961453e" title="Destructor." alt="" coords="18,57,181,98"/>
-</map>

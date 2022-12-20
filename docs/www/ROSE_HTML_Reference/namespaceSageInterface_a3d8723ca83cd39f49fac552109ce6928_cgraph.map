@@ -1,4 +1,0 @@
-<map id="SageInterface::wrapFunction" name="SageInterface::wrapFunction">
-<area shape="rect" id="node1" title="This is an overloaded member function, provided for convenience. It differs from the above function o..." alt="" coords="5,5,195,32"/>
-<area shape="rect" id="node2" href="$namespaceSageInterface.html#adb9d4a03d11809413cca4cac1dfc18a7" title="moves the body of a function f to a new function f; f&#39;s body is replaced with code that forwards the ..." alt="" coords="243,5,432,32"/>
-</map>

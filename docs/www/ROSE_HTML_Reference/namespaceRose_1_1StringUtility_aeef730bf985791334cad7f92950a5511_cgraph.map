@@ -1,5 +1,0 @@
-<map id="Rose::StringUtility::toNumber" name="Rose::StringUtility::toNumber">
-<area shape="rect" id="node1" title="Safely convert a string to a number using C++ style syntax." alt="" coords="5,39,135,80"/>
-<area shape="rect" id="node2" href="$namespaceRose_1_1StringUtility.html#abf7821b02ca01054a3b4303aff3086e2" title="Helpful way to print singular or plural words." alt="" coords="183,5,312,47"/>
-<area shape="rect" id="node3" href="$namespaceRose_1_1StringUtility.html#ad08c20bdcb39760f890b9d139048e3f5" title="Convert a character to a numeric digit." alt="" coords="183,71,312,112"/>
-</map>

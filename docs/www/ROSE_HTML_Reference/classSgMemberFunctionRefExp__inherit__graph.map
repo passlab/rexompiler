@@ -1,4 +1,0 @@
-<map id="SgMemberFunctionRefExp" name="SgMemberFunctionRefExp">
-<area shape="rect" id="node1" title="This class represents the member function being called and must be assembled in the SgFunctionCall wi..." alt="" coords="5,80,184,107"/>
-<area shape="rect" id="node2" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="43,5,146,32"/>
-</map>

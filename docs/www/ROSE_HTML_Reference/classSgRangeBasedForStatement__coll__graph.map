@@ -1,7 +1,0 @@
-<map id="SgRangeBasedForStatement" name="SgRangeBasedForStatement">
-<area shape="rect" id="node1" title=" " alt="" coords="205,215,397,241"/>
-<area shape="rect" id="node2" href="$classSgScopeStatement.html" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="141,81,275,108"/>
-<area shape="rect" id="node3" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="5,5,104,32"/>
-<area shape="rect" id="node4" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="299,81,402,108"/>
-<area shape="rect" id="node5" href="$classSgVariableDeclaration.html" title="This class represents the concept of a C or C++ variable declaration." alt="" coords="438,81,589,108"/>
-</map>

@@ -1,7 +1,0 @@
-<map id="Sawyer::Container::BitVectorSupport::clear" name="Sawyer::Container::BitVectorSupport::clear">
-<area shape="rect" id="node1" title="Clear some bits." alt="" coords="491,104,648,145"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1BitVector.html#ac7dd8005b5c90cafa90ccc19f749c3b1" title="Assign zero to some bits." alt="" coords="276,5,415,47"/>
-<area shape="rect" id="node3" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#abcc91eac654663790f3ab541a2b6d6d9" title="Assign an unsigned value to a bit range." alt="" coords="248,71,443,112"/>
-<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#af68ac2d6efbbb861299c4cfe02e8a148" title="Set or clear some bits." alt="" coords="256,136,435,177"/>
-<area shape="rect" id="node5" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a21054f8a03caaa2db161bce295442c7e" title="Sign extend." alt="" coords="5,165,200,207"/>
-</map>

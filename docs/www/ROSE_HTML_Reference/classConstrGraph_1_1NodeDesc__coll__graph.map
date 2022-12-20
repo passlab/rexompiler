@@ -1,7 +1,0 @@
-<map id="ConstrGraph::NodeDesc" name="ConstrGraph::NodeDesc">
-<area shape="rect" id="node1" title=" " alt="" coords="227,95,394,121"/>
-<area shape="rect" id="node2" href="$classVirtualCFG_1_1DataflowNode.html" title=" " alt="" coords="5,5,184,32"/>
-<area shape="rect" id="node3" title="STL class." alt="" coords="208,5,288,32"/>
-<area shape="rect" id="node4" title=" " alt="" coords="312,5,435,32"/>
-<area shape="rect" id="node5" href="$classNodeState.html" title=" " alt="" coords="459,5,543,32"/>
-</map>

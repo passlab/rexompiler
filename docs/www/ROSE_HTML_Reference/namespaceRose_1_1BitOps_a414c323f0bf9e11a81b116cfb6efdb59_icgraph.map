@@ -1,9 +1,0 @@
-<map id="Rose::BitOps::shiftRight" name="Rose::BitOps::shiftRight">
-<area shape="rect" id="node1" title="Right shift a value." alt="" coords="240,132,405,159"/>
-<area shape="rect" id="node2" href="$namespaceRose_1_1BitOps.html#ae6eefb1992d62b7cf111b074a8b7f045" title="Extract part of a value." alt="" coords="33,5,164,32"/>
-<area shape="rect" id="node3" href="$namespaceRose_1_1BitOps.html#aba3bee7baeef6d57c6f286bfdf75e25b" title="Extract part of a value limited by width." alt="" coords="23,56,174,83"/>
-<area shape="rect" id="node4" href="$namespaceRose_1_1BitOps.html#a6b962fa5d80f6462d8d23272942f5d65" title="Rotate bits left." alt="" coords="17,107,181,133"/>
-<area shape="rect" id="node5" href="$namespaceRose_1_1BitOps.html#a8a0e4edfa59d9a5c630d12e66d338a65" title="Rotate bits right." alt="" coords="12,157,185,184"/>
-<area shape="rect" id="node6" href="$namespaceRose_1_1BitOps.html#a669180862a0fec43cc30b7fb74808b7b" title="Right shift part of a value without affecting the rest." alt="" coords="5,208,192,235"/>
-<area shape="rect" id="node7" href="$namespaceRose_1_1BitOps.html#a9321c36db060c3e6b57d0671f83c35a3" title="Right shift replicating MSB." alt="" coords="16,259,181,301"/>
-</map>

@@ -1,5 +1,0 @@
-<map id="Sawyer::Container::AddressMapConstraints::atOrBefore" name="Sawyer::Container::AddressMapConstraints::atOrBefore">
-<area shape="rect" id="node1" title="Limit addresses." alt="" coords="5,43,168,99"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#a803bfc0e21661794d8b4de9c6f88758f" title="Greatest possible address." alt="" coords="234,5,397,61"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#acab0f249f1a6f09f06a6caf8ea1ee32f" title="Constraints that match nothing." alt="" coords="216,86,415,127"/>
-</map>

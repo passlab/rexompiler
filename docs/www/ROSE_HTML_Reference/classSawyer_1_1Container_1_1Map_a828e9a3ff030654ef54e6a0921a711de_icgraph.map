@@ -1,8 +1,0 @@
-<map id="Sawyer::Container::Map::isEmpty" name="Sawyer::Container::Map::isEmpty">
-<area shape="rect" id="node1" title="Determines whether this container is empty." alt="" coords="237,195,376,236"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Map.html#a5bad5ccc2a5152c0ac5e875761e02cb6" title="Returns the maximum key." alt="" coords="5,5,189,76"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Map.html#a9fa93c6416dfe1cabda60f986fc8fdc3" title="Returns the range of keys in this map." alt="" coords="5,100,189,171"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1DistinctList.html#abba2c2a241b0850e47b08be12cc2a825" title="Determines whether list is empty." alt="" coords="25,195,169,236"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1IntervalMap.html#acb61e91bac6aa82b6a5193726799bdf9" title="Determine if the container is empty." alt="" coords="23,261,172,317"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1Map.html#ae8b7c3a440ceca73c76a87291bd865f1" title="Returns the minimum key." alt="" coords="5,341,189,412"/>
-</map>

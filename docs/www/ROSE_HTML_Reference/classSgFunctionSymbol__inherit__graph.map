@@ -1,7 +1,0 @@
-<map id="SgFunctionSymbol" name="SgFunctionSymbol">
-<area shape="rect" id="node1" title=" " alt="" coords="207,80,339,107"/>
-<area shape="rect" id="node3" href="$classSgMemberFunctionSymbol.html" title=" " alt="" coords="5,155,184,181"/>
-<area shape="rect" id="node4" href="$classSgRenameSymbol.html" title=" " alt="" coords="208,155,339,181"/>
-<area shape="rect" id="node5" href="$classSgTemplateFunctionSymbol.html" title=" " alt="" coords="363,155,549,181"/>
-<area shape="rect" id="node2" href="$classSgSymbol.html" title="This class represents the concept of a name within the compiler." alt="" coords="232,5,315,32"/>
-</map>

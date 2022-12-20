@@ -1,9 +1,0 @@
-<map id="SgWhereStatement" name="SgWhereStatement">
-<area shape="rect" id="node1" title=" " alt="" coords="243,364,379,391"/>
-<area shape="rect" id="node2" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="211,185,309,212"/>
-<area shape="rect" id="node6" href="$classSgElseWhereStatement.html" title=" " alt="" coords="289,275,452,301"/>
-<area shape="rect" id="node3" href="$classSgLabelRefExp.html" title=" " alt="" coords="93,81,206,108"/>
-<area shape="rect" id="node4" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="98,5,201,32"/>
-<area shape="rect" id="node5" title="STL class." alt="" coords="569,81,649,108"/>
-<area shape="rect" id="node7" href="$classSgBasicBlock.html" title="This class represents the concept of a block (not a basic block from control flow analysis)." alt="" coords="481,185,585,212"/>
-</map>

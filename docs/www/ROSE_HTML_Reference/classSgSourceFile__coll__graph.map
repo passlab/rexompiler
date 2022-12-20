@@ -1,8 +1,0 @@
-<map id="SgSourceFile" name="SgSourceFile">
-<area shape="rect" id="node1" title=" " alt="" coords="159,109,259,136"/>
-<area shape="rect" id="node3" href="$classSgHeaderFileReport.html" title=" " alt="" coords="9,257,149,284"/>
-<area shape="rect" id="node4" href="$classSgIncludeFile.html" title=" " alt="" coords="303,257,405,284"/>
-<area shape="rect" id="node2" href="$classSgFile.html" title="This class represents a source file for a project (which may contian many source files and or directo..." alt="" coords="89,5,147,32"/>
-<area shape="rect" id="node5" href="$classSgGlobal.html" title="This class represents the concept of a namespace definition." alt="" coords="171,5,246,32"/>
-<area shape="rect" id="node6" title=" " alt="" coords="296,5,449,32"/>
-</map>

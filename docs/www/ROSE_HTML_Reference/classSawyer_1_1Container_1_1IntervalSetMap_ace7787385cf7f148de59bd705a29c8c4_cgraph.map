@@ -1,5 +1,0 @@
-<map id="Sawyer::Container::IntervalSetMap::replace" name="Sawyer::Container::IntervalSetMap::replace">
-<area shape="rect" id="node1" title="Replace sets with a new set." alt="" coords="5,53,165,94"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1IntervalMap.html#a797f0a6bd63f8debdcd0ccb2fcecf0f3" title="Erase the specified interval." alt="" coords="213,5,352,61"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1IntervalMap.html#a1effdf10ccfb80ed11cc999e850ab2bd" title="Insert a key/value pair." alt="" coords="213,85,352,141"/>
-</map>

@@ -1,9 +1,0 @@
-<map id="SgTypedefDeclaration" name="SgTypedefDeclaration">
-<area shape="rect" id="node1" title="This class represents the notion of a typedef declaration." alt="" coords="501,187,652,213"/>
-<area shape="rect" id="node2" href="$classSgDeclarationStatement.html" title="This class represents the concept of a declaration statement." alt="" coords="5,96,169,123"/>
-<area shape="rect" id="node3" href="$classSgScopeStatement.html" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="393,96,528,123"/>
-<area shape="rect" id="node4" href="$classSgTypedefType.html" title=" " alt="" coords="698,96,810,123"/>
-<area shape="rect" id="node5" href="$classSgSymbol.html" title="This class represents the concept of a name within the compiler." alt="" coords="557,5,639,32"/>
-<area shape="rect" id="node6" href="$classSgType.html" title="This class represents the base class for all types." alt="" coords="834,96,901,123"/>
-<area shape="rect" id="node7" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="932,96,1005,123"/>
-</map>

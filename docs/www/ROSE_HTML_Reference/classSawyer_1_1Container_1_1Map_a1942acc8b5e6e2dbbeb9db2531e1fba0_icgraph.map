@@ -1,4 +1,0 @@
-<map id="Sawyer::Container::Map::upperBound" name="Sawyer::Container::Map::upperBound">
-<area shape="rect" id="node1" title="Find a node close to a key." alt="" coords="203,13,341,54"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1IntervalMap.html#a56a00171503e761f08e789d07692187e" title="Find the first node whose interval begins above the specified scalar key." alt="" coords="5,5,155,61"/>
-</map>

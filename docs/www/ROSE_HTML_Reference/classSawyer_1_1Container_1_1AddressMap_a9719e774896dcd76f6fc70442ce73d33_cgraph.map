@@ -1,5 +1,0 @@
-<map id="Sawyer::Container::AddressMap::read" name="Sawyer::Container::AddressMap::read">
-<area shape="rect" id="node1" title="Reads data into the supplied buffer." alt="" coords="5,50,144,91"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1AddressMapConstraints.html#a1e7b229039bfde68032769c1fba95a5e" title="Limit matching length." alt="" coords="192,5,355,61"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1AddressMap.html#ae17e760e87b8cbeb207310f6f4dc8b20" title="Reads data into the supplied buffer." alt="" coords="204,86,343,127"/>
-</map>

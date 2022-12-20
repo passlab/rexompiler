@@ -1,5 +1,0 @@
-<map id="Rose::BitOps::signExtend" name="Rose::BitOps::signExtend">
-<area shape="rect" id="node1" title="Sign extend part of a value to the full width of the src type." alt="" coords="5,31,180,57"/>
-<area shape="rect" id="node2" href="$namespaceRose_1_1BitOps.html#a900e85ca0be624ba118ee2f20d6e7a27" title="Most significant bit within lsb region." alt="" coords="228,5,383,32"/>
-<area shape="rect" id="node3" href="$namespaceRose_1_1BitOps.html#ac58b5abeae90004b5a61a74a7ceebdde" title="Number of bits in a type or value." alt="" coords="431,31,569,57"/>
-</map>

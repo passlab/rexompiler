@@ -1,6 +1,0 @@
-<map id="ssa_private::DataflowCfgFilter::operator()" name="ssa_private::DataflowCfgFilter::operator()">
-<area shape="rect" id="node1" title="Determines if the provided CFG node should be traversed during DefUse." alt="" coords="5,49,176,90"/>
-<area shape="rect" id="node2" href="$classSgNode.html#a84a728494263300c7c838c5c98b3e9bc" title="Returns the CFG node for just before this AST node." alt="" coords="224,5,395,32"/>
-<area shape="rect" id="node3" href="$classSgNode.html#a4a1b6336271a584701a04a9969b873fb" title="Returns the CFG node for just after this AST node." alt="" coords="241,56,378,83"/>
-<area shape="rect" id="node4" href="$classSgNode.html#a7c9a652bb8435da633422a2440c64541" title="returns new style SageIII enum values" alt="" coords="247,107,371,133"/>
-</map>

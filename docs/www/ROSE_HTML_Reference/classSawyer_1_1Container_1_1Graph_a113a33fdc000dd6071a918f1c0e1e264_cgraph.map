@@ -1,7 +1,0 @@
-<map id="Sawyer::Container::Graph::isValidEdge" name="Sawyer::Container::Graph::isValidEdge">
-<area shape="rect" id="node1" title="Determines whether the edge iterator is valid." alt="" coords="5,104,144,145"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Graph.html#a0c04596aa16ca7b324bceed8859f08f4" title="Iterators for all edges." alt="" coords="192,5,331,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Graph.html#a3989ef4e9f30d9210e80a1cb36acfe7b" title="Finds the edge with specified ID number." alt="" coords="192,71,331,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Graph_1_1Edge.html#a935b88721183c4b1888775d66c16fa7c" title="Unique edge ID number." alt="" coords="192,136,331,177"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Graph.html#ae324cd7b2cc9b5d100d5d9b3960a931b" title="Total number of edges." alt="" coords="192,201,331,243"/>
-</map>

@@ -1,7 +1,0 @@
-<map id="SgGotoStatement" name="SgGotoStatement">
-<area shape="rect" id="node1" title="This class represents the concept of a C or C++ goto statement." alt="" coords="213,349,340,376"/>
-<area shape="rect" id="node2" href="$classSgStatement.html" title="This class represents the notion of a statement." alt="" coords="319,171,418,197"/>
-<area shape="rect" id="node5" href="$classSgLabelStatement.html" title="This class represents the concept of a C or C++ label statement." alt="" coords="383,260,512,287"/>
-<area shape="rect" id="node3" href="$classSgLabelRefExp.html" title=" " alt="" coords="156,81,269,108"/>
-<area shape="rect" id="node4" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="5,5,108,32"/>
-</map>

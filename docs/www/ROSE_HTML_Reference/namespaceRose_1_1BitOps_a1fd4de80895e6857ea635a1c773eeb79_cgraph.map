@@ -1,6 +1,0 @@
-<map id="Rose::BitOps::replicateLsb" name="Rose::BitOps::replicateLsb">
-<area shape="rect" id="node1" title="Replicate low&#45;order bits to fill region without affecting other bits." alt="" coords="5,31,184,57"/>
-<area shape="rect" id="node2" href="$namespaceRose_1_1BitOps.html#ac58b5abeae90004b5a61a74a7ceebdde" title="Number of bits in a type or value." alt="" coords="439,5,577,32"/>
-<area shape="rect" id="node3" href="$namespaceRose_1_1BitOps.html#ac06e1e42297d2a9ca522ad5f0f012d49" title="Replicate low&#45;order bits to fill return value." alt="" coords="232,31,391,57"/>
-<area shape="rect" id="node4" href="$namespaceRose_1_1BitOps.html#a3c68749c5731a07fca7c5eb8218f0cbc" title="Combine two values based on a bit mask." alt="" coords="239,81,383,108"/>
-</map>

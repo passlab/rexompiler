@@ -1,5 +1,0 @@
-<map id="SgRefExp" name="SgRefExp">
-<area shape="rect" id="node1" title="This class represents the &quot;&amp;&quot; operator (applied to any lvalue)." alt="" coords="15,184,98,211"/>
-<area shape="rect" id="node2" href="$classSgExpression.html" title="This class represents the notion of an expression. Expressions are derived from SgLocatedNodes,..." alt="" coords="5,5,108,32"/>
-<area shape="rect" id="node3" href="$classSgType.html" title="This class represents the base class for all types." alt="" coords="73,95,139,121"/>
-</map>

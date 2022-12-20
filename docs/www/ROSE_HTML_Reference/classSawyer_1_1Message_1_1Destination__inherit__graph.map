@@ -1,8 +1,0 @@
-<map id="Sawyer::Message::Destination" name="Sawyer::Message::Destination">
-<area shape="rect" id="node1" title="Base class for all types of message destinations." alt="" coords="224,56,425,83"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Message_1_1Multiplexer.html" title="Sends incoming messages to multiple destinations." alt="" coords="491,5,689,32"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Message_1_1SyslogSink.html" title="Sends messages to the syslog daemon." alt="" coords="489,56,691,83"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Message_1_1UnformattedSink.html" title="Base class for final destinations that are free&#45;format." alt="" coords="473,107,707,133"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1SharedObject.html" title="Base class for reference counted objects." alt="" coords="14,27,167,53"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1SharedFromThis.html" title=" " alt="" coords="5,78,176,119"/>
-</map>

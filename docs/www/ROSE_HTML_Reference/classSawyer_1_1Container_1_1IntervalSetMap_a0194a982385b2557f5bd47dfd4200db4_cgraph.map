@@ -1,5 +1,0 @@
-<map id="Sawyer::Container::IntervalSetMap::getUnion" name="Sawyer::Container::IntervalSetMap::getUnion">
-<area shape="rect" id="node1" title="Union of values over an interval of keys." alt="" coords="5,50,176,91"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1IntervalMap.html#acd6f088274649e06edc5911fa74c3379" title="Finds all nodes overlapping the specified interval." alt="" coords="224,5,363,61"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Map_1_1Node.html#aa7eca3d931f2ca3a2bc77ef7011afe00" title="Value part of key/value node." alt="" coords="224,86,363,127"/>
-</map>

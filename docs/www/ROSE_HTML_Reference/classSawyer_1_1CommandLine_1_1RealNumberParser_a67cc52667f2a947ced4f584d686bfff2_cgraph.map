@@ -1,5 +1,0 @@
-<map id="Sawyer::CommandLine::RealNumberParser::instance" name="Sawyer::CommandLine::RealNumberParser::instance">
-<area shape="rect" id="node1" title="Allocating constructor." alt="" coords="5,43,164,99"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1CommandLine_1_1RealNumberParser.html#adaad58a60248f20a5bd32e3637a8aa9e" title="Constructor for derived classes." alt="" coords="219,5,378,61"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1CommandLine_1_1ValueParser.html#a3377b055a88084d382694b9edb40ef0f" title="Property: functor responsible for saving a parsed value in user storage." alt="" coords="212,86,385,127"/>
-</map>

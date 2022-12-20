@@ -1,5 +1,0 @@
-<map id="Range::clear" name="Range::clear">
-<area shape="rect" id="node1" title="Make a range empty." alt="" coords="160,31,256,57"/>
-<area shape="rect" id="node2" href="$classRange.html#a3930d5474001c881ca3ff922fb22501b" title="Create a new range of specified size." alt="" coords="5,5,112,32"/>
-<area shape="rect" id="node3" href="$classRange.html#a6d27e17fadca79e6f3851c60ee50d12c" title="Sets the range size by adjusting the maximum value." alt="" coords="7,56,110,83"/>
-</map>

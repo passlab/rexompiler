@@ -1,4 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structRose_1_1AST_1_1Defects_1_1defect__t_3_01Kind_1_1any_01_4.html" title="Defect descriptor specialization for the default kind &quot;any&quot;." alt="" coords="5,13,161,54"/>
-<area shape="rect" id="node2" href="$structRose_1_1AST_1_1Defects_1_1defect__t_3_01Kind_1_1integrity__edges_01_4.html" title="Specialization of the defect_t template for the case of an edge integrity defect." alt="" coords="209,5,379,61"/>
-</map>

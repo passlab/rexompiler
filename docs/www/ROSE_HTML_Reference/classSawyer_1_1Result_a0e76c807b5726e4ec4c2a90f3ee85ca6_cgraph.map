@@ -1,5 +1,0 @@
-<map id="Sawyer::Result::orElse" name="Sawyer::Result::orElse">
-<area shape="rect" id="node1" title="Returns the contained Ok value, or calls a function." alt="" coords="5,31,163,57"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Result.html#a402b4620627ea1d00ca710f05ecc0295" title="Convert to Optional&lt;E&gt;." alt="" coords="211,5,357,32"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Result.html#afbbcca14fb893c413c5fc3b06993eb20" title="Returns true if the result is okay." alt="" coords="405,31,552,57"/>
-</map>

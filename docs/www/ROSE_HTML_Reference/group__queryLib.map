@@ -1,5 +1,0 @@
-<map id="Query Library" name="Query Library">
-<area shape="rect" id="node1" href="$group__localNodeQueryLib.html" title="This library simplifies the development of useful queries upon individual nodes of the AST." alt="" coords="153,5,324,31"/>
-<area shape="rect" id="node2" href="$group__subtreeQueryLib.html" title="This library simplifies the development of useful queries that require a traversal of any subtree of ..." alt="" coords="164,55,313,80"/>
-<area shape="rect" id="node3" title="This library simplifies the development of useful queries upon the AST." alt="" coords="5,31,105,56"/>
-</map>

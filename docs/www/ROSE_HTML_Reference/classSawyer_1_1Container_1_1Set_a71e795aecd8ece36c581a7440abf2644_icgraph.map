@@ -1,7 +1,0 @@
-<map id="Sawyer::Container::Set::exists" name="Sawyer::Container::Set::exists">
-<area shape="rect" id="node1" title="Whether a value exists." alt="" coords="215,104,353,145"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Set.html#aa595ba1006ea945a0979876f1a6c0c87" title="Whether all values exist." alt="" coords="13,5,159,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Set.html#a84d89c05e4a546a1a824dd59d695e64a" title="Whether any value exists." alt="" coords="9,71,163,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Set.html#ae207a2211c74a8facb910e52e3ba8e40" title="Intersects this set with another." alt="" coords="5,136,167,177"/>
-<area shape="rect" id="node5" href="$classSawyer_1_1Container_1_1Set.html#a734db792b0aa40da798e0ba333f6a471" title="Differences two sets." alt="" coords="8,201,164,243"/>
-</map>

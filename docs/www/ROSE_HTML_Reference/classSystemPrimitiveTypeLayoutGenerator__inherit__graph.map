@@ -1,4 +1,0 @@
-<map id="SystemPrimitiveTypeLayoutGenerator" name="SystemPrimitiveTypeLayoutGenerator">
-<area shape="rect" id="node1" title="Layout generator for the native system (uses sizeof)" alt="" coords="15,80,200,121"/>
-<area shape="rect" id="node2" href="$classChainableTypeLayoutGenerator.html" title="Basic type layout engine – handles bookkeeping, plus handing typedefs and." alt="" coords="5,5,209,32"/>
-</map>

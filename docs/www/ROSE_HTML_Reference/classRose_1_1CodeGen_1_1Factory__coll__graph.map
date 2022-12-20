@@ -1,5 +1,0 @@
-<map id="Rose::CodeGen::Factory&lt; CRT, API &gt;" name="Rose::CodeGen::Factory&lt; CRT, API &gt;">
-<area shape="rect" id="node1" title="constructs expressions and types for the given API" alt="" coords="89,109,257,151"/>
-<area shape="rect" id="node2" href="$classRose_1_1CodeGen_1_1Driver.html" title="facilitates the manipulation of source&#45;files (esp." alt="" coords="5,13,164,39"/>
-<area shape="rect" id="node3" href="$classRose_1_1CodeGen_1_1API.html" title="permits to gather types and symbols to extract an API from a set of headers." alt="" coords="189,5,335,47"/>
-</map>

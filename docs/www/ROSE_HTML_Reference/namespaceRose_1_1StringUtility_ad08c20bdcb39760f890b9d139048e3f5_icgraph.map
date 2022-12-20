@@ -1,4 +1,0 @@
-<map id="Rose::StringUtility::toDigit" name="Rose::StringUtility::toDigit">
-<area shape="rect" id="node1" title="Convert a character to a numeric digit." alt="" coords="183,5,312,47"/>
-<area shape="rect" id="node2" href="$namespaceRose_1_1StringUtility.html#aeef730bf985791334cad7f92950a5511" title="Safely convert a string to a number using C++ style syntax." alt="" coords="5,5,135,47"/>
-</map>

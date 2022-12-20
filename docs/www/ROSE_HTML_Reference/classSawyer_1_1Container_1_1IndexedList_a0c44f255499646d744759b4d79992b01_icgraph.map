@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::IndexedList::isEmpty" name="Sawyer::Container::IndexedList::isEmpty">
-<area shape="rect" id="node1" title="Determines if this list is empty." alt="" coords="243,93,388,134"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1IndexedList.html#ac5e336cc996fea4ec9eacd9a34372f5b" title="Last element of list." alt="" coords="5,5,195,61"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1IndexedList.html#a2d0c784b96eb6a647663ec6775643a21" title="First element of list." alt="" coords="5,85,195,141"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Stack.html#afc5f7902f7ac3d14ebd0d003ca576e69" title="Determines if the stack is empty." alt="" coords="15,166,185,207"/>
-</map>

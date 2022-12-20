@@ -1,6 +1,0 @@
-<map id="SgNamespaceDeclarationStatement" name="SgNamespaceDeclarationStatement">
-<area shape="rect" id="node1" title="This class represents the concept of a C++ namespace declaration." alt="" coords="226,97,461,124"/>
-<area shape="rect" id="node3" href="$classSgNamespaceDefinitionStatement.html" title="This class represents the concept of a namespace definition." alt="" coords="232,195,455,222"/>
-<area shape="rect" id="node2" href="$classSgDeclarationStatement.html" title="This class represents the concept of a declaration statement." alt="" coords="5,7,169,33"/>
-<area shape="rect" id="node4" href="$classSgName.html" title="This class represents strings within the IR nodes." alt="" coords="393,7,467,33"/>
-</map>

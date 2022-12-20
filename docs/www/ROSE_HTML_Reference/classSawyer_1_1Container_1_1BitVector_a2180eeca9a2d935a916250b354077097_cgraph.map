@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::BitVector::setValue" name="Sawyer::Container::BitVector::setValue">
-<area shape="rect" id="node1" title="Assign true/false to some bits." alt="" coords="5,71,144,112"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1BitVector.html#a4aef9f4b51c24193972024d5db21bf51" title="Assert valid range." alt="" coords="203,5,360,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1BitVector.html#a01cec791efd731cfbe2157d7721b7dfe" title="Raw data for vector." alt="" coords="212,71,351,112"/>
-<area shape="rect" id="node4" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#af68ac2d6efbbb861299c4cfe02e8a148" title="Set or clear some bits." alt="" coords="192,136,371,177"/>
-</map>

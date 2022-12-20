@@ -1,6 +1,0 @@
-<map id="Sawyer::Container::DenseIntegerSet::domain" name="Sawyer::Container::DenseIntegerSet::domain">
-<area shape="rect" id="node1" title="Domain of storable values." alt="" coords="209,93,380,134"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1DenseIntegerSet.html#a22a2cb5fda5444b3314ac5a328f48014" title="Construct an empty set that can hold values from the specified domain." alt="" coords="5,5,161,61"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1DenseIntegerSet.html#a7a94dcdefc13ab5e2488cdde95d2adff" title="Determines if a value is storable." alt="" coords="5,85,161,141"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1DenseIntegerSet.html#a1de0d952c3ab1ded5d00b6118ce4b142" title="Assignment operator." alt="" coords="5,165,161,221"/>
-</map>

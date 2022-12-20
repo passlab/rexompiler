@@ -1,8 +1,0 @@
-<map id="Backend" name="Backend">
-<area shape="rect" id="node1" href="$group__library__general__principles.html" title="Information about the ROSE library API in general." alt="" coords="5,109,172,134"/>
-<area shape="rect" id="node5" title=" " alt="" coords="220,109,293,134"/>
-<area shape="rect" id="node2" href="$group__backendGenerator.html" title="Generates C or C++ Source code from the AST." alt="" coords="357,5,534,45"/>
-<area shape="rect" id="node3" href="$group__LanguageIndependentCodeGenerator.html" title="Generates calls to the appropriate language to build source code from the AST." alt="" coords="341,69,549,109"/>
-<area shape="rect" id="node4" href="$group__FortranCodeGenerator.html" title="Generates Fortran Source code from the AST." alt="" coords="369,133,522,173"/>
-<area shape="rect" id="node6" href="$group__CxxCodeGenerator.html" title="Generates C++ Source code from the AST." alt="" coords="347,198,544,223"/>
-</map>

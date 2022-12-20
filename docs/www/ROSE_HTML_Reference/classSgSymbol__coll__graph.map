@@ -1,5 +1,0 @@
-<map id="SgSymbol" name="SgSymbol">
-<area shape="rect" id="node1" title="This class represents the concept of a name within the compiler." alt="" coords="120,97,203,124"/>
-<area shape="rect" id="node2" href="$classSgNode.html" title="This class represents the base class for all IR nodes within Sage III." alt="" coords="5,7,75,33"/>
-<area shape="rect" id="node3" href="$classAstAttributeMechanism.html" title="Stores named attributes in Sage IR nodes." alt="" coords="203,7,362,33"/>
-</map>

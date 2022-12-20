@@ -1,5 +1,0 @@
-<map id="Sawyer::Container::IntervalMap::nIntervals" name="Sawyer::Container::IntervalMap::nIntervals">
-<area shape="rect" id="node1" title="Number of nodes in the container." alt="" coords="193,53,348,94"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1IntervalSet.html#a82c2f589322e056a47f219dee70e9976" title="Number of storage nodes." alt="" coords="5,5,145,61"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1IntervalSet.html#a2f64f9cb833e1adc81e1a7f8563e2c6b" title="Determines if two sets contain different elements." alt="" coords="5,85,145,141"/>
-</map>

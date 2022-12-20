@@ -1,5 +1,0 @@
-<map id="SgNode::variantT" name="SgNode::variantT">
-<area shape="rect" id="node1" title="returns new style SageIII enum values" alt="" coords="224,57,348,84"/>
-<area shape="rect" id="node2" href="$classRose_1_1EditDistance_1_1LinearEditDistance_1_1Node.html#a49ef8e0d36deee18608c2f6e7b8a60dc" title="Construct a list node from an AST node." alt="" coords="21,5,161,61"/>
-<area shape="rect" id="node3" href="$structssa__private_1_1DataflowCfgFilter.html#aaf4c72d4153e961ddaaecdb88d2be1a9" title="Determines if the provided CFG node should be traversed during DefUse." alt="" coords="5,86,176,127"/>
-</map>

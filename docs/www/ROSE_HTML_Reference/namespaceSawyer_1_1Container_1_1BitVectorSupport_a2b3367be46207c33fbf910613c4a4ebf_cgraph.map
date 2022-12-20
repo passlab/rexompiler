@@ -1,8 +1,0 @@
-<map id="Sawyer::Container::BitVectorSupport::shiftLeft" name="Sawyer::Container::BitVectorSupport::shiftLeft">
-<area shape="rect" id="node1" title="Shift bits left." alt="" coords="5,151,181,193"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1Interval.html#a136b9afce8c48871c21c58dc9ecdc48f" title="Construct an interval from one endpoint and a size." alt="" coords="249,5,388,61"/>
-<area shape="rect" id="node3" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#aff6810c441e283e64b214bd4d9bbc0a6" title="Copy some bits." alt="" coords="240,86,397,127"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Interval.html#abb62f08552ec4762be55510d97e7a233" title="Returns lower limit." alt="" coords="249,151,388,193"/>
-<area shape="rect" id="node5" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#af68ac2d6efbbb861299c4cfe02e8a148" title="Set or clear some bits." alt="" coords="229,217,408,258"/>
-<area shape="rect" id="node6" href="$classSawyer_1_1Container_1_1Interval.html#a75d8ca4e63b1180f6d2194a0ec79440d" title="Size of interval." alt="" coords="249,282,388,323"/>
-</map>

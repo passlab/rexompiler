@@ -1,4 +1,0 @@
-<map id="Sawyer::Container::HashMap::eraseMultiple" name="Sawyer::Container::HashMap::eraseMultiple">
-<area shape="rect" id="node1" title="Remove keys stored in another HashMap." alt="" coords="5,29,168,71"/>
-<area shape="rect" id="node2" href="$classSawyer_1_1Container_1_1HashMap.html#a696396cdd5ffa84293d910abd7f59f01" title="Remove a node with specified key." alt="" coords="216,29,355,71"/>
-</map>

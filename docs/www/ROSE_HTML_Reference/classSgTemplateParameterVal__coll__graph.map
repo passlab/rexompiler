@@ -1,6 +1,0 @@
-<map id="SgTemplateParameterVal" name="SgTemplateParameterVal">
-<area shape="rect" id="node1" title=" " alt="" coords="78,95,247,121"/>
-<area shape="rect" id="node2" href="$classSgValueExp.html" title="This class represents the notion of an value (expression value)." alt="" coords="5,5,99,32"/>
-<area shape="rect" id="node3" title="STL class." alt="" coords="123,5,203,32"/>
-<area shape="rect" id="node4" href="$classSgType.html" title="This class represents the base class for all types." alt="" coords="244,5,311,32"/>
-</map>

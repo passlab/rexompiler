@@ -1,6 +1,0 @@
-<map id="SgCAFWithTeamStatement" name="SgCAFWithTeamStatement">
-<area shape="rect" id="node1" title=" " alt="" coords="54,171,238,197"/>
-<area shape="rect" id="node2" href="$classSgScopeStatement.html" title="This class represents the concept of a scope in C++ (e.g. global scope, fuction scope,..." alt="" coords="5,5,140,32"/>
-<area shape="rect" id="node4" href="$classSgBasicBlock.html" title="This class represents the concept of a block (not a basic block from control flow analysis)." alt="" coords="94,81,198,108"/>
-<area shape="rect" id="node3" href="$classSgVarRefExp.html" title="This class represents the variable refernece in expressions." alt="" coords="222,81,323,108"/>
-</map>

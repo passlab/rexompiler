@@ -1,8 +1,0 @@
-<map id="IntraDFTransferVisitor" name="IntraDFTransferVisitor">
-<area shape="rect" id="node1" title="Apply an analysis A&#39;s transfer function at a particular AST node type." alt="" coords="273,89,424,115"/>
-<area shape="rect" id="node3" href="$classIntraUnitDataflow_1_1DefaultTransfer.html" title=" " alt="" coords="483,5,615,47"/>
-<area shape="rect" id="node4" href="$classLiveDeadVarsTransfer.html" title=" " alt="" coords="473,71,624,98"/>
-<area shape="rect" id="node5" href="$classVariableStateTransfer.html" title=" " alt="" coords="475,123,622,164"/>
-<area shape="rect" id="node6" href="$classVariableStateTransfer.html" title=" " alt="" coords="760,160,907,201"/>
-<area shape="rect" id="node2" href="$classROSE__VisitorPatternDefaultBase.html" title=" " alt="" coords="5,89,224,115"/>
-</map>

@@ -1,7 +1,0 @@
-<map id="Sawyer::Container::BitVectorSupport::shiftRightArithmetic" name="Sawyer::Container::BitVectorSupport::shiftRightArithmetic">
-<area shape="rect" id="node1" title="Shift bits right arithmetically." alt="" coords="5,97,191,153"/>
-<area shape="rect" id="node2" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#a98b33c1888d241c1ef777bcef0eacc3c" title="Return a single bit." alt="" coords="258,5,405,47"/>
-<area shape="rect" id="node3" href="$classSawyer_1_1Container_1_1Interval.html#a0c203b5387ef72aa3bcf8815ec8b7c16" title="Returns upper limit." alt="" coords="262,71,401,112"/>
-<area shape="rect" id="node4" href="$classSawyer_1_1Container_1_1Interval.html#aab81e29f7ededeac6d008e6dfaa1bf19" title="True if interval is empty." alt="" coords="262,136,401,177"/>
-<area shape="rect" id="node5" href="$namespaceSawyer_1_1Container_1_1BitVectorSupport.html#abf56586a8f4f0df59c5ad26f1e34cb69" title="Shift bits right." alt="" coords="239,201,424,243"/>
-</map>
