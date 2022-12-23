@@ -32,7 +32,6 @@ include_directories(
   ${CMAKE_BINARY_DIR}/src/3rdPartyLibraries/fortran-parser
   ${JAVA_INCLUDE_PATH}
   ${JAVA_INCLUDE_PATH2}
-  ${CMAKE_SOURCE_DIR}/src/midend/astMatching
   ${CMAKE_SOURCE_DIR}/src/util
   ${CMAKE_SOURCE_DIR}/src/frontend
   ${ROSE_INCLUDES})
@@ -119,7 +118,6 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:abstractLayer>
   $<TARGET_OBJECTS:astDiagnostics>
   $<TARGET_OBJECTS:astProcessing>
-  $<TARGET_OBJECTS:astMatching>
   $<TARGET_OBJECTS:midend_util>
   $<TARGET_OBJECTS:midend_pt>
   $<TARGET_OBJECTS:ompparser>

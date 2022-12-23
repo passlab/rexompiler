@@ -14,7 +14,6 @@ SUBDIRS = \
         abstractHandle \
         astDiagnostics \
         astProcessing \
-        astMatching \
         astQuery \
         astRewriteMechanism \
         astUtil \

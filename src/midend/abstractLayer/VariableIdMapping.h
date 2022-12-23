@@ -7,7 +7,6 @@
 #include <vector>
 #include <boost/unordered_set.hpp>
 
-#include "RoseAst.h"
 #include "SgNodeHelper.h"
 
 namespace CodeThorn {

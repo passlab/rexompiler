@@ -5,6 +5,7 @@ This is useful to uniquely identify AST nodes during transformations.
 by Liao, 3/6/2014
 */
 #include "rose.h"
+#include "RoseAst.h"
 #include <string>
 #include <iostream>
 #include "AstPDFGeneration.h"

@@ -748,11 +748,6 @@ lcov_genhtml: coverage.info
 # -d src/util/Sawyer 
 
 # DQ (2/22/2016): The file genhtml has an error.
-#   ERROR: cannot read /export/tmp.schordan1/development/rosework/mainbranch/rose/src/midend/astMatching/matcherlexer.ll
-# So we can't process this directory.
-# -d src/midend/astMatching/.libs
-
-# DQ (2/22/2016): The file genhtml has an error.
 # genhtml: ERROR: cannot read /home/dquinlan/ROSE/ROSE_CompileTree/git-LINUX-64bit-4.8.3--dq-development-rc-lcov/src/3rdPartyLibraries/POET/poet_yacc.y
 # So we can't process this directory.
 # -d src/3rdPartyLibraries/POET/.libs 

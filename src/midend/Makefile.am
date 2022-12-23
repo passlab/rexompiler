@@ -14,7 +14,6 @@ include $(srcdir)/abstractHandle/Makefile_variables
 include $(srcdir)/abstractLayer/Makefile_variables
 include $(srcdir)/astDiagnostics/Makefile_variables
 include $(srcdir)/astProcessing/Makefile_variables
-include $(srcdir)/astMatching/Makefile_variables
 include $(srcdir)/astRewriteMechanism/Makefile_variables
 include $(srcdir)/astQuery/Makefile_variables
 include $(srcdir)/astUtil/Makefile_variables
@@ -43,7 +42,6 @@ mAbstractHandlePath=abstractHandle#
 mAbstractLayerPath=abstractLayer#
 mAstDiagnosticsPath=astDiagnostics#
 mAstProcessingPath=astProcessing#
-mAstMatchingPath=astMatching#
 mAstRewriteMechanismPath=astRewriteMechanism#
 mAstQueryPath=astQuery#
 mAstUtilPath=astUtil#
@@ -86,15 +84,12 @@ noinst_LTLIBRARIES=\
 lib_LTLIBRARIES=\
 	$(mProgramTransformation_lib_ltlibraries)
 
-#BUILT_SOURCES = $(mAstMatching_built_sources)
-
 libmidend_la_SOURCES=\
 	$(mAbstractHandle_la_sources) \
 	$(mAbstractLayer_la_sources) \
 	$(mAbstractMemoryObject_la_sources) \
 	$(mAstDiagnostics_la_sources) \
 	$(mAstProcessing_la_sources) \
-	$(mAstMatching_la_sources) \
 	$(mAstQuery_la_sources) \
 	$(mAstSnippet_la_sources)
 if !ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
@@ -113,7 +108,6 @@ pkginclude_HEADERS = \
 	$(mAbstractMemoryObject_includeHeaders) \
 	$(mAstDiagnostics_includeHeaders) \
 	$(mAstProcessing_includeHeaders) \
-	$(mAstMatching_includeHeaders) \
 	$(mAstRewriteMechanism_includeHeaders) \
 	$(mAstQuery_includeHeaders) \
 	$(mAstSnippet_includeHeaders) \
@@ -131,7 +125,6 @@ EXTRA_DIST = \
 	$(mAbstractMemoryObject_extraDist) \
 	$(mAstDiagnostics_extraDist) \
 	$(mAstProcessing_extraDist) \
-	$(mAstMatching_extraDist) \
 	$(mAstRewriteMechanism_extraDist) \
 	$(mAstQuery_extraDist) \
 	$(mAstUtil_extraDist) \
@@ -143,7 +136,6 @@ clean-local:
 	$(mAbstractMemoryObject_cleanLocal)
 	$(mAstDiagnostics_cleanLocal)
 	$(mAstProcessing_cleanLocal)
-	$(mAstMatching_cleanLocal)
 	$(mAstRewriteMechanism_cleanLocal)
 	$(mAstQuery_cleanLocal)
 	$(mAstUtil_cleanLocal)
@@ -151,22 +143,5 @@ clean-local:
 
 distclean-local:
 	$(mAstProcessing_distCleanLocal)
-	$(mAstMatching_distCleanLocal)
 	$(mAstQuery_distCleanLocal)
 	$(mAstUtil_distCleanLocal)
-
-# Explicit rules because of multiple bison parsers in the
-# library. These rules generate a unique name for the parser to avoid
-# name conflicts with the default naming scheme. The generated parser
-# is a tracked file. It's part of development to regenerate it if the
-# parser is changed. This rule is in this Makefile.am because we only use
-# variables from the subdirectory make files here.
-regenerateparser:
-#$(srcdir)/$(mAstMatchingPath)matcherparser.C: $(srcdir)/$(mAstMatchingPath)/matcherlexer.ll $(srcdir)/$(mAstMatchingPath)/matcherparser.yy
-	$(AM_V_GEN)
-	@$(YACC) $(YFLAGS) -d -p matcherparser $(srcdir)/$(mAstMatchingPath)/matcherparser.yy # generates y.tab.h/c
-	@$(LEX) $(LFLAGS) $(AM_LFLAGS) -Pmatcherparser $(srcdir)/$(mAstMatchingPath)/matcherlexer.ll
-	@mv y.tab.h $(srcdir)/$(mAstMatchingPath)/matcherparser.h
-	@cat lex.yy.c y.tab.c > $(srcdir)/$(mAstMatchingPath)/matcherparser.C
-	@rm lex.yy.c y.tab.c
-$(srcdir)/$(mAstMatchingPath)/matcherparser.h: $(srcdir)/$(mAstMatchingPath)/matcherparser.C

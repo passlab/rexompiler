@@ -36,7 +36,6 @@
 #include "AstDOTGeneration.h"
 #include "AstDiagnostics.h"
 // #include "AstStatistics.h"
-#include "RoseAst.h"
 
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 // DQ (6/3/2007): added internal support for AST visualization

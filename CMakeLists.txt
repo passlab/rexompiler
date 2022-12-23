@@ -922,7 +922,6 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/astInlining
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/astOutlining
   ${ROSE_TOP_SRC_DIR}/src/midend/astProcessing
-  ${ROSE_TOP_SRC_DIR}/src/midend/astMatching
   ${ROSE_TOP_SRC_DIR}/src/midend/astQuery
   ${ROSE_TOP_SRC_DIR}/src/midend/astRewriteMechanism
   ${ROSE_TOP_SRC_DIR}/src/midend/astUtil/annotation
