@@ -1,28 +1,20 @@
 # Non-recursive Makefile
 
 mAbstractLayer_includeHeaders=\
-	$(mAbstractLayerPath)/CodeThornException.h \
 	$(mAbstractLayerPath)/AstAnnotator.h \
-	$(mAbstractLayerPath)/CPAstAttributeInterface.h \
-	$(mAbstractLayerPath)/DFAstAttribute.h \
 	$(mAbstractLayerPath)/AstTerm.h \
 	$(mAbstractLayerPath)/RoseAst.h \
 	$(mAbstractLayerPath)/Label.h \
 	$(mAbstractLayerPath)/Labeler.h \
-	$(mAbstractLayerPath)/RDAstAttributeInterface.h \
 	$(mAbstractLayerPath)/SgNodeHelper.h \
 	$(mAbstractLayerPath)/VariableIdMapping.h
 
 mAbstractLayer_la_sources=\
-	$(mAbstractLayerPath)/CodeThornException.C \
 	$(mAbstractLayerPath)/AstAnnotator.C \
-	$(mAbstractLayerPath)/CPAstAttributeInterface.C \
-	$(mAbstractLayerPath)/DFAstAttribute.C \
 	$(mAbstractLayerPath)/AstTerm.C \
 	$(mAbstractLayerPath)/RoseAst.C \
 	$(mAbstractLayerPath)/Label.C \
 	$(mAbstractLayerPath)/Labeler.C \
-	$(mAbstractLayerPath)/RDAstAttributeInterface.C \
 	$(mAbstractLayerPath)/SgNodeHelper.C \
 	$(mAbstractLayerPath)/VariableIdMapping.C
 
