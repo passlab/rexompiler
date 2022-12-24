@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "DFAstAttribute.h"
 #include "Labeler.h"
 
 namespace CodeThorn {

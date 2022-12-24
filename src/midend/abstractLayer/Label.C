@@ -1,5 +1,4 @@
 #include "sage3basic.h"
-#include "CodeThornException.h"
 #include "Label.h"
 #include <sstream>
 #include <iostream>

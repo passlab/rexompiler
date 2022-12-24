@@ -34,7 +34,7 @@ void AstAnnotator::annotateAstAttributesAsComments(SgNode* node, string attribut
         //std::cerr << "WARNING: attaching comments to AST nodes of type SgCtorInitializerList not possible. We are skipping this annotation and continue."<<std::endl;
         continue;
       }
-      DFAstAttribute* artAttribute=dynamic_cast<DFAstAttribute*>(stmt->getAttribute(attributeName));
+      AstAttribute* artAttribute=stmt->getAttribute(attributeName);
       // if this fails, no attribute was attached
       if(artAttribute) {
         ROSE_ASSERT(_labeler);
@@ -45,8 +45,8 @@ void AstAnnotator::annotateAstAttributesAsComments(SgNode* node, string attribut
         if(!_variableIdMapping) {
           artAttributeString=artAttribute->toString();
         } else {
-          stringstream ss;
-          artAttribute->toStream(ss,_variableIdMapping);
+          stringstream ss("undefined");
+          //artAttribute->toStream(ss,_variableIdMapping);
           artAttributeString=ss.str();
         }
         insertComment(commentStart+labelString+" "+analysisInfoTypeDescription+": "+artAttributeString,posSpecifier,stmt);

@@ -1,6 +1,5 @@
 
 #include "sage3basic.h"
-#include "CodeThornException.h"
 #include "VariableIdMapping.h"
 #include "RoseAst.h"
 #include <set>
@@ -629,7 +628,7 @@ void VariableIdMapping::registerNewArraySymbol(SgSymbol* sym, TypeSize arraySize
   } else {
     stringstream ss;
     ss<< "VariableIdMapping: registerNewArraySymbol: attempt to register existing array symbol "<<sym<<":"<<SgNodeHelper::symbolToString(sym);
-    throw CodeThorn::Exception(ss.str());
+    throw std::runtime_error(ss.str());
   }
 }
 
@@ -671,7 +670,7 @@ void VariableIdMapping::deleteUniqueTemporaryVariableId(VariableId varId) {
     //cerr<<"DEBUG WARNING: not deleting temporary variable id symbol."<<endl;
     //delete getSymbol(varId);
   } else {
-    throw CodeThorn::Exception("VariableIdMapping::deleteUniqueTemporaryVariableSymbol: improper id operation.");
+    throw std::runtime_error("VariableIdMapping::deleteUniqueTemporaryVariableSymbol: improper id operation.");
   }
 }
 

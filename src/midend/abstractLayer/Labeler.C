@@ -1,6 +1,5 @@
 
 #include "sage3basic.h"
-#include "CodeThornException.h"
 
 #include "Labeler.h"
 #include "SgNodeHelper.h"
@@ -11,6 +10,7 @@
 #include <numeric>
 
 using namespace std;
+using namespace std::string_literals;
 using namespace CodeThorn;
 
 namespace si = SageInterface;
@@ -102,7 +102,7 @@ string LabelProperty::labelTypeToString(LabelType lt) {
   case LABEL_WORKSHARE: return "workshare";
   case LABEL_BARRIER: return "barrier";
   default:
-    throw CodeThorn::Exception("Error: unknown label type.");
+    throw std::runtime_error("Error: unknown label type.");
   }
 }
 
@@ -432,9 +432,9 @@ SgNode* CLabeler::getNode(Label label) {
        << mappingLabelToLabelProperty.size()
        << " ]";
     string errorInfo=ss.str();
-    throw CodeThorn::Exception("Labeler: getNode: label id out of bounds "+errorInfo);
+    throw std::runtime_error("Labeler: getNode: label id out of bounds "+errorInfo);
   } else if(label==Label()) {
-    throw CodeThorn::Exception("Labeler: getNode: invalid label id");
+    throw std::runtime_error("Labeler: getNode: invalid label id");
   }
   return mappingLabelToLabelProperty[label.getId()].getNode();
 }
@@ -483,7 +483,7 @@ Label CLabeler::getLabel(SgNode* node) {
     computeNodeToLabelMapping(); // sets _isValidMappingNodeToLabel to true.
     return mappingNodeToLabel[node];
   }
-  throw CodeThorn::Exception("Error: internal error getLabel.");
+  throw std::runtime_error("Error: internal error getLabel.");
 }
 
 size_t CLabeler::numberOfLabels() {
