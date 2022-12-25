@@ -1278,7 +1278,6 @@ exampleTranslators/DOTGenerator/Makefile
 exampleTranslators/Makefile
 exampleTranslators/PDFGenerator/Makefile
 exampleTranslators/defaultTranslator/Makefile
-exampleTranslators/documentedExamples/AstRewriteExamples/Makefile
 exampleTranslators/documentedExamples/Makefile
 exampleTranslators/documentedExamples/simpleTranslatorExamples/Makefile
 exampleTranslators/documentedExamples/simpleTranslatorExamples/exampleMakefile
@@ -1430,7 +1429,6 @@ tests/nonsmoke/functional/roseTests/astOutliningTests/Makefile
 tests/nonsmoke/functional/roseTests/astPerformanceTests/Makefile
 tests/nonsmoke/functional/roseTests/astProcessingTests/Makefile
 tests/nonsmoke/functional/roseTests/astQueryTests/Makefile
-tests/nonsmoke/functional/roseTests/astRewriteTests/Makefile
 tests/nonsmoke/functional/roseTests/astSymbolTableTests/Makefile
 tests/nonsmoke/functional/roseTests/astTokenStreamTests/Makefile
 tests/nonsmoke/functional/roseTests/fileLocation_tests/Makefile
