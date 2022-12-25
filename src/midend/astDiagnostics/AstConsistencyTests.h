@@ -15,9 +15,7 @@
 
 #include "AstNodePtrs.h"
 
-#ifdef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "AstReverseProcessing.h"
-#endif
+#include "AstReverseProcessing.h"
 
 class TestAstPropertiesSA 
    {

@@ -6,14 +6,6 @@
 #include "markForOutputInCodeGeneration.h"
 #include "markTemplateInstantiationsForOutput.h"
 
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-#include "lowLevelRewriteInterface.h"
-#endif
-
-#ifdef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "transformationSupport.h"
-#endif
-
 // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace std;
 

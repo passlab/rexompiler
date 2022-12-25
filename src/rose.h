@@ -50,9 +50,6 @@
 // which has not defined yet (circular reference in the header files)
 // #include "AstRestructure.h"
 
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-#include "rewrite.h"
-#endif
 #include "roseTranslators.h"
 
 // this is a temporary fix (will become obsolete)

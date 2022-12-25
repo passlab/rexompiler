@@ -8,7 +8,6 @@
 // DQ (1/2/2008): I think this is no longer used!
 // #include "copy_unparser.h"
 
-#include "rewrite.h"
 #include <CommandOptions.h>
 #include <AstInterface_ROSE.h>
 #include <LoopTransformInterface.h>

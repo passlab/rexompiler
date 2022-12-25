@@ -102,7 +102,6 @@ NOINST_TUTORIAL_EXAMPLES = \
    switchWithoutDefault \
    symbolTableHandling \
    synthesizedAttributeTraversal \
-   tauInstrumenter \
    templateParameter \
    traversalShortCircuit \
    traverseIRnodeTypes \
@@ -115,9 +114,6 @@ NOINST_TUTORIAL_EXAMPLES = \
    wholeASTGraphGenerator \
    wholeGraphAST \
    wholeGraphFilterOnPersistantAttributes
-
-# TV (02/13/2014) : desactivated tutorials using the deprecated AST rewrite mechanism.
-#   instrumentationExample
 
 # DQ (3/21/2009): Separate those that compile under Cygwin from those that don't.
 if ROSE_BUILD_OS_IS_CYGWIN
@@ -187,8 +183,6 @@ instrumentEndOfFunction_SOURCES = instrumentEndOfFunction.C
 
 reductionRecognition_SOURCES= reductionRecognition.C
 
-#instrumentationExample_SOURCES = instrumentationExample.C
-
 abstractHandle1_SOURCES = abstractHandle1.cpp
 
 abstractHandle2_SOURCES = abstractHandle2.cpp
@@ -245,8 +239,6 @@ classHierarchyGraph_SOURCES = classHierarchyGraph.C
 dataBaseUsage_SOURCES = dataBaseUsage.C
 
 loopNestingInfoProcessing_SOURCES = loopNestingInfoProcessing.C
-
-tauInstrumenter_SOURCES = tauInstrumenter.C
 
 typeTransformation_SOURCES = typeTransformation.C
 
@@ -382,9 +374,6 @@ testResolveOverloadedFunction: resolveOverloadedFunction
 
 testInstantiatedTemplate: templateParameter
 	./templateParameter $(srcdir)/inputCode_1.C
-
-#testInstrumentationExample: instrumentationExample
-#	./instrumentationExample -rose:verbose 0 -c $(srcdir)/inputCode_InstrumentationTranslator.C
 
 testInstrumentEndOfFunction: instrumentEndOfFunction
 	./instrumentEndOfFunction -rose:verbose 0 -c $(srcdir)/inputCode_instrumentEndOfFunction.C
@@ -718,7 +707,6 @@ traversalOutput = \
 generatedCodeExamples = \
    rose_inputCode_inlineTransformations.C \
    rose_inputCode_partialRedundancyElimination.C \
-   rose_inputCode_tauInstrumenter.C \
    inputCode_ASTGraphGenerator.pdf \
    inputCode_ASTGraphGeneratorCustomized.pdf \
    inputCode_AST_PDF_Generator.pdf \
@@ -1016,10 +1004,6 @@ rose_inputCode_AddFunctionCalls.C: addFunctionCalls
 	@echo "Generate executable from compilation of input code (addFunctionCalls) ..."
 	./addFunctionCalls $(ROSE_FLAGS) -c $(srcdir)/inputCode_AddFunctionCalls.C
 
-#rose_inputCode_InstrumentationTranslator.C: instrumentationExample
-#	@echo "Generate executable from compilation of input code ..."
-#	./instrumentationExample $(ROSE_FLAGS) -c $(srcdir)/inputCode_InstrumentationTranslator.C
-
 rose_inputCode_instrumentEndOfFunction.C: instrumentEndOfFunction
 	@echo "Generate executable from compilation of input code ..."
 	./instrumentEndOfFunction $(ROSE_FLAGS) -c $(srcdir)/inputCode_instrumentEndOfFunction.C
@@ -1227,10 +1211,6 @@ symbolTableHandling.out: symbolTableHandling
 scopeInformation.out: scopeInformation
 	./scopeInformation $(ROSE_FLAGS) -c $(srcdir)/inputCode_scopeInformation.C > scopeInformation.out
 
-rose_inputCode_tauInstrumenter.C: tauInstrumenter
-#	./tauInstrumenter $(ROSE_FLAGS) $(TAU_INCLUDES) -c $(srcdir)/inputCode_tauInstrumenter.C
-	echo "Test Failed!" > rose_inputCode_tauInstrumenter.C
-
 rose_inputCode_inlineTransformations.C: inlineTransformations
 	./inlineTransformations $(ROSE_FLAGS) -c $(srcdir)/inputCode_inlineTransformations.C
 
@@ -1393,7 +1373,6 @@ EXTRA_DIST = \
    inputCode_loopNestingInfoProcessing.C \
    inputCode_ChangeFunctionExample.C \
    inputCode_interveneAtVariables.C \
-   inputCode_tauInstrumenter.C \
    inputCode_typeTransformation.C \
    inputCode_astFileIO_GenerateBinaryFile.C \
    inputCode_generatingUniqueNamesFromDeclaration.C \

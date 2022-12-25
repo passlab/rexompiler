@@ -189,7 +189,6 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/midend/programTransformation/transformationTracking \
      -I$(top_srcdir)/src/midend/astProcessing \
      -I$(top_srcdir)/src/midend/astQuery \
-     -I$(top_srcdir)/src/midend/astRewriteMechanism \
      -I$(top_srcdir)/src/midend/astUtil/annotation \
      -I$(top_srcdir)/src/midend/astUtil/astInterface \
      -I$(top_srcdir)/src/midend/astUtil/astSupport \

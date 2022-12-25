@@ -1,7 +1,6 @@
 // See header file for documentation.
 
 #include "sage3basic.h"
-
 #include "fixupTemplateArguments.h"
 
 // We need this so that BACKEND_COMPILERS will be known.

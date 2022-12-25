@@ -727,7 +727,6 @@ lcov:
 -d src/midend/programTransformation/astInlining/.libs \
 -d src/midend/programTransformation/functionCallNormalization/.libs \
 -d src/midend/astDiagnostics/.libs \
--d src/midend/astRewriteMechanism/.libs \
 -d src/midend/astProcessing/.libs \
 -d src/midend/programAnalysis/ssaUnfilteredCfg/.libs \
 -d src/midend/programAnalysis/staticSingleAssignment/.libs \
@@ -786,7 +785,6 @@ librose-lcov.info: all-lcov.info
         "$(top_srcdir)/src/midend/programAnalysis/OpenAnalysis/*" \
         "$(top_srcdir)/src/midend/programAnalysis/genericDataflow/*" \
         "$(top_srcdir)/src/frontend/CxxFrontend/EDG/EDG_5.0/*" \
-        "$(top_srcdir)/src/midend/astRewriteMechanism/*" \
         "$(top_srcdir)/src/midend/programAnalysis/dominanceAnalysis/*" \
         "$(top_srcdir)/src/midend/programAnalysis/pointerAnal/*" \
         "$(top_srcdir)/src/midend/programAnalysis/ssaUnfilteredCfg/*" \
@@ -833,7 +831,6 @@ librose_lcov_web_pages: librose-lcov.info
 # src/midend/programAnalysis/OpenAnalysis/*
 # src/midend/programAnalysis/genericDataflowflow/*
 # src/frontend/CxxFrontend/EDG/EDG_5.0/*
-# src/midend/astRewriteMechanism/*
 # src/midend/programAnalysis/dominanceAnalysis/*
 # src/midend/programAnalysis/pointerAnal/*
 # src/midend/programAnalysis/ssaUnfilteredCfg/*

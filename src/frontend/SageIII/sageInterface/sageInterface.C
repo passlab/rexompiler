@@ -36,6 +36,9 @@
 // PP 01/06/2012 : need convenience functors to interface STL
 #include "sageFunctors.h"
 
+#include "AstConsistencyTests.h" //for SageInterface::isRemovableStatement ( SgStatement* s )
+
+
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 // For reusing some code from Qing's loop optimizer
 // Liao, 2/26/2009
@@ -122,10 +125,6 @@ namespace sg
 namespace SageInterface {
   template<class T> void setSourcePositionToDefault( T* node );
 }
-
-#ifdef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "transformationSupport.h"
-#endif
 
 // We need this so that USE_CMAKE will be seen (set via configure).
 #include "rose_config.h"
@@ -7533,7 +7532,9 @@ void SageInterface::changeContinuesToGotos(SgStatement* stmt, SgLabelStatement* 
           SgGotoStatement* gotoStatement = SageBuilder::buildGotoStatement(label);
        // printf ("Building gotoStatement #1 = %p \n",gotoStatement);
 #ifndef _MSC_VER
-          LowLevelRewrite::replace(*i, make_unit_list( gotoStatement ) );
+          //LowLevelRewrite::replace(*i, make_unit_list( gotoStatement ) );
+	  SageInterface::insertStatementListBefore(*i, make_unit_list( gotoStatement));
+          SageInterface::removeStatement(*i);
 #else
           ROSE_ABORT();
 #endif
@@ -9543,6 +9544,31 @@ void SageInterface::DeferredTransformation::display ( std::string label ) const
 // DQ (/20/2010): Control debugging output for SageInterface::removeStatement() function.
 #define REMOVE_STATEMENT_DEBUG 0
 
+//! This function qualifies a statement as to if it can be removed from the AST or not.
+//! Not all statements can be removed, e.g. the SgBasicBlock in a SgForStatement or similar
+//! statement containing a SgBasicBlock to represent a body.  Only a statement in
+//! an AST node representing a list can be removed (I don't know of any exceptions).
+ //! By definition, the statement is removeable if it's parent is a container.
+bool
+SageInterface::isRemovableStatement ( SgStatement* s )
+   {
+  // This code is based on the logic defined in the following function
+  // bool AstTests::isProblematic(SgNode* node)
+  //      { return numSuccContainers(node)>1 || (numSuccContainers(node)>0 && numSingleSuccs(node)>0); }
+
+     ROSE_ASSERT(s != NULL);
+     SgStatement* parentNode = isSgStatement(s->get_parent());
+     ROSE_ASSERT(parentNode != NULL);
+
+     bool isContainer    = (AstTests::numSuccContainers(parentNode) == 1);
+     bool isNonContainer = ( (AstTests::numSuccContainers(parentNode) == 0) && (AstTests::numSingleSuccs(parentNode) > 0) );
+
+     ROSE_ASSERT (isContainer == !isNonContainer);
+
+     return isContainer;
+   }
+
+
 //! Remove a statement: TODO consider side effects for symbol tables
 void SageInterface::removeStatement(SgStatement* targetStmt, bool autoRelocatePreprocessingInfo /*= true*/)
    {
@@ -9565,7 +9591,7 @@ void SageInterface::removeStatement(SgStatement* targetStmt, bool autoRelocatePr
   // Even so SgGlobal can't be removed from SgFile, but isRemovableStatement() takes a SgStatement.
   // ROSE_ASSERT (parentStatement != NULL);
 
-     bool isRemovable = (parentStatement != NULL) ? LowLevelRewrite::isRemovableStatement(targetStmt) : false;
+     bool isRemovable = (parentStatement != NULL) ? SageInterface::isRemovableStatement(targetStmt) : false;
 
 #if REMOVE_STATEMENT_DEBUG || 0
      printf ("In SageInterface::removeStatement(): parentStatement = %p = %s remove targetStatement = %p = %s (isRemovable = %s) \n",

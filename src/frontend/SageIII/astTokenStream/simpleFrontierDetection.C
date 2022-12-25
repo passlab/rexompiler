@@ -15,7 +15,6 @@
 // DQ (11/29/2013): Added to support marking of redundant mappings of statements to token streams.
 // #include "tokenStreamMapping.h"
 
-
 using namespace std;
 
 // DQ (12/1/2013): Added switch to control testing mode for token unparsing.

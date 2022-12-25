@@ -8,7 +8,6 @@
 
 #include "sageBuilder.h"
 #include "astPostProcessing.h"
-#include "rewrite.h"
 #include <iostream>
 #include <iomanip>
 #include <vector>

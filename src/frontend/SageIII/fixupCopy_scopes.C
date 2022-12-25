@@ -3,10 +3,6 @@
 
 #include "fixupCopy.h"
 
-#ifdef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "transformationSupport.h"
-#endif
-
 // This file implementes support for the AST copy fixup.  It is specific to:
 // 1) Scope pointer fixup
 // 2) Parent pointer fixup

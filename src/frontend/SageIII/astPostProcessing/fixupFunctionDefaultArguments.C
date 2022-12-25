@@ -3,13 +3,6 @@
 
 #include "fixupFunctionDefaultArguments.h"
 
-#ifdef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "transformationSupport.h"
-#endif
-
-
-
-
 bool
 containsLambdaSupportForFixupFunctionDefaultArguments (SgExpression* node)
    {

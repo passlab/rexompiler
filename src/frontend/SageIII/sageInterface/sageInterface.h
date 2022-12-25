@@ -6,15 +6,12 @@
 #include <utility>
 
 #include "rosePublicConfig.h" // for ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
+#include "nodeQuery.h" //for querySubTree
 
 #if 0   // FMZ(07/07/2010): the argument "nextErrorCode" should be call-by-reference
 SgFile* determineFileType ( std::vector<std::string> argv, int nextErrorCode, SgProject* project );
 #else
 SgFile* determineFileType ( std::vector<std::string> argv, int& nextErrorCode, SgProject* project );
-#endif
-
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-#include "rewrite.h"
 #endif
 
 // DQ (7/20/2008): Added support for unparsing abitrary strings in the unparser.
@@ -1975,6 +1972,8 @@ ROSE_DLL_API void insertStatementListBeforeFirstNonDeclaration(const std::vector
 
 // DQ (11/21/2018): We need to sometimes insert something after the last statement of the collection from rose_edg_required_macros_and_functions.h.
 ROSE_DLL_API SgStatement* lastFrontEndSpecificStatement( SgGlobal* globalScope );
+
+ROSE_DLL_API bool isRemovableStatement ( SgStatement* s );
 
 //! Remove a statement from its attach point of the AST. Automatically keep its associated preprocessing information at the original place after the removal. The statement is still in memory and it is up to the users to decide if the removed one will be inserted somewhere else or released from memory (deleteAST()).
 ROSE_DLL_API void removeStatement(SgStatement* stmt, bool autoRelocatePreprocessingInfo = true);

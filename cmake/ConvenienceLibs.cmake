@@ -69,8 +69,6 @@ set(alternativeProgramSlicing_STAT_SRCS
 set(dominance_STAT_SRCS
 )
 
-# src/midend/astRewriteMechanism/Makefile.am: rewrite
-
 # src/midend/astQuery/Makefile.am: query
 
 # src/midend/programTransformation/constantFolding/Makefile.am: constantFolding

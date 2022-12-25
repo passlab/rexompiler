@@ -15,7 +15,6 @@ SUBDIRS = \
         astDiagnostics \
         astProcessing \
         astQuery \
-        astRewriteMechanism \
         astUtil \
         programAnalysis \
         programTransformation

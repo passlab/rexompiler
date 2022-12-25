@@ -14,7 +14,6 @@ include $(srcdir)/abstractHandle/Makefile_variables
 include $(srcdir)/abstractLayer/Makefile_variables
 include $(srcdir)/astDiagnostics/Makefile_variables
 include $(srcdir)/astProcessing/Makefile_variables
-include $(srcdir)/astRewriteMechanism/Makefile_variables
 include $(srcdir)/astQuery/Makefile_variables
 include $(srcdir)/astUtil/Makefile_variables
 include $(srcdir)/astUtil/annotation/Makefile_variables
@@ -42,7 +41,6 @@ mAbstractHandlePath=abstractHandle#
 mAbstractLayerPath=abstractLayer#
 mAstDiagnosticsPath=astDiagnostics#
 mAstProcessingPath=astProcessing#
-mAstRewriteMechanismPath=astRewriteMechanism#
 mAstQueryPath=astQuery#
 mAstUtilPath=astUtil#
 mProgramTransformationPath=programTransformation#
@@ -94,7 +92,6 @@ libmidend_la_SOURCES=\
 	$(mAstSnippet_la_sources)
 if !ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 libmidend_la_SOURCES+=\
-	$(mAstRewriteMechanism_la_sources) \
 	$(mAstUtil_la_sources) \
 	$(mProgramTransformation_la_sources)
 endif
@@ -108,7 +105,6 @@ pkginclude_HEADERS = \
 	$(mAbstractMemoryObject_includeHeaders) \
 	$(mAstDiagnostics_includeHeaders) \
 	$(mAstProcessing_includeHeaders) \
-	$(mAstRewriteMechanism_includeHeaders) \
 	$(mAstQuery_includeHeaders) \
 	$(mAstSnippet_includeHeaders) \
 	$(mAstUtil_includeHeaders) \
@@ -125,7 +121,6 @@ EXTRA_DIST = \
 	$(mAbstractMemoryObject_extraDist) \
 	$(mAstDiagnostics_extraDist) \
 	$(mAstProcessing_extraDist) \
-	$(mAstRewriteMechanism_extraDist) \
 	$(mAstQuery_extraDist) \
 	$(mAstUtil_extraDist) \
 	$(mProgramTransformation_extraDist)
@@ -136,7 +131,6 @@ clean-local:
 	$(mAbstractMemoryObject_cleanLocal)
 	$(mAstDiagnostics_cleanLocal)
 	$(mAstProcessing_cleanLocal)
-	$(mAstRewriteMechanism_cleanLocal)
 	$(mAstQuery_cleanLocal)
 	$(mAstUtil_cleanLocal)
 	$(mProgramTransformation_cleanLocal)

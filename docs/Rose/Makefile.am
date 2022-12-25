@@ -45,7 +45,6 @@ RoseDocsDependencies = \
      $(top_srcdir)/src/util/stringSupport/stringSupportDocumentation.docs \
      $(top_srcdir)/src/util/utilDocumentation.docs \
      $(top_srcdir)/src/midend/astQuery/QueryLib.docs \
-     $(top_srcdir)/src/midend/astRewriteMechanism/ASTRewrite.docs \
      $(top_srcdir)/src/midend/astProcessing/AstProcessing.docs \
      $(top_srcdir)/src/backend/unparser/unparser.docs \
      $(top_srcdir)/src/3rdPartyLibraries/MSTL/MSTL.docs

@@ -20,10 +20,7 @@
    #include <fstream>
    #include <boost/algorithm/string/trim.hpp>
    #include <boost/foreach.hpp>
-
-   #include "transformationSupport.h"
 #endif
-
 
 // DQ (4/3/2012): Added so that I can enforce some rules as the AST is constructed.
 #include "AstConsistencyTests.h"

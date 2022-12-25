@@ -2,10 +2,6 @@
 #include "sage3basic.h"
 #include "initializeExplicitScopeData.h"
 
-#ifdef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "transformationSupport.h"
-#endif
-
 // DQ (11/29/2004): initialize any uninitialized explicitly stored scope data.
 void
 initializeExplicitScopes ( SgNode *node)

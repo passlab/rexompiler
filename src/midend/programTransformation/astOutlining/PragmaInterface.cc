@@ -153,7 +153,8 @@ Outliner::outline (SgPragmaDeclaration* decl)
 #if 1
        // This will search the parent for the location of decl, but this is not found
 #ifndef _MSC_VER
-	   LowLevelRewrite::remove (decl);
+	   //LowLevelRewrite::remove (decl);
+	   SageInterface::removeStatement (decl);
 #else
 	   ROSE_ASSERT(false);
 #endif
