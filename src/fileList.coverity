@@ -1,8 +1,5 @@
 ./roseSupport/transformationSupport.h
 ./roseSupport/optionDeclaration.h
-./roseSupport/sourceLocationInheritedAttribute.h
-./roseSupport/roseTranslators.h
-./roseSupport/templateSupport.h
 ./roseSupport/utility_functions.h
 ./rose.h
 ./frontend/EDG_SAGE_Connection/debugging.h
@@ -1000,9 +997,6 @@
 ./roseSupport/transformationSupport.C
 ./roseSupport/utility_functions.C
 ./roseSupport/optionDeclaration.C
-./roseSupport/sourceLocationInheritedAttribute.C
-./roseSupport/roseTranslators.C
-./roseSupport/templateSupport.C
 ./testRoseLib.C
 ./frontend/EDG_SAGE_Connection/alternativeEdgSageInterface.C
 ./frontend/EDG_SAGE_Connection/debugging.C

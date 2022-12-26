@@ -73,35 +73,6 @@ testSort.passed: testSort.conf testSort
 		CMD="$$(pwd)/testSort"			\
 		$< $@
 
-
-###############################################################################################################################
-# tests the RangeMap class
-###############################################################################################################################
-
-noinst_PROGRAMS += rangeMapTests
-rangeMapTests_SOURCES = rangeMapTests.C
-
-TEST_TARGETS += rangeMapTests.passed
-EXTRA_DIST += rangeMapTests.ans
-
-rangeMapTests.passed: $(top_srcdir)/scripts/test_with_answer rangeMapTests rangeMapTests.ans
-	@$(RTH_RUN)					\
-		TITLE="RangeMap container [$@]"		\
-		CMD="./rangeMapTests"			\
-		ANS="$(srcdir)/rangeMapTests.ans"	\
-		$< $@
-
-
-noinst_PROGRAMS += testRangeMap
-testRangeMap_SOURCES = testRangeMap.C
-
-TEST_TARGETS += testRangeMap.passed
-testRangeMap.passed: $(top_srcdir)/scripts/test_exit_status testRangeMap
-	@$(RTH_RUN)				\
-		TITLE="more RangeMap [$@]"	\
-		CMD="./testRangeMap"		\
-		$< $@
-
 ###############################################################################################################################
 # tests the builtin SHA-256 hash
 ###############################################################################################################################

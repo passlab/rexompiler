@@ -2,8 +2,7 @@
 add_definitions(-DROSE_DLL_EXPORTS)
 add_library(roseSupport OBJECT
   transformationSupport.C optionDeclaration.C Combinatorics.C
-  sourceLocationInheritedAttribute.C rangemap.C roseTranslators.C
-  utility_functions.C memoryUsage.C IncludeDirective.C
+  utility_functions.C IncludeDirective.C
   stringify.C)
 add_dependencies(roseSupport rosetta_generated)
 if(READLINE_FOUND)
@@ -15,9 +14,6 @@ endif()
 
 install(FILES  transformationSupport.h
                optionDeclaration.h
-               sourceLocationInheritedAttribute.h
-               rangemap.h
-               roseTranslators.h
                utility_functions.h
                IncludeDirective.h
                utility_functionsImpl.C
