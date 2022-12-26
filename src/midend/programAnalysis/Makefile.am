@@ -33,7 +33,6 @@ endif
 # Caution: include path cannot contain variable,
 #>..e.g. include $(cxxCodeGenerationPath)/Makefile_variables
 #
-include $(srcdir)/arithmeticIntensity/Makefile_variables
 include $(srcdir)/CallGraphAnalysis/Makefile_variables
 include $(srcdir)/CFG/Makefile_variables
 include $(srcdir)/bitvectorDataflow/Makefile_variables
@@ -48,8 +47,6 @@ include $(srcdir)/valuePropagation/Makefile_variables
 include $(srcdir)/variableRenaming/Makefile_variables
 include $(srcdir)/EditDistance/Makefile_variables
 
-
-mpaArithmeticIntensityPath=$(srcdir)/arithmeticIntensity#
 mpaCallGraphAnalysisPath=$(srcdir)/CallGraphAnalysis#
 mpaCFGPath=$(srcdir)/CFG#
 mpaBitvectorDataflowPath=$(srcdir)/bitvectorDataflow#

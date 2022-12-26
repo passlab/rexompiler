@@ -110,7 +110,6 @@ set(rose_LIB_SRCS
   #$<TARGET_OBJECTS:edg_internal>
   $<TARGET_OBJECTS:sage3>
   $<TARGET_OBJECTS:virtualCFG>
-  $<TARGET_OBJECTS:astFromString>
   $<TARGET_OBJECTS:roseSupport>
   $<TARGET_OBJECTS:astFixup>
   $<TARGET_OBJECTS:midend>

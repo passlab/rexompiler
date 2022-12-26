@@ -10391,18 +10391,6 @@ SgMicrosoftAttributeDeclaration* SageBuilder::buildMicrosoftAttributeDeclaration
      return result;
    }
 
-//! Build a statement from an arbitrary string, used for irregular statements with macros, platform-specified attributes etc.
-// This does not work properly since the global scope expects declaration statement, not just SgNullStatement
-#if 0
-SgStatement* SageBuilder::buildStatementFromString(std::string str)
-{
-  SgStatement* result = NULL;
-
-    return result;
-
-} //buildStatementFromString()
-#endif
-
 SgPointerType* SageBuilder::buildPointerType(SgType * base_type /*= NULL*/)
    {
   // DQ (7/26/2010): This needs to call the SgPointerType::createType() function so that we can properly abstract the creation of types into the type table.
@@ -20250,34 +20238,6 @@ SageBuilder::fixupCopyOfAstFromSeparateFileInNewTargetAst(SgStatement *insertion
   // DQ (3/30/2014): Turn this off (since we only only want to use it for the AST fixup, currently).
      SgSymbolTable::set_force_search_of_base_classes(false);
    }
-
-// Liao 9/18/2015
-// The parser is implemented in
-// src/frontend/SageIII/astFromString/AstFromString.h .C
-SgStatement* SageBuilder::buildStatementFromString(const std::string& s, SgScopeStatement * scope)
-{
-
-  SgStatement* result = NULL;
-  ROSE_ASSERT (scope != NULL);
-  // set input and context for the parser
-  AstFromString::c_char = s.c_str();
-  assert (AstFromString::c_char== s.c_str());
-  AstFromString::c_sgnode = scope;
-  AstFromString::c_parsed_node = NULL;
-
-  if (AstFromString::afs_match_statement())
-  {
-    result = isSgStatement(AstFromString::c_parsed_node); // grab the result
-    assert (result != NULL);
-  }
-  else
-  {
-    cerr<<"Error. buildStatementFromString() cannot parse the input string:"<<s
-        <<"\n\t within the given scope:"<<scope->class_name() <<endl;
-    ROSE_ABORT();
-  }
-  return result;
-}
 
 SgUsingDirectiveStatement* SageBuilder::buildUsingDirectiveStatement(SgNamespaceDeclarationStatement * ns_decl)
 {

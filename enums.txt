@@ -4,14 +4,6 @@ AST_Graph::traversalType::memory_pool_traversal	0
 AST_Graph::traversalType::whole_graph_AST	1
 AbstractMemoryObject::IndexSet::Index_type::Integer_type	0
 AbstractMemoryObject::IndexSet::Index_type::Unknown_type	1
-ArithmeticIntensityMeasurement::fp_operation_kind_enum::e_divide	5
-ArithmeticIntensityMeasurement::fp_operation_kind_enum::e_minus	3
-ArithmeticIntensityMeasurement::fp_operation_kind_enum::e_multiply	4
-ArithmeticIntensityMeasurement::fp_operation_kind_enum::e_plus	2
-ArithmeticIntensityMeasurement::fp_operation_kind_enum::e_total	1
-ArithmeticIntensityMeasurement::fp_operation_kind_enum::e_unknown	0
-ArithmeticIntensityMeasurement::running_mode_enum::e_analysis_and_instrument	0
-ArithmeticIntensityMeasurement::running_mode_enum::e_static_counting	1
 Association_Kinds::A_Discriminant_Association	2
 Association_Kinds::A_Generic_Association	6
 Association_Kinds::A_Parameter_Association	5

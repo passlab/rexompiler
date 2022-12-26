@@ -17,7 +17,7 @@ fSageSupportPath=sage_support#
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
    SUBDIRS = astFixup astPostProcessing sageInterface astVisualization virtualCFG includeDirectivesProcessing
 else
-   SUBDIRS = astFileIO astFixup astPostProcessing sageInterface virtualCFG astTokenStream astHiddenTypeAndDeclarationLists astVisualization astFromString includeDirectivesProcessing ompparser accparser
+   SUBDIRS = astFileIO astFixup astPostProcessing sageInterface virtualCFG astTokenStream astHiddenTypeAndDeclarationLists astVisualization includeDirectivesProcessing ompparser accparser
 endif
 
 # DQ (12/29/2009): This is only used to handle generated code as smaller files.
@@ -229,7 +229,6 @@ libsage3_la_LIBADD= \
   astPostProcessing/libastPostProcessing.la \
   sageInterface/libsageInterface.la \
   virtualCFG/libvirtualCFG.la \
-  astFromString/libAstFromString.la \
   astVisualization/libastVisualization.la \
   astHiddenTypeAndDeclarationLists/libastHiddenTypeAndDeclarationLists.la \
   includeDirectivesProcessing/libincludeDirectivesProcessing.la \
@@ -243,7 +242,6 @@ libsage3_la_LIBADD= \
   astPostProcessing/libastPostProcessing.la \
   sageInterface/libsageInterface.la \
   virtualCFG/libvirtualCFG.la \
-  astFromString/libAstFromString.la \
   astVisualization/libastVisualization.la \
   astHiddenTypeAndDeclarationLists/libastHiddenTypeAndDeclarationLists.la \
   includeDirectivesProcessing/libincludeDirectivesProcessing.la

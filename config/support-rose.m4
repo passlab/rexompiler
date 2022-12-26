@@ -1305,7 +1305,6 @@ src/frontend/SageIII/GENERATED_CODE_DIRECTORY_Cxx_Grammar/Makefile
 src/frontend/SageIII/Makefile
 src/frontend/SageIII/astFileIO/Makefile
 src/frontend/SageIII/astFixup/Makefile
-src/frontend/SageIII/astFromString/Makefile
 src/frontend/SageIII/astHiddenTypeAndDeclarationLists/Makefile
 src/frontend/SageIII/astPostProcessing/Makefile
 src/frontend/SageIII/astTokenStream/Makefile
