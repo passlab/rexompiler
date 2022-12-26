@@ -50,8 +50,6 @@
 // which has not defined yet (circular reference in the header files)
 // #include "AstRestructure.h"
 
-#include "roseTranslators.h"
-
 // this is a temporary fix (will become obsolete)
 #include "AstClearVisitFlags.h"
 
