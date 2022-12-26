@@ -252,6 +252,7 @@ convertOpenACCClause(SgStatement *directive,
     variables.push_back(variable_symbol);
   }
 
+  /*
   Rose_STL_Container<SgOmpClause *> data_fields =
       OmpSupport::getClause(target, V_SgUpirDataField);
 
@@ -265,12 +266,10 @@ convertOpenACCClause(SgStatement *directive,
   } else {
     ROSE_ASSERT(data_fields.size() == 1);
     upir_data = isSgUpirDataField(data_fields[0]);
-    /*
     if (isInUpirDataList(upir_data, data_item->get_symbol())) {
       ROSE_ASSERT(0);
       return upir_data;
     }
-    */
   };
   std::list<SgUpirDataItemField *> data_items = upir_data->get_data();
 
@@ -302,6 +301,7 @@ convertOpenACCClause(SgStatement *directive,
   upir_data->set_data(data_items);
 
   result = upir_data;
+  */
   acc_variable_list->clear();
   array_dimensions.clear();
   return result;

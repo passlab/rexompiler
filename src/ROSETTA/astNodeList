@@ -286,6 +286,7 @@ SgNullExpression
 SgNullptrValExp
 SgNullStatement
 SgNullifyStatement
+SgOmpExecStatement
 SgOmpAtomicStatement
 SgOmpBarrierStatement
 SgOmpCriticalStatement
@@ -296,7 +297,6 @@ SgOmpDoStatement
 SgOmpFlushStatement
 SgOmpAllocateStatement
 SgOmpDeclareSimdStatement
-SgUpirWorksharingStatement
 SgOmpForSimdStatement
 SgOmpMasterStatement
 SgOmpTaskyieldStatement
@@ -356,10 +356,7 @@ SgOmpMasterTaskloopStatement
 SgOmpUnrollStatement
 SgOmpTileStatement
 SgOmpSimdStatement
-SgUpirBaseStatement
-SgUpirLoopStatement
 SgOmpForStatement
-SgUpirSyncStatement
 SgOmpClause
 SgOmpAllocateClause
 SgOmpAllocatorClause
@@ -448,14 +445,6 @@ SgOmpWhenClause
 SgOmpFullClause
 SgOmpPartialClause
 SgOmpSizesClause
-SgUpirBranchField
-SgUpirNestedLevelField
-SgUpirNestedParentField
-SgUpirNestedChildField
-SgUpirSyncField
-SgUpirDataField
-SgUpirDataItemField
-SgUpirTargetField
 SgOpenclAccessModeModifier
 SgOpenStatement
 SgOptions

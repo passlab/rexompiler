@@ -85,9 +85,6 @@ namespace OmpSupport
   //! Translate omp task
   void transOmpTask(SgNode* node);
 
-  //! Translate UPIR parallel loops
-  void transUpirLoopParallel(SgNode* node);
-
   //! Translate omp for or omp do loops
   void transOmpLoop(SgNode* node);
 
@@ -144,9 +141,9 @@ namespace OmpSupport
   void transOmpTile(SgNode *node);
 
   //! Analysis helpers
-  void createUpirStatementTree(SgSourceFile *file);
-  SgStatement *getUpirParent(SgStatement *node);
-  void setUpirRelationship(SgStatement *parent, SgStatement *child);
+  void createOmpStatementTree(SgSourceFile *file);
+  SgStatement *getOmpParent(SgStatement *node);
+  void setOmpRelationship(SgStatement *parent, SgStatement *child);
   Rose_STL_Container<SgNode *> mergeSgNodeList(Rose_STL_Container<SgNode *> node_list1, Rose_STL_Container<SgNode *> node_list2);
 
   //! A helper function to generate implicit or explicit task for either omp parallel or omp task
@@ -190,7 +187,6 @@ namespace OmpSupport
 
   //! Add a variable into a non-reduction clause of an OpenMP statement, create the clause transparently if it does not exist
   ROSE_DLL_API void addClauseVariable(SgInitializedName* var, SgOmpClauseBodyStatement * clause_stmt, const VariantT& vt);
-  ROSE_DLL_API void addUpirDataVariable(SgOmpClauseBodyStatement* target, SgUpirDataItemField* data_item);
 
   //! Build a non-reduction variable clause for a given OpenMP directive. It directly returns the clause if the clause already exists
   ROSE_DLL_API SgOmpVariablesClause* buildOmpVariableClause(SgOmpClauseBodyStatement * clause_stmt, const VariantT& vt);
@@ -241,11 +237,6 @@ namespace OmpSupport
 
   //! Check if a variable is in the clause's variable list
   ROSE_DLL_API bool isInClauseVariableList(SgOmpClause* cls, SgSymbol* var);
-  ROSE_DLL_API bool isInUpirDataSharingList(SgOmpClause* data, SgSymbol* variable, SgOmpClause::upir_data_sharing_enum sharing_property);
-  ROSE_DLL_API bool isInUpirDataSharingList(SgOmpClauseBodyStatement* target, SgSymbol* variable, SgOmpClause::upir_data_sharing_enum sharing_property);
-  ROSE_DLL_API bool isInUpirDataSharingList(SgOmpClauseBodyStatement* target, SgSymbol* variable, std::set<SgOmpClause::upir_data_sharing_enum> sharing_property);
-  ROSE_DLL_API bool isInUpirDataList(SgOmpClauseBodyStatement* target, SgSymbol* variable);
-  ROSE_DLL_API SgUpirDataItemField* isInUpirDataList(SgOmpClause* target, SgSymbol* variable);
 
   //! Check if a variable is a threadprivate variable. It will search for all threadprivate directives to find the answer.
   ROSE_DLL_API bool isThreadprivate(SgSymbol* var);
