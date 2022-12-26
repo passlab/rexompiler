@@ -71,7 +71,7 @@ SgAndAssignOp.C                        SgClassSymbol.C                       SgG
 SgAndOp.C                              SgClassType.C                         SgGotoStatement.C                       SgOmpFirstprivateClause.C              SgOmpNontemporalClause.C       SgTryStmt.C \
 SgOmpInclusiveClause.C               SgOmpExclusiveClause.C                  SgOmpIsDevicePtrClause.C        SgOmpUseDevicePtrClause.C     SgOmpUseDevicePtrClause.C \
 SgArithmeticIfStatement.C              SgClinkageDeclarationStatement.C      SgGraph.C                               SgOmpFlushStatement.C                        SgTypeBool.C \
-SgArrayType.C                          SgClinkageEndStatement.C              SgGraphEdge.C                           SgUpirWorksharingStatement.C                          SgType.C \
+SgArrayType.C                          SgClinkageEndStatement.C              SgGraphEdge.C                           SgType.C \
 SgArrowExp.C                           SgClinkageStartStatement.C            SgGraphEdgeList.C                       SgOmpIfClause.C                              SgTypeChar.C \
 SgArrowStarOp.C                        SgCloseStatement.C                    SgGraphNode.C                           SgOmpLastprivateClause.C                     SgTypeComplex.C                  SgOmpMasterStatement.C\
 SgColonShapeExp.C                     SgGraphNodeList.C                       SgOmpTaskyieldStatement.C                       SgTypeDefault.C \
@@ -164,9 +164,10 @@ SgBitXorOp.C                               SgFortranNonblockedDo.C              
 SgBlockDataStatement.C                     SgFuncDecl_attr.C                     SgNullStatement.C                       SgTemplateDeclaration.C                      SgWhereStatement.C \
 SgBoolValExp.C                             SgFunctionCallExp.C                   SgOmpAtomicStatement.C                  SgTemplateInstantiationDecl.C                SgWhileStmt.C \
 SgBreakStmt.C                              SgFunctionDeclaration.C               SgOmpBarrierStatement.C                 SgTemplateInstantiationDefn.C                SgWriteStatement.C \
-SgCaseOptionStmt.C                         SgFunctionDefinition.C                SgOmpBodyStatement.C                   SgTemplateInstantiationDirectiveStatement.C  SgXorAssignOp.C \
-SgUpirBaseStatement.C                      SgUpirLoopStatement.C                 SgOmpForStatement.C \
-SgCastExp.C                                SgFunctionModifier.C                  SgOmpClauseBodyStatement.C              SgTemplateInstantiationFunctionDecl.C        SgHeaderFileBody.C
+SgCaseOptionStmt.C                         SgFunctionDefinition.C                SgOmpBodyStatement.C                    SgTemplateInstantiationDirectiveStatement.C  SgXorAssignOp.C \
+SgOmpForStatement.C \
+SgCastExp.C                                SgFunctionModifier.C                  SgOmpClauseBodyStatement.C              SgTemplateInstantiationFunctionDecl.C        SgHeaderFileBody.C \
+SgOmpExecStatement
 
 
 

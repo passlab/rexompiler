@@ -3834,10 +3834,6 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpAtomicStatement: // Atomic may have clause now
                          unparseOmpGenericStatement (stmt, info);
                          break;
-                    // UPIR statements that are only used for transformation
-                    case V_SgUpirSyncStatement:
-                         break;
-
                     default:
                       // DQ (11/4/2008): This is a bug for the case of a SgFortranDo statement, unclear what to do about this.
                       // Call the derived class implementation for C, C++, or Fortran specific language unparsing.
@@ -10270,24 +10266,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpUsesAllocatorsClause(SgOmpC
   curprint(string(" ) "));
 }
 
-void UnparseLanguageIndependentConstructs::unparseUpirDataField(SgOmpClause* clause, SgUnparse_Info& info)
-{
-  ROSE_ASSERT(clause != NULL);
-  SgUpirDataField* c = isSgUpirDataField(clause);
-  ROSE_ASSERT(c!= NULL);
-  curprint("");
-  // For now, SgUpirDataField is only used for unified transformation but not unparsing.
-}
-
-void UnparseLanguageIndependentConstructs::unparseUpirDataItemField(SgOmpClause* clause, SgUnparse_Info& info)
-{
-  ROSE_ASSERT(clause != NULL);
-  SgUpirDataItemField* c = isSgUpirDataItemField(clause);
-  ROSE_ASSERT(c!= NULL);
-  curprint("");
-  // For now, SgUpirDataItemField is only used for unified transformation but not unparsing.
-}
-
 // Generate dist_data(p1, p2, p3)
 void UnparseLanguageIndependentConstructs::unparseMapDistDataPoliciesToString (std::vector< std::pair< SgOmpClause::omp_map_dist_data_enum, SgExpression * > > policies, SgUnparse_Info& info)
 {
@@ -11378,16 +11356,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpUsesAllocatorsClause:
       {
         unparseOmpUsesAllocatorsClause(isSgOmpUsesAllocatorsClause(clause), info);
-        break;
-      }
-    case V_SgUpirDataField:
-      {
-        unparseUpirDataField(isSgUpirDataField(clause), info);
-        break;
-      }
-    case V_SgUpirDataItemField:
-      {
-        unparseUpirDataItemField(isSgUpirDataItemField(clause), info);
         break;
       }
    default:

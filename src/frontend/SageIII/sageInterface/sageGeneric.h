@@ -366,7 +366,7 @@ namespace sg
     GEN_VISIT(SgOmpSingleStatement)
     GEN_VISIT(SgOmpSimdStatement)
     GEN_VISIT(SgOmpTaskStatement)
-    GEN_VISIT(SgUpirWorksharingStatement)
+    GEN_VISIT(SgOmpForStatement)
     GEN_VISIT(SgOmpForSimdStatement)
     GEN_VISIT(SgOmpDoStatement)
     GEN_VISIT(SgOmpSectionsStatement)

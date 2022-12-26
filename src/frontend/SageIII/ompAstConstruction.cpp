@@ -259,12 +259,12 @@ namespace OmpSupport
       return newExp;
   }
 
-  void addUpirField(SgStatement* node, SgOmpClause* field) {
+  void addOmpClause(SgStatement* node, SgOmpClause* clause) {
       if (isSgOmpClauseStatement(node)) {
-          ((SgOmpClauseStatement*)node)->get_clauses().push_back(field);
+          ((SgOmpClauseStatement*)node)->get_clauses().push_back(clause);
       }
       else if (isSgOmpClauseBodyStatement(node)) {
-          ((SgOmpClauseBodyStatement*)node)->get_clauses().push_back(field);
+          ((SgOmpClauseBodyStatement*)node)->get_clauses().push_back(clause);
       }
       else {
           ROSE_ASSERT(0);
@@ -2112,7 +2112,7 @@ SgOmpClause* convertSimpleClause(SgStatement* directive, std::pair<SgPragmaDecla
     } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_flush) {
         ((SgOmpFlushStatement*)directive)->get_clauses().push_back(sg_clause);
     } else {
-        addUpirField(directive, sg_clause);
+        addOmpClause(directive, sg_clause);
     }
     sg_clause->set_parent(directive);
     return sg_clause;
@@ -2844,7 +2844,7 @@ SgOmpScheduleClause* convertScheduleClause(SgStatement* directive, std::pair<SgP
     SgOmpScheduleClause* result = new SgOmpScheduleClause(sg_modifier1, sg_modifier2, sg_kind, chunk_size);
     ROSE_ASSERT(result);
     setOneSourcePositionForTransformation(result);
-    addUpirField(directive, result);
+    addOmpClause(directive, result);
     result->set_parent(directive);
     printf("ompparser schedule clause is added.\n");
     return result;
@@ -3358,7 +3358,7 @@ SgOmpOrderClause* convertOrderClause(SgStatement* directive, std::pair<SgPragmaD
     if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_declare_simd) {
         ((SgOmpDeclareSimdStatement*)directive)->get_clauses().push_back(result);
     } else {
-        addUpirField(directive, result);
+        addOmpClause(directive, result);
     }
     result->set_parent(directive);
 
@@ -3579,7 +3579,7 @@ SgOmpSizesClause *convertSizesClause(SgStatement* directive, std::pair<SgPragmaD
     if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_declare_simd) {
         ((SgOmpDeclareSimdStatement*)directive)->get_clauses().push_back(result);
     } else {
-        addUpirField(directive, result);
+        addOmpClause(directive, result);
     }
     result->set_parent(directive);
     omp_variable_list.clear();
@@ -3751,7 +3751,7 @@ SgOmpVariablesClause* convertClause(SgStatement* directive, std::pair<SgPragmaDe
     if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_declare_simd) {
         ((SgOmpDeclareSimdStatement*)directive)->get_clauses().push_back(result);
     } else {
-        addUpirField(directive, result);
+        addOmpClause(directive, result);
     }
     result->set_parent(directive);
     omp_variable_list.clear();
@@ -4127,7 +4127,7 @@ SgOmpExpressionClause* convertExpressionClause(SgStatement* directive, std::pair
     } else if (current_OpenMPIR_to_SageIII.second->getKind() == OMPD_target_update) {
         ((SgOmpTargetUpdateStatement*)directive)->get_clauses().push_back(result);
     } else {
-        addUpirField(directive, result);
+        addOmpClause(directive, result);
     }
     result->set_parent(directive);
 
