@@ -716,8 +716,113 @@ void createOmpStatementTree(SgSourceFile *file) {
   }
 }
 
+void setOmpNumTeams(SgNode *node) {
+  ROSE_ASSERT(node != NULL);
+  SgOmpClauseBodyStatement *target = isSgOmpClauseBodyStatement(node);
+  ROSE_ASSERT(target != NULL);
+
+  SgExpression *num_teams_expression = NULL;
+  SgOmpNumTeamsClause *num_teams_clause = NULL;
+  if (hasClause(target, V_SgOmpNumTeamsClause)) {
+    Rose_STL_Container<SgOmpClause *> num_teams_clauses =
+        getClause(target, V_SgOmpNumTeamsClause);
+    ROSE_ASSERT(num_teams_clauses.size() ==
+                1); // should only have one num_teams()
+    num_teams_clause = isSgOmpNumTeamsClause(num_teams_clauses[0]);
+    ROSE_ASSERT(num_teams_clause->get_expression() != NULL);
+  } else {
+    num_teams_expression = buildIntVal(256);
+    num_teams_clause = new SgOmpNumTeamsClause(num_teams_expression);
+    addOmpClause(target, num_teams_clause);
+    num_teams_clause->set_parent(target);
+    setOneSourcePositionForTransformation(num_teams_clause);
+  }
+}
+
+void setOmpNumThreads(SgNode *node) {
+  ROSE_ASSERT(node != NULL);
+  SgOmpClauseBodyStatement *target = isSgOmpClauseBodyStatement(node);
+  ROSE_ASSERT(target != NULL);
+
+  SgExpression *num_threads_expression = NULL;
+  SgOmpNumThreadsClause *num_threads_clause = NULL;
+  if (hasClause(target, V_SgOmpNumThreadsClause)) {
+    Rose_STL_Container<SgOmpClause *> num_threads_clauses =
+        getClause(target, V_SgOmpNumThreadsClause);
+    ROSE_ASSERT(num_threads_clauses.size() ==
+                1); // should only have one num_threads()
+    num_threads_clause = isSgOmpNumThreadsClause(num_threads_clauses[0]);
+    ROSE_ASSERT(num_threads_clause->get_expression() != NULL);
+  } else {
+    num_threads_expression = buildIntVal(128);
+    num_threads_clause = new SgOmpNumThreadsClause(num_threads_expression);
+    addOmpClause(target, num_threads_clause);
+    num_threads_clause->set_parent(target);
+    setOneSourcePositionForTransformation(num_threads_clause);
+  }
+}
+
+void normalizeOmpTargetOffloadingUnits(SgFile *file) {
+  ROSE_ASSERT(file != NULL);
+  Rose_STL_Container<SgNode *> omp_nodes =
+      NodeQuery::querySubTree(file, V_SgOmpExecStatement);
+  Rose_STL_Container<SgNode *>::iterator iter;
+  SgOmpExecStatement *parent = NULL;
+  for (iter = omp_nodes.begin(); iter != omp_nodes.end(); iter++) {
+    SgOmpExecStatement *node = isSgOmpExecStatement(*iter);
+    ROSE_ASSERT(node != NULL);
+    // It doesn't need to check whether the directive is a variant because
+    // metadirective has been lowered at this point.
+    switch (node->variantT()) {
+    case V_SgOmpTargetTeamsStatement:
+    case V_SgOmpTargetTeamsDistributeStatement:
+      setOmpNumTeams(node);
+      break;
+    case V_SgOmpTargetParallelForStatement:
+    case V_SgOmpTargetParallelStatement:
+      setOmpNumThreads(node);
+      break;
+    case V_SgOmpTargetTeamsDistributeParallelForStatement:
+      setOmpNumTeams(node);
+      setOmpNumThreads(node);
+      break;
+    // Check whether parallel/parallel for is in a target region.
+    // case V_SgOmpParallelForStatement:
+    case V_SgOmpParallelStatement:
+      parent = isSgOmpExecStatement(node->get_omp_parent());
+      switch (parent->variantT()) {
+      case V_SgOmpTargetTeamsStatement:
+      case V_SgOmpTargetTeamsDistributeStatement:
+      case V_SgOmpTargetTeamsDistributeParallelForStatement:
+        setOmpNumThreads(node);
+        break;
+      case V_SgOmpTeamsStatement:
+      case V_SgOmpTeamsDistributeStatement:
+        if (isSgOmpTargetStatement(parent->get_parent()))
+          setOmpNumThreads(node);
+        break;
+      default:;
+      }
+    // Check whether teams/teams distribute is in a target region.
+    case V_SgOmpTeamsStatement:
+    case V_SgOmpTeamsDistributeStatement:
+      if (isSgOmpTargetStatement(node->get_parent()))
+        setOmpNumTeams(node);
+      break;
+    // Check whether teams distribute parallel for is in a target region.
+    case V_SgOmpTeamsDistributeParallelForStatement:
+      if (isSgOmpTargetStatement(node->get_parent())) {
+        setOmpNumTeams(node);
+        setOmpNumThreads(node);
+      }
+      break;
+    default:;
+    }
+  }
+}
+
 void analyze_omp(SgSourceFile *file) {
-  // Transform omp metadirective to multiple variants
+  // Transform omp metadirective to multiple variants.
   Rose_STL_Container<SgNode *> variant_directives =
       NodeQuery::querySubTree(file, V_SgOmpMetadirectiveStatement);
   Rose_STL_Container<SgNode *>::iterator node_list_iterator;
@@ -747,9 +852,10 @@ void analyze_omp(SgSourceFile *file) {
     normalizeOmpLoop(node);
   }
 
-  // After passes of analysis and normalization, add the information of OpenMP
-  // node parent and children.
-  createOmpStatementTree(file);
+  // Add the information of OpenMP directive parent and children.
+  OmpSupport::createOmpStatementTree(file);
+  // Normalize num_teams and num_threads in the target region.
+  OmpSupport::normalizeOmpTargetOffloadingUnits(file);
 }
 
 } // namespace OmpSupport

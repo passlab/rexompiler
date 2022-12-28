@@ -259,18 +259,6 @@ namespace OmpSupport
       return newExp;
   }
 
-  void addOmpClause(SgStatement* node, SgOmpClause* clause) {
-      if (isSgOmpClauseStatement(node)) {
-          ((SgOmpClauseStatement*)node)->get_clauses().push_back(clause);
-      }
-      else if (isSgOmpClauseBodyStatement(node)) {
-          ((SgOmpClauseBodyStatement*)node)->get_clauses().push_back(clause);
-      }
-      else {
-          ROSE_ASSERT(0);
-      };
-  }
-  
   SgExpression* checkOmpExpressionClause( SgExpression* clause_expression, SgGlobal* global, omp_construct_enum clause_type )
   {
       SgExpression* newExp = clause_expression;
