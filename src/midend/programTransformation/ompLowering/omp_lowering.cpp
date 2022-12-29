@@ -4095,8 +4095,9 @@ void transOmpTargetLoopBlock(SgNode* node)
     SageInterface::fixVariableReferences(num_blocks_decl->get_scope());
 
     // At this point, the for loop has been moved to the outlined function.
-    // It's the very first statement in that function.
-    transOmpTargetLoopBlock(result->get_definition()->get_body()->get_statements()[0]);
+    // It's the very first loop statement in that function.
+    Rose_STL_Container<SgNode*> for_loops = NodeQuery::querySubTree(result, V_SgForStatement);
+    transOmpTargetLoopBlock(for_loops[0]);
 
     //------------now remove omp parallel since everything within it has been outlined to a function
     replaceStatement(target, outlined_driver_body, true);
@@ -6162,8 +6163,8 @@ void lower_omp(SgSourceFile* file)
         }
       default:
         {
-          std::cout << "Nothing happened.\n";
-          // do nothing here
+          std::cout << "Unexpected OpenMP construct: " << node->sage_class_name() << "\n";
+          ROSE_ASSERT(0);
         }
     }// switch
 
