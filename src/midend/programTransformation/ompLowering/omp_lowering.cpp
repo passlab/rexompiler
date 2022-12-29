@@ -3180,7 +3180,8 @@ static void generateMappedArrayMemoryHandling(
     mapping_variable_expression = buildVarRefExp(sym->get_name(), sym->get_scope());
     map_variable_list->push_back(buildAddOp(mapping_variable_expression, mapping_array_offset));
     map_variable_base_list->push_back(mapping_variable_expression);
-    SgExpression* mapping_variable_total_size = buildCastExp(buildMultiplyOp(buildSizeOfOp(element_type), mapping_array_size), buildOpaqueType("int64_t", insertion_scope));
+    SgGlobal* g_scope = SageInterface::getGlobalScope(insertion_scope);
+    SgExpression* mapping_variable_total_size = buildCastExp(buildMultiplyOp(buildSizeOfOp(element_type), mapping_array_size), buildOpaqueType("int64_t", g_scope));
     map_variable_size_list->push_back(mapping_variable_total_size);
 
     int mapping_variable_type_enum = generate_mapping_variable_type(sym, map_alloc_clause, map_to_clause, map_from_clause, map_tofrom_clause,array_dimensions, device_expression,
@@ -3404,7 +3405,8 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* node, SgExprListExp* map
         };
         map_variable_list->append_expression(mapping_variable_expression);
         map_variable_base_list->append_expression(mapping_variable_expression);
-        SgExpression* mapping_variable_size = buildCastExp(buildSizeOfOp(mapping_variable_type), buildOpaqueType("int64_t", insertion_scope));
+        SgGlobal* g_scope = SageInterface::getGlobalScope(insertion_scope);
+        SgExpression* mapping_variable_size = buildCastExp(buildSizeOfOp(mapping_variable_type), buildOpaqueType("int64_t", g_scope));
         map_variable_size_list->append_expression(mapping_variable_size);
 
         int mapping_variable_type_enum = generate_mapping_variable_type(var_sym, map_alloc_clause, map_to_clause, map_from_clause, map_tofrom_clause,array_dimensions, device_expression,
@@ -3618,7 +3620,6 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* node, SgExprListExp* map
 
     // insert dim3 threadsPerBlock(xomp_get_maxThreadsPerBlock());
     // TODO: for 1-D mapping, int type is enough,  //TODO: a better interface accepting expression as initializer!!
-    // the default number of threads per team is set to 1
     SgVariableDeclaration* threads_per_block_decl = buildVariableDeclaration ("_threads_per_block_", buildIntType(), buildAssignInitializer(omp_num_threads), p_scope);
     outlined_driver_body->append_statement(threads_per_block_decl);
     attachComment(threads_per_block_decl, string("Launch CUDA kernel ..."));
@@ -3627,7 +3628,6 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* node, SgExprListExp* map
     // TODO: handle 2-D or 3-D using dim type
     // ROSE_ASSERT (cuda_loop_iter_count_1 != NULL);
 
-    // the default number of teams is set to 1
     SgVariableDeclaration* num_blocks_decl = buildVariableDeclaration ("_num_blocks_", buildIntType(), buildAssignInitializer(omp_num_teams), p_scope);
     outlined_driver_body->append_statement(num_blocks_decl);
 
@@ -3727,23 +3727,13 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* node, SgExprListExp* map
 
   }
 
+// Transform the worksharing loop in a target spmd region
 void transOmpTargetLoopBlock(SgNode* node)
 {
   //step 0: Sanity check
   ROSE_ASSERT(node != NULL);
-  SgOmpClauseBodyStatement* target = isSgOmpClauseBodyStatement(node);
-  ROSE_ASSERT (target != NULL);
-
-  SgScopeStatement* p_scope = target->get_scope();
-  ROSE_ASSERT (p_scope != NULL);
-
-  SgStatement * body = target->get_body();
-  ROSE_ASSERT(body != NULL);
-
-  SgForStatement * for_loop = isSgForStatement(body);
-
-  SgStatement* loop = isSgStatement(body);
-  ROSE_ASSERT (loop != NULL);
+  SgForStatement* for_loop = isSgForStatement(node);
+  ROSE_ASSERT(for_loop != NULL);
 
   // Step 1. Loop normalization
   // For the init statement: for (int i=0;... ) becomes int i; for (i=0;..)
@@ -3773,7 +3763,6 @@ void transOmpTargetLoopBlock(SgNode* node)
   //Step 2. Insert a basic block to replace SgOmpForStatement
   // This newly introduced scope is used to hold loop variables ,etc
   SgBasicBlock * bb1 = SageBuilder::buildBasicBlock();
-  SgStatement* new_loop = deepCopy (for_loop);
   replaceStatement(for_loop, bb1, true);
 
   // Insert variables used by the two scheduler functions
@@ -3829,22 +3818,17 @@ void transOmpTargetLoopBlock(SgNode* node)
   appendExpression (parameters, buildAddressOfOp(buildVarRefExp (getFirstVarSym(dev_upper_decl))) );
   SgExpression* func_call_exp = buildFunctionCallExp ("XOMP_static_sched_next", buildBoolType(), parameters, bb1);
 
-  //SgStatement* new_loop = deepCopy (for_loop);
-  SgWhileStmt* w_stmt = buildWhileStmt (func_call_exp, new_loop);
+  SgWhileStmt* w_stmt = buildWhileStmt (func_call_exp, for_loop);
   appendStatement (w_stmt, bb1);
-//  moveStatementsBetweenBlocks (loop_body, isSgBasicBlock(w_stmt->get_body()));
 
   // rewrite upper, lower bounds, TODO how about step? normalized to 1 already ?
-  setLoopLowerBound (new_loop, buildVarRefExp (getFirstVarSym(dev_lower_decl)));
-  setLoopUpperBound (new_loop, buildVarRefExp (getFirstVarSym(dev_upper_decl)));
-  //replaceStatement(for_loop, bb1, true);
-  removeStatement (for_loop);
+  setLoopLowerBound (for_loop, buildVarRefExp (getFirstVarSym(dev_lower_decl)));
+  setLoopUpperBound (for_loop, buildVarRefExp (getFirstVarSym(dev_upper_decl)));
 
   // handle private variables at this loop level, mostly loop index variables.
   // TODO: this is not very elegant since the outer most loop's loop variable is still translated.
   //for reduction
   per_block_declarations.clear(); // must reset to empty or wrong reference to stale content generated previously
-  transOmpVariables(target, bb1, NULL, true);
 }
 
   // transformation for combined directive
@@ -3856,8 +3840,6 @@ void transOmpTargetLoopBlock(SgNode* node)
     ROSE_ASSERT(node != NULL);
     SgOmpClauseBodyStatement* target = isSgOmpClauseBodyStatement(node);
     ROSE_ASSERT (target != NULL);
-
-    transOmpTargetLoopBlock(target);
 
     // device expression
     SgExpression* device_expression =NULL ;
@@ -3890,11 +3872,11 @@ void transOmpTargetLoopBlock(SgNode* node)
 
     // Prepare the outliner
     Outliner::enable_classic = true;
-//    Outliner::useParameterWrapper = false; //TODO: better handling of the dependence among flags
+    // Outliner::useParameterWrapper = false; //TODO: better handling of the dependence among flags
     SgBasicBlock* body_block = Outliner::preprocess(body);
 
     // The combined directive only has one code block and should only process omp variables once
-    //transOmpVariables (target, body_block);
+    transOmpVariables (target, body_block);
 
     ASTtools::VarSymSet_t all_syms; // all generated or remaining variables to be passed to the outliner
   // This addressOf_syms does not apply to CUDA kernel generation: since we cannot use pass-by-reference for CUDA kernel.
@@ -3982,15 +3964,13 @@ void transOmpTargetLoopBlock(SgNode* node)
 
     // insert dim3 threadsPerBlock(xomp_get_maxThreadsPerBlock());
     // TODO: for 1-D mapping, int type is enough,  //TODO: a better interface accepting expression as initializer!!
-    // the default number of threads per team is set to 1024
     SgVariableDeclaration* threads_per_block_decl = buildVariableDeclaration ("_threads_per_block_", buildIntType(), buildAssignInitializer(omp_num_threads), p_scope);
     outlined_driver_body->append_statement(threads_per_block_decl);
     attachComment(threads_per_block_decl, string("Launch CUDA kernel ..."));
 
     // dim3 numBlocks (xomp_get_max1DBlock(VEC_LEN));
     // TODO: handle 2-D or 3-D using dim type
-    ROSE_ASSERT (cuda_loop_iter_count_1 != NULL);
-    // the default number of teams is set to 256
+    // ROSE_ASSERT (cuda_loop_iter_count_1 != NULL);
     SgVariableDeclaration* num_blocks_decl = buildVariableDeclaration ("_num_blocks_", buildIntType(), buildAssignInitializer(omp_num_teams), p_scope);
     outlined_driver_body->append_statement(num_blocks_decl);
 
@@ -4113,6 +4093,11 @@ void transOmpTargetLoopBlock(SgNode* node)
 
     // num_blocks is referenced before the declaration is inserted. So we must fix it, otherwise the symbol of unkown type will be cleaned up later.
     SageInterface::fixVariableReferences(num_blocks_decl->get_scope());
+
+    // At this point, the for loop has been moved to the outlined function.
+    // It's the very first statement in that function.
+    transOmpTargetLoopBlock(result->get_definition()->get_body()->get_statements()[0]);
+
     //------------now remove omp parallel since everything within it has been outlined to a function
     replaceStatement(target, outlined_driver_body, true);
 
