@@ -600,7 +600,8 @@ namespace OmpSupport
     SgOmpClause::omp_map_operator_enum result = SgOmpClause::e_omp_map_unknown;
     switch (at_op)
     {
-      case OMPC_MAP_TYPE_tofrom: 
+      case OMPC_MAP_TYPE_tofrom:
+      case OMPC_MAP_TYPE_unspecified:
         {
           result = SgOmpClause::e_omp_map_tofrom;
           break;
