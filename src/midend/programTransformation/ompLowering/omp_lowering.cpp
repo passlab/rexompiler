@@ -6017,77 +6017,92 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
       }
     }
 
-// Patch up private variables for a single OpenMP For or DO loop
-// return the number of private variables added.
-int patchUpPrivateVariables(SgStatement* omp_loop)
-{
-  int result = 0;
-  ROSE_ASSERT(omp_loop != NULL);
+    // Patch up private variables for a single OpenMP For or DO loop
+    // return the number of private variables added.
+    int patchUpPrivateVariables(SgStatement *omp_loop) {
+      int result = 0;
+      ROSE_ASSERT(omp_loop != NULL);
 
-  SgOmpForStatement* for_node = isSgOmpForStatement(omp_loop);
-  SgOmpDoStatement* do_node = isSgOmpDoStatement(omp_loop);
-  SgOmpTargetParallelForStatement *target_parallel_for_node = isSgOmpTargetParallelForStatement(omp_loop);
-  SgOmpTargetTeamsDistributeParallelForStatement *target_teams_distribute_parallel_for_node = isSgOmpTargetTeamsDistributeParallelForStatement(omp_loop);
-  if (for_node)
-    omp_loop = for_node;
-  else if (do_node)
-    omp_loop = do_node;
-  else if (target_parallel_for_node)
-    omp_loop = target_parallel_for_node;
-  else if (target_teams_distribute_parallel_for_node)
-    omp_loop = target_teams_distribute_parallel_for_node;
-  else
-    ROSE_ASSERT (false);
+      SgOmpDoStatement *do_node = NULL;
+      SgOmpClauseBodyStatement *for_node = NULL;
+      switch (omp_loop->variantT()) {
+      case V_SgOmpDoStatement:
+        do_node = isSgOmpDoStatement(omp_loop);
+        break;
+      case V_SgOmpForStatement:
+      case V_SgOmpTargetParallelForStatement:
+      case V_SgOmpTargetTeamsDistributeParallelForStatement:
+      case V_SgOmpTargetTeamsDistributeStatement:
+        for_node = isSgOmpClauseBodyStatement(omp_loop);
+        break;
+      default:
+        std::cout << "Unexpected statement: " << omp_loop->sage_class_name()
+                  << "\n";
+        ROSE_ASSERT(0);
+      }
 
-  SgScopeStatement* directive_scope = omp_loop->get_scope();
-  ROSE_ASSERT(directive_scope != NULL);
-  // Collected nested loops and their indices
-  // skip the top level loop?
-  Rose_STL_Container<SgNode*> loops;
-  if (for_node)
-    loops = NodeQuery::querySubTree(for_node->get_body(), V_SgForStatement);
-  else if (do_node)
-    loops = NodeQuery::querySubTree(do_node->get_body(), V_SgFortranDo);
-  else if (target_parallel_for_node)
-    loops = NodeQuery::querySubTree(target_parallel_for_node->get_body(), V_SgForStatement);
-  else if (target_teams_distribute_parallel_for_node)
-    loops = NodeQuery::querySubTree(target_teams_distribute_parallel_for_node->get_body(), V_SgForStatement);
-  else
-    ROSE_ASSERT (false);
-  // For all loops within the OpenMP loop
-  Rose_STL_Container<SgNode*>::iterator loopIter = loops.begin();
-  for (; loopIter!= loops.end(); loopIter++)
-  {
-    SgInitializedName* index_var = getLoopIndexVariable(*loopIter);
-    ROSE_ASSERT (index_var != NULL);
-    SgVariableSymbol* variable_symbol = isSgVariableSymbol(index_var->get_symbol_from_symbol_table());
-    ROSE_ASSERT (variable_symbol != NULL);
-    SgScopeStatement* var_scope = index_var->get_scope();
-    // Only loop index variables declared in higher or the same scopes matter
-    if (isAncestor(var_scope, directive_scope) || var_scope==directive_scope)
-    {
-      // Grab possible enclosing parallel region
-      bool isPrivateInRegion = false;
-      SgOmpClauseBodyStatement *omp_stmt = NULL;
-      omp_stmt = isSgOmpParallelStatement(getEnclosingNode<SgOmpParallelStatement>(omp_loop));
-      if (omp_stmt == NULL) {
-        omp_stmt = isSgOmpTargetParallelForStatement(omp_loop);
-      }
-      if (omp_stmt)
-      {
-        isPrivateInRegion = isInClauseVariableList(index_var, isSgOmpClauseBodyStatement(omp_stmt), V_SgOmpPrivateClause);
-      }
-      // add it into the private variable list only if it is not specified as private in both the loop and region levels.
-      if (!isPrivateInRegion && !isInClauseVariableList(index_var, isSgOmpClauseBodyStatement(omp_loop), V_SgOmpPrivateClause))
-      {
-        result++;
-        addClauseVariable(index_var, isSgOmpClauseBodyStatement(omp_loop), V_SgOmpPrivateClause);
-      }
+      if (do_node)
+        omp_loop = do_node;
+      else
+        omp_loop = for_node;
+
+      SgScopeStatement *directive_scope = omp_loop->get_scope();
+      ROSE_ASSERT(directive_scope != NULL);
+      // Collected nested loops and their indices
+      // skip the top level loop?
+      Rose_STL_Container<SgNode *> loops;
+      if (do_node)
+        loops = NodeQuery::querySubTree(do_node->get_body(), V_SgFortranDo);
+      else
+        loops = NodeQuery::querySubTree(for_node->get_body(), V_SgForStatement);
+      // For all loops within the OpenMP loop
+      Rose_STL_Container<SgNode *>::iterator loopIter = loops.begin();
+      for (; loopIter != loops.end(); loopIter++) {
+        SgInitializedName *index_var = getLoopIndexVariable(*loopIter);
+        ROSE_ASSERT(index_var != NULL);
+        SgVariableSymbol *variable_symbol =
+            isSgVariableSymbol(index_var->get_symbol_from_symbol_table());
+        ROSE_ASSERT(variable_symbol != NULL);
+        SgScopeStatement *var_scope = index_var->get_scope();
+        // Only loop index variables declared in higher or the same scopes
+        // matter
+        if (isAncestor(var_scope, directive_scope) ||
+            var_scope == directive_scope) {
+        // Grab possible enclosing parallel region
+        bool isPrivateInRegion = false;
+        SgOmpClauseBodyStatement *omp_stmt = NULL;
+        switch (omp_loop->variantT()) {
+        case V_SgOmpTargetParallelForStatement:
+        case V_SgOmpTargetTeamsDistributeStatement:
+        case V_SgOmpTargetTeamsDistributeParallelForStatement:
+           omp_stmt = isSgOmpClauseBodyStatement(omp_loop);
+           break;
+        case V_SgOmpForStatement:
+        case V_SgOmpDoStatement:
+           omp_stmt = isSgOmpParallelStatement(
+               getEnclosingNode<SgOmpParallelStatement>(omp_loop));
+           break;
+        default:
+           ROSE_ASSERT(0);
+        }
+        isPrivateInRegion = isInClauseVariableList(
+            index_var, isSgOmpClauseBodyStatement(omp_stmt),
+            V_SgOmpPrivateClause);
+        // add it into the private variable list only if it is not specified as
+        // private in both the loop and region levels.
+        if (!isPrivateInRegion &&
+            !isInClauseVariableList(index_var,
+                                    isSgOmpClauseBodyStatement(omp_loop),
+                                    V_SgOmpPrivateClause)) {
+           result++;
+           addClauseVariable(index_var, isSgOmpClauseBodyStatement(omp_loop),
+                             V_SgOmpPrivateClause);
+        }
+        }
+
+      } // end for loops
+      return result;
     }
-
-  } // end for loops
-  return result;
-}
 
 /*
  * Winnie, Handle collapse clause before openmp and openmp accelerator

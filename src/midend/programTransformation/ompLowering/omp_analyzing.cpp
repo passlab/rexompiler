@@ -150,23 +150,19 @@ void normalizeOmpLoop(SgStatement *node) {
 int patchUpPrivateVariables(SgFile *file) {
   int result = 0;
   ROSE_ASSERT(file != NULL);
-  Rose_STL_Container<SgNode *> nodeList_merged =
-      NodeQuery::querySubTree(file, V_SgOmpForStatement);
 
-  nodeList_merged = mergeSgNodeList(
-      nodeList_merged, NodeQuery::querySubTree(file, V_SgOmpDoStatement));
-  nodeList_merged = mergeSgNodeList(
-      nodeList_merged,
-      NodeQuery::querySubTree(file, V_SgOmpTargetParallelForStatement));
-  nodeList_merged = mergeSgNodeList(
-      nodeList_merged,
-      NodeQuery::querySubTree(
-          file, V_SgOmpTargetTeamsDistributeParallelForStatement));
+  VariantVector directive_vv = VariantVector(V_SgOmpForStatement);
+  directive_vv.push_back(V_SgOmpDoStatement);
+  directive_vv.push_back(V_SgOmpTargetTeamsDistributeStatement);
+  directive_vv.push_back(V_SgOmpTargetParallelForStatement);
+  directive_vv.push_back(V_SgOmpTargetTeamsDistributeParallelForStatement);
+  Rose_STL_Container<SgNode *> node_list =
+      NodeQuery::querySubTree(file, directive_vv);
 
-  Rose_STL_Container<SgNode *>::iterator nodeListIterator =
-      nodeList_merged.begin();
   // For each omp for/do statement
-  for (; nodeListIterator != nodeList_merged.end(); ++nodeListIterator) {
+  for (Rose_STL_Container<SgNode *>::iterator nodeListIterator =
+           node_list.begin();
+       nodeListIterator != node_list.end(); nodeListIterator++) {
     SgStatement *omp_loop = isSgStatement(*nodeListIterator);
     ROSE_ASSERT(omp_loop != NULL);
     result += patchUpPrivateVariables(omp_loop);
