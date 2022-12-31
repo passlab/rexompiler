@@ -4023,7 +4023,7 @@ void transOmpTargetLoopBlock(SgNode* node)
   // transformation for combined directive
   // omp target parallel for
   // omp target teams distribute parallel for
-  void transOmpSpmdWorksharing (SgNode* node, SgExpression* omp_num_teams, SgExpression* omp_num_threads)
+  void transOmpTargetSpmdWorksharing (SgNode* node, SgExpression* omp_num_teams, SgExpression* omp_num_threads)
   {
     // Sanity check first
     ROSE_ASSERT(node != NULL);
@@ -4362,7 +4362,7 @@ void transOmpTargetLoopBlock(SgNode* node)
 
     SgExpression* omp_num_threads = buildIntVal(1);
 
-    transOmpSpmdWorksharing(target, omp_num_teams, omp_num_threads);
+    transOmpTargetSpmdWorksharing(target, omp_num_teams, omp_num_threads);
   }
 
   // transformation for combined directive omp target parallel for
@@ -4381,8 +4381,7 @@ void transOmpTargetLoopBlock(SgNode* node)
     ROSE_ASSERT (num_threads_clause->get_expression() != NULL);
     SgExpression* omp_num_threads = copyExpression(num_threads_clause->get_expression());
 
-
-    transOmpSpmdWorksharing(target, omp_num_teams, omp_num_threads);
+    transOmpTargetSpmdWorksharing(target, omp_num_teams, omp_num_threads);
   }
 
   // transformation for combined directive omp target teams distribute parallel for
@@ -4393,31 +4392,19 @@ void transOmpTargetLoopBlock(SgNode* node)
     SgOmpTargetTeamsDistributeParallelForStatement* target = isSgOmpTargetTeamsDistributeParallelForStatement(node);
     ROSE_ASSERT(target != NULL);
 
-    SgExpression* omp_num_teams = NULL;
-    if (hasClause(target, V_SgOmpNumTeamsClause)) {
-      Rose_STL_Container<SgOmpClause*> num_teams_clauses = getClause(target, V_SgOmpNumTeamsClause);
-      ROSE_ASSERT (num_teams_clauses.size() == 1); // should only have one num_teams()
-      SgOmpNumTeamsClause * num_teams_clause = isSgOmpNumTeamsClause(num_teams_clauses[0]);
-      ROSE_ASSERT (num_teams_clause->get_expression() != NULL);
-      omp_num_teams = copyExpression(num_teams_clause->get_expression());
-    }
-    else {
-      omp_num_teams = buildIntVal(256);
-    }
+    Rose_STL_Container<SgOmpClause*> num_teams_clauses = getClause(target, V_SgOmpNumTeamsClause);
+    ROSE_ASSERT (num_teams_clauses.size() == 1); // should only have one num_teams()
+    SgOmpNumTeamsClause * num_teams_clause = isSgOmpNumTeamsClause(num_teams_clauses[0]);
+    ROSE_ASSERT (num_teams_clause->get_expression() != NULL);
+    SgExpression* omp_num_teams = copyExpression(num_teams_clause->get_expression());
 
-    SgExpression* omp_num_threads = NULL;
-    if (hasClause(target, V_SgOmpNumThreadsClause)) {
-      Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgOmpNumThreadsClause);
-      ROSE_ASSERT (num_threads_clauses.size() == 1); // should only have one num_threads()
-      SgOmpNumThreadsClause * num_threads_clause = isSgOmpNumThreadsClause(num_threads_clauses[0]);
-      ROSE_ASSERT (num_threads_clause->get_expression() != NULL);
-      omp_num_threads = copyExpression(num_threads_clause->get_expression());
-    }
-    else {
-      omp_num_threads = buildIntVal(1024);
-    }
+    Rose_STL_Container<SgOmpClause*> num_threads_clauses = getClause(target, V_SgOmpNumThreadsClause);
+    ROSE_ASSERT (num_threads_clauses.size() == 1); // should only have one num_threads()
+    SgOmpNumThreadsClause * num_threads_clause = isSgOmpNumThreadsClause(num_threads_clauses[0]);
+    ROSE_ASSERT (num_threads_clause->get_expression() != NULL);
+    SgExpression* omp_num_threads = copyExpression(num_threads_clause->get_expression());
 
-    transOmpSpmdWorksharing(target, omp_num_teams, omp_num_threads);
+    transOmpTargetSpmdWorksharing(target, omp_num_teams, omp_num_threads);
   }
 
   /*
