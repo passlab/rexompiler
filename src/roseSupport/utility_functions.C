@@ -502,13 +502,6 @@ frontend (const std::vector<std::string>& argv, bool frontendConstantFolding )
   // Syncs C++ and C I/O subsystems!
      ios::sync_with_stdio();
 
-  // make sure that there is some sort of commandline (at least a file specified)
-     if (argv.size() == 1)
-        {
-       // Rose::usage(1);      // Print usage and exit with exit status == 1
-          SgFile::usage(1);      // Print usage and exit with exit status == 1
-        }
-
   // printf ("In frontend(const std::vector<std::string>& argv): frontendConstantFolding = %s \n",frontendConstantFolding == true ? "true" : "false");
 
   // We parse plugin related command line options before calling project();
@@ -1594,10 +1587,9 @@ Rose::getFileNameByTraversalBackToFileNode ( const SgNode* astNode )
 #endif
 
 void
-Rose::usage (int status)
+Rose::usage ()
    {
-     SgFile::usage(status);
-  // exit(status);
+     SgFile::usage();
    }
 
 int
@@ -1912,10 +1904,3 @@ Rose::getPreviousStatement ( SgStatement *targetStatement , bool climbOutScope /
 
      return previousStatement;
    }
-
-
-
-
-
-
-

@@ -4,6 +4,12 @@
 
 int main( int argc, char * argv[] ) {
   ROSE_INITIALIZE;
+
+  if (argc == 1){//Direct users to usage and exit with status == 1
+	 fprintf (stderr,"Try option `--help' for more information.\n");
+     exit (1);
+  }
+
   std::vector<std::string> args(argv, argv+argc);
 
 #if defined(ROSE_COMPILER_FOR_LANGUAGE)
@@ -20,9 +26,8 @@ int main( int argc, char * argv[] ) {
   }
 #endif
 
-  SgProject * project = args.size() > 1 ? frontend(args) : new SgProject(); // TODO this behavior should be part of ::frontend(std::vector<std::string> const &)
-
-  auto status = backend(project);
+  SgProject * project = frontend(args);
+  int status = backend(project);
 
 #if !defined(_WIN32) && !defined(__CYGWIN__)
   Rose::AST::IO::free();

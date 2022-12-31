@@ -701,7 +701,7 @@ static std::vector<std::string> parseCommandLine(std::vector< std::string > & ar
 //  remainingArgs.insert(remainingArgs.begin(), argvList[0]); // somehow this is not needed if I use the vector argument version of parse()
 
   if (showRoseHelp)
-    SgFile::usage(0); 
+    SgFile::usage();
 
 #if 0 // DEBUGGING [Robb P Matzke 2016-09-27]
   std::cerr <<"These are the arguments after parsing with Sawyer:\n";

@@ -739,8 +739,8 @@ SgProject::processCommandLine(const vector<string>& input_argv)
           printf ("This is a deprecated option in ROSE (use --h or --help instead).\n");
   // Default
           cout << version_message() << endl;
-       // Rose::usage(0);
-          SgFile::usage(0);
+       // Rose::usage();
+          SgFile::usage();
           exit(0);
         }
 
@@ -758,9 +758,9 @@ SgProject::processCommandLine(const vector<string>& input_argv)
        // printf ("option --help found \n");
        // printf ("\nROSE (pre-release alpha version: %s) \n",VERSION);
        // version();
-       // Rose::usage(0);
+       // Rose::usage();
           cout << version_message() << endl;
-          SgFile::usage(0);
+          SgFile::usage();
           exit(0);
         }
 
@@ -2197,12 +2197,8 @@ ProcessParam (SgProject* project, std::vector<std::string>& argv)
  *  namespace SgFile {
  *---------------------------------------------------------------------------*/
 void
-SgFile::usage ( int status )
+SgFile::usage ()
    {
-     if (status != 0)
-          fprintf (stderr,"Try option `--help' for more information.\n");
-       else
-        {
        // it would be nice to insert the version of ROSE being used (using the VERSION macro)
           fputs(
 "\n"
@@ -2621,12 +2617,6 @@ SgFile::usage ( int status )
   // -sage:disable_sage_backend    prevent EDG from calling the sage backend
   // -sage:enable_cp_backend       have EDG call the cp backend
   // -sage:preinit_il              do a preinit stage between the front-end and
-    }
-
-#if 1
-  // Comment this out for now while we test!
-     exit (status);
-#endif
    }
 
 void
@@ -2659,10 +2649,10 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
           CommandlineProcessing::isOption(argv,"-","(h|help)",true)      == true )
         {
        // printf ("\nROSE (pre-release alpha version: %s) \n",VERSION);
-       // Rose::usage(0);
+       // Rose::usage();
           cout << version_message() << endl;
-          usage(0);
-       // exit(0);
+          usage();
+          exit(0);
         }
   //
   // version option

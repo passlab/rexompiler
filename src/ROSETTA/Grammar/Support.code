@@ -6422,7 +6422,7 @@ public:
       //  friend void pdfPrintAbstractSyntaxTreeSage ( SgFile *file, bool writeOutHeaderFiles = false );
 
        // Move this function from ROSE into the AST restructuring tool (placed here os it can be called)
-          static void usage ( int status );
+          static void usage ();
 
       //! Move this function from ROSE into the AST restructuring tool
           std::string getWorkingDirectory ();

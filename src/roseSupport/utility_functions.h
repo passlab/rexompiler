@@ -218,7 +218,7 @@ namespace Rose
 
      SgName concatenate ( const SgName & X, const SgName & Y );
 
-     ROSE_DLL_API void usage (int status);
+     ROSE_DLL_API void usage ( );
 
      void filterInputFile ( const std::string inputFileName, const std::string outputFileName );
 
