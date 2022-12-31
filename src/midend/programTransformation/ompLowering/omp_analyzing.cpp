@@ -463,19 +463,13 @@ int patchUpFirstprivateVariables(SgFile *file) {
 int patchUpImplicitMappingVariables(SgFile *file) {
   int result = 0;
   ROSE_ASSERT(file != NULL);
-  Rose_STL_Container<SgNode *> node_list1 =
-      NodeQuery::querySubTree(file, V_SgOmpTargetStatement);
 
-  // TODO: implement a helper function to collect all the nodes into one list
-  Rose_STL_Container<SgNode *> node_list2 =
-      NodeQuery::querySubTree(file, V_SgOmpTargetParallelForStatement);
-  std::sort(node_list1.begin(), node_list1.end());
-  std::sort(node_list2.begin(), node_list2.end());
-  Rose_STL_Container<SgNode *> node_list;
-  std::merge(node_list1.begin(), node_list1.end(), node_list2.begin(),
-             node_list2.end(),
-             std::insert_iterator<Rose_STL_Container<SgNode *>>(
-                 node_list, node_list.end()));
+  VariantVector directive_vv = VariantVector(V_SgOmpTargetStatement);
+  directive_vv.push_back(V_SgOmpTargetTeamsDistributeParallelForStatement);
+  directive_vv.push_back(V_SgOmpTargetTeamsDistributeStatement);
+  directive_vv.push_back(V_SgOmpTargetParallelForStatement);
+  Rose_STL_Container<SgNode *> node_list =
+      NodeQuery::querySubTree(file, directive_vv);
 
   Rose_STL_Container<SgNode *>::iterator iter = node_list.begin();
   for (iter = node_list.begin(); iter != node_list.end(); iter++) {
@@ -522,75 +516,74 @@ int patchUpImplicitMappingVariables(SgFile *file) {
           isSgOmpTargetParallelForStatement(target)) {
         SgVariableSymbol *sym = var_ref->get_symbol();
         ROSE_ASSERT(sym != NULL);
-        SgType *orig_type = sym->get_type();
-        SgArrayType *a_type = isSgArrayType(orig_type);
-        if (a_type != NULL) {
-          std::vector<SgExpression *> dims = get_C_array_dimensions(a_type);
-          SgExpression *array_length = NULL;
-          for (std::vector<SgExpression *>::const_iterator iter = dims.begin();
-               iter != dims.end(); iter++) {
-            SgExpression *length_exp = *iter;
-            // TODO: get_C_array_dimensions returns one extra null expression
-            // somehow.
-            if (!isSgNullExpression(length_exp))
-              array_length = length_exp;
-          }
-          ROSE_ASSERT(array_length != NULL);
-          SgOmpMapClause *map_clause = NULL;
-          std::map<SgSymbol *,
-                   std::vector<std::pair<SgExpression *, SgExpression *>>>
-              array_dimensions;
-          SgExprListExp *explist = NULL;
-          SgVariableSymbol *array_symbol = var_ref->get_symbol();
 
-          if (hasClause(target, V_SgOmpMapClause)) {
-            Rose_STL_Container<SgOmpClause *> map_clauses =
-                getClause(target, V_SgOmpMapClause);
-            Rose_STL_Container<SgOmpClause *>::const_iterator iter;
-            for (iter = map_clauses.begin(); iter != map_clauses.end();
-                 iter++) {
-              SgOmpMapClause *temp_map_clause = isSgOmpMapClause(*iter);
-              if (temp_map_clause->get_operation() ==
-                  SgOmpClause::e_omp_map_tofrom) {
-                map_clause = temp_map_clause;
-                array_dimensions = map_clause->get_array_dimensions();
-                explist = map_clause->get_variables();
-                break;
-              }
-            }
-          }
+        SgOmpMapClause *map_clause = NULL;
+        std::map<SgSymbol *,
+                 std::vector<std::pair<SgExpression *, SgExpression *>>>
+            array_dimensions;
+        SgExprListExp *explist = NULL;
 
-          if (map_clause == NULL) {
-            explist = buildExprListExp();
-            SgOmpClause::omp_map_operator_enum sg_type =
-                SgOmpClause::e_omp_map_tofrom;
-            map_clause = new SgOmpMapClause(explist, sg_type);
-            explist->set_parent(map_clause);
-            setOneSourcePositionForTransformation(map_clause);
-            map_clause->set_parent(target);
-          }
-
-          bool has_mapped = false;
-          Rose_STL_Container<SgExpression *>::iterator iter;
-          SgExpressionPtrList expression_list = explist->get_expressions();
-          for (iter = expression_list.begin(); iter != expression_list.end();
-               iter++) {
-            if (isSgVarRefExp(*iter)->get_symbol() == array_symbol) {
-              has_mapped = true;
+        if (hasClause(target, V_SgOmpMapClause)) {
+          Rose_STL_Container<SgOmpClause *> map_clauses =
+              getClause(target, V_SgOmpMapClause);
+          Rose_STL_Container<SgOmpClause *>::const_iterator iter;
+          for (iter = map_clauses.begin(); iter != map_clauses.end(); iter++) {
+            SgOmpMapClause *temp_map_clause = isSgOmpMapClause(*iter);
+            if (temp_map_clause->get_operation() == SgOmpClause::e_omp_map_to) {
+              map_clause = temp_map_clause;
+              array_dimensions = map_clause->get_array_dimensions();
+              explist = map_clause->get_variables();
               break;
             }
           }
+        }
 
-          if (has_mapped == false) {
+        if (map_clause == NULL) {
+          explist = buildExprListExp();
+          SgOmpClause::omp_map_operator_enum sg_type =
+              SgOmpClause::e_omp_map_to;
+          map_clause = new SgOmpMapClause(explist, sg_type);
+          explist->set_parent(map_clause);
+          setOneSourcePositionForTransformation(map_clause);
+          map_clause->set_parent(target);
+          target->get_clauses().push_back(map_clause);
+        }
+
+        bool has_mapped = false;
+        Rose_STL_Container<SgExpression *>::iterator iter;
+        SgExpressionPtrList expression_list = explist->get_expressions();
+        for (iter = expression_list.begin(); iter != expression_list.end();
+             iter++) {
+          if (isSgVarRefExp(*iter)->get_symbol() == sym) {
+            has_mapped = true;
+            break;
+          }
+        }
+
+        if (has_mapped == false) {
+          SgType *orig_type = sym->get_type();
+          SgArrayType *a_type = isSgArrayType(orig_type);
+          if (a_type != NULL) {
+            std::vector<SgExpression *> dims = get_C_array_dimensions(a_type);
+            SgExpression *array_length = NULL;
+            for (std::vector<SgExpression *>::const_iterator iter =
+                     dims.begin();
+                 iter != dims.end(); iter++) {
+              SgExpression *length_exp = *iter;
+              // TODO: get_C_array_dimensions returns one extra null expression
+              // somehow.
+              if (!isSgNullExpression(length_exp))
+                array_length = length_exp;
+            }
+            ROSE_ASSERT(array_length != NULL);
+            SgVariableSymbol *array_symbol = var_ref->get_symbol();
+
             SgExpression *lower_exp = buildIntVal(0);
-            explist->append_expression(buildVarRefExp(var_ref->get_symbol()));
             array_dimensions[array_symbol].push_back(
                 std::make_pair(lower_exp, array_length));
             map_clause->set_array_dimensions(array_dimensions);
           }
-
-        } else {
-          addClauseVariable(init_var, target, V_SgOmpFirstprivateClause);
+          explist->append_expression(buildVarRefExp(var_ref->get_symbol()));
         }
       } else {
         addClauseVariable(init_var, target, V_SgOmpSharedClause);
@@ -685,8 +678,8 @@ void setOmpRelationship(SgStatement *parent, SgStatement *child) {
   omp_child->set_omp_parent(parent);
 }
 
-// search the OpenMP parent of a given OpenMP executable directive node, not its
-// SgNode parent.
+// search the OpenMP parent of a given OpenMP executable directive node, not
+// its SgNode parent.
 SgStatement *getOmpParent(SgStatement *node) {
   SgStatement *parent = isSgStatement(node->get_parent());
   while (parent != NULL) {
