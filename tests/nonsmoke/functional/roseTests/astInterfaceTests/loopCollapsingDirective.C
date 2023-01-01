@@ -8,7 +8,6 @@ test code for loopCollapsing
 #include "commandline_processing.h"
 
 using namespace std;
-using namespace AbstractHandle;
 vector<SgForStatement*> loopList;
 
 bool isDirectiveAttached(SgStatement* stmt)
@@ -40,15 +39,15 @@ void loopTraversal::visit(SgForStatement* loop)
 int main(int argc, char * argv[])
 
 {
-  std::string handle;
+  std::string positions;
   int factor =2;
   // command line processing
   //--------------------------------------------------
   vector<std::string> argvList (argv, argv+argc);
-  if (!CommandlineProcessing::isOptionWithParameter (argvList,"-rose:loopcollapse:","abstract_handle",handle, true)
+  if (!CommandlineProcessing::isOptionWithParameter (argvList,"-rose:loopcollapse:","positions",positions, true)
      || !CommandlineProcessing::isOptionWithParameter (argvList,"-rose:loopcollapse:","factor",factor, true))
    {
-     cout<<"Usage: loopCollapsing inputFile.c -rose:loopcollapse:abstract_handle <handle_string> -rose:loopcollapse:factor N"<<endl;
+     cout<<"Usage: loopCollapsing inputFile.c -rose:loopcollapse:position <position_string(line1,line2:col2,...)> -rose:loopcollapse:factor N"<<endl;
      return 0;
    }
 

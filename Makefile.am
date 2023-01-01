@@ -730,7 +730,6 @@ lcov:
 -d src/midend/programAnalysis/ssaUnfilteredCfg/.libs \
 -d src/midend/programAnalysis/staticSingleAssignment/.libs \
 -d src/midend/programAnalysis/.libs \
--d src/midend/abstractHandle/.libs \
 -d src/midend/.libs \
 -d src/midend/abstractLayer/.libs \
 -d src/midend/astQuery/.libs \

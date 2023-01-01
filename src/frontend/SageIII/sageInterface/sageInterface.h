@@ -20,7 +20,6 @@ SgFile* determineFileType ( std::vector<std::string> argv, int& nextErrorCode, S
 
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 #include "LivenessAnalysis.h"
-#include "abstract_handle.h"
 #include "ClassHierarchyGraph.h"
 #endif
 
@@ -578,16 +577,16 @@ class StatementGenerator {
 //! Check if a SgNode _s is an assignment statement (any of =,+=,-=,&=,/=, ^=, etc)
 //!
 //! Return the left hand, right hand expressions and if the left hand variable is also being read
-  bool isAssignmentStatement(SgNode* _s, SgExpression** lhs=NULL, SgExpression** rhs=NULL, bool* readlhs=NULL);
+bool isAssignmentStatement(SgNode* _s, SgExpression** lhs=NULL, SgExpression** rhs=NULL, bool* readlhs=NULL);
 
 //! Variable references can be introduced by SgVarRef, SgPntrArrRefExp, SgInitializedName, SgMemberFunctionRef etc. For Dot and Arrow Expressions, their lhs is used to obtain SgInitializedName (coarse grain) by default. Otherwise, fine-grain rhs is used.
 ROSE_DLL_API SgInitializedName* convertRefToInitializedName(SgNode* current, bool coarseGrain=true);
 
-//! Build an abstract handle from an AST node, reuse previously built handle when possible
-ROSE_DLL_API AbstractHandle::abstract_handle* buildAbstractHandle(SgNode*);
+//! Obtain the first queryed statement at line of a source file
+ROSE_DLL_API SgStatement* getFirstStatementAtLine(SgSourceFile * sourceFile, int line);
 
-//! Obtain a matching SgNode from an abstract handle string
-ROSE_DLL_API SgNode* getSgNodeFromAbstractHandleString(const std::string& input_string);
+//! Obtain all the queryed statement at line of a source file
+ROSE_DLL_API void getAllStatementsAtLine(SgSourceFile * sourceFile, int line, SgStatementPtrList &returnList);
 
 //! Dump information about a SgNode for debugging
 ROSE_DLL_API void dumpInfo(SgNode* node, std::string desc="");

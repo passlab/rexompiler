@@ -113,7 +113,6 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:roseSupport>
   $<TARGET_OBJECTS:astFixup>
   $<TARGET_OBJECTS:midend>
-  $<TARGET_OBJECTS:abstractHandle>
   $<TARGET_OBJECTS:abstractLayer>
   $<TARGET_OBJECTS:astDiagnostics>
   $<TARGET_OBJECTS:astProcessing>

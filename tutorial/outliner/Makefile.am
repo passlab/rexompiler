@@ -215,14 +215,14 @@ rose_outlined_pp-inputCode_OutlineNonLocalJumps.cc: outlinePreproc$(EXEEXT) \
 # using source file location : a for loop at line 12,
 rose_inputCode_OutlineLoop2.c: outlineTutorial$(EXEEXT) \
 		$(srcdir)/inputCode_OutlineLoop.cc
-	./outlineTutorial$(EXEEXT) -rose:outline:enable_debug -rose:outline:enable_classic -rose:outline:abstract_handle "ForStatement<position,12>" -c $(srcdir)/inputCode_OutlineLoop2.c
+	./outlineTutorial$(EXEEXT) -rose:outline:enable_debug -rose:outline:enable_classic -rose:outline:line "12" -c $(srcdir)/inputCode_OutlineLoop2.c
 # using name and relative numbering: the second loop within a function named initialize()	
 rose_inputCode_OutlineLoop2b.c: outlineTutorial$(EXEEXT) \
 		$(srcdir)/inputCode_OutlineLoop.cc
-	./outlineTutorial$(EXEEXT) -rose:outline:enable_classic -rose:outline:enable_debug -rose:outline:abstract_handle "FunctionDeclaration<name,initialize>::ForStatement<numbering,2>" -c $(srcdir)/inputCode_OutlineLoop2.c -rose:output rose_inputCode_OutlineLoop2b.c
+	./outlineTutorial$(EXEEXT) -rose:outline:enable_classic -rose:outline:enable_debug -rose:outline:line "13" -c $(srcdir)/inputCode_OutlineLoop2.c -rose:output rose_inputCode_OutlineLoop2b.c
 
 rose_declarations.c:outlineTutorial$(EXEEXT)
-	./outlineTutorial$(EXEEXT)  -rose:outline:preproc-only -rose:outline:abstract_handle "Statement<position,5>" -c $(srcdir)/declarations.c
+	./outlineTutorial$(EXEEXT)  -rose:outline:preproc-only -rose:outline:line "5" -c $(srcdir)/declarations.c
 
 rose_thisExpression.cpp:outlineTutorial$(EXEEXT)
 	./outlineTutorial$(EXEEXT) -c $(srcdir)/thisExpression.cpp

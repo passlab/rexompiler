@@ -8,7 +8,6 @@
 #include <rose_config.h>
 
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "roseAdapter.h"
    #include "markLhsValues.h"
 // #include "sageBuilder.h"
    #include <fstream>
@@ -16984,28 +16983,6 @@ PreprocessingInfo* SageBuilder::buildCpreprocessorDefineDeclaration(SgLocatedNod
     return result;
 
   }
-
-
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-//! Build an abstract handle from a SgNode
-AbstractHandle::abstract_handle * SageBuilder::buildAbstractHandle(SgNode* n)
-{
-  // avoid duplicated creation
-  static std::map<SgNode*, AbstractHandle::abstract_handle *> handleMap;
-
-  ROSE_ASSERT(n != NULL);
-  AbstractHandle::abstract_handle * ahandle =handleMap[n];
-  if (ahandle==NULL)
-  {
-    AbstractHandle::abstract_node* anode = AbstractHandle::buildroseNode(n);
-    ROSE_ASSERT(anode !=NULL );
-    ahandle = new AbstractHandle::abstract_handle(anode);
-    //TODO do we allow NULL handle to be returned?
-    ROSE_ASSERT(ahandle != NULL);
-  }
-  return ahandle;
-}
-#endif
 
 SgEquivalenceStatement*
 SageBuilder::buildEquivalenceStatement(SgExpression* exp1,SgExpression* exp2)

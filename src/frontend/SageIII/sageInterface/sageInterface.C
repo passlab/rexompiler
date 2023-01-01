@@ -50,8 +50,6 @@
 #include "ArrayInterface.h"
 
 #include "LoopUnroll.h"
-#include "abstract_handle.h"
-#include "roseAdapter.h"
 #endif
 
 #include <boost/lexical_cast.hpp>
@@ -7848,11 +7846,6 @@ static  void getSwitchCasesHelper(SgStatement* top, vector<SgStatement*>& result
 
 #endif
 
-AbstractHandle::abstract_handle* SageInterface::buildAbstractHandle(SgNode* n)
-{
-  return AbstractHandle::buildAbstractHandle(n);
-
-}
 //! Get the enclosing scope from a node n
 SgScopeStatement* SageInterface::getEnclosingScope(SgNode* n, const bool includingSelf/* =false*/)
 {
@@ -21461,45 +21454,38 @@ SgInitializedName* SageInterface::convertRefToInitializedName(SgNode* current, b
   return name;
 }
 
-//! Obtain a matching SgNode from an abstract handle string
-SgNode* SageInterface::getSgNodeFromAbstractHandleString(const std::string& input_string)
+//! Obtain the first queryed statement at line. Since most people write code one statement per line
+// This function is sufficient for most use cases.
+SgStatement* SageInterface::getFirstStatementAtLine(SgSourceFile * sourceFile, int line)
 {
-#ifdef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-  printf ("AbstractHandle support is disabled for ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT \n");
-  ROSE_ABORT();
-#else
-  AbstractHandle::abstract_handle * project_handle = buildAbstractHandle(getProject());
-
-  // trim off the possible leading handle for project: "Project<numbering,1>::"
-  size_t pos = input_string.find("SourceFile<");
-  ROSE_ASSERT (pos != string::npos);
-  string trimed_string = input_string.substr(pos);
-  AbstractHandle::abstract_handle * handle = new AbstractHandle::abstract_handle(project_handle, trimed_string);
-  if (handle)
+  SgStatement* stmt = NULL;
+  std::vector<SgStatement* > stmts = SageInterface::querySubTree<SgStatement>(sourceFile,V_SgStatement);
+  for (std::vector<SgStatement* >::iterator i = stmts.begin(); i!=stmts.end(); i++ )
   {
-    if (handle->getNode()!=NULL)
+    stmt = isSgStatement(*i);
+    if (stmt->get_file_info()->get_line() == line)
     {
-#ifdef _MSC_VER
-     // DQ (11/28/2009): This is related to the use of covariant return types (I think).
-SgNode* result = NULL; // (SgNode*)(handle->getNode()->getNode());
-#pragma message ("WARNING: covariant return type for get_node() not supported in MSVC.")
-                printf ("ERROR: covariant return type for get_node() not supported in MSVC. \n");
-                ROSE_ABORT();
-#else
-                SgNode* result = (SgNode*)(handle->getNode()->getNode());
-#endif
-      // deallocate memory, should not do this!!
-      // May corrupt the internal std maps used in abstract handle namespace
-      //delete handle->getNode();
-      //delete handle;
-      return result;
+      break;
     }
   }
-#endif
-
-  return NULL;
+  return stmt;
 }
 
+//! Obtain all queryed statements at line, the container for the queryed statement
+// should be provided in the call
+void SageInterface::getAllStatementsAtLine(SgSourceFile * sourceFile, int line, SgStatementPtrList &returnList)
+{
+  SgStatement* stmt = NULL;
+  std::vector<SgStatement* > stmts = SageInterface::querySubTree<SgStatement>(sourceFile,V_SgStatement);
+  for (std::vector<SgStatement* >::iterator i = stmts.begin(); i!=stmts.end(); i++ )
+  {
+    stmt = isSgStatement(*i);
+    if (stmt->get_file_info()->get_line() == line)
+    {
+      returnList.push_back(stmt);
+    }
+  }
+}
 
 //! Dump information about a SgNode for debugging
 // unparseToString() is too strict for debugging purpose

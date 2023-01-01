@@ -31,8 +31,6 @@ bin_PROGRAMS = \
 #varSubstCopy , disabled this one Liao, and sorted the list
 # tutorial examples which will not be installed to ROSE_INS/bin
 NOINST_TUTORIAL_EXAMPLES = \
-   abstractHandle1 \
-   abstractHandle2 \
    accumulatorAttributeTraversal \
    addAssignmentStmt \
    addComments \
@@ -182,10 +180,6 @@ templateParameter_SOURCES = templateParameter.C
 instrumentEndOfFunction_SOURCES = instrumentEndOfFunction.C
 
 reductionRecognition_SOURCES= reductionRecognition.C
-
-abstractHandle1_SOURCES = abstractHandle1.cpp
-
-abstractHandle2_SOURCES = abstractHandle2.cpp
 
 addVariableDeclaration_SOURCES = addVariableDeclaration.C
 
@@ -398,12 +392,6 @@ testAddFunctionDeclaration3: addFunctionDeclaration3
 
 testAddAssignmentStmt: addAssignmentStmt
 	./addAssignmentStmt --edg:no_warnings -c $(srcdir)/inputCode_AddAssignmentStmt.C
-
-testAbstractHandle1:abstractHandle1
-	./abstractHandle1  --edg:no_warnings -c $(srcdir)/inputCode_AbstractHandle1.cpp 
-
-testAbstractHandle2:abstractHandle2
-	./abstractHandle2  --edg:no_warnings -c $(srcdir)/inputCode_AbstractHandle2.cpp 
 
 testAddExpression: addExpression
 	./addExpression --edg:no_warnings -c $(srcdir)/inputCode_AddExpression.C
@@ -721,8 +709,6 @@ generatedCodeExamples = \
    rose_inputCode_AddFunctionDeclaration3.C \
    rose_inputCode_AddVariableDeclaration.C \
    rose_inputCode_AddAssignmentStmt.C \
-   abstractHandle1.outx \
-   abstractHandle2.outx \
    rose_inputCode_AddExpression.C \
    rose_inputCode_AddFunctionCalls.C \
    rose_inputCode_instrumentEndOfFunction.C \
@@ -983,14 +969,6 @@ rose_inputCode_AddVariableDeclaration.C: addVariableDeclaration
 rose_inputCode_AddVariableDeclaration2.C: addVariableDeclaration2
 	@echo "Generate executable from compilation of input code (addVariableDeclaration2) ..."
 	./addVariableDeclaration2 $(ROSE_FLAGS) -c $(srcdir)/inputCode_AddVariableDeclaration2.C
-
-abstractHandle1.outx: abstractHandle1
-	@echo "Generate executable from compilation of input code (abstractHandle1) ..."
-	./abstractHandle1 $(ROSE_FLAGS) -c $(srcdir)/inputCode_AbstractHandle1.cpp | fold > abstractHandle1.outx
-
-abstractHandle2.outx: abstractHandle2
-	@echo "Generate executable from compilation of input code (abstractHandle2) ..."
-	./abstractHandle2 $(ROSE_FLAGS) -c $(srcdir)/inputCode_AbstractHandle2.cpp | fold > abstractHandle2.outx
 
 rose_inputCode_AddAssignmentStmt.C: addAssignmentStmt
 	@echo "Generate executable from compilation of input code (addAssignmentStmt) ..."
@@ -1325,8 +1303,6 @@ EXTRA_DIST = \
    inputCode_AddFunctionDeclaration3.C \
    inputCode_AddExpression.C \
    inputCode_AddAssignmentStmt.C \
-   inputCode_AbstractHandle1.cpp \
-   inputCode_AbstractHandle2.cpp \
    inputCode_AddFunctionCalls.C \
    inputCode_ExampleDebugging.C \
    inputCode_LoopOptimization.C \

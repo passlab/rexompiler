@@ -915,7 +915,6 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/util/stringSupport
   ${ROSE_TOP_SRC_DIR}/src/util/commandlineProcessing
   ${ROSE_TOP_SRC_DIR}/src/midend
-  ${ROSE_TOP_SRC_DIR}/src/midend/abstractHandle
   ${ROSE_TOP_SRC_DIR}/src/midend/abstractLayer
   ${ROSE_TOP_SRC_DIR}/src/midend/astDiagnostics
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/astInlining

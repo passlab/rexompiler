@@ -3,7 +3,6 @@
 #include "sage3basic.h"
 
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-#include "roseAdapter.h"
 #include "markLhsValues.h"
 #include "sageBuilder.h"
 #include <fstream>

@@ -1,4 +1,3 @@
-add_subdirectory(abstractHandle)
 add_subdirectory(abstractLayer)
 add_subdirectory(astDiagnostics)
 add_subdirectory(astProcessing)

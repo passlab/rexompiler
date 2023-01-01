@@ -13,8 +13,6 @@
 
 # src/backend/unparser/languageIndependenceSupport/Makefile.am: unparseLanguageIndependenceSupport
 
-# src/midend/abstractHandle/Makefile.am: abstractHandle
-
 # src/midend/astUtil/annotation/Makefile.am: annotation
 
 # src/midend/astUtil/astInterface/Makefile.am: astInterface
