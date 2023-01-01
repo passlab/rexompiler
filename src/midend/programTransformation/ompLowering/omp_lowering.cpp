@@ -3172,8 +3172,7 @@ static void generateMappedArrayMemoryHandling(
     mapping_variable_expression = buildVarRefExp(sym->get_name(), sym->get_scope());
     map_variable_list->push_back(buildAddOp(mapping_variable_expression, mapping_array_offset));
     map_variable_base_list->push_back(mapping_variable_expression);
-    SgGlobal* g_scope = SageInterface::getGlobalScope(insertion_scope);
-    SgExpression* mapping_variable_total_size = buildCastExp(buildMultiplyOp(buildSizeOfOp(element_type), mapping_array_size), buildOpaqueType("int64_t", g_scope));
+    SgExpression* mapping_variable_total_size = buildCastExp(buildMultiplyOp(buildSizeOfOp(element_type), mapping_array_size), buildOpaqueType("int64_t", insertion_scope));
     map_variable_size_list->push_back(mapping_variable_total_size);
 
     int mapping_variable_type_enum = generate_mapping_variable_type(sym, map_alloc_clause, map_to_clause, map_from_clause, map_tofrom_clause,array_dimensions, device_expression,
@@ -3397,8 +3396,7 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* node, SgExprListExp* map
         };
         map_variable_list->append_expression(mapping_variable_expression);
         map_variable_base_list->append_expression(mapping_variable_expression);
-        SgGlobal* g_scope = SageInterface::getGlobalScope(insertion_scope);
-        SgExpression* mapping_variable_size = buildCastExp(buildSizeOfOp(mapping_variable_type), buildOpaqueType("int64_t", g_scope));
+        SgExpression* mapping_variable_size = buildCastExp(buildSizeOfOp(mapping_variable_type), buildOpaqueType("int64_t", target->get_scope()));
         map_variable_size_list->append_expression(mapping_variable_size);
 
         int mapping_variable_type_enum = generate_mapping_variable_type(var_sym, map_alloc_clause, map_to_clause, map_from_clause, map_tofrom_clause,array_dimensions, device_expression,
@@ -6594,7 +6592,7 @@ static void post_processing(SgSourceFile* file) {
         SgFile* cur_file = getEnclosingNode<SgFile>(target_outlined_function_list->at(0));
         std::string file_extension = StringUtility::fileNameSuffix(cur_file->get_file_info()->get_filenameString());
 
-        if (file_extension == "c" || file_extension == "C") {
+        if (CommandlineProcessing::isCppFileNameSuffix(file_extension)) {
             PreprocessingInfo* c_linkage_start = new PreprocessingInfo(PreprocessingInfo::ClinkageSpecificationStart, "#ifdef __cplusplus\nextern \"C\" {\n#endif", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
             SageInterface::insertHeader(new_scope->lastStatement(), c_linkage_start, 1);
         };
@@ -6612,7 +6610,7 @@ static void post_processing(SgSourceFile* file) {
             move_outlined_function(*i, new_file);
         };
 
-        if (file_extension == "c" || file_extension == "C") {
+        if (CommandlineProcessing::isCppFileNameSuffix(file_extension)) {
             PreprocessingInfo* c_linkage_end = new PreprocessingInfo(PreprocessingInfo::ClinkageSpecificationEnd, "#ifdef __cplusplus\n}\n#endif", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
             SageInterface::insertHeader(new_scope->lastStatement(), c_linkage_end, 1);
         };

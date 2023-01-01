@@ -659,12 +659,12 @@ CommandlineProcessing::isCppFileNameSuffix ( const std::string & suffix )
              || suffix == "c++"
              || suffix == "cpp"
              || suffix == "cxx"
+             || suffix == "CPP"
 //It seems that the upper-case versions of the above should also be accepted.
 //However, it does not look like GNU-g++ accepts them.
 //So, I am commenting them out
              /*
              || suffix == "CC"
-             || suffix == "CPP"
              || suffix == "C++"
              || suffix == "CP"
              || suffix == "CXX"
@@ -999,6 +999,7 @@ CommandlineProcessing::initSourceFileSuffixList ( )
           validSourceFileSuffixes.push_back(".cpp");
           validSourceFileSuffixes.push_back(".cxx");
           validSourceFileSuffixes.push_back(".C");
+          validSourceFileSuffixes.push_back(".CPP");
           validSourceFileSuffixes.push_back(".f");
           validSourceFileSuffixes.push_back(".f77");
           validSourceFileSuffixes.push_back(".f90");
@@ -1011,7 +1012,6 @@ CommandlineProcessing::initSourceFileSuffixList ( )
           validSourceFileSuffixes.push_back(".CP");
           validSourceFileSuffixes.push_back(".C++");
           validSourceFileSuffixes.push_back(".CXX");
-          validSourceFileSuffixes.push_back(".CPP");
      */
           validSourceFileSuffixes.push_back(".F");
           validSourceFileSuffixes.push_back(".F77");
