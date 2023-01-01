@@ -59,8 +59,27 @@ int __tgt_target_teams(int64_t device_id, void *host_ptr, int32_t arg_num,
                        int64_t *arg_types, int32_t num_teams,
                        int32_t thread_limit);
 
-void __tgt_register_lib(struct __tgt_bin_desc *desc);
-void __tgt_unregister_lib(struct __tgt_bin_desc *desc);
+// creates the host to target data mapping, stores it in the
+// libomptarget.so internal structure (an entry in a stack of data maps) and
+// passes the data to the device;
+void __tgt_target_data_begin(int64_t DeviceId, int32_t ArgNum, void **ArgsBase,
+                             void **Args, int64_t *ArgSizes, int64_t *ArgTypes);
+
+// passes data from the target, release target memory and destroys the
+// host-target mapping (top entry from the stack of data maps) created by
+// the last __tgt_target_data_begin
+void __tgt_target_data_end(int64_t DeviceId, int32_t ArgNum, void **ArgsBase,
+                           void **Args, int64_t *ArgSizes, int64_t *ArgTypes);
+
+void __tgt_target_data_update(int64_t DeviceId, int32_t ArgNum, void **ArgsBase,
+                              void **Args, int64_t *ArgSizes,
+                              int64_t *ArgTypes);
+
+/// adds a target shared library to the target execution image
+void __tgt_register_lib(struct __tgt_bin_desc *Desc);
+
+/// removes a target shared library from the target execution image
+void __tgt_unregister_lib(struct __tgt_bin_desc *Desc);
 
 struct __tgt_bin_desc *register_cubin(const char *);
 

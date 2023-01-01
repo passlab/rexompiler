@@ -157,13 +157,13 @@ namespace OmpSupport
   ROSE_DLL_API void transOmpVariables(SgStatement * ompStmt, SgBasicBlock* bb1, SgExpression* orig_loop_upper = NULL, bool withinAcceleratorModel= false);
 
   //! Collect all variables from OpenMP clauses associated with an omp statement: private, reduction, etc 
-  ROSE_DLL_API SgInitializedNamePtrList collectAllClauseVariables (SgOmpClauseBodyStatement * clause_stmt);
+  ROSE_DLL_API SgInitializedNamePtrList collectAllClauseVariables (SgStatement * clause_stmt);
 
   //! Collect variables from a particular type of OpenMP clauses associated with an omp statement: private, reduction, etc 
-  ROSE_DLL_API SgInitializedNamePtrList collectClauseVariables (SgOmpClauseBodyStatement * clause_stmt, const VariantT& vt);
+  ROSE_DLL_API SgInitializedNamePtrList collectClauseVariables (SgStatement * clause_stmt, const VariantT& vt);
 
   //! Collect variables from given types of OpenMP clauses associated with an omp statement: private, reduction, etc 
-  ROSE_DLL_API SgInitializedNamePtrList collectClauseVariables (SgOmpClauseBodyStatement * clause_stmt, const VariantVector& vvt);
+  ROSE_DLL_API SgInitializedNamePtrList collectClauseVariables (SgStatement * clause_stmt, const VariantVector& vvt);
 
   //! Collect expression from given types of OpenMP clauses associated with an omp statement: private, reduction, etc 
   ROSE_DLL_API SgExpression* getClauseExpression (SgStatement * clause_stmt, const VariantVector& vvt);

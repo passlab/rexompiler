@@ -312,6 +312,9 @@ namespace OmpSupport
   //! Check if an OpenMP construct is a dependence type for omp task depend 
   bool isDependenceType(omp_construct_enum omp_type);
 
+  //! Attach an OpenMP clause to directive
+  void addOmpClause(SgStatement* node, SgOmpClause* clause);
+
   // We use objects of this class to store parameters of those clauses that take one or two additional
   // parameters other than variable or expression list. E.g. reduction([reduction_modifier,]reduction_identifier:list).
   // We call this kind of clause as ComplexClause, compared with other clauses which just take one parameter or a list

@@ -578,4 +578,17 @@ namespace OmpSupport
     }
     return result;
   }
+
+  void addOmpClause(SgStatement* node, SgOmpClause* clause) {
+      if (isSgOmpClauseStatement(node)) {
+          ((SgOmpClauseStatement*)node)->get_clauses().push_back(clause);
+      }
+      else if (isSgOmpClauseBodyStatement(node)) {
+          ((SgOmpClauseBodyStatement*)node)->get_clauses().push_back(clause);
+      }
+      else {
+          ROSE_ASSERT(0);
+      };
+  }
+
 } //end namespace OmpSupport
