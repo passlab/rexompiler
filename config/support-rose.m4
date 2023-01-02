@@ -58,14 +58,6 @@ AM_CONDITIONAL(ROSE_BUILD_OS_IS_CYGWIN, [test "x$build_os" = xcygwin])
 # This sets up automake conditional variables for each OS vendor name.
 DETERMINE_OS_VENDOR
 
-# This appears to be a problem for Java (and so the Fortran support).
-# CHECK_SSL
-ROSE_SUPPORT_SSL
-
-# Need the SSL automake conditional so that libssl can be added selectively for only those
-# translators that require it (since it conflicts with use of Java, and thus Fortran support).
-AM_CONDITIONAL(ROSE_USE_SSL_SUPPORT, [test "x$enable_ssl" = xyes])
-
 configure_date=`date '+%A %B %e %H:%M:%S %Y'`
 AC_SUBST(configure_date)
 # echo "In ROSE/con figure: configure_date = $configure_date"
@@ -757,7 +749,6 @@ AC_MSG_NOTICE([testing the value of CC: (CC = "$CC")])
 AC_MSG_NOTICE([testing the value of CPPFLAGS: (CPPFLAGS = "$CPPFLAGS")])
 
 AX_BOOST_IOSTREAMS
-ROSE_SUPPORT_LIBGCRYPT
 
 ROSE_SUPPORT_VECTORIZATION
 

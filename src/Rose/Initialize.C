@@ -3,9 +3,6 @@
 #include <rose_config.h>                                // needed for VERSION with cmake
 #include <Rose/Initialize.h>
 
-#ifdef ROSE_HAVE_LIBGCRYPT
-#include <gcrypt.h>
-#endif
 #include <Rose/CommandLine.h>
 #include <Rose/Diagnostics.h>
 #include <Sawyer/Synchronization.h>

@@ -506,8 +506,6 @@ set(CMAKE_REQUIRED_QUIET FALSE)
 # A collection of macros which extend the built-in cmake commands
 include(MacroLibrary)
 
-find_package(OpenSSL)
-
 find_package(Perl REQUIRED)
 
 ########################################################################################################################
@@ -590,15 +588,6 @@ find_bison()
 include(FindDoxygen)
 find_doxygen()
 
-# To use GCrypt, set GCRYPT_ROOT to the GCrypt installation prefix. To avoid GCrypt set GCRYPT_ROOT=no
-include(FindGcrypt)
-find_gcrypt()
-if(GCRYPT_FOUND)
-  # To use GPG-Error, set GPGERROR_ROOT to the GPG-Error installation prefix. To avoid GPG-Error set GPGERROR=no
-  include(FindGpgError)
-  find_gpgerror()
-endif()
-
 # Zlib is required by Boost. To find it in a special place, set ZLIB_ROOT to its installation prefix.
 # Zlib is required by libharu
 include(FindZlib)
@@ -630,10 +619,6 @@ endif()
 find_path(with-wine "bin/wine" DOC "Specify the prefix where Wine is installed")
 if(with-wine)
   set(ROSE_WINE_INCLUDES -I${with-wine}/include)
-endif()
-
-if(NOT WIN32)
-  include(FindOpenSSL)
 endif()
 
 find_package(FLEX)

@@ -178,12 +178,6 @@ if(Z3_FOUND_LIB)
   target_link_libraries(ROSE_DLL ${Z3_LIBRARY})
 endif()
 
-# The GNU GCrypt library is used for computing a wide variety of hashes. It needs the GPG-Error library.
-if(GCRYPT_FOUND AND GPGERROR_FOUND)
-  target_link_libraries(ROSE_DLL ${GCRYPT_LIBRARY})
-  target_link_libraries(ROSE_DLL ${GPGERROR_LIBRARY})
-endif()
-
 # Zlib is a compression library and is needed by Boost. Make sure you compiled Boost with this same zlib.
 if(ZLIB_FOUND)
   target_link_libraries(ROSE_DLL ${ZLIB_LIBRARY})

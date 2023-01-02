@@ -126,7 +126,6 @@ nobase_pkginclude_HEADERS=						\
 	Rose/AST/cmdline.h						\
 	Rose/AST/Defect.h						\
 	Rose/AST/Utils.h						\
-	Rose/BasicTypes.h						\
 	Rose/BitFlags.h							\
 	Rose/BitOps.h							\
 	Rose/CodeGen.h							\
@@ -157,10 +156,8 @@ nobase_pkginclude_HEADERS=						\
 	Rose/FormattedTable.h						\
 	Rose/GraphUtility.h						\
 	Rose/Initialize.h						\
-	Rose/Location.h							\
 	Rose/Progress.h							\
 	Rose/RecursionCounter.h						\
-	Rose/SourceLocation.h						\
 	Rose/StringUtility.h						\
 	Rose/StringUtility/Convert.h					\
 	Rose/StringUtility/Diagnostics.h				\
@@ -247,21 +244,6 @@ endif
 # REQUIRED_LIBS = $(libdir)/libedg.la
 REQUIRED_LIBS = librose.la
 
-
-# DQ (3/14/2009): In this file we have to overwrite existing values in LDFLAGS (to build librose.so).
-# DQ (3/14/2009): We have to clear the LDFLAGS variable...  This is not so great.
-LDFLAGS =
-if OS_MACOSX
-if ROSE_HAVE_LIBGCRYPT
-PORT_PATH = $(shell which port)
-PORT_HOME = $(shell dirname $(PORT_PATH))/..
-LDFLAGS += -L$(PORT_HOME)/lib -lgcrypt
-else
-LDFLAGS +=
-endif
-endif
-
-
 ########################################################################################################################
 # This tool spits out information that tells users how to compile and link programs that use ROSE. Therefore, we have to
 # build a configuration file and compile its installed name into the rose-config tool. It's also especially important
@@ -289,7 +271,6 @@ rose_config_LDFLAGS += -fno-rtti
 rose_config_installed_cppflags =		\
 	-I@includedir@/rose			\
 	$(ROSE_PCH_INCLUDE)			\
-	$(ROSE_GCRYPT_INCLUDES)			\
 	$(BOOST_CPPFLAGS)
 
 rose_config_installed_ldflags =			\
@@ -307,9 +288,7 @@ rose_config_installed_ldflags =			\
 	$(BOOST_CHRONO_LIB)			\
 	$(JAVA_JVM_LINK)			\
 	$(RT_LIBS)				\
-	$(ROSE_SSL_LIBS)			\
 	$(ROSE_INTEL_COMPILER_MATH_LIBS)	\
-	$(ROSE_GCRYPT_LIBS_WITH_PATH)		\
 	-lm
 if ROSE_USE_EDG_QUAD_FLOAT
   rose_config_installed_ldflags += -lquadmath

@@ -160,13 +160,6 @@ ALL_TESTCODES =\
 # Liao, 5/27/2009
 # if ROSE_USE_OPEN_FORTRAN_PARSER
 if ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
-
-if ROSE_USE_SSL_SUPPORT
-	@echo "Fortran tests for ROSE OpenMP parser"
-	@echo "*******************************************************************************************************************"
-	@echo "****** ROSE/tests/CompilTests/OpenMP_tests/fortran: make check rule skipped (SSL support disables this rule) ******" 
-	@echo "*******************************************************************************************************************"
-else	
 conditional-check-local:
 	@echo "Fortran tests for ROSE OpenMP parser"
 	@$(MAKE) $(PASSING_F77_F90_TEST_RESULTS)
@@ -174,7 +167,6 @@ conditional-check-local:
 	@echo "***********************************************************************************************************"
 	@echo "****** ROSE/tests/CompilTests/OpenMP_tests/fortran: make check rule completes (terminated normally) *******" 
 	@echo "***********************************************************************************************************"
-endif	
 else
 conditional-check-local:
 	@echo "Fortran tests for ROSE OpenMP parser"

@@ -53,13 +53,6 @@ ALL_TESTCODES =\
   $(TESTCODES_CURRENTLY_FAILING) 
 
 if ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
-
-if ROSE_USE_SSL_SUPPORT
-	@echo "Fortran tests for ROSE OpenACC parser"
-	@echo "*******************************************************************************************************************"
-	@echo "****** ROSE/tests/CompilTests/OpenACC_tests/fortran: make check rule skipped (SSL support disables this rule) ******" 
-	@echo "*******************************************************************************************************************"
-else	
 conditional-check-local:
 	@echo "Fortran tests for ROSE OpenACC parser"
 	@$(MAKE) $(PASSING_F77_F90_TEST_RESULTS)
@@ -67,8 +60,6 @@ conditional-check-local:
 	@echo "***********************************************************************************************************"
 	@echo "****** ROSE/tests/CompilTests/OpenACC_tests/fortran: make check rule completes (terminated normally) *******" 
 	@echo "***********************************************************************************************************"
-endif	
-
 else
 conditional-check-local:
 	@echo "Fortran tests for ROSE OpenACC parser"

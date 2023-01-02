@@ -73,9 +73,6 @@
 /* Define if z3_version.h is available. */
 #cmakedefine ROSE_HAVE_Z3_VERSION_H
 
-/* Define if libgcrypt is available. */
-#cmakedefine ROSE_HAVE_LIBGCRYPT
-
 /* Define if YAML-CPP library is available. */
 #cmakedefine ROSE_HAVE_YAMLCPP
 
@@ -646,11 +643,6 @@
 /* Always enable Fortran support whenever Java and gfortran are present */
 //AS don't know what to do with this
 #undef USE_ROSE_OPEN_FORTRAN_PARSER_SUPPORT
-
-/* Controls use of ROSE support for SSL (libssl -- MD5) library (incompatable
-   with Java, so disables Fortran support). */
-//AS Don't know what to do with this
-#undef USE_ROSE_SSL_SUPPORT
 
 /* Wine provides access to Windows header files for analysis of windows
    applications under Linux. */

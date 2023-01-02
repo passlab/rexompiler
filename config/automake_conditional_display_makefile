@@ -204,11 +204,6 @@ if ROSE_USE_SMALLER_GENERATED_FILES
 else
 	@echo "Automake conditional ROSE_USE_SMALLER_GENERATED_FILES: NOT defined"
 endif
-if ROSE_USE_SSL_SUPPORT
-	@echo "Automake conditional ROSE_USE_SSL_SUPPORT: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_SSL_SUPPORT: NOT defined"
-endif
 if ROSE_USE_TCLSH
 	@echo "Automake conditional ROSE_USE_TCLSH: DEFINED"
 else

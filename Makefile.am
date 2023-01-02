@@ -174,8 +174,6 @@ rose-installer-rmc2: install-rose-library
 		    $(DLIB_ROOT)											\
 		    $(GNU_COMPILERS_ROOT)										\
 		    $(LIBBZ2_ROOT)											\
-		    $(LIBGCRYPT_ROOT)											\
-		    $(LIBGPG_ERROR_ROOT)										\
 		    $(LIBGRAPHICSMAGICK_ROOT)										\
 		    $(LIBJPEG_ROOT)											\
 		    $(LIBLCMS_ROOT)											\

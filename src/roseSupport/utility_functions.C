@@ -22,9 +22,6 @@
 
 // Headers required only to obtain version numbers
 #include <boost/version.hpp>
-#ifdef ROSE_HAVE_LIBGCRYPT
-#   include <gcrypt.h>
-#endif
 
 // DQ (10/11/2007): This is commented out to avoid use of this mechanism.
 // #include <copy_unparser.h>
@@ -360,16 +357,6 @@ std::string version_message() {
 #endif
 #else
     ss <<"  --- Fortran analysis:           disabled\n";
-#endif
-
-    //-----------------------------------------------------------------------
-    // Information related to binary analysis.
-    //-----------------------------------------------------------------------
-
-#ifdef ROSE_HAVE_LIBGCRYPT
-    ss <<"  --- gcrypt library:             " <<GCRYPT_VERSION <<"\n";
-#else
-    ss <<"  --- gcrypt library:             unused\n";
 #endif
 
     //-----------------------------------------------------------------------

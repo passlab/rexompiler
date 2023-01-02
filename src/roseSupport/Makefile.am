@@ -18,7 +18,6 @@ rebuild-stringify:
 noinst_LTLIBRARIES = libroseSupport.la
 
 libroseSupport_la_SOURCES =			\
-	Combinatorics.C				\
 	IncludeDirective.C			\
 	optionDeclaration.C			\
 	stringify.C				\
@@ -26,7 +25,6 @@ libroseSupport_la_SOURCES =			\
 	utility_functions.C
 
 pkginclude_HEADERS =				\
-	Combinatorics.h				\
 	IncludeDirective.h			\
 	optionDeclaration.h			\
 	stringify.h				\
@@ -43,13 +41,5 @@ clean-local:
 
 distclean-local:
 	rm -rf Templates.DB
-
-
-
-
-
-
-
-
 
 EXTRA_DIST = CMakeLists.txt

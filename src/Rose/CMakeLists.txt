@@ -20,15 +20,12 @@ add_library(roseNamespace OBJECT
   FormattedTable.C
   Initialize.C
   Progress.C
-  SourceLocation.C
   Yaml.C)
 
 add_dependencies(roseNamespace rosetta_generated)
 
 # Public header files for the ::Rose namespace (see top comment)
 install(FILES
-  BasicTypes.h
-  BinaryAnalysis.h
   BitFlags.h
   BitOps.h
   Color.h
@@ -41,10 +38,8 @@ install(FILES
   FormattedTable.h
   GraphUtility.h
   Initialize.h
-  Location.h
   Progress.h
   RecursionCounter.h
-  SourceLocation.h
   StringUtility.h
   Yaml.h
 

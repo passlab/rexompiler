@@ -28,7 +28,6 @@ librose_partial_la_SOURCES =								\
 	FormattedTable.C								\
 	Initialize.C									\
 	Progress.C									\
-	SourceLocation.C								\
 	StringUtility/Convert.C								\
 	StringUtility/Diagnostics.C							\
 	StringUtility/Escape.C								\

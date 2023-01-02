@@ -55,12 +55,6 @@ ADDRESS_SANITIZER_OPTIONS = "ASAN_OPTIONS=halt_on_error=0:symbolize=1:detect_lea
 # DQ(11/4/2016): Need a version when not using the ROSE Test Handler (RTH):
 NON_RTH_ADDRESS_SANITIZER_OPTIONS = ASAN_OPTIONS=halt_on_error=1:symbolize=1:detect_leaks=0 ASAN_SYMBOLIZER_PATH=`which llvm-symbolizer`
 
-# ROSE gcrypt support (for things like md5, sha1, etc)
-if ROSE_HAVE_LIBGCRYPT
-  ROSE_GCRYPT_INCLUDES = @LIBGCRYPT_CPPFLAGS@
-  ROSE_GCRYPT_LIBS_WITH_PATH = @LIBGCRYPT_LDFLAGS@
-endif
-
 # ASR (06/09/2010): adding llvm support variables
 if ROSE_USE_LLVM
   ROSE_LLVM_INCLUDES = -I$(llvm_path)/include
@@ -68,11 +62,6 @@ if ROSE_USE_LLVM
 
 # adding all libraries for now
 
-endif
-
-# SSL support permits use of MD5 checksums internally for binary library identification.
-if ROSE_USE_SSL_SUPPORT
-  ROSE_SSL_LIBS = -lssl -lcrypto
 endif
 
 # support for precompiled headers
@@ -228,7 +217,6 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/util/graphs \
      -I$(top_srcdir)/src/midend/astUtil/astInterface \
      -I$(top_srcdir)/libltdl \
-     $(ROSE_GCRYPT_INCLUDES) \
      $(VALGRIND_CFLAGS) \
      $(ROSE_BOOST_NORMAL_INCLUDE_PATH) \
      $(ROSE_PCH_INCLUDE) \
@@ -290,9 +278,7 @@ ROSE_BOOST_LIBS=$(BOOST_LDFLAGS) $(BOOST_DATE_TIME_LIB) $(BOOST_CHRONO_LIB) \
 ROSE_LIBS = $(abspath $(top_builddir)/src/librose.la) -lm $(JAVA_JVM_LINK) \
   $(ROSE_BOOST_LIBS) \
   $(RT_LIBS) \
-  $(ROSE_SSL_LIBS) \
   $(ROSE_INTEL_COMPILER_MATH_LIBS) \
-  $(ROSE_GCRYPT_LIBS_WITH_PATH) \
   $(ROSE_QUAD_FLOAT_MATH)
 
 if ROSE_USE_CLANG_FRONTEND
