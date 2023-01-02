@@ -30,8 +30,6 @@ set(CxxGrammarMetaProgram_SRCS
   visitorSupport.C
   poolBasedTraversal.C
   node.C
-  buildAstFileIO.C
-  buildStorageClasses.C
   buildConstructorsWithoutSourcePositionInformation.C
   outputClassesAndFields.C
   StringUtility.C)
@@ -66,13 +64,6 @@ set(GRAMMAR_SOURCE_FILES
   ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/grammarNewDeleteOperatorMacros.macro 
   ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/grammarTraverseMemoryPool.macro 
   ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/grammarCheckingIfDataMembersAreInMemoryPool.macro 
-  ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/grammarStorageClassDeclatationMacros.macro 
-  ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/grammarStorageClassDefinitionMacros.macro 
-  ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/grammarAST_FileIoHeader.code 
-  ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/grammarAST_FileIoSource.code  
-  ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/grammarSourceOfIRNodesAstFileIOSupport.macro 
-  ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/grammarStaticDataManagingClassHeader.macro 
-  ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/grammarStaticDataManagingClassStorageClassHeader.macro 
   ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/grammarReturnDataMemberPointers.macro 
   ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/grammarProcessDataMemberReferenceToPointers.macro 
   ${CMAKE_SOURCE_DIR}/src/ROSETTA/Grammar/grammarGetChildIndex.macro 
@@ -103,9 +94,7 @@ if(enable-smaller-generated-files)
     # into the same directory as where the input files locate
     COMMAND ${CMAKE_COMMAND}  -E copy_directory  ${ROSE_TOP_SRC_DIR}/src/ROSETTA/Grammar ${ROSE_TOP_BINARY_DIR}/src/ROSETTA/Grammar
     # create this directory is needed since a few generated files will be put there        
-    COMMAND ${CMAKE_COMMAND}  -E make_directory  ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/astFileIO
     COMMAND CxxGrammarMetaProgram ARGS ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/)
-
 else()
   if(VERBOSE)
     message(STATUS "Smaller generated files disabled")
@@ -121,7 +110,6 @@ else()
     # into the same directory as where the input files locate
     COMMAND ${CMAKE_COMMAND}  -E copy_directory  ${ROSE_TOP_SRC_DIR}/src/ROSETTA/Grammar ${ROSE_TOP_BINARY_DIR}/src/ROSETTA/Grammar
     # create this directory is needed since a few generated files will be put there        
-    COMMAND ${CMAKE_COMMAND}  -E make_directory  ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/astFileIO
     # COMMAND echo  "META_EXE_LOC =  ${META_EXE_LOC} ARGS ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/"
     # STRING(REGEX REPLACE "\\\\" "/" META_EXE_LOC ${META_EXE_LOC} )
     # COMMAND echo  "META_EXE_LOC =  ${META_EXE_LOC} ARGS ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/"

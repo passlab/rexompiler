@@ -1,6 +1,5 @@
 
 #include "sage3basic.h"
-#include "AST_FILE_IO.h"
 
 #include "Rose/AST/Checker.h"
 #include "Rose/AST/Defect.h"

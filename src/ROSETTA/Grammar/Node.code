@@ -490,11 +490,6 @@ class rose_graph_string_node_hash_multimap : public rose_graph_string_node_hash_
 
                parent = NULL;
              }
-
-
-        friend class AST_FILE_IO;
-        friend class SgSymbolTableStorageClass;
-        friend class EasyStorage<rose_graph_string_node_hash_multimap*>;
    };
 
 std::ostream & operator<< ( std::ostream & os, const rose_graph_string_node_hash_multimap::iterator & rhm_it );
@@ -555,10 +550,6 @@ class rose_graph_node_edge_hash_multimap : public rose_graph_node_edge_hash_mult
              {
                delete_elements();
              }
-
-        friend class AST_FILE_IO;
-        friend class SgSymbolTableStorageClass;
-        friend class EasyStorage<rose_graph_node_edge_hash_multimap*>;
    };
 
 std::ostream & operator<< ( std::ostream & os, const rose_graph_node_edge_hash_multimap::iterator & rhm_it );
@@ -616,10 +607,6 @@ class rose_graph_integer_node_hash_map : public rose_graph_integer_node_hash_map
              {
                delete_elements();
              }
-
-        friend class AST_FILE_IO;
-        friend class SgSymbolTableStorageClass;
-        friend class EasyStorage<rose_graph_integer_node_hash_map*>;
    };
 
 std::ostream & operator<< ( std::ostream & os, const rose_graph_integer_node_hash_map::iterator & rhm_it );
@@ -679,10 +666,6 @@ class rose_graph_integer_edge_hash_map : public rose_graph_integer_edge_hash_map
              {
                delete_elements();
              }
-
-        friend class AST_FILE_IO;
-        friend class SgSymbolTableStorageClass;
-        friend class EasyStorage<rose_graph_integer_edge_hash_map*>;
    };
 
 std::ostream & operator<< ( std::ostream & os, const rose_graph_integer_edge_hash_map::iterator & rhm_it );
@@ -737,10 +720,6 @@ class rose_graph_integer_edge_hash_multimap : public rose_graph_integer_edge_has
              {
                delete_elements();
              }
-
-        friend class AST_FILE_IO;
-        friend class SgSymbolTableStorageClass;
-        friend class EasyStorage<rose_graph_integer_edge_hash_multimap*>;
    };
 
 std::ostream & operator<< ( std::ostream & os, const rose_graph_integer_edge_hash_multimap::iterator & rhm_it );
@@ -792,10 +771,6 @@ class rose_graph_integerpair_edge_hash_multimap : public rose_graph_integerpair_
              {
                delete_elements();
              }
-
-        friend class AST_FILE_IO;
-        friend class SgSymbolTableStorageClass;
-        friend class EasyStorage<rose_graph_integerpair_edge_hash_multimap*>;
    };
 
 std::ostream & operator<< ( std::ostream & os, const rose_graph_integerpair_edge_hash_multimap::iterator & rhm_it );
@@ -850,10 +825,6 @@ class rose_graph_string_integer_hash_multimap : public rose_graph_string_integer
 
                parent = NULL;
              }
-
-        friend class AST_FILE_IO;
-        friend class SgSymbolTableStorageClass;
-        friend class EasyStorage<rose_graph_string_integer_hash_multimap*>;
    };
 
 std::ostream & operator<< ( std::ostream & os, const rose_graph_string_integer_hash_multimap::iterator & rhm_it );
@@ -1147,9 +1118,6 @@ class UnparseFormatHelp;
 // a Sg_File_Info object (to record the filename of the comments and
 // CPP directoves).
 // class PreprocessingInfo;
-
-// DQ (4/32/2006): g++ 4.0.2 requires a forward declaration for this (a friend class declaration is not sufficient!)
-class AstSpecificDataManagingClassStorageClass;
 
 // DQ (4/23/2006): The friend declaration the SgProject class is not enough this must be defined outside of the class (for g++ 4.1.0).
 std::ostream & operator<< ( std::ostream & os, const Rose_STL_Container<std::string> & l );

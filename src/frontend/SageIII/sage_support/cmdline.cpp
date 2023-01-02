@@ -360,9 +360,6 @@ CommandlineProcessing::isOptionTakingSecondParameter( string argument )
           argument == "-rose:excludeFile" ||
           argument == "-rose:projectSpecificDatabaseFile" ||
 
-          // AST I/O
-          argument == "-rose:ast:read" ||
-          argument == "-rose:ast:write" ||
           argument == "-rose:ast:graphviz:when" ||
           argument == "-rose:ast:graphviz:mode" ||
           argument == "-rose:ast:graphviz:out" ||
@@ -1560,29 +1557,9 @@ SgProject::processCommandLine(const vector<string>& input_argv)
           ROSE_ASSERT (get_suppressConstantFoldingPostProcessing() == true);
         }
 
-  // AST I/O
-
-     // `-rose:ast:read in0.ast,in2.ast` (extension does not matter)
+  // AST to GraphViz
      std::string rose_ast_option_param;
      std::vector<std::string> rose_ast_option_param_split;
-     if (CommandlineProcessing::isOptionWithParameter(local_commandLineArgumentList, "-rose:", "(ast:read)", rose_ast_option_param, true) == true ) {
-       split_string(rose_ast_option_param, p_astfiles_in);
-       p_ast_merge = true;
-     }
-
-     // `-rose:ast:write out.ast` (extension does not matter)
-     rose_ast_option_param = "";
-     if (CommandlineProcessing::isOptionWithParameter(local_commandLineArgumentList, "-rose:", "(ast:write)", rose_ast_option_param, true) == true ) {
-       p_astfile_out = rose_ast_option_param;
-     }
-
-     // `-rose:ast:merge`
-     if ( CommandlineProcessing::isOption(local_commandLineArgumentList,"-rose:","(ast:merge)",true) == true ) {
-       p_ast_merge = true;
-     }
-
-  // AST to GraphViz
-
      if (CommandlineProcessing::isOptionWithParameter(local_commandLineArgumentList, "-rose:ast:graphviz:", "(when)", rose_ast_option_param, true) == true ) {
        if (rose_ast_option_param == "both" || rose_ast_option_param=="frontend") {
          Rose::AST::cmdline::graphviz.frontend.on = true;

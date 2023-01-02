@@ -673,7 +673,6 @@ lcov:
 -d src/frontend/SageIII/sage_support/.libs \
 -d src/frontend/SageIII/ompparser/.libs \
 -d src/frontend/SageIII/includeDirectivesProcessing/.libs \
--d src/frontend/SageIII/astFileIO/.libs \
 -d src/frontend/SageIII/accparser/.libs \
 -d src/frontend/SageIII/sageInterface/.libs \
 -d src/frontend/SageIII/astTokenStream/.libs \

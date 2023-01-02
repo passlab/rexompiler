@@ -452,17 +452,6 @@ class TestForDisconnectedAST
    };
 
 
-class MemoryCheckingTraversalForAstFileIO : public ROSE_VisitTraversal
-   {
-     public:
-          int counter;
-          void visit ( SgNode* node );
-   };
-
-
-
-
-
 class TestForProperLanguageAndSymbolTableCaseSensitivity_InheritedAttribute : AstInheritedAttribute
    {
      public:

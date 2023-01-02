@@ -56,7 +56,6 @@ AstNodeClass::AstNodeClass ( const string& lexemeString , Grammar & X , const st
      automaticGenerationOfDataAccessFunctions(true),
      automaticGenerationOfCopyFunction(true),
      associatedGrammar(&X),
-     p_isBoostSerializable(false),
      generateEssentialDataMembersConstructorImplementation(false),
      generateEnforcedDefaultConstructorImplementation(false)
    {
@@ -79,16 +78,6 @@ AstNodeClass::getCppCondition() const {
 void
 AstNodeClass::setCppCondition(const std::string &s) {
     cppCondition = s;
-}
-
-bool
-AstNodeClass::isBoostSerializable() const {
-    return p_isBoostSerializable;
-}
-
-void
-AstNodeClass::isBoostSerializable(bool b) {
-    p_isBoostSerializable = b;
 }
 
 void

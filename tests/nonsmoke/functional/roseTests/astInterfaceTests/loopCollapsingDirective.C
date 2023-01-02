@@ -39,15 +39,15 @@ void loopTraversal::visit(SgForStatement* loop)
 int main(int argc, char * argv[])
 
 {
-  std::string positions;
+  int line;
   int factor =2;
   // command line processing
   //--------------------------------------------------
   vector<std::string> argvList (argv, argv+argc);
-  if (!CommandlineProcessing::isOptionWithParameter (argvList,"-rose:loopcollapse:","positions",positions, true)
+  if (!CommandlineProcessing::isOptionWithParameter (argvList,"-rose:loopcollapse:","line",line, true)
      || !CommandlineProcessing::isOptionWithParameter (argvList,"-rose:loopcollapse:","factor",factor, true))
    {
-     cout<<"Usage: loopCollapsing inputFile.c -rose:loopcollapse:position <position_string(line1,line2:col2,...)> -rose:loopcollapse:factor N"<<endl;
+     cout<<"Usage: loopCollapsing inputFile.c -rose:loopcollapse:line <line_number> -rose:loopcollapse:factor N"<<endl;
      return 0;
    }
 

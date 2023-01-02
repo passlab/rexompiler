@@ -1,6 +1,5 @@
 #include <iostream>
 #include "sage3basic.h"
-#include "Rose/AST/IO.h"
 
 int main( int argc, char * argv[] ) {
   ROSE_INITIALIZE;
@@ -29,11 +28,6 @@ int main( int argc, char * argv[] ) {
   SgProject * project = frontend(args);
   int status = backend(project);
 
-#if !defined(_WIN32) && !defined(__CYGWIN__)
-  Rose::AST::IO::free();
-#endif
-
   return status;
-
 }
 

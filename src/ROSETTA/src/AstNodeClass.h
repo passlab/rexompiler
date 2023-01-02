@@ -94,9 +94,6 @@ class AstNodeClass
   // String representation of '#if' that surrounds the class. If empty, then emits "#if 1"
   std::string cppCondition;
 
-  // Wher class supports boost::serialization
-  bool p_isBoostSerializable;
-
   enum locationInTree
   {
     LOCAL_LIST   = 0,
@@ -359,41 +356,15 @@ class AstNodeClass
   void setCppCondition(const std::string&);
   /** @} */
 
-  /** Whether node supports boost::serialization. */
-  bool isBoostSerializable() const;
-  void isBoostSerializable(bool b);
-  
   /* JH (10/28/2005): declaration of the source building methods for the storage classes
      concenrning the ast file IO. More about them one can find in the AstNodeClass.C file. They
      are called while the code generation of ROSETTA by the method 'buildStringForStorageClassSource'
      in the file grammar.C
   */
-  std::string buildStorageClassHeader ();
-  std::string buildStorageClassDeleteStaticDataSource ();
-  std::string buildStorageClassArrangeStaticDataInOneBlockSource ();
-  std::string buildStorageClassPickOutIRNodeDataSource ();
   std::string buildPointerInPoolCheck();
-  std::string buildSourceForIRNodeStorageClassConstructor();
   std::string buildSourceForStoringStaticMembers ();
   std::string buildInitializationForStaticMembers ();
   std::string buildStaticDataConstructorSource();
-  std::string buildStorageClassWriteStaticDataToFileSource () ;
-  std::string buildStorageClassReadStaticDataFromFileSource ();
-  bool hasMembersThatAreStoredInEasyStorageClass();
-  bool hasStaticMembers ();
-  
-  // DQ (4/6/2006): Added these to match Jochen's new version
-  std::string buildStaticDataMemberList();
-  std::string buildStaticDataMemberListSetStaticData();
-  std::string buildStaticDataMemberListDeleteStaticData();
-  std::string buildStaticDataMemberListConstructor();
-  std::string buildAccessFunctionsForStaticDataMember();
-  std::string buildAccessFunctionsForStaticDataMemberSource();
-  std::string buildStaticDataMemberListOfStorageClass();
-  std::string buildStaticDataWriteEasyStorageDataToFileSource();
-  std::string buildStaticDataReadEasyStorageDataFromFileSource();
-  std::string buildStaticDataArrangeEasyStorageInOnePoolSource();
-  std::string buildStaticDataDeleteEasyStorageMemoryPoolSource();
   
   // DQ (5/18/2007): support for documentation to handle mapping to KDM
   std::string outputClassesAndFields();

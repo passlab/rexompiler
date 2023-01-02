@@ -37,10 +37,8 @@
 // DQ (9/8/2017): Debugging ROSE_ASSERT. Call sighandler_t signal(int signum, sighandler_t handler);
 #include<signal.h>
 
-#include "Rose/AST/IO.h"
 #include "Rose/AST/cmdline.h"
 
-#include "AST_FILE_IO.h"
 // Note that this is required to define the Sg_File_Info_XXX symbols (need for file I/O)
 #include "Cxx_GrammarMemoryPoolSupport.h"
 
@@ -521,16 +519,6 @@ frontend (const std::vector<std::string>& argv, bool frontendConstantFolding )
   // DQ (1/27/2017): Comment this out so that we can generate the dot graph to debug symbol with null basis.
      unsetNodesMarkedAsModified(project);
 
-     std::list<std::string> const & astfiles = project->get_astfiles_in();
-     if (astfiles.size() > 0) {
-       Rose::AST::IO::load(project, astfiles);
-       ROSE_ASSERT(project->get_ast_merge());
-     }
-
-     if (project->get_ast_merge()) {
-       Rose::AST::IO::merge(project);
-     }
-
   // Set the mode to be transformation, mostly for Fortran. Liao 8/1/2013
   // Removed semicolon at end of if conditional to allow it to have a body [Rasmussen 2019.01.29]
      if (SageBuilder::SourcePositionClassificationMode == SageBuilder::e_sourcePositionFrontendConstruction)
@@ -668,17 +656,6 @@ backend ( SgProject* project, UnparseFormatHelp *unparseFormatHelp, UnparseDeleg
 
      Rose::AST::cmdline::graphviz.backend.exec(project);
      Rose::AST::cmdline::checker.backend.exec(project);
-
-     std::string const & astfile_out = project->get_astfile_out();
-     if (astfile_out != "") {
-       std::list<std::string> empty_file_list;
-       project->set_astfiles_in(empty_file_list);
-       project->get_astfile_out() = "";
-       AST_FILE_IO::reset();
-       AST_FILE_IO::startUp(project);
-       AST_FILE_IO::writeASTToFile(astfile_out);
-       AST_FILE_IO::resetValidAstAfterWriting();
-     }
 
 #if 0
   // DQ (9/8/2017): Debugging ROSE_ASSERT.

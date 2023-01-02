@@ -881,7 +881,6 @@ endif()
 set(ROSE_INCLUDES
   ${ROSE_TOP_BINARY_DIR}
   ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/
-  ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/astFileIO
   ${ROSE_TOP_SRC_DIR}
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/sage_support
@@ -894,14 +893,12 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astPostProcessing
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astVisualization
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/includeDirectivesProcessing
-  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astFileIO
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/sageInterface
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/ompparser/src
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/accparser/src
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/virtualCFG
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astTokenStream
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astHiddenTypeAndDeclarationLists
-  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astFileIO
   ${ROSE_TOP_SRC_DIR}/src/frontend/OpenFortranParser_SAGE_Connection
   ${ROSE_TOP_SRC_DIR}/src/frontend
   ${ROSE_TOP_SRC_DIR}/src/backend/unparser

@@ -658,7 +658,6 @@ if(enable-smaller-generated-files)
     # We need to copy the input files  to the build tree since 
     # the code generator will output the generated source files into the same directory as where the input files locate
     COMMAND ${CMAKE_COMMAND} -E make_directory ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/Grammar
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/astFileIO
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${ROSE_TOP_SRC_DIR}/src/ROSETTA/Grammar/ ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/Grammar/
     # create this directory is needed since a few generated files will be put there        
     COMMAND ${META_EXE_LOC}

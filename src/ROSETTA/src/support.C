@@ -266,8 +266,6 @@ Grammar::setUpSupport ()
   // ***********************************************************************
   // ***********************************************************************
 
-     Support.isBoostSerializable(true);
-
   // Header declarations for Support
   // Support.setSubTreeFunctionPrototype ( "HEADER", "../Grammar/sageCommon.code");
      Support.setFunctionPrototype        ( "HEADER", "../Grammar/Support.code");
@@ -1013,7 +1011,6 @@ Grammar::setUpSupport ()
 // DQ (4/25/2009): Must fix code in sageInterface/sageBuilder.C before we can use the proper BUILD_LIST_ACCESS_FUNCTIONS macro above.
 #warning "This should be using the BUILD_LIST_ACCESS_FUNCTIONS"
 #endif
-     File.isBoostSerializable(true);
 
   // Modified ROSE to hold variables into the File object
   // DQ (8/10/2004): modified to be an int instead of a bool
@@ -1947,10 +1944,6 @@ Grammar::setUpSupport ()
      Project.setDataPrototype("SgProject::template_instantiation_enum","template_instantiation_mode", "= SgProject::e_default",
                            NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
-  // DQ (7/7/2005): Added to support AST merging (specified using several parameters).
-     Project.setDataPrototype("bool","ast_merge", "= false",
-            NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
   // Milind Chabbi (9/9/2013): Added a commandline option to use a file to generate persistent id for files
   // used in different compilation units.
      Project.setDataPrototype("std::string","projectSpecificDatabaseFile", "= \"\"",
@@ -2175,11 +2168,6 @@ Grammar::setUpSupport ()
   // DQ (11/16/2019): When using deferred evaluation, the collection of comments and CPP directives is handled
   // by the transformation.  This is so far only used in a single tool, so support more broadly in ROSE may come soon.
      Project.setDataPrototype("bool", "usingDeferredTransformations", "= false",
-            NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     Project.setDataPrototype("std::string", "astfile_out", "",
-            NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     Project.setDataPrototype("std::list<std::string>", "astfiles_in", "",
             NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
   // DQ (3/12/2020): Added additional list to support extra paths to support directories where modified header files

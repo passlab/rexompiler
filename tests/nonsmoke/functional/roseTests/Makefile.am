@@ -39,7 +39,7 @@ endif
 if !USING_GCC_3_4_4_BACKEND_COMPILER
 # TOO (2/17/11): Errors with Tensilica's Xtensa compilers. 
 if !USING_XTENSA_BACKEND_COMPILER
-#  SUBDIRS += astInterfaceTests astInliningTests ompLoweringTests astFileIOTests programAnalysisTests astOutliningTests loopProcessingTests fileLocation_tests
+#  SUBDIRS += astInterfaceTests astInliningTests ompLoweringTests programAnalysisTests astOutliningTests loopProcessingTests fileLocation_tests
 if !ROSE_USE_INSURE
    SUBDIRS += astInterfaceTests astInliningTests 
 if !USING_CLANG_COMPILER
@@ -52,7 +52,6 @@ if !USING_CLANG_COMPILER
    SUBDIRS += astOutliningTests
 endif
    SUBDIRS += loopProcessingTests fileLocation_tests
-   SUBDIRS += astFileIOTests
 endif
 
 endif # !USING_XTENSA_BACKEND_COMPILER

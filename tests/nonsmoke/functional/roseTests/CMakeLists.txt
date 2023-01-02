@@ -25,8 +25,6 @@ if(enable-c)
 
     # TOO (2/17/11): Errors with Tensilica's Xtensa compilers.
     if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Xtensa")
-      #add_subdirectory (astFileIOTests)
-
       if (NOT with-insure)
         #add_subdirectory (astInterfaceTests)
         #add_subdirectory (astInliningTests)

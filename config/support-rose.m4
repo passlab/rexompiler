@@ -1303,7 +1303,6 @@ src/frontend/Makefile
 src/frontend/OpenFortranParser_SAGE_Connection/Makefile
 src/frontend/SageIII/GENERATED_CODE_DIRECTORY_Cxx_Grammar/Makefile
 src/frontend/SageIII/Makefile
-src/frontend/SageIII/astFileIO/Makefile
 src/frontend/SageIII/astFixup/Makefile
 src/frontend/SageIII/astHiddenTypeAndDeclarationLists/Makefile
 src/frontend/SageIII/astPostProcessing/Makefile
@@ -1416,7 +1415,6 @@ tests/nonsmoke/functional/UnitTests/Rose/SageBuilder/Makefile
 tests/nonsmoke/functional/Utility/Makefile
 tests/nonsmoke/functional/roseTests/Makefile
 tests/nonsmoke/functional/roseTests/ROSETTA/Makefile
-tests/nonsmoke/functional/roseTests/astFileIOTests/Makefile
 tests/nonsmoke/functional/roseTests/astInliningTests/Makefile
 tests/nonsmoke/functional/roseTests/astInterfaceTests/Makefile
 tests/nonsmoke/functional/roseTests/astInterfaceTests/typeEquivalenceTests/Makefile

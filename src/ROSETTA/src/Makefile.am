@@ -57,13 +57,6 @@ GRAMMAR_SOURCE_FILES = \
      ../Grammar/grammarNewDeleteOperatorMacros.macro \
      ../Grammar/grammarTraverseMemoryPool.macro \
      ../Grammar/grammarCheckingIfDataMembersAreInMemoryPool.macro \
-     ../Grammar/grammarStorageClassDeclatationMacros.macro \
-     ../Grammar/grammarStorageClassDefinitionMacros.macro \
-     ../Grammar/grammarAST_FileIoHeader.code \
-     ../Grammar/grammarAST_FileIoSource.code  \
-     ../Grammar/grammarSourceOfIRNodesAstFileIOSupport.macro \
-     ../Grammar/grammarStaticDataManagingClassHeader.macro \
-     ../Grammar/grammarStaticDataManagingClassStorageClassHeader.macro \
      ../Grammar/grammarReturnDataMemberPointers.macro \
      ../Grammar/grammarProcessDataMemberReferenceToPointers.macro \
      ../Grammar/grammarGetChildIndex.macro \
@@ -118,8 +111,6 @@ CxxGrammarMetaProgram_SOURCES = \
    visitorSupport.C \
    poolBasedTraversal.C \
    node.C \
-   buildAstFileIO.C \
-   buildStorageClasses.C \
    buildConstructorsWithoutSourcePositionInformation.C \
    outputClassesAndFields.C \
    StringUtility.C

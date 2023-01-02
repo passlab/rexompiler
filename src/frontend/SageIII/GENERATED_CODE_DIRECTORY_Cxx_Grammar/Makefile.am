@@ -30,10 +30,6 @@ nodist_libgeneratedIR_la_SOURCES = $(GENERATED_SOURCE)
 # nodist_libgeneratedIR_la_SOURCES = $(GENERATED_SOURCE)
 endif
 
-# DQ (10/18/2007): Added AST_FILE_IO.h StorageClasses.h
-# Removed sla.h (redundant with location in src/util/commandlineProcessing/sla.h)
-# include_HEADERS = *.h
-
 test:
 	echo "Force ROSETTA to regenerate the source code for the ROSE IR."
 	cd $(top_builddir)/src/ROSETTA/src; $(MAKE)

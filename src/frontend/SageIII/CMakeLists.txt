@@ -1,4 +1,3 @@
-add_subdirectory(astFileIO)
 # tps (04/01/2010) : Added  GENERATED_CODE_DIRECTORY_Cxx_Grammar subdirectory
 add_subdirectory(GENERATED_CODE_DIRECTORY_Cxx_Grammar)
 add_subdirectory(astFixup)
@@ -13,7 +12,6 @@ add_subdirectory(accparser)
 
 if(NOT enable-internalFrontendDevelopment)
   ##AS Commented out for simpler build
-  ###add_subdirectory(astFileIO)
   add_subdirectory(astHiddenTypeAndDeclarationLists)
   add_subdirectory(astTokenStream)
   add_subdirectory(includeDirectivesProcessing)
@@ -83,13 +81,9 @@ install(
     ompAstConstruction.h omp.h ompSupport.h
     omp_lib_kinds.h omp_lib.h rosedll.h fileoffsetbits.h rosedefs.h
     sage3basic.hhh sage_support/cmdline.h sage_support/sage_support.h
-    ${CMAKE_CURRENT_BINARY_DIR}/Cxx_GrammarSerialization.h
     ${CMAKE_CURRENT_BINARY_DIR}/Cxx_Grammar.h
     ${CMAKE_CURRENT_BINARY_DIR}/Cxx_GrammarMemoryPoolSupport.h
     ${CMAKE_CURRENT_BINARY_DIR}/Cxx_GrammarTreeTraversalAccessEnums.h
-    ${CMAKE_CURRENT_BINARY_DIR}/AST_FILE_IO.h
-    ${CMAKE_CURRENT_BINARY_DIR}/StorageClasses.h
     ${CMAKE_CURRENT_BINARY_DIR}/AstQueryMemoryPool.h
-    ${CMAKE_CURRENT_BINARY_DIR}/astFileIO/AstSpecificDataManagingClass.h
   DESTINATION ${INCLUDE_INSTALL_DIR})
 

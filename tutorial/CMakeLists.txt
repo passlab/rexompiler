@@ -25,13 +25,13 @@ if(NOT disable-tutorial-directory)
     commandlineProcessing interveneAtVariables changeFunction classHierarchyGraph
     dataBaseUsage 
     loopNestingInfoProcessing tauInstrumenter typeTransformation
-    astFileIO_GenerateBinaryFile generatingUniqueNamesFromDeclaration
+    generatingUniqueNamesFromDeclaration
     symbolTableHandling scopeInformation customGraphGeneration inlineTransformations
     addComments addArbitraryTextForUnparser collectComments
     collectDefineDirectives partialRedundancyElimination
     codeGenerationFormatControl dataFlowGraph customGraphGenerationWithFiltering
     graphTraversal wholeGraphAST traversalShortCircuit
-    customGraphGenerationWithColors astFileIO_ReadMultipleASTs
+    customGraphGenerationWithColors
     constantFoldingTransformation constantUnFoldingTransformation
     selectedFileTranslation wholeGraphFilterOnPersistantAttributes
     graphGenerationOfSubtree virtualCFG interproceduralCFG

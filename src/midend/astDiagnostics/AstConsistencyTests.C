@@ -324,7 +324,7 @@ AstTests::runAllTests(SgProject* sageProject)
   // DQ (9/21/2013): Force this to be skipped where ROSE's AST merge feature is active (since the point of
   // merge is to share IR nodes, it is pointless to detect sharing and generate output for each identified case).
   // if (sageProject->get_astMerge() == false)
-     if (sageProject->get_ast_merge() == false && sageProject->get_Fortran_only() == false)
+     if (sageProject->get_Fortran_only() == false)
         {
        // DQ (4/2/2012): Added test for unique IR nodes in the AST.
           if ( SgProject::get_verbose() >= DIAGNOSTICS_VERBOSE_LEVEL )
@@ -808,7 +808,7 @@ AstTests::runAllTests(SgProject* sageProject)
   // DQ (9/21/2013): Force this to be skipped where ROSE's AST merge feature is active (since the point of
   // detect inconsistancy in parent child relationships and these will be present when astMerge is active.
   // if (sageProject->get_astMerge() == false)
-     if (sageProject->get_ast_merge() == false && sageProject->get_Fortran_only() == false)
+     if (sageProject->get_Fortran_only() == false)
         {
        // DQ (3/19/2012): Added test from Robb for parents of the IR nodes in the AST.
           TestForParentsMatchingASTStructure::test(sageProject);
@@ -6159,18 +6159,6 @@ TestForDisconnectedAST::test(SgNode * node)
      if ( SgProject::get_verbose() >= DIAGNOSTICS_VERBOSE_LEVEL )
           cout << "Test declarations for disconnected parts of the AST finished." << endl;
    }
-
-
-void
-MemoryCheckingTraversalForAstFileIO::visit ( SgNode* node )
-   {
-     ROSE_ASSERT(node != NULL);
-  // printf ("MemoryCheckingTraversalForAstFileIO::visit: node = %s \n",node->class_name().c_str());
-     ROSE_ASSERT(node->get_freepointer() == AST_FileIO::IS_VALID_POINTER());
-     node->checkDataMemberPointersIfInMemoryPool();
-   }
-
-
 
 
 TestForProperLanguageAndSymbolTableCaseSensitivity_InheritedAttribute::

@@ -2904,72 +2904,6 @@ Grammar::buildVariantEnumNames() {
   return s;
 }
 
-// Build the file for supporting boost::serialization
-void
-Grammar::buildSerializationSupport(std::ostream &declarations, std::ostream &definitions, const std::string &headerName) {
-
-    // Header prologue
-    std::string includeOnce = "ROSE_" + headerName;               // no boost
-    for (size_t i=0; i<includeOnce.size(); ++i) {
-        if (!isalnum(includeOnce[i]))
-            includeOnce[i] = '_';
-    }
-    if (includeOnce.size()>2 && includeOnce.substr(includeOnce.size()-2)=="_h")
-        includeOnce[includeOnce.size()-1] = 'H';
-    declarations <<"// Declarations and templates for supporting boost::serialization of Sage IR nodes.\n"
-                 <<"#ifndef " <<includeOnce <<"\n"
-                 <<"#define " <<includeOnce <<"\n"
-                 <<"\n"
-                 <<"#ifdef ROSE_HAVE_BOOST_SERIALIZATION_LIB\n"
-                 <<"\n"
-                 <<"// sage3basic.h or rose.h must be inlucded first from a .C file (don't do it here!)\n"
-                 <<"#include <boost/serialization/export.hpp>\n\n";
-
-    // BOOST_CLASS_EXPORT_KEY
-    declarations <<"// The declaration half of exporting polymorphic classes.\n";
-    for (size_t i=0; i<terminalList.size(); ++i) {
-        if (terminalList[i]->isBoostSerializable())
-            declarations <<"BOOST_CLASS_EXPORT_KEY(" <<terminalList[i]->name <<");\n";
-    }
-    declarations <<"\n\n";
-
-    // roseAstSerializationRegistration
-    declarations <<"/** Register all Sage IR node types for serialization.\n"
-                 <<" *\n"
-                 <<" *  This function should be called before any Sage IR nodes are serialized or deserialized. It\n"
-                 <<" *  registers all SgNode subclasses that might be serialized through a base pointer. Note that\n"
-                 <<" *  registration is required but not sufficient for serialization: the \"serialize\" member\n"
-                 <<" *  function template must also be defined. */\n"
-                 <<"template<class Archive>\n"
-                 <<"void roseAstSerializationRegistration(Archive &archive) {\n";
-    for (size_t i=0; i<terminalList.size(); ++i) {
-        if (terminalList[i]->isBoostSerializable())
-            declarations <<"    archive.template register_type<" <<terminalList[i]->name <<">();\n";
-    }
-    declarations <<"}\n";
-
-    // BOOST_CLASS_EXPORT_IMPLEMENT
-    definitions <<"#include <sage3basic.h>\n"
-                <<"#include <" <<headerName <<">\n"
-                <<"\n"
-                <<"#ifdef ROSE_HAVE_BOOST_SERIALIZATION_LIB\n"
-                <<"\n"
-                <<"#include <boost/serialization/export.hpp>\n"
-                <<"\n\n"
-                <<"// Register SgNode and all subclasses so that subclasses can be serialized through a base class pointer.\n";
-    for (size_t i=0; i<terminalList.size(); ++i) {
-        if (terminalList[i]->isBoostSerializable())
-            definitions <<"BOOST_CLASS_EXPORT_IMPLEMENT(" <<terminalList[i]->name <<");\n";
-    }
-    definitions <<"\n"
-                <<"#endif\n";
-
-    // Header epilogue
-    declarations <<"\n"
-                 <<"#endif\n"
-                 <<"#endif\n";
-}
-
 // PC: new implementation of ReferenceToPointerHandler.  This implementation
 // allows you to use a subclass to override the template function
 // ReferenceToPointerHandler::apply, which is not usually possible.
@@ -3121,9 +3055,6 @@ Grammar::buildCode ()
      ROSE_ArrayGrammarHeaderFile += forwardDeclString;
   // delete [] forwardDeclString;
 
-  // JH (01/09/2006) : Adding the declaration of the ParentStorageClass: above!
-     ROSE_ArrayGrammarHeaderFile << buildStorageClassDeclarations();
-
      ROSE_ArrayGrammarHeaderFile << "\n\n";
      ROSE_ArrayGrammarHeaderFile << "ROSE_DLL_API std::ostream& operator<<(std::ostream&, const SgName&);\n\n";
 
@@ -3229,13 +3160,8 @@ Grammar::buildCode ()
   // DQ (10/18/2007): These have been moved to the src/frontend/SageIII directory
   // to provde greater parallelism to the make -jn parallel make feature.
   // JH (01/09/2006)
-  // string includeHeaderAstFileIO ="#include \"astFileIO/AST_FILE_IO.h\"\n\n";
    //  string includeSage3 ="#include \"Cxx_Grammar.h\"\n\n";
    //  includeHeaderString += includeSage3;
-
-  // string includeHeaderAstFileIO = "#include \"AST_FILE_IO.h\"\n\n";
-     string includeHeaderAstFileIO = "#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT\n   #include \"AST_FILE_IO.h\"\n#endif \n";
-     includeHeaderString += includeHeaderAstFileIO;
 
   // DQ (10/14/2010):  This should only be included by source files that require it.
   // This fixed a reported bug which caused conflicts with autoconf macros (e.g. PACKAGE_BUGREPORT).
@@ -3566,19 +3492,6 @@ Grammar::buildCode ()
      variantEnumNamesFile << "\n#include \"rosedll.h\"\n ROSE_DLL_API const char* roseGlobalVariantNameList[] = { \n" << variantEnumNames << "\n};\n\n";
 
   // --------------------------------------------
-  // generate code for boost::serialization support
-  // --------------------------------------------
-     {
-         string declarationsFileName = string(getGrammarName()) + "Serialization.h";
-         string definitionsFileName = string(getGrammarName()) + "Serialization.C";
-         ofstream declarationsFile(string(target_directory+"/"+declarationsFileName).c_str());
-         ofstream definitionsFile(string(target_directory+"/"+definitionsFileName).c_str());
-         ROSE_ASSERT(declarationsFile.good());
-         ROSE_ASSERT(definitionsFile.good());
-         buildSerializationSupport(declarationsFile, definitionsFile, declarationsFileName);
-     }
-
-  // --------------------------------------------
   // generate code for RTI support
   // --------------------------------------------
      string rtiFunctionsSourceFileName = string(getGrammarName())+"RTI.C";
@@ -3625,29 +3538,6 @@ Grammar::buildCode ()
          cout << "DONE: buildSDFTreeGrammarFile" << endl;
 
 #if 1
-   // JH (01/18/2006)
-   //--------------------------------------------
-   // generate IR node constructor that takes a
-   // storage class object
-   //--------------------------------------------
-
-     StringUtility::FileWithLineNumbers ROSE_ConstructorTakingStorageClassSourceFile;
-
-     ROSE_ConstructorTakingStorageClassSourceFile << includeHeaderString;
-     ROSE_ConstructorTakingStorageClassSourceFile << "#include \"Cxx_GrammarMemoryPoolSupport.h\"\n";
-  // JH (01/18/2006) Adding additionally the header of StorageClasses
-  // Now build the source code for the terminals and non-terminals in the grammar
-     ROSE_ASSERT (rootNode != NULL);
-
-     buildIRNodeConstructorOfStorageClassSource(*rootNode,ROSE_ConstructorTakingStorageClassSourceFile);
-     if (verbose)
-         cout << "DONE: buildConstructorTakingStorageClass()" << endl;
-
-  // printf ("Exiting after building traverse memory pool functions \n");
-  // ROSE_ASSERT(false);
-     Grammar::writeFile(ROSE_ConstructorTakingStorageClassSourceFile, target_directory+"/astFileIO/", "SourcesOfIRNodesAstFileIOSupport", ".C");
-#endif
-#if 1
   // --------------------------------------------
   // generate code for memory pool support header
   // --------------------------------------------
@@ -3669,19 +3559,6 @@ Grammar::buildCode ()
          cout << "DONE: buildStringForMemoryPoolSupportSource()" << endl;
      Grammar::writeFile(ROSE_MemoryPoolSupportFile, target_directory, getGrammarName() + "MemoryPoolSupport", ".C");
 #endif
-
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  // JH(10/26/2005): Build files for ast file io
-  //   * AST_FILE_IO.h
-  //   * AST_FILE_IO.C
-  //   * StorageClasses.h
-  //   * StorageClasses.C
-
-     Grammar::generateAST_FILE_IOFiles();
-     Grammar::generateStorageClassesFiles();
-  /////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 #if 1
   // -----------------------------------------------------------------------------------------------------------------------

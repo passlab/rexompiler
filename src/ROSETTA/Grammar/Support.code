@@ -4719,11 +4719,6 @@ class rose_hash_multimap : public rose_hash::unordered_multimap<SgName, SgSymbol
             // DQ (12/22/2005): Added initialization of parent pointer as suggested by Jochen
                parent = NULL;
              }
-
-     // JH (01/01/2006) friend class declarations to get direct access to data member for the ast file IO
-        friend class AST_FILE_IO;
-        friend class SgSymbolTableStorageClass;
-        friend class EasyStorage<rose_hash_multimap*>;
    };
 
 
@@ -18338,7 +18333,6 @@ SgProject::initialization()
 
      p_prelink                             = false;
      p_template_instantiation_mode         = e_unknown;
-     p_ast_merge                            = false;
      p_projectSpecificDatabaseFile         = "";
      p_compilationPerformanceFile          = "";
      p_C_PreprocessorOnly                  = false;
@@ -19355,11 +19349,6 @@ SgProject::display ( const std::string & label ) const
 
      printf ("   p_template_instantiation_mode             = %d \n",p_template_instantiation_mode);
 
-  // DQ (7/3/2020): I think these data members have been removed by Tristan, not a problem.
-  // printf ("   p_astMerge                                = %s \n",(p_astMerge == true) ? "true" : "false");
-  // printf ("   p_astMergeCommandFile                     = %s \n",p_astMergeCommandFile.c_str());
-
-     printf ("   p_ast_merge                               = %s \n",(p_ast_merge == true) ? "true" : "false");
      printf ("   p_projectSpecificDatabaseFile             = %s \n",p_projectSpecificDatabaseFile.c_str());
      printf ("   p_compilationPerformanceFile              = %s \n",p_compilationPerformanceFile.c_str());
 

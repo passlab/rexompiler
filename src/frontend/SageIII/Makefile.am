@@ -17,7 +17,7 @@ fSageSupportPath=sage_support#
 if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
    SUBDIRS = astFixup astPostProcessing sageInterface astVisualization virtualCFG includeDirectivesProcessing
 else
-   SUBDIRS = astFileIO astFixup astPostProcessing sageInterface virtualCFG astTokenStream astHiddenTypeAndDeclarationLists astVisualization includeDirectivesProcessing ompparser accparser
+   SUBDIRS = astFixup astPostProcessing sageInterface virtualCFG astTokenStream astHiddenTypeAndDeclarationLists astVisualization includeDirectivesProcessing ompparser accparser
 endif
 
 # DQ (12/29/2009): This is only used to handle generated code as smaller files.
@@ -96,8 +96,6 @@ GENERATED_SOURCE = \
 	Cxx_GrammarTreeTraversalSuccessorContainer.C \
 	Cxx_GrammarTreeTraversalAccessEnums.h \
 	Cxx_GrammarVariantEnumNames.C \
-	Cxx_GrammarSerialization.C \
-	Cxx_GrammarSerialization.h \
 	Cxx_GrammarNewAndDeleteOperators.C \
 	Cxx_GrammarCopyMemberFunctions.C \
 	Cxx_GrammarTraverseMemoryPool.C \
@@ -118,25 +116,16 @@ GENERATED_SOURCE = \
 	Cxx_GrammarTreeTraversalSuccessorContainer.C \
 	Cxx_GrammarTreeTraversalAccessEnums.h \
 	Cxx_GrammarVariantEnumNames.C \
-	Cxx_GrammarSerialization.C \
-	Cxx_GrammarSerialization.h \
 	Cxx_GrammarNewAndDeleteOperators.C \
 	Cxx_GrammarCopyMemberFunctions.C \
 	Cxx_GrammarTraverseMemoryPool.C \
 	Cxx_GrammarCheckingIfDataMembersAreInMemoryPool.C \
 	Cxx_GrammarMemoryPoolSupport.h \
-	AST_FILE_IO.h \
-	AST_FILE_IO.C \
-	StorageClasses.h \
-	StorageClasses.C \
 	Cxx_GrammarReturnDataMemberPointers.C \
 	Cxx_GrammarProcessDataMemberReferenceToPointers.C \
 	Cxx_GrammarNewConstructors.C \
 	Cxx_GrammarGetChildIndex.C
 endif
-
-# DQ (4/23/2009): This file depends upon other files
-StorageClasses.lo: $(srcdir)/astFileIO/StorageClassMemoryManagement.C astFileIO/SourcesOfIRNodesAstFileIOSupport.C
 
 haveRosettaGeneratedSource:
 	cd $(top_builddir)/src/ROSETTA/src; $(MAKE)
@@ -222,7 +211,6 @@ nodist_libsage3_la_SOURCES = $(GENERATED_SOURCE)
 
 if ROSE_USE_BOOST_WAVE
 libsage3_la_LIBADD= \
-  astFileIO/libastFileIO.la \
   astFixup/libastFixup.la \
   accparser/libaccparser.la \
   ompparser/libompparser.la \
@@ -235,7 +223,6 @@ libsage3_la_LIBADD= \
   astTokenStream/libastTokenStream.la
 else
 libsage3_la_LIBADD= \
-  astFileIO/libastFileIO.la \
   astFixup/libastFixup.la \
   accparser/libaccparser.la \
   ompparser/libompparser.la \
@@ -292,9 +279,6 @@ endif
 
 test_roseh: roseh
 
-# DQ (10/18/2007): Added AST_FILE_IO.h StorageClasses.h
-# Removed sla.h (redundant with location in src/util/commandlineProcessing/sla.h)
-# Rasmussen (04/17/2019): Support for ATerms has been deprecated (atermSupport.h removed)
 pkginclude_HEADERS = \
    sage3.h sage3basic.h rose_attributes_list.h \
    attachPreprocessingInfo.h \
@@ -304,7 +288,6 @@ pkginclude_HEADERS = \
    general_token_defs.h rtiHelpers.h \
    ompSupport.h omp.h \
    omp_lib_kinds.h omp_lib.h sage3basic.hhh rosedefs.h  fileoffsetbits.h rosedll.h \
-   Cxx_GrammarSerialization.h \
    $(fSageSupport_includeHeaders)
 
 # DQ (4/5/2009): Moved rose_paths.h to src/util (where the source file is located).
@@ -312,9 +295,7 @@ nodist_pkginclude_HEADERS = \
    Cxx_Grammar.h \
    Cxx_GrammarMemoryPoolSupport.h \
    Cxx_GrammarTreeTraversalAccessEnums.h \
-   AST_FILE_IO.h StorageClasses.h \
-   AstQueryMemoryPool.h \
-   astFileIO/AstSpecificDataManagingClass.h
+   AstQueryMemoryPool.h
 
 BUILT_SOURCES = $(GENERATED_SOURCE) omp_exprparser_parser.cc omp_exprparser_parser.hh omp_exprparser_lexer.cc
 
@@ -330,8 +311,8 @@ BUILT_SOURCES = $(GENERATED_SOURCE) omp_exprparser_parser.cc omp_exprparser_pars
 
 clean-local:
 	rm -rf Templates.DB ii_files ti_files cxx_templates
-	rm -rf Cxx_Grammar* AST_FILE_IO.C StorageClasses.C
-	rm -rf AST_FILE_IO.h StorageClasses.h AstQueryMemoryPool.h
+	rm -rf Cxx_Grammar*
+	rm -rf AstQueryMemoryPool.h
 	rm -rf generated_abstractcppgrammar.atg
 	rm -f sage3basic.h.gch
 	rm -f *.binary

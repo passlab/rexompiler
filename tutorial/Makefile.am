@@ -44,8 +44,6 @@ NOINST_TUTORIAL_EXAMPLES = \
    addVariableDeclaration \
    addVariableDeclaration2 \
    AST_PDF_Generator \
-   astFileIO_GenerateBinaryFile \
-   astFileIO_ReadMultipleASTs \
    ASTGraphGenerator \
    ASTGraphGeneratorCustomized \
    buildFile \
@@ -236,8 +234,6 @@ loopNestingInfoProcessing_SOURCES = loopNestingInfoProcessing.C
 
 typeTransformation_SOURCES = typeTransformation.C
 
-astFileIO_GenerateBinaryFile_SOURCES = astFileIO_GenerateBinaryFile.C
-
 generatingUniqueNamesFromDeclaration_SOURCES = generatingUniqueNamesFromDeclaration.C
 
 symbolTableHandling_SOURCES = symbolTableHandling.C
@@ -271,8 +267,6 @@ wholeGraphAST_SOURCES = wholeGraphAST.C
 traversalShortCircuit_SOURCES = traversalShortCircuit.C
 
 customGraphGenerationWithColors_SOURCES = customGraphGenerationWithColors.C
-
-astFileIO_ReadMultipleASTs_SOURCES = astFileIO_ReadMultipleASTs.C
 
 constantFoldingTransformation_SOURCES = constantFoldingTransformation.C
 
@@ -502,15 +496,6 @@ testPersistantAttributes: persistantAttributes
 
 testTypeTransformation: typeTransformation
 	./typeTransformation -c $(srcdir)/inputCode_typeTransformation.C
-
-testAstFileIO_GenerateBinaryFile: astFileIO_GenerateBinaryFile
-	./astFileIO_GenerateBinaryFile -c $(srcdir)/inputCode_astFileIO_GenerateBinaryFile.C
-
-testAstFileIO_ReadMultipleASTs: astFileIO_ReadMultipleASTs
-	./astFileIO_GenerateBinaryFile -c $(srcdir)/inputCode_astFileIO_GenerateBinaryFile_1.C
-	./astFileIO_GenerateBinaryFile -c $(srcdir)/inputCode_astFileIO_GenerateBinaryFile_2.C
-	./astFileIO_GenerateBinaryFile -c $(srcdir)/inputCode_astFileIO_GenerateBinaryFile_3.C
-	./astFileIO_ReadMultipleASTs inputCode_astFileIO_GenerateBinaryFile_1 inputCode_astFileIO_GenerateBinaryFile_2 inputCode_astFileIO_GenerateBinaryFile_3
 
 testTraverseIRnodeTypes: traverseIRnodeTypes
 	$(VALGRIND) ./traverseIRnodeTypes -c $(srcdir)/inputCode_ExampleTraversals_3.C
@@ -744,7 +729,6 @@ generatedCodeExamples = \
    symbolTableHandling.out \
    scopeInformation.out \
    rose_inputCode_typeTransformation.C \
-   astFileIO_GenerateBinaryFile.out \
    customGraph.pdf \
    customGraphWithFiltering.pdf \
    graphTraversal.pdf \
@@ -1171,11 +1155,6 @@ loopNestingInfoProcessing.out: loopNestingInfoProcessing $(srcdir)/inputCode_loo
 rose_inputCode_typeTransformation.C: typeTransformation
 	./typeTransformation $(ROSE_FLAGS) -c $(srcdir)/inputCode_typeTransformation.C
 
-astFileIO_GenerateBinaryFile.out: astFileIO_GenerateBinaryFile
-	./astFileIO_GenerateBinaryFile $(ROSE_FLAGS) -c $(srcdir)/inputCode_astFileIO_GenerateBinaryFile.C > astFileIO_temp.out
-	head -n 20 astFileIO_temp.out > astFileIO_GenerateBinaryFile.out
-#	echo "File I/O temporarily disabled!" > astFileIO_GenerateBinaryFile.out
-
 generatingUniqueNamesFromDeclaration.out: generatingUniqueNamesFromDeclaration
 	./generatingUniqueNamesFromDeclaration $(ROSE_FLAGS) -c $(srcdir)/inputCode_generatingUniqueNamesFromDeclaration.C | grep -v rose_edg_macros_and_functions_required_for_gnu > generatingUniqueNamesFromDeclaration.out
 
@@ -1350,7 +1329,6 @@ EXTRA_DIST = \
    inputCode_ChangeFunctionExample.C \
    inputCode_interveneAtVariables.C \
    inputCode_typeTransformation.C \
-   inputCode_astFileIO_GenerateBinaryFile.C \
    inputCode_generatingUniqueNamesFromDeclaration.C \
    inputCode_generatingUniqueNamesFromDeclaration2.C \
    inputCode_scopeInformation.C \
@@ -1404,8 +1382,6 @@ docs: $(noinst_PROGRAMS) $(bin_PROGRAMS) $(generatedCodeExamples)
 	@echo "******************************************************************"
 
 # Note that the *.trace files come from the execution of the codeCoverage.C test,
-# and the *.binary files are generated from the astFileIO_GenerateBinaryFile.C test.
-# The *.binary are the binary form of the ASTs.
 cleanDocs:
 #	This can not be called after make distclean (by make distcheck)
 #	cd outliner; $(MAKE) cleanDocs

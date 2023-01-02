@@ -523,9 +523,6 @@ class Grammar
        // MS: build Variants for use in tree traversal (access with getVariantT())
           std::string buildVariantEnums();
 
-       // Build functions for boost::serialization support
-          void buildSerializationSupport(std::ostream &decls, std::ostream &defns, const std::string &headerName);
-
        // PC: build ReferenceToPointerHandler and related classes
           std::string buildReferenceToPointerHandlerCode();
 
@@ -602,38 +599,19 @@ class Grammar
        // StorageClasses, after generation of the code located in SageIII/astFileIO/StorageClasses.C
           std::string myBuildHeaderStringAfterMarker  ( const std::string& marker, const std::string& fileName );
 
-          void buildStorageClassSourceFiles ( AstNodeClass & node, Rose::StringUtility::FileWithLineNumbers & outputFile );
-          void buildStorageClassHeaderFiles ( AstNodeClass & node, Rose::StringUtility::FileWithLineNumbers & outputFile );
-          void buildIRNodeConstructorOfStorageClassSource ( AstNodeClass & node, Rose::StringUtility::FileWithLineNumbers & outputFile );
-          std::string buildStringForStorageClassSource ( AstNodeClass & node );
-          std::string buildStorageClassDeclarations ( );
-
        // DQ (4/6/2006): Added in Jochen's new version
           std::string buildStaticDataMemberListClassEntries( AstNodeClass & node);
           std::string buildAccessFunctionsOfClassEntries( AstNodeClass & node);
           std::string buildAccessFunctionSources( AstNodeClass & node);
-          std::string buildDataMemberStorageClass( AstNodeClass & node);
-          std::string buildStaticStorageClassPickOutSource( AstNodeClass & node);
           std::string generateStaticDataConstructorSource(AstNodeClass & node);
-          std::string generateStaticDataWriteEasyStorageDataToFileSource(AstNodeClass & node);
-          std::string generateStaticDataReadEasyStorageDataFromFileSource(AstNodeClass & node);
-          std::string generateStaticDataArrangeEasyStorageInOnePoolSource(AstNodeClass & node);
-          std::string generateStaticDataDeleteEasyStorageMemoryPoolSource(AstNodeClass & node);
           std::string buildStaticDataMemberListSetStaticDataSource(AstNodeClass & node);
           std::string buildStaticDataMemberListDeleteStaticDataSource(AstNodeClass & node);
           std::string buildStaticDataMemberListClassConstructor(AstNodeClass & node);
 
-          void  generateAST_FILE_IOFiles ( );
-          void  generateStorageClassesFiles ( );
           std::vector<std::string>& getListOfBuiltinTypes();
 
        // DQ (4/6/2006): Added in Jochen's new version
           std::vector<std::string>& getListOfAbstractClasses();
-
-       // JH(10/25/2005): declaration of the grammar functions that build the header and the source of the
-       // AstFileIO class, loacated after the generation in SageIII/astFileIO/AstFileIO.(hC)
-          std::string build_header_AST_FILE_IO_CLASS();
-          std::string build_source_AST_FILE_IO_CLASS();
 
        // DQ (5/18/2007): support for documentation to handle mapping to KDM
           std::string outputClassesAndFields ( AstNodeClass & node );
