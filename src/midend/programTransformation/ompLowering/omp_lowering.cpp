@@ -3697,11 +3697,11 @@ void collectOmpTargetUpdateInfo(SgStatement *target,
       device_expression = buildIntVal(0);
 
     // Now we need to ensure that "omp target " has a basic block as its body
-   // so we can insert declarations into an inner block, instead of colliding declarations within the scope of "omp target"
-   // This is important since we often have consecutive "omp target" regions within one big scope
-   // We cannot just insert things into that big scope.
+    // so we can insert declarations into an inner block, instead of colliding declarations within the scope of "omp target"
+    // This is important since we often have consecutive "omp target" regions within one big scope
+    // We cannot just insert things into that big scope.
     SgBasicBlock* omp_target_stmt_body_block = ensureBasicBlockAsBodyOfOmpBodyStmt (target);
-    //ROSE_ASSERT (isSgBasicBlock(target_directive_stmt->get_body()));
+    ROSE_ASSERT (isSgBasicBlock(target->get_body()));
 
 
     SgStatement * body =  target->get_body();
@@ -4036,14 +4036,16 @@ void transOmpTargetLoopBlock(SgNode* node)
       device_expression = buildIntVal(0);
 
     // Now we need to ensure that "omp target " has a basic block as its body
-   // so we can insert declarations into an inner block, instead of colliding declarations within the scope of "omp target"
-   // This is important since we often have consecutive "omp target" regions within one big scope
-   // We cannot just insert things into that big scope.
+    // so we can insert declarations into an inner block, instead of colliding declarations within the scope of "omp target"
+    // This is important since we often have consecutive "omp target" regions within one big scope
+    // We cannot just insert things into that big scope.
     SgBasicBlock* omp_target_stmt_body_block = ensureBasicBlockAsBodyOfOmpBodyStmt(target);
     ROSE_ASSERT (isSgBasicBlock(target->get_body()));
 
     SgStatement * body = target->get_body();
     ROSE_ASSERT(body != NULL);
+    if(hasClause(target, V_SgOmpCollapseClause))
+      transOmpCollapse(target);
     // Save preprocessing info as early as possible, avoiding mess up from the outliner
     AttachedPreprocessingInfoType save_buf1, save_buf2, save_buf_inside;
     cutPreprocessingInfo(target, PreprocessingInfo::before, save_buf1) ;
@@ -6101,7 +6103,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
 void transOmpCollapse(SgStatement* node)
 {
 
-  SgOmpForStatement* target = isSgOmpForStatement(node);
+  SgOmpClauseBodyStatement* target = isSgOmpClauseBodyStatement(node);
   ROSE_ASSERT(target != NULL);
   SgStatement* body = target->get_body();;
   ROSE_ASSERT(body != NULL);
@@ -6253,14 +6255,10 @@ void lower_omp(SgSourceFile* file)
     bool isVariant = isSgOmpWhenClause(node->get_parent()) || isSgOmpDefaultClause(node->get_parent());
     if (isVariant)
     {
-      std::cout << "It is a variant.\n";
-      //continue;
-    } //else
+      std::cout << "It is a variant, which should have been transformed.\n";
+      ROSE_ASSERT(0);
+    }
 
-    /*Winnie, handle Collapse clause.*/
-    if(hasClause(node, V_SgOmpCollapseClause))
-      transOmpCollapse(node);
-#if 1 // debugging code after collapsing the loops
     if (!isVariant)
     switch (node->variantT())
     {
@@ -6291,6 +6289,9 @@ void lower_omp(SgSourceFile* file)
       case V_SgOmpForStatement:
       case V_SgOmpDoStatement:
         {
+          /*Winnie, handle Collapse clause.*/
+          if(hasClause(node, V_SgOmpCollapseClause))
+            transOmpCollapse(node);
           // check if the loop is part of the combined "omp parallel for" under the "omp target" directive
           // TODO: more robust handling of this logic, not just fixed AST form
           bool is_target_loop = false;
@@ -6411,6 +6412,8 @@ void lower_omp(SgSourceFile* file)
         }
       case V_SgOmpSimdStatement:
         {
+          if(hasClause(node, V_SgOmpCollapseClause))
+            transOmpCollapse(node);
           transOmpSimd(node);
           break;
         }
@@ -6430,8 +6433,6 @@ void lower_omp(SgSourceFile* file)
           ROSE_ASSERT(0);
         }
     }// switch
-
-#endif
 
   }
   } while (omp_nodes.size() != 0);
@@ -6592,7 +6593,7 @@ static void post_processing(SgSourceFile* file) {
         SgFile* cur_file = getEnclosingNode<SgFile>(target_outlined_function_list->at(0));
         std::string file_extension = StringUtility::fileNameSuffix(cur_file->get_file_info()->get_filenameString());
 
-        if (CommandlineProcessing::isCppFileNameSuffix(file_extension)) {
+        if (CommandlineProcessing::isCFileNameSuffix(file_extension) || CommandlineProcessing::isCppFileNameSuffix(file_extension)) {
             PreprocessingInfo* c_linkage_start = new PreprocessingInfo(PreprocessingInfo::ClinkageSpecificationStart, "#ifdef __cplusplus\nextern \"C\" {\n#endif", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
             SageInterface::insertHeader(new_scope->lastStatement(), c_linkage_start, 1);
         };
@@ -6610,7 +6611,7 @@ static void post_processing(SgSourceFile* file) {
             move_outlined_function(*i, new_file);
         };
 
-        if (CommandlineProcessing::isCppFileNameSuffix(file_extension)) {
+        if (CommandlineProcessing::isCFileNameSuffix(file_extension) || CommandlineProcessing::isCppFileNameSuffix(file_extension)) {
             PreprocessingInfo* c_linkage_end = new PreprocessingInfo(PreprocessingInfo::ClinkageSpecificationEnd, "#ifdef __cplusplus\n}\n#endif", "Transformation generated", 0, 0, 0, PreprocessingInfo::after);
             SageInterface::insertHeader(new_scope->lastStatement(), c_linkage_end, 1);
         };

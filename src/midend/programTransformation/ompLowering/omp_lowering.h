@@ -261,6 +261,8 @@ namespace OmpSupport
       std::map<SgSymbol*,  std::vector < std::pair <SgExpression*, SgExpression*> > >&  array_dimensions, // array bounds  info as input
       std::set<SgSymbol*>& array_syms, // variable symbols which are array types (explicit or as a pointer)
       std::set<SgSymbol*>& atom_syms); // variable symbols which are non-aggregate types: scalar, pointer, etc
+
+  void transOmpCollapse(SgStatement* node);
 } // end namespace OmpSupport  
 
 #endif //OMP_LOWERING_H
