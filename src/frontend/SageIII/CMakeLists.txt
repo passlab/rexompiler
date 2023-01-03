@@ -82,7 +82,6 @@ install(
     omp_lib_kinds.h omp_lib.h rosedll.h fileoffsetbits.h rosedefs.h
     sage3basic.hhh sage_support/cmdline.h sage_support/sage_support.h
     ${CMAKE_CURRENT_BINARY_DIR}/Cxx_Grammar.h
-    ${CMAKE_CURRENT_BINARY_DIR}/Cxx_GrammarMemoryPoolSupport.h
     ${CMAKE_CURRENT_BINARY_DIR}/Cxx_GrammarTreeTraversalAccessEnums.h
     ${CMAKE_CURRENT_BINARY_DIR}/AstQueryMemoryPool.h
   DESTINATION ${INCLUDE_INSTALL_DIR})

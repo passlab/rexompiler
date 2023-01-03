@@ -90,7 +90,6 @@ if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 GENERATED_SOURCE = \
 	Cxx_Grammar.h \
 	Cxx_Grammar.C \
-	Cxx_GrammarMemoryPoolSupport.C \
 	AstQueryMemoryPool.h \
 	Cxx_GrammarReturnClassHierarchySubTree.C \
 	Cxx_GrammarTreeTraversalSuccessorContainer.C \
@@ -100,7 +99,6 @@ GENERATED_SOURCE = \
 	Cxx_GrammarCopyMemberFunctions.C \
 	Cxx_GrammarTraverseMemoryPool.C \
 	Cxx_GrammarCheckingIfDataMembersAreInMemoryPool.C \
-	Cxx_GrammarMemoryPoolSupport.h \
 	Cxx_GrammarReturnDataMemberPointers.C \
 	Cxx_GrammarProcessDataMemberReferenceToPointers.C \
 	Cxx_GrammarNewConstructors.C \
@@ -110,7 +108,6 @@ GENERATED_SOURCE = \
 	Cxx_Grammar.h \
 	Cxx_Grammar.C \
 	Cxx_GrammarRTI.C \
-	Cxx_GrammarMemoryPoolSupport.C \
 	AstQueryMemoryPool.h \
 	Cxx_GrammarReturnClassHierarchySubTree.C \
 	Cxx_GrammarTreeTraversalSuccessorContainer.C \
@@ -120,7 +117,6 @@ GENERATED_SOURCE = \
 	Cxx_GrammarCopyMemberFunctions.C \
 	Cxx_GrammarTraverseMemoryPool.C \
 	Cxx_GrammarCheckingIfDataMembersAreInMemoryPool.C \
-	Cxx_GrammarMemoryPoolSupport.h \
 	Cxx_GrammarReturnDataMemberPointers.C \
 	Cxx_GrammarProcessDataMemberReferenceToPointers.C \
 	Cxx_GrammarNewConstructors.C \
@@ -293,7 +289,6 @@ pkginclude_HEADERS = \
 # DQ (4/5/2009): Moved rose_paths.h to src/util (where the source file is located).
 nodist_pkginclude_HEADERS = \
    Cxx_Grammar.h \
-   Cxx_GrammarMemoryPoolSupport.h \
    Cxx_GrammarTreeTraversalAccessEnums.h \
    AstQueryMemoryPool.h
 

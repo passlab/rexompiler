@@ -41,7 +41,6 @@ include_directories(
 set(ROSETTA_HEADERS
   ${CMAKE_BINARY_DIR}/src/frontend/SageIII/AstQueryMemoryPool.h
   ${CMAKE_BINARY_DIR}/src/frontend/SageIII/Cxx_Grammar.h
-  ${CMAKE_BINARY_DIR}/src/frontend/SageIII/Cxx_GrammarMemoryPoolSupport.h
   ${CMAKE_BINARY_DIR}/src/frontend/SageIII/Cxx_GrammarTreeTraversalAccessEnums.h
 
 # ROSETTA-generated source files.
@@ -50,7 +49,6 @@ set(ROSETTA_SRC
   ${CMAKE_BINARY_DIR}/src/frontend/SageIII/Cxx_GrammarCheckingIfDataMembersAreInMemoryPool.C
   ${CMAKE_BINARY_DIR}/src/frontend/SageIII/Cxx_GrammarCopyMemberFunctions.C
   ${CMAKE_BINARY_DIR}/src/frontend/SageIII/Cxx_GrammarGetChildIndex.C
-  ${CMAKE_BINARY_DIR}/src/frontend/SageIII/Cxx_GrammarMemoryPoolSupport.C
   ${CMAKE_BINARY_DIR}/src/frontend/SageIII/Cxx_GrammarNewAndDeleteOperators.C
   ${CMAKE_BINARY_DIR}/src/frontend/SageIII/Cxx_GrammarNewConstructors.C
   ${CMAKE_BINARY_DIR}/src/frontend/SageIII/Cxx_GrammarProcessDataMemberReferenceToPointers.C

@@ -36,9 +36,6 @@
 
 #include "Rose/AST/cmdline.h"
 
-// Note that this is required to define the Sg_File_Info_XXX symbols (need for file I/O)
-#include "Cxx_GrammarMemoryPoolSupport.h"
-
 // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace std;
 using namespace Rose;

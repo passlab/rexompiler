@@ -2536,42 +2536,6 @@ Grammar::buildForwardDeclarations ()
      return returnString;
    }
 
-string
-Grammar::buildTransformationSupport()
-   {
-  // DQ (11/27/2005): This function builds support text for transformations
-  // that change the names of interface and objects as part of a pre-release
-  // effort to fixup many details of ROSE.  The goal is to do it at one time
-  // and provide the automate mechanism to ROSE users as well.
-
-  // Goal is to generate: "pair<string,string> array[2] = { pair<string,string>("a1","a2"), pair<string,string>("b1","b2") };"
-
-     const string header = "Text to be use in the development of automated translation of interfaces. \n" \
-                           "string arrayOfStrings[] \n" \
-                           "   { \n";
-     const string footer = "   }; \n";
-
-     const string separatorString = "          pair<string,string>(";
-     const string newlineString   = "),\n";
-
-     unsigned int i=0;
-
-  // now allocate the necessary memory
-     string returnString = header;
-
-     for (i=0; i < terminalList.size(); i++)
-        {
-          returnString += separatorString;
-          returnString += string("\"") + terminalList[i]->getTagName() + string("\"");
-          returnString += string(", \"V_") + terminalList[i]->name + string("\"");
-          returnString += newlineString;
-        }
-
-     returnString += footer;
-
-     return returnString;
-   }
-
 StringUtility::FileWithLineNumbers
 Grammar::extractStringFromFile (
    const string& startMarker, const string& endMarker,
@@ -3242,7 +3206,6 @@ Grammar::buildCode ()
      StringUtility::FileWithLineNumbers ROSE_NewAndDeleteOperatorSourceFile;
      ROSE_NewAndDeleteOperatorSourceFile.push_back(StringUtility::StringWithLineNumber(includeHeaderString, "", 1));
 
-     ROSE_NewAndDeleteOperatorSourceFile.push_back(StringUtility::StringWithLineNumber("#include \"Cxx_GrammarMemoryPoolSupport.h\"\n", "", 1));
   // Now build the source code for the terminals and non-terminals in the grammar
      ROSE_ASSERT (rootNode != NULL);
 
@@ -3270,7 +3233,6 @@ Grammar::buildCode ()
      StringUtility::FileWithLineNumbers ROSE_TraverseMemoryPoolSourceFile;
 
      ROSE_TraverseMemoryPoolSourceFile.push_back(StringUtility::StringWithLineNumber(includeHeaderString, "", 1));
-     ROSE_TraverseMemoryPoolSourceFile.push_back(StringUtility::StringWithLineNumber("#include \"Cxx_GrammarMemoryPoolSupport.h\"\n", "", 1));
   // Now build the source code for the terminals and non-terminals in the grammar
      ROSE_ASSERT (rootNode != NULL);
 
@@ -3295,7 +3257,6 @@ Grammar::buildCode ()
      StringUtility::FileWithLineNumbers ROSE_CheckingIfDataMembersAreInMemoryPoolSourceFile;
 
      ROSE_CheckingIfDataMembersAreInMemoryPoolSourceFile.push_back(StringUtility::StringWithLineNumber(includeHeaderString, "", 1));
-     ROSE_CheckingIfDataMembersAreInMemoryPoolSourceFile.push_back(StringUtility::StringWithLineNumber("#include \"Cxx_GrammarMemoryPoolSupport.h\"\n", "", 1));
   // Now build the source code for the terminals and non-terminals in the grammar
      ROSE_ASSERT (rootNode != NULL);
 
@@ -3506,17 +3467,6 @@ Grammar::buildCode ()
          cout << "DONE: buildRTIFile" << endl;
      Grammar::writeFile(rtiFile, target_directory, getGrammarName() + "RTI", ".C");
 
-#if 0
-  // DQ (11/27/2005): Support for renaming transformations for ROSE project
-  // part of pre-release work to fixup interface and names of objects within ROSE.
-     string transformationSupportFileName = "translationSupport.code";
-     ofstream ROSE_TransformationSupportFile(transformationSupportFileName.c_str());
-     ROSE_ASSERT(ROSE_TransformationSupportFile.good() == true);
-     string transformationSupportString = buildTransformationSupport();
-     ROSE_TransformationSupportFile << transformationSupportString;
-     ROSE_TransformationSupportFile.close();
-#endif
-
   // ---------------------------------------------------------------------------
   // generate grammar representations (from class hierarchy and node attributes)
   // ---------------------------------------------------------------------------
@@ -3536,29 +3486,6 @@ Grammar::buildCode ()
      buildSDFTreeGrammarFile(rootNode, sdfTreeGrammarFile);
      if (verbose)
          cout << "DONE: buildSDFTreeGrammarFile" << endl;
-
-#if 1
-  // --------------------------------------------
-  // generate code for memory pool support header
-  // --------------------------------------------
-     StringUtility::FileWithLineNumbers ROSE_MemoryPoolSupportFile;
-     ROSE_MemoryPoolSupportFile.push_back(StringUtility::StringWithLineNumber(includeHeaderStringWithoutROSE, "", 1));
-     ROSE_ASSERT (rootNode != NULL);
-     buildStringForMemoryPoolSupport(rootNode,ROSE_MemoryPoolSupportFile);
-     if (verbose)
-         cout << "DONE: buildStringForMemoryPoolSupport()" << endl;
-     Grammar::writeFile(ROSE_MemoryPoolSupportFile, target_directory, getGrammarName() + "MemoryPoolSupport", ".h");
-  // --------------------------------------------
-  // generate code for memory pool support source
-  // --------------------------------------------
-     ROSE_MemoryPoolSupportFile.clear();
-     ROSE_MemoryPoolSupportFile.push_back(StringUtility::StringWithLineNumber(includeHeaderString, "", 1));
-     ROSE_ASSERT (rootNode != NULL);
-     buildStringForMemoryPoolSupportSource(rootNode,ROSE_MemoryPoolSupportFile);
-     if (verbose)
-         cout << "DONE: buildStringForMemoryPoolSupportSource()" << endl;
-     Grammar::writeFile(ROSE_MemoryPoolSupportFile, target_directory, getGrammarName() + "MemoryPoolSupport", ".C");
-#endif
 
 #if 1
   // -----------------------------------------------------------------------------------------------------------------------
@@ -3804,57 +3731,6 @@ string Grammar::generateRTICode(GrammarString* gs, string dataMemberContainerNam
 #endif
   return ss.str();
 }
-
-
-/////////////////////////////////////////
-// MEMORY POOL SUPPORT CODE GENERATION //
-/////////////////////////////////////////
-// JJW 10/16/2008 -- This just plugs in each class name into a bunch of
-// function and data definitions
-void Grammar::buildStringForMemoryPoolSupport(AstNodeClass* rootNode, StringUtility::FileWithLineNumbers& file) {
-  GrammarSynthesizedAttribute a=BottomUpProcessing(rootNode, &Grammar::generateMemoryPoolSupportImplementation);
-  string result;
-  result += "// generated file\n";
-  result += a.text; // synthesized attribute
-  file.push_back(StringUtility::StringWithLineNumber(result, "", 1));
-}
-
-void Grammar::buildStringForMemoryPoolSupportSource(AstNodeClass* rootNode, StringUtility::FileWithLineNumbers& file) {
-  GrammarSynthesizedAttribute a=BottomUpProcessing(rootNode, &Grammar::generateMemoryPoolSupportImplementationSource);
-  string result;
-  result += "// generated file\n";
-  result += a.text; // synthesized attribute
-  file.push_back(StringUtility::StringWithLineNumber(result, "", 1));
-}
-
-Grammar::GrammarSynthesizedAttribute
-Grammar::generateMemoryPoolSupportImplementation(AstNodeClass* grammarnode, vector<GrammarSynthesizedAttribute> v)
-   {
-     GrammarSynthesizedAttribute sa;
-     StringUtility::FileWithLineNumbers file = extractStringFromFile("HEADER_MEMORY_POOL_SUPPORT_START", "HEADER_MEMORY_POOL_SUPPORT_END", "../Grammar/grammarMemoryPoolSupport.macro", "");
-     file = GrammarString::copyEdit (file,"$CLASSNAME",grammarnode->name);
-     string s = toString(file);
-  // union data of subtree nodes
-     for(vector<GrammarSynthesizedAttribute>::iterator viter=v.begin(); viter!=v.end(); viter++) {s+=(*viter).text;}
-     sa.grammarnode = grammarnode;
-     sa.text = s;
-     return sa;
-   }
-
-Grammar::GrammarSynthesizedAttribute
-Grammar::generateMemoryPoolSupportImplementationSource(AstNodeClass* grammarnode, vector<GrammarSynthesizedAttribute> v)
-   {
-     GrammarSynthesizedAttribute sa;
-     StringUtility::FileWithLineNumbers file = extractStringFromFile("SOURCE_MEMORY_POOL_SUPPORT_START", "SOURCE_MEMORY_POOL_SUPPORT_END", "../Grammar/grammarMemoryPoolSupport.macro", "");
-     file = GrammarString::copyEdit (file,"$CLASSNAME",grammarnode->name);
-     string s = toString(file);
-  // union data of subtree nodes
-     for(vector<GrammarSynthesizedAttribute>::iterator viter=v.begin(); viter!=v.end(); viter++) {s+=(*viter).text;}
-     sa.grammarnode = grammarnode;
-     sa.text = s;
-     return sa;
-   }
-
 
 //======================================================================
 // BUILD TRAVERSAL SUCCESSOR CONTAINER CREATION CODE
