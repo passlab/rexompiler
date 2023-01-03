@@ -3362,7 +3362,10 @@ ASTtools::VarSymSet_t transOmpMapVariables(SgStatement* node, SgExprListExp* map
   rewriteArraySubscripts (insertion_scope, array_syms);
 
   // Step 4. replace references to old with new variables,
-  replaceVariableReferences (insertion_scope , cpu_gpu_var_map);
+  // The omp target data region is still executed on the host. We don't need to outline it or rename its variables.
+  // Thus, the original body should be preserved.
+  if (!isSgOmpTargetDataStatement(node))
+    replaceVariableReferences(insertion_scope, cpu_gpu_var_map);
 
   // TODO handle scalar, separate or merged into previous loop ?
 
@@ -4743,20 +4746,15 @@ void transOmpTargetLoopBlock(SgNode* node)
     SgScopeStatement * p_scope = target->get_scope();
     ROSE_ASSERT(p_scope != NULL);
 
-    // The omp target data region is still executed on the host. We don't need to outline it or rename its variables.
-    // Thus, the original body should be stored before calling transOmpMapVariables().
-    SgBasicBlock* body = deepCopy(isSgBasicBlock(target->get_body()));
-    ROSE_ASSERT(body != NULL );
-
     SgExprListExp* map_variable_list = buildExprListExp();
     SgExprListExp* map_variable_base_list = buildExprListExp();
     SgExprListExp* map_variable_size_list = buildExprListExp();
     SgExprListExp* map_variable_type_list = buildExprListExp();
 
-    // transOmpMapVariables() will modify the original code body, which is incorrect for omp target data.
-    // We must discard the changes and restore it to the original status later.
     transOmpMapVariables(target, map_variable_list, map_variable_base_list, map_variable_size_list, map_variable_type_list);
 
+    SgBasicBlock* body = isSgBasicBlock(target->get_body());
+    ROSE_ASSERT(body != NULL );
     SgBasicBlock* target_data_begin_block = body;
 
     // by default, the device id is set to 0
