@@ -505,7 +505,8 @@ int patchUpImplicitMappingVariables(SgFile *file) {
       if (isSgClassDefinition(init_var->get_scope()))
         continue;
       // Skip variables which are shared in enclosing constructs
-      if (isSharedInEnclosingConstructs(init_var, target))
+      if (!isSgGlobal(var_scope) &&
+          isSharedInEnclosingConstructs(init_var, target))
         continue;
       // Now it should be mapped explicitly.
       SgVariableSymbol *sym = var_ref->get_symbol();
