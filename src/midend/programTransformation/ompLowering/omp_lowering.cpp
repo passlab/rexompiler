@@ -4743,15 +4743,19 @@ void transOmpTargetLoopBlock(SgNode* node)
     SgScopeStatement * p_scope = target->get_scope();
     ROSE_ASSERT(p_scope != NULL);
 
+    // The omp target data region is still executed on the host. We don't need to outline it or rename its variables.
+    // Thus, the original body should be stored before calling transOmpMapVariables().
+    SgBasicBlock* body = deepCopy(isSgBasicBlock(target->get_body()));
+    ROSE_ASSERT(body != NULL );
+
     SgExprListExp* map_variable_list = buildExprListExp();
     SgExprListExp* map_variable_base_list = buildExprListExp();
     SgExprListExp* map_variable_size_list = buildExprListExp();
     SgExprListExp* map_variable_type_list = buildExprListExp();
 
+    // transOmpMapVariables() will modify the original code body, which is incorrect for omp target data.
+    // We must discard the changes and restore it to the original status later.
     transOmpMapVariables(target, map_variable_list, map_variable_base_list, map_variable_size_list, map_variable_type_list);
-
-    SgBasicBlock* body = isSgBasicBlock(target->get_body());
-    ROSE_ASSERT(body != NULL );
 
     SgBasicBlock* target_data_begin_block = body;
 

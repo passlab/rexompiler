@@ -772,6 +772,8 @@ void normalizeOmpTargetOffloadingUnits(SgFile *file) {
     // case V_SgOmpParallelForStatement:
     case V_SgOmpParallelStatement:
       parent = isSgOmpExecStatement(node->get_omp_parent());
+      if (parent == NULL)
+        break;
       switch (parent->variantT()) {
       case V_SgOmpTargetTeamsStatement:
       case V_SgOmpTargetTeamsDistributeStatement:
