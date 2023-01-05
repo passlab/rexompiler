@@ -86,24 +86,6 @@ CLEANFILES = haveRosettaGeneratedSource
 DISTCLEANFILES = preproc-c.cc omp_exprparser_lexer.cc omp_exprparser_parser.hh omp_exprparser_parser.cc
 
 # Some source code is generated (call make in ROSE/src/ROSETTA/src to generate these files)
-if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-GENERATED_SOURCE = \
-	Cxx_Grammar.h \
-	Cxx_Grammar.C \
-	AstQueryMemoryPool.h \
-	Cxx_GrammarReturnClassHierarchySubTree.C \
-	Cxx_GrammarTreeTraversalSuccessorContainer.C \
-	Cxx_GrammarTreeTraversalAccessEnums.h \
-	Cxx_GrammarVariantEnumNames.C \
-	Cxx_GrammarNewAndDeleteOperators.C \
-	Cxx_GrammarCopyMemberFunctions.C \
-	Cxx_GrammarTraverseMemoryPool.C \
-	Cxx_GrammarCheckingIfDataMembersAreInMemoryPool.C \
-	Cxx_GrammarReturnDataMemberPointers.C \
-	Cxx_GrammarProcessDataMemberReferenceToPointers.C \
-	Cxx_GrammarNewConstructors.C \
-	Cxx_GrammarGetChildIndex.C
-else
 GENERATED_SOURCE = \
 	Cxx_Grammar.h \
 	Cxx_Grammar.C \
@@ -121,7 +103,6 @@ GENERATED_SOURCE = \
 	Cxx_GrammarProcessDataMemberReferenceToPointers.C \
 	Cxx_GrammarNewConstructors.C \
 	Cxx_GrammarGetChildIndex.C
-endif
 
 haveRosettaGeneratedSource:
 	cd $(top_builddir)/src/ROSETTA/src; $(MAKE)
@@ -138,20 +119,6 @@ $(GENERATED_SOURCE): haveRosettaGeneratedSource
 # longer built.  Files atermSupport.C and nodeBuildFunctionsForAterms.C have been removed
 # from libsage3Sources below (in the else clause).
 
-if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-libsage3Sources = \
-   Utf8.C \
-   rose_attributes_list.C \
-   attachPreprocessingInfo.C \
-   attachPreprocessingInfoTraversal.C \
-   attributeListMap.C \
-   manglingSupport.C \
-   fixupCopy_scopes.C \
-   fixupCopy_symbols.C \
-   fixupCopy_references.C \
-   rose_graph_support.C \
-   $(fSageSupport_la_sources)
-else
 libsage3Sources = \
    Utf8.C \
    rose_attributes_list.C \
@@ -168,8 +135,8 @@ libsage3Sources = \
    ompSupport.C \
    ompFortranParser.C \
    ompAstConstruction.cpp \
-   accAstConstruction.cpp
-endif
+   accAstConstruction.cpp \
+   memory-pool-snapshot.C
 
 # DQ (2/15/2010): This fails in Hudson tests of ROSE compiling ROSE for code generation, but I can't 
 # get it to fail in my own tests.  Skip it for now and see if there are more of these cases.
@@ -193,11 +160,7 @@ endif
 
 noinst_LTLIBRARIES = libsage3.la
 
-if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-libsage3_la_SOURCES = $(libsage3Sources) preproc-c.ll
-else
 libsage3_la_SOURCES = $(libsage3Sources) preproc-c.ll omp_exprparser_lexer.ll omp_exprparser_parser.yy
-endif
 
 # DQ (3/8/2009): I think that the dependence upon $(top_builddir)/rose_config.h 
 # is what was forcing a lot of files to be compiled after reruning configure.
@@ -280,7 +243,7 @@ pkginclude_HEADERS = \
    attachPreprocessingInfo.h \
    attachPreprocessingInfoTraversal.h \
    attach_all_info.h manglingSupport.h C++_include_files.h \
-   fixupCopy.h \
+   fixupCopy.h memory-pool-snapshot.h \
    general_token_defs.h rtiHelpers.h \
    ompSupport.h omp.h \
    omp_lib_kinds.h omp_lib.h sage3basic.hhh rosedefs.h  fileoffsetbits.h rosedll.h \
