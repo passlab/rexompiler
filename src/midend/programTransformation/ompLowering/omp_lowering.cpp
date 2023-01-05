@@ -4068,7 +4068,7 @@ void transOmpTargetLoopBlock(SgNode* node)
     SgBasicBlock* body_block = Outliner::preprocess(body);
 
     // The combined directive only has one code block and should only process omp variables once
-    transOmpVariables (target, body_block);
+    transOmpVariables (target, body_block, NULL, true);
 
     ASTtools::VarSymSet_t all_syms; // all generated or remaining variables to be passed to the outliner
   // This addressOf_syms does not apply to CUDA kernel generation: since we cannot use pass-by-reference for CUDA kernel.
@@ -4098,7 +4098,7 @@ void transOmpTargetLoopBlock(SgNode* node)
       SgVarRefExp *vRef = isSgVarRefExp((*i));
       SgName var_name = vRef-> get_symbol()->get_name();
       string var_name_str = var_name.getString();
-      if (var_name_str.find("_dev_per_block_",0) == 0)
+      if (var_name_str.find("__dev_reduce_",0) == 0)
       {
         all_syms.insert( vRef-> get_symbol());
         per_block_reduction_syms.insert (vRef-> get_symbol());
@@ -4154,11 +4154,15 @@ void transOmpTargetLoopBlock(SgNode* node)
     // create the outlined driver for GPU offloading, which is empty at this point
     SgBasicBlock* outlined_driver_body = omp_target_stmt_body_block;
 
+    // by default, the device id is set to 0
+    SgVariableDeclaration* device_id_decl = buildVariableDeclaration("__device_id", buildOpaqueType("int64_t", p_scope), buildAssignInitializer(buildIntVal(0)), p_scope);
+    outlined_driver_body->append_statement(device_id_decl);
+    attachComment(device_id_decl, string("Launch CUDA kernel ..."));
+
     // insert dim3 threadsPerBlock(xomp_get_maxThreadsPerBlock());
     // TODO: for 1-D mapping, int type is enough,  //TODO: a better interface accepting expression as initializer!!
     SgVariableDeclaration* threads_per_block_decl = buildVariableDeclaration ("_threads_per_block_", buildIntType(), buildAssignInitializer(omp_num_threads), p_scope);
     outlined_driver_body->append_statement(threads_per_block_decl);
-    attachComment(threads_per_block_decl, string("Launch CUDA kernel ..."));
 
     // dim3 numBlocks (xomp_get_max1DBlock(VEC_LEN));
     // TODO: handle 2-D or 3-D using dim type
@@ -4213,10 +4217,6 @@ void transOmpTargetLoopBlock(SgNode* node)
     kmpc_kernel_id_counter += 1;
     SgVariableDeclaration* outlined_kernel_id_decl = buildVariableDeclaration (func_name + "id__", buildCharType(), buildAssignInitializer(buildIntVal(0)), g_scope);
 
-    // by default, the device id is set to 0
-    SgVariableDeclaration* device_id_decl = buildVariableDeclaration("__device_id", buildOpaqueType("int64_t", p_scope), buildAssignInitializer(buildIntVal(0)), p_scope);
-    outlined_driver_body->append_statement(device_id_decl);
-
     // define the entry point
     SgExprListExp* offload_entry_parameters = buildExprListExp(buildCastExp(buildAddressOfOp(buildVarRefExp(outlined_kernel_id_decl)), buildPointerType(buildVoidType())), buildStringVal(func_name + "kernel__"), buildIntVal(0), buildIntVal(0), buildIntVal(0));
     SgBracedInitializer* offload_entry_initilization = buildBracedInitializer(offload_entry_parameters);
@@ -4265,22 +4265,22 @@ void transOmpTargetLoopBlock(SgNode* node)
       SgType * orig_type = pointer_type->get_base_type();
       ROSE_ASSERT (orig_type != NULL);
 
+      SgVariableDeclaration* host_id_decl = buildVariableDeclaration("__host_id", buildIntType(), buildAssignInitializer(buildFunctionCallExp("omp_get_initial_device", buildVoidType(), NULL, p_scope)), p_scope);
+      outlined_driver_body->append_statement(host_id_decl);
       string per_block_var_name = (current_symbol->get_name()).getString();
       // get the original var name by stripping of the leading "_dev_per_block_"
-      string leading_pattern = string("_dev_per_block_");
+      string leading_pattern = string("__dev_reduce_");
       string orig_var_name = per_block_var_name.substr(leading_pattern.length(), per_block_var_name.length() - leading_pattern.length());
 //      cout<<"debug: "<<per_block_var_name <<" after "<< orig_var_name <<endl;
-      SgExprListExp * parameter_list = buildExprListExp (buildVarRefExp(const_cast<SgVariableSymbol*>(current_symbol)), buildVarRefExp("_num_blocks_",target->get_scope()), buildIntVal(per_block_reduction_map[const_cast<SgVariableSymbol*>(current_symbol)]) );
-      SgFunctionCallExp* func_call_exp = buildFunctionCallExp ("xomp_beyond_block_reduction_"+ orig_type->unparseToString(), buildVoidType(), parameter_list, target->get_scope());
+      SgExprListExp * parameter_list = buildExprListExp (buildVarRefExp(orig_var_name, target->get_scope()), buildVarRefExp(const_cast<SgVariableSymbol*>(current_symbol)), buildSizeOfOp(orig_type), buildIntVal(0), buildIntVal(0), buildVarRefExp(host_id_decl), buildVarRefExp(device_id_decl));
+      SgFunctionCallExp* func_call_exp = buildFunctionCallExp ("omp_target_memcpy", buildVoidType(), parameter_list, target->get_scope());
       SgStatement* assign_stmt = buildAssignStatement (buildVarRefExp(orig_var_name, omp_target_stmt_body_block )  ,func_call_exp);
-     ROSE_ASSERT (target->get_scope () == target->get_body()); // there is a block in between
-     ROSE_ASSERT (omp_target_stmt_body_block  == target->get_body()); // just to make sure
-     insertStatementBefore (target, assign_stmt );
+      outlined_driver_body->append_statement(assign_stmt);
 
      // insert memory free for the _dev_per_block_variables
      // TODO: need runtime support to automatically free memory
-      SgFunctionCallExp* func_call_exp2 = buildFunctionCallExp ("xomp_freeDevice", buildVoidType(), buildExprListExp(buildVarRefExp(const_cast<SgVariableSymbol*>(current_symbol))),  omp_target_stmt_body_block);
-     insertStatementBefore (target, buildExprStatement(func_call_exp2));
+      SgFunctionCallExp* func_call_exp2 = buildFunctionCallExp ("omp_target_free", buildVoidType(), buildExprListExp(buildVarRefExp(const_cast<SgVariableSymbol*>(current_symbol)), buildVarRefExp(device_id_decl)),  omp_target_stmt_body_block);
+      outlined_driver_body->append_statement(buildExprStatement(func_call_exp2));
     }
 
     // num_blocks is referenced before the declaration is inserted. So we must fix it, otherwise the symbol of unkown type will be cleaned up later.
@@ -5712,18 +5712,22 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
        SgVariableDeclaration* per_block_decl = NULL;
       if (isReductionVar && isAcceleratorModel)
       {
-        SgOmpParallelStatement* enclosing_omp_parallel = getEnclosingNode<SgOmpParallelStatement> (ompStmt);
+        //SgOmpParallelStatement* enclosing_omp_parallel = getEnclosingNode<SgOmpParallelStatement> (ompStmt);
+        SgOmpClauseBodyStatement* enclosing_omp_parallel = isSgOmpClauseBodyStatement(ompStmt);
         ROSE_ASSERT (enclosing_omp_parallel!= NULL);
         //SgScopeStatement* scope_for_insertion = enclosing_omp_target->get_scope();
         SgScopeStatement* scope_for_insertion = isSgScopeStatement(enclosing_omp_parallel->get_scope());
         ROSE_ASSERT (scope_for_insertion != NULL);
-        SgVarRefExp* blk_ref = buildVarRefExp("_num_blocks_", scope_for_insertion);
-        SgExpression* multi_exp = buildMultiplyOp( blk_ref, buildSizeOfOp(orig_type) );
-        SgExprListExp* parameter_list = buildExprListExp(multi_exp);
-        SgExpression* init_exp = buildCastExp(buildFunctionCallExp(SgName("xomp_deviceMalloc"), buildPointerType(buildVoidType()), parameter_list, scope_for_insertion),
+        SgVarRefExp* device_id_ref = buildVarRefExp("__device_id", scope_for_insertion);
+        SgVarRefExp* num_block_ref = buildVarRefExp("_num_blocks_", scope_for_insertion);
+        SgVarRefExp* num_threads_ref = buildVarRefExp("_threads_per_block_", scope_for_insertion);
+        SgExpression* multi_exp = buildMultiplyOp(buildMultiplyOp(num_block_ref, num_threads_ref), buildSizeOfOp(orig_type));
+        SgExprListExp* parameter_list = buildExprListExp(multi_exp, device_id_ref);
+        SgExpression* init_exp = buildCastExp(buildFunctionCallExp(SgName("omp_target_alloc"), buildPointerType(buildPointerType(orig_type)), parameter_list, scope_for_insertion),
                                               buildPointerType(orig_type));
-       // the prefix of "_dev_per_block_" is important for later handling when calling outliner: add them into the parameter list
-        per_block_decl = buildVariableDeclaration ("_dev_per_block_"+orig_name, buildPointerType(orig_type), buildAssignInitializer(init_exp), scope_for_insertion);
+        per_block_decl = buildVariableDeclaration("__dev_reduce_" + orig_name, buildPointerType(orig_type), buildAssignInitializer(init_exp), scope_for_insertion);
+        // the prefix of "_dev_per_block_" is important for later handling when calling outliner: add them into the parameter list
+        // per_block_decl = buildVariableDeclaration ("_dev_per_block_"+orig_name, buildPointerType(orig_type), buildAssignInitializer(init_exp), scope_for_insertion);
         // this statement refers to _num_blocks_, which will be declared later on when translating "omp parallel" enclosed in "omp target"
         // so we insert it  later when the kernel launch statement is inserted.
         // insertStatementAfter(enclosing_omp_parallel, per_block_decl);
