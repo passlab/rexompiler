@@ -30,17 +30,12 @@ if !ROSE_USE_SANITIZER
    SUBDIRS += ROSETTA
 endif
 
-if !ROSE_USE_INSURE
-#   SUBDIRS += roseHPCToolkitTests 
-endif
-
 # TOO (2/16/2011): Errors with Thrifty (GCC 3.4.4) backend compiler. We can gradually
 # enable these tests at a later stage if necessary.
 if !USING_GCC_3_4_4_BACKEND_COMPILER
 # TOO (2/17/11): Errors with Tensilica's Xtensa compilers. 
 if !USING_XTENSA_BACKEND_COMPILER
 #  SUBDIRS += astInterfaceTests astInliningTests ompLoweringTests programAnalysisTests astOutliningTests loopProcessingTests fileLocation_tests
-if !ROSE_USE_INSURE
    SUBDIRS += astInterfaceTests astInliningTests 
 if !USING_CLANG_COMPILER
  # DQ (9/19/2020): Clang does not work with most of the test codes in this directory.
@@ -52,7 +47,6 @@ if !USING_CLANG_COMPILER
    SUBDIRS += astOutliningTests
 endif
    SUBDIRS += loopProcessingTests fileLocation_tests
-endif
 
 endif # !USING_XTENSA_BACKEND_COMPILER
 endif # !USING_GCC_3_4_4_BACKEND_COMPILER
@@ -61,17 +55,6 @@ endif # ROSE_BUILD_CXX_LANGUAGE_SUPPORT
 
 # endif # USING_GNU_COMPILER
 endif # !USING_INTEL_COMPILER
-
-if !ROSE_USE_INSURE
-# DQ (4/23/2011): At least one of the files (process_cmdline.o) in this directory does not seem 
-# to compile with Insure++ (it hangs for Hudson, but I can't reproduce the problem locally).
-# This was not a problem the second time that Insure++ compiled ROSE.
-
-# DQ (8/23/2013): This is a part of SUBDIRS above and is redundant here.
-# SUBDIRS += roseHPCToolkitTests utilTests
-# SUBDIRS += roseHPCToolkitTests
-
-endif
 
 check-local:
 	@echo "*******************************************"

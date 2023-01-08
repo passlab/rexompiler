@@ -92,7 +92,6 @@ class TestAstNullPointers : public AstNodePtrs {
     void visit(SgNode*) {}
   };
 
-// #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
   class DummyISTestQuery2 : public AstReversePrefixInhSynProcessing<DI,DS> {
     DI evaluateInheritedAttribute(SgNode*, DI inh) { return inh; }
     DS evaluateSynthesizedAttribute(SgNode*, DI, SubTreeSynthesizedAttributes) { DS syn; return syn; }
@@ -122,7 +121,6 @@ class TestAstNullPointers : public AstNodePtrs {
   class DummyTestQuery3 : public AstReverseBranchSimpleProcessing {
     void visit(SgNode*) {}
   };
-// #endif
 
 // DQ (3/30/2004): Added tests on templates!
 // class TestAstTemplateProperties : public AstPreOrderTraversal

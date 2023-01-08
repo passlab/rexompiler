@@ -97,10 +97,10 @@ endif
 # installed with Linux (it is always a version too old to be used with ROSE).
 # This is used only when the ROSE configuration detects a previously installed
 # version of Boost (e.g /usr/include/boost) that we don't want to use.
-if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
+# if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 # ROSE_INCLUDES =
 #    $(ROSE_BOOST_PREINCLUDE_PATH)
-ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
+ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH_ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT = \
      -I$(top_builddir)/src/roseSupport \
      -I$(top_builddir)/src/frontend/SageIII \
      -I$(top_srcdir)/src \
@@ -134,7 +134,7 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/util/graphs \
      $(ROSE_FLANG_INCLUDES) \
      $(ROSE_BOOST_NORMAL_INCLUDE_PATH)
-else
+# else # ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 # ROSE_INCLUDES =
 #     $(ROSE_BOOST_PREINCLUDE_PATH)
 ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
@@ -221,7 +221,7 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      $(ROSE_BOOST_NORMAL_INCLUDE_PATH) \
      $(ROSE_PCH_INCLUDE) \
      $(BOOST_CPPFLAGS)
-endif
+# endif # ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 
 # DQ (10/23/2015): These paths have been replaces with the following variables.
 # These variable are empty for now (reflecting the default usage, and need to
@@ -410,6 +410,6 @@ clean-test-targets:
 	rm -f $(TEST_TARGETS:.passed=.out)
 	rm -f $(TEST_TARGETS:.passed=.err)
 
-clean-local: clean-test-targets
+# clean-local: clean-test-targets
 
 .PHONY: clean-test-targets

@@ -7,11 +7,7 @@
 #define ROSE_SYNTHESIZED 1
 #define ROSE_BOTH 2
 
-
-
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "staticCFG.h"
-#endif
+#include "staticCFG.h"
 
 #include <vector>
 #include <algorithm>

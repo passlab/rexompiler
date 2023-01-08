@@ -3327,10 +3327,8 @@ SgFile::secondaryPassOverSourceFile()
                attachPreprocessingInfo(sourceFile);
 #endif
 
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
             // Liao, 3/31/2009 Handle OpenMP here to see macro calls within directives
                processOpenMP(sourceFile);
-#endif
                // Liao, 1/29/2014, handle failsafe pragmas for resilience work
                //if (sourceFile->get_failsafe())
                //  FailSafe::process_fail_safe_directives (sourceFile);

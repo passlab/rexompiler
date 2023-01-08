@@ -39,14 +39,6 @@ dist-hook: docs
 	  rm -rf ${distdir}/$$i/CVS ${distdir}/$$i/*~   ;\
 	done
 
-# Purify related flags
-# PURIFY_USE_WINDOWS = -windows=yes
-# PURIFY_FLAGS  = $(PURIFY_USE_WINDOWS) -recursion-depth-limit=40000 -chain-length=12 -first-only=yes -l -at-exit=yes -inuse-at-exit=yes -always-use-cache-dir=yes -cache-dir=/home/dquinlan/tmp
-# PURIFY        = purify4.5 $(PURIFY_FLAGS)
-
-# PURIFY_DIR    = `purify4.5 -print-home-dir`
-# PURIFY_STUBS  = $(PURIFY_DIR)/purify_stubs.a
-
 clean-local:
 	rm -rf Templates.DB ii_files ti_files
 

@@ -69,11 +69,6 @@ if ROSE_WITH_LIBHARU
    noinst_PROGRAMS += testPDFGeneration
 endif
 
-# DQ (1/16/2012): This test code is not supported when compiling for simple front-end testing (smallest subset of ROSE that can be built).
-if !ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   noinst_PROGRAMS += testAstFileIO
-endif
-
 # Phase 0 tests code:
 # This is a test of the EDG and OFP parser support. No significant part of ROSE is generated.
 # A bit of the infrastructure of ROSE is tested that sets up work to build the ROSE AST, etc.
@@ -387,18 +382,10 @@ endif
 
 # Rule to run all the example translator tests
 # test: test_testAnalysis test_testCodeGeneration test_testTranslator testSimpleLinkFileTranslator
-if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-if ROSE_WITH_LIBHARU
-   test: test_testTokenGeneration test_testAnalysis test_testCodeGeneration test_testTranslator test_testTemplates test_testGraphGeneration test_testPDFGeneration testSimpleLinkFileTranslator testTranslatorFoldedConstants testTranslatorUnfoldedConstants testKeepGoingTranslator test_readFileTwice
-else
-   test: test_testTokenGeneration test_testAnalysis test_testCodeGeneration test_testTranslator test_testTemplates test_testGraphGeneration testSimpleLinkFileTranslator testTranslatorFoldedConstants testTranslatorUnfoldedConstants testKeepGoingTranslator test_readFileTwice
-endif
-else
 if ROSE_WITH_LIBHARU
    test: test_testTokenGeneration test_testAnalysis test_testCodeGeneration test_testTranslator test_testTemplates test_testGraphGeneration test_testPDFGeneration testSimpleLinkFileTranslator testTranslatorFoldedConstants testTranslatorUnfoldedConstants testKeepGoingTranslator test_exampleIdentityTranslator test_readFileTwice
 else
    test: test_testTokenGeneration test_testAnalysis test_testCodeGeneration test_testTranslator test_testTemplates test_testGraphGeneration testSimpleLinkFileTranslator testTranslatorFoldedConstants testTranslatorUnfoldedConstants testKeepGoingTranslator test_exampleIdentityTranslator test_readFileTwice
-endif
 endif
 
 # Liao, 4/12/2017 restrict_template_parameter.C will trigger frontend error.

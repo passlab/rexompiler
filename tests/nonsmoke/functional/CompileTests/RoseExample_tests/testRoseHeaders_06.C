@@ -43,11 +43,7 @@ namespace ELF{
 // #include "AstStatistics.h"
 #include "RoseAst.h"
 
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-// DQ (6/3/2007): added internal support for AST visualization
-// // #include "astVisualization/wholeAST_API.h"
 #include "wholeAST_API.h"
-#endif
 
 // DQ (10/18/2003) Why is this commented out (what is it)
 //#include "AgProcessing.h"
@@ -56,10 +52,7 @@ namespace ELF{
 // which has not defined yet (circular reference in the header files)
 // #include "AstRestructure.h"
 
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 #include "rewrite.h"
-#endif
-#include "roseTranslators.h"
 
 // this is a temporary fix (will become obsolete)
 #include "AstClearVisitFlags.h"
@@ -68,30 +61,18 @@ namespace ELF{
 // DQ (8/1/2005): Included Milind's AstMerge mechanism as standard part of ROSE.
 // #include "AstMerge.h"
 
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-// DQ (5/26/2007): Use the new AST merge mechanism.
-#include "merge.h"
-// JH (01/18/2006): adding the include file for the AST file I/O (by Jochen)
-#ifndef _MSC_VER
-// tps (11/23/2009) : Commented out right now to make progress in Windows
-#include "AST_FILE_IO.h"
-#endif
 // DQ (9/9/2007): Can't use astVisualization/ prefix since it then does not permit use from the install tree
 // DQ (5/27/2007): Added astVisualization/ prefix to the header file
 // DQ (2/22/2006): Added Andreas' work to graph the AST.
 // #include "astVisualization/astGraph.h"
 #include "astGraph.h"
-#endif
 
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 // DQ (9/9/2007): Can't use astVisualization/ prefix since it then does not permit use from the install tree
 // DQ (5/27/2007): Added astVisualization/ prefix to the header file
 // DQ (6/23/2006): Added Andreas's work to support custom DOT graphs using persistant attributes.
 // #include "astVisualization/AstAttributeDOT.h"
 #include "AstAttributeDOT.h"
-#endif
 
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 // DQ (3/11/2006): Jeremiah Willcock's inliner
 #include "inliner.h"
 
@@ -170,7 +151,6 @@ namespace ELF{
 #include "utility_functionsImpl.C"
 #undef TEMPLATE_IMPLEMENTATIONS
 
-// ifndef for ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 #endif
 
 // DQ (4/20/2009): Added support to optionally get more information out about new delete operators.

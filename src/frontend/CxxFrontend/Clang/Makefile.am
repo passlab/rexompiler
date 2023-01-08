@@ -37,8 +37,8 @@ libroseClangFrontend_la_CXXFLAGS     = $(CLANG_CXXFLAGS)
 #  clang-to-dot-decl.cpp 
 #  clang-to-dot-stmt.cpp 
 #  clang-to-dot-type.cpp
-libClangToDot_la_LDFLAGS      = $(CLANG_LDFLAGS)
-libClangToDot_la_CXXFLAGS     = $(CLANG_CXXFLAGS)
+# libClangToDot_la_LDFLAGS      = $(CLANG_LDFLAGS)
+# libClangToDot_la_CXXFLAGS     = $(CLANG_CXXFLAGS)
 
 pkginclude_HEADERS = clang-frontend.hpp clang-frontend-private.hpp 	clang-to-dot-private.hpp clang-to-dot.hpp clang_graph.h
 

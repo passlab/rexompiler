@@ -511,7 +511,6 @@ endif
 # is in use so that we can focus on this in a later iteration after we have initial testing into place.
 # I want to make sure that these are the only problem that cause Insure++ to fail, then we can re-enable 
 # these tests and track down the problem.
-if !ROSE_USE_INSURE
 # DQ (4/3/2011): The test2011_Rice_alternate-return-argument.f90 failes too frequently (not frequently 
 # enough to reproduce the failure in a controled way, but frequently enough to hold back other progress
 # in ROSE (e.g for other language and analysis support). I have forced this test to run where it appears
@@ -537,7 +536,6 @@ if !ROSE_USE_INSURE
 #     test2011_Rice_alternate-return-argument.f90 \
 #     test2011_Rice_alt-return-call.f90
 #endif
-endif
 
 # DQ (3/29/2011): This is now passing the LLVM tests, so I will leave it alone and thus leave it in to run on all platforms.
 # test2011_Rice_alternate-return-argument.f90
@@ -1089,10 +1087,6 @@ if ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
 # ROSE directory structure).  This does not appear to work!
 ../../testTranslator:
 	cd ../..; $(MAKE) testTranslator
-if ROSE_USE_INSURE
-	@echo "Force the lt-testTranslator to be built in ../../.libs so that we can rename it for Insure++ runs."
-	../../testTranslator --help > /dev/null
-endif
 
 testTranslator: ../../testTranslator
 
@@ -1133,7 +1127,6 @@ testTokenGeneration: ../../testTokenGeneration
 SDF_OFP = $(top_srcdir)/src/3rdPartyLibraries/experimental-fortran-parser/share/rose
 
 $(TEST_F90_Sources): ../../testTranslator ../../testGraphGeneration ../../testTokenGeneration ${ALL_TESTCODES}
-if !ROSE_USE_INSURE
 #	$(VALGRIND) ../../testTranslator $(ROSE_FLAGS) -rose:f90 -c $(srcdir)/$(@:.o=.f90)
 	@$(RTH_RUN) CMD="../../testTranslator $(ROSE_FLAGS) -rose:f90 -c $(srcdir)/$(@:.f90.passed=.f90)" $(top_srcdir)/scripts/test_exit_status $@
 #	$(VALGRIND) ../../testGraphGeneration $(ROSE_FLAGS) -rose:f90 -c $(srcdir)/$(@:.o=.f90)
@@ -1146,15 +1139,6 @@ if ROSE_EXPERIMENTAL_OFP_ROSE_CONNECTION
 #	@$(RTH_RUN) CMD="sglri -i $(srcdir)/$(@:.f90.passed=.f90) -p $(SDF_OFP)/Fortran.tbl | pp-aterm -o $(@:.f90.passed=.f90).aterm" $(top_srcdir)/scripts/test_exit_status $(@:.f90.passed=.f90.testAtermGeneration.passed) || true
 # Rasmussen (12/20/2018): Turned off running experimental frontend on normal Fortran tests.  Not ready for these tests yet!
 #	@$(RTH_RUN) CMD="../../testTranslator -rose:experimental_fortran_frontend $(ROSE_FLAGS) -rose:f90 -c $(srcdir)/$(@:.f90.passed=.f90)" $(top_srcdir)/scripts/test_exit_status $(@:.f90.passed=.f90.testTokenGeneration.passed)
-endif
-else
-#	DQ (4/22/2011): For Insure++ we want to get the filename into the names used for the report files.
-#	@if test ! -f "../../.libs/lt-testTranslator"; then echo "Can NOT find ../../.libs/lt-testTranslator"; exit 1; fi
-	@if test ! -f "../../.libs/lt-testTranslator"; then echo "Can NOT find ../../.libs/lt-testTranslator"; ../../testTranslator --help > /dev/null; echo "Fixed"; fi
-	cp ../../.libs/lt-testTranslator testTranslator_$(@:.o=)
-	./testTranslator_$(@:.o=) $(ROSE_FLAGS) -rose:f90 -c $(srcdir)/$(@:.o=.f90)
-	echo "Removing the just built copy of lt-testTranslator to save space..."
-	rm -f testTranslator_$(@:.o=)
 endif
 
 # $(TEST_REQUIRING_PREPROCESSOR_F90_Objects): ../../testTranslator ../../testGraphGeneration ../../testTokenGeneration ${ALL_TESTCODES}
@@ -1172,7 +1156,6 @@ endif
 # endif
 
 $(TEST_REQUIRING_PREPROCESSOR_F90_Sources): ../../testTranslator ../../testGraphGeneration ../../testTokenGeneration ${ALL_TESTCODES}
-if !ROSE_USE_INSURE
 #	$(VALGRIND) ../../testTranslator $(ROSE_FLAGS) -rose:f90 -c $(srcdir)/$(@:.o=.F90)
 	@$(RTH_RUN) CMD="../../testTranslator $(ROSE_FLAGS) -rose:f90 -c $(srcdir)/$(@:.F90.passed=.F90)" $(top_srcdir)/scripts/test_exit_status $@
 #	$(VALGRIND) ../../testGraphGeneration $(ROSE_FLAGS) -rose:f90 -c $(srcdir)/$(@:.o=.F90)
@@ -1183,14 +1166,6 @@ if ROSE_EXPERIMENTAL_OFP_ROSE_CONNECTION
 #	@$(RTH_RUN) CMD="sglri -i $(srcdir)/$(@:.F90.passed=.F90) -p $(SDF_OFP)/Fortran.tbl | pp-aterm -o $(@:.F90.passed=.F90).aterm" $(top_srcdir)/scripts/test_exit_status $(@:.F90.passed=.F90.testAtermGeneration.passed) || true
 # Rasmussen (12/20/2018): Turned off running experimental frontend on normal Fortran tests.  Not ready for these tests yet!
 #	@$(RTH_RUN) CMD="../../testTranslator -rose:experimental_fortran_frontend $(ROSE_FLAGS) -rose:f90 -c $(srcdir)/$(@:.F90.passed=.F90)" $(top_srcdir)/scripts/test_exit_status $(@:.F90.passed=.F90.testTokenGeneration.passed)
-endif
-else
-#	DQ (4/22/2011): For Insure++ we want to get the filename into the names used for the report files.
-	@if test ! -f "../../.libs/lt-testTranslator"; then echo "Can NOT find ../../.libs/lt-testTranslator"; ../../testTranslator --help > /dev/null; echo "Fixed"; fi
-	cp ../../.libs/lt-testTranslator testTranslator_$(@:.o=)
-	./testTranslator_$(@:.o=) $(ROSE_FLAGS) -rose:f90 -c $(srcdir)/$(@:.o=.F90)
-	echo "Removing the just built copy of lt-testTranslator to save space..."
-	rm -f testTranslator_$(@:.o=)
 endif
 
 # $(TEST_F77_Objects): ../../testTranslator ../../testGraphGeneration ../../testTokenGeneration ${ALL_TESTCODES}
@@ -1211,7 +1186,6 @@ endif
 
 $(TEST_F77_Sources): ../../testTranslator ../../testGraphGeneration ../../testTokenGeneration ${ALL_TESTCODES}
 #	java parser.java.FortranMain --dump $(srcdir)/$(@:.o=.f77)
-if !ROSE_USE_INSURE
 #	$(VALGRIND) ../../testTranslator $(ROSE_FLAGS) -rose:f77 -c $(srcdir)/$(@:.o=.f77)
 	@$(RTH_RUN) CMD="../../testTranslator $(ROSE_FLAGS) -rose:f77 -c $(srcdir)/$(@:.f77.passed=.f77)" $(top_srcdir)/scripts/test_exit_status $@
 #	$(VALGRIND) ../../testGraphGeneration $(ROSE_FLAGS) -rose:f77 -c $(srcdir)/$(@:.o=.f77)
@@ -1222,15 +1196,6 @@ if ROSE_EXPERIMENTAL_OFP_ROSE_CONNECTION
 #	@$(RTH_RUN) CMD="sglri -i $(srcdir)/$(@:.f77.passed=.f77) -p $(SDF_OFP)/Fortran.tbl | pp-aterm -o $(@:.f77.passed=.f77).aterm" $(top_srcdir)/scripts/test_exit_status $(@:.f77.passed=.f77.testAtermGeneration.passed) || true
 # Rasmussen (12/20/2018): Turned off running experimental frontend on normal Fortran tests.  Not ready for these tests yet!
 #	@$(RTH_RUN) CMD="../../testTranslator -rose:experimental_fortran_frontend $(ROSE_FLAGS) -rose:f77 -c $(srcdir)/$(@:.f77.passed=.f77)" $(top_srcdir)/scripts/test_exit_status $(@:.f77.passed=.f77.experimental.passed)
-endif
-else
-#	DQ (4/22/2011): For Insure++ we want to get the filename into the names used for the report files.
-#	@if test ! -f "../../.libs/lt-testTranslator"; then echo "Can NOT find ../../.libs/lt-testTranslator"; exit 1; fi
-	@if test ! -f "../../.libs/lt-testTranslator"; then echo "Can NOT find ../../.libs/lt-testTranslator"; ../../testTranslator --help > /dev/null; echo "Fixed"; fi
-	cp ../../.libs/lt-testTranslator testTranslator_$(@:.o=)
-	./testTranslator_$(@:.o=) $(ROSE_FLAGS) -rose:f77 -c $(srcdir)/$(@:.o=.f77)
-	echo "Removing the just built copy of lt-testTranslator to save space..."
-	rm -f testTranslator_$(@:.o=)
 endif
 
 # $(TEST_F77_FIXED_FORMAT_Objects): ../../testTranslator ../../testGraphGeneration ../../testTokenGeneration ${ALL_TESTCODES}
@@ -1251,7 +1216,6 @@ endif
 
 $(TEST_F77_FIXED_FORMAT_Sources): ../../testTranslator ../../testGraphGeneration ../../testTokenGeneration ${ALL_TESTCODES}
 #	java parser.java.FortranMain --dump $(srcdir)/$(@:.o=.f)
-if !ROSE_USE_INSURE
 #	$(VALGRIND) ../../testTranslator $(ROSE_FLAGS) -rose:f77 -c $(srcdir)/$(@:.o=.f)
 	@$(RTH_RUN) CMD="../../testTranslator $(ROSE_FLAGS) -rose:f77 -c $(srcdir)/$(@:.f.passed=.f)" $(top_srcdir)/scripts/test_exit_status $@
 #	$(VALGRIND) ../../testGraphGeneration $(ROSE_FLAGS) -rose:f77 -c $(srcdir)/$(@:.o=.f)
@@ -1262,15 +1226,6 @@ if ROSE_EXPERIMENTAL_OFP_ROSE_CONNECTION
 #	@$(RTH_RUN) CMD="sglri -i $(srcdir)/$(@:.f.passed=.f) -p $(SDF_OFP)/Fortran.tbl | implode-asfix | pp-aterm -o $(@:.f.passed=.f).aterm" $(top_srcdir)/scripts/test_exit_status $(@:.f.passed=.f.testAtermGeneration.passed) || true
 # Rasmussen (12/20/2018): Turned off running experimental frontend on normal Fortran tests.  Not ready for these tests yet!
 #	@$(RTH_RUN) CMD="../../testTranslator -rose:experimental_fortran_frontend$(ROSE_FLAGS) -rose:f77 -c $(srcdir)/$(@:.f.passed=.f)" $(top_srcdir)/scripts/test_exit_status $(@:.f.passed=.f.testTokenGeneration.passed)
-endif
-else
-#	DQ (4/22/2011): For Insure++ we want to get the filename into the names used for the report files.
-#	@if test ! -f "../../.libs/lt-testTranslator"; then echo "Can NOT find ../../.libs/lt-testTranslator"; exit 1; fi
-	@if test ! -f "../../.libs/lt-testTranslator"; then echo "Can NOT find ../../.libs/lt-testTranslator"; ../../testTranslator --help > /dev/null; echo "Fixed"; fi
-	cp ../../.libs/lt-testTranslator testTranslator_$(@:.o=)
-	./testTranslator_$(@:.o=) $(ROSE_FLAGS) -rose:f77 -c $(srcdir)/$(@:.o=.f)
-	echo "Removing the just built copy of lt-testTranslator to save space..."
-	rm -f testTranslator_$(@:.o=)
 endif
 
 # Note: If using gfortran version greater then 4.1, we can't call it with Fortran 2003 code since it is so buggy.
@@ -1300,7 +1255,6 @@ endif
 # endif
 
 $(TEST_F03_Sources): ../../testTranslator ../../testGraphGeneration ../../testTokenGeneration 
-if !ROSE_USE_INSURE
 #	$(VALGRIND) ../../testGraphGeneration $(ROSE_FLAGS) -rose:skip_syntax_check -rose:skipfinalCompileStep -rose:f2003 -c $(srcdir)/$(@:.o=.f03)
 	@$(RTH_RUN) CMD="../../testGraphGeneration $(ROSE_FLAGS) -rose:skip_syntax_check -rose:skipfinalCompileStep -rose:f2003 -c $(srcdir)/$(@:.f03.passed=.f03)" $(top_srcdir)/scripts/test_exit_status $@
 #	$(VALGRIND) ../../testTokenGeneration $(ROSE_FLAGS) -rose:skip_syntax_check -rose:skipfinalCompileStep -rose:f2003 -c $(srcdir)/$(@:.o=.f03)
@@ -1310,15 +1264,6 @@ if !ROSE_USE_INSURE
 	@touch $@
 if ROSE_EXPERIMENTAL_OFP_ROSE_CONNECTION
 	@$(RTH_RUN) CMD="sglri -i $(srcdir)/$(@:.f03.passed=.f03) -p $(SDF_OFP)/Fortran.tbl | pp-aterm -o $(@:.f03.passed=.f03).aterm" $(top_srcdir)/scripts/test_exit_status $(@:.f03.passed=.f03.testAtermGeneration.passed) || true
-endif
-else
-#	DQ (4/22/2011): For Insure++ we want to get the filename into the names used for the report files.
-#	@if test ! -f "../../.libs/lt-testTranslator"; then echo "Can NOT find ../../.libs/lt-testTranslator"; exit 1; fi
-	@if test ! -f "../../.libs/lt-testTranslator"; then echo "Can NOT find ../../.libs/lt-testTranslator"; ../../testTranslator --help > /dev/null; echo "Fixed"; fi
-	cp ../../.libs/lt-testTranslator testTranslator_$(@:.o=)
-	./testTranslator_$(@:.o=) $(ROSE_FLAGS) -rose:skip_syntax_check -rose:skipfinalCompileStep -rose:f2003 -c $(srcdir)/$(@:.o=.f03)
-	echo "Removing the just built copy of lt-testTranslator to save space..."
-	rm -f testTranslator_$(@:.o=)
 endif
 
 # DQ (4/6/2010): Added test for parsing only (tested here for C++ code)
@@ -1571,10 +1516,5 @@ clean-local:
 	rm -rf QMTest
 	rm -f *.passed *.failed *.err
 	rm -f *.aterm $(F90_COMMENTS_REQUIRED_TO_PASS_RESULTS_DIFF)
-if ROSE_USE_INSURE
-#	Remove the links built to get the filename being compiled into the name of the executable.
-	rm -f testTranslator_*
-	rm -f *.rpt
-endif
 
 # SKW's trivial change to force new Hudson run

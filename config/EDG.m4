@@ -66,12 +66,6 @@ AC_SUBST(OBJ)
 EXE=""
 AC_SUBST(EXE)
 
-AC_ARG_ENABLE(purify,
-[  --enable-purify        use memory managment that purify can understand],
-[if test $enable_purify = yes; then
-     AC_DEFINE([USING_PURIFY],[],[Support for PURIFY debugging software.])
- fi])
-
 # AC_ARG_ENABLE(ccpp,
 # [  --disable-ccpp don't support CC++ extensions],
 # [if test $enable_cc++ = yes; then

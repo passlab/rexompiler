@@ -1066,34 +1066,22 @@ ROSE_FLAGS += -w -rose:verbose 0
 # RTH test targets
 
 $(TEST_Source_passed): %.passed: $(srcdir)/% $(TEST_TRANSLATOR) $(top_srcdir)/scripts/test_exit_status
-if !ROSE_USE_INSURE
 	@$(RTH_RUN) \
 		CMD="$(TEST_TRANSLATOR) $(LANG_FLAGS) $(ROSE_FLAGS) -I$(srcdir) -c $(srcdir)/$(@:.c.passed=.c)" \
 		TITLE="TEST: $(TEST_TRANSLATOR) $(@:.c.passed=.c)" \
 		$(top_srcdir)/scripts/test_exit_status $@
-else
-	$(VALGRIND) $(TEST_TRANSLATOR) $(LANG_FLAGS) $(ROSE_FLAGS) -I$(srcdir) -c $(srcdir)/$(@:.c.passed=.c)
-endif
 
 test2005_168.c.passed: $(srcdir)/test2005_168.c $(TEST_TRANSLATOR) $(top_srcdir)/scripts/test_exit_status
-if !ROSE_USE_INSURE
 	@$(RTH_RUN) \
 		CMD="$(TEST_TRANSLATOR) $(LANG_FLAGS) $(ROSE_FLAGS) -I$(srcdir) -I$(top_srcdir)/src/util/commandlineProcessing -I$(top_srcdir)/src/frontend/SageIII -c $(srcdir)/test2005_168.c" \
 		TITLE="TEST: $(TEST_TRANSLATOR) test2005_168.c" \
 		$(top_srcdir)/scripts/test_exit_status $@
-else
-	$(VALGRIND) $(TEST_TRANSLATOR) $(LANG_FLAGS) $(ROSE_FLAGS) -I$(srcdir) -I$(top_srcdir)/src/util/commandlineProcessing -I$(top_srcdir)/src/frontend/SageIII -c $(srcdir)/test2005_168.c
-endif
 
 test2012_145.c.passed: $(srcdir)/test2012_145.c $(TEST_TRANSLATOR) $(top_srcdir)/scripts/test_exit_status
-if !ROSE_USE_INSURE
 	@$(RTH_RUN) \
 		CMD="$(TEST_TRANSLATOR) $(LANG_FLAGS) $(ROSE_FLAGS) -I$(srcdir) -DSTRING_MACRO=\\\"some_text\\\" -c $(srcdir)/test2012_145.c" \
 		TITLE="TEST: $(TEST_TRANSLATOR) test2012_145.c" \
 		$(top_srcdir)/scripts/test_exit_status $@
-else
-	$(VALGRIND) $(TEST_TRANSLATOR) $(LANG_FLAGS) $(ROSE_FLAGS) -I$(srcdir) -DSTRING_MACRO=\\\"some_text\\\" -c $(srcdir)/test2012_145.c
-endif
 
 #
 ############

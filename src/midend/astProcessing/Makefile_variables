@@ -15,13 +15,11 @@ mAstProcessing_la_sources=\
 	$(mAstProcessingPath)/AstTraversal.C \
 	$(mAstProcessingPath)/AstCombinedSimpleProcessing.C \
 	$(mAstProcessingPath)/AstSharedMemoryParallelSimpleProcessing.C
-if !ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 mAstProcessing_la_sources+=\
 	$(mAstProcessingPath)/AstRestructure.C
 if ROSE_WITH_LIBHARU
 mAstProcessing_la_sources+=\
 	$(mAstProcessingPath)/AstPDFGeneration.C 
-endif
 endif
 
 mAstProcessing_libadd=\

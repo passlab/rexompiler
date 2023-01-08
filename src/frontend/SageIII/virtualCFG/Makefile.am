@@ -10,10 +10,9 @@ $(GENERATED_SOURCE):
 
 noinst_LTLIBRARIES = libvirtualCFG.la
 
-if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-libvirtualCFG_la_SOURCES      = \
-     memberFunctions.C
-else
+# if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
+# libvirtualCFG_la_SOURCES      = memberFunctions.C
+# else
 libvirtualCFG_la_SOURCES      = \
      virtualCFG.C \
      cfgToDot.C \
@@ -21,7 +20,7 @@ libvirtualCFG_la_SOURCES      = \
      staticCFG.C \
      customFilteredCFG.C \
      interproceduralCFG.C
-endif
+# endif
 
 libvirtualCFG_la_LIBADD       = 
 libvirtualCFG_la_DEPENDENCIES = $(GENERATED_SOURCE)

@@ -15,9 +15,6 @@
 //        typedef class NodeQuery::VariantVector VariantVector;
 #include "astQueryInheritedAttribute.h"
 
-
-
-
 class ROSE_DLL_API VariantVector : public std::vector < VariantT >
 {
   // This class is derived from the STL vector class
@@ -41,13 +38,8 @@ ROSE_DLL_API VariantVector operator+ (VariantT lhs, const VariantVector & rhs);
 ROSE_DLL_API VariantVector operator+ (const VariantVector & lhs, VariantT rhs);
 ROSE_DLL_API VariantVector operator+ (const VariantVector & lhs, const VariantVector & rhs);
 
-
-
-
-
 namespace AstQueryNamespace
 {
-
   template<typename AstQuerySynthesizedAttributeType>
     struct helpFunctionalOneParamater
     : public std::unary_function<SgNode* , Rose_STL_Container<AstQuerySynthesizedAttributeType> >

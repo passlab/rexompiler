@@ -588,19 +588,6 @@
 /* Mark that GFORTRAN is available */
 #cmakedefine USE_GFORTRAN_IN_ROSE 1
 
-/* Link-time support for Insure. */
-//AS Don't know what to do with this
-#undef USE_INSURE
-
-/* Support for Purify */
-#cmakedefine USE_PURIFY
-
-/* Support for Purify API (Compiling with the Purify library). */
-#cmakedefine USE_PURIFY_API
-
-/* Link-time support for Purify. */
-#cmakedefine USE_PURIFY_LINKER
-
 /* Controls use of ROSE support for bddbddb (Binary decision diagrams (BDD)
    BDD-Based Deductive DataBase. */
 //AS Don't know what to do with this
@@ -744,7 +731,6 @@
 #cmakedefine ROSE_USE_UNIFORM_ADVANCED_WARNINGS_SUPPORT
 
 #cmakedefine ROSE_SUPPORT_GNU_EXTENSIONS
-#cmakedefine ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 #cmakedefine ROSE_SUPPORT_MICROSOFT_EXTENSIONS
 
 /* Detect whether our compilers are GNU or not */

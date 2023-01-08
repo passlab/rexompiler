@@ -6,9 +6,8 @@ EXTRA_DIST =
 # they generate data that is subsequently used in the generated 
 # ROSE documentation (examples, input codes, and generated output).
 
-# DQ (2/6/2010): changed the order of tests, the projects directory now follows the tests directory.
-# This was something that was discussed in email previously with the group.  Thei point is to have the
-# first tests run by make check be the most relevant tests (e.g. can we compile C++ code).
+# DQ (2/6/2010): The order of tests, the first tests run by make
+# check be the most relevant tests (e.g. can we compile C++ code).
 
 # DQ (4/17/2010): Support for minimal configuration of ROSE (e.g. "--enable-only-fortran").
 
@@ -23,43 +22,13 @@ if ROSE_USE_LONG_MAKE_CHECK_RULE
 SUBDIRS += tests/nonsmoke
 endif
 
-if !ROSE_USE_CLANG_FRONTEND
-if !ROSE_USE_INSURE
-# DQ (4/23/2011): Ignoring all of these whole directories might be over kill.  But I have had problems with 
-# Insure++ compilation specific to Hudson and want to start small and work to grow the number of parts of ROSE
-# used by Insure.  Except on Hudson (e.g. on my machine) Insure++ can be used to compiler nearly all of ROSE.
-
-# DQ (2/6/2017): Added test to detect if the default mode of the C++ frontend compiler for rOSE is C++11 or not.
-# Ultimately we want this test to only apply to the GNU 4.8 compiler in C++11 mode (which can have internal errors 
-# in compiling the C++ code represented by some more complex C++ test codes using ROSE).  Interestingly, the
-# GNU 4.8 C++11 mode works fine for the C++ code that implements ROSE itself.
-# if ROSE_USING_GCC_VERSION_4_8_CXX11
-#check-local:
-# all: remove_sage3basic_h_pch
-# all:
-#	@echo "**********************************************************************************************"
-#	@echo "**********************************************************************************************"
-#	@echo "Skipping tests in tutorial, exampleTranslators, docs, tools, scripts, and directories for"
-#	@echo "GNU 4.8.x using C++11 mode (GNU 4.8 compiler has internal errors when using the C++11 mode)."
-#	@echo "**********************************************************************************************"
-#	@echo "**********************************************************************************************"
-if !ROSE_USING_GCC_VERSION_4_8_CXX11
-
 if ROSE_BUILD_TUTORIAL_DIRECTORY_SUPPORT
  # If we can't process the tutorial directory then we can't generate example translators or the documentation
    SUBDIRS += tutorial exampleTranslators docs 
 endif
 SUBDIRS += tools scripts 
 
-# endif for excluding tests using GNU 4.8 and C++11 mode together.
-endif
-
-# endif for controling Insure++ usage.
-endif
-endif
-
 # Pei-Hung (12/06/2016) use "aclocal --print-ac-dir" to specify the include path to support both Linux and Mac
-#ACLOCAL_AMFLAGS = -I ./config -I ./acmacros -I ./libltdl -I /usr/share/aclocal
 ACLOCAL_INCLUDE = "$$(aclocal --print-ac-dir)"
 ACLOCAL_AMFLAGS = -I ./config -I ./acmacros -I ./libltdl -I $(ACLOCAL_INCLUDE)
 
@@ -111,10 +80,6 @@ check-rex: check-core
 # The "check" target at this top makefile is what users will normally
 # run. This should only run tests that are portable and useful to
 # users.
-#
-# (Matzke: adding binary tests since they're portable and useful and
-# some of our users have come to expect them, and utility tests since
-# they're fundamental to ROSE operation).
 check:
 	$(MAKE) check-core
 	$(MAKE) check-smoke
@@ -224,18 +189,10 @@ enforce_policies:
 .PHONY: check-policies
 check-policies: enforce_policies
 
-
-# DQ (6/29/2004): I don't think we need this!
-# LIBS = @LIBS@ ${SAGE_LIBS}
-
 # It seems that it is better to handle the config directory with its own Makefile.am
 # This allows us to hide autoconf accessory files (config.guess, etc.)
 # Copy the config directory to the distribution: why?
 # (because it has the file: config/Makefile.for.ROSE.includes.and.libs)
-# EXTRA_DIST = stamp-h.in stamp-h1.in GNU_HEADERS config
-# EXTRA_DIST = stamp-h.in stamp-h1.in GNU_HEADERS COPYWRITE ROSE_ResearchPapers
-# EXTRA_DIST = cmake CMakeLists.txt rose_config.h.in.cmake stamp-h.in stamp-h1.in COPYRIGHT \
-#              LicenseInformation ROSE_ResearchPapers README.OSX README.Cygwin build ChangeLog2 bincompat-sig
 EXTRA_DIST += cmake CMakeLists.txt rose_config.h.in.cmake stamp-h.in stamp-h1.in COPYRIGHT \
              LicenseInformation build 
 
@@ -248,17 +205,11 @@ cleanSig:
 bincompat-sig: cleanSig
 	$(srcdir)/scripts/edg-generate-sig > $@
 
-# At some point we want to put tals into the distribution (likely just PDF files, but not yet).
-# ROSE_Talks
-
 # clean-local explanation:
 # Remove template repositories.  No source code is compiled, but configuration
 #   tests may have created template repositories here.
 clean-local:
 	rm -rf Templates.DB ii_files ti_files *.csv
-
-# Not sure if this should be part of the clean-local rule.
-# chmod -R +rwx rose-0.9.5a; rm -rf rose-0.9.5a
 
 # DQ (9/8/2006): Modified to remove backend specific header files
 uninstall-local:
@@ -334,10 +285,6 @@ else
   DISTCHECK_CONFIGURE_FLAGS += --disable-fortran
 endif
 
-# DQ (4/5/2010): Use the same version of OFP as specified on the original configure command line.
-# CER (10/10/2011): No longer needed. A specific OFP version is configured by default and distributed with ROSE.
-#DISTCHECK_CONFIGURE_FLAGS += --enable-ofp-version=@ROSE_OFP_MAJOR_VERSION_NUMBER@.@ROSE_OFP_MINOR_VERSION_NUMBER@.@ROSE_OFP_PATCH_VERSION_NUMBER@
-
 # SRIRAM (8/2/2010): changing distcheck configuration for LLVM translator
 if ROSE_USE_LLVM
    DISTCHECK_CONFIGURE_FLAGS += --with-llvm=$(llvm_path)
@@ -351,15 +298,6 @@ rename_distribution:
 	new_name="$(distdir)-source-with-EDG-source.tar.gz"; \
 	cp $(distdir).tar.gz $$new_name
 
-# We reset distdir as shown on
-# http://jcalcote.wordpress.com/2008/02/23/autoconf-macros-exposed-at3/ to add the SVN
-# revision number
-# The final distribution package should be
-# rose-0.9.5a-8286.tar.gz
-#
-# Liao 12/14/2009
-# We don't use subversion anymore
-# We convert the number of git commits to a pseudo revision number instead
 distdir = $(PACKAGE)-$(VERSION)$(DOT_SVNREV)
 
 dist-hook:
@@ -423,8 +361,6 @@ docs: FORCE_DOCS_TO_BE_MADE
 	fi
 
 if ROSE_HAS_EDG_SOURCE
-
-# 1
 # This rule generates the simple binary tarball for the directories: EDG and EDG_SAGE_Connection
 binary_edg_tarball: 
 	$(MAKE) -C src/frontend/CxxFrontend binary_edg_tarball
@@ -433,27 +369,6 @@ upload_edg_binary:
 	$(MAKE) -C src/frontend/CxxFrontend upload_edg_binary
 
 endif
-
-# Makefile rule to test the Hudson runTest script (used for all Hudson tests).
-# Note that empty ROSE_TEST_BUILD_STYLE maps to a minimal build.
-testHudsonRunScript:
-	export ROSE_TEST_BUILD_SKIP_BUILD_SCRIPT=yes; \
-   export ROSE_TEST_GCC_VERSION=4.2.4; \
-   export ROSE_TEST_BUILD_STYLE=; \
-   export ROSE_TEST_BOOST_PATH=${MY_BOOST_ROOT}; \
-   export ROSE_TEST_JAVA_PATH=${JAVA_PATH}; \
-   cd $(top_srcdir); \
-   $(top_srcdir)/scripts/hudson/runTest
-
-# This will cause the Hudson environment to be dumped to a file so that
-# it can be sourced to reproduce the environment required to run tests
-# in the hudson tmp directories as part of debugging.
-dumpHudsonEnv:
-	export ROSE_DUMP_HUDSON_ENV=yes; $(MAKE) testHudsonRunScript
-
-
-# $(top_srcdir)/scripts/hudson/testHudsonRunScript.sh;
-
 
 # DQ (12/16/2009): Added interesting "git" feature by Liao.
 # It is unclear if it is very meaningful since it represents 
@@ -464,7 +379,6 @@ CheckinCounts:
 	@echo "*****************************************************"
 	cd $(top_srcdir); git shortlog -s -n
 	@echo "*****************************************************"
-
 
 # This rule is useful for identifing source files where "rose_config.h" should be included.
 FindFileRequiringRoseConfigHeaderShort:
@@ -568,16 +482,11 @@ testNameOfAutomakeConditionals:
 include $(top_srcdir)/config/automake_conditional_display_makefile
 # ***********************************************************
 
-
-
 # DQ (10/18/2010): These are used all over within a line (so don't use start of line anchor).
 # (eventually we want tests for consistancy)
 FILTER_AUTOCONF_DEFINE = egrep -v "autom4te" | grep -v "~" | grep -v "configure:" | grep AC_DEFINE
 NameOfAutoconfDefines:
 	grep -r "AC_DEFINE" $(top_srcdir) | $(FILTER_AUTOCONF_DEFINE)
-
-
-
 
 # DQ (2/12/2010): Report the areas of ROSE where we have skipped some tests of ROSE 
 # either doing analysis, code generation, or translation of the ROSE source code.
@@ -599,8 +508,6 @@ ProblemAreas:
 	grep -rl CXX_IS_ROSE_CODE_GENERATION $(top_srcdir) | grep "\.C"
 #	echo "Files where ROSE does not analyze some amount of code (test of CXX_IS_ROSE_TRANSLATOR in each ROSE source file)."
 #	grep -rl CXX_IS_ROSE_TRANSLATOR $(top_srcdir) | grep "\.C"
-
-
 
 # Report the version number of the ROSE translator built.
 PrintRoseTranslatorVersion: $(top_builddir)/tests/nonsmoke/functional/testAnalysis
@@ -817,63 +724,9 @@ librose_lcov_web_pages: librose-lcov.info
                 --ignore-errors=source          \
                 --output-directory $@ $<
 
-# Directories to remove from LCOV testing of ROSE:
-# src/frontend/CxxFrontend/EDG/edgRose/debugging.*
-# src/frontend/CxxFrontend/EDG/edgRose/edgGraph.*
-# src/backend/unparser/PythonCodeGeneration/*
-# src/backend/unparser/PHPCodeGeneration/*
-# src/midend/programAnalysis/OAWrap/*
-# src/midend/programAnalysis/OpenAnalysis/*
-# src/midend/programAnalysis/genericDataflowflow/*
-# src/frontend/CxxFrontend/EDG/EDG_5.0/*
-# src/midend/programAnalysis/dominanceAnalysis/*
-# src/midend/programAnalysis/pointerAnal/*
-# src/midend/programAnalysis/ssaUnfilteredCfg/*
-# src/src/midend/programAnalysis/staticInterproceduralSlicing/*
-# src/midend/programAnalysis/staticSingleAssignment/*
-# src/midend/programAnalysis/staticSingleAssignment/*
-# src/midend/programAnalysis/variableRenaming/*
-# src/midend/programTransformation/extractFunctionArgumentsNormalization/*
-# src/midend/programTransformation/finiteDifferencing/*
-# src/midend/programTransformation/functionCallNormalization/*
-# src/midend/programTransformation/implicitCodeGeneration/*
-# src/midend/programTransformation/singleStatementToBlockNormalization/*
-# src/roseSupport/stringify.C
-# 
-# 
-# Directories to remove from ROSE:
-# src/midend/programAnalysis/dominanceAnalysis
-# src/midend/programAnalysis/pointerAnal
-# src/midend/programAnalysis/ssaUnfilteredCfg
-# src/midend/programAnalysis/staticInterproceduralSlicing
-# src/midend/programAnalysis/staticSingleAssignment
-# src/midend/programAnalysis/variableRenaming
-# src/midend/programTransformation/extractFunctionArgumentsNormalization
-# src/midend/programTransformation/finiteDifferencing
-# src/midend/programTransformation/functionCallNormalization
-# src/midend/programTransformation/implicitCodeGeneration
-# src/midend/programTransformation/singleStatementToBlockNormalization
-# 
-# May be removed in the future (to be discussed) DQ (3/13/2017):
-# src/midend/programTransformation/constantFolding
-# src/midend/programTransformation/ompLowering
-# src/midend/programTransformation/partialRedundancyElimination 
-#
-# These should not be evaluated using lcov (to be discussed) DQ (3/13/2017):
-# src/roseSupport/stringify.C 
-#      Generated file, placed in source tree because it took a long time to generate when it was put into the build tree).
-#      A few functions from this file are tested (14 of 864), but not all.
-#      This file could only be tested using an automatically generated test and that might no be productive.
-#
-#
-#
 # Why are these so poorly tested:
 # src/midend/programTransformation/astInlining
 # src/midend/programTransformation/astOutlining
-# 
-# 
-# 
-
 
 # Generate a directory containing the HTML representation of the coverage information for the ROSE library proper.
 # THIS INCLUDES EDG SOURCES; DO NOT DISTRIBUTE THIS DIRECTORY

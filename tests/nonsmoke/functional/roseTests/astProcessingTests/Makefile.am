@@ -335,6 +335,7 @@ TEST_TARGETS += $(sourcePTP_TEST_TARGETS)
 MOSTLYCLEANFILES += $(addsuffix .main.dot, $(sourcePTP_SPECIMENS)) hotness0.dot
 
 #------------------------------------------------------------------------------------------------------------------------
+noinst_PROGRAMS += binaryPaths
 binaryPaths_SOURCES = binaryPaths.C
 binaryPaths_LDADD = $(ROSE_SEPARATE_LIBS)
 binaryPaths_SPECIMENS = t1 t2 t3 t4
@@ -349,8 +350,8 @@ check-binaryPaths: $(binaryPaths_TEST_TARGETS)
 EXTRA_DIST += $(binaryPaths_SPECIMENS)
 MOSTLYCLEANFILES += analysis.dot hotness0.dot
 
-
 #------------------------------------------------------------------------------------------------------------------------
+noinst_PROGRAMS += bPTP
 bPTP_SOURCES = bPTP.C
 bPTP_LDADD = $(ROSE_SEPARATE_LIBS)
 bPTP_SPECIMENS = t1 t2 t3 t4

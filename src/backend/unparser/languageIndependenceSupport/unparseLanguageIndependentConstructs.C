@@ -294,7 +294,7 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
   // that they should not be unparsed (this fix forces the statements in a "*.rmod" file to
   // always be unparsed.  If the SgSourceFile built to represent the "*.rmod" file had been
   // constructed as a transformation then the file info objects would have been marked as
-  // part of a transforamtion and this fix would not have been required.  At some point this
+  // part of a transformation and this fix would not have been required.  At some point this
   // can be improved.  So this is a fine temporary fix for now.
      if (StringUtility::fileNameSuffix(sourceFilename) == "rmod")
         {

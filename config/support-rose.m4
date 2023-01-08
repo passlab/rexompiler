@@ -177,18 +177,6 @@ if test "x$enable_smaller_generated_files" = "xyes"; then
   AC_DEFINE([ROSE_USE_SMALLER_GENERATED_FILES], [], [Whether to use smaller (but more numerous) generated files for the ROSE IR])
 fi
 
-# DQ (11/14/2011): Added new configure mode to support faster development of langauge specific
-# frontend support (e.g. for work on new EDG 4.3 front-end integration into ROSE).
-AC_ARG_ENABLE(internalFrontendDevelopment, AS_HELP_STRING([--enable-internalFrontendDevelopment], [Enable development mode to reduce files required to support work on language frontends]))
-AM_CONDITIONAL(ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT, [test "x$enable_internalFrontendDevelopment" = xyes])
-if test "x$enable_internalFrontendDevelopment" = "xyes"; then
-  AC_MSG_WARN([using reduced set of files to support faster development of language frontend work; e.g. new EDG version 4.3 to translate EDG to ROSE (internal use only)!])
-
-# DQ (11/14/2011): It is not good enough for this to be processed here (added to the rose_config.h file)
-# since it is seen too late in the process.
-# AC_DEFINE([ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT], [], [Whether to use internal reduced mode to support integration of the new EDG version 4.x])
-fi
-
 # This is the support for using EDG as the frontend in ROSE.
 ROSE_SUPPORT_EDG
 
@@ -333,13 +321,6 @@ unset ax_cv_cxx_compiler_vendor
 # exit 1
 
 # *****************************************************************
-
-# DQ (11/14/2011): This is defined here since it must be seen before any processing of the rose_config.h file.
-if test "x$enable_internalFrontendDevelopment" = "xyes"; then
-  AC_MSG_NOTICE([adding -D to command line to support faster development of language frontend work])
-  CFLAGS+=" -DROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT"
-  CXXFLAGS+=" -DROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT"
-fi
 
 AC_MSG_NOTICE([CFLAGS   = "$CFLAGS"])
 AC_MSG_NOTICE([CXXFLAGS = "$CXXFLAGS"])
@@ -697,12 +678,6 @@ ROSE_SUPPORT_LONG_MAKE_CHECK_RULE
 # Make the use of longer test optional where it is used in some ROSE/tests directories
 AM_CONDITIONAL(ROSE_USE_LONG_MAKE_CHECK_RULE,test "$with_ROSE_LONG_MAKE_CHECK_RULE" = yes)
 
-# DQ (10/17/2009): This is a bug introduced (again) into ROSE which disables the Java support.
-# See elsewhere in this file where this macro is commented out and the reason explained in
-# more details.
-# AS Check for ssl for the binary clone detection work
-# CHECK_SSL
-
 # Check for availability of wget (used for downloading the EDG binaries used in ROSE).
 AC_CHECK_TOOL(ROSE_WGET_PATH, [wget], [no])
 AM_CONDITIONAL(ROSE_USE_WGET, [test "$ROSE_WGET_PATH" != "no"])
@@ -924,14 +899,6 @@ AC_MSG_RESULT($CXX_ID-$CXX_VERSION)
 # ROSE_FLAG_C_OPTIONS
 # ROSE_FLAG_CXX_OPTIONS
 # echo "Outside of ROSE_FLAG _ CXX_OPTIONS macro: CXX_DEBUG= $CXX_DEBUG"
-
-# Enable turning on purify and setting its options, etc.
-ROSE_SUPPORT_PURIFY
-# echo "In ROSE/configure: AUX_LINKER = $AUX_LINKER"
-
-# Enable turning on Insure and setting its options, etc.
-ROSE_SUPPORT_INSURE
-# echo "In ROSE/configure: AUX_LINKER = $AUX_LINKER"
 
 # DQ (7/8/2004): Added support for shared libraries using Brian's macros
 # ROSE_TEST_LIBS="-L`pwd`/src"

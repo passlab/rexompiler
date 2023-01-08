@@ -1036,12 +1036,10 @@ EXAMPLE_TESTCODES_REQUIRED_TO_PASS +=
     
 
 
-if !ROSE_USE_INSURE
 # This test code fails with Insure++
    EXAMPLE_TESTCODES_REQUIRED_TO_PASS += \
       test2003_24.C \
       test2004_82.C
-endif
 
 # DQ (2/12/2011): This test fails for the astFileIO tests in tests/nonsmoke/functional/roseTests/astFileIOTests.
 # test2011_08.C 

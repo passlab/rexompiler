@@ -92,8 +92,6 @@ ptrUnitTests_SOURCES		 = ptrUnitTests.C
 mesgUnitTests_SOURCES		 = mesgUnitTests.C
 markupUnitTests_SOURCES		 = markupUnitTests.C
 cmdUnitTests_SOURCES		 = cmdUnitTests.C
-serializationUnitTests_SOURCES	 = serializationUnitTests.C
-databaseUnitTests_SOURCES	 = databaseUnitTests.C
 workListTests_SOURCES		 = workListTests.C
 resultUnitTests_SOURCES          = resultUnitTests.C
 

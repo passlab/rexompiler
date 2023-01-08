@@ -51,11 +51,9 @@ SUBDIRS = \
 # and are a source of portability problem on Ubuntu systems (because they overload 
 # the CXXFLAGS makefile variable).
 
-if !ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 SUBDIRS += \
 	programAnalysis \
 	programTransformation/loopProcessing
-endif
 
 # ------------------------------------------------------------------------------
 #  Library: programTransformation.la
@@ -85,12 +83,9 @@ libmidend_la_SOURCES=\
 	$(mAstDiagnostics_la_sources) \
 	$(mAstProcessing_la_sources) \
 	$(mAstQuery_la_sources) \
-	$(mAstSnippet_la_sources)
-if !ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-libmidend_la_SOURCES+=\
+	$(mAstSnippet_la_sources) \
 	$(mAstUtil_la_sources) \
 	$(mProgramTransformation_la_sources)
-endif
 
 libmidend_la_DEPENDENCIES=\
 	$(mAstQuery_la_dependencies)

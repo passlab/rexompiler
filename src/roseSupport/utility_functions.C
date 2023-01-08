@@ -964,7 +964,6 @@ copy_backend( SgProject* project, UnparseFormatHelp *unparseFormatHelp )
 void
 generatePDF ( const SgProject & project )
    {
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
   // DQ (6/14/2007): Added support for timing of the generatePDF() function.
      TimingPerformance timer ("ROSE generatePDF():");
 
@@ -978,8 +977,6 @@ generatePDF ( const SgProject & project )
      pdftest.generateInputFiles(&nonconstProject);
 #else
      printf("Warning: libharu support is not enabled\n");
-#endif
-
 #endif
    }
 

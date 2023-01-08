@@ -13,13 +13,9 @@ if ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
    SUBDIRS += fortran-parser
 endif
 
-if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-SUBDIRS += MSTL
-else
 SUBDIRS += MSTL antlr-jars
 if ROSE_WITH_LIBHARU
 SUBDIRS += libharu-2.1.0 
-endif
 endif
 
 EXTRA_DIST = CMakeLists.txt

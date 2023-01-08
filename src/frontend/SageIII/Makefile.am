@@ -14,11 +14,11 @@ include $(srcdir)/sage_support/Makefile_variables
 #mptPartialRedundancyEliminationPath=$(srcdir)/partialRedundancyElimination#
 fSageSupportPath=sage_support#
 
-if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   SUBDIRS = astFixup astPostProcessing sageInterface astVisualization virtualCFG includeDirectivesProcessing
-else
+# if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
+#   SUBDIRS = astFixup astPostProcessing sageInterface astVisualization virtualCFG includeDirectivesProcessing
+#else
    SUBDIRS = astFixup astPostProcessing sageInterface virtualCFG astTokenStream astHiddenTypeAndDeclarationLists astVisualization includeDirectivesProcessing ompparser accparser
-endif
+#endif
 
 # DQ (12/29/2009): This is only used to handle generated code as smaller files.
 SUBDIRS += GENERATED_CODE_DIRECTORY_Cxx_Grammar
@@ -30,12 +30,6 @@ ROSE_OPTIMIZATION_LEVEL =
 # ROSE_VERBOSE = -rose:verbose 2
 
 CXXFLAGS += $(ROSE_OPTIMIZATION_LEVEL) $(ROSE_VERBOSE)
-
-# DQ (11/14/2011): Add debug support when doing selective frontend development.
-# This cause the link time to incread about 4X.
-if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-# CXXFLAGS += -g
-endif
 
 omp_exprparser_lexer.lo: omp_exprparser_parser.hh omp_exprparser_lexer.cc
 omp_exprparser_parser.hh: omp_exprparser_parser.cc

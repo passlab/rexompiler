@@ -5,16 +5,11 @@ AM_CPPFLAGS = $(ROSE_INCLUDES)
 ## The grammar generator (ROSETTA) should use its own template repository
 CXX_TEMPLATE_REPOSITORY_PATH = .
 
-if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-libmstlSources = \
-   DOTGraphInterface.C
-else
 libmstlSources = \
    DOTGraphInterface.C
 if ROSE_WITH_LIBHARU
 libmstlSources += \
    PDFGeneration.C 
-endif
 endif
 
 # lib_LIBRARIES = libmstl.a
