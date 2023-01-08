@@ -4187,6 +4187,15 @@ void transOmpTargetLoopBlock(SgNode* node)
          // threadsPerBlock.x*sizeof(REAL)  //TODO: how to handle multiple shared data blocks, each for a reduction variable??
        }
        shared_data = buildMultiplyOp (buildVarRefExp(threads_per_block_decl), buildSizeOfOp (base_type) );
+
+       // insert reduction buffer array to variable mapping list
+       string reduction_buffer_name = (sym->get_name()).getString();
+       map_variable_list->append_expression(buildVarRefExp(reduction_buffer_name, p_scope));
+       map_variable_base_list->append_expression(buildVarRefExp(reduction_buffer_name, p_scope));
+       SgExpression* reduction_variable_size = buildCastExp(buildSizeOfOp(pointer_type), buildOpaqueType("int64_t", p_scope));
+       map_variable_size_list->append_expression(reduction_variable_size);
+       SgExpression* reduction_variable_value = buildIntVal(OMP_TGT_MAPTYPE_TARGET_PARAM | OMP_TGT_MAPTYPE_LITERAL);
+       map_variable_type_list->append_expression(reduction_variable_value);
     }
 
     // generate the cuda kernel launch statement
@@ -4272,14 +4281,14 @@ void transOmpTargetLoopBlock(SgNode* node)
       string leading_pattern = string("__dev_reduce_");
       string orig_var_name = per_block_var_name.substr(leading_pattern.length(), per_block_var_name.length() - leading_pattern.length());
 //      cout<<"debug: "<<per_block_var_name <<" after "<< orig_var_name <<endl;
-      SgExprListExp * parameter_list = buildExprListExp (buildVarRefExp(orig_var_name, target->get_scope()), buildVarRefExp(const_cast<SgVariableSymbol*>(current_symbol)), buildSizeOfOp(orig_type), buildIntVal(0), buildIntVal(0), buildVarRefExp(host_id_decl), buildVarRefExp(device_id_decl));
-      SgFunctionCallExp* func_call_exp = buildFunctionCallExp ("omp_target_memcpy", buildVoidType(), parameter_list, target->get_scope());
-      SgStatement* assign_stmt = buildAssignStatement (buildVarRefExp(orig_var_name, omp_target_stmt_body_block )  ,func_call_exp);
+      SgExprListExp * parameter_list = buildExprListExp (buildVarRefExp(orig_var_name, p_scope), buildVarRefExp(const_cast<SgVariableSymbol*>(current_symbol)), buildSizeOfOp(orig_type), buildIntVal(0), buildIntVal(0), buildVarRefExp(host_id_decl), buildVarRefExp(device_id_decl));
+      SgFunctionCallExp* func_call_exp = buildFunctionCallExp ("omp_target_memcpy", buildVoidType(), parameter_list, p_scope);
+      SgStatement* assign_stmt = buildAssignStatement (buildVarRefExp(orig_var_name, omp_target_stmt_body_block), func_call_exp);
       outlined_driver_body->append_statement(assign_stmt);
 
-     // insert memory free for the _dev_per_block_variables
-     // TODO: need runtime support to automatically free memory
-      SgFunctionCallExp* func_call_exp2 = buildFunctionCallExp ("omp_target_free", buildVoidType(), buildExprListExp(buildVarRefExp(const_cast<SgVariableSymbol*>(current_symbol)), buildVarRefExp(device_id_decl)),  omp_target_stmt_body_block);
+      // insert memory free for the _dev_per_block_variables
+      // TODO: need runtime support to automatically free memory
+      SgFunctionCallExp* func_call_exp2 = buildFunctionCallExp ("omp_target_free", buildVoidType(), buildExprListExp(buildVarRefExp(const_cast<SgVariableSymbol*>(current_symbol)), buildVarRefExp(device_id_decl)), omp_target_stmt_body_block);
       outlined_driver_body->append_statement(buildExprStatement(func_call_exp2));
     }
 
