@@ -14,14 +14,10 @@ add_subdirectory(valuePropagation)
 add_subdirectory(defUseAnalysis)
 add_subdirectory(dominanceAnalysis)
 add_subdirectory(staticInterproceduralSlicing)
-add_subdirectory(staticSingleAssignment)
 add_subdirectory(pointerAnal)
 add_subdirectory(variableRenaming)
 add_subdirectory(genericDataflow)
 add_subdirectory(dataflowAnalysis)
-add_subdirectory(ssaUnfilteredCfg)
-add_subdirectory(systemDependenceGraph)
-add_subdirectory(EditDistance)
 
 
 if (NOT enable-internalFrontendDevelopment)
@@ -62,15 +58,7 @@ if (NOT enable-internalFrontendDevelopment)
    VirtualFunctionAnalysis/PtrAliasAnalysis.C
    VirtualFunctionAnalysis/IntraProcAliasAnalysis.C
    VirtualFunctionAnalysis/IntraProcDataFlowAnalysis.C
-   VirtualFunctionAnalysis/InterProcDataFlowAnalysis.C
-   staticSingleAssignment/staticSingleAssignmentCalculation.C
-   staticSingleAssignment/staticSingleAssignmentQueries.C
-   staticSingleAssignment/uniqueNameTraversal.C
-   staticSingleAssignment/defsAndUsesTraversal.C
-   staticSingleAssignment/reachingDef.C
-   staticSingleAssignment/staticSingleAssignmentInterprocedural.C
-   EditDistance/EditDistance.C
-   EditDistance/TreeEditDistance.C)
+   VirtualFunctionAnalysis/InterProcDataFlowAnalysis.C)
 
   add_dependencies(midend_pa rosetta_generated)
 endif()

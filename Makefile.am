@@ -631,8 +631,6 @@ lcov:
 -d src/midend/programTransformation/functionCallNormalization/.libs \
 -d src/midend/astDiagnostics/.libs \
 -d src/midend/astProcessing/.libs \
--d src/midend/programAnalysis/ssaUnfilteredCfg/.libs \
--d src/midend/programAnalysis/staticSingleAssignment/.libs \
 -d src/midend/programAnalysis/.libs \
 -d src/midend/.libs \
 -d src/midend/abstractLayer/.libs \
@@ -689,9 +687,7 @@ librose-lcov.info: all-lcov.info
         "$(top_srcdir)/src/frontend/CxxFrontend/EDG/EDG_5.0/*" \
         "$(top_srcdir)/src/midend/programAnalysis/dominanceAnalysis/*" \
         "$(top_srcdir)/src/midend/programAnalysis/pointerAnal/*" \
-        "$(top_srcdir)/src/midend/programAnalysis/ssaUnfilteredCfg/*" \
         "$(top_srcdir)/src/src/midend/programAnalysis/staticInterproceduralSlicing/*" \
-        "$(top_srcdir)/src/midend/programAnalysis/staticSingleAssignment/*" \
         "$(top_srcdir)/src/midend/programAnalysis/variableRenaming/*" \
         "$(top_srcdir)/src/midend/programTransformation/extractFunctionArgumentsNormalization/*" \
         "$(top_srcdir)/src/midend/programTransformation/finiteDifferencing/*" \

@@ -1274,9 +1274,6 @@ src/frontend/SageIII/accparser/Makefile
 src/frontend/SageIII/virtualCFG/Makefile
 src/midend/Makefile
 src/midend/programAnalysis/Makefile
-src/midend/programAnalysis/ssaUnfilteredCfg/Makefile
-src/midend/programAnalysis/staticSingleAssignment/Makefile
-src/midend/programAnalysis/systemDependenceGraph/Makefile
 src/midend/programTransformation/extractFunctionArgumentsNormalization/Makefile
 src/midend/programTransformation/loopProcessing/Makefile
 src/midend/programTransformation/singleStatementToBlockNormalization/Makefile
@@ -1395,10 +1392,7 @@ tests/nonsmoke/functional/roseTests/ompLoweringTests/fortran/Makefile
 tests/nonsmoke/functional/roseTests/programAnalysisTests/Makefile
 tests/nonsmoke/functional/roseTests/programAnalysisTests/defUseAnalysisTests/Makefile
 tests/nonsmoke/functional/roseTests/programAnalysisTests/generalDataFlowAnalysisTests/Makefile
-tests/nonsmoke/functional/roseTests/programAnalysisTests/ssa_UnfilteredCfg_Test/Makefile
 tests/nonsmoke/functional/roseTests/programAnalysisTests/staticInterproceduralSlicingTests/Makefile
-tests/nonsmoke/functional/roseTests/programAnalysisTests/staticSingleAssignmentTests/Makefile
-tests/nonsmoke/functional/roseTests/programAnalysisTests/systemDependenceGraphTests/Makefile
 tests/nonsmoke/functional/roseTests/programAnalysisTests/testCallGraphAnalysis/Makefile
 tests/nonsmoke/functional/roseTests/programAnalysisTests/typeTraitTests/Makefile
 tests/nonsmoke/functional/roseTests/programAnalysisTests/variableLivenessTests/Makefile

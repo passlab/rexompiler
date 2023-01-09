@@ -4,7 +4,6 @@
 #include <Sawyer/ProgressBar.h>
 
 #include <Rose/Diagnostics.h>
-#include <EditDistance/EditDistance.h>                  // Rose::EditDistance
 
 // DQ (3/24/2016): Adding support for EDG/ROSE frontend message logging.
 #ifndef ROSE_USE_CLANG_FRONTEND
@@ -81,7 +80,6 @@ void initialize() {
         // Register logging facilities from other software layers.  Calling these initializers should make all the streams
         // point to the Rose::Diagnostics::destination that we set above.  Generally speaking, if a frontend language is
         // disabled there should be a dummy initDiagnostics that does nothing so we don't need lots of #ifdefs here.
-        EditDistance::initDiagnostics();
 #ifdef ROSE_BUILD_CXX_LANGUAGE_SUPPORT
 #ifndef ROSE_USE_CLANG_FRONTEND
      // DQ (2/5/2017): This is only used with the EDG frontend, not for use when configured to use Clang.

@@ -39,8 +39,6 @@ endif
 ROSE_BOOST_PREINCLUDE_PATH        = @ROSE_BOOST_PREINCLUDE_PATH@
 ROSE_BOOST_NORMAL_INCLUDE_PATH    = @ROSE_BOOST_NORMAL_INCLUDE_PATH@
 
-ROSE_SIDEEFFECT_INCLUDE = -I$(top_srcdir)/src/midend/programAnalysis/sideEffectAnalysis
-
 # This is properly handled by automake even when specified in an include file
 EDG_LIBS = @EDG_LIBS@
 
@@ -189,10 +187,6 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/midend/programTransformation/singleStatementToBlockNormalization \
      -I$(top_srcdir)/src/midend/programAnalysis \
      -I$(top_srcdir)/src/midend/programAnalysis/CFG \
-     -I$(top_srcdir)/src/midend/programAnalysis/staticSingleAssignment \
-     -I$(top_srcdir)/src/midend/programAnalysis/ssaUnfilteredCfg \
-     -I$(top_srcdir)/src/midend/programAnalysis/systemDependenceGraph \
-     -I$(top_srcdir)/src/midend/programAnalysis/systemDependenceGraph \
      -I$(top_srcdir)/src/midend/programAnalysis/CallGraphAnalysis \
      -I$(top_srcdir)/src/midend/programAnalysis/OAWrap \
      -I$(top_srcdir)/src/midend/programAnalysis/bitvectorDataflow \
@@ -203,7 +197,6 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/midend/programAnalysis/staticInterproceduralSlicing \
      -I$(top_srcdir)/src/midend/programAnalysis/valuePropagation \
      -I$(top_srcdir)/src/midend/programAnalysis/variableRenaming \
-      $(ROSE_SIDEEFFECT_INCLUDE) \
      -I$(top_srcdir)/src/midend/programTransformation/partialRedundancyElimination \
      -I$(top_srcdir)/src/midend/programTransformation/finiteDifferencing \
      -I$(top_srcdir)/src/midend/programTransformation/functionCallNormalization \
@@ -234,12 +227,6 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
 SWIG_ROSE_INCLUDES = $(ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH)
 ROSE_INCLUDES = -I$(top_builddir) -I$(top_builddir)/src $(ROSE_BOOST_PREINCLUDE_PATH) $(ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH)
 
-# DQ (8/15/2010): I have removed these directories from the include paths since it no longer exists.
-# I expect that the directories were removed and the include list not properly cleaned up.
-# -I$(top_srcdir)/src/midend/binaryAnalyses/graph
-# -I$(top_srcdir)/src/midend/programTransformation/runtimeTransformation
-# -I$(top_srcdir)/projects/dataBase
-
 # DQ (12/22/2008): Move Boost directory to front and used "-isystem" option so
 # that a system with a previous (older) installation of boost does not interfer
 # with the use of ROSE (and the version of boost specified using "--with-boost").
@@ -249,13 +236,6 @@ ROSE_INCLUDES = -I$(top_builddir) -I$(top_builddir)/src $(ROSE_BOOST_PREINCLUDE_
 # were removed (used with Microsoft Windows tests, and Yices tests).
 # DQ: Not used currently
 #     $(ROSE_WINE_INCLUDES)
-
-# DQ (5/3/2007): Removed from ROSE
-#     -I$(top_srcdir)/src/midend/programAnalysis/dominatorTreesAndDominanceFrontiers
-#     -I$(top_srcdir)/src/midend/programAnalysis/staticProgramSlicing
-
-# DQ (10/22/2004): Removed when I could not get annotation work to compile properly with make distcheck rule
-#     -I$(top_srcdir)/src/midend/programAnalysis/annotationLanguageParser
 
 # New way using two libraries
 # ROSE_LIBS_WITH_PATH = $(top_builddir)/src/librose.a $(top_builddir)/src/libedg.a
