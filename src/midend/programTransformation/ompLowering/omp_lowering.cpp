@@ -882,6 +882,25 @@ namespace OmpSupport
     }
   }
 
+static SgStatement* generateTargetReduceOnCPU(std::string orig_var, SgVariableSymbol* buffer_decl, SgVariableDeclaration* num_blocks, int r_operator) {
+  SgVariableDeclaration* init_stmt = buildVariableDeclaration("i", buildIntType(), buildAssignInitializer(buildIntVal(0)), num_blocks->get_scope());
+  SgStatement* cond_stmt = buildExprStatement(buildLessThanOp(buildVarRefExp(init_stmt),buildVarRefExp(num_blocks)));
+  SgExpression* incr_exp = buildPlusPlusOp(buildVarRefExp(init_stmt),SgUnaryOp::postfix);
+  SgStatement* loop_body = NULL;
+  switch (r_operator) {
+    case 6: // SgOmpClause::e_omp_reduction_plus
+    case 7: // SgOmpClause::e_omp_reduction_minus
+      loop_body = buildExprStatement(buildPlusAssignOp(buildVarRefExp(orig_var), buildPntrArrRefExp(buildVarRefExp(buffer_decl), buildVarRefExp(init_stmt))));
+      break;
+    default:
+      ROSE_ASSERT(0 && "Unsupported reduction operator is met.");
+  }
+  ROSE_ASSERT(loop_body != NULL);
+  SgStatement* for_stmt = buildForStatement_nfi(init_stmt,cond_stmt,incr_exp,loop_body);
+
+  return for_stmt;
+}
+
   //! check if an omp for/do loop use static schedule or not
   // Static schedule include: default schedule, or schedule(static[,chunk_size])
   bool useStaticSchedule(SgOmpClauseBodyStatement* omp_loop)
@@ -3918,7 +3937,7 @@ void collectOmpTargetUpdateInfo(SgStatement *target,
   }
 
 // Transform the worksharing loop in a target spmd region
-void transOmpTargetLoopBlock(SgNode* node)
+SgBasicBlock* transOmpTargetLoopBlock(SgNode* node)
 {
   //step 0: Sanity check
   ROSE_ASSERT(node != NULL);
@@ -4019,6 +4038,7 @@ void transOmpTargetLoopBlock(SgNode* node)
   // TODO: this is not very elegant since the outer most loop's loop variable is still translated.
   //for reduction
   per_block_declarations.clear(); // must reset to empty or wrong reference to stale content generated previously
+  return bb1;
 }
 
   // transformation for combined directive
@@ -4098,7 +4118,7 @@ void transOmpTargetLoopBlock(SgNode* node)
       SgVarRefExp *vRef = isSgVarRefExp((*i));
       SgName var_name = vRef-> get_symbol()->get_name();
       string var_name_str = var_name.getString();
-      if (var_name_str.find("__dev_reduce_",0) == 0)
+      if (var_name_str.find("__reduction_buffer_",0) == 0)
       {
         all_syms.insert( vRef-> get_symbol());
         per_block_reduction_syms.insert (vRef-> get_symbol());
@@ -4192,9 +4212,9 @@ void transOmpTargetLoopBlock(SgNode* node)
        string reduction_buffer_name = (sym->get_name()).getString();
        map_variable_list->append_expression(buildVarRefExp(reduction_buffer_name, p_scope));
        map_variable_base_list->append_expression(buildVarRefExp(reduction_buffer_name, p_scope));
-       SgExpression* reduction_variable_size = buildCastExp(buildSizeOfOp(pointer_type), buildOpaqueType("int64_t", p_scope));
+       SgExpression* reduction_variable_size = buildCastExp(buildMultiplyOp(buildVarRefExp(num_blocks_decl), buildSizeOfOp(base_type)), buildOpaqueType("int64_t", p_scope));
        map_variable_size_list->append_expression(reduction_variable_size);
-       SgExpression* reduction_variable_value = buildIntVal(OMP_TGT_MAPTYPE_TARGET_PARAM | OMP_TGT_MAPTYPE_LITERAL);
+       SgExpression* reduction_variable_value = buildIntVal(OMP_TGT_MAPTYPE_TARGET_PARAM | OMP_TGT_MAPTYPE_FROM);
        map_variable_type_list->append_expression(reduction_variable_value);
     }
 
@@ -4266,6 +4286,11 @@ void transOmpTargetLoopBlock(SgNode* node)
     setSourcePositionForTransformation(func_offloading_stmt);
     outlined_driver_body->append_statement(func_offloading_stmt);
 
+    // At this point, the for loop has been moved to the outlined function.
+    // It's the very first loop statement in that function.
+    Rose_STL_Container<SgNode*> for_loops = NodeQuery::querySubTree(result, V_SgForStatement);
+    SgBasicBlock* loop_block = transOmpTargetLoopBlock(for_loops[0]);
+
     for (ASTtools::VarSymSet_t::const_iterator iter = per_block_reduction_syms.begin(); iter != per_block_reduction_syms.end(); iter ++)
     {
       const SgVariableSymbol * current_symbol = *iter;
@@ -4274,31 +4299,23 @@ void transOmpTargetLoopBlock(SgNode* node)
       SgType * orig_type = pointer_type->get_base_type();
       ROSE_ASSERT (orig_type != NULL);
 
-      SgVariableDeclaration* host_id_decl = buildVariableDeclaration("__host_id", buildIntType(), buildAssignInitializer(buildFunctionCallExp("omp_get_initial_device", buildVoidType(), NULL, p_scope)), p_scope);
-      outlined_driver_body->append_statement(host_id_decl);
       string per_block_var_name = (current_symbol->get_name()).getString();
       // get the original var name by stripping of the leading "_dev_per_block_"
-      string leading_pattern = string("__dev_reduce_");
+      string leading_pattern = string("__reduction_buffer_");
       string orig_var_name = per_block_var_name.substr(leading_pattern.length(), per_block_var_name.length() - leading_pattern.length());
 //      cout<<"debug: "<<per_block_var_name <<" after "<< orig_var_name <<endl;
-      SgExprListExp * parameter_list = buildExprListExp (buildVarRefExp(orig_var_name, p_scope), buildVarRefExp(const_cast<SgVariableSymbol*>(current_symbol)), buildSizeOfOp(orig_type), buildIntVal(0), buildIntVal(0), buildVarRefExp(host_id_decl), buildVarRefExp(device_id_decl));
-      SgFunctionCallExp* func_call_exp = buildFunctionCallExp ("omp_target_memcpy", buildVoidType(), parameter_list, p_scope);
-      SgStatement* assign_stmt = buildAssignStatement (buildVarRefExp(orig_var_name, omp_target_stmt_body_block), func_call_exp);
-      outlined_driver_body->append_statement(assign_stmt);
+      SgExprListExp * parameter_list = buildExprListExp(buildVarRefExp(const_cast<SgVariableSymbol*>(current_symbol)), buildVarRefExp("_num_blocks_", target->get_scope()), buildIntVal(per_block_reduction_map[const_cast<SgVariableSymbol*>(current_symbol)]));
+      SgStatement* reduce_on_cpu_stmt = generateTargetReduceOnCPU(orig_var_name, const_cast<SgVariableSymbol*>(current_symbol), num_blocks_decl, per_block_reduction_map[const_cast<SgVariableSymbol*>(current_symbol)]);
+      outlined_driver_body->append_statement(reduce_on_cpu_stmt);
 
       // insert memory free for the _dev_per_block_variables
       // TODO: need runtime support to automatically free memory
-      SgFunctionCallExp* func_call_exp2 = buildFunctionCallExp ("omp_target_free", buildVoidType(), buildExprListExp(buildVarRefExp(const_cast<SgVariableSymbol*>(current_symbol)), buildVarRefExp(device_id_decl)), omp_target_stmt_body_block);
+      SgFunctionCallExp* func_call_exp2 = buildFunctionCallExp("free", buildVoidType(), buildExprListExp(buildVarRefExp(const_cast<SgVariableSymbol*>(current_symbol))), omp_target_stmt_body_block);
       outlined_driver_body->append_statement(buildExprStatement(func_call_exp2));
     }
 
     // num_blocks is referenced before the declaration is inserted. So we must fix it, otherwise the symbol of unkown type will be cleaned up later.
     SageInterface::fixVariableReferences(num_blocks_decl->get_scope());
-
-    // At this point, the for loop has been moved to the outlined function.
-    // It's the very first loop statement in that function.
-    Rose_STL_Container<SgNode*> for_loops = NodeQuery::querySubTree(result, V_SgForStatement);
-    transOmpTargetLoopBlock(for_loops[0]);
 
     //------------now remove omp parallel since everything within it has been outlined to a function
     replaceStatement(target, outlined_driver_body, true);
@@ -5727,14 +5744,12 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
         //SgScopeStatement* scope_for_insertion = enclosing_omp_target->get_scope();
         SgScopeStatement* scope_for_insertion = isSgScopeStatement(enclosing_omp_parallel->get_scope());
         ROSE_ASSERT (scope_for_insertion != NULL);
-        SgVarRefExp* device_id_ref = buildVarRefExp("__device_id", scope_for_insertion);
         SgVarRefExp* num_block_ref = buildVarRefExp("_num_blocks_", scope_for_insertion);
-        SgVarRefExp* num_threads_ref = buildVarRefExp("_threads_per_block_", scope_for_insertion);
-        SgExpression* multi_exp = buildMultiplyOp(buildMultiplyOp(num_block_ref, num_threads_ref), buildSizeOfOp(orig_type));
-        SgExprListExp* parameter_list = buildExprListExp(multi_exp, device_id_ref);
-        SgExpression* init_exp = buildCastExp(buildFunctionCallExp(SgName("omp_target_alloc"), buildPointerType(buildPointerType(orig_type)), parameter_list, scope_for_insertion),
+        SgExpression* multi_exp = buildMultiplyOp(num_block_ref, buildSizeOfOp(orig_type));
+        SgExprListExp* parameter_list = buildExprListExp(multi_exp);
+        SgExpression* init_exp = buildCastExp(buildFunctionCallExp(SgName("malloc"), buildPointerType(buildPointerType(orig_type)), parameter_list, scope_for_insertion),
                                               buildPointerType(orig_type));
-        per_block_decl = buildVariableDeclaration("__dev_reduce_" + orig_name, buildPointerType(orig_type), buildAssignInitializer(init_exp), scope_for_insertion);
+        per_block_decl = buildVariableDeclaration("__reduction_buffer_" + orig_name, buildPointerType(orig_type), buildAssignInitializer(init_exp), scope_for_insertion);
         // the prefix of "_dev_per_block_" is important for later handling when calling outliner: add them into the parameter list
         // per_block_decl = buildVariableDeclaration ("_dev_per_block_"+orig_name, buildPointerType(orig_type), buildAssignInitializer(init_exp), scope_for_insertion);
         // this statement refers to _num_blocks_, which will be declared later on when translating "omp parallel" enclosed in "omp target"
