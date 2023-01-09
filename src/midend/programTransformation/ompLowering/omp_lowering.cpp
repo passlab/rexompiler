@@ -37,6 +37,8 @@ static std::vector<SgVariableDeclaration*> per_block_declarations;
 static std::map<string , std::vector<SgExpression*> > offload_array_offset_map;
 static std::map<string , std::vector<SgExpression*> > offload_array_size_map;
 
+std::map<SgOmpExecStatement*, std::map<SgInitializedName*, SgExpression*>*> clause_variable_renaming_record;
+
 // Liao 1/23/2015
 // when translating mapped variables using xomp_deviceDataEnvironmentPrepareVariable(), the original variable reference will be used as
 // a parameter.
@@ -2538,7 +2540,18 @@ static SgStatement* findLastDeclarationStatement(SgScopeStatement * scope)
        cpu_outlined_file = generate_outlined_function_file(outlined_func, "");
    }
    // Move the outlined function to the new source file
-   move_outlined_function(outlined_func, cpu_outlined_file);
+   SgFunctionDeclaration* new_outlined_func = move_outlined_function(outlined_func, cpu_outlined_file);
+   Rose_STL_Container<SgNode*> old_directives = NodeQuery::querySubTree(outlined_func, V_SgOmpExecStatement);
+   Rose_STL_Container<SgNode*> new_directives = NodeQuery::querySubTree(new_outlined_func, V_SgOmpExecStatement);
+   ROSE_ASSERT(old_directives.size() == new_directives.size());
+   for (int i = 0; i < new_directives.size(); i++) {
+     SgOmpExecStatement* old_directive = isSgOmpExecStatement(old_directives[i]);
+     SgOmpExecStatement* new_directive = isSgOmpExecStatement(new_directives[i]);
+     ROSE_ASSERT(old_directive != NULL);
+     ROSE_ASSERT(new_directive != NULL);
+     clause_variable_renaming_record[new_directive] = clause_variable_renaming_record[old_directive];
+     clause_variable_renaming_record.erase(old_directive);
+   }
   }
 
 
@@ -5322,40 +5335,40 @@ static void insertOmpLastprivateCopyBackStmts(SgStatement* ompStmt, vector <SgSt
   //    shared = shared op local;
   //    GOMP_atomic_end ();
   // We use the 2nd method only for now for simplicity and portability
-static void insertOmpReductionCopyBackStmts (SgOmpClause::omp_reduction_identifier_enum r_operator, vector <SgStatement* >& end_stmt_list,  SgBasicBlock* bb1, SgInitializedName* orig_var, SgVariableDeclaration* local_decl)
+static void insertOmpReductionCopyBackStmts (SgOmpClause::omp_reduction_identifier_enum r_operator, vector <SgStatement* >& end_stmt_list,  SgBasicBlock* bb1, SgInitializedName* orig_var, SgVariableDeclaration* local_decl, SgStatement* node)
 {
-#ifdef ENABLE_XOMP
   SgExprStatement* atomic_start_stmt = buildFunctionCallStmt("__kmpc_atomic_start", buildVoidType(), NULL, bb1);
-#else
-  SgExprStatement* atomic_start_stmt = buildFunctionCallStmt("GOMP_atomic_start", buildVoidType(), NULL, bb1);
-#endif
   end_stmt_list.push_back(atomic_start_stmt);
   SgExpression* r_exp = NULL;
+  SgExpression* orig_var_exp = buildVarRefExp(orig_var, bb1);
+  SgOmpExecStatement* target = isSgOmpExecStatement(node);
+  if (clause_variable_renaming_record.count(target))
+    orig_var_exp = clause_variable_renaming_record[target]->at(orig_var);
   switch (r_operator)
   {
     case SgOmpClause::e_omp_reduction_plus:
-      r_exp = buildAddOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl));
+      r_exp = buildAddOp(orig_var_exp, buildVarRefExp(local_decl));
       break;
     case SgOmpClause::e_omp_reduction_mul:
-      r_exp = buildMultiplyOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl));
+      r_exp = buildMultiplyOp(orig_var_exp, buildVarRefExp(local_decl));
       break;
     case SgOmpClause::e_omp_reduction_minus:
-      r_exp = buildSubtractOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl));
+      r_exp = buildSubtractOp(orig_var_exp, buildVarRefExp(local_decl));
       break;
     case SgOmpClause::e_omp_reduction_bitand:
-      r_exp = buildBitAndOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl));
+      r_exp = buildBitAndOp(orig_var_exp, buildVarRefExp(local_decl));
       break;
     case SgOmpClause::e_omp_reduction_bitor:
-      r_exp = buildBitOrOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl));
+      r_exp = buildBitOrOp(orig_var_exp, buildVarRefExp(local_decl));
       break;
     case SgOmpClause::e_omp_reduction_bitxor:
-      r_exp = buildBitXorOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl));
+      r_exp = buildBitXorOp(orig_var_exp, buildVarRefExp(local_decl));
       break;
     case SgOmpClause::e_omp_reduction_logand:
-      r_exp = buildAndOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl));
+      r_exp = buildAndOp(orig_var_exp, buildVarRefExp(local_decl));
       break;
     case SgOmpClause::e_omp_reduction_logor:
-      r_exp = buildOrOp(buildVarRefExp(orig_var, bb1), buildVarRefExp(local_decl));
+      r_exp = buildOrOp(orig_var_exp, buildVarRefExp(local_decl));
       break;
       // TODO Fortran operators.
     case SgOmpClause::e_omp_reduction_and: // Fortran .and.
@@ -5372,13 +5385,9 @@ static void insertOmpReductionCopyBackStmts (SgOmpClause::omp_reduction_identifi
     default:
         cerr<<"Illegal or unhandled reduction operator type:"<< r_operator<<endl;
     }
-    SgStatement* reduction_stmt = buildAssignStatement(buildVarRefExp(orig_var, bb1), r_exp);
+    SgStatement* reduction_stmt = buildAssignStatement(orig_var_exp, r_exp);
     end_stmt_list.push_back(reduction_stmt);
-#ifdef ENABLE_XOMP
     SgExprStatement* atomic_end_stmt = buildFunctionCallStmt("__kmpc_atomic_end", buildVoidType(), NULL, bb1);
-#else
-    SgExprStatement* atomic_end_stmt = buildFunctionCallStmt("GOMP_atomic_end", buildVoidType(), NULL, bb1);
-#endif
     end_stmt_list.push_back(atomic_end_stmt);
   }
 
@@ -5769,7 +5778,7 @@ static void insertInnerThreadBlockReduction(SgOmpClause::omp_reduction_identifie
         if (isAcceleratorModel)
           insertInnerThreadBlockReduction (r_operator, end_stmt_list, bb1, orig_var, local_decl, per_block_decl);
         else
-          insertOmpReductionCopyBackStmts(r_operator, end_stmt_list, bb1, orig_var, local_decl);
+          insertOmpReductionCopyBackStmts(r_operator, end_stmt_list, bb1, orig_var, local_decl, ompStmt);
       }
 
      } // end for (each variable)
