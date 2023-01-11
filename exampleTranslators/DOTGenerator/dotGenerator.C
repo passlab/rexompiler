@@ -3,7 +3,6 @@
 using namespace Rose::Diagnostics;
 
 int main( int argc, char* argv[] ) {
-  ROSE_INITIALIZE;
   std::vector<std::string> argvList(argv, argv + argc);
 
   SgProject* project = frontend(argvList);

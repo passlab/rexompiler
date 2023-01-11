@@ -25,9 +25,6 @@ void RoseVisitor::visit ( SgNode* node)
 int
 main ( int argc, char* argv[] )
    {
-  // Initialize and check compatibility. See Rose::initialize
-     ROSE_INITIALIZE;
-
      SgProject* project = frontend(argc,argv);
      ROSE_ASSERT (project != NULL);
 

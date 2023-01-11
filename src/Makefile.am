@@ -110,7 +110,6 @@ nobase_pkginclude_HEADERS=						\
 	Rose/FormatRestorer.h						\
 	Rose/FormattedTable.h						\
 	Rose/GraphUtility.h						\
-	Rose/Initialize.h						\
 	Rose/Progress.h							\
 	Rose/RecursionCounter.h						\
 	Rose/StringUtility.h						\

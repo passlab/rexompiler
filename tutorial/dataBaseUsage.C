@@ -15,9 +15,6 @@ using namespace Rose;
 
 int main( int argc, char * argv[] ) 
    {
-  // Initialize and check compatibility. See Rose::initialize
-     ROSE_INITIALIZE;
-
 // TPS (01Dec2008): Enabled mysql and this fails.
 // seems like it is not supposed to be included
 #if 0

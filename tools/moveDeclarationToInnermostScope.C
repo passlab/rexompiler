@@ -714,8 +714,6 @@ static std::vector<std::string> parseCommandLine(std::vector< std::string > & ar
 
 int main(int argc, char * argv[])
 {
-  ROSE_INITIALIZE;
-
   //! Command line process begin --------------------------
   vector <string> argvList (argv, argv+argc)  ; 
   //argvList =  parseCommandLine (argc, argv);

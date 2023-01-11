@@ -156,8 +156,6 @@ int main(int argc, char *argv[]) {
 
     typedef Sawyer::Container::Graph<VertexValue, EdgeValue> Graph;
 
-    ROSE_INITIALIZE;
-
     size_t nverts = 10000;
     size_t nedges = 10000000;
     bool showGraph = false;

@@ -148,25 +148,6 @@ file(READ ${ROSE_SCM_DATE_FILE} ROSE_VERSION)
 message(STATUS "The ROSE version integer is ${ROSE_VERSION}")
 message(STATUS "The ROSE version string is ${ROSE_PACKAGE_VERSION}")
 
-
-
-########################################################################################################################
-# Initialize the leading part of the Rose::initialize token
-########################################################################################################################
-
-# Configuration synopsis used by Rose::initialize.  The ROSE_CONFIG_TOKEN is #define'd as a string in rose_config.h and
-# ultimately rosePublicConfig.h and the string is a synopsis of some important configuration details. This string is
-# passed by user code to the Rose::initialize function which compares it against the same macro compiled into the ROSE
-# library. If their contents differ it means that the ROSE header files being used by the user are not the same as the
-# ROSE header files that were used to compile librose being linked by the user and bad things will probably happen.
-#
-# The CMake ROSE_CONFIG_TOKEN variable is the string that becomes the eventual value of the ROSE_CONFIG_TOKEN C
-# preprocessor macro.  We initialize it here, but other parts of the CMake file might augment its value with additional
-# information (e.g., adding the boost version number).
-set(ROSE_CONFIG_TOKEN "rose-${ROSE_SCM_VERSION_ID}")
-
-
-
 ########################################################################################################################
 # Boost libraries
 ########################################################################################################################
@@ -228,17 +209,6 @@ endif()
 find_package(Boost 1.47.0
   COMPONENTS chrono date_time filesystem iostreams program_options random regex system wave thread serialization)
 include_directories(${Boost_INCLUDE_DIRS})
-set(ROSE_CONFIG_TOKEN "${ROSE_CONFIG_TOKEN} boost-${Boost_VERSION}")
-
-# If the boost is compiled with multi-thread support then we must add "-pthread" to all compile and link commands, or
-# whatever is appropriate for the system.  With GCC it is not sufficient to just add "-lpthread" to the link
-# commands--the "-pthread" switch MUST be added to the compile commands as well.
-set(Threads_FIND_QUIETLY ${QUIET})
-find_package(Threads)
-if(CMAKE_USE_PTHREADS_INIT)
-  add_definitions(-pthread)
-  set(ROSE_CONFIG_TOKEN "${ROSE_CONFIG_TOKEN} pthread")
-endif()
 
 # Paths to install header, executable, and libraries
 set(INCLUDE_INSTALL_DIR "include/rose")

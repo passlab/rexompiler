@@ -18,7 +18,6 @@ add_definitions(-DROSE_UTIL_EXPORTS)
 # .C files for the ::Rose namespace (see top comment)
 add_library(roseNamespace OBJECT
   FormattedTable.C
-  Initialize.C
   Progress.C
   Yaml.C)
 
@@ -37,7 +36,6 @@ install(FILES
   FormatRestorer.h
   FormattedTable.h
   GraphUtility.h
-  Initialize.h
   Progress.h
   RecursionCounter.h
   StringUtility.h

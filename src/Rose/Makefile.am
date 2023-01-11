@@ -26,7 +26,6 @@ librose_partial_la_SOURCES =								\
 	Diagnostics/Diagnostics.C							\
 	FileSystem/FileSystem.C								\
 	FormattedTable.C								\
-	Initialize.C									\
 	Progress.C									\
 	StringUtility/Convert.C								\
 	StringUtility/Diagnostics.C							\

@@ -530,8 +530,6 @@ test_ast_attributes() {
 
 int
 main() {
-    ROSE_INITIALIZE;
-
     test_allocation_counter();
     test_value_deletion();
     test_container_destruction();

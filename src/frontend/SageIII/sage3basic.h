@@ -24,6 +24,7 @@
 // This is first because it quickly brings in all the configuration-related settings that are needed by #ifdef's in the rest of
 // this header.
 #include "featureTests.h"
+#include "logging.h"
 
 // Much of ROSE's binary support uses the intX_t and uintX_t types (where X is a bit width), so we need to have the stdc printf
 // format macros defined for portability.  We do that here because it needs to be done before <inttypes.h> is included for the
@@ -34,31 +35,6 @@
 #define __STDC_FORMAT_MACROS
 #endif
 #include <inttypes.h>
-
-// The boost::filesystem::path class has no serialization function, and boost::serialization doesn't provide a non-intrusive
-// implementation. Therefore ROSE needs to define one. This code must occur before including any headers that serialize
-// boost::filesystem::path, and specifically before defining AST node types.
-#ifdef ROSE_HAVE_BOOST_SERIALIZATION_LIB
-#include <boost/filesystem.hpp>
-#include <boost/serialization/nvp.hpp>
-namespace boost {
-    namespace serialization {
-        template<class Archive>
-        void serialize(Archive &ar, boost::filesystem::path &path, const unsigned version) {
-            if (Archive::is_saving::value) {
-                std::string nativePath = path.string();
-                ar & BOOST_SERIALIZATION_NVP(nativePath);
-            } else {
-                std::string nativePath;
-                ar & BOOST_SERIALIZATION_NVP(nativePath);
-                path = nativePath;
-            }
-        }
-    }
-}
-#endif
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -448,8 +424,6 @@ namespace boost {
 
 // endif for ifndef ROSE_USE_SWIG_SUPPORT
 // #endif
-
-#include <Rose/Initialize.h>                                 // defines Rose::initialize
 
 // Liao, 2018/6/25, define the actual version value for OpenMP 4.5
 #define OMPVERSION 201511

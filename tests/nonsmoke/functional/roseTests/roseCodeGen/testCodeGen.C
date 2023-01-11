@@ -76,7 +76,6 @@ struct my_factory_t : Rose::CodeGen::Factory<my_factory_t, my_api_t> {
 };
 
 int main( int argc, char * argv[] ) {
-  ROSE_INITIALIZE;
   std::vector<std::string> args(argv, argv+argc);
   Rose::CodeGen::Driver driver(args);
 

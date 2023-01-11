@@ -2,7 +2,7 @@
 #include "sage3basic.h"
 
 int main( int argc, char * argv[] ) {
-  ROSE_INITIALIZE;
+  LOG_KEY(LOG_DRIVER, "Entering the main program of the compiler\n");
 
   if (argc == 1){//Direct users to usage and exit with status == 1
 	 fprintf (stderr,"Try option `--help' for more information.\n");

@@ -52,9 +52,6 @@ struct keepFunction : public unary_function<bool,SgFunctionDeclaration*>
 };
 int main( int argc, char * argv[] ) 
 {
-  // Initialize and check compatibility. See Rose::initialize
-  ROSE_INITIALIZE;
-
   SgProject* project = new SgProject(argc, argv);
   ROSE_ASSERT (project != NULL);
 
