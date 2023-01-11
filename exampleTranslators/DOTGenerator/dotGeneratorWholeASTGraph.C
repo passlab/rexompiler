@@ -5,7 +5,6 @@
 using namespace Rose::Diagnostics;
 
 int main( int argc, char* argv[] ) {
-  ROSE_INITIALIZE;
   std::vector<std::string> argvList(argv, argv + argc);
 
   // -DSKIP_ROSE_BUILTIN_DECLARATIONS needs to be added

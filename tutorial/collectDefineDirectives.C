@@ -88,9 +88,6 @@ visitorTraversal::evaluateSynthesizedAttribute ( SgNode* n, SynthesizedAttribute
 int
 main ( int argc, char* argv[] )
    {
-  // Initialize and check compatibility. See Rose::initialize
-     ROSE_INITIALIZE;
-
      SgProject* project = frontend(argc,argv);
 
   // Build the traversal object and call "traverse" member function

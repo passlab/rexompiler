@@ -4,10 +4,6 @@ AC_DEFUN([ROSE_SUPPORT_ROSE_PART_1],
 [
 # Begin macro ROSE_SUPPORT_ROSE_PART_1.
 
-
-# Used by Rose::initialize. See the top-level CMakeLists.txt for more details.
-ROSE_CONFIG_TOKEN="rose-$(cat $srcdir/ROSE_VERSION)"
-
 # *********************************************************************
 # This macro encapsulates the complexity of the tests required for ROSE
 # to understnd the machine environment and the configure command line.
@@ -652,7 +648,6 @@ AC_MSG_NOTICE([in configure.in ... CXX = "$CXX"])
 # specific and system specific header files as for the backend compiler.  These depend
 # upon the selection of the back-end compiler.
 GET_COMPILER_SPECIFIC_DEFINES
-ROSE_CONFIG_TOKEN="$ROSE_CONFIG_TOKEN $FRONTEND_CXX_COMPILER_VENDOR-$FRONTEND_CXX_VERSION_MAJOR.$FRONTEND_CXX_VERSION_MINOR"
 
 # DQ (9/20/20): Moving the setup of compiler flags to after the macros that define the compiler versions are computed.
 # Setup default options for C and C++ compilers compiling ROSE source code.
@@ -1375,7 +1370,6 @@ tests/nonsmoke/functional/roseTests/astInterfaceTests/Makefile
 tests/nonsmoke/functional/roseTests/astInterfaceTests/typeEquivalenceTests/Makefile
 tests/nonsmoke/functional/roseTests/astInterfaceTests/unitTests/Makefile
 tests/nonsmoke/functional/roseTests/astLValueTests/Makefile
-tests/nonsmoke/functional/roseTests/astMempoolTests/Makefile
 tests/nonsmoke/functional/roseTests/astMergeTests/Makefile
 tests/nonsmoke/functional/roseTests/astOutliningTests/Makefile
 tests/nonsmoke/functional/roseTests/astPerformanceTests/Makefile

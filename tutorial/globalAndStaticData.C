@@ -90,9 +90,6 @@ main ( int argc, char* argv[] )
    {
      ios::sync_with_stdio();     // Syncs C++ and C I/O subsystems!
 
-  // Initialize and check compatibility. See Rose::initialize
-     ROSE_INITIALIZE;
-
      ofstream datfile ( "ProblemVariableDeclarations.data" , ios::out | ios::app );
      if ( datfile.good() == false )
         {

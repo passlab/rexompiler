@@ -59,9 +59,6 @@ void TransformVariableDeclarationTraversal::visit(SgNode* node)
 
 int main(int argc, char *argv[]) 
    {
-  // Initialization
-     ROSE_INITIALIZE;
-
      SgProject* project = frontend(argc,argv);
      ROSE_ASSERT(project!=NULL);
   

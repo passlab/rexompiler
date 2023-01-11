@@ -179,8 +179,6 @@ generateRVAs(SgAsmCilMetadataRoot* n)
 
 int main(int argc, char *argv[])
 {
-    ROSE_INITIALIZE;
-
 #if 1
     printf ("In TOP of main() \n");
 #endif

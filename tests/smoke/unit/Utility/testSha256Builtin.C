@@ -61,7 +61,6 @@ buildData(size_t nBytes) {
 
 int
 main(int argc, char *argv[]) {
-    ROSE_INITIALIZE;
     Diagnostics::initAndRegister(&mlog, "tool");
     mlog.comment("tool-specific diagnostics");
     std::pair<std::string, Sizes> comsz = parseCommandLine(argc, argv);

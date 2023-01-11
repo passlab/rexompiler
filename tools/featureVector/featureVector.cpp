@@ -293,8 +293,6 @@ void nodeTraversal::visit(SgNode* n)
 }
 
 int main( int argc, char * argv[] ){
-
-  ROSE_INITIALIZE;
   Rose::Diagnostics::initAndRegister(&mlog, "featureVector");
 
   Sawyer::CommandLine::ParserResult cmdline = parseCommandLine(argc, argv);

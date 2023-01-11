@@ -127,12 +127,6 @@ getLibSourceFile(SgSourceFile* target)
 
 int main( int argc, char * argv[] )
    {
-  // DQ (3/5/2017): This will not fail if we skip calling ROSE_INITIALIZE (but the test for Rose::Diagnostics::isInitialized() 
-  // is then required, however it will fail to output message that we enable explicitly below.
-  // Initialize and check compatibility. See Rose::initialize
-     ROSE_INITIALIZE;
-
-  // Generate the ROSE AST (note ROSE_INITIALIZE will be called by the frontend, if not called explicitly above in main()).
      SgProject* project = frontend(argc,argv);
 
   // AST consistency tests (optional for users, but this enforces more of our tests)

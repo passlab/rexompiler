@@ -4,10 +4,6 @@ using namespace std;
 int
 main ( int argc, char** argv )
 {
-  // DQ (4/6/2017): This will not fail if we skip calling ROSE_INITIALIZE (but
-  // any warning message using the message looging feature in ROSE will fail).
-  ROSE_INITIALIZE;
-
   vector<string> argvList(argv,argv+argc);
   if (CommandlineProcessing::isOption(argvList, "","--help",false))
   {

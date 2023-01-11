@@ -60,7 +60,6 @@ else
 fi
 
 AC_MSG_NOTICE([rose_boost_version = '$rose_boost_version'])
-ROSE_CONFIG_TOKEN="$ROSE_CONFIG_TOKEN boost-$rose_boost_version"
 
 if test "x$rose_boost_version" = "x"; then
   ROSE_MSG_ERROR([Unable to compute the version of your Boost C++ libraries from '$ac_boost_path'/include/boost/version.hpp . Please make sure the file exists or specify the right path with --with-boost])

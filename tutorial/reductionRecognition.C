@@ -8,9 +8,6 @@ using namespace std;
 int main(int argc, char * argv[])
 {
 #ifdef ROSE_BUILD_CPP_LANGUAGE_SUPPORT
-  // Initialize and check compatibility. See Rose::initialize
-  ROSE_INITIALIZE;
-
   SgProject *project = frontend (argc, argv);
   //Find main() function
   SgFunctionDeclaration* func = SageInterface::findMain(project);

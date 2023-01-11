@@ -199,9 +199,6 @@ void SimpleInstrumentation::visit ( SgNode* astNode )
 int
 main ( int argc, char * argv[] )
    {
-  // Initialize and check compatibility. See Rose::initialize
-     ROSE_INITIALIZE;
-
   // Build ROSE AST
      SgProject* project = frontend(argc,argv);
      ROSE_ASSERT(project != NULL);

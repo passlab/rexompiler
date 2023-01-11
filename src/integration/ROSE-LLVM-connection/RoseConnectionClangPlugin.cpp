@@ -33,7 +33,6 @@ public:
     SourceManager& SrcMgr = Context.getSourceManager();
     llvm::errs() << "my customized initizlier for input file: " << inFile << "\"\n";
     
-    ROSE_INITIALIZE;
     std::vector<std::string> roseFEArgs{"","-rose:skipfinalCompileStep",inFile.str()};
     roseProject = ::frontend(roseFEArgs); 
     std::cout << "In Plugin: generated sgproject:" << roseProject << std::endl;
