@@ -8,6 +8,19 @@
 
 #include <tuple>
 
+// the vector of pairs of OpenACC pragma and accparser IR.
+static std::vector<std::pair<SgPragmaDeclaration *, OpenACCDirective *>>
+    OpenACCIR_list;
+OpenACCDirective *accparser_OpenACCIR;
+
+std::map<SgPragmaDeclaration *, OpenMPDirective *> fortran_paired_pragma_dict;
+std::vector<std::tuple<SgLocatedNode *, PreprocessingInfo *, OpenMPDirective *>>
+    fortran_omp_pragma_list;
+
+OpenMPDirective *ompparser_OpenMPIR;
+static bool use_ompparser = false;
+static bool use_accparser = false;
+
 using namespace std;
 using namespace SageInterface;
 using namespace SageBuilder;
