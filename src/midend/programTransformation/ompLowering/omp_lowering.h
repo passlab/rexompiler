@@ -13,8 +13,8 @@
  *  all things go to the OmpSupport namespace to avoid conflicts
  * Liao, 8/10/2009
  */
-extern std::vector<SgFunctionDeclaration *> *outlined_function_list;
-extern std::vector<SgDeclarationStatement *> *outlined_struct_list;
+extern std::vector<SgFunctionDeclaration *> *target_outlined_function_list;
+extern std::vector<SgDeclarationStatement *> *target_outlined_struct_list;
 namespace OmpSupport {
 // static std::vector<SgFunctionDeclaration* >* outlined_function_list = new
 // std::vector<SgFunctionDeclaration *>();

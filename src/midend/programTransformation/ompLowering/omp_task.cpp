@@ -14,8 +14,8 @@ using namespace SageInterface;
 using namespace SageBuilder;
 using namespace OmpSupport;
 
-extern std::vector<SgFunctionDeclaration* >* outlined_function_list;
-extern std::vector<SgDeclarationStatement *>* outlined_struct_list;
+extern std::vector<SgFunctionDeclaration* >* target_outlined_function_list;
+extern std::vector<SgDeclarationStatement *>* target_outlined_struct_list;
 
 //! Translate omp task
 void OmpSupport::transOmpTask(SgNode* node) {
@@ -77,8 +77,8 @@ void OmpSupport::transOmpTask(SgNode* node) {
     SgTypedefDeclaration *tyPshareds = buildTypedefDeclaration("pshareds", buildPointerType(strPshareds->get_type()), g_scope, true);
     tyPshareds->set_declaration(strPshareds);
     
-    outlined_struct_list->push_back(strPshareds);
-    outlined_struct_list->push_back(tyPshareds);
+    target_outlined_struct_list->push_back(strPshareds);
+    target_outlined_struct_list->push_back(tyPshareds);
     
     // We don't actually use this outlined function, but for some reason we need it to make sure
     // we have all the correct parameters
@@ -139,7 +139,7 @@ void OmpSupport::transOmpTask(SgNode* node) {
     SgExprStatement *assignBody = buildAssignStatement(deref, rhs);
     funcDef->append_statement(assignBody);
     
-    outlined_function_list->push_back(isSgFunctionDeclaration(outlined_func));
+    target_outlined_function_list->push_back(isSgFunctionDeclaration(outlined_func));
     
     ///////////////////////////////////
     // Now build the body
