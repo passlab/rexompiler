@@ -378,7 +378,7 @@ whatTypeOfFileIsThis( const string & name )
   // Use "-b" for brief mode!
      string commandLine = "file " + name;
      if (system(commandLine.c_str()))
-         mlog[ERROR] <<"command failed: \"" <<StringUtility::cEscape(commandLine) <<"\"\n";
+         MLOG_ERROR_CXX("sage_support") <<"command failed: \"" <<StringUtility::cEscape(commandLine) <<"\"\n";
    }
 
 
@@ -1434,7 +1434,6 @@ SgProject::parseCommandLine(std::vector<std::string> argv)
      using namespace Sawyer::CommandLine;
 
      using namespace Rose;                   // the ROSE team is migrating everything to this namespace
-     using namespace Rose::Diagnostics;      // for mlog, INFO, WARN, ERROR, FATAL, etc.
 
   // Use Rose::CommandLine to create a consistent parser among all tools.  If you want a tool's parser to be different
   // then either create one yourself, or modify the parser properties after createParser returns. The createEmptyParserStage
@@ -1449,7 +1448,7 @@ SgProject::parseCommandLine(std::vector<std::string> argv)
 
   // User errors (what few will be reported since this is only a first-stage parser) should be sent to standard error instead
   // of raising an exception.  Programmer errors still cause exceptions.
-     p.errorStream(SageBuilder::mlog[FATAL]);
+     //p.errorStream(SageBuilder::mlog[FATAL]);
 
   // All ROSE tools have some switches in common, such as --version, -V, --help, -h, -?, --log, -L, --threads, etc. We
   // include them first so they appear near the top of the documentation.  The genericSwitches returns a
@@ -4472,7 +4471,7 @@ SgSourceFile::build_Fortran_AST( vector<string> argv, vector<string> inputComman
      if (astIncludeStack.size() != 0)
         {
        // DQ (3/17/2017): Added support to use message streams.
-          mprintf ("Warning: astIncludeStack not cleaned up after openFortranParser_main(): astIncludeStack.size() = %" PRIuPTR " \n",astIncludeStack.size());
+    	 MLOG_WARN_C("sage_support", "astIncludeStack not cleaned up after openFortranParser_main(): astIncludeStack.size() = %" PRIuPTR " \n",astIncludeStack.size());
         }
 #endif
 
@@ -6405,37 +6404,6 @@ StringUtility::popen_wrapper ( const string & command, vector<string> & result )
      return returnValue;
    }
 
-string
-StringUtility::demangledName ( string s )
-   {
-  // Support for demangling of C++ names. We take care of an empty
-  // string, but an input string with a single space might be an issue.
-
-     vector<string> result;
-     if (s.empty() == false)
-        {
-          if (!popen_wrapper ("c++filt " + s, result))
-             {
-               cout << "Cannot execute popen_wrapper" << endl;
-               return "unknown demangling " + s;
-             }
-#if 0
-       // Debugging...
-          for (size_t i = 0; i < result.size (); i++)
-             {
-               cout << "[" << i << "]\t : " << result [i] << endl;
-             }
-#endif
-        }
-       else
-        {
-          result.push_back("unknown");
-        }
-
-     return result[0];
-   }
-
-
 SgFunctionDeclaration*
 SgFunctionCallExp::getAssociatedFunctionDeclaration() const
    {
@@ -6768,12 +6736,12 @@ SgFunctionCallExp::getAssociatedFunctionSymbol() const
           default:
              {
                // Send out error message before the assertion, which may fail and stop first otherwise.
-                 mprintf("Error: There should be no other cases functionExp = %p = %s \n", functionExp, functionExp->class_name().c_str());
+            	 MLOG_ERROR_C("sage_support", "There should be no other cases functionExp = %p = %s \n", functionExp, functionExp->class_name().c_str());
 
                ASSERT_not_null(functionExp->get_file_info());
 
             // DQ (3/15/2017): Fixed to use mlog message logging.
-               if (Rose::ir_node_mlog[Rose::Diagnostics::DEBUG])
+               //if (Rose::ir_node_mlog[Rose::Diagnostics::DEBUG])
                   {
                     functionExp->get_file_info()->display("In SgFunctionCallExp::getAssociatedFunctionSymbol(): case not supported: debug");
                   }

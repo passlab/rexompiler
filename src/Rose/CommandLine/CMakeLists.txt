@@ -8,11 +8,11 @@ add_custom_command(
 set_source_files_properties(License.C OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/LicenseString.h)
 
 add_library(roseCommandLine OBJECT
-  DurationParser.C License.C Parser.C SelfTest.C Version.C)
+  License.C Parser.C Version.C)
 add_dependencies(roseCommandLine rosetta_generated)
 include_directories(roseCommandLine ${CMAKE_BINARY_DIR}/src)
 
 install(
-  FILES DurationParser.h IntervalParser.h License.h Parser.h SelfTest.h SuffixMultiplierParser.h Version.h
+  FILES License.h Parser.h SuffixMultiplierParser.h Version.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/Rose/CommandLine)
 

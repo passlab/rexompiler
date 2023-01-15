@@ -18,13 +18,6 @@
 using namespace std;
 using namespace Rose;
 
-// DQ (3/24/2016): Adding Robb's message logging mechanism to contrl output debug message from the EDG/ROSE connection code.
-using namespace Rose::Diagnostics;
-
-// DQ (3/24/2016): Adding Message logging mechanism.
-Sawyer::Message::Facility UnparseLanguageIndependentConstructs::mlog;
-
-
 #define OUTPUT_DEBUGGING_FUNCTION_BOUNDARIES 0
 #define OUTPUT_HIDDEN_LIST_DATA 0
 #define OUTPUT_DEBUGGING_INFORMATION 0
@@ -42,19 +35,6 @@ bool isVariant = false;
 bool isConstruct = false;
 
 UnparseLanguageIndependentConstructs::unparsed_as_enum_type global_unparsed_as = UnparseLanguageIndependentConstructs::e_unparsed_as_error;
-
-void
-UnparseLanguageIndependentConstructs::initDiagnostics()
-   {
-     static bool initialized = false;
-     if (!initialized)
-        {
-          initialized = true;
-          Rose::Diagnostics::initAndRegister(&mlog, "Rose::UnparseLanguageIndependentConstructs");
-          mlog.comment("generating source code for language-indepentend constructs");
-        }
-   }
-
 
 std::string
 UnparseLanguageIndependentConstructs::unparsed_as_kind(unparsed_as_enum_type x)
@@ -12070,8 +12050,8 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
                if (functionCallExp->get_uses_operator_syntax() == true)
                   {
                  // DQ (3/5/2017): Converted to use message logging, but the mechanism is not supported here yet.
-                    mprintf ("WARNING: In getPrecedence(): case V_SgFunctionCallExp: If this is an overloaded operator then the precedence should be that of the operator being overloaded (not zero). \n");
-                    mprintf ("   --- functionCallExp = %p functionCallExp->get_uses_operator_syntax() = %s \n",functionCallExp,functionCallExp->get_uses_operator_syntax() ? "true" : "false");
+            	    MLOG_WARN_C("languageIndependenceSupport", "In getPrecedence(): case V_SgFunctionCallExp: If this is an overloaded operator then the precedence should be that of the operator being overloaded (not zero). \n");
+            	    MLOG_WARN_C("languageIndependenceSupport", "   --- functionCallExp = %p functionCallExp->get_uses_operator_syntax() = %s \n",functionCallExp,functionCallExp->get_uses_operator_syntax() ? "true" : "false");
 #if 0
                  // DQ (1/8/2020): Output a message that I can see for debugging.
                     printf ("WARNING: In getPrecedence(): case V_SgFunctionCallExp: If this is an overloaded operator then the precedence should be that of the operator being overloaded (not zero). \n");
@@ -12219,7 +12199,7 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
                       // If this is compiler generated then we have to look at the precedence of the unary operator's operand.
                       // printf ("WARNING: case of overloaded cast operator: If this is compiler generated then we have to look at the precedence of the unary operator's operand (returning 1) \n");
                       // return 1;
-                         mprintf ("WARNING: case of overloaded cast operator: If this is compiler generated then we have to look at the precedence of the unary operator's operand (returning 16) \n");
+                    	  MLOG_WARN_C("languageIndependenceSupport", "case of overloaded cast operator: If this is compiler generated then we have to look at the precedence of the unary operator's operand (returning 16) \n");
                       // return 16;
                          precedence_value = 16;
                        }

@@ -39,10 +39,8 @@
 // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace std;
 using namespace Rose;
-using namespace Rose::Diagnostics;
 
 // global variable for turning on and off internal debugging.
-// Consider using Rose::Diagnostics instead [Robb Matzke 2021-08-18]
 int ROSE_DEBUG = 0;
 
 #if 1
@@ -196,25 +194,6 @@ bool Rose::is_Cuda_language       = false;
 bool Rose::is_OpenCL_language     = false;
 
 // DQ (3/24/2016): Adding Robb's message logging mechanism to contrl output debug message from the EDG/ROSE connection code.
-using namespace Rose::Diagnostics;
-
-// DQ (3/5/2017): Added general IR node specific message stream to support debugging message from the ROSE IR nodes.
-Sawyer::Message::Facility Rose::ir_node_mlog;
-
-void Rose::initDiagnostics()
-   {
-     static bool initialized = false;
-     if (!initialized)
-        {
-          initialized = true;
-       // printf ("In Rose::initDiagnostics(): Calling Sawyer::Message::Facility() \n");
-          ir_node_mlog = Sawyer::Message::Facility("rose_ir_node", Rose::Diagnostics::destination);
-          ir_node_mlog.comment("operating on ROSE internal representation nodes");
-          Rose::Diagnostics::mfacilities.insertAndAdjust(ir_node_mlog);
-       // printf ("In Rose::initDiagnostics(): DONE Calling Sawyer::Message::Facility() \n");
-        }
-   }
-
 
 // DQ (4/17/2010): This function must be defined if C++ support in ROSE is disabled.
 std::string edgVersionString()
@@ -1658,12 +1637,12 @@ Rose::getNextStatement ( SgStatement *currentStatement )
                  // currentStatement is not found in the list
                     if (i ==  statementList.end())
                        {
-                         mlog[FATAL]<<"fatal error: ROSE::getNextStatement(): current statement is not found within its scope's statement list"<<endl;
-                         mlog[FATAL]<<"current statement is "<<currentStatement->class_name()<<endl;
-                         //~ mlog[FATAL]<<"code: " << currentStatement->unparseToString()<<endl;
-                         mlog[FATAL]<<currentStatement->get_file_info()->displayString()<<endl;
-                         mlog[FATAL]<<"Its scope is "<<scope->class_name()<<endl;
-                         mlog[FATAL]<<scope->get_file_info()->displayString()<<endl;
+                         MLOG_FATAL_CXX("sageSupport") <<"fatal error: ROSE::getNextStatement(): current statement is not found within its scope's statement list"<<endl;
+                         MLOG_FATAL_CXX("sageSupport") <<"current statement is "<<currentStatement->class_name()<<endl;
+                         //~ MLOG_FATAL_CXX("sageSupport") <<"code: " << currentStatement->unparseToString()<<endl;
+                         MLOG_FATAL_CXX("sageSupport") <<currentStatement->get_file_info()->displayString()<<endl;
+                         MLOG_FATAL_CXX("sageSupport") <<"Its scope is "<<scope->class_name()<<endl;
+                         MLOG_FATAL_CXX("sageSupport") <<scope->get_file_info()->displayString()<<endl;
 #if 0
                          currentStatement->get_file_info()->display("fatal error: ROSE::getNextStatement(): current statement is not found within its scope's statement list: debug");
 #endif

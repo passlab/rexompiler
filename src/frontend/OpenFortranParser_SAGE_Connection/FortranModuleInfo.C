@@ -4,7 +4,6 @@
 #include "boost/filesystem.hpp"
 #include "boost/algorithm/string/replace.hpp"
 
-
 using namespace std;
 using std::string;
 using std::map;
@@ -92,11 +91,7 @@ FortranModuleInfo::set_inputDirs(SgProject* project) {
                 inputDirs.push_back(rmodDir_no_quotes);
           } else 
              {
-            // DQ (3/15/2017): Fixed to use mlog message logging.
-               if (Rose::ir_node_mlog[Rose::Diagnostics::DEBUG])
-                  {
-                    cout << "WARNING: the input directory does not exist (rose): " << rmodDir<< endl;
-                  }
+               MLOG_DEBUG_CXX("FortranModuleInfo") << "The input directory does not exist (rose): " << rmodDir<< endl;
              }
      } 
 #endif

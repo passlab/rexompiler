@@ -1,6 +1,5 @@
 #include "sage3basic.h"
 #include "AstAttributeMechanism.h"
-#include <Rose/Diagnostics.h>
 
 #include "roseInternal.h"
 #include <boost/foreach.hpp>
@@ -9,7 +8,6 @@
 #include <Sawyer/Set.h>
 
 using namespace Rose;
-using namespace Rose::Diagnostics;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,19 +54,19 @@ deleteAttributeValue(AstAttribute *value, Sawyer::Attribute::Id id) {
                 break;
             case AstAttribute::NO_OWNERSHIP:
                 if (shouldEmit(id, HAS_MEMORY_LEAK))
-                    mlog[WARN] <<attributeFullName(value, id) <<" is leaked\n";
+                    MLOG_WARN_CXX("midend:astProcessing") <<attributeFullName(value, id) <<" is leaked\n";
                 break;
             case AstAttribute::CUSTOM_OWNERSHIP:
                 // assume ownership is properly implemented by the subclass
                 break;
             case AstAttribute::UNKNOWN_OWNERSHIP: {
                 if (shouldEmit(id, HAS_UNKNOWN_OWNERSHIP)) {
-                    mlog[WARN] <<attributeFullName(value, id) <<" ownership is unknown and possibly leaked\n";
+                	MLOG_WARN_CXX("midend:astProcessing")<<attributeFullName(value, id) <<" ownership is unknown and possibly leaked\n";
 
                     // Show details about how to fix this only once per program.
                     static bool detailsShown = false;
                     if (!detailsShown) {
-                        mlog[WARN] <<"    This attribute's class should include a definition for the virtual\n"
+                    	MLOG_WARN_CXX("midend:astProcessing") <<"    This attribute's class should include a definition for the virtual\n"
                                    <<"    \"getOwnershipPolicy\" based on the intention the author had for how\n"
                                    <<"    memory is managed for this attribute type.  If the author intended\n"
                                    <<"    attribute memory to be managed by ROSE's AstAttributeMechanism, then\n"
@@ -200,9 +198,9 @@ AstAttributeMechanism::assignFrom(const AstAttributeMechanism &other) {
         // report them here because there's a large amount of user code that doesn't follow the rules and we don't want to be
         // completely obnoxious.
         if (!copied && shouldEmit(id, HAS_NULL_COPY))
-            mlog[WARN] <<attributeFullName(attr, id) <<" was not copied; no virtual copy function?\n";
+        	MLOG_WARN_CXX("midend:astProcessing") <<attributeFullName(attr, id) <<" was not copied; no virtual copy function?\n";
         if (attr->attribute_class_name().compare("AstAttribute") == 0 && shouldEmit(id, HAS_NO_CLASS_NAME)) {
-            mlog[WARN] <<"attribute \"" <<StringUtility::cEscape(Sawyer::Attribute::name(id)) <<"\""
+        	MLOG_WARN_CXX("midend:astProcessing") <<"attribute \"" <<StringUtility::cEscape(Sawyer::Attribute::name(id)) <<"\""
                        <<" does not implement attribute_class_name\n";
         }
         switch (attr->getOwnershipPolicy()) {
@@ -221,7 +219,7 @@ AstAttributeMechanism::assignFrom(const AstAttributeMechanism &other) {
             case AstAttribute::UNKNOWN_OWNERSHIP:
                 // Similar to CONTAINER_OWNERSHIP but only warn, don't assert.
                 if (copied != attr && shouldEmit(id, HAS_SELF_COPY))
-                    mlog[WARN] <<attributeFullName(attr, id) <<" virtual copy function did not copy the attribute (unknown ownership)\n";
+                	MLOG_WARN_CXX("midend:astProcessing") <<attributeFullName(attr, id) <<" virtual copy function did not copy the attribute (unknown ownership)\n";
                 break;
         }
 

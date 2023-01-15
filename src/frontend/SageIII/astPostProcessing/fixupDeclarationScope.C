@@ -1,15 +1,6 @@
 #include "sage3basic.h"
 
-#include <Rose/Diagnostics.h>
-
 #include "fixupDeclarationScope.h"
-
-// DQ (3/24/2016): Adding Robb's message logging mechanism to contrl output debug message from the EDG/ROSE connection code.
-using namespace Rose::Diagnostics;
-
-// DQ (3/24/2016): Adding Message logging mechanism.
-Sawyer::Message::Facility FixupAstDeclarationScope::mlog;
-
 
 void fixupAstDeclarationScope( SgNode* node )
    {
@@ -102,7 +93,7 @@ void fixupAstDeclarationScope( SgNode* node )
                  // DQ (1/30/2014): Cleaning up some output spew.
                     if (SgProject::get_verbose() > 0)
                        {
-                         mprintf ("WARNING: This is the wrong scope (declaration = %p = %s): associatedScope = %p = %s correctScope = %p = %s \n",
+                    	 MLOG_WARN_C("astPostProcessing", "This is the wrong scope (declaration = %p = %s): associatedScope = %p = %s correctScope = %p = %s \n",
                               *j,(*j)->class_name().c_str(),associatedScope,associatedScope->class_name().c_str(),correctScope,correctScope->class_name().c_str());
                        }
 #if 0
@@ -121,19 +112,6 @@ void fixupAstDeclarationScope( SgNode* node )
      printf ("Leaving fixupAstDeclarationScope() node = %p = %s \n",node,node->class_name().c_str());
 #endif
    }
-
-
-void FixupAstDeclarationScope::initDiagnostics() 
-   {
-     static bool initialized = false;
-     if (!initialized) 
-        {
-          initialized = true;
-          Rose::Diagnostics::initAndRegister(&mlog, "Rose::FixupAstDeclarationScope");
-          mlog.comment("normalizing AST declarations");
-        }
-   }
-
 
 void
 FixupAstDeclarationScope::visit ( SgNode* node )
@@ -170,7 +148,7 @@ FixupAstDeclarationScope::visit ( SgNode* node )
             // ROSE_ASSERT(firstNondefiningDeclaration != NULL);
                if (firstNondefiningDeclaration == NULL)
                   {
-                    mprintf ("WARNING: In FixupAstDeclarationScope::visit(): firstNondefiningDeclaration == NULL for case of node = %p = %s (allowed for tutorial example transformations only) \n",node,node->class_name().c_str());
+            	   MLOG_WARN_C("astPostProcessing", "In FixupAstDeclarationScope::visit(): firstNondefiningDeclaration == NULL for case of node = %p = %s (allowed for tutorial example transformations only) \n",node,node->class_name().c_str());
                   }
                  else
                   {

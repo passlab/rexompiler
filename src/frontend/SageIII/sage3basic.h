@@ -24,7 +24,7 @@
 // This is first because it quickly brings in all the configuration-related settings that are needed by #ifdef's in the rest of
 // this header.
 #include "featureTests.h"
-#include "logging.h"
+#include "mlog.h"
 
 // Much of ROSE's binary support uses the intX_t and uintX_t types (where X is a bit width), so we need to have the stdc printf
 // format macros defined for portability.  We do that here because it needs to be done before <inttypes.h> is included for the

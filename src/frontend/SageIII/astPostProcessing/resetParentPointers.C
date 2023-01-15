@@ -6,7 +6,6 @@
 #include "resetParentPointers.h"
 #include "astPostProcessing.h"
 // tps (01/14/2009): Had to define this locally as it is not part of sage3 but rose.h
-#include "AstDiagnostics.h"
 
 #define DEBUG_PARENT_INITIALIZATION 0
 
@@ -15,10 +14,6 @@
 
 // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace std;
-
-// DQ (3/6/2017): Added support for message logging to control output from ROSE tools.
-#undef mprintf
-#define mprintf Rose::Diagnostics::mfprintf(Rose::ir_node_mlog[Rose::Diagnostics::DEBUG])
 
 // [DQ]
 // Declaration matching static member data
@@ -1548,7 +1543,7 @@ ResetParentPointers::evaluateInheritedAttribute (
 
   // I/O useful for debugging
   // if ( SgProject::get_verbose() >= DIAGNOSTICS_VERBOSE_LEVEL )
-     if ( SgProject::get_verbose() >= AST_POST_PROCESSING_VERBOSE_LEVEL )
+     if ( SgProject::get_verbose() <= mlogLevel )
         {
           if ( node->get_parent() != NULL )
              {
@@ -2233,7 +2228,7 @@ ResetParentPointersInMemoryPool::visit(SgNode* node)
                          if (declaration->get_parent() == NULL)
                             {
                             // DQ (3/6/2017): Converted to use message logging.
-                            // mprintf ("##### ResetParentPointersInMemoryPool::visit(declaration = %p = %s) declaration->get_parent() == NULL \n",node,node->class_name().c_str());
+                            // MLOG_WARN_C("astPostProcessing", "##### ResetParentPointersInMemoryPool::visit(declaration = %p = %s) declaration->get_parent() == NULL \n",node,node->class_name().c_str());
 #if 0
                                printf ("##### ResetParentPointersInMemoryPool::visit(declaration = %p = %s) declaration->get_parent() == NULL \n",node,node->class_name().c_str());
 #endif

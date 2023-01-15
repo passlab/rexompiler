@@ -2,7 +2,6 @@
 
 #include <Rose/GraphUtility.h>
 #include <Rose/StringUtility.h>
-#include <Rose/Diagnostics.h>
 #include <Sawyer/CommandLine.h>
 #include <iostream>
 #include <sstream>
@@ -151,7 +150,6 @@ static void showHelpAndExit(const Sawyer::CommandLine::ParserResult &cmdline) {
 
 int main(int argc, char *argv[]) {
     using namespace Rose;
-    using namespace Rose::Diagnostics;
     using namespace StringUtility;
 
     typedef Sawyer::Container::Graph<VertexValue, EdgeValue> Graph;
@@ -188,28 +186,27 @@ int main(int argc, char *argv[]) {
 
  // DQ (3/6/2017): Need explicit qualification to about mlog in rose namespace.
  // mlog[DEBUG].enable(showGraph);
-    Rose::Diagnostics::mlog[DEBUG].enable(showGraph);
+   // Rose::Diagnostics::mlog[DEBUG].enable(showGraph);
 
     // Build and serialize the inital graph
-    Rose::Diagnostics::mlog[INFO] <<"building the initial graph: " <<plural(nverts, "vertices", "vertex") <<" and " <<plural(nedges, "edges") <<"\n";
+    MLOG_INFO_CXX("test") <<"building the initial graph: " <<plural(nverts, "vertices", "vertex") <<" and " <<plural(nedges, "edges") <<"\n";
     Graph g1;
     buildGraph(g1, nverts, nedges);
-    SAWYER_MESG(Rose::Diagnostics::mlog[DEBUG]) <<"Original graph:\n" <<g1;
-    Rose::Diagnostics::mlog[INFO] <<"serializing original graph\n";
-    std::ostringstream oss;
+    MLOG_DEBUG_CXX("test") <<"Original graph:\n" <<g1;
+    MLOG_INFO_CXX("test") <<"serializing original graph\n";
     GraphUtility::serialize(oss, g1);
-    Rose::Diagnostics::mlog[INFO] <<"serialized to " <<plural(oss.str().size(), "bytes") <<"\n";
+    MLOG_INFO_CXX("test") <<"serialized to " <<plural(oss.str().size(), "bytes") <<"\n";
 
     // De-serialize to create a second graph
-    Rose::Diagnostics::mlog[INFO] <<"creating a new graph by de-serializing\n";
+    MLOG_INFO_CXX("test") <<"creating a new graph by de-serializing\n";
     Graph g2;
     std::istringstream iss(oss.str());
     GraphUtility::deserialize(iss, g2);
     ASSERT_always_require2(g2.nVertices()==nverts, "wrong number of vertices deserialized");
     ASSERT_always_require2(g2.nEdges()==nedges, "wrong number of edges deserialized");
-    SAWYER_MESG(Rose::Diagnostics::mlog[DEBUG]) <<"Reconstructed graph:\n" <<g2;
+    MLOG_DEBUG_CXX("test") <<"Reconstructed graph:\n" <<g2;
 
     // Check that both graphs are the same
-    Rose::Diagnostics::mlog[INFO] <<"comparing new graph with original\n";
+    MLOG_INFO_CXX("test") <<"comparing new graph with original\n";
     checkGraphs(g1, g2);
 }

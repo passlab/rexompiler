@@ -3,8 +3,6 @@
 
 #include "commandline_processing.h"
 
-#include <Rose/StringUtility.h>
-
 namespace Rose {
 
 // [Robb P Matzke 2016-06-16]: These file utilities were all originally part of StringUtility. I'm leaving them here for now

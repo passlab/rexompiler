@@ -7,7 +7,6 @@ static const char *description =
 
 
 #include <rose.h>
-#include <Rose/Diagnostics.h>
 #include <Sawyer/CommandLine.h>
 
 using namespace Rose;
@@ -36,5 +35,5 @@ main(int argc, char *argv[]) {
 
                                     .parse(argc, argv).apply().unreachedArgs();
 
-    std::cout <<"ran algorithm " <<algorithm <<" on " <<StringUtility::plural(args.size(), "inputs") <<"\n";
+    std::cout <<"ran algorithm " <<algorithm <<" on " <<args.size() << "input(s)" <<"\n";
 }

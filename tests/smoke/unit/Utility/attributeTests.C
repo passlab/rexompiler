@@ -3,8 +3,6 @@
 #include <rose.h>
 #include <sstream>
 
-using namespace Rose::Diagnostics;
-
 // Counts how many instances of class T are currently allocated.
 template<class T>
 class AllocationCounter {

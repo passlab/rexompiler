@@ -9,16 +9,12 @@ static const char *description =
 #include <rose.h>                                       // must be first ROSE include
 #include <Outliner.hh>                                  // from ROSE
 #include <Rose/CommandLine.h>
-#include <Rose/Diagnostics.h>
 
 #include <iostream>
 #include <vector>
 #include <string>
 
 using namespace Rose;                                   // the ROSE team is migrating everything to this namespace
-using namespace Rose::Diagnostics;                      // for mlog, INFO, WARN, ERROR, etc.
-
-Diagnostics::Facility mlog;                             // most ROSE tools use a diagnostics logging facility
 
 // Switches for this tool. Tools with lots of switches will probably want these to be in some Settings struct mirroring the
 // approach used by some analyses that have lots of settings. So we'll do that here too even though it looks funny.
@@ -32,9 +28,6 @@ struct Settings {
 int
 main (int argc, char* argv[])
 {
-  ::mlog = Diagnostics::Facility("tool", Diagnostics::destination);
-  Diagnostics::mfacilities.insertAndAdjust(::mlog);
-
   std::vector<std::string> args(argv, argv+argc);
   Outliner::commandLineProcessing(args);  // this is the old way
   SgProject *proj = frontend(args);
@@ -63,8 +56,8 @@ main (int argc, char* argv[])
   }
   // Ideally, this logging would be part of the Outliner, not every tool that uses it. And the outliner would have its own
   // diagnostic facility that could be turned on and off from the command-line (see --log).
-  ::mlog[INFO] << "outlining...\n";
+  MLOG_INFO_CXX("tutorial") << "outlining...\n";
   size_t count = Outliner::outlineAll(proj);
-  ::mlog[INFO] << "outlining processed " << StringUtility::plural(count, "outline directives") <<"\n";
+  MLOG_INFO_CXX("tutorial") << "outlining processed " << count << " outline directive(s)" <<"\n";
   return backend(proj);
 }

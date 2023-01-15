@@ -42,8 +42,6 @@
 using namespace std;
 using namespace Rose;
 using namespace SageInterface;
-using namespace Rose::Diagnostics;
-
 
 namespace EDG_ROSE_Translation
    {
@@ -61,21 +59,6 @@ namespace EDG_ROSE_Translation
 
 // MS 2015: utility functions used in the implementation of SageBuilder functions, but are not exposed in the SageBuilder-Interface.
 namespace SageBuilder {
-
-// DQ (3/24/2016): Adding Robb's message mechanism (data member and function).
-Sawyer::Message::Facility mlog;
-void
-initDiagnostics()
-   {
-     static bool initialized = false;
-     if (!initialized)
-        {
-          initialized = true;
-          Rose::Diagnostics::initAndRegister(&mlog, "Rose::SageBuilder");
-          mlog.comment("building abstract syntax trees");
-        }
-   }
-
 
 template <class actualFunction>
 actualFunction*
@@ -2195,7 +2178,7 @@ SageBuilder::buildTypedefDeclaration_nfi(const std::string& name, SgType* base_t
           if (declaration)
              {
 #if 1
-               mprintf ("Found a valid declaration = %p = %s \n",declaration,declaration->class_name().c_str());
+        	   MLOG_INFO_C("sageInterface","Found a valid declaration = %p = %s \n",declaration,declaration->class_name().c_str());
 #endif
 
                ROSE_ASSERT(declaration->get_firstNondefiningDeclaration() != NULL);
@@ -3388,7 +3371,7 @@ SageBuilder::buildNondefiningFunctionDeclaration_T (
      if (XXX_name.is_null() == true)
         {
        // DQ (4/2/2013): This case is generated for test2013_86.C.
-          mprintf ("NOTE: In buildNondefiningFunctionDeclaration_T(): XXX_name.is_null() == true: This is a function with an empty name (allowed as compiler generated initializing constructors to un-named classes, structs, and unions in C++ \n");
+    	 MLOG_INFO_C("sageInterface","NOTE: In buildNondefiningFunctionDeclaration_T(): XXX_name.is_null() == true: This is a function with an empty name (allowed as compiler generated initializing constructors to un-named classes, structs, and unions in C++ \n");
         }
 
      SgName nameWithoutTemplateArguments = XXX_name;
@@ -3438,7 +3421,7 @@ SageBuilder::buildNondefiningFunctionDeclaration_T (
         {
        // DQ (3/25/2017): Modified to use message logging.
        // DQ (4/2/2013): This case is generated for test2013_86.C.
-          mprintf ("NOTE: In buildNondefiningFunctionDeclaration_T(): nameWithTemplateArguments.is_null() == true: This is a function with an empty name (allowed as compiler generated initializing constructors to un-named classes, structs, and unions in C++ \n");
+    	 MLOG_INFO_C("sageInterface", "NOTE: In buildNondefiningFunctionDeclaration_T(): nameWithTemplateArguments.is_null() == true: This is a function with an empty name (allowed as compiler generated initializing constructors to un-named classes, structs, and unions in C++ \n");
         }
 
   // ROSE_ASSERT(nameWithoutTemplateArguments.is_null() == false);
@@ -3446,7 +3429,7 @@ SageBuilder::buildNondefiningFunctionDeclaration_T (
         {
        // DQ (3/25/2017): Modified to use message logging.
        // DQ (4/2/2013): This case is generated for test2013_86.C.
-          mprintf ("NOTE: In buildNondefiningFunctionDeclaration_T(): nameWithoutTemplateArguments.is_null() == true: This is a function with an empty name (allowed as compiler generated initializing constructors to un-named classes, structs, and unions in C++ \n");
+    	 MLOG_INFO_C("sageInterface", "NOTE: In buildNondefiningFunctionDeclaration_T(): nameWithoutTemplateArguments.is_null() == true: This is a function with an empty name (allowed as compiler generated initializing constructors to un-named classes, structs, and unions in C++ \n");
         }
 
      ROSE_ASSERT(return_type != NULL);
@@ -6227,8 +6210,8 @@ SageBuilder::buildProcedureHeaderStatement( const char* name, SgType* return_typ
         {
           if (kind != SgProcedureHeaderStatement::e_function_subprogram_kind)
              {
-               mlog[ERROR] << "unhandled subprogram kind for Fortran (or Jovial) function declaration:"
-                           << kind << endl;
+        	   MLOG_ERROR_CXX("Rose::SageBuilder") << "unhandled subprogram kind for Fortran (or Jovial) function declaration:"
+        	                          << kind << endl;
                ROSE_ABORT();
              }
         }

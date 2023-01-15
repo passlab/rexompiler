@@ -18,22 +18,15 @@ AM_CPPFLAGS = $(ROSE_INCLUDES)
 noinst_LTLIBRARIES = librose_partial.la
 librose_partial_la_SOURCES =								\
 	Color/Color.C									\
-	CommandLine/DurationParser.C							\
 	CommandLine/License.C								\
 	CommandLine/Parser.C								\
-	CommandLine/SelfTest.C								\
 	CommandLine/Version.C								\
-	Diagnostics/Diagnostics.C							\
 	FileSystem/FileSystem.C								\
-	FormattedTable.C								\
-	Progress.C									\
 	StringUtility/Convert.C								\
-	StringUtility/Diagnostics.C							\
 	StringUtility/Escape.C								\
 	StringUtility/NumberToString.C							\
 	StringUtility/Predicate.C							\
 	StringUtility/SplitJoin.C							\
-	StringUtility/StringToNumber.C							\
-	Yaml.C
+	StringUtility/StringToNumber.C
 
 # Public header files are installed from parent makefiles.

@@ -81,7 +81,6 @@ nobase_pkginclude_HEADERS=						\
 	Rose/AST/cmdline.h						\
 	Rose/AST/Defect.h						\
 	Rose/AST/Utils.h						\
-	Rose/BitFlags.h							\
 	Rose/BitOps.h							\
 	Rose/CodeGen.h							\
 	Rose/CodeGen/API.h						\
@@ -96,31 +95,21 @@ nobase_pkginclude_HEADERS=						\
 	Rose/CodeGen/Object.h						\
 	Rose/Color.h							\
 	Rose/CommandLine.h						\
-	Rose/CommandLine/DurationParser.h				\
-	Rose/CommandLine/IntervalParser.h				\
 	Rose/CommandLine/License.h					\
 	Rose/CommandLine/Parser.h					\
-	Rose/CommandLine/SelfTest.h					\
 	Rose/CommandLine/SuffixMultiplierParser.h			\
 	Rose/CommandLine/Version.h					\
 	Rose/Constants.h						\
-	Rose/Diagnostics.h						\
 	Rose/Exception.h						\
 	Rose/FileSystem.h						\
-	Rose/FormatRestorer.h						\
-	Rose/FormattedTable.h						\
 	Rose/GraphUtility.h						\
-	Rose/Progress.h							\
-	Rose/RecursionCounter.h						\
 	Rose/StringUtility.h						\
 	Rose/StringUtility/Convert.h					\
-	Rose/StringUtility/Diagnostics.h				\
 	Rose/StringUtility/Escape.h					\
 	Rose/StringUtility/NumberToString.h				\
 	Rose/StringUtility/Predicate.h					\
 	Rose/StringUtility/SplitJoin.h					\
-	Rose/StringUtility/StringToNumber.h				\
-	Rose/Yaml.h
+	Rose/StringUtility/StringToNumber.h
 
 ########################################################################################################################
 

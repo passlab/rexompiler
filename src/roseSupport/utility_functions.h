@@ -261,11 +261,6 @@ namespace Rose
   // DQ (10/29/2018): Build a map for the unparser to use to locate SgIncludeFile IR nodes.
      extern std::map<std::string, SgIncludeFile*> includeFileMapForUnparsing;
 
-  // DQ (3/5/2017): Added general IR node specific message stream to support debugging message from the ROSE IR nodes.
-     extern Sawyer::Message::Facility ir_node_mlog;
-
-     void initDiagnostics();
-
   // DQ (11/25/2020): These are the boolean variables that are computed in the function compute_language_kind() 
   // and inlined via the SageInterface::is_<language kind>_language() functions.  This fixes a significant 
   // performacne bug that was identified by Matt Sottile. First indications of this problem were from HPCToolKit,

@@ -1395,6 +1395,7 @@ tests/nonsmoke/functional/roseTests/programTransformationTests/Makefile
 tests/nonsmoke/functional/roseTests/programTransformationTests/extractFunctionArgumentsTest/Makefile
 tests/nonsmoke/functional/roseTests/programTransformationTests/singleStatementToBlockNormalization/Makefile
 tests/nonsmoke/functional/roseTests/varDeclNorm/Makefile
+tests/nonsmoke/functional/roseTests/roseCodeGen/Makefile
 tests/nonsmoke/functional/testSupport/Makefile
 tests/nonsmoke/functional/testSupport/gtest/Makefile
 tests/nonsmoke/functional/translatorTests/Makefile
@@ -1418,7 +1419,6 @@ tests/smoke/specimens/c/Makefile
 tests/smoke/specimens/fortran/Makefile
 tests/smoke/unit/Boost/Makefile
 tests/smoke/unit/Makefile
-tests/smoke/unit/Sawyer/Makefile
 tests/smoke/unit/Utility/Makefile
 tools/Makefile
 tools/globalVariablesInLambdas/Makefile

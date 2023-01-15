@@ -1,19 +1,10 @@
 #include "sage3basic.h"
 
-#include <Rose/Diagnostics.h>
-
 #include "fixupCxxSymbolTablesToSupportAliasingSymbols.h"
 
 #include <string>
 
 #define ALIAS_SYMBOL_DEBUGGING 0
-
-// DQ (3/24/2016): Adding Robb's message logging mechanism to contrl output debug message from the EDG/ROSE connection code.
-using namespace Rose::Diagnostics;
-
-// DQ (3/24/2016): Adding Message logging mechanism.
-Sawyer::Message::Facility FixupAstSymbolTablesToSupportAliasedSymbols::mlog;
-
 
 void
 fixupAstSymbolTablesToSupportAliasedSymbols (SgNode* node)
@@ -53,19 +44,6 @@ fixupAstSymbolTablesToSupportAliasedSymbols (SgNode* node)
      SgSymbolTable::get_aliasSymbolCausalNodeSet().clear();
      ROSE_ASSERT(SgSymbolTable::get_aliasSymbolCausalNodeSet().empty() == true);
    }
-
-
-void FixupAstSymbolTablesToSupportAliasedSymbols::initDiagnostics() 
-   {
-     static bool initialized = false;
-     if (!initialized) 
-        {
-          initialized = true;
-          Rose::Diagnostics::initAndRegister(&mlog, "Rose::FixupAstSymbolTablesToSupportAliasedSymbols");
-          mlog.comment("normalizing symbol tables for aliased symbols");
-        }
-   }
-
 
 #if 0
 // DQ (1/21/2019): Added to support Cxx_tests/test2019_21.C (symbol aliasing of data member in private base class of base class of derived class).
@@ -489,7 +467,7 @@ FixupAstSymbolTablesToSupportAliasedSymbols::injectSymbolsFromReferencedScopeInt
                   }
                  else
                   {
-                    mprintf ("WARNING: In injectSymbolsFromReferencedScopeIntoCurrentScope(): initializedNameFromSymbol->get_declptr() == NULL: initializedNameFromSymbol->get_name() = %s \n",initializedNameFromSymbol->get_name().str());
+                	 MLOG_WARN_C("astPostProcessing", "In injectSymbolsFromReferencedScopeIntoCurrentScope(): initializedNameFromSymbol->get_declptr() == NULL: initializedNameFromSymbol->get_name() = %s \n",initializedNameFromSymbol->get_name().str());
                   }
              }
 
@@ -1428,7 +1406,7 @@ FixupAstSymbolTablesToSupportAliasedSymbols::visit ( SgNode* node )
                     referencedScope  = targetDeclaration->get_definition();
                  } else {
                     if (SgProject::get_verbose() > 0) {
-                      mprintf ("WARNING: In FixupAstSymbolTablesToSupportAliasedSymbols::visit(): Not really clear how to handle this case where tmpClassDeclaration->get_definingDeclaration() == NULL! \n");
+                    	MLOG_WARN_C("astPostProcessing", "In FixupAstSymbolTablesToSupportAliasedSymbols::visit(): Not really clear how to handle this case where tmpClassDeclaration->get_definingDeclaration() == NULL! \n");
                     }
                  }
                } else if (baseClass->variantT() == V_SgNonrealBaseClass) {

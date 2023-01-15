@@ -8,8 +8,8 @@
 
 // tps : needed to define this here as it is defined in rose.h
 #include "markCompilerGenerated.h"
-
 #include "AstDiagnostics.h"
+
 #ifndef ASTTESTS_C
    #define ASTTESTS_C
 // DQ (8/9/2004): Modified to put code below outside of ASTTESTS_C if ... endif
@@ -34,19 +34,9 @@
 // DQ (3/19/2012): We need this for a function in calss: TestForParentsMatchingASTStructure
 #include "stringify.h"
 
-// DQ (3/24/2016): Adding message logging.
-#include <Rose/Diagnostics.h>
-
 // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace std;
 using namespace Rose;
-
-// DQ (3/24/2016): Adding Robb's message logging mechanism to contrl output debug message from the EDG/ROSE connection code.
-using namespace Rose::Diagnostics;
-
-// DQ (3/24/2016): Adding Message logging mechanism.
-Sawyer::Message::Facility TestChildPointersInMemoryPool::mlog;
-
 
 /*! \file
 
@@ -2702,9 +2692,9 @@ TestAstForProperlySetDefiningAndNondefiningDeclarations::visit ( SgNode* node )
                     if (isSgTemplateInstantiationDecl(definingDeclaration) != NULL)
                        {
                       // DQ (3/11/2017): Fixed to use message streams.
-                         mprintf ("Warning: (different access modifiers used) definingDeclaration = %p firstNondefiningDeclaration = %p = %s  \n",definingDeclaration,firstNondefiningDeclaration,firstNondefiningDeclaration->class_name().c_str());
-                         mprintf ("Warning: definingDeclaration_access_modifier         = %d \n",definingDeclaration_access_modifier);
-                         mprintf ("Warning: firstNondefiningDeclaration_access_modifier = %d \n",firstNondefiningDeclaration_access_modifier);
+                         MLOG_WARN_C("astDiagnostics", "(different access modifiers used) definingDeclaration = %p firstNondefiningDeclaration = %p = %s  \n",definingDeclaration,firstNondefiningDeclaration,firstNondefiningDeclaration->class_name().c_str());
+                         MLOG_WARN_C("astDiagnostics", "definingDeclaration_access_modifier         = %d \n",definingDeclaration_access_modifier);
+                         MLOG_WARN_C("astDiagnostics", "firstNondefiningDeclaration_access_modifier = %d \n",firstNondefiningDeclaration_access_modifier);
                        }
                       else
                        {
@@ -5046,18 +5036,6 @@ TestChildPointersInMemoryPool::test()
      t.traverseMemoryPool();
    }
 
-void TestChildPointersInMemoryPool::initDiagnostics()
-   {
-     static bool initialized = false;
-     if (!initialized)
-        {
-          initialized = true;
-          Rose::Diagnostics::initAndRegister(&mlog, "Rose::TestChildPointersInMemoryPool");
-          mlog.comment("testing AST child pointers in memory pools");
-        }
-   }
-
-
 // DQ (9/13/2006): Implemented by Ghassan to verify that for
 // each node, it appears in its parent's list of children.
 // This is a test requested by Jeremiah.
@@ -5247,7 +5225,7 @@ TestChildPointersInMemoryPool::visit( SgNode *node )
                             {
                               if (SgProject::get_verbose() > 0)
                                  {
-                                   mprintf ("Warning: TestChildPointersInMemoryPool::visit(): Node is not in parent's child list, node: %p = %s = %s parent: %p = %s \n",
+                                   MLOG_WARN_C("astDiagnostics", "TestChildPointersInMemoryPool::visit(): Node is not in parent's child list, node: %p = %s = %s parent: %p = %s \n",
                                         node,node->class_name().c_str(),SageInterface::get_name(node).c_str(),parent,parent->class_name().c_str());
                                  }
                             }
@@ -5272,7 +5250,7 @@ TestChildPointersInMemoryPool::visit( SgNode *node )
                                  }
                                 else
                                  {
-                                   mprintf ("Warning: TestChildPointersInMemoryPool::visit(): Node is not in parent's child list, node: %p = %s = %s parent: %p = %s \n",
+                                   MLOG_WARN_C("astDiagnostics", "TestChildPointersInMemoryPool::visit(): Node is not in parent's child list, node: %p = %s = %s parent: %p = %s \n",
                                         node,node->class_name().c_str(),SageInterface::get_name(node).c_str(),parent,parent->class_name().c_str());
                                  }
                             }
@@ -5395,7 +5373,7 @@ TestChildPointersInMemoryPool::visit( SgNode *node )
                            else
                             {
                            // DQ (3/19/2017): Added support for using message logging.
-                              mprintf ("Warning: TestChildPointersInMemoryPool::visit(). SgVariableSymbol is not in parent's child list, node: %p = %s = %s parent: %p = %s \n",
+                              MLOG_WARN_C("astDiagnostics", "TestChildPointersInMemoryPool::visit(). SgVariableSymbol is not in parent's child list, node: %p = %s = %s parent: %p = %s \n",
                                    node,node->class_name().c_str(),SageInterface::get_name(node).c_str(),parent,parent->class_name().c_str());
                             }
                          break;

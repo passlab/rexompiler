@@ -17,6 +17,7 @@
 #include <Rose/FileSystem.h>
 
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
 #include <string>
 
 class FileHelper {
