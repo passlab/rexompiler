@@ -3,7 +3,6 @@
 
 #include <Rose/StringUtility/NumberToString.h>
 
-#include <Rose/StringUtility/Diagnostics.h>
 #include <Rose/Exception.h>
 #include <rosedll.h>
 
@@ -166,7 +165,7 @@ toNumber(const std::string &s) {
 
             n = shifted + *digit;
         } else {
-            return Error("syntax error: invalid digit after parsing " + plural(nDigits, "digits"));
+            return Error("syntax error: invalid digit after parsing " + numberToString(nDigits) + "digit(s)");
         }
     }
     if (0 == nDigits)

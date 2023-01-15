@@ -1,11 +1,8 @@
 #ifndef ROSE_CommandLine_H
 #define ROSE_CommandLine_H
 
-#include <Rose/CommandLine/DurationParser.h>
-#include <Rose/CommandLine/IntervalParser.h>
 #include <Rose/CommandLine/License.h>
 #include <Rose/CommandLine/Parser.h>
-#include <Rose/CommandLine/SelfTest.h>
 #include <Rose/CommandLine/SuffixMultiplierParser.h>
 #include <Rose/CommandLine/Version.h>
 

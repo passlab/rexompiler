@@ -37,7 +37,6 @@
 // therefore should compile quickly.
 
 #include <Rose/StringUtility/Convert.C>
-#include <Rose/StringUtility/Diagnostics.C>
 #include <Rose/StringUtility/Escape.C>
 #include <Rose/StringUtility/NumberToString.C>
 #include <Rose/StringUtility/Predicate.C>

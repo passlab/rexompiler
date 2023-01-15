@@ -32,7 +32,7 @@ libroseutil_la_SOURCES =			\
 	LinearCongruentialGenerator.C		\
 	processSupport.C			\
 	rose_getline.C				\
-	rose_strtoull.C logging.c
+	rose_strtoull.C mlog.C
 
 nodist_libroseutil_la_SOURCES = rose_paths.C
 libroseutil_la_LIBADD = \
@@ -63,7 +63,7 @@ pkginclude_HEADERS =				\
 	rose_strtoull.h				\
 	roseTraceLib.c				\
 	setup.h						\
-	logging.h
+	mlog.h
 
 EXTRA_DIST = CMakeLists.txt setup.h utilDocumentation.docs
 

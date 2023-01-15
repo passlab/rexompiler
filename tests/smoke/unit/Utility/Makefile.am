@@ -26,20 +26,19 @@ attributeTests.passed: $(top_srcdir)/scripts/test_exit_status attributeTests
 
 
 ###############################################################################################################################
-# Tests that diagnostics are working
+# Tests that mlog are working
 ###############################################################################################################################
 
-noinst_PROGRAMS += testDiagnostics
-testDiagnostics_SOURCES = testDiagnostics.C
+noinst_PROGRAMS += testMLog
+testMLog_SOURCES = testMLog.C
 
-TEST_TARGETS += testDiagnostics.passed
+TEST_TARGETS += testMLog.passed
 
-testDiagnostics.passed: $(top_srcdir)/scripts/test_exit_status testDiagnostics
+testMLog.passed: $(top_srcdir)/scripts/test_exit_status testMLog
 	@$(RTH_RUN)				\
-		TITLE="diagnostic streams [$@]"	\
-		CMD="./testDiagnostics"		\
+		TITLE="test mlogging facility (src/util/mlog.h/C) [$@]"	\
+		CMD="./testMLog"		\
 		$< $@
-
 
 ###############################################################################################################################
 # Tests the StringUtility functions
@@ -71,23 +70,6 @@ testSort.passed: testSort.conf testSort
 	@$(RTH_RUN)					\
 		TITLE="various parallel sorting [$@]"	\
 		CMD="$$(pwd)/testSort"			\
-		$< $@
-
-###############################################################################################################################
-# tests the builtin SHA-256 hash
-###############################################################################################################################
-
-noinst_PROGRAMS += testSha256Builtin
-testSha256Builtin_SOURCES = testSha256Builtin.C
-
-TEST_TARGETS += testSha256Builtin.passed
-EXTRA_DIST += testSha256Builtin.ans
-
-testSha256Builtin.passed: $(top_srcdir)/scripts/test_with_answer testSha256Builtin testSha256Builtin.passed
-	@$(RTH_RUN)						\
-		TITLE="SHA-256 builtin [$@]"			\
-		CMD="./testSha256Builtin 0 9399"		\
-		ANS="$(srcdir)/testSha256Builtin.ans"		\
 		$< $@
 
 ########################################################################################################################

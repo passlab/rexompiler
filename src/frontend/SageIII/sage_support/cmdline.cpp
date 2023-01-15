@@ -11,7 +11,6 @@
 #include "cmdline.h"
 #include "keep_going.h"
 #include "FileUtility.h"
-#include <Rose/Diagnostics.h>
 #include "Rose/AST/cmdline.h"
 #include "omp_simd.h"
 
@@ -1477,22 +1476,19 @@ SgProject::processCommandLine(const vector<string>& input_argv)
                     if (false == is_directory)
                        {
                       // DQ (3/15/2017): Fixed to use mlog message logging.
-                         if (Rose::ir_node_mlog[Rose::Diagnostics::DEBUG])
-                            {
-                              std::cout  << "[WARN] "
+                         MLOG_WARN_CXX("sage_support") 
                                          << "Invalid argument to -I; path does not exist: "
                                          << "'" << include_path_no_quotes << "'"
                                          << std::endl;
-                            }
                        }
                   }
                catch (const boost::filesystem::filesystem_error& ex)
                   {
-                    std::cout  << "[ERROR] "
+                       MLOG_ERROR_CXX("sage_support")
                                << "Exception processing argument to -I: "
                                << "'" << include_path_no_quotes << "'"
                                << std::endl;
-                    std::cout << ex.what() << std::endl;
+                       MLOG_ERROR_MORE_CXX() << ex.what() << std::endl;
                   }
              }
 
@@ -1702,9 +1698,8 @@ NormalizeIncludePathOptions (std::vector<std::string>& argv)
           if (false == is_directory)
           {
           // DQ (3/15/2017): Fixed to use mlog message logging.
-             if (Rose::ir_node_mlog[Rose::Diagnostics::DEBUG])
                 {
-                  std::cout  << "[WARN] "
+                  MLOG_WARN_CXX("sage_support") 
                         << "Invalid argument to -I; path does not exist: "
                         << "'" << arg << "'"
                         << std::endl;
@@ -2641,6 +2636,8 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
   // specifically the part about being able to return an array of values.
   //
      static const std::string removalString = "(--REMOVE_ME--)";
+     //TODO FIXME: need to come back to fix this (2023/01/14)
+#if 0
      for (size_t i=0; i<argv.size(); ++i) {
          if ((0==strcmp(argv[i].c_str(), "-rose:log")) && i+1 < argv.size()) {
              argv[i] = removalString;
@@ -2663,7 +2660,7 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
          }
      }
      argv.erase(std::remove(argv.begin(), argv.end(), removalString), argv.end());
-
+#endif
   //
   // -rose:assert abort|exit|throw
   //

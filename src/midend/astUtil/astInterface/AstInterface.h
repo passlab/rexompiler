@@ -8,7 +8,6 @@
 #include <typeinfo>
 #include "ObserveObject.h"
 #include <rosedll.h>
-#include <Rose/Diagnostics.h>
 
 class AstNodePtr;
 class SgNode;
@@ -87,10 +86,6 @@ protected:
   AstInterfaceImpl *impl;
   
 public:
-  // Adding Robb's meageage mechanism (data member and function).
-  static Sawyer::Message::Facility mlog;
-  static void initDiagnostics();
-
   // Types:
   typedef enum {OP_NONE = 0, 
            UOP_MINUS, UOP_ADDR, UOP_DEREF, UOP_ALLOCATE, UOP_NOT,

@@ -37,14 +37,14 @@ static void HandlesDefaultParameter() {
 }
 
 static void RunUnitTests() {
-  Sawyer::Message::Stream tlog(mlog[TRACE] << "Starting BuildBoolTypeTests");
+  MLOG_TRACE_CXX("UnitTest") << "Starting BuildBoolTypeTests" << endl;
   //---------------------------------------------------------------------------
   // Tests
 
   HandlesDefaultParameter();
 
   //---------------------------------------------------------------------------
-  tlog << "... Done.\n";
+  MLOG_TRACE_CXX("UnitTest") << "Done" << endl;
 }
 }
 
@@ -57,14 +57,14 @@ static void HandlesDefaultParameter() {
 }
 
 static void RunUnitTests() {
-  Sawyer::Message::Stream tlog(mlog[TRACE] << "Starting BuildNullptrTypeTests");
+  MLOG_TRACE_CXX("UnitTest") << "Starting BuildBoolTypeTests" <<endl;
   //---------------------------------------------------------------------------
   // Tests
 
   HandlesDefaultParameter();
 
   //---------------------------------------------------------------------------
-  tlog << "... Done.\n";
+  MLOG_TRACE_CXX("UnitTest") << "Done" <<endl;
 }
 }
 
@@ -77,14 +77,14 @@ static void HandlesDefaultParameter() {
 }
 
 static void RunUnitTests() {
-  Sawyer::Message::Stream tlog(mlog[TRACE] << "Starting BuildCharTypeTests");
+  MLOG_TRACE_CXX("UnitTest") << "Starting BuildCharTypeTests" <<endl;
   //---------------------------------------------------------------------------
   // Tests
 
   HandlesDefaultParameter();
 
   //---------------------------------------------------------------------------
-  tlog << "... Done.\n";
+  MLOG_TRACE_CXX("UnitTest") << "Done" <<endl;
 }
 }
 
@@ -97,21 +97,21 @@ static void HandlesDefaultParameter() {
 }
 
 static void RunUnitTests() {
-  Sawyer::Message::Stream tlog(mlog[TRACE] << "Starting BuildDoubleTypeTests");
+  MLOG_TRACE_CXX("UnitTest") << "Starting BuildDoubleTypeTests" <<endl;
   //---------------------------------------------------------------------------
   // Tests
 
   HandlesDefaultParameter();
 
   //---------------------------------------------------------------------------
-  tlog << "... Done.\n";
+  MLOG_TRACE_CXX("UnitTest") << "Done" <<endl;
 }
 }
 
 //-----------------------------------------------------------------------------
 static void RunUnitTests() {
 //-----------------------------------------------------------------------------
-  Sawyer::Message::Stream tlog(mlog[TRACE] << "Starting SgTypeBuilders tests");
+  MLOG_TRACE_CXX("UnitTest") << "Starting SgTypeBuilders tests" <<endl;
 
   //---------------------------------------------------------------------------
   // Tests
@@ -123,7 +123,7 @@ static void RunUnitTests() {
 
   //---------------------------------------------------------------------------
 
-  tlog << "... Done.\n";
+  MLOG_TRACE_CXX("UnitTest") << "Done" <<endl;
 }//::Rose::Tests::UnitTests::SageBuilder::SgTypeBuilders::RunUnitTests
 }//::Rose::Tests::UnitTests::SageBuilder::SgTypeBuilders
 }//::Rose::Tests::UnitTests::SageBuilder

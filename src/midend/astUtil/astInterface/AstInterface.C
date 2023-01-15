@@ -20,9 +20,6 @@
 #include <sys/stat.h>
 #endif
 
-using namespace Rose::Diagnostics;
-Sawyer::Message::Facility AstInterface::mlog;
-
 // jichi (9/29/2009): Add test for Fortran language
 #define IS_FORTRAN_LANGUAGE() \
         SageInterface::is_Fortran_language()
@@ -130,17 +127,6 @@ void AstInterface :: AttachObserver( AstObserver* ob)
 void AstInterface :: DetachObserver( AstObserver* ob)
 {
   impl->DetachObserver(ob);
-}
-
-void AstInterface::initDiagnostics()
-{
-  static bool initialized = false;
-  if (!initialized)
-    {
-      initialized = true;
-      Rose::Diagnostics::initAndRegister(&mlog, "Rose::AstInterface");
-      mlog.comment("Qing's side effect analysis");
-    }
 }
 
 AstNodePtr AstInterface::GetFunctionDefinition( const AstNodePtr &n, std::string* name)
@@ -1338,9 +1324,10 @@ AstNodePtr GetFunctionDecl( const AstNodePtr& _s)
     case V_SgDotExp:
          return GetFunctionDecl( AstNodePtrImpl(isSgDotExp(s)->get_rhs_operand()));
     }
-    mlog[ERROR] << "Error: not recognizable function type : " << s->sage_class_name() << endl;
-    mlog[ERROR] << " at " << s->get_file_info()->get_filenameString() << ":" << s->get_file_info()->get_line() << std::endl;
-    mlog[ERROR] << s->unparseToString() << endl;
+    MLOG_ERROR_CXX("astInterface") << "Error: not recognizable function type: "
+            << s->sage_class_name() << " at " << s->get_file_info()->get_filenameString()
+            << ":" << s->get_file_info()->get_line() << endl;
+    MLOG_ERROR_MORE_CXX() << s->unparseToString() << endl;
     ROSE_ABORT();
 }
 
@@ -2502,9 +2489,9 @@ IsFunctionCall( const AstNodePtr& _s, AstNodePtr* fname, AstNodeList* args,
      AstNodeType _ftype;
      if (!IsVarRef(AstNodePtrImpl(f), &_ftype))
      { //IsVarRef can also be used to get the (return?) type of a function
-       mlog[ERROR] << "Could not get function information from " << f->class_name() << std::endl;
-       mlog[ERROR] <<"Expression is " << f->unparseToString() << std::endl;
-       mlog[ERROR] << " at " << f->get_file_info()->get_filenameString() << ":" << f->get_file_info()->get_line() << std::endl;
+       MLOG_ERROR_C("astInterface", "Could not get function information from %s, Expression is %s at %s:%d\n",
+    		  f->class_name().c_str(), f->unparseToString().c_str(),
+			  f->get_file_info()->get_filenameString().c_str(), f->get_file_info()->get_line());
        ROSE_ABORT();
      }
      SgType* t = AstNodeTypeImpl(_ftype).get_ptr();

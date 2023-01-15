@@ -95,9 +95,7 @@ namespace sg
     }
 
     {
-      using namespace Rose::Diagnostics;
-
-      mlog[FATAL] << "[abort] " << desc << std::endl;
+      MLOG_FATAL_CXX("sageInterface") << "[abort] " << desc << std::endl;
       ROSE_ABORT();
 
       //~ mlog[FATAL] << "[throw] " << desc << std::endl;
@@ -12057,8 +12055,8 @@ SgInitializedName* SageInterface::getLoopIndexVariable(SgNode* loop)
   else
   {
 
-    mlog[Sawyer::Message::Common::WARN] <<"Warning: SageInterface::getLoopIndexVariable(). Unhandled init_stmt type of SgForStatement"<<endl;
-    mlog[Sawyer::Message::Common::WARN] <<"Init statement is :"<<init1->class_name() <<" " <<init1->unparseToString()<<endl;
+    MLOG_WARN_CXX("sageInterface") <<"SageInterface::getLoopIndexVariable(). Unhandled init_stmt type of SgForStatement"<<endl;
+    MLOG_WARN_MORE_CXX() <<"Init statement is :"<<init1->class_name() <<" " <<init1->unparseToString()<<endl;
     init1->get_file_info()->display("Debug");
 
     return NULL;
@@ -21442,11 +21440,11 @@ SgInitializedName* SageInterface::convertRefToInitializedName(SgNode* current, b
       // side effect analysis will return rhs of  Class A a = A(); as a read ref exp. SgConstructorInitializer
       if (!isSgConstructorInitializer(current))
       {
-          mlog[Sawyer::Message::Common::WARN] <<
+    	  MLOG_WARN_CXX("sageInterface")<<
               "convertRefToInitializedName: " <<
               current->get_file_info()->get_filename() << ":" <<
               current->get_file_info()->get_line() << "-" << current->get_file_info()->get_col()<<endl;
-          cerr<<"In SageInterface::convertRefToInitializedName(): unhandled reference type:"<<current->class_name()<<endl;
+    	  MLOG_WARN_MORE_CXX() <<"In SageInterface::convertRefToInitializedName(): unhandled reference type:"<<current->class_name()<<endl;
           ROSE_ABORT();
       }
   }
@@ -21600,7 +21598,7 @@ SageInterface::collectReadWriteRefs(SgStatement* stmt, std::vector<SgNode*>& rea
   // Actual side effect analysis
   if (!AnalyzeStmtRefs(fa, s1, cwRef1, crRef1))
   {
-    mlog[Sawyer::Message::Common::WARN] << "Side Effect Analysis incomplete on " << funcDef->get_declaration()->get_qualified_name() << endl;
+	MLOG_WARN_CXX("sageInterface") << "Side Effect Analysis incomplete on " << funcDef->get_declaration()->get_qualified_name() << endl;
     //It's incomplete, but it's not useless, we still want the reflist returned. -Jim
     retVal = false;
   }
@@ -22367,7 +22365,7 @@ void SageInterface::ReductionRecognition(SgForStatement* loop, std::set< std::pa
     // referenced once only
     if (var_references[initname].size()==1)
     {
-      mlog[Sawyer::Message::Common::DEBUG] << "Debug: SageInterface::ReductionRecognition() A candidate used once:"<<initname->get_name().getString()<<endl;
+      MLOG_DEBUG_CXX("sageInterface") << "SageInterface::ReductionRecognition() A candidate used once:"<<initname->get_name().getString()<<endl;
       SgVarRefExp* ref_exp = *(var_references[initname].begin());
       if (isSingleAppearanceReduction (ref_exp, optype))
         isReduction = true;
@@ -22375,7 +22373,7 @@ void SageInterface::ReductionRecognition(SgForStatement* loop, std::set< std::pa
     // referenced twice within a same statement
     else if (var_references[initname].size()==2)
     {
-      mlog[Sawyer::Message::Common::DEBUG] << "Debug: A candidate used twice:"<<initname->get_name().getString()<<endl;
+      MLOG_DEBUG_CXX("sageInterface")"A candidate used twice:"<<initname->get_name().getString()<<endl;
       SgVarRefExp* ref_exp1 = *(var_references[initname].begin());
       SgVarRefExp* ref_exp2 = *(++var_references[initname].begin());
       // TODO: recognize  maxV = array[i]>maxV? array[i]:maxV // this can be normalized to if () stmt

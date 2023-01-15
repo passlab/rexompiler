@@ -2,8 +2,6 @@
 #include <Rose/CommandLine.h> // Commandline support in librose
 #include <Sawyer/CommandLine.h>
 using namespace std;
-using namespace Sawyer::Message::Common; // if you want unqualified DEBUG, WARN, ERROR, FATAL, etc.
-Sawyer::Message::Facility mlog; // a.k.a., Rose::Diagnostics::Facility
 
 bool enable_debug = false;
 bool enable_verbose = false;
@@ -293,8 +291,6 @@ void nodeTraversal::visit(SgNode* n)
 }
 
 int main( int argc, char * argv[] ){
-  Rose::Diagnostics::initAndRegister(&mlog, "featureVector");
-
   Sawyer::CommandLine::ParserResult cmdline = parseCommandLine(argc, argv);
   std::vector<std::string> positionalArgs = cmdline.unparsedArgs();
   positionalArgs.insert(positionalArgs.begin(), argv[0]);

@@ -4,12 +4,10 @@
 #include "RoseAst.h"
 #include <set>
 #include <vector>
-#include <Rose/Diagnostics.h>
 #include "SgNodeHelper.h"
 
 using namespace std;
 using namespace CodeThorn;
-using namespace Rose::Diagnostics;
 
 static int exprToInt(SgExpression* exp) {
   if(SgUnsignedLongVal* valExp = isSgUnsignedLongVal(exp))
@@ -444,11 +442,11 @@ void VariableIdMapping::computeVariableSymbolMapping(SgProject* project, int max
         }
         if(numWarningsCount<maxWarningsCount || -1 == maxWarningsCount) {
           if(initName) {
-            Rose::Diagnostics::mlog[WARN]<<"VariableIdMapping: No symbol available for SgInitializedName " << name << " at "<<SgNodeHelper::sourceFilenameLineColumnToString(*i)<<endl;
+            MLOG_WARN_CXX("midend:abstractLayer") <<"VariableIdMapping: No symbol available for SgInitializedName " << name << " at "<<SgNodeHelper::sourceFilenameLineColumnToString(*i)<<endl;
           }
         } else if(numWarningsCount==maxWarningsCount) {
-          Rose::Diagnostics::mlog[WARN]<<"VariableIdMapping: No symbol available for SgInitializedName " << name << " at "<<SgNodeHelper::sourceFilenameLineColumnToString(*i)<<endl;
-          Rose::Diagnostics::mlog[WARN]<<"VariableIdMapping: No symbol available for SgInitializedName: maximum warning count of "<<maxWarningsCount<<" reached."<<endl;
+            MLOG_WARN_CXX("midend:abstractLayer") <<"VariableIdMapping: No symbol available for SgInitializedName " << name << " at "<<SgNodeHelper::sourceFilenameLineColumnToString(*i)<<endl;
+            MLOG_WARN_CXX("midend:abstractLayer") <<"VariableIdMapping: No symbol available for SgInitializedName: maximum warning count of "<<maxWarningsCount<<" reached."<<endl;
         }
       }
     }

@@ -1,7 +1,5 @@
 #include <Rose/StringUtility/NumberToString.h>
 
-#include <Rose/StringUtility/Diagnostics.h>
-
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -81,6 +79,17 @@ intToHex(uint64_t i) {
     std::ostringstream os;
     os << "0x" << std::hex << i;
     return os.str();
+}
+
+std::string
+appendAsmComment(const std::string &s, const std::string &comment) {
+    if (comment.empty())
+        return s;
+    if (s.empty())
+        return "<" + comment + ">";
+    if (s[s.size()-1] == '>')
+        return s.substr(0, s.size()-1) + "," + comment + ">";
+    return s + "<" + comment + ">";
 }
 
 std::string

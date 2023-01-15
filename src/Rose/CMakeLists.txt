@@ -15,12 +15,6 @@ add_subdirectory(CodeGen)
 # needed to properly define ROSE_UTIL_API
 add_definitions(-DROSE_UTIL_EXPORTS)
 
-# .C files for the ::Rose namespace (see top comment)
-add_library(roseNamespace OBJECT
-  FormattedTable.C
-  Progress.C
-  Yaml.C)
-
 add_dependencies(roseNamespace rosetta_generated)
 
 # Public header files for the ::Rose namespace (see top comment)
@@ -30,15 +24,9 @@ install(FILES
   Color.h
   CommandLine.h
   Constants.h
-  Diagnostics.h
   Exception.h
   FileSystem.h
-  FormatRestorer.h
-  FormattedTable.h
   GraphUtility.h
-  Progress.h
-  RecursionCounter.h
   StringUtility.h
-  Yaml.h
 
   DESTINATION ${INCLUDE_INSTALL_DIR}/Rose)

@@ -29,16 +29,6 @@ bool isNull(SgNode* n) {
   return (n == NULL);
 }
 
-namespace Diagnostics {
-using namespace Rose::Diagnostics;
-
-void initialize() {
-  Rose::Diagnostics::initialize();
-  Rose::Diagnostics::mfacilities.control("all");
-}
-
-}//::Rose::Tests::UnitTests::Diagnostics
-
 using namespace UnitTests::Diagnostics;
 }//::Rose::Tests::UnitTests
 }//::Rose::Tests

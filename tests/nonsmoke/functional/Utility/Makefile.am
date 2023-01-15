@@ -12,22 +12,6 @@ AM_LDFLAGS = $(ROSE_RPATHS)
 LDADD = $(ROSE_LIBS)
 
 ########################################################################################################################
-# Test BitFlags
-########################################################################################################################
-
-noinst_PROGRAMS += bitFlags
-bitFlags_SOURCES = bitFlags.C
-
-TEST_TARGETS += bitFlags.passed
-
-bitFlags.passed: $(top_srcdir)/scripts/test_exit_status bitFlags
-	@$(RTH_RUN)				\
-		TITLE="bit flags [$@]"		\
-		USE_SUBIDR=yes			\
-		CMD="$$(pwd)/bitFlags"		\
-		$< $@
-
-########################################################################################################################
 # Test that Rose::FileSystem::copyFile works
 ########################################################################################################################
 
@@ -122,21 +106,6 @@ graphIO.passed: $(top_srcdir)/scripts/test_exit_status graphIO
 	@$(RTH_RUN)				\
 		TITLE="graph I/O [$@]"		\
 		CMD="./graphIO"			\
-		$< $@
-
-########################################################################################################################
-# Test asynchronous progress reporting
-########################################################################################################################
-
-noinst_PROGRAMS += progressReports
-progressReports_SOURCES = progressReports.C
-
-TEST_TARGETS += progressReports.passed
-
-progressReports.passed: $(top_srcdir)/scripts/test_exit_status progressReports
-	@$(RTH_RUN)						\
-		TITLE="asynchronous progress reports [$@]"	\
-		CMD="./progressReports"				\
 		$< $@
 
 ########################################################################################################################

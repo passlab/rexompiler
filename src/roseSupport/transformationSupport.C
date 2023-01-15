@@ -8,11 +8,6 @@
 // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace std;
 
-// DQ (3/6/2017): Added support for message logging to control output from ROSE tools.
-#undef mprintf
-#define mprintf Rose::Diagnostics::mfprintf(Rose::ir_node_mlog[Rose::Diagnostics::DEBUG])
-
-
 #if 0
 void
 TransformationSupport::insertDeclarations (
@@ -1910,7 +1905,7 @@ TransformationSupport::getDirectory( const SgNode* astNode )
                if (isSgArrayType(parentNode) == NULL)
                  {
                 // DQ (3/6/2017): Converted to use message logging.
-                   mprintf ("Warning: can't locate an associated SgFile from astNode = %p = %s parentNode = %p = %s \n",astNode,astNode->class_name().c_str(),parentNode,parentNode->class_name().c_str());
+                   MLOG_WARN_C("roseSupport", "Can't locate an associated SgFile from astNode = %p = %s parentNode = %p = %s \n",astNode,astNode->class_name().c_str(),parentNode,parentNode->class_name().c_str());
                  }
                return NULL;
              }
@@ -1952,7 +1947,7 @@ TransformationSupport::getFile( const SgNode* astNode )
                if (isSgArrayType(parentNode) == NULL)
                  {
                 // DQ (3/6/2017): Converted to use message logging.
-                   mprintf ("Warning: can't locate an associated SgFile from astNode = %p = %s parentNode = %p = %s \n",astNode,astNode->class_name().c_str(),parentNode,parentNode->class_name().c_str());
+                   MLOG_WARN_C("roseSupport", "Can't locate an associated SgFile from astNode = %p = %s parentNode = %p = %s \n",astNode,astNode->class_name().c_str(),parentNode,parentNode->class_name().c_str());
                  }
                return NULL;
              }

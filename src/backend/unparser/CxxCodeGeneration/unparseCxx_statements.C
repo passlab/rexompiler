@@ -7463,7 +7463,7 @@ Unparse_ExprStmt::unparseVarDeclStmt(SgStatement* stmt, SgUnparse_Info& info)
             else
              {
             // DQ (3/6/2017): Added support for message logging to control output from ROSE tools.
-               mprintf ("Warning: TransformationSupport::getFile(vardecl_stmt) == NULL \n");
+            	MLOG_WARN_C("CxxCodeGeneration", "TransformationSupport::getFile(vardecl_stmt) == NULL \n");
              }
 
        // For C we need to use the GNU 4.9 compiler.
@@ -7962,7 +7962,7 @@ Unparse_ExprStmt::unparseVarDeclStmt(SgStatement* stmt, SgUnparse_Info& info)
                  else
                   {
                  // DQ (3/6/2017): Added support for message logging to control output from ROSE tools.
-                    mprintf ("Warning: TransformationSupport::getFile(vardecl_stmt) == NULL \n");
+                	 MLOG_WARN_C("CxxCodeGeneration",  "TransformationSupport::getFile(vardecl_stmt) == NULL \n");
                   }
 #if 0
                printf ("In unparseVarDeclStmt(): is_C_Compiler = %s is_Cxx_Compiler = %s \n",is_C_Compiler ? "true" : "false",is_Cxx_Compiler ? "true" : "false");

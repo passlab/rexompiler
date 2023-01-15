@@ -4,20 +4,12 @@
 #include "AstFixup.h"
 #include "astPostProcessing.h"
 
-// tps (01/14/2009): Had to define this locally as it is not part of sage3 but rose.h
-#include "AstDiagnostics.h"
-
 // DQ (10/14/2010):  This should only be included by source files that require it.
 // This fixed a reported bug which caused conflicts with autoconf macros (e.g. PACKAGE_BUGREPORT).
 #include "rose_config.h"
 
-// DQ (3/6/2017): Added support for message logging to control output from ROSE tools.
-#undef mprintf
-#define mprintf Rose::Diagnostics::mfprintf(Rose::ir_node_mlog[Rose::Diagnostics::DEBUG])
-
 // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace std;
-
 
 // DQ (8/20/2005): Make this local so that it can't be called externally!
 void postProcessingSupport (SgNode* node);
@@ -526,9 +518,9 @@ void postProcessingSupport (SgNode* node)
              {
                resetConstantFoldedValues(node);
              } else if (project != NULL && SgProject::get_verbose() >= 1) {
-            mprintf ("In postProcessingSupport: skipping call to resetConstantFoldedValues(): project->get_suppressConstantFoldingPostProcessing() = %s \n",project->get_suppressConstantFoldingPostProcessing() ? "true" : "false");
+                MLOG_DEBUG_C("astPostProcessing", "In postProcessingSupport: skipping call to resetConstantFoldedValues(): project->get_suppressConstantFoldingPostProcessing() = %s \n",project->get_suppressConstantFoldingPostProcessing() ? "true" : "false");
           } else if (project == NULL) {
-            mprintf ("postProcessingSupport should not be called for non SgProject IR nodes \n");
+        	  MLOG_DEBUG_C("astPostProcessing", "postProcessingSupport should not be called for non SgProject IR nodes \n");
           }
 
 #if 0
@@ -721,8 +713,7 @@ void postProcessingSupport (SgNode* node)
           fixupTemplateDeclarations(node);
 
        // Output progress comments for these relatively expensive operations on the AST
-          if ( SgProject::get_verbose() >= AST_POST_PROCESSING_VERBOSE_LEVEL )
-               cout << "/* AST Postprocessing reset parent pointers */" << endl;
+          MLOG_KEY_CXX("astPostProcessing") << "/* AST Postprocessing reset parent pointers */" << endl;
      
           topLevelResetParentPointer (node);
 
@@ -733,8 +724,7 @@ void postProcessingSupport (SgNode* node)
           resetParentPointersInMemoryPool(node);
 
        // Output progress comments for these relatively expensive operations on the AST
-          if ( SgProject::get_verbose() >= AST_POST_PROCESSING_VERBOSE_LEVEL )
-               cout << "/* AST Postprocessing reset parent pointers (done) */" << endl;
+          MLOG_KEY_CXX("astPostProcessing") << "/* AST Postprocessing reset parent pointers (done) */" << endl;
 
        // DQ (7/19/2005): Moved to after parent pointer fixup!        
        // subTemporaryAstFixes(node);
@@ -755,8 +745,7 @@ void postProcessingSupport (SgNode* node)
           ROSE_ASSERT(SgNode::get_globalMangledNameMap().size() == 0);
 
        // Output progress comments for these relatively expensive operations on the AST
-          if ( SgProject::get_verbose() >= AST_POST_PROCESSING_VERBOSE_LEVEL )
-               cout << "/* AST Postprocessing reset template names */" << endl;
+          MLOG_KEY_CXX("astPostProcessing") << "/* AST Postprocessing reset template names */" << endl;
 
        // DQ (5/15/2011): This causes template names to be computed as strings and and without name qualification 
        // if we don't call the name qualification before here. Or we reset the template names after we do the 
@@ -772,8 +761,7 @@ void postProcessingSupport (SgNode* node)
           ROSE_ASSERT(SgNode::get_globalMangledNameMap().size() == 0);
 
        // Output progress comments for these relatively expensive operations on the AST
-          if ( SgProject::get_verbose() >= AST_POST_PROCESSING_VERBOSE_LEVEL )
-               cout << "/* AST Postprocessing reset template names (done) */" << endl;
+          MLOG_KEY_CXX("astPostProcessing") << "/* AST Postprocessing reset template names (done) */" << endl;
 
        // DQ (6/26/2007): Enum values used before they are defined in a class can have NULL declaration pointers.  This
        // fixup handles this case and traverses just the SgEnumVal objects.
@@ -988,7 +976,7 @@ void postProcessingSupport (SgNode* node)
                if (globalScope->get_declarations().empty() == true)
                   {
                  // DQ (3/17/2017): Added support to use message streams.
-                    mprintf ("WARNING: no statements in global scope for file = %s \n",sourceFile->getFileName().c_str());
+            	   MLOG_DEBUG_C("astPostProcessing", "WARNING: no statements in global scope for file = %s \n",sourceFile->getFileName().c_str());
                   }
              }
             else
@@ -1005,7 +993,7 @@ void postProcessingSupport (SgNode* node)
                               if (globalScope->get_declarations().empty() == true)
                                  {
                                 // DQ (3/17/2017): Added support to use message streams.
-                                   mprintf ("WARNING: no statements in global scope for file = %s \n",(*fileI)->getFileName().c_str());
+                            	  MLOG_DEBUG_C("astPostProcessing", "WARNING: no statements in global scope for file = %s \n",(*fileI)->getFileName().c_str());
                                  }
                             }
                        }

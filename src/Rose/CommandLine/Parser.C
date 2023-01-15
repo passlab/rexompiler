@@ -1,13 +1,8 @@
 #include <sage3basic.h>                                 // must be first ROSE include
 #include <Rose/CommandLine/Parser.h>
 
-#include <Rose/CommandLine/SelfTest.h>
 #include <Rose/CommandLine/License.h>
 #include <Rose/CommandLine/Version.h>
-#include <Rose/Diagnostics.h>
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-#include <Rose/BinaryAnalysis/SmtCommandLine.h>
-#endif
 #include <Sawyer/CommandLine.h>
 
 #include <processSupport.h>                             // ROSE
@@ -61,7 +56,7 @@ createEmptyParser(const std::string &purpose, const std::string &description) {
 #endif
     parser.version(v, ROSE_CONFIGURE_DATE);
     parser.groupNameSeparator(":");                     // ROSE's style is "--rose:help" rather than "--rose-help"
-    parser.errorStream(Diagnostics::mlog[FATAL]);       // probably overridden by individual tools
+    //parser.errorStream(Diagnostics::mlog[FATAL]);       // probably overridden by individual tools
 
     parser.environmentVariable("ROSE_ARGS");
     parser.doc("Environment variables",
@@ -147,22 +142,6 @@ genericSwitches() {
                     "same number of threads as there is hardware concurrency (or one thread if the hardware "
                     "concurrency can't be determined)."));
 
-#ifdef ROSE_ENABLE_BINARY_ANALYSIS
-    // Global SMT solver name. This is used by any analysis that needs a solver and for which the user hasn't told that
-    // specific analysis which solver to use. Specific analyses may override this global solver with other command-line
-    // switches. The value "list" means generate a list of available solvers. So far this is only impelemented for the SMT
-    // solvers used by binary analysis, but the intention is that it would be available for all parts of ROSE.
-    gen.insert(Switch("smt-solver")
-               .argument("name", anyParser(genericSwitchArgs.smtSolver))
-               .action(BinaryAnalysis::SmtSolverValidator::instance())
-               .doc(BinaryAnalysis::smtSolverDocumentationString(genericSwitchArgs.smtSolver)));
-#endif
-
-    gen.insert(Switch("self-test")
-               .action(SelfTests::instance())
-               .doc("Instead of doing any real work, run any self tests registered with this tool then exit with success "
-                    "or failure status depending on whether all such tests pass."));
-
     gen.insert(Switch("license")
                .action(ShowLicenseAndExit::instance())
                .doc("Show the ROSE software license and exit."));
@@ -182,7 +161,7 @@ insertBooleanSwitch(Sawyer::CommandLine::SwitchGroup &sg, const std::string &swi
                     const std::string &documentation) {
     using namespace Sawyer::CommandLine;
 
-    ASSERT_forbid2(boost::starts_with(switchName, "-"), "specify only the name, not the prefix");
+    //ASSERT_forbid2(boost::starts_with(switchName, "-"), "specify only the name, not the prefix");
 
     std::string defaults = " This can be disabled with @s{no-" + switchName + "}. The default is " +
                            (storageLocation ? "yes" : "no") + ".";
