@@ -7293,11 +7293,12 @@ static void fix_storage_modifier(SgSourceFile *new_file) {
 };
 
 static void post_processing(SgSourceFile *file) {
-
   SgGlobal *g_scope = file->get_globalScope();
   ROSE_ASSERT(g_scope != NULL);
 
   SgSourceFile *new_file = NULL;
+  
+  // Insert structures
 
   // handle the outlined functions for NVIDIA GPU
   if (target_outlined_function_list->size() > 0) {
