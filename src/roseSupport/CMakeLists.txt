@@ -1,7 +1,7 @@
 ########### build library ###############
 add_definitions(-DROSE_DLL_EXPORTS)
 add_library(roseSupport OBJECT
-  transformationSupport.C optionDeclaration.C Combinatorics.C
+  transformationSupport.C optionDeclaration.C #Combinatorics.C
   utility_functions.C IncludeDirective.C
   stringify.C)
 add_dependencies(roseSupport rosetta_generated)
