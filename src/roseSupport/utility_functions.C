@@ -2,7 +2,6 @@
 #include "sage3basic.h"
 
 #include "checkIsModifiedFlag.h"
-#include <Rose/CommandLine.h>
 
 #if ROSE_WITH_LIBHARU
 #include "AstPDFGeneration.h"
@@ -246,7 +245,7 @@ std::string version_message() {
 
     // Use the same version string as outut by the --version switch. This string is usually "ROSE 0.x.y.z" but can be changed
     // at runtime. Tools often change this to be a tool version number followed by the ROSE version number.
-    ss <<Rose::CommandLine::versionString <<" (configured " <<ROSE_CONFIGURE_DATE <<")\n";
+    ss << version_number() <<" (configured " <<ROSE_CONFIGURE_DATE <<")\n";
 
     //-----------------------------------------------------------------------
     // GLobal information regardless of what languages ROSE is configured to analyze

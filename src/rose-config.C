@@ -33,20 +33,17 @@ static const char *description =
   "subdirectories (among others) where the ROSE library and its headers are installed.}";
 
 #include <rose.h>                                       // POLICY_OK -- this is not a ROSE library source file
-#include <Rose/CommandLine.h>
 #include <rose_getline.h>
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
-#include <Sawyer/CommandLine.h>
 #include <map>
 #include <string>
 #include <vector>
 
 using namespace Rose;
-using namespace Sawyer::Message::Common;
 
 typedef std::map<std::string, std::string> Configuration;
 
@@ -96,31 +93,6 @@ std::string toOldKeyFormat(std::string& key)
     std::transform(key.begin()+5, key.end(), std::back_inserter(oldFormat), ::tolower);
     return oldFormat;
     
-}
-
-// Parse switches and return the single positional KEY argument.
-static std::string
-parseCommandLine(int argc, char *argv[], Settings &settings /*in,out*/) {
-  using namespace Sawyer::CommandLine;
-
-    Parser parser = Rose::CommandLine::createEmptyParser(purpose, description);
-    parser.doc("Synopsis", "@prop{programName} [@v{switches}] @v{variable}");
-    parser.with(Rose::CommandLine::genericSwitches());
-
-  SwitchGroup tool("Tool-specific switches");
-  tool.insert(Switch("config")
-              .argument("file", anyParser(settings.configFile))
-              .doc("Use the specified file instead of the " CONFIG_NAME " file installed as part of installing ROSE."));
-
-  parser.with(tool);
-                
-  std::vector<std::string> args = parser.parse(argc, argv).apply().unreachedArgs();
-    
-  if (args.size() != 1) {
-    MLOG_FATAL_C("rose-config", "incorrect usage; see --help\n");
-    exit(1);
-  }
-  return args[0];
 }
 
 // Read a specific configuration file
@@ -287,7 +259,33 @@ makefileEscape(const std::string &s) {
 int
 main(int argc, char *argv[]) {
   Settings settings;
-  std::string key = parseCommandLine(argc, argv, settings);
+  std::string key;
+  if (argc == 2) { //--help or <key>
+	  std::string helpflag ("--help");
+	  std::string versionflag ("--version");
+	  if (helpflag.compare(argv[1]) == 0) {
+		  std::cout << purpose << "\n" << description << "\n";
+		  exit(0);
+	  } else if (versionflag.compare(argv[1]) == 0){
+		  std::cout << version_message() << "\n";
+		  exit(0);
+	  } else {
+	    MLOG_FATAL_C("rose-config", "incorrect usage; see --help\n");
+	    exit(1);
+	  }
+  } else if (argc == 4) { //--config <file> <key>
+	  std::string configflag ("--config");
+	  if (configflag.compare(argv[1]) == 0) {
+		  settings.configFile = boost::filesystem::path(argv[2]);
+		  key = std::string(argv[3]);
+	  } else {
+	    MLOG_FATAL_C("rose-config", "incorrect usage; see --help\n");
+	    exit(1);
+	  }
+  } else { //argc == 1 || argc > 4
+    MLOG_FATAL_C("rose-config", "incorrect usage; see --help\n");
+    exit(1);
+  }
   Configuration config = readConfigFile(settings);
 
   // Print the value

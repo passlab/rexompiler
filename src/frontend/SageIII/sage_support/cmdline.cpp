@@ -18,11 +18,14 @@
 
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string/replace.hpp>
-#include <Sawyer/CommandLine.h>
 
 using namespace Rose;                                   // temporary, until this file lives in namespace Rose
 
 #include <inttypes.h> /* for %" PRIuPTR " vs. %Iu handling */
+
+const char *licenseText =
+#include "license_string.h"
+;
 
 /*-----------------------------------------------------------------------------
  *  Variable Definitions

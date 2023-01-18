@@ -93,12 +93,6 @@ nobase_pkginclude_HEADERS=						\
 	Rose/CodeGen/factory/typedefs.txx				\
 	Rose/CodeGen/factory/variables.txx				\
 	Rose/CodeGen/Object.h						\
-	Rose/Color.h							\
-	Rose/CommandLine.h						\
-	Rose/CommandLine/License.h					\
-	Rose/CommandLine/Parser.h					\
-	Rose/CommandLine/SuffixMultiplierParser.h			\
-	Rose/CommandLine/Version.h					\
 	Rose/Constants.h						\
 	Rose/Exception.h						\
 	Rose/FileSystem.h						\

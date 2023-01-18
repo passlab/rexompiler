@@ -467,7 +467,8 @@ FixupAstSymbolTablesToSupportAliasedSymbols::injectSymbolsFromReferencedScopeInt
                   }
                  else
                   {
-                	 MLOG_WARN_C("astPostProcessing", "In injectSymbolsFromReferencedScopeIntoCurrentScope(): initializedNameFromSymbol->get_declptr() == NULL: initializedNameFromSymbol->get_name() = %s \n",initializedNameFromSymbol->get_name().str());
+                	 //MLOG_WARN_C("astPostProcessing", "In injectSymbolsFromReferencedScopeIntoCurrentScope(): initializedNameFromSymbol->get_declptr() == NULL: initializedNameFromSymbol->get_name() = %s \n",initializedNameFromSymbol->get_name().str());
+                	 MLOG_INFO_C("astPostProcessing", "In injectSymbolsFromReferencedScopeIntoCurrentScope(): initializedNameFromSymbol->get_declptr() == NULL: initializedNameFromSymbol->get_name() = %s \n",initializedNameFromSymbol->get_name().str());
                   }
              }
 
