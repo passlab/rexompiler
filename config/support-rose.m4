@@ -1378,7 +1378,6 @@ tests/nonsmoke/functional/roseTests/astQueryTests/Makefile
 tests/nonsmoke/functional/roseTests/astSymbolTableTests/Makefile
 tests/nonsmoke/functional/roseTests/astTokenStreamTests/Makefile
 tests/nonsmoke/functional/roseTests/fileLocation_tests/Makefile
-tests/nonsmoke/functional/roseTests/graph_tests/Makefile
 tests/nonsmoke/functional/roseTests/loopProcessingTests/Makefile
 tests/nonsmoke/functional/roseTests/mergeTraversal_tests/Makefile
 tests/nonsmoke/functional/roseTests/ompLoweringTests/Makefile

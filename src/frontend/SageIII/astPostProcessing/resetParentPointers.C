@@ -1542,8 +1542,8 @@ ResetParentPointers::evaluateInheritedAttribute (
         }
 
   // I/O useful for debugging
-  // if ( SgProject::get_verbose() >= DIAGNOSTICS_VERBOSE_LEVEL )
-     if ( SgProject::get_verbose() <= mlogLevel )
+     //if ( SgProject::get_verbose() >= DIAGNOSTICS_VERBOSE_LEVEL )
+     if ( SgProject::get_verbose() > mlogLevel )
         {
           if ( node->get_parent() != NULL )
              {

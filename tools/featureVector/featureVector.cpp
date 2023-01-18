@@ -1,43 +1,8 @@
 #include "rose.h"
-#include <Rose/CommandLine.h> // Commandline support in librose
-#include <Sawyer/CommandLine.h>
 using namespace std;
 
 bool enable_debug = false;
 bool enable_verbose = false;
-
-Sawyer::CommandLine::ParserResult
-parseCommandLine(int argc, char *argv[]) {
-    using namespace Sawyer::CommandLine;
-
-    SwitchGroup featureVector;
-    featureVector.doc("The following switches are specific to scalarizer.");
-  
-    bool showRoseHelp = false;
-    featureVector.insert(Switch("rose:help")
-             .longPrefix("-")
-             .intrinsicValue(true, showRoseHelp)
-             .doc("Show the old-style ROSE help.")); 
-
-    featureVector.insert(Switch("debug")
-                .intrinsicValue(true, enable_debug)
-                .doc("Enable the debugging mode: print out FVDebug file"));
-
-    featureVector.insert(Switch("verbose")
-                .intrinsicValue(true, enable_verbose)
-                .doc("Enable the verbose mode: print debug info to stdout"));
-
-    Parser parser;
-    parser
-        .purpose("Feature Vector")
-        .doc("synopsis", "@prop{programName} [@v{switches}] [@v{files}] ")
-        .doc("description",
-             "This program prints out the feature vector of a program "
-             "to help verifying ROSE output correctness. ");
-
-    parser.skippingUnknownSwitches(true);
-    return parser.with(Rose::CommandLine::genericSwitches()).with(featureVector).parse(argc, argv).apply();
-}
 
 class nodeTraversal : public AstSimpleProcessing
 {
@@ -291,11 +256,22 @@ void nodeTraversal::visit(SgNode* n)
 }
 
 int main( int argc, char * argv[] ){
-  Sawyer::CommandLine::ParserResult cmdline = parseCommandLine(argc, argv);
-  std::vector<std::string> positionalArgs = cmdline.unparsedArgs();
-  positionalArgs.insert(positionalArgs.begin(), argv[0]);
+  //Not using Sawyer-based commandline processing anymore
+  //Sawyer::CommandLine::ParserResult cmdline = parseCommandLine(argc, argv);
+  //std::vector<std::string> positionalArgs = cmdline.unparsedArgs();
+  //positionalArgs.insert(positionalArgs.begin(), argv[0]);
+  //SgProject* project = frontend(positionalArgs);
+  if (argc == 2) { //--help
+	  std::string helpflag ("--help");
+	  if (helpflag.compare(argv[1]) == 0) {
+		  std::cout << "Feature Vector: This program prints out the feature\n"
+				    << "vector of a program to help verifying ROSE output correctness.\n";
+		  exit(0);
+	  }
+  }
+  std::vector<std::string> args(argv, argv+argc);
+  SgProject* project = frontend(args);
 
-  SgProject* project = frontend(positionalArgs);
   Rose_STL_Container<std::string> filenames = project->getAbsolutePathFileNames();
   for(Rose_STL_Container<std::string>::iterator it = filenames.begin(); it != filenames.end(); it++)
     cout << "filename: " << *it << endl;

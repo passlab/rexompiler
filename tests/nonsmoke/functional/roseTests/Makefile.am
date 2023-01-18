@@ -17,7 +17,7 @@ if ROSE_BUILD_CXX_LANGUAGE_SUPPORT
               astProcessingTests astQueryTests \
               astSymbolTableTests \
               programTransformationTests \
-              graph_tests mergeTraversal_tests \
+              mergeTraversal_tests \
               astLValueTests varDeclNorm \
 	      roseCodeGen
 

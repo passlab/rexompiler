@@ -44,7 +44,6 @@ testFileNameClassifier.passed: $(top_srcdir)/scripts/test_exit_status testFileNa
 		CMD="$$(pwd)/testFileNameClassifier"	\
 		$< $@
 
-
 ########################################################################################################################
 # Test file name support
 ########################################################################################################################
@@ -74,38 +73,6 @@ directorySupport.passed: $(top_srcdir)/scripts/test_exit_status directorySupport
 	@$(RTH_RUN)									\
 		TITLE="directory support [$@]"						\
 		CMD="./directorySupport -c -rose:verbose 0 $(__minimal_input_code)"	\
-		$< $@
-
-
-########################################################################################################################
-# Tests performance of various graph implementations
-########################################################################################################################
-
-noinst_PROGRAMS += graphPerformance
-graphPerformance_SOURCES = graphPerformance.C
-
-TEST_TARGETS += graphPerformance.passed
-
-graphPerformance.passed: $(top_srcdir)/scripts/test_exit_status graphPerformance
-	@$(RTH_RUN)				\
-		TITLE="graph performance [$@]"	\
-		CMD="./graphPerformance"	\
-		$< $@
-
-
-########################################################################################################################
-# Tests and demonstrates one way to serialize and deserialize a graph
-########################################################################################################################
-
-noinst_PROGRAMS += graphIO
-graphIO_SOURCES = graphIO.C
-
-TEST_TARGETS += graphIO.passed
-
-graphIO.passed: $(top_srcdir)/scripts/test_exit_status graphIO
-	@$(RTH_RUN)				\
-		TITLE="graph I/O [$@]"		\
-		CMD="./graphIO"			\
 		$< $@
 
 ########################################################################################################################

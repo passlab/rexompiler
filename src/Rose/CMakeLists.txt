@@ -4,9 +4,6 @@
 # Namespaces within ::Rose (see top comment). Every namespace will
 # have a directory listed here, and every directory here is a
 # namespace.
-add_subdirectory(Color)
-add_subdirectory(CommandLine)
-add_subdirectory(Diagnostics)
 add_subdirectory(FileSystem)
 add_subdirectory(StringUtility)
 add_subdirectory(AST)
@@ -19,10 +16,7 @@ add_dependencies(roseNamespace rosetta_generated)
 
 # Public header files for the ::Rose namespace (see top comment)
 install(FILES
-  BitFlags.h
   BitOps.h
-  Color.h
-  CommandLine.h
   Constants.h
   Exception.h
   FileSystem.h
