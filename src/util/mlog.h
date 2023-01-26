@@ -73,6 +73,9 @@ typedef enum MLOG_LEVEL{
 #define DEFAULT_MLOG_LEVEL MLOG_LEVEL_NONE
 extern int  mlogLevel; //The current mlog level setting to control which level (KEY/INFO/MARCH/TRACE) info is spit out
 extern void mlog_C(MLOG_LEVEL_t level, const char * subject, const char * file, int line, const char * funcname, const char * format, ...);
+#if __cplusplus >= 201103L
+[[noreturn]]
+#endif
 extern void mlogAssertFail_C(const char * subject, const char * expr, const char * file, int line, const char * funcname, const char * format, ...);
 extern void mlogMore_C(const char * format, ...);
 extern const char * mlogLevelToString_C[];
