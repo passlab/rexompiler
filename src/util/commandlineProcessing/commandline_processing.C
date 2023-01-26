@@ -1,10 +1,10 @@
 #include <rose_config.h>
 #include <rosePublicConfig.h>
-#include <ROSE_ABORT.h>
 
 #include <string.h>
 #include <iostream>
 #include "commandline_processing.h"
+#include "mlog.h"
 #include <vector>
 #include <algorithm>
 #include <boost/algorithm/string/predicate.hpp>
@@ -23,7 +23,6 @@
 // DQ (12/31/2005): This is allowed in C files where it can not
 // effect the users application (just not in header files).
 using namespace std;
-using namespace Rose;
 
 Rose_STL_Container<std::string> CommandlineProcessing::extraCppSourceFileSuffixes;
 

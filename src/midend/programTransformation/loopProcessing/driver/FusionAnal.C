@@ -3,7 +3,6 @@
 #include <CompSliceLocality.h>
 #include <FusionAnal.h>
 #include <CommandOptions.h>
-#include <ROSE_ASSERT.h>
 
 //#define DEBUG 1
 

@@ -138,8 +138,8 @@ ROSE_UTIL_API std::string fileNameSuffix(const std::string &fileName);
  *
  *  This function does not work for non-POSIX systems. Consider using boost::filesystem instead, which has a directory iterator
  *  that works for non-POSIX systems also. */
-ROSE_UTIL_API std::list<std::string> findfile(std::string patternString, std::string pathString)
-    SAWYER_DEPRECATED("use Rose::FileSystem functions instead"); // ROSE_DEPRECATED is not defined here
+//ROSE_UTIL_API std::list<std::string> findfile(std::string patternString, std::string pathString)
+    //SAWYER_DEPRECATED("use Rose::FileSystem functions instead"); // ROSE_DEPRECATED is not defined here
 
 /* File name location.
  *

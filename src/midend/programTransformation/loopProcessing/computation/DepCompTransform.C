@@ -10,7 +10,6 @@
 #include <union_find.h>
 #include <GraphScope.h>
 #include <GraphIO.h>
-#include <ROSE_ASSERT.h>
 
 bool DebugRefFuse()
 {

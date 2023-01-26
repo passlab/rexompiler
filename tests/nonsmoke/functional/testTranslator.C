@@ -15,8 +15,6 @@ int main( int argc, char * argv[] )
           Rose::global_options.set_frontend_warnings(false);
           Rose::global_options.set_backend_warnings(false);
 #endif
-        }
-#endif
 
      SgProject* project = frontend(argc,argv);
 

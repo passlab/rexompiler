@@ -644,7 +644,6 @@
 ./util/commandlineProcessing/sla.h
 ./util/stringSupport/string_functions.h
 ./util/stringSupport/roseString.h
-./util/setup.h
 ./midend/astQuery/roseQueryLib.h
 ./midend/astQuery/booleanQuery.h
 ./midend/astQuery/booleanQueryInheritedAttribute.h

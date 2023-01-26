@@ -1,6 +1,5 @@
 #include <iostream>
 #include "ProcessAstTree.h"
-#include <ROSE_ASSERT.h>
 
 void ProcessAstTreeBase:: SetLocation( TraverseLocation state)
    {

@@ -1,9 +1,6 @@
-#include <assert.h>
-
 #include <DepInfo.h>
 #include <sstream>
-#include <ROSE_ABORT.h>
-#include <ROSE_ASSERT.h>
+#include <mlog.h>
 
 class DepEDDTypeInfo : public DepInfoImpl
 {
@@ -43,7 +40,7 @@ DepInfo DepInfoGenerator:: GetTopDepInfo()
 
 DepInfo DepInfoGenerator:: GetBottomDepInfo(int nr, int nc, int commLevel  )
 {
-  assert(commLevel <= nr && commLevel <= nc);
+  ASSERT_require(commLevel <= nr && commLevel <= nc);
   DepInfoImpl *impl = new DepInfoImpl( nr, nc, false, commLevel);
   impl->edd.Initialize(DepRel(DEPDIR_ALL));
   for (int i = 0; i < commLevel; ++i) {
@@ -63,7 +60,7 @@ DepInfo DepInfoGenerator::GetIDDepInfo(int nr, bool p)
 
 DepInfo DepInfoGenerator:: GetDepInfo( int nr, int nc, bool p, int commLevel)
 {
-  assert(commLevel <= nr && commLevel <= nc);
+  ASSERT_require(commLevel <= nr && commLevel <= nc);
   return new DepInfoImpl(nr, nc, p, commLevel);
 }
 
@@ -169,7 +166,7 @@ DepInfo operator & ( const DepInfo &info1, const DepInfo &info2)
 bool DepInfo :: ClosureEntries()
 {
   bool mod = false;
-  assert(rows() == cols());
+  ASSERT_require(rows() == cols());
   for (int i = 0; i < rows(); i++) {
     for (int j = 0; j < cols(); j++) {
       DepRel e1 = Entry(i,j);
@@ -211,7 +208,7 @@ DepInfo Reverse(const DepInfo &info)
 
 void DepInfo ::  TransformDep (DepInfo &dep, DepDirection dir) const
 {
-  assert( rows() == cols());
+  ASSERT_require( rows() == cols());
   DepInfo info( dep);
   if (dir & DEP_SRC) {
      dep = (*this) * info  ;
@@ -283,7 +280,7 @@ void DepInfo::InsertLoop( int level, DepDirection dir)
   int incr1 = (dir & DEP_SRC)? 1 : 0;
   int incr2 = (dir & DEP_SINK)? 1 : 0;
 
-  assert( (incr1 == 0 || level < d1) && (incr2 == 0 || level < d2) );
+  ASSERT_require( (incr1 == 0 || level < d1) && (incr2 == 0 || level < d2) );
   UpdateRef().Reset(d1+incr1,d2+incr2);
   if (d1 == 0 || d2 == 0)
     return;
@@ -323,7 +320,7 @@ void DepInfo::InsertLoop( int level, DepDirection dir)
   }
   if (level <= CommonLevel() && incr1 && incr2)
      ++CommonLevel();
-  assert( CommonLevel() <= rows() && CommonLevel() <= cols());
+  ASSERT_require( CommonLevel() <= rows() && CommonLevel() <= cols());
 
 }
 
@@ -333,7 +330,7 @@ void DepInfo:: DistLoop( int level)
   if ( level < CommonLevel());
       CommonLevel() = level;
 */
-  assert( CommonLevel() <= rows() && CommonLevel() <= cols());
+  ASSERT_require( CommonLevel() <= rows() && CommonLevel() <= cols());
 }
 
 void DepInfo:: RemoveLoop( int level, DepDirection dir)
@@ -346,7 +343,7 @@ void DepInfo:: RemoveLoop( int level, DepDirection dir)
   int incr1 = (dir & DEP_SRC)? 1 : 0;
   int incr2 = (dir & DEP_SINK)? 1 : 0;
 
-  assert(d1 >= incr1 && d2 >= incr2);
+  ASSERT_require(d1 >= incr1 && d2 >= incr2);
   UpdateRef().Reset(d1-incr1,d2-incr2);
 
   int m1 = (level < d1)? level : d1;
@@ -364,7 +361,7 @@ void DepInfo:: RemoveLoop( int level, DepDirection dir)
      for ( j = level+incr2 ; j < d2; ++j)
          Entry(i-incr1,j-incr2) = tmp.Entry(i,j);
   }
-  assert( CommonLevel() <= rows() && CommonLevel() <= cols());
+  ASSERT_require( CommonLevel() <= rows() && CommonLevel() <= cols());
 }
 
 void DepInfo::MergeLoop( int index1, int index2, DepDirection dir)

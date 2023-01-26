@@ -6,7 +6,6 @@ HEADER_NODE_PREDECLARATION_START
 // tps (01/27/10): Added essential files..
 //#include "sage3basic.h"
 #include <rosePublicConfig.h>
-#include "setup.h"
 #include "Map.h"
 
 #include <boost/serialization/access.hpp>
@@ -17,14 +16,10 @@ HEADER_NODE_PREDECLARATION_START
 #include <boost/serialization/version.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/unordered_set.hpp>
-#include <Sawyer/Interval.h>
-#include <Sawyer/IntervalSet.h>
 
 #include "Cxx_Grammar.h"
 
-#include "processSupport.h"
 #define __builtin_constant_p(exp) (0)
-
 
 class PreprocessingInfo;
 class AstRegExAttribute;

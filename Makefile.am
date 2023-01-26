@@ -593,7 +593,6 @@ lcov:
 -d src/util/commandlineProcessing/.libs \
 -d src/util/support/.libs \
 -d src/util/.libs \
--d src/util/Sawyer/.libs \
 -d src/backend/.libs \
 -d src/3rdPartyLibraries/MSTL/.libs \
 -d src/3rdPartyLibraries/libharu-2.1.0/src/.libs \
@@ -644,7 +643,6 @@ lcov_genhtml: coverage.info
 # DQ (2/22/2016): We can't include directories that ere not configured.
 # -d src/frontend/CxxFrontend/EDG/EDG_4.9/misc
 # -d src/frontend/CxxFrontend/EDG/EDG_4.9/src/.libs
-# -d src/util/Sawyer 
 
 # DQ (2/22/2016): The file genhtml has an error.
 # genhtml: ERROR: cannot read /home/dquinlan/ROSE/ROSE_CompileTree/git-LINUX-64bit-4.8.3--dq-development-rc-lcov/src/3rdPartyLibraries/POET/poet_yacc.y

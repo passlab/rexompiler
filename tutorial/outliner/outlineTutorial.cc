@@ -47,8 +47,7 @@ main (int argc, char* argv[])
       std::cout <<"  temp_variable       = " <<Outliner::temp_variable <<"\n";
       std::cout <<"  use_dlopen          = " <<Outliner::use_dlopen <<"\n";
       std::cout <<"  line                = ";
-      BOOST_FOREACH (int &line, Outliner::lines)
-          std::cout <<line<<" ";
+      for (int &line: Outliner::lines) std::cout <<line<<" ";
       std::cout <<"\n";
       std::cout <<"  output_path         = " <<Outliner::output_path <<"\n";
       std::cout <<"  enable_liveness     = " <<Outliner::enable_liveness <<"\n";

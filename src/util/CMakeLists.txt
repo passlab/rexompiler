@@ -48,7 +48,6 @@ add_definitions(-DROSE_UTIL_EXPORTS)
 ######## build sub libraries ##########
 add_subdirectory(commandlineProcessing)
 add_subdirectory(graphs)
-add_subdirectory(Sawyer)
 add_subdirectory(stringSupport)
 add_subdirectory(support)
 
@@ -69,14 +68,13 @@ add_library(roseUtil INTERFACE)
 target_sources(roseUtil INTERFACE
   $<TARGET_OBJECTS:util_main>
   $<TARGET_OBJECTS:util_commandlineProcessing>
-  $<TARGET_OBJECTS:util_sawyer>
   $<TARGET_OBJECTS:util_stringSupport>
   $<TARGET_OBJECTS:util_support>
   $<TARGET_OBJECTS:util_graphs>)
 
 ########### install files ###############
 install(FILES
-  setup.h processSupport.h ROSE_ABORT.h ROSE_ASSERT.h rose_paths.h
+  processSupport.h rose_paths.h
   compilationFileDatabase.h LinearCongruentialGenerator.h
   Map.h timing.h rose_getline.h rose_strtoull.h
   roseTraceLib.c ParallelSort.h rose_isnan.h rose_pragma_message.h

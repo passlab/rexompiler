@@ -311,7 +311,7 @@ void PRE::partialRedundancyEliminationOne( SgExpression* expr, SgBasicBlock* roo
                   }
              }
 
-          ASSERT_always_require (!computationInsertedOrUsed || needToMakeCachevar);
+          ASSERT_require (!computationInsertedOrUsed || needToMakeCachevar);
 
        // Compute antloc
           antloc[*i] = false;

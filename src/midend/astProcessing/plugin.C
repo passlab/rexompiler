@@ -5,6 +5,7 @@
 //#include "cmdline.h"
 #include "commandline_processing.h"
 #include "plugin.h"
+#include "mlog.h"
 using namespace std;
 
 namespace Rose {
@@ -32,7 +33,7 @@ namespace Rose {
       {
         pos1=i; 
         pos2=pos1+1; 
-        assert (pos2<sz);
+        ASSERT_require (pos2<sz);
         value = argv[pos2]; 
         break; 
       }
@@ -141,7 +142,7 @@ namespace Rose {
       if (!handle)
       {
         char* errKode = dlerror();
-        assert (errKode != NULL);
+        ASSERT_require (errKode != NULL);
         cout<<"Error in dlopen: error code: "<<errKode<<" when loading "<<lib_file_name <<endl;
         exit(1);
       }

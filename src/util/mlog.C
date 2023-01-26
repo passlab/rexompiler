@@ -4,6 +4,7 @@
  */
 #include <stdarg.h>
 #include <time.h>
+#include<cstring>
 #include <stdio.h>
 #include "mlog.h"
 
@@ -14,9 +15,10 @@ int mlogLevel = DEFAULT_MLOG_LEVEL;
  * it must be matching the value of each element of the MLOG_LEVEL enum
  */
 const char * mlogLevelToString_C[] = {
-    "FATAL", //0
-    "ERROR", //1
-    "WARN ",  //2
+    "FAIL ", //0
+    "FATAL",
+    "ERROR",
+    "WARN ",
 	"NONE ",
 	"KEY  ",
 	"INFO ",
@@ -44,6 +46,7 @@ char * getDateTime() {
 
 std::string mlogLevelToString_CXX(MLOG_LEVEL_t level) {
 	switch(level) {
+		case MLOG_LEVEL_FAIL:
 		case MLOG_LEVEL_FATAL:
 			return (std::string("\033[1;31m") + mlogLevelToString_C[level]); //bold red
 		case MLOG_LEVEL_ERROR:
@@ -62,10 +65,25 @@ std::string mlogLevelToString_CXX(MLOG_LEVEL_t level) {
 		}
 }
 
+void mlogAssertFail_C(const char * subject, const char * expr, const char * file, int line, const char * funcname, const char * format, ...) {
+	mlog_C(MLOG_LEVEL_FAIL, subject, file, line, funcname, "%s\n", expr);
+	if (format != NULL && strlen(format) != 0) {
+	    FILE * mlogFile = stderr;
+	    fprintf(mlogFile, "\t\t"); //indentation
+	    va_list l;
+	    va_start(l, format);
+	    vfprintf(mlogFile, format, l);
+	    va_end(l);
+	    fflush(mlogFile);
+	}
+	abort();
+}
+
 void mlog_C(MLOG_LEVEL_t level, const char * subject, const char * file,
 	  int line, const char * funcname, const char * format, ...) {
 	FILE * mlogFile = stderr;
 	switch(level) {
+	case MLOG_LEVEL_FAIL:
 	case MLOG_LEVEL_FATAL:
 		fprintf(mlogFile, "\033[1m\033[31m"); //bold red
 		fprintf(mlogFile, "%s: ", mlogLevelToString_C[level]); //print the string of each level
@@ -104,6 +122,7 @@ void mlog_C(MLOG_LEVEL_t level, const char * subject, const char * file,
 }
 
 void mlogMore_C(const char * format, ...) {
+	if (format == NULL || strlen(format) == 0) return;
 	FILE * mlogFile = stderr;
 	fprintf(mlogFile, "\t\t"); //indentation
 	va_list l;

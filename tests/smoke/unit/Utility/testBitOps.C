@@ -1,7 +1,6 @@
 #include <Rose/BitOps.h>
 
 #include <boost/lexical_cast.hpp>
-#include <Sawyer/Assert.h>
 #include <string>
 
 #define check(FUNC, ANS) do {                                                                                                  \

@@ -1,5 +1,4 @@
 #include <LoopTreeShadow.h>
-#include <ROSE_ASSERT.h>
 
 LoopTreeShadowNode ::
 LoopTreeShadowNode( LoopTreeNode *n, LoopTreeShadowCreate *tc)

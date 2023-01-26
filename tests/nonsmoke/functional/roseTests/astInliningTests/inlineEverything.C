@@ -47,7 +47,7 @@ void inlineFromRoot (SgFunctionDeclaration* func_decl, int& callSitesConsidered,
   do {
     changed = false; 
 
-    BOOST_FOREACH (SgFunctionCallExp *call, SageInterface::querySubTree<SgFunctionCallExp>(func_decl)) 
+    for (SgFunctionCallExp *call : SageInterface::querySubTree<SgFunctionCallExp>(func_decl)) 
     {
       callSitesConsidered ++;
       if (callSitesConsidered >  e_inline_limit )
@@ -61,7 +61,7 @@ void inlineFromRoot (SgFunctionDeclaration* func_decl, int& callSitesConsidered,
         std::cout << "Trying to inline the function id (starting from 1):" << callSitesConsidered << std::endl;
 
       if (doInline(call)) {
-        ASSERT_always_forbid2(isAstContaining(func_decl, call),
+        ASSERT_forbid2(!isAstContaining(func_decl, call),
             "Inliner says it inlined, but the call expression is still present in the AST.");
         inlined_calls.push_back(call);
         changed = true;
@@ -155,7 +155,9 @@ main (int argc, char* argv[]) {
       bool changed = false;
       //    BOOST_FOREACH (SgFunctionCallExp *call, SageInterface::querySubTree<SgFunctionCallExp>(sageProject)) 
       // interesting user loops are often located in the end of the source file    
-      BOOST_REVERSE_FOREACH (SgFunctionCallExp *call, SageInterface::querySubTree<SgFunctionCallExp>(sageProject)) 
+      //BOOST_REVERSE_FOREACH (SgFunctionCallExp *call, SageInterface::querySubTree<SgFunctionCallExp>(sageProject)) 
+      MLOG_WARN_C("astInliningTests", "reverse_foreach, e.g., BOOST_REVERSE_FOREACH should be used.\n"); 
+      for (SgFunctionCallExp *call : SageInterface::querySubTree<SgFunctionCallExp>(sageProject)) 
       {
         call_count++; 
         if (call_count>  e_inline_limit )
@@ -167,7 +169,7 @@ main (int argc, char* argv[]) {
         if (Inliner::verbose)        
           std::cout << "Trying to inline the function id (starting from 1):" << call_count << std::endl;
         if (doInline(call)) {
-          ASSERT_always_forbid2(isAstContaining(sageProject, call),
+          ASSERT_forbid2(isAstContaining(sageProject, call),
               "Inliner says it inlined, but the call expression is still present in the AST.");
           ++nInlined;
           inlined_calls.push_back(call);
@@ -179,7 +181,7 @@ main (int argc, char* argv[]) {
         break;
     }
 
-  std::cout <<"Test inlined " <<StringUtility::plural(nInlined, "function calls") << " out of "<< call_count<< " calls." <<"\n";
+  std::cout <<"Test inlined " << nInlined << "function call(s)" << " out of "<< call_count<< " calls." <<"\n";
   for (size_t i=0; i< inlined_calls.size(); i++)
   {
     std::cout <<"call@line:col " <<inlined_calls[i]->get_file_info()->get_line() <<":" << inlined_calls[i]->get_file_info()->get_col() <<"\n";

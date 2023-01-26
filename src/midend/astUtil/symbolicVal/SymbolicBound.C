@@ -1,9 +1,7 @@
-
 #include "SymbolicExpr.h"
 #include "SymbolicSelect.h"
 #include "SymbolicBound.h"
 #include "CommandOptions.h"
-#include <ROSE_ASSERT.h>
 
 bool DebugReplaceVal()
 {

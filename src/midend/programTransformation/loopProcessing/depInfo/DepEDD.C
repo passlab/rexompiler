@@ -5,7 +5,6 @@
 #include <assert.h>
 
 #include <DepEDD.h>
-#include <ROSE_ASSERT.h>
 
 inline void CopyVec( DepRel *vec1, DepRel *vec2, unsigned num)
 {

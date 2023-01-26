@@ -5,7 +5,7 @@
 #include <PtrMap.h>
 #include <ProcessAstTree.h>
 #include <CommandOptions.h>
-#include <ROSE_ABORT.h>
+#include <mlog.h>
 
 class CFGConfig {
  public:

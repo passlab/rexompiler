@@ -1,7 +1,7 @@
 include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 bin_PROGRAMS =
 
-SUBDIRS = stringSupport commandlineProcessing support graphs Sawyer
+SUBDIRS = stringSupport commandlineProcessing support graphs
 
 # AUTOMAKE_OPTIONS = subdir-objects
 
@@ -50,22 +50,19 @@ libroseutil_la_LIBADD = \
 pkginclude_HEADERS =				\
 	compilationFileDatabase.h		\
 	LinearCongruentialGenerator.h		\
-	Map.h					\
+	Map.h		\
 	timing.h				\
 	ParallelSort.h				\
 	processSupport.h			\
-	ROSE_ABORT.h				\
-	ROSE_ASSERT.h                           \
 	rose_getline.h				\
 	rose_isnan.h				\
 	rose_pragma_message.h			\
 	rose_paths.h				\
 	rose_strtoull.h				\
 	roseTraceLib.c				\
-	setup.h						\
 	mlog.h
 
-EXTRA_DIST = CMakeLists.txt setup.h utilDocumentation.docs
+EXTRA_DIST = CMakeLists.txt utilDocumentation.docs
 
 
 ########################################################################################################################

@@ -6,7 +6,6 @@
 //#include "sage3.h"
 #include "AstProcessing.h"
 #include "rosedll.h"
-#include <ROSE_ABORT.h>
 
 #include <functional>
 // Support for operations like (SgTypeInt | SgTypeFloat)

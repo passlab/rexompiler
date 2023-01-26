@@ -4607,6 +4607,7 @@ AstNodeClass* lookupTerminal(const vector<AstNodeClass*>& tl, const std::string&
   }
   cerr << "Reached end of AstNodeClass list in search for '" << name << "'" << endl;
   ROSE_ABORT ();
+  return NULL;
 }
 
 bool Grammar::nameHasPrefix(string name, string prefix) {

@@ -8,7 +8,6 @@
 
 #include <sstream>
 #include "NameGenerator.hh"
-#include <ROSE_ASSERT.h>
 
 using namespace std;
 

@@ -2,9 +2,10 @@
 #define ROSE_AstAttributeMechanism_H
 
 #include "rosedll.h"
-#include <Sawyer/Attribute.h>
+#include <string>
 #include <list>
 #include <set>
+#include <map>
 
 class SgNode;
 class SgNamedType;
@@ -99,7 +100,7 @@ public:
      *  @endcode */
     virtual OwnershipPolicy getOwnershipPolicy() const;
 
-    /** Support for attibutes to specify edges in the dot graphs. */
+    /** Support for attributes to specify edges in the dot graphs. */
     class ROSE_DLL_API AttributeEdgeInfo {
     public:
         SgNode* fromNode;
@@ -247,7 +248,9 @@ public:
  *  For additional information, including examples, see @ref attributes. */
 class ROSE_DLL_API AstAttributeMechanism {
     // Use containment because we want to keep the original API.
-    Sawyer::Attribute::Storage<> attributes_;
+    //Sawyer::Attribute::Storage<> attributes_;
+    typedef std::map<std::string, AstAttribute*> attributeMap_;
+    attributeMap_ attributes_;
 
 public:
     /** Default constructor.
@@ -513,21 +516,6 @@ public:
     virtual std::string attribute_class_name() const override { return "AstSgNodeAttribute"; }
     SgNode* getNode() { return get(); }
     void setNode(SgNode *node) { set(node); }
-};
-
-class ROSE_DLL_API AstSgNodeListAttribute: public AstValueAttribute<std::vector<SgNode*> > {
-public:
-    typedef AstValueAttribute<std::vector<SgNode*> > Super;
-    AstSgNodeListAttribute() {}
-    explicit AstSgNodeListAttribute(std::vector<SgNode *> &value): Super(value) {}
-    AstSgNodeListAttribute(const AstSgNodeListAttribute &other): Super(other) {}
-    virtual AstAttribute* copy() const override { return new AstSgNodeListAttribute(*this); }
-    virtual std::string attribute_class_name() const override { return "AstSgNodeListAttribute"; }
-    std::vector<SgNode*> &getNodeList() { return get(); }
-    void addNode(SgNode *n) { get().push_back(n); }
-    void setNode(SgNode*, int);
-    SgNode *getNode(int);
-    int size() { return get().size(); }
 };
 
 class ROSE_DLL_API AstIntAttribute : public AstValueAttribute<int> {

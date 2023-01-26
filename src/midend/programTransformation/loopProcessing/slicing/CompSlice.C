@@ -9,7 +9,6 @@
 #include <CompSliceImpl.h>
 #include <CompSliceObserver.h>
 #include <LoopInfoInterface.h>
-#include <ROSE_ASSERT.h>
 
 class CompSlice::ObserveImpl
    : public ObserveObject <CompSliceObserver>

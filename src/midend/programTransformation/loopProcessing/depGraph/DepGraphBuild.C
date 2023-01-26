@@ -6,7 +6,7 @@
 #include <DepGraphBuild.h>
 #include <DomainInfo.h>
 #include <PtrSet.h>
-#include <ROSE_ASSERT.h>
+#include <mlog.h>
 
 class DepGraphEdgeCreate : public CollectObject<DepInfo>
 {

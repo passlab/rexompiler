@@ -3518,7 +3518,8 @@ unparseFile ( SgFile* file, UnparseFormatHelp *unparseHelp, UnparseDelegate* unp
           if (unparseHelp != NULL) {
               Rose::FileSystem::Path fullOutputName = Rose::FileSystem::makeAbsolute(outputFilename);
               UnparseFormatHelp::PostOutputCallback::Args args(file, fullOutputName);
-              unparseHelp->postOutputCallbacks.apply(true, args);
+              //unparseHelp->postOutputCallbacks.apply(true, args);
+	      MLOG_FATAL_CXX(MLOG_UNPARSER) << "Need callback mechanisms that were supported by Sawyer before\n";
           }
 
        // DQ (3/19/2014): If -rose:noclobber_if_different_output, then test the generated file against the original file.

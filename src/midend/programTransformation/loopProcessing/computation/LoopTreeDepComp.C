@@ -7,7 +7,6 @@
 #include <DomainInfo.h>
 #include <LoopTreeTransform.h>
 #include <GraphIO.h>
-#include <ROSE_ASSERT.h>
 
 void LoopTreeDepGraphCreate::AddNode(LoopTreeDepGraphNode* result)
     {

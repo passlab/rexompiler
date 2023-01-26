@@ -7,7 +7,6 @@
 #include <DGBaseGraphImpl.h>
 #include <CompSliceDepGraph.h>
 #include <GraphGroup.h>
-#include <ROSE_ASSERT.h>
 
 extern bool DebugDep();
 

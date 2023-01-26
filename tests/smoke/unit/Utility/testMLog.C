@@ -105,5 +105,16 @@ int main() {
    //check and abort, only supported by C-style API
    //MLOG_CHECK_ERROR_ABORT_C(1==1, MLOG_EDG2SAGE, "error %d = %s and abort\n", 1, "one");
 
+   i = 100;
+   int ten = 10;
+   ASSERT_require(i == ten);
+   ASSERT_require(i == 100);
+   ASSERT_require2(i == ten, "i is %d, not %d\n", 100, ten);
+
+   int *ip = &i;
+   ASSERT_not_null(ip);
+   ASSERT_not_null2(ip, "ip is not null %p\n", ip);
+   ip = NULL;
+   ASSERT_not_null(ip);
    return 0;
 }

@@ -10,7 +10,7 @@ static void
 createSourceFile() {
     std::ofstream out(SOURCE_FILE_NAME);
     out <<FILE_CONTENT;
-    ASSERT_always_require(out.good());
+    ASSERT_require(out.good());
 }
 
 static void
@@ -23,8 +23,8 @@ checkTargetFile() {
     std::ifstream in(TARGET_FILE_NAME);
     char buf[256];
     in.getline(buf, sizeof buf);
-    ASSERT_always_require(in.eof());
-    ASSERT_always_require2(strcmp(buf, FILE_CONTENT)==0, "got \""+StringUtility::cEscape(buf)+"\"");
+    ASSERT_require(in.eof());
+    ASSERT_require2(strcmp(buf, FILE_CONTENT)==0, "got \"%s\"\n", StringUtility::cEscape(buf).c_str());
 }
 
 int main() {

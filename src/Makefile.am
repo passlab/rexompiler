@@ -49,7 +49,6 @@ libroseLibraries = \
    $(top_builddir)/src/util/support/libsupport.la \
    $(top_builddir)/src/util/graphs/libgraphs.la \
    $(top_builddir)/src/util/libroseutil.la \
-   $(top_builddir)/src/util/Sawyer/libroseSawyer.la \
    $(top_builddir)/src/Rose/librose_partial.la \
    $(top_builddir)/src/Rose/AST/libRoseAST.la \
    $(top_builddir)/src/Rose/CodeGen/libRoseCodeGen.la
@@ -96,7 +95,6 @@ nobase_pkginclude_HEADERS=						\
 	Rose/Constants.h						\
 	Rose/Exception.h						\
 	Rose/FileSystem.h						\
-	Rose/GraphUtility.h						\
 	Rose/StringUtility.h						\
 	Rose/StringUtility/Convert.h					\
 	Rose/StringUtility/Escape.h					\
