@@ -1,5 +1,5 @@
 #include <Rose/StringUtility/StringToNumber.h>
-
+#include <ctype.h>
 namespace Rose {
 namespace StringUtility {
 

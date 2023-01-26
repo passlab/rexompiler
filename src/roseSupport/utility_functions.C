@@ -8,6 +8,7 @@
 #endif
 
 #include "AstDOTGeneration.h"
+#include "processSupport.h"
 
 #include "wholeAST_API.h"
 

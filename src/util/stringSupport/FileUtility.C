@@ -7,6 +7,7 @@
 #include <rose_config.h>
 #include <integerOps.h>
 #include "rose_msvc.h"                                  // DQ (3/22/2009): Added MSVS support for ROSE.
+#include "mlog.h"
 
 // Other includes
 #include <boost/foreach.hpp>
@@ -14,6 +15,7 @@
 #include <cstring>
 #include <errno.h>                                      // DQ (9/29/2006): This is required for 64-bit g++ 3.4.4 compiler.
 #include <inttypes.h>
+#include <fstream>
 #include <iostream>
 #include <sstream>
 #include <rose_config.h>

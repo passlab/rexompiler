@@ -3,7 +3,6 @@
 #include <CommandOptions.h>
 #include <ReuseAnalysis.h>
 #include <LoopInfoInterface.h>
-#include <ROSE_ASSERT.h>
 
 #include <GraphIO.h>
 

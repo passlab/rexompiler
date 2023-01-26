@@ -2,7 +2,6 @@
 #include <PtrMap.h>
 #include <ProcessAstTree.h>
 #include <CommandOptions.h>
-#include <ROSE_ASSERT.h>
 
 bool debug_cfg()
 {

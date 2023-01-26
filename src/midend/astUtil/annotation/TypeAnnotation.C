@@ -1,9 +1,7 @@
-
 #include "TypeAnnotation.h"
 #include "AnnotExpr.h"
 #include <sstream>
 #include <list>
-#include <ROSE_ASSERT.h>
 
 // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace std;

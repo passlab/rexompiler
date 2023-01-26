@@ -1,11 +1,8 @@
-
-
 #include "AnnotExpr.h"
 #include "SymbolicSelect.h"
 #include "SymbolicPlus.h"
 #include "SymbolicMultiply.h"
 #include "CPPAstInterface.h"
-#include <ROSE_ASSERT.h>
 #include <string.h>
 
 using namespace std;

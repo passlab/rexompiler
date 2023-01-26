@@ -88,7 +88,6 @@ TEST(SymbolTableTest, LookUpOfNameInEmptyTableReturnsFalseNullOrZero){
   EXPECT_EQ(isNull(p->find_enum(foo)), true);
   EXPECT_EQ(isNull(p->find_enum_field(foo)), true);
   EXPECT_EQ(isNull(p->find_label(foo)), true);
-  EXPECT_EQ(isNull(p->find_java_label(foo)), true);
   EXPECT_EQ(isNull(p->find_namespace(foo)), true);
 //  EXPECT_EQ(isNull(p->find_aliased_symbol(foo)), true);
   EXPECT_EQ(p->count(foo), 0);

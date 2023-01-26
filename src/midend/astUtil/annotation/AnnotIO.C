@@ -1,5 +1,3 @@
-
-
 #include "AnnotIO.h"
 #include "CommandOptions.h"
 #include <string.h>
@@ -9,9 +7,6 @@
 // DQ (11/26/2009): This is required to support MSVC specific code below.
 #include "assert.h"
 #endif
-
-#include <ROSE_ASSERT.h>
-#include <ROSE_ABORT.h>
 
 using namespace std;
 

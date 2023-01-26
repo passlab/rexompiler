@@ -10,7 +10,6 @@
 #include <assert.h>
 #include <CommandOptions.h>
 #include <AutoTuningInterface.h>
-#include <ROSE_ASSERT.h>
 
 unsigned LoopUnrolling::unrollsize = 0;
 LoopUnrolling::UnrollOpt LoopUnrolling::opt = DEFAULT;

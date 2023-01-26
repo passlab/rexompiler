@@ -4,7 +4,7 @@
 #include <vector>
 #include <fstream>
 
-#include "OmpSupport.h"
+#include "ompSupport.h"
 using namespace std;
 using namespace OmpSupport;
 using namespace SageInterface;

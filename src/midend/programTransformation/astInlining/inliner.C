@@ -491,7 +491,7 @@ doInline(SgFunctionCallExp* funcall, bool allowRecursion)
          //cout << "There is a lambda class" << endl;
          SgLambdaCaptureList* lambdaCaptureList = lambdaExp->get_lambda_capture_list();
          SgLambdaCapturePtrList captureList = lambdaCaptureList->get_capture_list();
-         BOOST_FOREACH (SgLambdaCapture* capture, captureList)
+         for (SgLambdaCapture* capture : captureList)
          {
            // get the capture variable
            SgVarRefExp* captureVarRef = isSgVarRefExp(capture->get_capture_variable());
@@ -547,7 +547,7 @@ doInline(SgFunctionCallExp* funcall, bool allowRecursion)
      SgFunctionDefinition* targetFunction = SageInterface::getEnclosingFunctionDefinition(funcall, false /* do not include self */);
      SgExpressionPtrList funargs = funcall->get_args()->get_expressions();
      funcall->get_args()->get_expressions().clear();
-     BOOST_FOREACH (SgExpression *actual, funargs)
+     for (SgExpression *actual : funargs)
          actual->set_parent(NULL);
 
      // Make a copy of the to-be-inlined function so we're not modifying and (re)inserting the original.
@@ -749,7 +749,7 @@ doInline(SgFunctionCallExp* funcall, bool allowRecursion)
            closureList->set_definingDeclaration(closureList);
            // prepare member functon parameter list for constructor initializer
            SgExprListExp* memberFuncArgList = SageBuilder::buildExprListExp_nfi();
-           BOOST_FOREACH (SgLambdaCapture* capture, captureList)
+           for (SgLambdaCapture* capture : captureList)
            {
              // capture list
              SgVarRefExp* captureVarRef = isSgVarRefExp(capture->get_capture_variable());

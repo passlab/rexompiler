@@ -18205,6 +18205,7 @@ SOURCE_APPLICATION_PROJECT_START
 
 
 //! (static data) global concept of verbose level which controls useful output from the compiler
+//int SgProject::p_verbose = DEFAULT_MLOG_LEVEL; //TOBEFIXED to use the new mlog leveling
 int SgProject::p_verbose = 0;
 
 // DQ (4/4/2020): Adding support for unparse headers feature specific diagnostics.

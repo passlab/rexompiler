@@ -4,7 +4,6 @@
 #include <Rose/BitOps.h>
 #include <rosedll.h>
 
-#include <Sawyer/IntervalSet.h>
 #include <string>
 
 namespace Rose {
@@ -79,19 +78,7 @@ ROSE_UTIL_API std::string addrToString(uint64_t value, size_t nbits = 0);
  *
  *  Converts an interval to a string by converting each address to a string, separating them with a comma, and enclosing the
  *  whole string in square brackets. */
-ROSE_UTIL_API std::string addrToString(const Sawyer::Container::Interval<uint64_t> &interval, size_t nbits = 0);
-
-/** Convert an interval set of virtual addresses to a string.
- *
- *  Converts the interval-set to a string by converting each interval to a string, separating the intervals with commas, and
- *  enclosing the whole string in curly braces. */
-ROSE_UTIL_API std::string addrToString(const Sawyer::Container::IntervalSet<Sawyer::Container::Interval<uint64_t> > &iset,
-                                       size_t nbits = 0);
-
-/** Convert an optional virtual address to a string.
- *
- *  Same as the non-optional version of this function, but prints the word "none" if the argument is @ref Sawyer::Nothing. */
-ROSE_UTIL_API std::string addrToString(const Sawyer::Optional<uint64_t>&, size_t nbits = 0);
+ROSE_UTIL_API std::string addrIntervalToString(uint64_t low, uint64_t high, size_t nbits = 0);
 
 /** Convert a number to a binary string. */
 template<typename Unsigned>

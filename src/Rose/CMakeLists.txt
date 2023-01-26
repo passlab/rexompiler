@@ -20,7 +20,6 @@ install(FILES
   Constants.h
   Exception.h
   FileSystem.h
-  GraphUtility.h
   StringUtility.h
 
   DESTINATION ${INCLUDE_INSTALL_DIR}/Rose)

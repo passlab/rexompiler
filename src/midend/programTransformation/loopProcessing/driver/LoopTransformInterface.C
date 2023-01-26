@@ -9,7 +9,6 @@
 #include <LoopUnroll.h>
 #include <CommandOptions.h>
 #include <AutoTuningInterface.h>
-#include <ROSE_ASSERT.h>
 
 //#define DEBUG 1
 

@@ -4,8 +4,7 @@
 #include <CPPAstInterface.h>
 #include <AnnotExpr.h>
 #include <ValueAnnot.h>
-#include <ROSE_ABORT.h>
-#include <ROSE_ASSERT.h>
+#include <mlog.h>
 
 bool DebugValuePropogate();
 

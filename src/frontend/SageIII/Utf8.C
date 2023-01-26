@@ -1,7 +1,6 @@
 #include <iostream>
 #include <sstream>
 #include <string.h>
-#include <ROSE_ASSERT.h>
 #include "Utf8.h"
 
 // Define static member variables

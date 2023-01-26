@@ -1,8 +1,6 @@
 #include <iostream>
 #include <sstream>
 
-#include <ROSE_ASSERT.h>
-
 #include <DomainInfo.h>
 
 extern bool DebugDep();

@@ -1,8 +1,6 @@
 #include <DynamicCompSlice.h>
 #include <CompSliceImpl.h>
 #include <LoopTreeTransform.h>
-#include <ROSE_ASSERT.h>
-#include <assert.h>
 #include <stdio.h>
 
 class CondSliceStmt : public CompSliceStmt

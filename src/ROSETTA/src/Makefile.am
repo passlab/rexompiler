@@ -126,7 +126,6 @@ BoostLibraries = \
 CxxGrammarMetaProgram_LDADD = \
   $(ROSE_BOOST_LIBS) \
   $(top_builddir)/src/util/libroseutil.la \
-  $(top_builddir)/src/util/Sawyer/libroseSawyer.la \
   $(ROSE_BOOST_LIBS) \
   $(RT_LIBS)
 

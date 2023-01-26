@@ -5,7 +5,6 @@
 #include <TypedFusion.h>
 #include <GraphScope.h>
 #include <FusionAnal.h>
-#include <ROSE_ASSERT.h>
 
 //#define DEBUG 1
 

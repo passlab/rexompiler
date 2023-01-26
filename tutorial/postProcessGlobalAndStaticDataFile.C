@@ -6,9 +6,6 @@
 
 #include<list>
 
-#include<assert.h>
-#include <ROSE_ABORT.h>
-
 using namespace std;
 
 int 

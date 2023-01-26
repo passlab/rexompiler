@@ -6,6 +6,7 @@
 #include "grammar.h"
 #include "AstNodeClass.h"
 #include "grammarString.h"
+#include <cstring>
 
 using namespace std;
 using namespace Rose;

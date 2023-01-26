@@ -3,9 +3,8 @@
 #define TREE_IMPL_H
 
 #include <iostream>
-#include <assert.h>
 #include <DoublyLinkedList.h>
-#include <ROSE_ABORT.h>
+#include <mlog.h>
 
 template<class T>
 class TreeNodeImpl
@@ -49,7 +48,7 @@ class TreeNodeImpl
   unsigned ChildCount() const { return children.NumberOfEntries(); }
 
   void Link(T* pos, LinkOption opt)
-     { assert(holder == 0);
+     { ASSERT_require(holder == 0);
        T* entry = static_cast<T*>(this);
        switch (opt) {
        case AsFirstChild: 

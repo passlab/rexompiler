@@ -14,7 +14,6 @@
 #include <LoopTransformOptions.h>
 #include <AutoTuningInterface.h>
 #include <GraphIO.h>
-#include <ROSE_ASSERT.h>
 
 //#define DEBUG
 using namespace std;

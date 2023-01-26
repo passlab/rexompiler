@@ -13,8 +13,6 @@
 #include <CommandOptions.h>
 #include <fstream>
 
-#include <ROSE_ASSERT.h>
-
 #ifdef BD_OMEGA
 #include <PlatoOmegaInterface.h>
 #include <DepTestStatistics.h>

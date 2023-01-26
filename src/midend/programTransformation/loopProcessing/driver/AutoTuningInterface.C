@@ -11,8 +11,6 @@
 #include "timing.h"
 #endif
 
-#include <ROSE_ASSERT.h>
-
 #define DEBUG
 
 ArrayAbstractionInterface* AutoTuningInterface::arrayInfo = 0;

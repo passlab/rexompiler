@@ -1,8 +1,7 @@
 #ifndef ROSE_BitOps_H
 #define ROSE_BitOps_H
-
-#include <Sawyer/Assert.h>
-#include <Sawyer/Optional.h>
+#include <cstddef>
+#include "mlog.h"
 
 namespace Rose {
 
@@ -305,7 +304,7 @@ inline Unsigned signExtendLsb(Unsigned src, size_t n, size_t m) {
  *
  *  Rotates the bits of @p src left (toward higher indices) by @p n bits. This is similar to @ref shiftLeft except the high order
  *  bits that would normally be discarded are reintroduced in the low order positions. If @p n is zero then this is a
- *  no-op. The rotation amount is calculated modulo the width of @p src */
+ *  no-op. The rotation amount is calculated modulo the width of @p#include <cstddef> src */
 template<typename Unsigned>
 inline Unsigned rotateLeft(Unsigned src, size_t n) {
     n %= nBits(src);
@@ -378,20 +377,6 @@ template<typename Unsigned>
 inline Unsigned replicateLsb(Unsigned src, size_t w, size_t n) {
     ASSERT_require(w <= nBits(src));
     return select(lowMask<Unsigned>(w), replicate(src, n), src);
-}
-
-/** Index of the highest set bit.
- *
- *  If no bits are set then this returns nothing. Otherwise it returns the zero-origin index of the highest order set bit. */
-template<typename Unsigned>
-inline Sawyer::Optional<size_t> highestSetBit(Unsigned src) {
-    if (src) {
-        for (size_t i = nBits(src); i > 0; --i) {
-            if (bit(src, i-1))
-                return i-1;
-        }
-    }
-    return Sawyer::Nothing();
 }
 
 template<typename Unsigned>

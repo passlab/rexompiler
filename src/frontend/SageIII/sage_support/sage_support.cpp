@@ -11,6 +11,7 @@
 #include "sage_support.h"
 #include "keep_going.h"
 #include "cmdline.h"
+#include "processSupport.h"
 #include <Rose/FileSystem.h>
 
 #ifdef ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
@@ -24,7 +25,6 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
-#include <Sawyer/FileSystem.h>
 
 // DQ (12/22/2019): I don't need this now, and it is an issue for some compilers (e.g. GNU 4.9.4).
 // DQ (12/21/2019): Require hash table support for determining the shared nodes in the ASTs.
@@ -3623,8 +3623,9 @@ SgSourceFile::build_Fortran_AST( vector<string> argv, vector<string> inputComman
 
           // The Sawyer::FileSystem::TemporaryFile d'tor will delete the file. We close the file after it's created because
           // Rose::FileSystem::copyFile will reopen it in binary mode anyway.
-          Sawyer::FileSystem::TemporaryFile tempFile(preprocessFilename);
-          tempFile.stream().close();
+          //yanyh15 2023-01/19, not sure the purpose of this: create a file, and then delete it.
+          //Sawyer::FileSystem::TemporaryFile tempFile(preprocessFilename);
+          //tempFile.stream().close();
 
           // copy source file to pseudonym file
           try {

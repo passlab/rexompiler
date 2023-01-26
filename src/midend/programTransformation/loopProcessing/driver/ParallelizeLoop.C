@@ -1,6 +1,5 @@
 #include <ParallelizeLoop.h>
 #include <AutoTuningInterface.h>
-#include <ROSE_ASSERT.h>
 
 LoopTreeNode* ParallelizeBlocking::
 apply( const CompSliceDepGraphNode::FullNestInfo& nestInfo,

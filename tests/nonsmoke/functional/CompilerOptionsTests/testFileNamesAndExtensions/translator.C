@@ -2,47 +2,53 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 #include <fstream>
-#include <Sawyer/CommandLine.h>
+#include <map>
+#include <pair>
 #include <unistd.h>                                     // execvp
 
 using namespace Rose;
 
 int
 main(int argc, char *argv[]) {
-    using namespace Sawyer::CommandLine;
     typedef std::vector<std::string> Strings;
 
     // Usage:
     //    translator --command=CMD NAMES [-- SWITCHES...]         -- runs: CMD SWITCHES NAMES
     //    translator NAMES -- SWITCHES                        -- runs ROSE on SWITCHES NAMES
     // NAMES are always de-escaped and created
-    Parser p;
+
     std::string cmd;
-    p.with(Switch("command").argument("cmd", anyParser(cmd)));
-    Strings args = p.parse(argc, argv).apply().unreachedArgs();
+    //argv[1] has to start either --command= (10 char) or NAMES
+    std::vector<std::string> args(argv+1, argv+argc-1);
+    if (args[0].compare(0, 10, "--command=") == 0) { //10 characters for --command=
+    	cmd = args[0].substr(11);
+    	args.erase(args.begin());
+    }
+
+    //NOTE: command line processing was changed and Sawyer-based cmd processing is removed
+    //However, this fix has not yet tested.
 
     // Expand the "+SOMETHING+" escapes in all arguments.
-    typedef Sawyer::Container::Map<std::string, std::string> Translations;
+    typedef std::map<std::string, std::string> Translations;
     Translations map;
-    map.insert("+PLUS+",        "+");
-    map.insert("+SPACE+",       " ");
-    map.insert("+DOLLAR+",      "$");
-    map.insert("+STAR+",        "*");
-    map.insert("+HASH+",        "#");
-    map.insert("+SQUOTE+",      "'");
-    map.insert("+DQUOTE+",      "\"");
-    map.insert("+DOT+",         ".");
-    map.insert("+SLASH+",       "/");
-    map.insert("+BSLASH+",      "\\");
+    map.insert(std::pair<std::string, std::string>("+PLUS+",        "+"));
+    map.insert(std::pair<std::string, std::string>("+SPACE+",       " "));
+    map.insert(std::pair<std::string, std::string>("+DOLLAR+",      "$"));
+    map.insert(std::pair<std::string, std::string>("+STAR+",        "*"));
+    map.insert(std::pair<std::string, std::string>("+HASH+",        "#"));
+    map.insert(std::pair<std::string, std::string>("+SQUOTE+",      "'"));
+    map.insert(std::pair<std::string, std::string>("+DQUOTE+",      "\""));
+    map.insert(std::pair<std::string, std::string>("+DOT+",         "."));
+    map.insert(std::pair<std::string, std::string>("+SLASH+",       "/"));
+    map.insert(std::pair<std::string, std::string>("+BSLASH+",      "\\"));
     for (Strings::iterator arg = args.begin(); arg != args.end(); ++arg) {
         std::string translated;
         for (size_t i=0; i<arg->size(); ++i) {
             size_t endPlus;
             if ((*arg)[i] == '+' && (endPlus=arg->find('+', i+1)) != std::string::npos) {
                 std::string token = arg->substr(i, endPlus+1-i);
-                translated += map.getOrElse(token, token);
+                translated += map[token];
                 i = endPlus;
             } else {
                 translated += (*arg)[i];
@@ -70,7 +76,7 @@ main(int argc, char *argv[]) {
     // Either the ROSE translator or some other command
     if (cmd.empty()) {
         std::cout <<"translator args are:";
-        BOOST_FOREACH (const std::string &arg, args)
+        for (const std::string &arg : args)
             std::cout <<" \"" <<StringUtility::cEscape(arg) <<"\"";
         std::cout <<"\n";
         

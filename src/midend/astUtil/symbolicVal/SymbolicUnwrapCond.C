@@ -1,6 +1,4 @@
 #include "SymbolicExpr.h"
-#include <ROSE_ASSERT.h>
-#include <ROSE_ABORT.h>
 //store condition for a variable
 // coeff*variable + result Relation 0
 // e.g.   5*i+1 <=0

@@ -1,9 +1,7 @@
-
 #ifndef SYMBOLIC_PLUS_H
 #define SYMBOLIC_PLUS_H
 
 #include "SymbolicExpr.h"
-#include <ROSE_ABORT.h>
 
 class SymbolicPlus : public SymbolicExpr
 {

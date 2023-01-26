@@ -8,7 +8,6 @@
 #include <CommandOptions.h>
 #include <CopyArrayAnal.h>
 #include <ParallelizeLoop.h>
-#include <ROSE_ASSERT.h>
 
 class DynamicTuning {
   static int dt;

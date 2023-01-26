@@ -339,8 +339,6 @@ CommandlineProcessing::isOptionTakingSecondParameter( string argument )
           argument == "-rose:o" ||                          // Used to specify output file to ROSE (alternative to -rose:output)
           argument == "-rose:compilationPerformanceFile" || // Use to output performance information about ROSE compilation phases
           argument == "-rose:verbose" ||                    // Used to specify output of internal information about ROSE phases
-          argument == "-rose:log" ||                        // Used to conntrol Rose::Diagnostics
-          argument == "-rose:assert" ||                     // Controls behavior of failed assertions
           argument == "-rose:test" ||
           argument == "-rose:backendCompileFormat" ||
           argument == "-rose:outputFormat" ||
@@ -813,20 +811,24 @@ SgProject::processCommandLine(const vector<string>& input_argv)
   //
   // specify verbose setting for projects (should be set even for linking where there are no source files
   //
-  // DQ (3/9/2009): valid initial range is 0 ... 10.
      ROSE_ASSERT (get_verbose() >= 0);
      ROSE_ASSERT (get_verbose() <= 10);
 
+     //user specify verbose level from command line from 0 - 4, coresponding to 4 (NONE), 5, (KEY), 6(INFO), 7(MARCH), 8(TRACE)
      int integerOptionForVerbose = 0;
   // if ( CommandlineProcessing::isOptionWithParameter(argc,argv,"-rose:","(v|verbose)",integerOptionForVerbose,true) == true )
      if ( CommandlineProcessing::isOptionWithParameter(local_commandLineArgumentList,"-rose:","(v|verbose)",integerOptionForVerbose,true) == true )
         {
        // set_verbose(true);
+          int needToFix = integerOptionForVerbose;
+          integerOptionForVerbose += DEFAULT_MLOG_LEVEL;
+          if (integerOptionForVerbose > MLOG_LEVEL_TRACE) integerOptionForVerbose = MLOG_LEVEL_TRACE;
+          integerOptionForVerbose = needToFix;
           set_verbose(integerOptionForVerbose);
           Rose::Cmdline::verbose = integerOptionForVerbose;
 
-          if ( SgProject::get_verbose() >= 1 )
-               printf ("verbose mode ON (for SgProject)\n");
+          if ( SgProject::get_verbose() > DEFAULT_MLOG_LEVEL )
+               printf ("Fake news: %s verbose mode ON (for SgProject)\n", mlogLevelToString_C[integerOptionForVerbose]);
         }
 
      Rose::Cmdline::ProcessKeepGoing(this, local_commandLineArgumentList);
@@ -2390,18 +2392,11 @@ SgFile::usage ()
 "     -rose:markGeneratedFiles\n"
 "                             add \"#define ROSE_GENERATED_CODE\" to top of all\n"
 "                               generated code\n"
-"     -rose:verbose [LEVEL]   verbosely list internal processing (default=0)\n"
+"     -rose:verbose [LEVEL]   verbosely list internal processing (0, 1, 2, 4) with default=0\n"
+"                                      0 (NONE), 1(KEY), 2(INFO), 3(MARCH), 4(TRACE)\n"
 "                               Higher values generate more output (can be\n"
 "                               applied to individual files and to the project\n"
-"                               separately).\n"
-"     -rose:log WHAT\n"
-"                             Control diagnostic output. See '-rose:log help' for\n"
-"                             more information.\n"
-"     -rose:assert HOW\n"
-"                             Determines how a failed assertion is handled. The value\n"
-"                             for HOW should be 'abort', 'exit' with non-zero status, or\n"
-"                             'throw' a Rose::Diagnostics::FailedAssertion exception. Only\n"
-"                             assertions that use the Sawyer mechanism are affected.\n"
+"                               separately, TBI).\n"
 "     -rose:output_parser_actions\n"
 "                             call parser with --dump option (fortran only)\n"
 "     -rose:embedColorCodesInGeneratedCode LEVEL\n"
@@ -2633,60 +2628,6 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
         }
 
   //
-  // Diagnostic logging.  We need all of the '-rose:log WHAT' command-line switches in the order they appear, which seems to
-  // mean that we need to parse the argv vector ourselves. CommandlineParsing doesn't have a suitable function, and the sla
-  // code in sla++.C is basically unreadable and its minimal documentation doesn't seem to match its macro-hidden API,
-  // specifically the part about being able to return an array of values.
-  //
-     static const std::string removalString = "(--REMOVE_ME--)";
-     //TODO FIXME: need to come back to fix this (2023/01/14)
-#if 0
-     for (size_t i=0; i<argv.size(); ++i) {
-         if ((0==strcmp(argv[i].c_str(), "-rose:log")) && i+1 < argv.size()) {
-             argv[i] = removalString;
-             std::string switchValue = argv[++i];
-             argv[i] = removalString;
-
-             // This is a bit of a roundabout way to do this, but it supports "help", "list", etc and keeps ROSE's capabilities
-             // up to date with the latest documentation in Sawyer.
-             using namespace Sawyer::CommandLine;
-             SwitchGroup switches;
-             switches.insert(Switch("rose:log")
-                             .resetLongPrefixes("-")    // ROSE switches only support single hyphens
-                             .action(configureDiagnostics("rose:log", Diagnostics::mfacilities))
-                             .argument("config"));
-             std::vector<std::string> args;
-             args.push_back("-rose:log");
-             args.push_back(switchValue);
-             Parser parser;
-             parser.with(switches).parse(args).apply(); // causes configureDiagnostics to be called
-         }
-     }
-     argv.erase(std::remove(argv.begin(), argv.end(), removalString), argv.end());
-#endif
-  //
-  // -rose:assert abort|exit|throw
-  //
-     for (size_t i=0; i<argv.size(); ++i) {
-         if (argv[i] == std::string("-rose:assert") && i+1 < argv.size()) {
-             std::string switchValue = argv[i+1];
-             Sawyer::Assert::AssertFailureHandler handler = NULL;
-             if (switchValue == "abort") {
-                 handler = Rose::abortOnFailedAssertion;
-             } else if (switchValue == "exit") {
-                 handler = Rose::exitOnFailedAssertion;
-             } else if (switchValue == "throw") {
-                 handler = Rose::throwOnFailedAssertion;
-             }
-             if (handler != NULL) {
-                 argv[i] = argv[i+1] = removalString;
-                 Rose::failedAssertionBehavior(handler);
-             }
-         }
-     }
-     argv.erase(std::remove(argv.begin(), argv.end(), removalString), argv.end());
-
-  //
   // markGeneratedFiles option
   //
      set_markGeneratedFiles(false);
@@ -2736,7 +2677,6 @@ SgFile::processRoseCommandLineOptions ( vector<string> & argv )
           if ( SgProject::get_verbose() >= 1 )
                printf ("verbose mode ON (for SgFile)\n");
         }
-
 
   //
   // Turn on warnings (turns on warnings in fronend, for Fortran support this turns on detection of

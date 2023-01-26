@@ -1,9 +1,7 @@
-
 #include "sage3basic.h"
 #include "markLhsValues.h"
 #include "fixupNames.h"
 #include "FileUtility.h"
-#include <Sawyer/Message.h>
 
 #if ROSE_WITH_LIBHARU
 #include "AstPDFGeneration.h"
@@ -21250,6 +21248,11 @@ void
 SageInterface::moveStatementsBetweenBlocks ( SgBasicBlock* sourceBlock, SgBasicBlock* targetBlock )
 {
   moveStatementsBetweenScopes (sourceBlock, targetBlock);
+}
+
+void SageInterface::moveStatementsBetweenBlocks ( SgNamespaceDefinitionStatement* sourceBlock, SgNamespaceDefinitionStatement* targetBlock )
+{
+  moveDeclarationsBetweenScopes(sourceBlock, targetBlock);
 }
 
 //! Check if a function declaration is a C++11 lambda function

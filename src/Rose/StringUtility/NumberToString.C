@@ -143,35 +143,8 @@ addrToString(uint64_t value, size_t nbits) {
 }
 
 std::string
-addrToString(const Sawyer::Optional<uint64_t> &value, size_t nbits) {
-    return value ? addrToString(*value, nbits) : "none";
+addrIntervalToString(uint64_t low, uint64_t high, size_t nbits) {
+    return "[" + addrToString(low, nbits) + ", " + addrToString(high, nbits) + "]";
 }
-
-std::string
-addrToString(const Sawyer::Container::Interval<uint64_t> &interval, size_t nbits) {
-    if (interval.isEmpty()) {
-        return "[empty]";
-    } else {
-        return "[" + addrToString(interval.least(), nbits) + ", " + addrToString(interval.greatest(), nbits) + "]";
-    }
-}
-
-std::string
-addrToString(const Sawyer::Container::IntervalSet<Sawyer::Container::Interval<uint64_t> > &iset, size_t nbits) {
-    if (iset.isEmpty()) {
-        return "{empty}";
-    } else {
-        std::string retval = "{";
-        size_t i = 0;
-        for (const Sawyer::Container::Interval<uint64_t> &interval: iset.intervals()) {
-            if (++i > 1)
-                retval += ", ";
-            retval += addrToString(interval);
-        }
-        retval += "}";
-        return retval;
-    }
-}
-
 } // namespace
 } // namespace
