@@ -50,8 +50,7 @@ libroseLibraries = \
    $(top_builddir)/src/util/graphs/libgraphs.la \
    $(top_builddir)/src/util/libroseutil.la \
    $(top_builddir)/src/Rose/librose_partial.la \
-   $(top_builddir)/src/Rose/AST/libRoseAST.la \
-   $(top_builddir)/src/Rose/CodeGen/libRoseCodeGen.la
+   $(top_builddir)/src/Rose/AST/libRoseAST.la
 
 if ROSE_WITH_LIBHARU
 libroseLibraries += \
@@ -75,23 +74,11 @@ pkginclude_HEADERS = \
      midend/astDiagnostics/AstConsistencyTests.h
 
 nobase_pkginclude_HEADERS=						\
-	Rose/AST.h							\
 	Rose/AST/Checker.h						\
 	Rose/AST/cmdline.h						\
 	Rose/AST/Defect.h						\
 	Rose/AST/Utils.h						\
 	Rose/BitOps.h							\
-	Rose/CodeGen.h							\
-	Rose/CodeGen/API.h						\
-	Rose/CodeGen/API.txx						\
-	Rose/CodeGen/Driver.h						\
-	Rose/CodeGen/Factory.h						\
-	Rose/CodeGen/factory/classes.txx				\
-	Rose/CodeGen/factory/functions.txx				\
-	Rose/CodeGen/factory/namespaces.txx				\
-	Rose/CodeGen/factory/typedefs.txx				\
-	Rose/CodeGen/factory/variables.txx				\
-	Rose/CodeGen/Object.h						\
 	Rose/Constants.h						\
 	Rose/Exception.h						\
 	Rose/FileSystem.h						\

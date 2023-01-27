@@ -4,7 +4,7 @@
 include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 AUTOMAKE_OPTIONS = nostdinc subdir-objects
 
-SUBDIRS=AST CodeGen
+SUBDIRS=AST
 
 # .C files for the ::Rose namespace (see top comment)
 AM_CPPFLAGS = $(ROSE_INCLUDES)

@@ -18,8 +18,7 @@ if ROSE_BUILD_CXX_LANGUAGE_SUPPORT
               astSymbolTableTests \
               programTransformationTests \
               mergeTraversal_tests \
-              astLValueTests varDeclNorm \
-	      roseCodeGen
+              astLValueTests varDeclNorm
 
 # DQ (3/31/2021): Testing by removing astTokenStreamTests (above)
 #              astSymbolTableTests astTokenStreamTests

@@ -12,7 +12,7 @@ libRoseAST_la_SOURCES = \
 libRoseAST_la_LIBADD = 
 
 libRoseAST_la_public_includedir = $(prefix)/include/Rose
-libRoseAST_la_public_include_HEADERS = ../AST.h
+libRoseAST_la_public_include_HEADERS =
 
 libRoseAST_la_includedir = $(prefix)/include/Rose/AST
 libRoseAST_la_include_HEADERS = cmdline.h Checker.h Defect.h Utils.h
