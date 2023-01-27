@@ -162,7 +162,6 @@ void
 AstAttributeMechanism::assignFrom(const AstAttributeMechanism &other) {
     if (this == &other) return;
     AstAttributeMechanism tmp;                          // for exception safety
-    //BOOST_FOREACH (Sawyer::Attribute::Id id, other.attributes_.attributeIds()) {
     for(auto it=attributes_.begin(); it!=attributes_.end(); it++) {
         /*!const*/ AstAttribute *attr = other[it->first];
         ASSERT_not_null(attr);

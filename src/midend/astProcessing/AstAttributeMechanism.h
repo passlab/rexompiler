@@ -16,11 +16,11 @@ class SgTemplateParameterList;
  *
  *  This is the base class for all attribute values stored in the Sage IR node using the @ref AstAttributeMechanism. IR node
  *  attributes are polymorphic based on this abstract class, and are always allocated on the heap. Once the attribute value is
- *  handed to an attribute container method the container owns the value and is reponsible for deleting it.  In the case of
+ *  handed to an attribute container method the container owns the value and is responsible for deleting it.  In the case of
  *  methods that only optionally insert a value, the value is deleted immediately if it's not inserted.  But see @ref
  *  getOwnershipPolicy for additional information.
  *
- *  The underlying @ref Sawyer::Attribute mechanism can store values of any type, including POD, 3rd party types, and
+ *  The underlying mechanism is designed to store values of any type, including POD, 3rd party types, and
  *  pointers. On the other hand, the @ref AstAttributeMechanism interface described here stores only pointers to values
  *  allocated on the stack, owns those values, and supports operations that are useful specifically in IR nodes.
  *
@@ -29,8 +29,6 @@ class SgTemplateParameterList;
  *  when its AST node is copied.  If a subclass fails to implement the virtual copy constructor and a superclass has an
  *  implementation that return non-null, then copying the AST node will copy only the superclass part of the attribute and the
  *  new attribute will have the dynamic type of the superclass--probably not what you want!
- *
- *
  *
  *  For a more detailed description of using attributes in ROSE (and your own classes) see @ref attributes. */
 class ROSE_DLL_API AstAttribute {
@@ -239,16 +237,8 @@ public:
  *  although that is not the preferred API.  Instead, @ref SgNode provides an additional methods that contain "attribute" as
  *  part of their name. These "attribute" methods are mostly just wrappers around @ref SgNode::get_attributeMechanism.
  *
- *  Users can also use @ref AstAttributeMechanism as a data member in their own classes. However, @ref Sawyer::Attribute is
- *  another choice: not only does it serve as the implementation for @ref AstAttributeMechanism, but it also supports checked
- *  attribute names and attributes that are values rather than pointers, including POD, 3rd-party types, and shared-ownership
- *  pointers. The amount of boilerplate that needs to be written in order to store a @ref Sawyer::Attribute is much less than
- *  that required to store an attribute with @ref AstAttributeMechanism.
- *
  *  For additional information, including examples, see @ref attributes. */
 class ROSE_DLL_API AstAttributeMechanism {
-    // Use containment because we want to keep the original API.
-    //Sawyer::Attribute::Storage<> attributes_;
     typedef std::map<std::string, AstAttribute*> attributeMap_;
     attributeMap_ attributes_;
 
