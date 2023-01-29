@@ -64,8 +64,8 @@ static SgFunctionDeclaration *move_outlined_function(SgFunctionDeclaration *,
 std::vector<SgFunctionDeclaration *> *outlined_function_list = NULL;
 std::vector<SgDeclarationStatement *> *outlined_struct_list = NULL;
 
-static std::vector<SgFunctionDeclaration *> *target_outlined_function_list =
-    NULL;
+std::vector<SgFunctionDeclaration *> *target_outlined_function_list = NULL;
+std::vector<SgDeclarationStatement *> *target_outlined_struct_list = NULL;
 static void post_processing(SgSourceFile *);
 static SgSourceFile *generate_outlined_function_file(SgFunctionDeclaration *,
                                                      std::string);
