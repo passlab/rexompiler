@@ -584,6 +584,66 @@ int patchUpImplicitMappingVariables(SgFile *file) {
   return result;
 } // end patchUpImplicitMappingVariables()
 
+int patchUpImplicitSharedVariables(SgFile *file) {
+  int result = 0;
+  ROSE_ASSERT(file != NULL);
+
+  VariantVector directive_vv = VariantVector(V_SgOmpParallelStatement);
+  directive_vv.push_back(V_SgOmpTeamsStatement);
+  directive_vv.push_back(V_SgOmpTeamsDistributeParallelForStatement);
+  directive_vv.push_back(V_SgOmpTeamsDistributeStatement);
+  Rose_STL_Container<SgNode *> node_list =
+      NodeQuery::querySubTree(file, directive_vv);
+
+  Rose_STL_Container<SgNode *>::iterator iter = node_list.begin();
+  for (iter = node_list.begin(); iter != node_list.end(); iter++) {
+    SgOmpClauseBodyStatement *target = NULL;
+    target = isSgOmpClauseBodyStatement(*iter);
+    SgScopeStatement *directive_scope = target->get_scope();
+    SgStatement *body = target->get_body();
+    ROSE_ASSERT(body != NULL);
+
+    // Find all variable references from the task's body
+    Rose_STL_Container<SgNode *> ref_list =
+        NodeQuery::querySubTree(body, V_SgVarRefExp);
+    Rose_STL_Container<SgNode *>::iterator var_iter = ref_list.begin();
+    for (var_iter = ref_list.begin(); var_iter != ref_list.end(); var_iter++) {
+      SgVarRefExp *var_ref = isSgVarRefExp(*var_iter);
+      ROSE_ASSERT(var_ref->get_symbol() != NULL);
+      SgInitializedName *init_var = var_ref->get_symbol()->get_declaration();
+      ROSE_ASSERT(init_var != NULL);
+      SgScopeStatement *var_scope = init_var->get_scope();
+      ROSE_ASSERT(var_scope != NULL);
+
+      // Variables with automatic storage duration that are declared in
+      // a scope inside the construct are private. Skip them
+      if (isAncestor(directive_scope, var_scope))
+        continue;
+
+      // Skip variables already with explicit data-sharing attributes
+      VariantVector vv(V_SgOmpDefaultClause);
+      vv.push_back(V_SgOmpPrivateClause);
+      vv.push_back(V_SgOmpSharedClause);
+      vv.push_back(V_SgOmpFirstprivateClause);
+      if (isInClauseVariableList(init_var, target, vv))
+        continue;
+      // Skip variables which are class/structure members: part of another
+      // variable
+      if (isSgClassDefinition(init_var->get_scope()))
+        continue;
+      // Skip variables which are shared in enclosing constructs
+      if (!isSgGlobal(var_scope) &&
+          isSharedInEnclosingConstructs(init_var, target))
+        continue;
+
+      // Now it should be in a shared variable
+      addClauseVariable(init_var, target, V_SgOmpSharedClause);
+      result++;
+    } // end for each variable reference
+  }
+  return result;
+} // end patchUpImplicitMappingVariables()
+
 // map variables in omp target firstprivate clause
 int normalizeOmpMapVariables(SgFile *file) {
   int result = 0;
@@ -598,9 +658,9 @@ int normalizeOmpMapVariables(SgFile *file) {
     SgStatement *body = target->get_body();
     ROSE_ASSERT(body != NULL);
 
-    if (hasClause(target, V_SgOmpFirstprivateClause) == false) {
+    if (hasClause(target, V_SgOmpFirstprivateClause) == false)
       continue;
-    }
+
     Rose_STL_Container<SgOmpClause *> clauses =
         getClause(target, V_SgOmpFirstprivateClause);
     SgOmpFirstprivateClause *firstprivate_clause =
@@ -657,6 +717,26 @@ int normalizeOmpMapVariables(SgFile *file) {
   return result;
 } // end normalizeOmpMapVariables()
 
+bool isInOmpTargetRegion(SgStatement *node) {
+  SgOmpExecStatement *target = isSgOmpExecStatement(node);
+  ROSE_ASSERT(target);
+  SgOmpExecStatement *parent = NULL;
+  do {
+    parent = isSgOmpExecStatement(target->get_omp_parent());
+    if (parent != NULL) {
+      switch (parent->variantT()) {
+      case V_SgOmpTargetStatement:
+      case V_SgOmpTargetTeamsStatement:
+      case V_SgOmpTargetTeamsDistributeStatement:
+        return true;
+      default:
+        target = parent;
+      }
+    }
+  } while (parent != NULL);
+  return false;
+}
+
 // set the parent and children of a given OpenMP executable directive node
 void setOmpRelationship(SgStatement *parent, SgStatement *child) {
   SgOmpExecStatement *omp_parent = isSgOmpExecStatement(parent);
@@ -673,12 +753,11 @@ void setOmpRelationship(SgStatement *parent, SgStatement *child) {
 SgStatement *getOmpParent(SgStatement *node) {
   SgStatement *parent = isSgStatement(node->get_parent());
   while (parent != NULL) {
-    if (isSgOmpExecStatement(parent)) {
-      break;
-    }
+    if (isSgOmpExecStatement(parent))
+      return parent;
     parent = isSgStatement(parent->get_parent());
   }
-  return isSgOmpExecStatement(parent);
+  return NULL;
 }
 
 // traverse the SgNode AST and fill the information of OpenMP executable
@@ -772,31 +851,18 @@ void normalizeOmpTargetOffloadingUnits(SgFile *file) {
     // Check whether parallel/parallel for is in a target region.
     // case V_SgOmpParallelForStatement:
     case V_SgOmpParallelStatement:
-      parent = isSgOmpExecStatement(node->get_omp_parent());
-      if (parent == NULL)
-        break;
-      switch (parent->variantT()) {
-      case V_SgOmpTargetTeamsStatement:
-      case V_SgOmpTargetTeamsDistributeStatement:
-      case V_SgOmpTargetTeamsDistributeParallelForStatement:
+      if (isInOmpTargetRegion(node))
         setOmpNumThreads(node);
-        break;
-      case V_SgOmpTeamsStatement:
-      case V_SgOmpTeamsDistributeStatement:
-        if (isSgOmpTargetStatement(parent->get_parent()))
-          setOmpNumThreads(node);
-        break;
-      default:;
-      }
+      break;
     // Check whether teams/teams distribute is in a target region.
     case V_SgOmpTeamsStatement:
     case V_SgOmpTeamsDistributeStatement:
-      if (isSgOmpTargetStatement(node->get_parent()))
+      if (isInOmpTargetRegion(node))
         setOmpNumTeams(node);
       break;
     // Check whether teams distribute parallel for is in a target region.
     case V_SgOmpTeamsDistributeParallelForStatement:
-      if (isSgOmpTargetStatement(node->get_parent())) {
+      if (isInOmpTargetRegion(node)) {
         setOmpNumTeams(node);
         setOmpNumThreads(node);
       }
@@ -827,6 +893,8 @@ void analyze_omp(SgSourceFile *file) {
   // Convert firstprivate clause in target directive to map clause because
   // later only map clause will be lowered.
   normalizeOmpMapVariables(file);
+
+  patchUpImplicitSharedVariables(file);
 
   Rose_STL_Container<SgNode *> node_list =
       NodeQuery::querySubTree(file, V_SgOmpForStatement);

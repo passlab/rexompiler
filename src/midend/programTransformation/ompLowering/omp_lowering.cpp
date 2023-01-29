@@ -64,9 +64,8 @@ static SgFunctionDeclaration *move_outlined_function(SgFunctionDeclaration *,
 std::vector<SgFunctionDeclaration *> *outlined_function_list = NULL;
 std::vector<SgDeclarationStatement *> *outlined_struct_list = NULL;
 
-std::vector<SgFunctionDeclaration *> *target_outlined_function_list = NULL;
-std::vector<SgDeclarationStatement *> *target_outlined_struct_list = NULL;
-
+static std::vector<SgFunctionDeclaration *> *target_outlined_function_list =
+    NULL;
 static void post_processing(SgSourceFile *);
 static SgSourceFile *generate_outlined_function_file(SgFunctionDeclaration *,
                                                      std::string);
@@ -2689,7 +2688,6 @@ void transOmpParallel(SgNode *node) {
 }
 
 //! A helper function to categorize variables collected from map clauses
-
 void categorizeMapClauseVariables(
     const SgInitializedNamePtrList
         &all_vars, // all variables collected from map clauses
@@ -4825,6 +4823,193 @@ void transOmpTargetSpmdWorksharing(SgNode *node, SgExpression *omp_num_teams,
   target_outlined_function_list->push_back(isSgFunctionDeclaration(result));
 }
 
+void transOmpLoopInTargetRegion(SgNode *node) {
+  // Sanity check first
+  ROSE_ASSERT(node != NULL);
+  SgOmpClauseBodyStatement *target = isSgOmpClauseBodyStatement(node);
+  ROSE_ASSERT(target != NULL);
+
+  // At this point, the for loop has been moved to the outlined function.
+  // It's the very first loop statement in that function.
+  Rose_STL_Container<SgNode *> for_loops =
+      NodeQuery::querySubTree(node, V_SgForStatement);
+  SgBasicBlock *loop_block = transOmpTargetLoopBlock(for_loops[0]);
+
+  replaceStatement(target, loop_block, true);
+}
+
+// FIXME: It's still work-in-progress.
+void transOmpSpmdInTargetRegion(SgNode *node) {
+  // Sanity check first
+  ROSE_ASSERT(node != NULL);
+  SgOmpClauseBodyStatement *target = isSgOmpClauseBodyStatement(node);
+  ROSE_ASSERT(target != NULL);
+
+  // Now we need to ensure that "omp target " has a basic block as its body
+  // so we can insert declarations into an inner block, instead of colliding
+  // declarations within the scope of "omp target" This is important since we
+  // often have consecutive "omp target" regions within one big scope We cannot
+  // just insert things into that big scope.
+  SgBasicBlock *omp_target_stmt_body_block =
+      ensureBasicBlockAsBodyOfOmpBodyStmt(target);
+  ROSE_ASSERT(isSgBasicBlock(target->get_body()));
+
+  SgStatement *body = target->get_body();
+  ROSE_ASSERT(body != NULL);
+  // Save preprocessing info as early as possible, avoiding mess up from the
+  // outliner
+  AttachedPreprocessingInfoType save_buf1, save_buf2, save_buf_inside;
+  cutPreprocessingInfo(target, PreprocessingInfo::before, save_buf1);
+  cutPreprocessingInfo(target, PreprocessingInfo::after, save_buf2);
+
+  // 1/15/2009, Liao, also handle the last #endif, which is attached inside of
+  // the target
+  cutPreprocessingInfo(target, PreprocessingInfo::inside, save_buf_inside);
+
+  //-----------------------------------------------------------------
+  // step 1: generated an outlined function and make it a CUDA function
+  SgOmpClauseBodyStatement *target_parallel_stmt =
+      isSgOmpClauseBodyStatement(node);
+  ROSE_ASSERT(target_parallel_stmt);
+
+  // Prepare the outliner
+  Outliner::enable_classic = true;
+  //    Outliner::useParameterWrapper = false; //TODO: better handling of the
+  //    dependence among flags
+  SgBasicBlock *body_block = Outliner::preprocess(body);
+  // translator OpenMP 3.0 and earlier variables.
+  // transOmpVariables(target, body_block);
+
+  ASTtools::VarSymSet_t all_syms; // all generated or remaining variables to be
+                                  // passed to the outliner
+  // This addressOf_syms does not apply to CUDA kernel generation: since we
+  // cannot use pass-by-reference for CUDA kernel. If we want to copy back
+  // value, we have to use memory copy  since they are in two different memory
+  // spaces.
+  ASTtools::VarSymSet_t
+      addressOf_syms; // generated or remaining variables should be passed by
+                      // using their addresses
+
+  SageInterface::fixVariableReferences(body_block);
+  Outliner::collectVars(body_block, all_syms);
+  ASTtools::VarSymSet_t::iterator iter;
+  for (iter = all_syms.begin(); iter != all_syms.end(); iter++) {
+    const SgVariableSymbol *var_sym = *iter;
+    std::cout << var_sym->get_name() << "\n";
+    SgType *i_type = var_sym->get_declaration()->get_type();
+    if (!isSgPointerType(i_type) && !isSgArrayType(i_type))
+      addressOf_syms.insert(var_sym);
+  }
+
+  // if num_threads clause exists, we need to set up the omp number of threads
+  // first. therefore, the head will be the function call of setting up
+  // num_threads.
+  SgExpression *omp_num_threads = NULL;
+  if (hasClause(target, V_SgOmpNumThreadsClause)) {
+    Rose_STL_Container<SgOmpClause *> num_threads_clauses =
+        getClause(target, V_SgOmpNumThreadsClause);
+    ROSE_ASSERT(num_threads_clauses.size() ==
+                1); // should only have one num_threads()
+    SgOmpNumThreadsClause *num_threads_clause =
+        isSgOmpNumThreadsClause(num_threads_clauses[0]);
+    ROSE_ASSERT(num_threads_clause->get_expression() != NULL);
+    omp_num_threads = copyExpression(num_threads_clause->get_expression());
+  }
+
+  string func_name = Outliner::generateFuncName(target);
+  // add a meaningful suffix to the generated unique outlined function name
+  // the suffix is "<enclosing function name>__<line number of the original
+  // statement>__"
+  const Sg_File_Info *info = target->get_startOfConstruct();
+  SgFunctionDeclaration *enclosing_function =
+      getEnclosingFunctionDeclaration(target);
+  std::string enclosing_function_name =
+      enclosing_function->get_name().getString();
+  std::stringstream statement_line_number;
+  statement_line_number << info->get_line();
+  func_name +=
+      enclosing_function_name + "__" + statement_line_number.str() + "__";
+
+  SgGlobal *g_scope = SageInterface::getGlobalScope(body_block);
+  ROSE_ASSERT(g_scope != NULL);
+
+  // pass all the parameters by reference
+  for (std::set<const SgVariableSymbol *>::iterator iter = all_syms.begin();
+       iter != all_syms.end(); iter++) {
+    if (!isPointerType((*iter)->get_type()) &&
+        !isSgArrayType((*iter)->get_type())) {
+      addressOf_syms.insert(*iter);
+    };
+  };
+
+  std::set<SgInitializedName *> restoreVars;
+  SgFunctionDeclaration *result =
+      Outliner::generateFunction(body_block, func_name + "kernel__", all_syms,
+                                 addressOf_syms, restoreVars, NULL, g_scope);
+  SgFunctionDeclaration *result_decl =
+      isSgFunctionDeclaration(result->get_firstNondefiningDeclaration());
+  ROSE_ASSERT(result_decl != NULL);
+  result_decl->get_functionModifier()
+      .setCudaKernel(); // add __global__ modifier
+
+  result->get_functionModifier().setCudaKernel();
+
+  // This one is not desired. It inserts the function to the end and prepend a
+  // prototype Outliner::insert(result, g_scope, body_block);
+  // TODO: better interface to specify where exactly to insert the function!
+  // Custom insertion:  insert right before the enclosing function of "omp
+  // target"
+  SgFunctionDeclaration *target_func = const_cast<SgFunctionDeclaration *>(
+      SageInterface::getEnclosingFunctionDeclaration(target));
+  ROSE_ASSERT(target_func != NULL);
+  insertStatementAfter(target_func, result);
+  // TODO: this really should be done within Outliner::generateFunction()
+  // TODO: we have to patch up first nondefining function declaration since
+  // custom insertion is used
+  SgGlobal *glob_scope = getGlobalScope(target);
+  ROSE_ASSERT(glob_scope != NULL);
+  SgFunctionSymbol *func_symbol =
+      glob_scope->lookup_function_symbol(result->get_name());
+  ROSE_ASSERT(func_symbol != NULL);
+
+  SgScopeStatement *p_scope =
+      target->get_scope(); // the scope of "omp parallel" will be destroyed
+                           // later, so we use scope of "omp target"
+  ROSE_ASSERT(p_scope != NULL);
+
+  // Generate the parameter list for the call to the XOMP runtime function
+  SgExprListExp *parameters = buildExprListExp();
+  for (iter = all_syms.begin(); iter != all_syms.end(); iter++) {
+    const SgVariableSymbol *var_sym = *iter;
+    SgVarRefExp *var_ref =
+        buildVarRefExp(const_cast<SgVariableSymbol *>(var_sym));
+    SgType *i_type = var_sym->get_declaration()->get_type();
+    if (!isSgPointerType(i_type) && !isSgArrayType(i_type))
+      appendExpression(parameters, buildAddressOfOp(var_ref));
+    else
+      appendExpression(parameters, var_ref);
+  }
+  // create the outlined driver for GPU offloading, which is empty at this point
+  SgBasicBlock *outlined_driver_body = buildBasicBlock();
+
+  SgCudaKernelExecConfig *cuda_kernel_config =
+      buildCudaKernelExecConfig_nfi(buildIntVal(1), omp_num_threads);
+  SgCudaKernelCallExp *cuda_kernel_call_expression = buildCudaKernelCallExp_nfi(
+      buildFunctionRefExp(result), parameters, cuda_kernel_config);
+  SgStatement *outlined_function_call =
+      buildExprStatement(cuda_kernel_call_expression);
+
+  setSourcePositionForTransformation(outlined_function_call);
+  outlined_driver_body->append_statement(outlined_function_call);
+
+  SageInterface::fixStatement(outlined_driver_body, p_scope);
+  //------------now remove omp parallel since everything within it has been
+  // outlined to a function
+  replaceStatement(target, outlined_driver_body, true);
+
+  target_outlined_function_list->push_back(isSgFunctionDeclaration(result));
+}
+
 // transformation for combined directive omp target teams
 void transOmpTargetTeams(SgNode *node) {
   // Sanity check first
@@ -6892,6 +7077,22 @@ void transOmpCollapse(SgStatement *node) {
   } // end if target
 } // Winnie, end of loop collapse
 
+bool isInOmpTargetOffloadingFunc(SgNode *node) {
+  SgNode *parent = node->get_parent();
+  do {
+    if (isSgFunctionDeclaration(parent))
+      break;
+    parent = parent->get_parent();
+  } while (parent);
+
+  if (std::find(target_outlined_function_list->begin(),
+                target_outlined_function_list->end(),
+                parent) != target_outlined_function_list->end())
+    return true;
+  else
+    return false;
+}
+
 //! Bottom-up processing AST tree to translate all OpenMP constructs
 // the major interface of omp_lowering
 // We now operation on scoped OpenMP regions and blocks
@@ -6917,7 +7118,6 @@ void lower_omp(SgSourceFile *file) {
     insertAcceleratorInit(file);
 
   target_outlined_function_list = new std::vector<SgFunctionDeclaration *>();
-  target_outlined_struct_list = new std::vector<SgDeclarationStatement *>();
 
   Rose_STL_Container<SgNode *> omp_nodes;
   do {
@@ -6969,6 +7169,10 @@ void lower_omp(SgSourceFile *file) {
             parent = parent->get_parent();
           if (isSgOmpTargetStatement(parent))
             transOmpTargetParallel(node);
+          /*
+          if (isInOmpTargetOffloadingFunc(node))
+            transOmpSpmdInTargetRegion(node);
+          */
           else
             transOmpParallel(node);
           break;
@@ -6987,39 +7191,14 @@ void lower_omp(SgSourceFile *file) {
           /*Winnie, handle Collapse clause.*/
           if (hasClause(node, V_SgOmpCollapseClause))
             transOmpCollapse(node);
-          // check if the loop is part of the combined "omp parallel for" under
-          // the "omp target" directive
-          // TODO: more robust handling of this logic, not just fixed AST form
-          bool is_target_loop = false;
-          SgNode *parent = node->get_parent();
-          ROSE_ASSERT(parent != NULL);
-          // skip a possible BB between omp parallel and omp for, especially
-          // when the omp parallel has multiple omp for loops
-          if (isSgBasicBlock(parent))
-            parent = parent->get_parent();
-          SgNode *grand_parent = parent->get_parent();
-          if (isSgBasicBlock(grand_parent))
-            grand_parent = grand_parent->get_parent();
-          ROSE_ASSERT(grand_parent != NULL);
 
-          if (isSgOmpParallelStatement(parent) &&
-              isSgOmpTargetStatement(grand_parent))
-            is_target_loop = true;
-
-          if (is_target_loop) {
-            //            transOmpTargetLoop (node);
-            // use round-robin scheduler for larger iteration space and better
-            // performance
-            transOmpTargetLoop_RoundRobin(node);
-          } else {
+          if (isInOmpTargetOffloadingFunc(node))
+            transOmpLoopInTargetRegion(node);
+          else
             transOmpLoop(node);
-          }
+
           break;
         }
-          //          {
-          //            transOmpDo(node);
-          //            break;
-          //          }
         case V_SgOmpBarrierStatement: {
           transOmpBarrier(node);
           break;
@@ -7293,12 +7472,11 @@ static void fix_storage_modifier(SgSourceFile *new_file) {
 };
 
 static void post_processing(SgSourceFile *file) {
+
   SgGlobal *g_scope = file->get_globalScope();
   ROSE_ASSERT(g_scope != NULL);
 
   SgSourceFile *new_file = NULL;
-  
-  // Insert structures
 
   // handle the outlined functions for NVIDIA GPU
   if (target_outlined_function_list->size() > 0) {
