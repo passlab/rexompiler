@@ -11,7 +11,7 @@ add_subdirectory(AST)
 # needed to properly define ROSE_UTIL_API
 add_definitions(-DROSE_UTIL_EXPORTS)
 
-add_dependencies(roseNamespace rosetta_generated)
+#add_dependencies(roseNamespace rosetta_generated)
 
 # Public header files for the ::Rose namespace (see top comment)
 install(FILES

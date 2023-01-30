@@ -96,7 +96,7 @@ set(rose_LIB_SRCS
   ${ROSETTA_SRC}
   $<TARGET_OBJECTS:util_main>
   $<TARGET_OBJECTS:util_commandlineProcessing>
-  $<TARGET_OBJECTS:util_sawyer>
+  #$<TARGET_OBJECTS:util_sawyer>
   $<TARGET_OBJECTS:util_stringSupport>
   $<TARGET_OBJECTS:util_support>
   $<TARGET_OBJECTS:util_graphs>
@@ -122,10 +122,10 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:includeDirectivesProcessing>
   $<TARGET_OBJECTS:astPostProcessing>
   $<TARGET_OBJECTS:trans_tracking>
-  $<TARGET_OBJECTS:roseNamespace>
-  $<TARGET_OBJECTS:roseColor>
-  $<TARGET_OBJECTS:roseCommandLine>
-  $<TARGET_OBJECTS:roseDiagnostics>
+  #$<TARGET_OBJECTS:roseNamespace>
+  #$<TARGET_OBJECTS:roseColor>
+  #$<TARGET_OBJECTS:roseCommandLine>
+  #$<TARGET_OBJECTS:roseDiagnostics>
   $<TARGET_OBJECTS:roseFileSystem>
   $<TARGET_OBJECTS:roseStringUtility>
   $<TARGET_OBJECTS:RoseAST>

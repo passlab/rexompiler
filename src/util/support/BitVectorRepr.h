@@ -8,6 +8,7 @@
 #include <map>
 #include <sstream>
 #include "rosedll.h"
+#include <util/mlog.h>
 
 class BitVectorReprImpl {
   unsigned* impl;
