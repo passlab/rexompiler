@@ -1,4 +1,4 @@
-name: Auto Testing
+name: CMake
 
 on:
   push:
@@ -64,22 +64,14 @@ jobs:
     - name: Configure
       run: |
         cd $GITHUB_WORKSPACE
-        ./build
         mkdir ../rex_build
         cd ../rex_build
-        $GITHUB_WORKSPACE/configure --prefix=$GITHUB_WORKSPACE/../rex_install --with-boost=/usr --with-boost-libdir=/usr/lib/x86_64-linux-gnu --enable-languages=c,c++,fortran --disable-tests-directory --disable-tutorial-directory
+        cmake -Denable-c=ON -Denable-fortran=ON -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/../rex_install $GITHUB_WORKSPACE
 
     - name: Build
       run: |
         cd $GITHUB_WORKSPACE/../rex_build
-        make core -j2
-        make install-core -j2
+        cmake --build . -j2
+        make install -j2
 
-    - name: Test
-      run: |
-        cd $GITHUB_WORKSPACE/../rex_build
-        make check-core -j2
-        cd $GITHUB_WORKSPACE/../rex_build/tests/nonsmoke/functional/CompileTests/OpenMP_tests
-        make check -j2
-        cd $GITHUB_WORKSPACE/../rex_build/tests/nonsmoke/functional/roseTests/astInterfaceTests
-        make check -j2
+    # Currently, we don't have working tests for CMake builds.

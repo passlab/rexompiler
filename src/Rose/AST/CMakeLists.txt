@@ -11,5 +11,5 @@ add_dependencies(RoseAST rosetta_generated)
 ########### install files ###############
 
 install(FILES
-  cmdline.h IO.h Checker.h Defect.h Utils.h
+  cmdline.h Checker.h Defect.h Utils.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/Rose/AST)

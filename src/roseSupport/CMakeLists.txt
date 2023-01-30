@@ -18,6 +18,5 @@ install(FILES  transformationSupport.h
                IncludeDirective.h
                utility_functionsImpl.C
                stringify.h
-	       Combinatorics.h
 	DESTINATION ${INCLUDE_INSTALL_DIR}
   )
