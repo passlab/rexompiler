@@ -123,6 +123,7 @@ libsage3Sources = \
    fixupCopy_scopes.C \
    fixupCopy_symbols.C \
    fixupCopy_references.C \
+   IncludeDirective.C \
    rtiHelpers.C \
    rose_graph_support.C \
    $(fSageSupport_la_sources) \

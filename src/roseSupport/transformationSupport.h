@@ -1,10 +1,6 @@
 #ifndef ROSE_TRANSFORMATION_SUPPORT
 #define ROSE_TRANSFORMATION_SUPPORT
 
-// #include "transformationOptions.h"
-
-#include "optionDeclaration.h"
-
 // Access to Query Libraries
 #include "roseQueryLib.h"
 
@@ -45,57 +41,6 @@ class ROSE_DLL_API TransformationSupport
           be fixed to work more cleanly.
        */
           static std::string buildMacro ( std::string s );
-
-      /*! @{
-          \name Applications Specific Transformation Option Mechanism
-          \brief Supporting functions for reading transformation specifications (hints)
-
-          Preprocessors can optionally retrive hints embedded within the user's application.
-          The mechanism is useful to provide additional information used to make more 
-          sophisticated optimizations than the knowledge of the semantics of abstractions 
-          might provide.  It also is a way to pass on information as a substitution for 
-          program analysis.
-       */
-
-      /*! \brief This interface permits a more general specification of options 
-                 using strings to identify the options and values to associate 
-                 with the identified option. \sa OptionDeclaration
-
-          This function is the only interface to the general mechanism that permits passing data from the user's application to a preprocessor.  If this mechanism is used, the user's application is optionally annotated with declarations (which have no side-effect to the execution of the user's application) but which can be read and interpreted by a preprocessor.  This function makes ...
-       */
-          static void getTransformationOptions (
-                    SgNode* astNode,
-                    std::list<OptionDeclaration> & variableNameList,
-                    std::string identifingTypeName );
-
-      /*! \if documentDevelopmentVersionUsingDoxygen
-               \brief Get the list\<int\> of options (if any are specified).
-               \deprecated This function is superceeded by the more general
-                           form:
-                    getTransformationOptions (SgNode* astNode,list<OptionDeclaration>&variableNameList,string identifingTypeName )
-          \endif
-       */
-          static void getTransformationOptions (
-                    SgNode* astNode,
-                    std::list<int> & variableNameList,
-                    std::string identifingTypeName );
-
-      /*! \if documentDevelopmentVersionUsingDoxygen
-               \brief Function used internally (for list\<int\> interface)
-          \endif
-       */
-          static void getTransformationOptionsFromVariableDeclarationConstructorArguments (
-                    SgVariableDeclaration* variableDeclaration,
-                    std::list<int> & returnList );
-
-      /*! \if documentDevelopmentVersionUsingDoxygen
-               \brief Function used internally (used with list\<string\> version of interface)
-          \endif
-       */
-          static void getTransformationOptionsFromVariableDeclarationConstructorArguments (
-                    SgVariableDeclaration* variableDeclaration,
-                    std::list<OptionDeclaration> & returnList );
-      /*! @} */
 
       /*! \brief Builds variable declarations for all variable and types defined in subtree at astNode.
 

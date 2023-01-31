@@ -18,15 +18,11 @@ rebuild-stringify:
 noinst_LTLIBRARIES = libroseSupport.la
 
 libroseSupport_la_SOURCES =			\
-	IncludeDirective.C			\
-	optionDeclaration.C			\
 	stringify.C				\
 	transformationSupport.C			\
 	utility_functions.C
 
 pkginclude_HEADERS =				\
-	IncludeDirective.h			\
-	optionDeclaration.h			\
 	stringify.h				\
 	transformationSupport.h			\
 	utility_functions.h
