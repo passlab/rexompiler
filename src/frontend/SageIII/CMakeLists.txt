@@ -60,13 +60,21 @@ add_custom_command(
     #    && mv omp_exprparser_parser.H omp_exprparser_parser.hh
   DEPENDS  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/omp_exprparser_parser.yy)
 
+#GENERATING the license_string.h file
+add_custom_command(
+  OUTPUT ${CMAKE_BINARY_DIR}/src/frontend/SageIII/license_string.h
+  COMMAND ${PERL_EXECUTABLE} -t
+    ${ROSE_TOP_SRC_DIR}/scripts/to-c-string.pl < ${ROSE_TOP_SRC_DIR}/LicenseInformation/ROSE_BSD_License.txt > ${CMAKE_BINARY_DIR}/src/frontend/SageIII/license_string.h
+  DEPENDS  ${ROSE_TOP_SRC_DIR}/LicenseInformation/ROSE_BSD_License.txt)
+
 set(SAGE3_SOURCES ${SAGE3_SOURCES}
   ompSupport.C
   ompAstConstruction.cpp ompFortranParser.C
         omp_exprparser_lexer.ll omp_exprparser_parser.yy
   ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.C
   ${CMAKE_CURRENT_BINARY_DIR}/omp_exprparser_parser.cc
-  ${CMAKE_CURRENT_BINARY_DIR}/omp_exprparser_lexer.cc)
+  ${CMAKE_CURRENT_BINARY_DIR}/omp_exprparser_lexer.cc
+  ${CMAKE_CURRENT_BINARY_DIR}/license_string.h)
 
 ########### next target ###############
 add_library(sage3 OBJECT ${SAGE3_SOURCES})
