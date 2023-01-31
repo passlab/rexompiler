@@ -4,5 +4,5 @@
 
 void for_all (int & begin, int &end)
 {
-  ARES_ASSERT_ERROR( begin <= end );
+  ROSE_ASSERT( begin <= end );
 }

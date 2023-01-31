@@ -4,8 +4,6 @@ include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 ## files, in order to avoid collisions when non-recursive make is used.
 AUTOMAKE_OPTIONS = subdir-objects
 
-include $(srcdir)/sage_support/Makefile_variables
-
 #
 # Don't use $(srcdir) in conjunction with [subdir-objects], otherwise
 # object files will be built in the source tree. Therefore, we need to
@@ -13,6 +11,10 @@ include $(srcdir)/sage_support/Makefile_variables
 #
 #mptPartialRedundancyEliminationPath=$(srcdir)/partialRedundancyElimination#
 fSageSupportPath=sage_support#
+include $(srcdir)/sage_support/Makefile_variables
+# license_string.h is included by sage_support/cmdline.cpp
+license_string.h: $(top_srcdir)/LicenseInformation/ROSE_BSD_License.txt
+	perl $(top_srcdir)/scripts/to-c-string.pl < $< > $@
 
 # if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 #   SUBDIRS = astFixup astPostProcessing sageInterface astVisualization virtualCFG includeDirectivesProcessing
@@ -66,10 +68,6 @@ CXX_TEMPLATE_REPOSITORY_PATH = .
 # EXTRA_DIST = preproc.lex preproc.C astGraphTemplate.C docs
 # EXTRA_DIST = preproc.ll docs rtiHelpers.h attributeListMap.h
 
-# DQ (9/29/2009): Renamed preproc.ll to preproc-c.ll in SVN.
-# This will hopefull avoid a linking problem where multiple files
-# are called preproc.o (from here and from EDG).
-# Rasmussen (04/17/2019): Support for ATerms has been deprecated (atermSupport.h removed)
 EXTRA_DIST = CMakeLists.txt preproc-c.ll docs rtiHelpers.h attributeListMap.h \
              advanced_preprocessing_hooks.h rose_attributes_list.h \
              sage3basic.hhh fileoffsetbits.h rosedll.h PolicyControl.txt Utf8.h  \
@@ -77,10 +75,10 @@ EXTRA_DIST = CMakeLists.txt preproc-c.ll docs rtiHelpers.h attributeListMap.h \
              omp_exprparser_lexer.cc omp_exprparser_parser.cc omp_exprparser_parser.hh
 CLEANFILES = haveRosettaGeneratedSource
 
-DISTCLEANFILES = preproc-c.cc omp_exprparser_lexer.cc omp_exprparser_parser.hh omp_exprparser_parser.cc
+DISTCLEANFILES = preproc-c.cc omp_exprparser_lexer.cc omp_exprparser_parser.hh omp_exprparser_parser.cc license_string.h
 
 # Some source code is generated (call make in ROSE/src/ROSETTA/src to generate these files)
-GENERATED_SOURCE = \
+ROSETTA_GENERATED_SOURCE = \
 	Cxx_Grammar.h \
 	Cxx_Grammar.C \
 	Cxx_GrammarRTI.C \
@@ -106,12 +104,7 @@ force-haveRosettaGeneratedSource:
 	-rm Cxx_Grammar.h
 	$(MAKE) haveRosettaGeneratedSource
 
-$(GENERATED_SOURCE): haveRosettaGeneratedSource
-
-# Rasmussen (04/17/2019): Support for ATerms has been deprecated as it is no longer needed
-# and likely never fully implemented nor tested.  Files remain in the src tree but are no
-# longer built.  Files atermSupport.C and nodeBuildFunctionsForAterms.C have been removed
-# from libsage3Sources below (in the else clause).
+$(ROSETTA_GENERATED_SOURCE): haveRosettaGeneratedSource
 
 libsage3Sources = \
    Utf8.C \
@@ -133,35 +126,14 @@ libsage3Sources = \
    accAstConstruction.cpp \
    memory-pool-snapshot.C
 
-# DQ (2/15/2010): This fails in Hudson tests of ROSE compiling ROSE for code generation, but I can't 
-# get it to fail in my own tests.  Skip it for now and see if there are more of these cases.
-# attachPreprocessingInfo.C
-# if !ROSE_USING_ROSE_CODE_GENERATION
-#    libsage3Sources += attachPreprocessingInfo.C
-# endif
-
-# $(GENERATED_SOURCE) is handled separately
-
-# DQ (5/27/2007): Files moved or removed
-#   generateAST.C
-#   AstAttributeDOT.C
-#   astGraph.C
-#   insert.C
-#   stripWrapper.C
-#   grammarBaseClass.C
-
-# DQ (12/16/2008): Removed as part of rewrite of CPP and comment handling.
-#   attach_all_info.C 
-
 noinst_LTLIBRARIES = libsage3.la
 
 libsage3_la_SOURCES = $(libsage3Sources) preproc-c.ll omp_exprparser_lexer.ll omp_exprparser_parser.yy
 
 # DQ (3/8/2009): I think that the dependence upon $(top_builddir)/rose_config.h 
 # is what was forcing a lot of files to be compiled after reruning configure.
-# nodist_libsage3_la_SOURCES = $(GENERATED_SOURCE) $(top_builddir)/rose_config.h
-nodist_libsage3_la_SOURCES = $(GENERATED_SOURCE)
-
+# nodist_libsage3_la_SOURCES = $(ROSETTA_GENERATED_SOURCE) $(top_builddir)/rose_config.h
+nodist_libsage3_la_SOURCES = $(ROSETTA_GENERATED_SOURCE) license_string.h
 
 if ROSE_USE_BOOST_WAVE
 libsage3_la_LIBADD= \
@@ -248,23 +220,14 @@ pkginclude_HEADERS = \
 nodist_pkginclude_HEADERS = \
    Cxx_Grammar.h \
    Cxx_GrammarTreeTraversalAccessEnums.h \
-   AstQueryMemoryPool.h
+   AstQueryMemoryPool.h \
+   license_string.h
 
-BUILT_SOURCES = $(GENERATED_SOURCE) omp_exprparser_parser.cc omp_exprparser_parser.hh omp_exprparser_lexer.cc
-
-# DQ (9/9/2007): Put C++_include_files.h back into place
-# since it is a convinient mechanism to handle included headers 
-# in the Cxx_Grammar.C file (a ROSETTA generated file).
-# DQ (5/27/2007): Files moved or removed
-# grammarBaseClass.h 
-# AstAttributeDOT.h
-# astGraph.h
-# astGraphTemplate.C
-# C++_include_files.h
+BUILT_SOURCES = $(ROSETTA_GENERATED_SOURCE) omp_exprparser_parser.cc omp_exprparser_parser.hh omp_exprparser_lexer.cc license_string.h
 
 clean-local:
 	rm -rf Templates.DB ii_files ti_files cxx_templates
-	rm -rf Cxx_Grammar*
+	rm -rf Cxx_Grammar* license_string.h
 	rm -rf AstQueryMemoryPool.h
 	rm -rf generated_abstractcppgrammar.atg
 	rm -f sage3basic.h.gch

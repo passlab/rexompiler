@@ -11,13 +11,7 @@ $(fSageSupportPath)/cmdline.lo: ${top_builddir}/rose_config.h
 fSageSupport_includeHeaders=\
 	$(fSageSupportPath)/sage_support.h \
 	$(fSageSupportPath)/keep_going.h \
-	$(fSageSupportPath)/cmdline.h \
-	$(fSageSupportPath)/license_string.h
-	
-# license_string.h is included by cmdline.cpp
-#
-$(srcdir)/$(fSageSupportPath)/license_string.h: $(top_srcdir)/LicenseInformation/ROSE_BSD_License.txt
-	perl $(top_srcdir)/scripts/to-c-string.pl < $< > $@
+	$(fSageSupportPath)/cmdline.h
 
 # DQ (3/13/2010):
 #
