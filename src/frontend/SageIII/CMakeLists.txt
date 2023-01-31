@@ -30,6 +30,7 @@ set(SAGE3_SOURCES
   fixupCopy_scopes.C
   fixupCopy_symbols.C
   fixupCopy_references.C
+  IncludeDirective.C
   rtiHelpers.C
   rose_graph_support.C
   Utf8.C)
