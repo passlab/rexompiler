@@ -84,7 +84,6 @@ extern std::string mlogLevelToString_CXX(MLOG_LEVEL_t level);
 #define WHEREARG __FILE__,__LINE__, __func__
 
 //C-style API for mandatory fatal/error/warning/debugging mlogging
-#define MLOG_FAIL_C(SUBJECT, ...) { mlog_C(MLOG_LEVEL_FAIL, SUBJECT, WHEREARG, __VA_ARGS__); abort();}
 #define MLOG_FATAL_C(SUBJECT, ...) mlog_C(MLOG_LEVEL_FATAL, SUBJECT, WHEREARG, __VA_ARGS__)
 #define MLOG_ERROR_C(SUBJECT, ...) mlog_C(MLOG_LEVEL_ERROR, SUBJECT, WHEREARG, __VA_ARGS__)
 #define MLOG_WARN_C(SUBJECT, ...)  mlog_C(MLOG_LEVEL_WARN,  SUBJECT, WHEREARG, __VA_ARGS__)

@@ -8,6 +8,10 @@
 #include <stdio.h>
 #include "mlog.h"
 
+#if defined(REX_STACKTRACE_ABORT_BOOST)
+#include <boost/stacktrace.hpp>
+#endif
+
 int mlogLevel = DEFAULT_MLOG_LEVEL;
 
 /**
@@ -76,6 +80,9 @@ void mlogAssertFail_C(const char * subject, const char * expr, const char * file
 	    va_end(l);
 	    fflush(mlogFile);
 	}
+#if defined(REX_STACKTRACE_ABORT_BOOST)
+	std::cerr << boost::stacktrace::stacktrace();
+#endif
 	abort();
 }
 
