@@ -9,11 +9,6 @@ AC_REQUIRE([AC_CANONICAL_HOST])
 AC_REQUIRE([AC_PROG_CC])
 AC_REQUIRE([AC_PROG_CXX])
 
-# Given the C++ compiler command-line, create output variables HOST_CXX_VENDOR, HOST_CXX_VERSION, and HOST_CXX_LANGUAGE
-# that contain the vendor (gnu, llvm, or intel), the version (as defined by CPP macros, not the --version output), and
-# the language dialect (c++17, gnu++11, etc.).
-ROSE_COMPILER_FEATURES([c++], [$CXX $CPPFLAGS $CXXFLAGS], [HOST_CXX_])
-
 # Debug Flags
 
 AC_ARG_WITH(DEBUG, AS_HELP_STRING([--with-DEBUG], [manually set the compiler debug flags]))
@@ -167,11 +162,6 @@ AC_DEFUN([ROSE_FLAG_CXX_OPTIONS], [
 # so we must know our host and the compiler used.
 AC_REQUIRE([AC_CANONICAL_HOST])
 AC_REQUIRE([AC_PROG_CXX])
-
-# Given the C++ compiler command-line, create output variables HOST_CXX_VENDOR, HOST_CXX_VERSION, and HOST_CXX_LANGUAGE
-# that contain the vendor (gnu, llvm, or intel), the version (as defined by CPP macros, not the --version output), and
-# the language dialect (c++17, gnu++11, etc.).
-ROSE_COMPILER_FEATURES([c++], [$CXX $CPPFLAGS $CXXFLAGS], [HOST_CXX_])
 
 AC_MSG_NOTICE([in c++ option setting: FRONTEND_CXX_COMPILER_VENDOR = "$FRONTEND_CXX_COMPILER_VENDOR"])
 

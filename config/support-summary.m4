@@ -16,17 +16,37 @@ AC_DEFUN([ROSE_SUMMARY_HEADING],[
 ])
 
 AC_DEFUN([ROSE_SUPPORT_SUMMARY],[
-    echo "${T_BM}Configuration summary:${T_NM}"
+# Given the C/C++/Fortran compiler command-line, create output variables such as HOST_CXX_VENDOR, HOST_CXX_VERSION, and HOST_CXX_LANGUAGE
+# that contain the vendor (gnu, llvm, or intel), the version (as defined by CPP macros, not the --version output), and
+# the language dialect (c++17, gnu++11, etc.).
+ROSE_COMPILER_FEATURES([c], [$CC $CFLAGS], [HOST_CC_])
+ROSE_COMPILER_FEATURES([c++], [$CXX $CPPFLAGS $CXXFLAGS], [HOST_CXX_])
+ROSE_COMPILER_FEATURES([fortran], [$FC $FCLAGS], [HOST_FC_])
 
+    echo "${T_BM}Configuration summary:${T_NM}"
     #--------------------------------------------------------------------------------
     # ROSE conflates the compilers used to compile ROSE with the compiler frontend
     # compiler used for C++ analysis, thus the variables printed for this section
     # of the summary are named "FRONTEND".
     ROSE_SUMMARY_HEADING([Compilers for ROSE source code])
+    echo "    C compiler                       ${CC}"
+    echo "        CFLAGS                       ${CFLAGS}"
+    echo "        LDFLAGS                      ${LDFLAGS}"
+    echo "    C vendor                         ${HOST_CC_VENDOR:-unknown}"
+    echo "    C version                        ${HOST_CC_VERSION:-unknown}"
+    echo "    C language                       ${HOST_CC_LANGUAGE:-unknown}"
     echo "    C++ compiler                     ${CXX}"
+    echo "        CXXFLAGS                     ${CXXFLAGS}"
+    echo "        LDFLAGS                      ${LDFLAGS}"
     echo "    C++ vendor                       ${HOST_CXX_VENDOR:-unknown}"
     echo "    C++ version                      ${HOST_CXX_VERSION:-unknown}"
     echo "    C++ language                     ${HOST_CXX_LANGUAGE:-unknown}"
+    echo "    Fortran compiler                 ${FC}"
+    echo "        FCFLAGS                      ${FCFLAGS}"
+    echo "        LDFLAGS                      ${LDFLAGS}"
+    echo "    Fortran vendor                   ${HOST_FC_VENDOR:-unknown}"
+    echo "    Fortran version                  ${HOST_FC_VERSION:-unknown}"
+    echo "    Fortran language                 ${HOST_FC_LANGUAGE:-unknown}"
     echo "    Bison version                    ${bison_version:-unknown}"
 
     #--------------------------------------------------------------------------------
