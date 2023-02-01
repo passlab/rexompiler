@@ -99,9 +99,9 @@ SimpleInstrumentation::buildNewFunctionDeclaration ( SgStatement* statementLocat
 
   // Put the new function declaration before the function containing the input statementLocation
      bool inFront = true;
-     SgGlobal* globalScope = TransformationSupport::getGlobalScope(statementLocation);
+     SgGlobal* globalScope = SageInterface::getGlobalScope(statementLocation);
      SgFunctionDeclaration* functionDeclarationInGlobalScope = 
-          TransformationSupport::getFunctionDeclaration(statementLocation);
+          SageInterface::getEnclosingFunctionDeclaration(statementLocation, true);
      ROSE_ASSERT(globalScope != NULL);
      ROSE_ASSERT(functionDeclarationInGlobalScope != NULL);
      globalScope->insert_statement(functionDeclarationInGlobalScope,functionDeclaration,inFront);

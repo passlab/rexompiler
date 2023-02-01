@@ -286,7 +286,7 @@ Outliner::outlineBlock (SgBasicBlock* s, const string& func_name_str)
 
   // Insert outlined function.
   // grab target scope first
-  SgGlobal* glob_scope = const_cast<SgGlobal *> (TransformationSupport::getGlobalScope (s));
+  SgGlobal* glob_scope = const_cast<SgGlobal *> (SageInterface::getGlobalScope (s));
 
   SgGlobal* src_scope = glob_scope;
   if (Outliner::useNewFile)  // change scope to the one within the new source file
@@ -621,8 +621,8 @@ Outliner::outlineBlock (SgBasicBlock* s, const string& func_name_str)
 
 #if 1
     ROSE_ASSERT(func->get_firstNondefiningDeclaration() != NULL);
-    ROSE_ASSERT(TransformationSupport::getSourceFile(func) == TransformationSupport::getSourceFile(func->get_firstNondefiningDeclaration()));
-    ROSE_ASSERT(TransformationSupport::getSourceFile(func->get_scope()) == TransformationSupport::getSourceFile(func->get_firstNondefiningDeclaration()));
+    ROSE_ASSERT(SageInterface::getEnclosingSourceFile(func) == SageInterface::getEnclosingSourceFile(func->get_firstNondefiningDeclaration()));
+    ROSE_ASSERT(SageInterface::getEnclosingSourceFile(func->get_scope()) == SageInterface::getEnclosingSourceFile(func->get_firstNondefiningDeclaration()));
 
 #if 0
     printf ("******************************************************************** \n");
@@ -653,7 +653,7 @@ Outliner::outlineBlock (SgBasicBlock* s, const string& func_name_str)
 
   // This fails for moreTest3.cpp
   // Run the AST fixup on the AST for the source file.
-  SgSourceFile* originalSourceFile = TransformationSupport::getSourceFile(src_scope);
+  SgSourceFile* originalSourceFile = SageInterface::getEnclosingSourceFile(src_scope);
   //     printf ("##### Calling AstPostProcessing() on SgFile = %s \n",originalSourceFile->getFileName().c_str());
   AstPostProcessing (originalSourceFile);
   //     printf ("##### DONE: Calling AstPostProcessing() on SgFile = %s \n",originalSourceFile->getFileName().c_str());
@@ -668,7 +668,7 @@ Outliner::outlineBlock (SgBasicBlock* s, const string& func_name_str)
 #if 1
     // This fails for moreTest3.cpp
     // Run the AST fixup on the AST for the separate file of outlined code.
-    SgSourceFile* separateOutlinedSourceFile = TransformationSupport::getSourceFile(glob_scope);
+    SgSourceFile* separateOutlinedSourceFile = SageInterface::getEnclosingSourceFile(glob_scope);
     //          printf ("##### Calling AstPostProcessing() on SgFile = %s \n",separateOutlinedSourceFile->getFileName().c_str());
     AstPostProcessing (separateOutlinedSourceFile);
     //          printf ("##### DONE: Calling AstPostProcessing() on SgFile = %s \n",separateOutlinedSourceFile->getFileName().c_str());

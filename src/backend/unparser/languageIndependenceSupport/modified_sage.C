@@ -2043,7 +2043,7 @@ Unparse_MOD_SAGE::printSpecifier2(SgDeclarationStatement* decl_stmt, SgUnparse_I
              {
             // DQ (9/25/2013): Check if this is a C file using -std=c89, and if so then unparse "__inline__" instead of "inline".
             // curprint( "inline ");
-               SgFile* file = TransformationSupport::getFile(functionDeclaration);
+               SgFile* file = SageInterface::getEnclosingFileNode(functionDeclaration);
                ASSERT_not_null(file);
                if (file->get_C89_only() == true && file->get_C89_gnu_only() == false)
                   {

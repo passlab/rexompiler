@@ -600,8 +600,8 @@ void PRE::partialRedundancyEliminationOne( SgExpression* expr, SgBasicBlock* roo
                  // DQ (3/14/2006): Bug here when SgExprStatement from SgForStatement test is used here!
                     printf ("Bug here when SgExprStatement from SgForStatement test is used: i->first = %s \n",i->first->class_name().c_str());
                     i->first->get_file_info()->display("Location i->first");
-                    printf ("Bug here when SgExprStatement from SgForStatement test is used: TransformationSupport::getStatement(i->first) = %s \n",
-                         TransformationSupport::getStatement(i->first)->class_name().c_str());
+                    printf ("Bug here when SgExprStatement from SgForStatement test is used: SageInterface::getEnclosingStatement(i->first) = %s \n",
+                         SageInterface::getEnclosingStatement(i->first)->class_name().c_str());
                     printf ("Bug here when SgExprStatement from SgForStatement test is used: the_computation = %s \n",the_computation->class_name().c_str());
                     the_computation->get_file_info()->display("Location the_computation: debug");
                     ROSE_ASSERT(i->first != NULL);
@@ -662,8 +662,8 @@ void PRE::partialRedundancyEliminationOne( SgExpression* expr, SgBasicBlock* roo
                             }
                            else
                             {
-                              myStatementInsert(TransformationSupport::getStatement(i->first),the_computation,i->second,true);
-                              the_computation->set_parent(TransformationSupport::getStatement(i->first));
+                              myStatementInsert(SageInterface::getEnclosingStatement(i->first),the_computation,i->second,true);
+                              the_computation->set_parent(SageInterface::getEnclosingStatement(i->first));
                             }
                        }
                   }

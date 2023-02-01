@@ -1319,7 +1319,7 @@ list<string> queryVariableNamesWithTypeName(SgNode* astNode, string matchingName
       ROSE_ASSERT (variableSymbol != NULL);
       SgType* type = variableSymbol->get_type();
       ROSE_ASSERT (type != NULL);
-      string typeName = TransformationSupport::getTypeName(type);
+      string typeName = SageInterface:getTypeName(type);
       ROSE_ASSERT (typeName.length() > 0);
 
       if ( typeName == matchingName){

@@ -1947,7 +1947,7 @@ TestAstForProperlyMangledNames::visit ( SgNode* node )
           if (isValidMangledName(mangledName) != true)
              {
              // Check first if this is for a Java file and if so then '$' is allowed.
-                file = TransformationSupport::getFile(classDeclaration);
+                file = SageInterface::getEnclosingFileNode(classDeclaration);
                 ROSE_ASSERT(file != NULL);
 
                 if (file->get_Java_only() == false)
@@ -2346,7 +2346,7 @@ TestAstForUniqueNodesInAST::visit ( SgNode* node )
                     printf ("Note: found a shared IR node = %p = %s in the AST (OK if part of merged AST) \n",node,node->class_name().c_str());
 #endif
 #if 0
-                    SgProject* project = TransformationSupport::getProject(locatedNode);
+                    SgProject* project = SageInterface::getProject(locatedNode);
                     project->display("In TestAstForUniqueNodesInAST::visit()");
 #endif
 #if 0
@@ -2356,7 +2356,7 @@ TestAstForUniqueNodesInAST::visit ( SgNode* node )
                        }
 #endif
 #if 0
-                    SgSourceFile* file = TransformationSupport::getSourceFile(locatedNode);
+                    SgSourceFile* file = SageInterface::getEnclosingSourceFile(locatedNode);
                     file->display("In TestAstForUniqueNodesInAST::visit()");
 #endif
 #if 0
@@ -2692,9 +2692,10 @@ TestAstForProperlySetDefiningAndNondefiningDeclarations::visit ( SgNode* node )
                     if (isSgTemplateInstantiationDecl(definingDeclaration) != NULL)
                        {
                       // DQ (3/11/2017): Fixed to use message streams.
-                         MLOG_WARN_C("astDiagnostics", "(different access modifiers used) definingDeclaration = %p firstNondefiningDeclaration = %p = %s  \n",definingDeclaration,firstNondefiningDeclaration,firstNondefiningDeclaration->class_name().c_str());
-                         MLOG_WARN_C("astDiagnostics", "definingDeclaration_access_modifier         = %d \n",definingDeclaration_access_modifier);
-                         MLOG_WARN_C("astDiagnostics", "firstNondefiningDeclaration_access_modifier = %d \n",firstNondefiningDeclaration_access_modifier);
+                         //MLOG_WARN_C("astDiagnostics", "(different access modifiers used) definingDeclaration = %p firstNondefiningDeclaration = %p = %s  \n",definingDeclaration,firstNondefiningDeclaration,firstNondefiningDeclaration->class_name().c_str());
+                         MLOG_KEY_C("astDiagnostics", "(different access modifiers used) definingDeclaration = %p firstNondefiningDeclaration = %p = %s  \n",definingDeclaration,firstNondefiningDeclaration,firstNondefiningDeclaration->class_name().c_str());
+                         MLOG_KEY_MORE_C("definingDeclaration_access_modifier         = %d \n",definingDeclaration_access_modifier);
+                         MLOG_KEY_MORE_C("firstNondefiningDeclaration_access_modifier = %d \n",firstNondefiningDeclaration_access_modifier);
                        }
                       else
                        {
@@ -5250,7 +5251,7 @@ TestChildPointersInMemoryPool::visit( SgNode *node )
                                  }
                                 else
                                  {
-                                   MLOG_WARN_C("astDiagnostics", "TestChildPointersInMemoryPool::visit(): Node is not in parent's child list, node: %p = %s = %s parent: %p = %s \n",
+                                   MLOG_KEY_C("astDiagnostics", "TestChildPointersInMemoryPool::visit(): Node is not in parent's child list, node: %p = %s = %s parent: %p = %s \n",
                                         node,node->class_name().c_str(),SageInterface::get_name(node).c_str(),parent,parent->class_name().c_str());
                                  }
                             }
@@ -5373,7 +5374,7 @@ TestChildPointersInMemoryPool::visit( SgNode *node )
                            else
                             {
                            // DQ (3/19/2017): Added support for using message logging.
-                              MLOG_WARN_C("astDiagnostics", "TestChildPointersInMemoryPool::visit(). SgVariableSymbol is not in parent's child list, node: %p = %s = %s parent: %p = %s \n",
+                              MLOG_KEY_C("astDiagnostics", "TestChildPointersInMemoryPool::visit(). SgVariableSymbol is not in parent's child list, node: %p = %s = %s parent: %p = %s \n",
                                    node,node->class_name().c_str(),SageInterface::get_name(node).c_str(),parent,parent->class_name().c_str());
                             }
                          break;
@@ -5932,9 +5933,9 @@ TestMultiFileConsistancy::visit( SgNode* node)
           if (firstDefiningDeclaration != NULL)
              {
                ROSE_ASSERT(declaration->get_scope() != NULL);
-               SgSourceFile* declarationFile              = TransformationSupport::getSourceFile(declaration);
-               SgSourceFile* declarationScopeFile         = TransformationSupport::getSourceFile(declaration->get_scope());
-               SgSourceFile* firstDefiningDeclarationFile = TransformationSupport::getSourceFile(firstDefiningDeclaration);
+               SgSourceFile* declarationFile              = SageInterface::getEnclosingSourceFile(declaration);
+               SgSourceFile* declarationScopeFile         = SageInterface::getEnclosingSourceFile(declaration->get_scope());
+               SgSourceFile* firstDefiningDeclarationFile = SageInterface::getEnclosingSourceFile(firstDefiningDeclaration);
                if (declarationScopeFile != firstDefiningDeclarationFile || declarationFile != firstDefiningDeclarationFile)
                   {
 #if 0
@@ -5966,8 +5967,8 @@ TestMultiFileConsistancy::visit( SgNode* node)
        // DQ (3/3/2009): Some template arguments are setting off these new tests (e.g. test2004_35.C), need to look into this.
           if (firstDefiningDeclaration != NULL)
              {
-               ROSE_ASSERT(TransformationSupport::getSourceFile(firstDefiningDeclaration) == TransformationSupport::getSourceFile(firstDefiningDeclaration->get_firstNondefiningDeclaration()));
-               ROSE_ASSERT(TransformationSupport::getSourceFile(firstDefiningDeclaration->get_scope()) == TransformationSupport::getSourceFile(firstDefiningDeclaration->get_firstNondefiningDeclaration()));
+               ROSE_ASSERT(SageInterface::getEnclosingSourceFile(firstDefiningDeclaration) == SageInterface::getEnclosingSourceFile(firstDefiningDeclaration->get_firstNondefiningDeclaration()));
+               ROSE_ASSERT(SageInterface::getEnclosingSourceFile(firstDefiningDeclaration->get_scope()) == SageInterface::getEnclosingSourceFile(firstDefiningDeclaration->get_firstNondefiningDeclaration()));
              }
 #endif
 #if 0
@@ -5978,11 +5979,11 @@ TestMultiFileConsistancy::visit( SgNode* node)
                SgDeclarationStatement* alt_firstDefiningDeclaration = definingDeclaration->get_firstNondefiningDeclaration();
                if (alt_firstDefiningDeclaration != NULL)
                   {
-                    ROSE_ASSERT(TransformationSupport::getSourceFile(definingDeclaration) == TransformationSupport::getSourceFile(definingDeclaration->get_firstNondefiningDeclaration()));
-                    ROSE_ASSERT(TransformationSupport::getSourceFile(definingDeclaration->get_scope()) == TransformationSupport::getSourceFile(definingDeclaration->get_firstNondefiningDeclaration()));
+                    ROSE_ASSERT(SageInterface::getEnclosingSourceFile(definingDeclaration) == SageInterface::getEnclosingSourceFile(definingDeclaration->get_firstNondefiningDeclaration()));
+                    ROSE_ASSERT(SageInterface::getEnclosingSourceFile(definingDeclaration->get_scope()) == SageInterface::getEnclosingSourceFile(definingDeclaration->get_firstNondefiningDeclaration()));
 
-                    ROSE_ASSERT(TransformationSupport::getSourceFile(alt_firstDefiningDeclaration) == TransformationSupport::getSourceFile(alt_firstDefiningDeclaration->get_firstNondefiningDeclaration()));
-                    ROSE_ASSERT(TransformationSupport::getSourceFile(alt_firstDefiningDeclaration->get_scope()) == TransformationSupport::getSourceFile(alt_firstDefiningDeclaration->get_firstNondefiningDeclaration()));
+                    ROSE_ASSERT(SageInterface::getEnclosingSourceFile(alt_firstDefiningDeclaration) == SageInterface::getEnclosingSourceFile(alt_firstDefiningDeclaration->get_firstNondefiningDeclaration()));
+                    ROSE_ASSERT(SageInterface::getEnclosingSourceFile(alt_firstDefiningDeclaration->get_scope()) == SageInterface::getEnclosingSourceFile(alt_firstDefiningDeclaration->get_firstNondefiningDeclaration()));
                   }
              }
 #endif
@@ -6263,7 +6264,7 @@ TestForReferencesToDeletedNodes::visit ( SgNode* node )
                if (child != NULL && child->variantT() == V_SgNode)
                   {
                  // This is a deleted IR node
-                 // SgFile* file = TransformationSupport::getFile(node);
+                 // SgFile* file = SageInterface::getEnclosingFileNode(node);
                  // string filename = (file != NULL) ? file->getFileName() : "unknown file";
                     printf ("Error in AST consistancy detect_dangling_pointers test for file %s: Found a child = %p = %s child name = %s of node = %p = %s that was previously deleted \n",filename.c_str(),child,child->class_name().c_str(),v[i].second.c_str(),node,node->class_name().c_str());
                   }

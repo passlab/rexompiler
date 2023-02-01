@@ -21,31 +21,26 @@ void processTemplateHandlingOptions( SgNode* node )
      TimingPerformance timer ("Fixup templateHandlingOptions:");
 
      ROSE_ASSERT(node != NULL);
-     SgFile* file = TransformationSupport::getFile(node);
-
-     if (file == NULL)
+     SgProject *project = isSgProject(node);
+     if (project != NULL)
         {
-       // printf ("Detected AST fragement not associated with primary AST, ignore template handling ... \n");
+          // GB (9/4/2009): Added this case for handling SgProject nodes. We do
+          // this simply by iterating over the list of files in the project and
+          // calling this function recursively. This is only one level of
+          // recursion since files are not nested.
+             SgFilePtrList &files = project->get_fileList();
+             SgFilePtrList::iterator fIterator;
+             for (fIterator = files.begin(); fIterator != files.end(); ++fIterator)
+                {
+                  SgFile *file = *fIterator;
+                  ROSE_ASSERT(file != NULL);
+                  markTemplateInstantiationsForOutput(file);
+                }
+          }
 
-          SgProject *project = isSgProject(node);
-          if (project != NULL)
-             {
-            // GB (9/4/2009): Added this case for handling SgProject nodes. We do
-            // this simply by iterating over the list of files in the project and
-            // calling this function recursively. This is only one level of
-            // recursion since files are not nested.
-               SgFilePtrList &files = project->get_fileList();
-               SgFilePtrList::iterator fIterator;
-               for (fIterator = files.begin(); fIterator != files.end(); ++fIterator)
-                  {
-                    SgFile *file = *fIterator;
-                    ROSE_ASSERT(file != NULL);
-                    markTemplateInstantiationsForOutput(file);
-                  }
-             }
-        }
-       else
+     else //if (file != NULL)
         {
+          SgFile* file = SageInterface::getEnclosingFileNode(node);
           bool buildImplicitTemplates       = (file != NULL) && (file->get_no_implicit_templates() == false);
           bool buildImplicitInlineTemplates = (file != NULL) && (file->get_no_implicit_inline_templates() == false);
 #if 0

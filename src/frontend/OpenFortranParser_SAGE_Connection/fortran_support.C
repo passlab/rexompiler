@@ -4744,10 +4744,10 @@ generateFunctionRefExp( Token_t* nameToken )
           SgScopeStatement* currentScope = isSgClassDefinition(astScopeStack.front());
           if (currentScope == NULL)
              {
-               currentScope = TransformationSupport::getClassDefinition(astScopeStack.front());
+               currentScope = SageInterface::getEnclosingClassDefinition(astScopeStack.front(), true);
                if (currentScope == NULL)
                   {
-                    currentScope = TransformationSupport::getGlobalScope(astScopeStack.front());
+                    currentScope = SageInterface::getGlobalScope(astScopeStack.front());
                     ROSE_ASSERT(currentScope != NULL);
                   }
              }
@@ -6158,8 +6158,8 @@ fixup_possible_incomplete_function_return_type()
      outputState("At TOP of fixup_possible_incomplete_function_return_type()");
 #endif
 
-  // SgFunctionDefinition* functionDefinition   = TransformationSupport::getFunctionDefinition(astScopeStack.front());
-     SgFunctionDeclaration* functionDeclaration = TransformationSupport::getFunctionDeclaration(astScopeStack.front());
+  // SgFunctionDefinition* functionDefinition   = SageInterface::getEnclosingFunctionDefinition(astScopeStack.front(), true);
+     SgFunctionDeclaration* functionDeclaration = SageInterface::getEnclosingFunctionDeclaration(astScopeStack.front(), true);
 
   // printf ("functionDeclaration = %p \n",functionDeclaration);
      if (functionDeclaration != NULL)

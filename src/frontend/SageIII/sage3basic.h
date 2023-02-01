@@ -414,8 +414,6 @@
 // This is located in ROSE/src/midend/astDiagnostics
 #include "AstPerformance.h"
 
-#include "transformationSupport.h"
-
 // DQ (10/26/2016): Adding mechanism to suppress use of delete in SgType IR nodes, so 
 // that the memory pool will not be changing while we are traversing it.  I think this
 // is perhaps a fundamental problem in the memory pool traversal if operations are done

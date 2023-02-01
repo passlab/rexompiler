@@ -344,8 +344,8 @@ ProcessMemberFunctionTemplateDeclarations ( set<SgDeclarationStatement*> setOfRe
                printf ("templateDeclaration->get_firstNondefiningDeclaration() = %p \n",templateDeclaration->get_firstNondefiningDeclaration());
                printf ("templateDeclaration->get_definingDeclaration()         = %p \n",templateDeclaration->get_definingDeclaration());
 #endif
-            // string currentFilename = TransformationSupport::getFile(templateDeclaration)->getFileName();
-               SgSourceFile* file = TransformationSupport::getSourceFile(memberFunctionInstantiation);
+            // string currentFilename = SageInterface::getEnclosingFileNode(templateDeclaration)->getFileName();
+               SgSourceFile* file = SageInterface::getEnclosingSourceFile(memberFunctionInstantiation);
                ROSE_ASSERT(file != NULL);
                string currentFilename = (file != NULL) ? file->getFileName() : "";
                string filenameOfTemplateDeclaration = templateDeclaration->get_file_info()->get_filename();
@@ -1030,7 +1030,7 @@ markTemplateInstantiationsForOutput( SgNode* node )
   // bool buildImplicitTemplates = false;
 
      ROSE_ASSERT(node != NULL);
-     file = TransformationSupport::getSourceFile(node);
+     file = SageInterface::getEnclosingSourceFile(node, false);
      project = isSgProject(node);
   // buildImplicitTemplates = (file != NULL) && (file->get_no_implicit_templates() == false);
 

@@ -95,9 +95,9 @@ SimpleInstrumentation::buildNewFunctionDeclaration ( SgStatement* statementLocat
      functionDeclaration->set_linkage("C");  // This mechanism could be improved!
 
      bool inFront = true;
-     SgGlobal* globalScope = TransformationSupport::getGlobalScope(statementLocation);
+     SgGlobal* globalScope = SageInterface::getGlobalScope(statementLocation);
      SgFunctionDeclaration* functionDeclarationInGlobalScope = 
-          TransformationSupport::getFunctionDeclaration(statementLocation);
+          SageInterface::getEnclosingFunctionDeclaration(statementLocation, true);
      ROSE_ASSERT(globalScope != NULL);
      ROSE_ASSERT(functionDeclarationInGlobalScope != NULL);
      globalScope->insert_statement(functionDeclarationInGlobalScope,functionDeclaration,inFront);
@@ -142,7 +142,7 @@ void SimpleInstrumentation::visit ( SgNode* astNode )
                                  {
                                    SgFunctionType* originalFunctionType = isSgFunctionType(functionSymbol->get_type());
                                    ROSE_ASSERT(originalFunctionType != NULL);
-                                   newFunctionSymbol = buildNewFunctionDeclaration (TransformationSupport::getStatement(astNode),originalFunctionType);
+                                   newFunctionSymbol = buildNewFunctionDeclaration (SageInterface::getEnclosingStatement(astNode),originalFunctionType);
                                  }
 
                               ROSE_ASSERT(newFunctionSymbol != NULL);

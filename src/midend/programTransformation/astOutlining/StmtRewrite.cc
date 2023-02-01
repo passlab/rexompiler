@@ -62,7 +62,7 @@ ASTtools::appendCopy (const SgStatement* s, SgBasicBlock* b)
         //		((isSgFunctionDeclaration(s)->get_firstNondefiningDeclaration()));
         SgFunctionSymbol * symbol_1 = new SgFunctionSymbol(decl);
         SgGlobal* glob_scope =
-	    const_cast<SgGlobal *> (TransformationSupport::getGlobalScope (s));
+	    const_cast<SgGlobal *> (SageInterface::getGlobalScope (s));
         ROSE_ASSERT(glob_scope);
         glob_scope->insert_symbol(decl->get_name(), symbol_1);
       }

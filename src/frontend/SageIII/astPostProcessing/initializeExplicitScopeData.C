@@ -311,7 +311,7 @@ InitializeExplicitScopes::visit ( SgNode *node)
 
                               memberFunctionDeclaration->get_startOfConstruct()->display("memberFunctionDeclaration: debug");
 #endif
-                              SgGlobal* globalScope = TransformationSupport::getGlobalScope(classDeclaration);
+                              SgGlobal* globalScope = SageInterface::getGlobalScope(classDeclaration);
                               ROSE_ASSERT(globalScope != NULL);
                               memberFunctionDeclaration->set_scope(globalScope);
                          }

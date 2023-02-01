@@ -187,7 +187,7 @@ Outliner::generateCall (SgFunctionDeclaration* out_func, // the outlined functio
                         SgScopeStatement* scope) // the scope in which we insert the function call
 {
   // Create a reference to the function.
-  SgGlobal* glob_scope = TransformationSupport::getGlobalScope(scope);
+  SgGlobal* glob_scope = SageInterface::getGlobalScope(scope);
   ROSE_ASSERT(glob_scope != NULL);
   SgFunctionSymbol* func_symbol = glob_scope->lookup_function_symbol(out_func->get_name());
   if (func_symbol == NULL)

@@ -806,17 +806,17 @@ SgDeclarationStatement::fixupCopy_scopes(SgNode* copy, SgCopyHelp & help) const
           ROSE_ASSERT(copyDeclarationStatement->get_scope()->variantT() == this->get_scope()->variantT());
 
        // DQ (2/28/2009): Make sure that the declaration and the copy are in the same file.
-       // ROSE_ASSERT(TransformationSupport::getSourceFile(copyDeclarationStatement) == TransformationSupport::getSourceFile(this));
-       // ROSE_ASSERT(TransformationSupport::getSourceFile(this->get_firstNondefiningDeclaration()) == TransformationSupport::getSourceFile(this));
+       // ROSE_ASSERT(SageInterface::getEnclosingSourceFile(copyDeclarationStatement) == SageInterface::getEnclosingSourceFile(this));
+       // ROSE_ASSERT(SageInterface::getEnclosingSourceFile(this->get_firstNondefiningDeclaration()) == SageInterface::getEnclosingSourceFile(this));
           if (this->get_definingDeclaration() != NULL)
              {
             // DQ (3/4/2009): This test fails for copytest2007_34.C
-               if (TransformationSupport::getSourceFile(this->get_definingDeclaration()) != TransformationSupport::getSourceFile(this))
+               if (SageInterface::getEnclosingSourceFile(this->get_definingDeclaration()) != SageInterface::getEnclosingSourceFile(this))
                   {
-                    printf ("Warning: TransformationSupport::getSourceFile(this->get_definingDeclaration()) != TransformationSupport::getSourceFile(this) \n");
+                    printf ("Warning: SageInterface::getEnclosingSourceFile(this->get_definingDeclaration()) != SageInterface::getEnclosingSourceFile(this) \n");
                     printf ("Commented out failing test for copytest2007_34.C \n");
                   }
-            // ROSE_ASSERT(TransformationSupport::getSourceFile(this->get_definingDeclaration()) == TransformationSupport::getSourceFile(this));
+            // ROSE_ASSERT(SageInterface::getEnclosingSourceFile(this->get_definingDeclaration()) == SageInterface::getEnclosingSourceFile(this));
              }
 
 #if 0
@@ -824,7 +824,7 @@ SgDeclarationStatement::fixupCopy_scopes(SgNode* copy, SgCopyHelp & help) const
        // been copied before this test they will appear to be from different file until the second declaration is copied.
           if (copyDeclarationStatement->get_firstNondefiningDeclaration() != NULL)
              {
-               if (TransformationSupport::getSourceFile(copyDeclarationStatement->get_firstNondefiningDeclaration()) != TransformationSupport::getSourceFile(copyDeclarationStatement))
+               if (SageInterface::getEnclosingSourceFile(copyDeclarationStatement->get_firstNondefiningDeclaration()) != SageInterface::getEnclosingSourceFile(copyDeclarationStatement))
                   {
                     printf ("Error: source files don't match for copyDeclarationStatement = %p and copyDeclarationStatement->get_firstNondefiningDeclaration() = %p \n",copyDeclarationStatement,copyDeclarationStatement->get_firstNondefiningDeclaration());
                   }
@@ -832,17 +832,17 @@ SgDeclarationStatement::fixupCopy_scopes(SgNode* copy, SgCopyHelp & help) const
 #endif
 
        // DQ (3/2/2009): Make sure this is not the non-defining declaration since the defining declaration will not have been copied yet and so of course the files will not match.
-       // ROSE_ASSERT(TransformationSupport::getSourceFile(copyDeclarationStatement->get_firstNondefiningDeclaration()) == TransformationSupport::getSourceFile(copyDeclarationStatement));
+       // ROSE_ASSERT(SageInterface::getEnclosingSourceFile(copyDeclarationStatement->get_firstNondefiningDeclaration()) == SageInterface::getEnclosingSourceFile(copyDeclarationStatement));
        // if (copyDeclarationStatement->get_definingDeclaration() != NULL)
           if (copyDeclarationStatement->get_definingDeclaration() != NULL && this != this->get_firstNondefiningDeclaration())
              {
-            // ROSE_ASSERT(TransformationSupport::getSourceFile(copyDeclarationStatement->get_definingDeclaration()) == TransformationSupport::getSourceFile(copyDeclarationStatement));
-               if (TransformationSupport::getSourceFile(copyDeclarationStatement->get_definingDeclaration()) != TransformationSupport::getSourceFile(copyDeclarationStatement))
+            // ROSE_ASSERT(SageInterface::getEnclosingSourceFile(copyDeclarationStatement->get_definingDeclaration()) == SageInterface::getEnclosingSourceFile(copyDeclarationStatement));
+               if (SageInterface::getEnclosingSourceFile(copyDeclarationStatement->get_definingDeclaration()) != SageInterface::getEnclosingSourceFile(copyDeclarationStatement))
                   {
                     printf ("copyDeclarationStatement = %p = %s \n",copyDeclarationStatement,copyDeclarationStatement->class_name().c_str());
                     printf ("############# Detected case of copyDeclarationStatement->get_definingDeclaration() in file %s \n",
-                         TransformationSupport::getSourceFile(copyDeclarationStatement->get_definingDeclaration())->getFileName().c_str());
-                    printf ("############# Detected case of copyDeclarationStatement in file %s \n",TransformationSupport::getSourceFile(copyDeclarationStatement)->getFileName().c_str());
+                            SageInterface::getEnclosingSourceFile(copyDeclarationStatement->get_definingDeclaration())->getFileName().c_str());
+                    printf ("############# Detected case of copyDeclarationStatement in file %s \n",SageInterface::getEnclosingSourceFile(copyDeclarationStatement)->getFileName().c_str());
 
                  // This is not what we want here!
                  // copyDeclarationStatement->set_definingDeclaration(NULL);

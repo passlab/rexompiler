@@ -5023,7 +5023,7 @@ UnparseLanguageIndependentConstructs::unparseGlobalStmt (SgStatement* stmt, SgUn
 #endif
 
 #if OUTPUT_DEBUGGING_FUNCTION_BOUNDARIES || 0
-     printf ("global scope file = %s \n",TransformationSupport::getSourceFile(globalScope)->getFileName().c_str());
+     printf ("global scope file = %s \n",SageInterface::getEnclosingSourceFile(globalScope)->getFileName().c_str());
      printf ("global scope size = %ld \n",globalScope->get_declarations().size());
 #endif
 
@@ -7427,7 +7427,7 @@ UnparseLanguageIndependentConstructs::unparseBoolVal(SgExpression* expr, SgUnpar
   // Bug reported by Yarden (IBM), output for C should not use C++ keywords ("true" and "false")
   // Note that the getProject() function will use the parent pointers to traverse back to the SgProject node
      bool C_language_support = false;
-     SgFile* file = TransformationSupport::getFile(expr);
+     SgFile* file = SageInterface::getEnclosingFileNode(expr);
 
 #if 0
      printf ("In unparseBoolVal(): resolving file to be %p \n",file);

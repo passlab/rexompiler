@@ -232,7 +232,7 @@ NameQuery::queryNameVariableTypeNames (SgNode * astNode)
      ROSE_ASSERT (type != NULL);
 
 
-     string typeName = TransformationSupport::getTypeName(type);
+     string typeName = SageInterface::getTypeName(type);
      ROSE_ASSERT (typeName.length() > 0);
 
      returnNameList.push_back(typeName);
@@ -270,10 +270,10 @@ NameQuery::queryNameVariableTypeNames (SgNode * astNode)
 
             typeNode = elmVar->get_type();
             ROSE_ASSERT (typeNode != NULL);
-            returnNameList.push_back (TransformationSupport::getTypeName (typeNode));
+            returnNameList.push_back (SageInterface::getTypeName (typeNode));
 #if DEBUG_NAMEQUERY
             cout << "The typeName of the variable is: " <<
-              TransformationSupport::getTypeName (typeNode) << endl;
+              SageInterface::getTypeName (typeNode) << endl;
 #endif
           }
         break;
@@ -311,10 +311,10 @@ NameQuery::queryNameVariableTypeNames (SgNode * astNode)
           ROSE_ASSERT (elmVar != NULL);
           typeNode = elmVar->get_type ();
           ROSE_ASSERT (typeNode != NULL);
-          returnNameList.push_back (TransformationSupport::getTypeName (typeNode));
+          returnNameList.push_back (SageInterface::getTypeName (typeNode));
 #if DEBUG_NAMEQUERY
           cout << "The typeName of the variable is: " <<
-            TransformationSupport::getTypeName (typeNode) << endl;
+            SageInterface::getTypeName (typeNode) << endl;
 #endif
         }
 
@@ -360,7 +360,7 @@ NameQuery::queryNameVariableNames (SgNode * astNode)
          ROSE_ASSERT (type != NULL);
 
 
-         string typeName = TransformationSupport::getTypeName(type);
+         string typeName = SageInterface::getTypeName(type);
          ROSE_ASSERT (typeName.length() > 0);
 
 
@@ -653,8 +653,8 @@ NameQuery::queryNameFunctionReferenceNames (SgNode * astNode)
       Rose_STL_Container< string > argumentNameList;
       string returnTypeName = "double";
 
-      returnNameList.push_back (TransformationSupport::getFunctionName (sageFunctionCallExp));
-
+      SgFunctionDeclaration* funcDeclaration = SageInterface::getFunctionDeclaration ( sageFunctionCallExp );
+      returnNameList.push_back (funcDeclaration->get_name().str());
     }
 
 
@@ -707,7 +707,7 @@ NameQuery::queryVariableNamesWithTypeName (SgNode * astNode, string matchingName
             ROSE_ASSERT (elmVar != NULL);
             typeNode = elmVar->get_type ();
             ROSE_ASSERT (typeNode != NULL);
-            string typeName = TransformationSupport::getTypeName(typeNode);
+            string typeName = SageInterface::getTypeName(typeNode);
 
             if (typeName == matchingName)
               {
@@ -745,7 +745,7 @@ NameQuery::queryVariableNamesWithTypeName (SgNode * astNode, string matchingName
           ROSE_ASSERT (elmVar != NULL);
           typeNode = elmVar->get_type ();
           ROSE_ASSERT (typeNode != NULL);
-          string typeName = TransformationSupport::getTypeName (typeNode);
+          string typeName = SageInterface::getTypeName (typeNode);
 
           if (typeName == matchingName)
             {
@@ -797,236 +797,10 @@ NameQuery::queryNameTypeName (SgNode * astNode)
   Rose_STL_Container< string > returnList;
   SgType *type = isSgType (astNode);
 
-  // printf ("In TransformationSupport::getTypeName(): type->sage_class_name() = %s \n",type->sage_class_name());
-
   if (type != NULL)
-    switch (type->variantT ())
-      {
-      case V_SgTypeComplex:
-        typeName = "complex";
-        break;
-      case V_SgTypeImaginary:
-        typeName = "imaginary";
-        break;
-      case V_SgTypeBool:
-        typeName = "bool";
-        break;
-      case V_SgEnumType:
-        typeName = "enum";
-        break;
-      case V_SgTypeChar:
-        typeName = "char";
-        break;
-      case V_SgTypeVoid:
-        typeName = "void";
-        break;
-      case V_SgTypeInt:
-        typeName = "int";
-        break;
-      case V_SgTypeDouble:
-        typeName = "double";
-        break;
-      case V_SgTypeFloat:
-        typeName = "float";
-        break;
-      case V_SgTypeLong:
-        typeName = "long";
-        break;
-      case V_SgTypeLongDouble:
-        typeName = "long double";
-        break;
-      case V_SgTypeEllipse:
-        typeName = "ellipse";
-        break;
-      case V_SgTypeGlobalVoid:
-        typeName = "void";
-        break;
-      case V_SgTypeLongLong:
-        typeName = "long long";
-        break;
-      case V_SgTypeShort:
-        typeName = "short";
-        break;
-      case V_SgTypeSignedChar:
-        typeName = "signed char";
-        break;
-      case V_SgTypeSignedInt:
-        typeName = "signed int";
-        break;
-      case V_SgTypeSignedLong:
-        typeName = "signed long";
-        break;
-      case V_SgTypeSignedShort:
-        typeName = "signed short";
-        break;
-      case V_SgTypeString:
-        typeName = "string";
-        break;
-      case V_SgTypeUnknown:
-        typeName = "unknown";
-        break;
-      case V_SgTypeUnsignedChar:
-        typeName = "unsigned char";
-        break;
-      case V_SgTypeUnsignedInt:
-        typeName = "unsigned int";
-        break;
-      case V_SgTypeUnsignedLong:
-        typeName = "unsigned long";
-        break;
-      case V_SgTypeUnsignedShort:
-        typeName = "unsigned short";
-        break;
-      case V_SgTypeUnsignedLongLong:
-        typeName = "unsigned long long";
-        break;
-      case V_SgReferenceType:
-        {
-          ROSE_ASSERT (isSgReferenceType (type)->get_base_type () != NULL);
-
-          Rose_STL_Container< string > subTypeNames = queryNameTypeName (isSgReferenceType (type)->get_base_type ());
-
-          typedef Rose_STL_Container< string >::iterator typeIterator;
-
-          //This iterator will only contain one name
-          for (typeIterator i = subTypeNames.begin ();
-               i != subTypeNames.end (); ++i)
-            {
-              string e = *i;
-              typeName = e;
-              break;
-            }
-
-          break;
-        }
-      case V_SgPointerType:
-        {
-          ROSE_ASSERT (isSgPointerType (type)->get_base_type () != NULL);
-
-          Rose_STL_Container< string > subTypeNames =
-            queryNameTypeName (isSgPointerType (type)->get_base_type ());
-
-          typedef Rose_STL_Container< string >::iterator typeIterator;
-
-          //This iterator will only contain one name
-          for (typeIterator i = subTypeNames.begin ();
-               i != subTypeNames.end (); ++i)
-            {
-              string e = *i;
-              typeName = e;
-              break;
-            }
-
-          break;
-        }
-      case V_SgModifierType:
-        {
-          ROSE_ASSERT (isSgModifierType (type)->get_base_type () != NULL);
-
-          Rose_STL_Container< string > subTypeNames =
-            queryNameTypeName (isSgModifierType (type)->get_base_type ());
-
-          typedef Rose_STL_Container< string >::iterator typeIterator;
-
-          //This iterator will only contain one name
-          for (typeIterator i = subTypeNames.begin ();
-               i != subTypeNames.end (); ++i)
-            {
-              string e = *i;
-              typeName = e;
-              break;
-            }
-          break;
-        }
-      case V_SgNamedType:
-        {
-          SgNamedType *sageNamedType = isSgNamedType (type);
-          ROSE_ASSERT (sageNamedType != NULL);
-          typeName = sageNamedType->get_name ().str ();
-          break;
-        }
-      case V_SgClassType:
-        {
-          SgClassType *sageClassType = isSgClassType (type);
-          ROSE_ASSERT (sageClassType != NULL);
-          typeName = sageClassType->get_name ().str ();
-          break;
-        }
-      case V_SgTypedefType:
-        {
-          SgTypedefType *sageTypedefType = isSgTypedefType (type);
-          ROSE_ASSERT (sageTypedefType != NULL);
-          typeName = sageTypedefType->get_name ().str ();
-          break;
-        }
-      case V_SgPointerMemberType:
-        {
-          SgPointerMemberType *pointerMemberType =
-            isSgPointerMemberType (type);
-          ROSE_ASSERT (pointerMemberType != NULL);
-          SgClassType *classType =
-            isSgClassType(pointerMemberType->get_class_type()->stripTypedefsAndModifiers());
-          ROSE_ASSERT (classType != NULL);
-          SgClassDeclaration *classDeclaration =
-            isSgClassDeclaration(classType->get_declaration());
-          ROSE_ASSERT (classDeclaration != NULL);
-          typeName = classDeclaration->get_name ().str ();
-          break;
-        }
-      case V_SgArrayType:
-        {
-          ROSE_ASSERT (isSgArrayType (type)->get_base_type () != NULL);
-
-
-          Rose_STL_Container< string > subTypeNames =
-            queryNameTypeName (isSgArrayType (type)->get_base_type ());
-
-          typedef Rose_STL_Container< string >::iterator typeIterator;
-
-          //This iterator will only contain one name
-          for (typeIterator i = subTypeNames.begin ();
-               i != subTypeNames.end (); ++i)
-            {
-              string e = *i;
-              typeName = e;
-              break;
-            }
-          break;
-        }
-      case V_SgFunctionType:
-        {
-          SgFunctionType *functionType = isSgFunctionType (type);
-          ROSE_ASSERT (functionType != NULL);
-          typeName = functionType->get_mangled_type ().str ();
-          break;
-        }
-      case V_SgMemberFunctionType:
-        {
-          SgMemberFunctionType *memberFunctionType =
-            isSgMemberFunctionType (type);
-          ROSE_ASSERT (memberFunctionType != NULL);
-          SgClassType *classType =
-            isSgClassType(memberFunctionType->get_class_type()->stripTypedefsAndModifiers());
-          ROSE_ASSERT (classType != NULL);
-          SgClassDeclaration *classDeclaration =
-            isSgClassDeclaration(classType->get_declaration());
-          ROSE_ASSERT (classDeclaration != NULL);
-          typeName = classDeclaration->get_name ().str ();
-          break;
-        }
-      case V_SgTypeWchar:
-        typeName = "wchar";
-        break;
-      case V_SgTypeDefault:
-        typeName = "default";
-        break;
-      default:
-        printf
-          ("default reached in switch within TransformationSupport::getTypeName type->sage_class_name() = %s variant = %d \n",
-           type->sage_class_name (), type->variant ());
-        ROSE_ABORT ();
-        break;
-      }
+  {
+    typeName = SageInterface::getTypeName(type);
+  }
 
   // Fix for purify problem report
   // typeName = Rose::stringDuplicate(typeName);

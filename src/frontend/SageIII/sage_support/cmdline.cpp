@@ -5041,7 +5041,7 @@ SgFile::build_EDG_CommandLine ( vector<string> & inputCommandLine, vector<string
 
   // DQ (6/13/2013): This was wrong, the parent of the SgFile is the SgFileList IR node and it is better to call the function to get the SgProject.
   // SgProject* project = isSgProject(this->get_parent());
-     SgProject* project = TransformationSupport::getProject(this);
+     SgProject* project = SageInterface::getProject(this);
      ROSE_ASSERT (project != NULL);
 
   // AS(063006) Changed implementation so that real paths can be found later
@@ -6342,7 +6342,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
   // DQ (10/10/2020): Output values before manipulation.
      if (sourceFile != NULL)
         {
-          SgProject* project = TransformationSupport::getProject(sourceFile);
+          SgProject* project = SageInterface::getProject(sourceFile);
           ROSE_ASSERT(project != NULL);
 
           printf ("(TOP of buildCompilerCommandLineOptions(): project->get_includeDirectorySpecifierList().size() = %zu \n",project->get_includeDirectorySpecifierList().size());
@@ -6946,7 +6946,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
         {
        // DQ (3/12/20202): the extraIncludeDirectorySpecifierList from the SgProject is used to support extra directory paths required as
        // part of header file transformations that are projects wide instead of source file specific.
-          SgProject* project = TransformationSupport::getProject(sourceFile);
+          SgProject* project = SageInterface::getProject(sourceFile);
           ROSE_ASSERT(project != NULL);
 
 #if DEBUG_INCLUDE_PATHS
@@ -7269,7 +7269,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
         {
        // DQ (1/24/2010): Now that we have directory support, the parent of a SgFile does not have to be a SgProject.
        // SgProject* project = isSgProject(this->get_parent())
-          SgProject* project = TransformationSupport::getProject(this);
+          SgProject* project = SageInterface::getProject(this);
           ROSE_ASSERT (project != NULL);
           Rose_STL_Container<string> sourceFilenames = project->get_sourceFileNameList();
 #if DEBUG_COMPILER_COMMAND_LINE
@@ -7734,7 +7734,7 @@ SgFile::buildCompilerCommandLineOptions ( vector<string> & argv, int fileNameInd
                  // When (get_unparse_in_same_directory_as_input_file() == true) we don't want to add the include
                  // path to the source directory.
                  // compilerNameString.insert(iter, std::string("-I") + oldFileNamePathOnly);
-                    SgProject* project = TransformationSupport::getProject(this);
+                    SgProject* project = SageInterface::getProject(this);
                  // ROSE_ASSERT(project != NULL);
                     if (project != NULL)
                        {

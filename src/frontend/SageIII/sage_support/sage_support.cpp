@@ -4906,7 +4906,7 @@ SgFile::compileOutput ( vector<string>& argv, int fileNameIndex )
        // DQ (9/15/2013): Added support for generated file to be placed into the same directory as the source file.
        // It's use here is similar to that in the unparse.C file, but less clear here that it is correct since we
        // don't have tests of the -rose:keep_going option (that I know of directly in ROSE).
-          SgProject* project = TransformationSupport::getProject(this);
+          SgProject* project = SageInterface::getProject(this);
           if (project != nullptr)
              {
 #if DEBUG_PROJECT_COMPILE_COMMAND_LINE_WITH_ARGS
@@ -5536,7 +5536,7 @@ SgFile::isPrelinkPhase() const
         {
        // DQ (1/24/2010): Now that we have directory support, the parent of a SgFile does not have to be a SgProject.
        // SgProject* project = isSgProject(get_parent());
-          SgProject* project = TransformationSupport::getProject(this);
+          SgProject* project = SageInterface::getProject(this);
 
           ASSERT_not_null(project);
           returnValue = project->get_prelink();
@@ -5882,7 +5882,7 @@ print_pragma(SgAttributePtrList& pattr, std::ostream& os)
 StringUtility::FileNameLocation
 get_location ( Sg_File_Info* X )
    {
-     SgFile* file = TransformationSupport::getFile(X->get_parent());
+     SgFile* file = SageInterface::getEnclosingFileNode(X->get_parent());
      ASSERT_not_null(file);
      string sourceFilename = file->getFileName();
      string sourceDirectory = StringUtility::getPathFromFileName(sourceFilename);
@@ -5896,7 +5896,7 @@ get_location ( Sg_File_Info* X )
 StringUtility::FileNameLibrary
 get_library ( Sg_File_Info* X )
    {
-     SgFile* file = TransformationSupport::getFile(X->get_parent());
+     SgFile* file = SageInterface::getEnclosingFileNode(X->get_parent());
      ASSERT_not_null(file);
      string sourceFilename = file->getFileName();
      string sourceDirectory = StringUtility::getPathFromFileName(sourceFilename);
@@ -5910,7 +5910,7 @@ get_library ( Sg_File_Info* X )
 std::string
 get_libraryName ( Sg_File_Info* X )
    {
-     SgFile* file = TransformationSupport::getFile(X->get_parent());
+     SgFile* file = SageInterface::getEnclosingFileNode(X->get_parent());
      ASSERT_not_null(file);
      string sourceFilename = file->getFileName();
      string sourceDirectory = StringUtility::getPathFromFileName(sourceFilename);
@@ -5931,7 +5931,7 @@ get_OS_type ()
 int
 get_distanceFromSourceDirectory ( Sg_File_Info* X )
    {
-     SgFile* file = TransformationSupport::getFile(X->get_parent());
+     SgFile* file = SageInterface::getEnclosingFileNode(X->get_parent());
      ASSERT_not_null(file);
      string sourceFilename = file->getFileName();
      string sourceDirectory = StringUtility::getPathFromFileName(sourceFilename);
@@ -6479,6 +6479,12 @@ SgFunctionCallExp::getAssociatedFunctionSymbol() const
                break;
              }
 
+       // YYH(2023/02/01): need to debug this how this could happen.
+          case V_SgNonrealRefExp:
+             {
+               break;
+               //ROSE_ABORT();
+	     }
        // DQ (2/25/2013): Added support for this case, from test2012_133.c.
        // This should not resolve to a symbol.
           case V_SgConditionalExp:
@@ -6528,10 +6534,8 @@ SgFunctionCallExp::getAssociatedFunctionSymbol() const
 
                // schroder3 (2016-07-25): Changed "#if 1" to "#if 0" to remove ROSE_ASSERT. If this member function is unable to determine the
                //  associated function then it should return 0 instead of raising an assertion.
-#if 0
             // DQ (2/23/2013): Allow this to be commented out so that I can generate the DOT graphs to better understand the problem in test2013_69.C.
-               ROSE_ABORT();
-#endif
+              // ROSE_ABORT();
              }
         }
 

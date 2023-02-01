@@ -21,7 +21,7 @@ int main(int argc, char * argv[])
 //  myvisitor.traverseInputFiles(project,preorder);
 #if 0  // used to trigger issue outliner-32
   SgGlobal * global =  SageInterface::getFirstGlobalScope(project);
-  SgSourceFile* originalSourceFile = TransformationSupport::getSourceFile(global); 
+  SgSourceFile* originalSourceFile = SageInterface::getEnclosingSourceFile(global);
   // check this first, before doing any ast post processing
   checkPhysicalSourcePosition(originalSourceFile);
 

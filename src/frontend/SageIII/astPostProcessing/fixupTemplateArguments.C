@@ -948,7 +948,7 @@ FixupTemplateArguments::visit ( SgNode* node )
 
        // DQ (2/16/2017): Don't process code in template instantiations.
           SgTemplateInstantiationDefn*               templateInstantiationDefn              = isSgTemplateInstantiationDefn(targetScope);
-          SgFunctionDeclaration*                     functionDeclaration                    = TransformationSupport::getFunctionDeclaration(targetScope);
+          SgFunctionDeclaration*                     functionDeclaration                    = SageInterface::getEnclosingFunctionDeclaration(targetScope, true);
           SgTemplateInstantiationFunctionDecl*       templateInstantiationFunctionDec       = isSgTemplateInstantiationFunctionDecl(functionDeclaration);
           SgTemplateInstantiationMemberFunctionDecl* templateInstantiationMemberFunctionDec = isSgTemplateInstantiationMemberFunctionDecl(functionDeclaration);
        // if (templateInstantiationDefn == NULL)

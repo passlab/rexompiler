@@ -3409,7 +3409,7 @@ SageBuilder::buildNondefiningFunctionDeclaration_T (
      printf ("In buildNondefiningFunctionDeclaration_T(): nameWithTemplateArguments = |%s| \n",nameWithTemplateArguments.str());
 #endif
 
-  // printf ("Building non-defining function for scope = %p in file = %s \n",scope,TransformationSupport::getSourceFile(scope)->getFileName().c_str());
+  // printf ("Building non-defining function for scope = %p in file = %s \n",scope,SageInterface::getEnclosingSourceFile(scope)->getFileName().c_str());
 
   // DQ (2/25/2009): I think I added this recently but it is overly restrictive.
   // ROSE_ASSERT(scope != NULL);
@@ -17035,7 +17035,7 @@ SageBuilder::findAssociatedSymbolInTargetAST(SgDeclarationStatement* snippet_dec
      printf ("snippet_scope_list.size() = %" PRIuPTR " \n",snippet_scope_list.size());
 #endif
 
-     SgGlobal* global_scope_in_target_ast = TransformationSupport::getGlobalScope(targetScope);
+     SgGlobal* global_scope_in_target_ast = SageInterface::getGlobalScope(targetScope);
      SgScopeStatementPtrList::reverse_iterator i = snippet_scope_list.rbegin();
 
      SgScopeStatement* target_AST_scope  = global_scope_in_target_ast;
@@ -17321,7 +17321,7 @@ SageBuilder::findAssociatedDeclarationInTargetAST(SgDeclarationStatement* snippe
         {
           SgScopeStatement* scope = *i;
           printf (" --- *i = %p = %s name = %s \n",scope,scope->class_name().c_str(),SageInterface::get_name(scope).c_str());
-          SgGlobal* global_scope_from_declarations_scope = TransformationSupport::getGlobalScope(scope);
+          SgGlobal* global_scope_from_declarations_scope = SageInterface::getGlobalScope(scope);
           printf (" --- --- global_scope_from_declarations_scope = %p \n",global_scope_from_declarations_scope);
         }
 #endif
@@ -17330,7 +17330,7 @@ SageBuilder::findAssociatedDeclarationInTargetAST(SgDeclarationStatement* snippe
   // have the same global scope as the input declaration.
      ROSE_ASSERT(SageInterface::hasSameGlobalScope(snippet_declaration,snippet_scope) == true);
 
-     SgGlobal* global_scope_in_target_ast = TransformationSupport::getGlobalScope(targetScope);
+     SgGlobal* global_scope_in_target_ast = SageInterface::getGlobalScope(targetScope);
      SgScopeStatementPtrList::reverse_iterator i = snippet_scope_list.rbegin();
 
 #if DEBUG_FIND_ASSOCIATED_DECLARATION
@@ -18107,14 +18107,14 @@ SageBuilder::errorCheckingTargetAST (SgNode* node_copy, SgNode* node_original, S
                ROSE_ASSERT(scope_copy     != NULL);
                ROSE_ASSERT(scope_original != NULL);
 
-            // if (TransformationSupport::getFile(scope_original) != targetFile)
+            // if (SageInterface::getEnclosingFileNode(scope_original) != targetFile)
             // if (getEnclosingFileNode(scope_original) != targetFile)
                if (getEnclosingFileNode(scope_copy) != targetFile)
                   {
 #if 0
                     printf ("Warning: SgStatement: scope = %p = %s \n",scope_original,scope_original->class_name().c_str());
 #endif
-                 // SgFile* snippetFile = TransformationSupport::getFile(scope_original);
+                 // SgFile* snippetFile = SageInterface::getEnclosingFileNode(scope_original);
                  // SgFile* snippetFile = getEnclosingFileNode(scope_original);
                     SgFile* snippetFile = getEnclosingFileNode(scope_copy);
                     ROSE_ASSERT(snippetFile != NULL);
@@ -18154,10 +18154,10 @@ SageBuilder::errorCheckingTargetAST (SgNode* node_copy, SgNode* node_original, S
                ROSE_ABORT();
 #endif
 #if 0
-               if (TransformationSupport::getFile(scope) != targetFile)
+               if (SageInterface::getEnclosingFileNode(scope) != targetFile)
                   {
                     printf ("Warning: SgStatement: scope = %p = %s \n",scope,scope->class_name().c_str());
-                    SgFile* snippetFile = TransformationSupport::getFile(scope);
+                    SgFile* snippetFile = SageInterface::getEnclosingFileNode(scope);
                     ROSE_ASSERT(snippetFile != NULL);
                     ROSE_ASSERT(snippetFile->get_sourceFileNameWithPath().empty() == false);
 
@@ -18215,7 +18215,7 @@ SageBuilder::errorCheckingTargetAST (SgNode* node_copy, SgNode* node_original, S
           if (definingDeclaration_original != NULL)
              {
             // DQ (3/17/2014): Bugfix, we want to use the definingDeclaration_copy instead of definingDeclaration_original.
-            // if (TransformationSupport::getFile(definingDeclaration_original) != targetFile)
+            // if (SageInterface::getEnclosingFileNode(definingDeclaration_original) != targetFile)
             // if (getEnclosingFileNode(definingDeclaration_original) != targetFile)
             // SgFile* snippetFile = getEnclosingFileNode(definingDeclaration_original);
                SgFile* snippetFile = getEnclosingFileNode(definingDeclaration_copy);
@@ -18347,7 +18347,7 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
      return;
 #endif
 
-  // SgFile* targetFile = TransformationSupport::getFile(insertionPoint);
+  // SgFile* targetFile = SageInterface::getEnclosingFileNode(insertionPoint);
      SgFile* targetFile = getEnclosingFileNode(insertionPoint);
 
 #if 0
@@ -18389,13 +18389,13 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
                ROSE_ASSERT(scope_copy     != NULL);
                ROSE_ASSERT(scope_original != NULL);
 
-            // if (TransformationSupport::getFile(scope_original) != targetFile)
+            // if (SageInterface::getEnclosingFileNode(scope_original) != targetFile)
                if (getEnclosingFileNode(scope_original) != targetFile)
                   {
 #if 0
                     printf ("Warning: SgStatement: scope = %p = %s \n",scope_original,scope_original->class_name().c_str());
 #endif
-                 // SgFile* snippetFile = TransformationSupport::getFile(scope_original);
+                 // SgFile* snippetFile = SageInterface::getEnclosingFileNode(scope_original);
                     SgFile* snippetFile = getEnclosingFileNode(scope_original);
                     ROSE_ASSERT(snippetFile != NULL);
                     ROSE_ASSERT(snippetFile->get_sourceFileNameWithPath().empty() == false);
@@ -18429,10 +18429,10 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
                ROSE_ABORT();
 #endif
 #if 0
-               if (TransformationSupport::getFile(scope) != targetFile)
+               if (SageInterface::getEnclosingFileNode(scope) != targetFile)
                   {
                     printf ("Warning: SgStatement: scope = %p = %s \n",scope,scope->class_name().c_str());
-                    SgFile* snippetFile = TransformationSupport::getFile(scope);
+                    SgFile* snippetFile = SageInterface::getEnclosingFileNode(scope);
                     ROSE_ASSERT(snippetFile != NULL);
                     ROSE_ASSERT(snippetFile->get_sourceFileNameWithPath().empty() == false);
 
@@ -18478,7 +18478,7 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
           SgDeclarationStatement* definingDeclaration_original = declarationStatement_original->get_definingDeclaration();
           if (definingDeclaration_original != NULL)
              {
-            // if (TransformationSupport::getFile(definingDeclaration_original) != targetFile)
+            // if (SageInterface::getEnclosingFileNode(definingDeclaration_original) != targetFile)
             // if (getEnclosingFileNode(definingDeclaration_original) != targetFile)
                SgFile* snippetFile = getEnclosingFileNode(definingDeclaration_original);
                if (snippetFile != NULL && snippetFile != targetFile)
@@ -18545,7 +18545,7 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
             // Since we don't want the scope that is stored in the SgInitializedName we
             // have to get the associated statement and the scope of that statement.
             // SgScopeStatement* scope_copy     = initializedName_copy->get_scope();
-               SgStatement* enclosingStatement_copy = TransformationSupport::getStatement(initializedName_copy);
+               SgStatement* enclosingStatement_copy = SageInterface::getEnclosingStatement(initializedName_copy);
 #if 0
                printf ("enclosingStatement_copy = %p = %s \n",enclosingStatement_copy,enclosingStatement_copy->class_name().c_str());
 #endif
@@ -18556,7 +18556,7 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
                ROSE_ASSERT(scope_copy != NULL);
                ROSE_ASSERT(scope_original != NULL);
 
-            // if (TransformationSupport::getFile(scope_original) != targetFile)
+            // if (SageInterface::getEnclosingFileNode(scope_original) != targetFile)
                if (getEnclosingFileNode(scope_original) != targetFile)
                   {
 #if 0
@@ -18582,7 +18582,7 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
                     printf ("Warning: case V_SgInitializedName: initializedName_copy->get_parent()     = %p \n",initializedName_copy->get_parent());
                     printf ("Warning: case V_SgInitializedName: initializedName_original->get_parent() = %p \n",initializedName_original->get_parent());
 #endif
-                 // SgFile* snippetFile = TransformationSupport::getFile(scope_original);
+                 // SgFile* snippetFile = SageInterface::getEnclosingFileNode(scope_original);
                     SgFile* snippetFile = getEnclosingFileNode(scope_original);
 
                     ROSE_ASSERT(snippetFile != NULL);
@@ -18830,7 +18830,7 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
                               ROSE_ASSERT(variableDeclaration != NULL);
 
                            // SgSymbol* symbol = targetScope->lookup_variable_symbol(initializedName_copy->get_name());
-                              SgStatement* enclosingStatement_original = TransformationSupport::getStatement(initializedName_original);
+                              SgStatement* enclosingStatement_original = SageInterface::getEnclosingStatement(initializedName_original);
                               ROSE_ASSERT(enclosingStatement_original != NULL);
                               SgCatchOptionStmt* catchOptionStatement_original = isSgCatchOptionStmt(enclosingStatement_original->get_parent());
 
@@ -19130,7 +19130,7 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
             // SgClassSymbol* classSymbol_copy = isSgClassSymbol(classDeclaration_copy->search_for_symbol_from_symbol_table());
             // ROSE_ASSERT(classSymbol_copy != NULL);
 
-            // if (TransformationSupport::getFile(classSymbol_copy) != targetFile)
+            // if (SageInterface::getEnclosingFileNode(classSymbol_copy) != targetFile)
             // if (getEnclosingFileNode(classSymbol_copy) != targetFile)
             // if (getEnclosingFileNode(classDeclaration_copy) != targetFile)
                   {
@@ -19468,7 +19468,7 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
                SgVarRefExp* varRefExp_original = isSgVarRefExp(node_original);
                SgVariableSymbol* variableSymbol_copy = isSgVariableSymbol(varRefExp_copy->get_symbol());
                ROSE_ASSERT(variableSymbol_copy != NULL);
-            // if (TransformationSupport::getFile(variableSymbol_copy) != targetFile)
+            // if (SageInterface::getEnclosingFileNode(variableSymbol_copy) != targetFile)
                if (getEnclosingFileNode(variableSymbol_copy) != targetFile)
                   {
 #if 0
@@ -19499,14 +19499,14 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
                       // We need to look into the scope of the block used to define the statments as seperate snippets (same issue as for functions).
 
                       // If could be that the symbol is in the local scope of the snippet AST.
-                         SgStatement* enclosingStatement_original = TransformationSupport::getStatement(varRefExp_original);
+                         SgStatement* enclosingStatement_original = SageInterface::getEnclosingStatement(varRefExp_original);
                          ROSE_ASSERT(enclosingStatement_original != NULL);
 #if 0
                          printf ("case V_SgVarRefExp: enclosingStatement_original = %p = %s \n",enclosingStatement_original,enclosingStatement_original->class_name().c_str());
 #endif
                          SgScopeStatement* otherPossibleScope_original = isSgScopeStatement(enclosingStatement_original->get_parent());
                          ROSE_ASSERT(otherPossibleScope_original != NULL);
-                      // SgFile* file = TransformationSupport::getFile(enclosingStatement_original);
+                      // SgFile* file = SageInterface::getEnclosingFileNode(enclosingStatement_original);
                          SgFile* file = getEnclosingFileNode(enclosingStatement_original);
                          ROSE_ASSERT(file != NULL);
 #if 0
@@ -19592,7 +19592,7 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
             // SgFunctionRefExp* functionRefExp_original = isSgFunctionRefExp(node_original);
                SgFunctionSymbol* functionSymbol_copy = isSgFunctionSymbol(functionRefExp_copy->get_symbol());
                ROSE_ASSERT(functionSymbol_copy != NULL);
-            // if (TransformationSupport::getFile(functionSymbol) != targetFile)
+            // if (SageInterface::getEnclosingFileNode(functionSymbol) != targetFile)
                if (getEnclosingFileNode(functionSymbol_copy) != targetFile)
                   {
 #if 0
@@ -19627,7 +19627,7 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
                                   " of the target AST\n", name.str());
 
                          fprintf (stderr, "  targetScope = %p = %s \n",targetScope,targetScope->class_name().c_str());
-                         SgGlobal* globalScope = TransformationSupport::getGlobalScope(targetScope);
+                         SgGlobal* globalScope = SageInterface::getGlobalScope(targetScope);
                          ROSE_ASSERT(globalScope != NULL);
                          fprintf (stderr, "  globalScope = %p = %s \n",globalScope,globalScope->class_name().c_str());
 #if 0
@@ -19638,14 +19638,14 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
                       // DQ (3/10/2014): This might be important for friend functions in C++ (but we can ignore it for now).
 #error "DEAD CODE!"
                       // If could be that the symbol is in the local scope of the snippet AST.
-                         SgStatement* enclosingStatement_original = TransformationSupport::getStatement(functionRefExp_original);
+                         SgStatement* enclosingStatement_original = SageInterface::getEnclosingStatement(functionRefExp_original);
                          ROSE_ASSERT(enclosingStatement_original != NULL);
 #if 0
                          printf ("case V_SgFunctionRefExp: enclosingStatement_original = %p = %s \n",enclosingStatement_original,enclosingStatement_original->class_name().c_str());
 #endif
                          SgScopeStatement* otherPossibleScope_original = isSgScopeStatement(enclosingStatement_original->get_parent());
                          ROSE_ASSERT(otherPossibleScope_original != NULL);
-                      // SgFile* file = TransformationSupport::getFile(enclosingStatement_original);
+                      // SgFile* file = SageInterface::getEnclosingFileNode(enclosingStatement_original);
                          SgFile* file = getEnclosingFileNode(enclosingStatement_original);
                          ROSE_ASSERT(file != NULL);
 #if 0
@@ -19733,7 +19733,7 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
                SgMemberFunctionRefExp* memberFunctionRefExp_original = isSgMemberFunctionRefExp(node_original);
                SgMemberFunctionSymbol* memberFunctionSymbol_copy = isSgMemberFunctionSymbol(memberFunctionRefExp_copy->get_symbol());
                ROSE_ASSERT(memberFunctionSymbol_copy != NULL);
-            // if (TransformationSupport::getFile(memberFunctionSymbol) != targetFile)
+            // if (SageInterface::getEnclosingFileNode(memberFunctionSymbol) != targetFile)
                if (getEnclosingFileNode(memberFunctionSymbol_copy) != targetFile)
                   {
                  // Not implemented (initial work is focused on C, then Java, then C++.
@@ -19753,14 +19753,14 @@ SageBuilder::fixupCopyOfNodeFromSeparateFileInNewTargetAst(SgStatement* insertio
                       // DQ (3/10/2014): This is important for member functions in Java and C++.
 
                       // If could be that the symbol is in the local scope of the snippet AST.
-                         SgStatement* enclosingStatement_original = TransformationSupport::getStatement(memberFunctionRefExp_original);
+                         SgStatement* enclosingStatement_original = SageInterface::getEnclosingStatement(memberFunctionRefExp_original);
                          ROSE_ASSERT(enclosingStatement_original != NULL);
 #if DEBUG_MEMBER_FUNCTION_REF_EXP
                          printf ("case V_SgMemberFunctionRefExp: enclosingStatement_original = %p = %s \n",enclosingStatement_original,enclosingStatement_original->class_name().c_str());
 #endif
                          SgScopeStatement* otherPossibleScope_original = isSgScopeStatement(enclosingStatement_original->get_parent());
                          ROSE_ASSERT(otherPossibleScope_original != NULL);
-                      // SgFile* file = TransformationSupport::getFile(enclosingStatement_original);
+                      // SgFile* file = SageInterface::getEnclosingFileNode(enclosingStatement_original);
                          SgFile* file = getEnclosingFileNode(enclosingStatement_original);
                          ROSE_ASSERT(file != NULL);
 #if DEBUG_MEMBER_FUNCTION_REF_EXP
@@ -20092,13 +20092,13 @@ SageBuilder::fixupCopyOfAstFromSeparateFileInNewTargetAst(SgStatement *insertion
      SgSymbolTable::set_force_search_of_base_classes(true);
 
   // DQ (3/4/2014): Switch to using the SageInterface function.
-  // SgFile* targetFile = TransformationSupport::getFile(insertionPoint);
+  // SgFile* targetFile = SageInterface::getEnclosingFileNode(insertionPoint);
      SgFile* targetFile = getEnclosingFileNode(insertionPoint);
 
   // For Java support this might be NULL, if the insertion point was in global scope.
      ROSE_ASSERT(targetFile != NULL);
 
-  // SgFile* snippetFile_of_copy = TransformationSupport::getFile(toInsert);
+  // SgFile* snippetFile_of_copy = SageInterface::getEnclosingFileNode(toInsert);
      SgFile* snippetFile_of_copy = getEnclosingFileNode(toInsert);
 
   // At this point the parent pointers are set so that the same SgFile is found via a traversal back to the SgProject.
@@ -20107,7 +20107,7 @@ SageBuilder::fixupCopyOfAstFromSeparateFileInNewTargetAst(SgStatement *insertion
   // target AST.
      ROSE_ASSERT(snippetFile_of_copy == targetFile);
 
-  // SgFile* snippetFile_of_original = TransformationSupport::getFile(original_before_copy);
+  // SgFile* snippetFile_of_original = SageInterface::getEnclosingFileNode(original_before_copy);
      SgFile* snippetFile_of_original = getEnclosingFileNode(original_before_copy);
 
      ROSE_ASSERT(snippetFile_of_original != targetFile);

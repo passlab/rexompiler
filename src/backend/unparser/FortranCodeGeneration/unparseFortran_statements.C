@@ -843,7 +843,7 @@ unparseDimensionStatement(SgStatement* stmt)
             // This is a function parameter, so get the function scope and look for the symbol there
             // attributeSpecificationStatement->get_file_info()->display("Error: variableSymbol == NULL");
 
-               SgScopeStatement* functionScope = TransformationSupport::getFunctionDefinition(currentScope);
+               SgScopeStatement* functionScope = SageInterface::getEnclosingFunctionDefinition(currentScope, true);
                ASSERT_not_null(functionScope);
                variableSymbol = functionScope->lookup_variable_symbol(name);
 
@@ -4317,7 +4317,7 @@ FortranCodeGeneration_locatedNode::unparseVarDecl(SgStatement* stmt, SgInitializ
           if (variableDeclaration->get_declarationModifier().get_accessModifier().isPublic() == true)
              {
             // The PUBLIC keyword is only permitted within Modules
-               if ( TransformationSupport::getModuleStatement(variableDeclaration) != NULL )
+               if ( SageInterface::getEnclosingModuleStatement(variableDeclaration) != NULL )
                   {
                     curprint(", PUBLIC");
                   }
@@ -4335,7 +4335,7 @@ FortranCodeGeneration_locatedNode::unparseVarDecl(SgStatement* stmt, SgInitializ
           if (variableDeclaration->get_declarationModifier().get_accessModifier().isPrivate() == true)
              {
             // The PRIVATE keyword is only permitted within Modules
-               if ( TransformationSupport::getModuleStatement(variableDeclaration) != NULL )
+               if ( SageInterface::getEnclosingModuleStatement(variableDeclaration) != NULL )
                   {
                     curprint(", PRIVATE");
                   }
@@ -5473,7 +5473,7 @@ FortranCodeGeneration_locatedNode::unparseClassDeclStmt_derivedType(SgStatement*
           if (classdecl_stmt->get_declarationModifier().get_accessModifier().isPublic() == true)
              {
             // The PUBLIC keyword is only permitted within Modules
-               if ( TransformationSupport::getModuleStatement(classdecl_stmt) != NULL )
+               if ( SageInterface::getEnclosingModuleStatement(classdecl_stmt, true) != NULL )
                   {
                     curprint(", PUBLIC");
                   }
@@ -5487,7 +5487,7 @@ FortranCodeGeneration_locatedNode::unparseClassDeclStmt_derivedType(SgStatement*
           if (classdecl_stmt->get_declarationModifier().get_accessModifier().isPrivate() == true)
              {
             // The PRIVATE keyword is only permitted within Modules
-               if ( TransformationSupport::getModuleStatement(classdecl_stmt) != NULL )
+               if ( SageInterface::getEnclosingModuleStatement(classdecl_stmt, true) != NULL )
                   {
                     curprint(", PRIVATE");
                   }
@@ -5501,7 +5501,7 @@ FortranCodeGeneration_locatedNode::unparseClassDeclStmt_derivedType(SgStatement*
           if (classdecl_stmt->get_declarationModifier().get_typeModifier().isBind() == true)
              {
             // The BIND keyword is only permitted within Modules
-               if ( TransformationSupport::getModuleStatement(classdecl_stmt) != NULL )
+               if ( SageInterface::getEnclosingModuleStatement(classdecl_stmt, true) != NULL )
                   {
                  // I think that bind implies "BIND(C)"
                     curprint(", BIND(C)");
@@ -5516,7 +5516,7 @@ FortranCodeGeneration_locatedNode::unparseClassDeclStmt_derivedType(SgStatement*
           if (classdecl_stmt->get_declarationModifier().get_typeModifier().isExtends() == true)
              {
             // The EXTENDS keyword is only permitted within Modules
-               if ( TransformationSupport::getModuleStatement(classdecl_stmt) != NULL )
+               if ( SageInterface::getEnclosingModuleStatement(classdecl_stmt, true) != NULL )
                   {
                     curprint(", EXTENDS(PARENT-TYPE-NAME-NOT-IMPLEMENTED)");
                   }
@@ -5530,7 +5530,7 @@ FortranCodeGeneration_locatedNode::unparseClassDeclStmt_derivedType(SgStatement*
           if (classdecl_stmt->get_declarationModifier().get_typeModifier().isAbstract() == true)
              {
             // The ABSTRACT keyword is only permitted within Modules
-               if ( TransformationSupport::getModuleStatement(classdecl_stmt) != NULL )
+               if ( SageInterface::getEnclosingModuleStatement(classdecl_stmt, true) != NULL )
                   {
                     curprint(", ABSTRACT");
                   }

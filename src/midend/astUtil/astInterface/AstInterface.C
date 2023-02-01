@@ -298,9 +298,9 @@ SgScopeStatement* GetScope( SgNode* loc)
                     cur = initializedName->get_scope();
                   }
                  else {
-                    const SgExpression* expression = isSgExpression(loc);
+                    SgExpression* expression = isSgExpression(loc);
                     if (expression != NULL) {
-                         SgStatement* statement = TransformationSupport::getStatement(expression);
+                         SgStatement* statement = SageInterface::getEnclosingStatement(expression);
                          ROSE_ASSERT(statement != NULL);
                          cur = GetScope(statement);
                        }

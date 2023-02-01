@@ -2,6 +2,9 @@
 
 #include "rose.h"
 #include "stringify.h"
+#include "nameQuery.h"
+#include "nodeQuery.h"
+#include "numberQuery.h"
 
 using namespace std;
 using namespace Rose;

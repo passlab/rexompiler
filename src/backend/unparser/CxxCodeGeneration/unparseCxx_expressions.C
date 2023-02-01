@@ -4014,7 +4014,7 @@ Unparse_ExprStmt::unparseStringVal(SgExpression* expr, SgUnparse_Info& info)
         }
        else
         {
-          SgFile* file = TransformationSupport::getFile(str_val);
+          SgFile* file = SageInterface::getEnclosingFileNode(str_val);
 #if 0
           printf ("In unparseStringVal(): resolving file to be %p \n",file);
 #endif
@@ -4026,7 +4026,7 @@ Unparse_ExprStmt::unparseStringVal(SgExpression* expr, SgUnparse_Info& info)
              }
             else
              {
-               printf ("Warning: TransformationSupport::getFile(str_val) == NULL \n");
+               printf ("Warning: SageInterface::getEnclosingFileNode(str_val) == NULL \n");
              }
        // bool is_C_Compiler   = file->get_C_only();
 
@@ -6826,17 +6826,17 @@ sharesSameStatement(SgExpression* expr, SgType* expressionType)
 
        // DQ (9/14/2013): If this is a scope statement then we want to use the declaration directly (else everything 
        // will be an ancestor in the case of this being a global scope).  See test2013_70.c for what we need this.
-       // statementDefiningType = TransformationSupport::getStatement(namedType->get_declaration()->get_parent());
+       // statementDefiningType = SageInterface::getEnclosingStatement(namedType->get_declaration()->get_parent());
           if (isSgScopeStatement(namedType->get_declaration()->get_parent()) != NULL)
              {
             // The declaration for the type is declared in a scope and not as part of being embedded in another statement.
-            // statementDefiningType = TransformationSupport::getStatement(namedType->get_declaration());
+            // statementDefiningType = SageInterface::getEnclosingStatement(namedType->get_declaration());
                statementDefiningType = namedType->get_declaration();
              }
             else
              {
             // This is the case of the type embedded in another statement (e.g. for a GNU statement expression).
-               statementDefiningType = TransformationSupport::getStatement(namedType->get_declaration()->get_parent());
+               statementDefiningType = SageInterface::getEnclosingStatement(namedType->get_declaration()->get_parent());
              }
         }
 

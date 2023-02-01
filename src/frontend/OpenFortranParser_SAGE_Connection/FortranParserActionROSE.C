@@ -13027,7 +13027,7 @@ void c_action_case_value()
         // DQ (12/9/2007): set the scope.
         // labelStatement->set_scope(astScopeStack.front());
         SgFunctionDefinition* currentFunctionScope =
-        TransformationSupport::getFunctionDefinition(astScopeStack.front());
+        SageInterface::getEnclosingFunctionDefinition(astScopeStack.front(), true);
         ROSE_ASSERT(currentFunctionScope != NULL);
         labelStatement->set_scope(currentFunctionScope);
         ROSE_ASSERT(labelStatement->get_scope() != NULL);

@@ -1,7 +1,6 @@
 ########### build library ###############
 add_definitions(-DROSE_DLL_EXPORTS)
 add_library(roseSupport OBJECT
-  transformationSupport.C
   utility_functions.C
   stringify.C)
 add_dependencies(roseSupport rosetta_generated)
@@ -12,8 +11,7 @@ endif()
 
 ########### install files ###############
 
-install(FILES  transformationSupport.h
-               utility_functions.h
+install(FILES  utility_functions.h
                utility_functionsImpl.C
                stringify.h
 	DESTINATION ${INCLUDE_INSTALL_DIR}

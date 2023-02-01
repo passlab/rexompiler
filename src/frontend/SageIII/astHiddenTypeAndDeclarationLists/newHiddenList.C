@@ -2401,7 +2401,7 @@ HiddenListTraversal::evaluateInheritedAttribute(SgNode* n, HiddenListInheritedAt
                       // is referenced before it is declared then it can appear associated via the symbol table through a non variable 
                       // declaration (SgVariableDeclaration) IR node.
                          printf ("WARNING: variableDeclaration case of name qualification originalVariableDeclaration == NULL (building alternativeDecaration) \n");
-                         SgFunctionDeclaration* alternativeDecaration = TransformationSupport::getFunctionDeclaration(originalInitializedName->get_parent());
+                         SgFunctionDeclaration* alternativeDecaration = SageInterface::getEnclosingFunctionDeclaration(originalInitializedName->get_parent(), true);
                          ROSE_ASSERT(alternativeDecaration != NULL);
                          setNameQualification(variableDeclaration,alternativeDecaration,amountOfNameQualificationRequiredForName);
                        }
@@ -2454,7 +2454,7 @@ HiddenListTraversal::evaluateInheritedAttribute(SgNode* n, HiddenListInheritedAt
           SgDeclarationStatement* declaration = getDeclarationAssociatedWithType(initializedName->get_type());
           if (declaration != NULL)
              {
-               SgStatement* currentStatement = TransformationSupport::getStatement(initializedName);
+               SgStatement* currentStatement = SageInterface::getEnclosingStatement(initializedName);
                ROSE_ASSERT(currentStatement != NULL);
                printf ("case of SgInitializedName: currentStatement = %p = %s \n",currentStatement,currentStatement->class_name().c_str());
 
@@ -2490,7 +2490,7 @@ HiddenListTraversal::evaluateInheritedAttribute(SgNode* n, HiddenListInheritedAt
        // SgScopeStatement* currentScope = TransformationSupport::getScope(functionDeclaration);
        // SgScopeStatement* currentScope = functionDeclaration->get_scope();
 
-       // SgStatement* currentStatement = TransformationSupport::getStatement(functionDeclaration->get_parent());
+       // SgStatement* currentStatement = SageInterface::getEnclosingStatement(functionDeclaration->get_parent());
        // ROSE_ASSERT(currentStatement != NULL);
 
        // Make sure these are the same. test2005_57.C presents what might be a relevant test code.
@@ -2803,7 +2803,7 @@ HiddenListTraversal::evaluateInheritedAttribute(SgNode* n, HiddenListInheritedAt
        // ROSE_ASSERT(functionDeclaration != NULL);
           if (functionDeclaration != NULL)
              {
-               SgStatement* currentStatement = TransformationSupport::getStatement(functionRefExp);
+               SgStatement* currentStatement = SageInterface::getEnclosingStatement(functionRefExp);
                ROSE_ASSERT(currentStatement != NULL);
 
                SgScopeStatement* currentScope = currentStatement->get_scope();
@@ -2833,7 +2833,7 @@ HiddenListTraversal::evaluateInheritedAttribute(SgNode* n, HiddenListInheritedAt
              {
                printf ("Found a SgTemplateInstantiationFunctionDecl that will have template arguments that might require qualification. name = %s \n",templateInstantiationFunctionDeclaration->get_name().str());
 
-               SgStatement* currentStatement = TransformationSupport::getStatement(functionRefExp);
+               SgStatement* currentStatement = SageInterface::getEnclosingStatement(functionRefExp);
                ROSE_ASSERT(currentStatement != NULL);
 
                SgScopeStatement* currentScope = currentStatement->get_scope();
@@ -2855,7 +2855,7 @@ HiddenListTraversal::evaluateInheritedAttribute(SgNode* n, HiddenListInheritedAt
        // ROSE_ASSERT(functionDeclaration != NULL);
           if (memberFunctionDeclaration != NULL)
              {
-               SgStatement* currentStatement = TransformationSupport::getStatement(memberFunctionRefExp);
+               SgStatement* currentStatement = SageInterface::getEnclosingStatement(memberFunctionRefExp);
                ROSE_ASSERT(currentStatement != NULL);
 
                SgScopeStatement* currentScope = currentStatement->get_scope();
@@ -2912,7 +2912,7 @@ HiddenListTraversal::evaluateInheritedAttribute(SgNode* n, HiddenListInheritedAt
                ROSE_ABORT();
              }
 #endif
-          SgStatement* currentStatement = TransformationSupport::getStatement(constructorInitializer);
+          SgStatement* currentStatement = SageInterface::getEnclosingStatement(constructorInitializer);
           ROSE_ASSERT(currentStatement != NULL);
 
        // If this could occur in a SgForStatement then this should be fixed up as it is elsewhere...
@@ -2958,7 +2958,7 @@ HiddenListTraversal::evaluateInheritedAttribute(SgNode* n, HiddenListInheritedAt
         {
        // We need to store the information about the required name qualification in the SgVarRefExp IR node.
 
-          SgStatement* currentStatement = TransformationSupport::getStatement(varRefExp);
+          SgStatement* currentStatement = SageInterface::getEnclosingStatement(varRefExp);
           ROSE_ASSERT(currentStatement != NULL);
 
        // DQ (5/30/2011): Handle the case of test2011_58.C (index declaration in for loop construct).
@@ -2996,7 +2996,7 @@ HiddenListTraversal::evaluateInheritedAttribute(SgNode* n, HiddenListInheritedAt
                          printf ("varRefExp's initialized name = %s is not associated with a SgVariableDeclaration \n",initializedName->get_name().str());
                          initializedName->get_file_info()->display("This SgInitializedName is not associated with a SgVariableDeclaration");
 
-                         SgStatement* currentStatement = TransformationSupport::getStatement(initializedName->get_parent());
+                         SgStatement* currentStatement = SageInterface::getEnclosingStatement(initializedName->get_parent());
                          ROSE_ASSERT(currentStatement != NULL);
 
                          SgScopeStatement* targetScope = initializedName->get_scope();
@@ -3037,7 +3037,7 @@ HiddenListTraversal::evaluateInheritedAttribute(SgNode* n, HiddenListInheritedAt
      SgEnumVal* enumVal = isSgEnumVal(n);
      if (enumVal != NULL)
         {
-          SgStatement* currentStatement = TransformationSupport::getStatement(enumVal);
+          SgStatement* currentStatement = SageInterface::getEnclosingStatement(enumVal);
           ROSE_ASSERT(currentStatement != NULL);
 
           SgScopeStatement* currentScope = isSgScopeStatement(currentStatement);
@@ -3107,7 +3107,7 @@ HiddenListTraversal::evaluateInheritedAttribute(SgNode* n, HiddenListInheritedAt
                SgDeclarationStatement* associatedTypeDeclaration = associatedDeclaration(qualifiedType);
                if (associatedTypeDeclaration != NULL)
                   {
-                    SgStatement* currentStatement = TransformationSupport::getStatement(n);
+                    SgStatement* currentStatement = SageInterface::getEnclosingStatement(n);
                     ROSE_ASSERT(currentStatement != NULL);
 
                     SgScopeStatement* currentScope = currentStatement->get_scope();

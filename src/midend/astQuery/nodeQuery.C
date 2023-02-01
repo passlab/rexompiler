@@ -296,7 +296,7 @@ NodeQuerySynthesizedAttributeType NodeQuery::queryNodeClassDeclarationsFromTypeN
 
   if (sageClassDeclaration != NULL)
   {
-    if(TransformationSupport::getTypeName(sageClassDeclaration->get_type()) == nameToMatch)
+    if(SageInterface::getTypeName(sageClassDeclaration->get_type()) == nameToMatch)
       returnList.push_back(node);
     else
     {
@@ -314,7 +314,7 @@ NodeQuerySynthesizedAttributeType NodeQuery::queryNodeClassDeclarationsFromTypeN
         SgBaseClass* baseClass = *baseClassElm;
         // sageClassDeclaration = baseClass.get_base_class();
         sageClassDeclaration = baseClass->get_base_class();
-        std::string typeName  = TransformationSupport::getTypeName ( sageClassDeclaration->get_type() );
+        std::string typeName  = SageInterface::getTypeName ( sageClassDeclaration->get_type() );
         if( typeName == nameToMatch )
           returnList.push_back(node);
       }
@@ -329,7 +329,7 @@ NodeQuerySynthesizedAttributeType NodeQuery::queryNodeClassDeclarationsFromTypeN
 
        do{
        previousTypeName = currentTypeName;
-       currentTypeName  = TransformationSupport::getTypeName (typeNode);
+       currentTypeName  = SageInterface::getTypeName (typeNode);
 
        typeNode = typeNode->findBaseType();
        ROSE_ASSERT( typeNode != NULL );
@@ -1111,7 +1111,7 @@ Rose_STL_Container<SgNode*> NodeQuery::generateListOfTypes ( SgNode* astNode )
     {
    // DQ (1/25/2011): We want to be able to use this functionality, it is not depreicated...
    // printf ("This is not a SgProject, but it is a SgFile or SgGlobal so check if this is an only file before using the memory pool! \n");
-      SgProject* project = TransformationSupport::getProject(astNode);
+      SgProject* project = SageInterface::getProject(astNode);
 
       // 2nd chance to reset useMemoryPool and provide an optimized query for types!
       useMemoryPool = (project->numberOfFiles() == 1);

@@ -18612,7 +18612,7 @@ SgDerivedTypeStatement::get_mangled_name() const
   // return SgClassDeclaration::get_mangled_name();
      SgName mangleName;
      ROSE_ASSERT(this->get_parent() != NULL);
-     SgFunctionDeclaration* functionDeclaration = TransformationSupport::getFunctionDeclaration(this->get_parent());
+     SgFunctionDeclaration* functionDeclaration = SageInterface::getEnclosingFunctionDeclaration(this->get_parent(), true);
 
      bool defineShorterName = false;
      if (functionDeclaration != NULL)

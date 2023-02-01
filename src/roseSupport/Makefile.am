@@ -19,12 +19,10 @@ noinst_LTLIBRARIES = libroseSupport.la
 
 libroseSupport_la_SOURCES =			\
 	stringify.C				\
-	transformationSupport.C			\
 	utility_functions.C
 
 pkginclude_HEADERS =				\
 	stringify.h				\
-	transformationSupport.h			\
 	utility_functions.h
 
 # DQ (10/11/2007): This used to be part of the template instationation mechanism, but it was 

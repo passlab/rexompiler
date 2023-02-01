@@ -5418,7 +5418,7 @@ SageInterface::getMangledNameFromCache( SgNode* astNode )
    {
   // The TransformationSupport is not defined yet (I forget the
   // details but I recall that there is a reason why this is this way).
-  // SgGlobal* globalScope = TransformationSupport::getGlobalScope(astNode);
+  // SgGlobal* globalScope = getGlobalScope(astNode);
 #if 0
      SgGlobal* globalScope = isSgGlobal(astNode);
 
@@ -5670,7 +5670,7 @@ SageInterface::declarationPreceedsDefinition ( SgDeclarationStatement* nonDefini
      if (nonDefiningDeclaration != definingDeclaration)
         {
        // Get the global scope from a traversal back (up) through the AST.
-          SgGlobal* globalScope = TransformationSupport::getGlobalScope(definingDeclaration);
+          SgGlobal* globalScope = getGlobalScope(definingDeclaration);
           ROSE_ASSERT(globalScope != NULL);
 
        // Now buid the traveral object and call the traversal (preorder) on the function definition.
@@ -5885,7 +5885,7 @@ SageInterface::functionCallExpressionPreceedsDeclarationWhichAssociatesScope ( S
      bool returnResult = false;
 
   // Get the global scope from a traversal back (up) through the AST.
-     SgGlobal* globalScope = TransformationSupport::getGlobalScope(functionCall);
+     SgGlobal* globalScope = getGlobalScope(functionCall);
      ROSE_ASSERT(globalScope != NULL);
 
   // Now buid the traveral object and call the traversal (preorder) on the function definition.
@@ -7504,17 +7504,6 @@ SgNode * SageInterface::deepCopyNode (const SgNode* n)
   return rt;
 }
 
-// by Jeremiah
-// Return bool for C++ code, and int for C code
-SgType* SageInterface::getBoolType(SgNode* n) {
-  bool isC = TransformationSupport::getSourceFile(n)->get_outputLanguage() == SgFile::e_C_language;
-  if (isC) {
-    return SgTypeInt::createType();
-  } else {
-    return SgTypeBool::createType();
-  }
-}
-
 #if 1
 // Change continue statements in a given block of code to gotos to a label
 void SageInterface::changeContinuesToGotos(SgStatement* stmt, SgLabelStatement* label)
@@ -8188,7 +8177,7 @@ vector<SgVariableSymbol*> SageInterface::getSymbolsUsedInExpression(SgExpression
 #endif
 
 SgSourceFile*
-SageInterface::getEnclosingSourceFile(SgNode* n,bool includingSelf) {
+SageInterface::getEnclosingSourceFile(const SgNode* n,bool includingSelf) {
     return getEnclosingNode<SgSourceFile>(n, includingSelf);
 }
 
@@ -8230,7 +8219,6 @@ SageInterface::getEnclosingClassDefinition(SgNode* astNode, const bool including
     return getEnclosingNode<SgClassDefinition>(astNode, includingSelf);
 }
 
-
 SgClassDeclaration*
 SageInterface::getEnclosingClassDeclaration(SgNode* astNode) {
     // DQ (1/24/2019): This might have to get the SgClassDefinition and then the SgClassDeclaration from that.
@@ -8238,10 +8226,172 @@ SageInterface::getEnclosingClassDeclaration(SgNode* astNode) {
     return getEnclosingNode<SgClassDeclaration>(astNode, true);
 }
 
+SgModuleStatement*
+SageInterface::getEnclosingModuleStatement(SgNode* astNode, const bool includingSelf/* =false*/) {
+    return getEnclosingNode<SgModuleStatement>(astNode, includingSelf);
+}
+
 SgExprListExp*
 SageInterface::getEnclosingExprListExp(SgNode* astNode, const bool includingSelf/* =false*/) {
     return getEnclosingNode<SgExprListExp>(astNode, includingSelf);
 }
+
+//Copied from TransformationSupport::getTemplateDeclaration()
+// SgTemplateDeclaration*
+SgDeclarationStatement*
+SageInterface::getTemplateDeclaration( const SgNode* astNode)
+   {
+     const SgNode* parentNode = astNode;
+
+#if 0
+     printf ("In SageInterface::getTemplateDeclaration(): astNode = %p = %s \n",astNode,astNode != NULL ? astNode->class_name().c_str() : "NULL");
+#endif
+
+  // DQ (7/25/2012): Updated to reflect new template design using different types or template IR nodes.
+  // while ( (isSgTemplateDeclaration(parentNode) == NULL) && (parentNode->get_parent() != NULL) )
+     while ( (isSgTemplateDeclaration(parentNode) == NULL)         && (isSgTemplateClassDeclaration(parentNode) == NULL) &&
+             (isSgTemplateFunctionDeclaration(parentNode) == NULL) && (isSgTemplateMemberFunctionDeclaration(parentNode) == NULL) &&
+             (isSgTemplateVariableDeclaration(parentNode) == NULL) && (parentNode->get_parent() != NULL) )
+        {
+          parentNode = parentNode->get_parent();
+#if 0
+          printf ("In SageInterface::getTemplateDeclaration(): parentNode = %p = %s \n",parentNode,parentNode != NULL ? parentNode->class_name().c_str() : "NULL");
+#endif
+        }
+
+  // DQ (7/25/2012): Updated to reflect new template design using different types or template IR nodes.
+  // Check to see if we made it back to the root (current root is SgProject).
+  // It is also OK to stop at a node for which get_parent() returns NULL (SgType and SgSymbol nodes).
+     if ( isSgTemplateDeclaration(parentNode) == NULL &&
+          isSgTemplateClassDeclaration(parentNode) == NULL &&
+          isSgTemplateFunctionDeclaration(parentNode) == NULL &&
+          isSgTemplateMemberFunctionDeclaration(parentNode) == NULL &&
+          isSgTemplateVariableDeclaration(parentNode) == NULL &&
+          dynamic_cast<const SgType*>(parentNode) == NULL &&
+          dynamic_cast<const SgSymbol*>(parentNode) == NULL )
+        {
+#if 1
+          if (astNode == NULL)
+             {
+               printf ("Error: could not trace back to SgTemplateDeclaration node \n");
+               ROSE_ABORT();
+             }
+            else
+             {
+               printf ("Warning: In SageInterface::getTemplateDeclaration(): could not trace back to template declaration node from %s \n",astNode->class_name().c_str());
+            // ROSE_ASSERT(false);
+             }
+       // DQ (6/6/2013): commented this out since it is OK to return NULL (I think).
+       // ROSE_ASSERT(false);
+#endif
+
+       // DQ (12/27/2010): This should not be an error (OK to return NULL).
+          return NULL;
+        }
+       else
+        {
+          if ( dynamic_cast<const SgType*>(parentNode) != NULL || dynamic_cast<const SgSymbol*>(parentNode) != NULL )
+             {
+               printf ("Error: can't locate an associated SgTemplateDeclaration from astNode = %p = %s parentNode = %p = %s \n",astNode,astNode->class_name().c_str(),parentNode,parentNode->class_name().c_str());
+               return NULL;
+             }
+        }
+
+  // Make sure we have a SgFunctionDeclaration node
+  // const SgTemplateDeclaration* templateDeclaration = isSgTemplateDeclaration(parentNode);
+     const SgDeclarationStatement* templateDeclaration = isSgDeclarationStatement(parentNode);
+     ROSE_ASSERT (templateDeclaration != NULL);
+
+  // return const_cast<SgTemplateDeclaration*>(templateDeclaration);
+     return const_cast<SgDeclarationStatement*>(templateDeclaration);
+   }
+
+//Copied from TransformationSupport::getAssociatedType, not sure whether this can be replaced by getEnclosingNode<SgType>
+//We leave this as it is here. It is only used once in ./src/backend/unparser/nameQualificationSupport.C 
+SgType*
+SageInterface::getAssociatedType( const SgNode* astNode )
+   {
+  // DQ (8/19/2014): Iterate back through the parents and scopes to find the SgType that the current node is embedded into.
+
+     ROSE_ASSERT(astNode != NULL);
+
+     const SgNode* parentNode = astNode;
+
+  // DQ (6/27/2007): These IR nodes are not contained in any statement
+     if (isSgProject(astNode) != NULL || isSgFile(astNode) != NULL)
+          return NULL;
+
+  // DQ (7/24/2010): Handle the case of an expression in an array type.
+     SgArrayType* arrayType = isSgArrayType(parentNode->get_parent());
+     if (parentNode->get_parent() != NULL && arrayType != NULL)
+        {
+#if 1
+          printf ("SageInterface::getAssociatedType(): Case of expression in SgArrayType: arrayType = %p \n",arrayType);
+#endif
+          return arrayType;
+        }
+
+     while ( (isSgStatement(parentNode) == NULL) && (parentNode->get_parent() != NULL) )
+        {
+          parentNode = parentNode->get_parent();
+        }
+
+     ROSE_ASSERT(parentNode != NULL);
+
+  // Check to see if we made it back to the root (current root is SgProject).
+  // It is also OK to stop at a node for which get_parent() returns NULL (SgType and SgSymbol nodes).
+     if ( isSgStatement(parentNode) == NULL &&
+          dynamic_cast<const SgType*>(parentNode) == NULL &&
+          dynamic_cast<const SgSymbol*>(parentNode) == NULL )
+        {
+          if (astNode == NULL)
+             {
+               printf ("Error: could not trace back to SgStatement node \n");
+             }
+            else
+             {
+            // DQ (7/30/2010): This can be allowed for the expression in a SgArrayType!
+            // printf ("Warning: could not trace back to SgStatement node from %s (parentNode = %p = %s) \n",astNode->class_name().c_str(),parentNode,parentNode->class_name().c_str());
+             }
+
+       // ROSE_ABORT();
+          return NULL;
+        }
+       else
+        {
+          if ( dynamic_cast<const SgType*>(parentNode) != NULL || dynamic_cast<const SgSymbol*>(parentNode) != NULL )
+             {
+            // Test for SgArrayType since a value if often hidden there and it is not possible to traverse
+            // through a SgType along parent IR nodes.
+               if ( dynamic_cast<const SgArrayType*>(parentNode) != NULL )
+                  {
+                 // const SgArrayType* arrayType = isSgArrayType(parentNode);
+                 // SgArrayType* arrayType = const_cast<SgArrayType*>(parentNode);
+                    SgNode* tmp_node = const_cast<SgNode*>(parentNode);
+                    SgArrayType* arrayType = isSgArrayType(tmp_node);
+                    return arrayType;
+                  }
+
+            // DQ (11/10/2007): Note that for an AST fragment (e.g. expression) not connected to the AST, this function will return NULL.
+#if PRINT_DEVELOPER_WARNINGS
+               printf ("Warning: can't locate an associated SgStatement from astNode = %p = %s parentNode = %p = %s \n",astNode,astNode->class_name().c_str(),parentNode,parentNode->class_name().c_str());
+#endif
+            // SgType* possibleOtherType = isSgType(parentNode);
+               SgNode* other_node = const_cast<SgNode*>(parentNode);
+               SgType* possibleOtherType = isSgType(other_node);
+               return possibleOtherType;
+             }
+        }
+
+  // Make sure we have a SgStatement node
+     const SgStatement* statement = isSgStatement(parentNode);
+     ROSE_ASSERT (statement != NULL);
+
+  // DQ (8/19/2014): If we did find a statement then return NULL (since no SgType was found).
+  // return statement;
+  // return const_cast<SgStatement*>(statement);
+     return NULL;
+   }
 
 bool
 SageInterface::isInSubTree(SgExpression* subtree, SgExpression* exp)
@@ -9100,7 +9250,7 @@ SgFile * SageInterface::getEnclosingFileNode(SgNode* astNode)
             // Find the associated Java class file.
 #if 0
             // DQ (3/4/2014): This is the code we want to use until we get Philippe's branch in place with the attribute.
-               SgProject* project = TransformationSupport::getProject(parent);
+               SgProject* project = SageInterface::getProject(parent);
                ROSE_ASSERT(project != NULL);
                SgFileList* fileList = project->get_fileList_ptr();
                ROSE_ASSERT(fileList != NULL);
@@ -10042,7 +10192,7 @@ SageInterface::findSurroundingStatementFromSameFile(SgStatement* targetStmt, boo
 #if REMOVE_STATEMENT_DEBUG
                               printf ("Setting the surroundingStatement to be global scope \n");
 #endif
-                              surroundingStatement = TransformationSupport::getGlobalScope(targetStmt);
+                              surroundingStatement = getGlobalScope(targetStmt);
                             }
                        }
                   }
@@ -19442,7 +19592,7 @@ SageInterface::addMessageStatement( SgStatement* stmt, string message )
    {
   // Put out a message in the separate file to lable the dependent CPP directives.
   // --- PreprocessingInfo(DirectiveType, const std::string & inputString, const std::string & filenameString, int line_no, int col_no, int nol, RelativePositionType relPos );
-  // SgSourceFile* separateSourceFile = TransformationSupport::getSourceFile(scope);
+  // SgSourceFile* separateSourceFile = SageInterface::getEnclosingSourceFile(scope);
      string fileName = "separate-outlined-file";
      PreprocessingInfo* messageToUser = new PreprocessingInfo(PreprocessingInfo::C_StyleComment,message,fileName,0,0,1,PreprocessingInfo::before);
   // requiredDirectivesList.push_back(messageToUser);
@@ -19467,13 +19617,13 @@ SageInterface::appendStatementWithDependentDeclaration( SgDeclarationStatement* 
      printf ("***** In SageInterface::appendStatementWithDependentDeclaration(): decl->get_parent()                      = %p \n",decl->get_parent());
      printf ("***** In SageInterface::appendStatementWithDependentDeclaration(): decl->get_scope()                       = %p \n",decl->get_scope());
      printf ("***** In SageInterface::appendStatementWithDependentDeclaration(): original_statement                      = %p \n",original_statement);
-     printf ("***** In SageInterface::appendStatementWithDependentDeclaration(): file (decl)                             = %s \n",TransformationSupport::getSourceFile(decl)->getFileName().c_str());
+     printf ("***** In SageInterface::appendStatementWithDependentDeclaration(): file (decl)                             = %s \n",SageInterface::getEnclosingSourceFile(decl)->getFileName().c_str());
      printf ("***** In SageInterface::appendStatementWithDependentDeclaration(): decl->get_firstNondefiningDeclaration() = %p \n",decl->get_firstNondefiningDeclaration());
      if (decl->get_firstNondefiningDeclaration() != NULL)
-          printf ("***** In SageInterface::appendStatementWithDependentDeclaration(): file (first non-defining)               = %s \n",TransformationSupport::getSourceFile(decl->get_firstNondefiningDeclaration())->getFileName().c_str());
+          printf ("***** In SageInterface::appendStatementWithDependentDeclaration(): file (first non-defining)               = %s \n",SageInterface::getEnclosingSourceFile(decl->get_firstNondefiningDeclaration())->getFileName().c_str());
      printf ("***** In SageInterface::appendStatementWithDependentDeclaration(): decl->get_definingDeclaration()         = %p \n",decl->get_definingDeclaration());
      if (decl->get_definingDeclaration() != NULL)
-          printf ("***** In SageInterface::appendStatementWithDependentDeclaration(): file (first non-defining)               = %s \n",TransformationSupport::getSourceFile(decl->get_definingDeclaration())->getFileName().c_str());
+          printf ("***** In SageInterface::appendStatementWithDependentDeclaration(): file (first non-defining)               = %s \n",SageInterface::getEnclosingSourceFile(decl->get_definingDeclaration())->getFileName().c_str());
 #endif
 
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
@@ -19481,8 +19631,8 @@ SageInterface::appendStatementWithDependentDeclaration( SgDeclarationStatement* 
   // than one file (only a significant test when outlining to a separate file; which is what this
   // function supports).
      ROSE_ASSERT(decl->get_firstNondefiningDeclaration() != NULL);
-     ROSE_ASSERT(TransformationSupport::getSourceFile(decl) == TransformationSupport::getSourceFile(decl->get_firstNondefiningDeclaration()));
-     ROSE_ASSERT(TransformationSupport::getSourceFile(decl->get_scope()) == TransformationSupport::getSourceFile(decl->get_firstNondefiningDeclaration()));
+     ROSE_ASSERT(SageInterface::getEnclosingSourceFile(decl) == SageInterface::getEnclosingSourceFile(decl->get_firstNondefiningDeclaration()));
+     ROSE_ASSERT(SageInterface::getEnclosingSourceFile(decl->get_scope()) == SageInterface::getEnclosingSourceFile(decl->get_firstNondefiningDeclaration()));
 
   // DQ (2/6/2009): I need to write this function to support the
   // insertion of the function into the specified scope.  If the
@@ -19501,7 +19651,7 @@ SageInterface::appendStatementWithDependentDeclaration( SgDeclarationStatement* 
 
   // ***** Also move different loop IR nodes into a common base class *****
 
-  // SgSourceFile* separateSourceFile = TransformationSupport::getSourceFile(scope);
+  // SgSourceFile* separateSourceFile = SageInterface::getEnclosingSourceFile(scope);
 
   // DQ (3/2/2009): This now calls a newer function which returns a list of declarations and a list of symbols.
   // The declarations are sometimes outer declarations of nested references to dependent declaration in inner
@@ -19522,8 +19672,8 @@ SageInterface::appendStatementWithDependentDeclaration( SgDeclarationStatement* 
   // than one file (only a significant test when outlining to a separate file; which is what this
   // function supports).
      ROSE_ASSERT(decl->get_firstNondefiningDeclaration() != NULL);
-     ROSE_ASSERT(TransformationSupport::getSourceFile(decl) == TransformationSupport::getSourceFile(decl->get_firstNondefiningDeclaration()));
-     ROSE_ASSERT(TransformationSupport::getSourceFile(decl->get_scope()) == TransformationSupport::getSourceFile(decl->get_firstNondefiningDeclaration()));
+     ROSE_ASSERT(SageInterface::getEnclosingSourceFile(decl) == SageInterface::getEnclosingSourceFile(decl->get_firstNondefiningDeclaration()));
+     ROSE_ASSERT(SageInterface::getEnclosingSourceFile(decl->get_scope()) == SageInterface::getEnclosingSourceFile(decl->get_firstNondefiningDeclaration()));
 
   // This is used to fixup the AST by resetting references to IR nodes (leveraged from AST merge).
      std::map<SgNode*, SgNode*> replacementMap;
@@ -19562,12 +19712,12 @@ SageInterface::appendStatementWithDependentDeclaration( SgDeclarationStatement* 
 
   // DQ (2/22/2009): We need all the declarations! (moreTest3.cpp demonstrates this, since it drops
   // the "#define SIMPLE 1" which causes it to be treated a "0" (causing errors in the generated code).
-     SgSourceFile* sourceFile = TransformationSupport::getSourceFile(original_statement);
+     SgSourceFile* sourceFile = SageInterface::getEnclosingSourceFile(original_statement);
      vector<PreprocessingInfo*> requiredDirectivesList = collectCppDirectives(sourceFile);
 
      SgFunctionDeclaration* outlinedFunctionDeclaration = isSgFunctionDeclaration(decl);
      ROSE_ASSERT(outlinedFunctionDeclaration != NULL);
-     SgGlobal* originalFileGlobalScope = TransformationSupport::getGlobalScope(original_statement);
+     SgGlobal* originalFileGlobalScope = getGlobalScope(original_statement);
      ROSE_ASSERT(originalFileGlobalScope != NULL);
      if ( SgProject::get_verbose() >= 1 )
        printf ("WARNING: In SageInterface::appendStatementWithDependentDeclaration(): I think this is the wrong lookup symbol function that is being used here! \n");
@@ -19582,9 +19732,9 @@ SageInterface::appendStatementWithDependentDeclaration( SgDeclarationStatement* 
 #if 0
      printf ("outlinedFunctionSymbolFromOriginalFile = %p outlinedFunctionSymbolFromOutlinedFile = %p \n",outlinedFunctionSymbolFromOriginalFile,outlinedFunctionSymbolFromOutlinedFile);
 
-     printf ("TransformationSupport::getSourceFile(decl)->getFileName()                                    = %s \n",TransformationSupport::getSourceFile(decl)->getFileName().c_str());
-     printf ("TransformationSupport::getSourceFile(decl->get_firstNondefiningDeclaration())->getFileName() = %s \n",TransformationSupport::getSourceFile(decl->get_firstNondefiningDeclaration())->getFileName().c_str());
-     printf ("TransformationSupport::getSourceFile(original_statement)->getFileName()                      = %s \n",TransformationSupport::getSourceFile(original_statement)->getFileName().c_str());
+     printf ("SageInterface::getEnclosingSourceFile(decl)->getFileName()                                    = %s \n",SageInterface::getEnclosingSourceFile(decl)->getFileName().c_str());
+     printf ("SageInterface::getEnclosingSourceFile(decl->get_firstNondefiningDeclaration())->getFileName() = %s \n",SageInterface::getEnclosingSourceFile(decl->get_firstNondefiningDeclaration())->getFileName().c_str());
+     printf ("SageInterface::getEnclosingSourceFile(original_statement)->getFileName()                      = %s \n",SageInterface::getEnclosingSourceFile(original_statement)->getFileName().c_str());
 #endif
 
      ROSE_ASSERT(outlinedFunctionSymbolFromOriginalFile != NULL);
@@ -19748,7 +19898,7 @@ SageInterface::appendStatementWithDependentDeclaration( SgDeclarationStatement* 
   // pointers in the AST. As the replacement is computed the pointer values that are marked in the replacement
   // list for update are added to the intermediateDeleteSet.
 
-     SgSourceFile* outlinedFile = TransformationSupport::getSourceFile(scope);
+     SgSourceFile* outlinedFile = SageInterface::getEnclosingSourceFile(scope);
      ROSE_ASSERT(outlinedFile != NULL);
 
   // This replacement will be done over the entire file (parts of it are redundant with what has already
@@ -24017,7 +24167,7 @@ SageInterface::reportModifiedStatements( const string & label, SgNode* node )
                printf ("   --- filename == transformation: sourceFile = %p using physical filename \n",sourceFile);
 #endif
             // filename = (*i)->get_file_info()->get_physical_filename();
-               SgSourceFile* sourceFile = TransformationSupport::getSourceFile(*i);
+               SgSourceFile* sourceFile = SageInterface::getEnclosingSourceFile(*i);
                if (sourceFile != NULL)
                   {
                     filename = sourceFile->getFileName();

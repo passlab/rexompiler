@@ -3629,7 +3629,6 @@ NameQualificationTraversal::nameQualificationDepth ( SgDeclarationStatement* dec
 #if 0
                                 // SgClassDeclaration* containingClassDeclaration = SageInterface::getEnclosingClassDeclaration(currentScope);
                                 // SgClassDefinition*  containingClassDefinition  = SageInterface::getEnclosingClassDefinition(currentScope);
-                                // SgClassDefinition*  containingClassDefinition  = TransformationSupport::getClassDefinition(currentScope);
 
                                    MLOG_WARN_C(MLOG_UNPARSER, "currentScope = %p = %s \n",currentScope,currentScope->class_name().c_str());
 
@@ -5911,7 +5910,7 @@ NameQualificationTraversal::traverseType ( SgType* type, SgNode* nodeReferenceTo
                     ASSERT_not_null(positionStatement);
                     positionStatement->get_file_info()->display("Output offending type name string to a file for inspection: debug");
 
-                    SgFile* problemFile = TransformationSupport::getFile(positionStatement);
+                    SgFile* problemFile = SageInterface::getEnclosingFileNode(positionStatement);
                     string filename = problemFile->getFileName();
                     filename += ".typename";
 
@@ -6594,7 +6593,7 @@ NameQualificationTraversal::nameQualificationTypeSupport  ( SgType* type, SgScop
                ROSE_ABORT();
              }
 #endif
-          SgStatement* currentStatement = TransformationSupport::getStatement(initializedName);
+          SgStatement* currentStatement = SageInterface::getEnclosingStatement(initializedName);
           ASSERT_not_null(currentStatement);
 #if (DEBUG_NAME_QUALIFICATION_LEVEL > 3) || 0
           MLOG_WARN_C(MLOG_UNPARSER, "case of SgInitializedName: currentStatement = %p = %s \n",currentStatement,currentStatement->class_name().c_str());
@@ -6752,8 +6751,8 @@ NameQualificationTraversal::nameQualificationTypeSupport  ( SgType* type, SgScop
 #endif
                       // DQ (8/8/2020): Removed reference to "n".
                       // DQ (6/30/2013): Added to support using generateNestedTraversalWithExplicitScope() instead of generateNameQualificationSupport().
-                      // SgStatement* currentStatement = TransformationSupport::getStatement(n);
-                         SgStatement* currentStatement = TransformationSupport::getStatement(initializedName);
+                      // SgStatement* currentStatement = SageInterface::getEnclosingStatement(n);
+                         SgStatement* currentStatement = SageInterface::getEnclosingStatement(initializedName);
 #if 0
                          MLOG_WARN_C(MLOG_UNPARSER, "SgInitializedName: decltype: currentStatement = %p = %s \n",currentStatement,currentStatement != NULL ? currentStatement->class_name().c_str() : "null");
 #endif
@@ -6833,7 +6832,7 @@ NameQualificationTraversal::nameQualificationTypeSupport  ( SgType* type, SgScop
             // if (declaration != NULL)
                if (processAsNormalTypeThatMightRequireNameQualification == true)
                   {
-                    SgStatement* currentStatement = TransformationSupport::getStatement(initializedName);
+                    SgStatement* currentStatement = SageInterface::getEnclosingStatement(initializedName);
                     ASSERT_not_null(currentStatement);
 #if (DEBUG_NAME_QUALIFICATION_LEVEL > 3) || DEBUG_INITIALIZED_NAME
                     MLOG_WARN_C(MLOG_UNPARSER, "case of SgInitializedName: currentStatement = %p = %s \n",currentStatement,currentStatement->class_name().c_str());
@@ -7562,7 +7561,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
                     MLOG_WARN_C(MLOG_UNPARSER, "Found a SgTemplateInstantiationDecl that will have template arguments that might require qualification. name = %s \n",templateInstantiationClassDeclaration->get_name().str());
 #endif
                  // DQ (4/12/2019): When this is a function call in an array type index expression we can't identify an associated statement.
-                    SgStatement* currentStatement = TransformationSupport::getStatement(baseClass);
+                    SgStatement* currentStatement = SageInterface::getEnclosingStatement(baseClass);
                  // ASSERT_not_null(currentStatement);
                     if (currentStatement != NULL)
                        {
@@ -7923,7 +7922,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
 #if (DEBUG_NAME_QUALIFICATION_LEVEL > 3)
                          MLOG_WARN_C(MLOG_UNPARSER, "WARNING: variableDeclaration case of name qualification originalVariableDeclaration == NULL (building alternativeDecaration) \n");
 #endif
-                         SgFunctionDeclaration* alternativeDecaration = TransformationSupport::getFunctionDeclaration(originalInitializedName->get_parent());
+                         SgFunctionDeclaration* alternativeDecaration = SageInterface::getEnclosingFunctionDeclaration(originalInitializedName->get_parent(), true);
 
                       // DQ (7/19/2012): Allow this to be NULL (see test2005_103.C), at least for testing.
                       // ASSERT_not_null(alternativeDecaration);
@@ -8393,7 +8392,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
 #endif
 
        // DQ (8/8/2020): Moved from the refactored code below.
-          SgStatement* currentStatement = TransformationSupport::getStatement(initializedName);
+          SgStatement* currentStatement = SageInterface::getEnclosingStatement(initializedName);
           ASSERT_not_null(currentStatement);
 #if (DEBUG_NAME_QUALIFICATION_LEVEL > 3) || 0
           MLOG_WARN_C(MLOG_UNPARSER, "case of SgInitializedName: currentStatement = %p = %s \n",currentStatement,currentStatement->class_name().c_str());
@@ -8525,7 +8524,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
              }
 #endif
        // DQ (8/8/2020): This was moved to before the refactored code.
-       // SgStatement* currentStatement = TransformationSupport::getStatement(initializedName);
+       // SgStatement* currentStatement = SageInterface::getEnclosingStatement(initializedName);
           ASSERT_not_null(currentStatement);
 #if (DEBUG_NAME_QUALIFICATION_LEVEL > 3) || 0
           MLOG_WARN_C(MLOG_UNPARSER, "case of SgInitializedName: currentStatement = %p = %s \n",currentStatement,currentStatement->class_name().c_str());
@@ -8689,7 +8688,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
 #if 0
                          MLOG_WARN_C(MLOG_UNPARSER, "Make a recursive call from this context (processing decltype taking SgExpression) \n");
 #endif
-                         SgStatement* currentStatement = TransformationSupport::getStatement(n);
+                         SgStatement* currentStatement = SageInterface::getEnclosingStatement(n);
 #if 0
                          MLOG_WARN_C(MLOG_UNPARSER, "SgInitializedName: decltype: currentStatement = %p = %s \n",currentStatement,currentStatement != NULL ? currentStatement->class_name().c_str() : "null");
 #endif
@@ -8769,7 +8768,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
             // if (declaration != NULL)
                if (processAsNormalTypeThatMightRequireNameQualification == true)
                   {
-                    SgStatement* currentStatement = TransformationSupport::getStatement(initializedName);
+                    SgStatement* currentStatement = SageInterface::getEnclosingStatement(initializedName);
                     ASSERT_not_null(currentStatement);
 #if (DEBUG_NAME_QUALIFICATION_LEVEL > 3) || DEBUG_INITIALIZED_NAME
                     MLOG_WARN_C(MLOG_UNPARSER, "case of SgInitializedName: currentStatement = %p = %s \n",currentStatement,currentStatement->class_name().c_str());
@@ -9777,14 +9776,12 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
 
        // We need the structural location in scope (not the semantic one).
           SgScopeStatement* currentScope = isSgScopeStatement(functionDeclaration->get_parent());
-       // SgScopeStatement* currentScope = TransformationSupport::getScope(functionDeclaration);
        // SgScopeStatement* currentScope = functionDeclaration->get_scope();
 
-       // SgStatement* currentStatement = TransformationSupport::getStatement(functionDeclaration->get_parent());
+       // SgStatement* currentStatement = SageInterface::getEnclosingStatement(functionDeclaration->get_parent());
        // ASSERT_not_null(currentStatement);
 
        // Make sure these are the same. test2005_57.C presents what might be a relevant test code.
-       // ROSE_ASSERT(currentScope == TransformationSupport::getScope(currentStatement));
        // ROSE_ASSERT(currentScope == currentStatement->get_scope());
 #if 0
           MLOG_WARN_C(MLOG_UNPARSER, "Case of (functionDeclaration != NULL && isSgMemberFunctionDeclaration(n) == NULL): currentScope = %p \n",currentScope);
@@ -10994,7 +10991,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
        SgNonrealDecl * nrdecl = nrsym->get_declaration();
        ASSERT_not_null(nrdecl);
 
-       SgStatement* currentStatement = TransformationSupport::getStatement(nrRefExp);
+       SgStatement* currentStatement = SageInterface::getEnclosingStatement(nrRefExp);
        if (currentStatement != NULL) {
          SgScopeStatement* currentScope = currentStatement->get_scope();
 
@@ -11039,7 +11036,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
        // ASSERT_not_null(functionDeclaration);
           if (functionDeclaration != NULL)
              {
-               SgStatement* currentStatement = TransformationSupport::getStatement(functionRefExp);
+               SgStatement* currentStatement = SageInterface::getEnclosingStatement(functionRefExp);
 
 #if (DEBUG_NAME_QUALIFICATION_LEVEL > 3)
                MLOG_WARN_C(MLOG_UNPARSER, "!!!!!!!!!!!!!!! case SgFunctionRefExp: currentStatement = %p = %s \n",currentStatement,currentStatement->class_name().c_str());
@@ -11136,7 +11133,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
                MLOG_WARN_C(MLOG_UNPARSER, "Found a SgTemplateInstantiationFunctionDecl that will have template arguments that might require qualification. name = %s \n",templateInstantiationFunctionDeclaration->get_name().str());
 #endif
             // DQ (12/18/2016): When this is a function call in an array type index expression we can't identify an associated statement.
-               SgStatement* currentStatement = TransformationSupport::getStatement(functionRefExp);
+               SgStatement* currentStatement = SageInterface::getEnclosingStatement(functionRefExp);
             // ASSERT_not_null(currentStatement);
                if (currentStatement != NULL)
                   {
@@ -11189,7 +11186,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
             // current scope should be taken from the type of the pointer being dereferenced instead of from the location
             // of the statement containing the memberFunctionRefExp.  But I can't build a counter example that fails.
 
-               SgStatement* currentStatement = TransformationSupport::getStatement(pseudoDestructorRefExp);
+               SgStatement* currentStatement = SageInterface::getEnclosingStatement(pseudoDestructorRefExp);
 
 #if DEBUG_PSEUDO_DESTRUCTOR_REF
                MLOG_WARN_C(MLOG_UNPARSER, "Compute the currentStatement: currentStatement = %p \n",currentStatement);
@@ -11379,7 +11376,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
 #endif
                  // ROSE_ASSERT (isMemberFunctionMemberReference == true && isAddressTaken == false);
 
-                    SgStatement* currentStatement = TransformationSupport::getStatement(memberFunctionRefExp);
+                    SgStatement* currentStatement = SageInterface::getEnclosingStatement(memberFunctionRefExp);
                  // ASSERT_not_null(currentStatement);
                     if (currentStatement != NULL)
                        {
@@ -11436,7 +11433,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
 #endif
                  // ROSE_ASSERT (isMemberFunctionMemberReference == true && isAddressTaken == false);
 
-                    SgStatement* currentStatement = TransformationSupport::getStatement(memberFunctionRefExp);
+                    SgStatement* currentStatement = SageInterface::getEnclosingStatement(memberFunctionRefExp);
                  // ASSERT_not_null(currentStatement);
                     if (currentStatement != NULL)
                        {
@@ -11486,7 +11483,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
                  // current scope should be taken from the type of the pointer being dereferenced instead of from the location
                  // of the statement containing the memberFunctionRefExp.  But I can't build a counter example that fails.
 
-                    SgStatement* currentStatement = TransformationSupport::getStatement(memberFunctionRefExp);
+                    SgStatement* currentStatement = SageInterface::getEnclosingStatement(memberFunctionRefExp);
 
 #if DEBUG_MEMBER_FUNCTION_REF
                     MLOG_WARN_C(MLOG_UNPARSER, "Compute the currentStatement: currentStatement = %p \n",currentStatement);
@@ -11497,7 +11494,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
                       // A better test might be to find the type that embeds the expression and make sure it is a SgArrayType.
                       // DQ (7/11/2014): test2014_83.C demonstrates how this can happen because the SgMemberFunctionRefExp
                       // appears in an index expression of an array type in a variable declaration.
-                         SgType* associatedType = TransformationSupport::getAssociatedType(memberFunctionRefExp);
+                         SgType* associatedType = SageInterface::getAssociatedType(memberFunctionRefExp);
                          if (associatedType != NULL)
                             {
                               SgArrayType* arrayType = isSgArrayType(associatedType);
@@ -11594,7 +11591,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
 #endif
                     ROSE_ASSERT (isMemberFunctionMemberReference == true && isAddressTaken == false);
 
-                    SgStatement* currentStatement = TransformationSupport::getStatement(memberFunctionRefExp);
+                    SgStatement* currentStatement = SageInterface::getEnclosingStatement(memberFunctionRefExp);
                  // ASSERT_not_null(currentStatement);
                     if (currentStatement != NULL)
                        {
@@ -11640,7 +11637,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
 
             // DQ (5/24/2013): Added support for member function template argument lists to have similar handling, such as to
             // SgTemplateInstantiationFunctionDecl IR nodes.  This is required to support test codes such as test2013_188.C.
-               SgStatement* currentStatement = TransformationSupport::getStatement(memberFunctionRefExp);
+               SgStatement* currentStatement = SageInterface::getEnclosingStatement(memberFunctionRefExp);
 
             // DQ (4/15/2019): This fails for EDG 5.0 only, on Cxx_tests/test2004_149.C (as a result of recent work Sunday afternoon).
             // ASSERT_not_null(currentStatement);
@@ -11694,7 +11691,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
              }
 #endif
 
-          SgStatement* currentStatement = TransformationSupport::getStatement(constructorInitializer);
+          SgStatement* currentStatement = SageInterface::getEnclosingStatement(constructorInitializer);
 
 #if 0
           printf ("Case of SgConstructorInitializer: before if(currentStatement == NULL): currentStatement = %p = %s name = %s \n",currentStatement,
@@ -11901,7 +11898,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
           MLOG_WARN_C(MLOG_UNPARSER, "Case of SgAggregateInitializer: aggregateInitializerClassDeclaration = %p \n",aggregateInitializerClassDeclaration);
 #endif
 
-          SgStatement* currentStatement = TransformationSupport::getStatement(aggregateInitializer);
+          SgStatement* currentStatement = SageInterface::getEnclosingStatement(aggregateInitializer);
           if (currentStatement == NULL)
              {
             // DQ (1/28/2019): This can happen when the expression is used in an array type declaration (e.g. within a variable declaration for an array).
@@ -11994,7 +11991,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
         {
        // We need to store the information about the required name qualification in the SgVarRefExp IR node.
 
-          SgStatement* currentStatement = TransformationSupport::getStatement(varRefExp);
+          SgStatement* currentStatement = SageInterface::getEnclosingStatement(varRefExp);
 
 #if (DEBUG_NAME_QUALIFICATION_LEVEL > 3)
           MLOG_WARN_C(MLOG_UNPARSER, "Case of SgVarRefExp: varRefExp = %p currentStatement = %p = %s \n",varRefExp,currentStatement,currentStatement != NULL ? currentStatement->class_name().c_str() : "null");
@@ -12387,7 +12384,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
                                    MLOG_WARN_C(MLOG_UNPARSER, "varRefExp's initialized name = %s is not associated with a SgVariableDeclaration \n",initializedName->get_name().str());
                                    initializedName->get_file_info()->display("This SgInitializedName is not associated with a SgVariableDeclaration");
 
-                                   SgStatement* currentStatement = TransformationSupport::getStatement(initializedName->get_parent());
+                                   SgStatement* currentStatement = SageInterface::getEnclosingStatement(initializedName->get_parent());
                                    ASSERT_not_null(currentStatement);
 
                                    SgScopeStatement* targetScope = initializedName->get_scope();
@@ -12748,7 +12745,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
                  // DQ (7/23/2011): This case happens when the SgVarRefExp can not be associated with a statement.
                  // I think this only happens when a constant variable is used in an array index of an array type.
 #if 0
-                    MLOG_WARN_C(MLOG_UNPARSER, "Case of TransformationSupport::getStatement(varRefExp) == NULL explictlySpecifiedCurrentScope = %p \n",explictlySpecifiedCurrentScope);
+                    MLOG_WARN_C(MLOG_UNPARSER, "Case of SageInterface::getEnclosingStatement(varRefExp) == NULL explictlySpecifiedCurrentScope = %p \n",explictlySpecifiedCurrentScope);
 #endif
                  // DQ (7/24/2011): This fails for the tests/nonsmoke/functional/CompileTests/OpenMP_tests/objectLastprivate.cpp test code.
                  // ASSERT_not_null(explictlySpecifiedCurrentScope);
@@ -12966,7 +12963,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
 #if 1
        // DQ (7/9/2019): Original code which addresses requirements for name qualification based on visability, but not ambiguity.
 
-          SgStatement* currentStatement = TransformationSupport::getStatement(enumVal);
+          SgStatement* currentStatement = SageInterface::getEnclosingStatement(enumVal);
        // ASSERT_not_null(currentStatement);
 #if (DEBUG_NAME_QUALIFICATION_LEVEL > 3)
           MLOG_WARN_C(MLOG_UNPARSER, "case of SgEnumVal: currentStatement = %p \n",currentStatement);
@@ -13018,7 +13015,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
              }
 #else
        // DQ (7/8/2019): Compute this from the perspective where they are referenced.
-          SgStatement* currentStatement = TransformationSupport::getStatement(enumVal);
+          SgStatement* currentStatement = SageInterface::getEnclosingStatement(enumVal);
           if (currentStatement == NULL)
              {
             // This is the case of an enum in a array index expression or a template argument.
@@ -13312,7 +13309,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
                     SgExpression* expressionHoldingTypeReference = isSgExpression(n);
                     ASSERT_not_null(expressionHoldingTypeReference);
 
-                    SgStatement* currentStatement = TransformationSupport::getStatement(expressionHoldingTypeReference);
+                    SgStatement* currentStatement = SageInterface::getEnclosingStatement(expressionHoldingTypeReference);
                     ASSERT_not_null(currentStatement);
                     SgScopeStatement* currentScope = currentStatement->get_scope();
                     ASSERT_not_null(currentScope);
@@ -13388,7 +13385,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
                     MLOG_WARN_C(MLOG_UNPARSER, "#################################################################################################### \n");
 #endif
 
-                    SgStatement*      currentStatement = TransformationSupport::getStatement(referenceToType);
+                    SgStatement*      currentStatement = SageInterface::getEnclosingStatement(referenceToType);
                     SgScopeStatement* currentScope     = currentStatement->get_scope();
 #if 1
                     ASSERT_not_null(currentScope);
@@ -13435,7 +13432,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
                          MLOG_WARN_C(MLOG_UNPARSER, "associatedTypeDeclaration = %p = %s = %s \n",associatedTypeDeclaration,
                               associatedTypeDeclaration->class_name().c_str(),SageInterface::get_name(associatedTypeDeclaration).c_str());
 #endif
-                         SgStatement* currentStatement = TransformationSupport::getStatement(n);
+                         SgStatement* currentStatement = SageInterface::getEnclosingStatement(n);
 
                       // ASSERT_not_null(currentStatement);
                          if (currentStatement != NULL)
@@ -13517,7 +13514,7 @@ NameQualificationTraversal::evaluateInheritedAttribute(SgNode* n, NameQualificat
 #if (DEBUG_NAME_QUALIFICATION_LEVEL > 3)
                MLOG_WARN_C(MLOG_UNPARSER, "@@@@@@@@@@@@@ Recursive call to the originalExpressionTree = %p = %s \n",originalExpressionTree,originalExpressionTree->class_name().c_str());
 #endif
-               SgStatement* currentStatement = TransformationSupport::getStatement(n);
+               SgStatement* currentStatement = SageInterface::getEnclosingStatement(n);
             // DQ (9/14/2015): Added debugging code.
             // DQ (9/14/2015): This can be an expression in a type, in which case we don't have an associated scope.
                if (currentStatement == NULL)

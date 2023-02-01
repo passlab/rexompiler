@@ -854,12 +854,11 @@ void setSourcePositionPointersToNull(SgNode *node);
   \brief
 */
 
-// from src/midend/astInlining/typeTraits.h
-// src/midend/astUtil/astInterface/AstInterface.h
+//! Get the string representing the type name
+ROSE_DLL_API  std::string getTypeName ( SgType* type );
 
 //! Get the right bool type according to C or C++ language input
-SgType* getBoolType(SgNode* n);
-
+ROSE_DLL_API SgType* getBoolType(SgNode* n);
 
 //! Check if a type is an integral type, only allowing signed/unsigned short, int, long, long long.
 ////!
@@ -1642,7 +1641,7 @@ NodeType* getEnclosingNode(const SgNode* astNode, const bool includingSelf = fal
    }
 
   //! Find enclosing source file node
-  ROSE_DLL_API SgSourceFile* getEnclosingSourceFile(SgNode* n, const bool includingSelf=false);
+  ROSE_DLL_API SgSourceFile* getEnclosingSourceFile(const SgNode* n, const bool includingSelf=false);
 
   //! Get the closest scope from astNode. Return astNode if it is already a scope.
   ROSE_DLL_API SgScopeStatement* getScope(const SgNode* astNode);
@@ -1676,7 +1675,8 @@ NodeType* getEnclosingNode(const SgNode* astNode, const bool includingSelf = fal
 
   //! Find the enclosing function declaration, including its derived instances like isSgProcedureHeaderStatement, isSgProgramHeaderStatement, and isSgMemberFunctionDeclaration.
   ROSE_DLL_API SgFunctionDeclaration * getEnclosingFunctionDeclaration (SgNode * astNode, const bool includingSelf=false);
-   //roseSupport/utility_functions.h
+ 
+  //roseSupport/utility_functions.h
   //! get the SgFile node from current node
   ROSE_DLL_API SgFile* getEnclosingFileNode (SgNode* astNode );
 
@@ -1688,6 +1688,15 @@ NodeType* getEnclosingNode(const SgNode* astNode, const bool includingSelf = fal
 
   //! Get the closest class declaration enclosing the specified AST node,
   ROSE_DLL_API SgClassDeclaration* getEnclosingClassDeclaration( SgNode* astNode );
+
+  //! Get the closest module statement enclosing the specified AST node,
+  ROSE_DLL_API SgModuleStatement* getEnclosingModuleStatement( SgNode* astNode, const bool includingSelf = false);
+
+  //! Get the enclosing TemplateDeclaration statement
+  ROSE_DLL_API SgDeclarationStatement* getTemplateDeclaration( const SgNode* astNode);
+  
+  //! Get the enclosing type of this associated node, not used other than in ./src/backend/unparser/nameQualificationSupport.C
+  ROSE_DLL_API SgType* getAssociatedType( const SgNode* astNode );
 
   // DQ (2/7/2019): Adding support for name qualification of variable references associated with SgPointerMemberType function parameters.
   //! Get the enclosing SgExprListExp (used as part of function argument index evaluation in subexpressions).

@@ -1547,7 +1547,7 @@ Outliner::generateFunction ( SgBasicBlock* s,  // block to be outlined
     if (Outliner::copy_origFile) // we only do the symbol resetting when copy_origFile is turned on.
     {
       SgGlobal* new_global = isSgGlobal(scope); 
-      SgGlobal* old_global = const_cast<SgGlobal *> (TransformationSupport::getGlobalScope (s));
+      SgGlobal* old_global = const_cast<SgGlobal *> (SageInterface::getGlobalScope (s));
       ROSE_ASSERT (new_global != old_global);
 
       RoseAst ast(func_body);

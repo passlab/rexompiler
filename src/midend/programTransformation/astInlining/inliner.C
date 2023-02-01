@@ -278,7 +278,7 @@ doInline(SgFunctionCallExp* funcall, bool allowRecursion)
   // DQ (4/6/2015): Adding code to check for consistency of checking the isTransformed flag.
      ROSE_ASSERT(funcall != NULL);
      ROSE_ASSERT(funcall->get_parent() != NULL);
-     SgGlobal* globalScope = TransformationSupport::getGlobalScope(funcall);
+     SgGlobal* globalScope = SageInterface::getGlobalScope(funcall);
      ROSE_ASSERT(globalScope != NULL);
   // checkTransformedFlagsVisitor(funcall->get_parent());
      checkTransformedFlagsVisitor(globalScope);
@@ -889,7 +889,7 @@ doInline(SgFunctionCallExp* funcall, bool allowRecursion)
   // printf ("Output the symbol table for funbody_copy \n");
   // funbody_copy->get_symbol_table()->print("debugging copy problem");
 
-     SgProject* project_copy = TransformationSupport::getProject(funbody_raw);
+     SgProject* project_copy = SageInterface::getProject(funbody_raw);
      ROSE_ASSERT(project_copy != NULL);
 
      const int MAX_NUMBER_OF_IR_NODES_TO_GRAPH_FOR_WHOLE_GRAPH = 4000;

@@ -1,4 +1,3 @@
-./roseSupport/transformationSupport.h
 ./roseSupport/optionDeclaration.h
 ./roseSupport/utility_functions.h
 ./rose.h
@@ -993,7 +992,6 @@
 ./3rdPartyLibraries/OLD_aterm-bundle-2.2/aterm-2.2/doc/examples/match.c
 ./3rdPartyLibraries/OLD_aterm-bundle-2.2/aterm-2.2/doc/examples/plac.c
 ./3rdPartyLibraries/OLD_aterm-bundle-2.2/aterm-2.2/doc/examples/prot.c
-./roseSupport/transformationSupport.C
 ./roseSupport/utility_functions.C
 ./roseSupport/optionDeclaration.C
 ./testRoseLib.C
