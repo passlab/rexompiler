@@ -1246,7 +1246,6 @@ src/midend/programAnalysis/Makefile
 src/midend/programTransformation/extractFunctionArgumentsNormalization/Makefile
 src/midend/programTransformation/loopProcessing/Makefile
 src/midend/programTransformation/singleStatementToBlockNormalization/Makefile
-src/roseSupport/Makefile
 src/util/Makefile
 src/util/commandlineProcessing/Makefile
 src/util/graphs/Makefile

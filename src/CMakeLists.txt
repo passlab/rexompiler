@@ -27,7 +27,6 @@ add_custom_target(
 # Header files needed to build ROSETTA
 include_directories(
   ${Boost_INCLUDE_DIRS}
-  ${CMAKE_BINARY_DIR}/src/roseSupport
   ${CMAKE_SOURCE_DIR}/src/midend/programTransformation/transformationTracking
   ${CMAKE_BINARY_DIR}/src/3rdPartyLibraries/fortran-parser
   ${JAVA_INCLUDE_PATH}
@@ -77,7 +76,6 @@ endif()
 # Build in the subdirectories that make up the ROSE source code
 add_subdirectory(util)
 add_subdirectory(ROSETTA)
-add_subdirectory(roseSupport)
 add_subdirectory(3rdPartyLibraries)
 
 add_definitions(-DROSE_DLL_EXPORTS)
@@ -105,7 +103,6 @@ set(rose_LIB_SRCS
   #$<TARGET_OBJECTS:edg_internal>
   $<TARGET_OBJECTS:sage3>
   $<TARGET_OBJECTS:virtualCFG>
-  $<TARGET_OBJECTS:roseSupport>
   $<TARGET_OBJECTS:astFixup>
   $<TARGET_OBJECTS:midend>
   $<TARGET_OBJECTS:abstractLayer>

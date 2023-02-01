@@ -99,7 +99,6 @@ endif
 # ROSE_INCLUDES =
 #    $(ROSE_BOOST_PREINCLUDE_PATH)
 ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH_ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT = \
-     -I$(top_builddir)/src/roseSupport \
      -I$(top_builddir)/src/frontend/SageIII \
      -I$(top_srcdir)/src \
      -I$(top_srcdir)/src/frontend \
@@ -128,7 +127,6 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH_ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT 
      -I$(top_srcdir)/src/midend/astProcessing \
      -I$(top_srcdir)/src/midend/astQuery \
      -I$(top_srcdir)/src/midend/programAnalysis \
-     -I$(top_srcdir)/src/roseSupport \
      -I$(top_srcdir)/src/3rdPartyLibraries/MSTL \
      -I$(top_srcdir)/src/3rdPartyLibraries/json \
      -I$(top_srcdir)/src/util/graphs \
@@ -138,7 +136,6 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH_ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT 
 # ROSE_INCLUDES =
 #     $(ROSE_BOOST_PREINCLUDE_PATH)
 ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
-     -I$(top_builddir)/src/roseSupport \
      -I$(top_builddir)/src/frontend/SageIII \
      -I$(top_srcdir)/src \
      -I$(top_srcdir)/src/frontend \
@@ -206,7 +203,6 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/midend/programTransformation/functionCallNormalization \
      -I$(top_srcdir)/src/midend/programTransformation/constantFolding \
      -I$(top_srcdir)/src/midend/programTransformation/implicitCodeGeneration \
-     -I$(top_srcdir)/src/roseSupport \
      -I$(top_srcdir)/src/3rdPartyLibraries/MSTL \
      -I$(top_srcdir)/src/3rdPartyLibraries/json \
      -I$(top_srcdir)/src/3rdPartyLibraries/libharu-2.1.0/include \

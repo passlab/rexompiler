@@ -63,13 +63,13 @@ else
     "$stringifier" --emit=declarations --compatible --no-deprecate --root="$top_srcdir" \
 		   $(find "$top_srcdir/src" \( -name '*.[hcC]' -o -name '*.hpp' -o -name '*.cpp' \)) \
 		   $(find "$top_blddir/src" -name '*.h') \
-		   > "$top_srcdir/src/roseSupport/stringify.h"
+		   > "$top_srcdir/src/frontend/SageIII/stringify.h"
 
     # Generate the implementations, but we can discard the diagnostics since they're identical to above
     "$stringifier" --emit=definitions --quiet --compatible --no-deprecate --root="$top_srcdir" \
 		   $(find "$top_srcdir/src" \( -name '*.[hcC]' -o -name '*.hpp' -o -name '*.cpp' \)) \
 		   $(find "$top_blddir/src" -name '*.h') \
-		   > "$top_srcdir/src/roseSupport/stringify.C"
+		   > "$top_srcdir/src/frontend/SageIII/stringify.C"
 fi
 
 exit 0

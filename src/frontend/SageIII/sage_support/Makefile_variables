@@ -3,7 +3,8 @@
 fSageSupport_la_sources=\
 	$(fSageSupportPath)/sage_support.cpp \
 	$(fSageSupportPath)/keep_going.cpp \
-	$(fSageSupportPath)/cmdline.cpp
+	$(fSageSupportPath)/cmdline.cpp \
+	$(fSageSupportPath)/utility_functions.C
 
 # DQ (2/2/2016): Added dependence to force this to be recompiled.
 $(fSageSupportPath)/cmdline.lo: ${top_builddir}/rose_config.h
@@ -11,7 +12,9 @@ $(fSageSupportPath)/cmdline.lo: ${top_builddir}/rose_config.h
 fSageSupport_includeHeaders=\
 	$(fSageSupportPath)/sage_support.h \
 	$(fSageSupportPath)/keep_going.h \
-	$(fSageSupportPath)/cmdline.h
+	$(fSageSupportPath)/cmdline.h \
+	$(fSageSupportPath)/utility_functions.h \
+	$(fSageSupportPath)/utility_functionsImpl.C
 
 # DQ (3/13/2010):
 #

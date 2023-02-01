@@ -714,12 +714,11 @@ INPUT                  = @top_srcdir@/docs/Rose/MainPage.dox \
                          @top_srcdir@/src/backend/unparser/languageIndependenceSupport/documentation.docs \
                          @top_srcdir@/src/backend/unparser/CxxCodeGeneration/documentation.docs \
                          @top_srcdir@/src/backend/unparser/FortranCodeGeneration/documentation.docs \
-			             @top_srcdir@/src/util \
+                         @top_srcdir@/src/util \
                          @top_srcdir@/src/util/utilDocumentation.docs \
                          @top_srcdir@/src/util/stringSupport/stringSupportDocumentation.docs \
                          @top_srcdir@/src/util/stringSupport/ \
                          @top_srcdir@/src/util/commandlineProcessing \
-                         @top_srcdir@/src/roseSupport \
                          @top_srcdir@/src/3rdPartyLibraries/3rdPartyLibraries.docs \
                          @top_srcdir@/src/3rdPartyLibraries/MSTL/MSTL.docs \
                          @top_srcdir@/src/extra.docs

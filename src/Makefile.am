@@ -4,7 +4,7 @@ bin_SCRIPTS =
 pkgdata_DATA =
 MOSTLYCLEANFILES =
 
-SUBDIRS = util ROSETTA roseSupport Rose frontend midend backend \
+SUBDIRS = util ROSETTA Rose frontend midend backend \
           3rdPartyLibraries
 
 # This lists a large number of directories.  If "make install"
@@ -45,7 +45,6 @@ libroseLibraries = \
    $(top_builddir)/src/midend/programTransformation/extractFunctionArgumentsNormalization/libExtractFunctionArgumentsNormalization.la \
    $(top_builddir)/src/midend/programTransformation/singleStatementToBlockNormalization/libSingleStatementToBlockNormalization.la \
    $(top_builddir)/src/midend/libmidend.la \
-   $(top_builddir)/src/roseSupport/libroseSupport.la \
    $(top_builddir)/src/util/support/libsupport.la \
    $(top_builddir)/src/util/graphs/libgraphs.la \
    $(top_builddir)/src/util/libroseutil.la \
@@ -66,7 +65,6 @@ pkginclude_HEADERS = \
      roseInternal.h \
      rose_msvc.h \
      msvc_stdint.h \
-     roseSupport/utility_functionsImpl.C \
      midend/astProcessing/AstDOTGeneration.h \
      midend/astProcessing/AstDOTGenerationImpl.C \
      frontend/SageIII/sage3basic.h \
@@ -363,6 +361,5 @@ uninstall-local:
 rebuildPrelinker:
 	rm -f frontend/CxxFrontend/EDG/EDG_3.3/util/edg_prelink.lo
 	rm -f frontend/SageIII/Cxx_Grammar.lo
-	rm -f roseSupport/templateSupport.lo
 	$(MAKE)
 

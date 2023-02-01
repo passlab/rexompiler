@@ -1,5 +1,3 @@
-include_directories(${CMAKE_BINARY_DIR}/src/roseSupport)
-
 #-------------------------------------------------------------------------------
 add_executable(testQuery testQuery.C)
 target_link_libraries(testQuery ROSE_DLL EDG ${link_with_libraries})

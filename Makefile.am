@@ -571,7 +571,6 @@ remove_codecov_files:
 # lcov command to generate the html files.
 lcov:
 	lcov --capture \
--d src/roseSupport/.libs \
 -d src/frontend/CxxFrontend/EDG/edgRose/.libs \
 -d src/frontend/CxxFrontend/EDG/EDG_5.0/src/.libs \
 -d src/frontend/OpenFortranParser_SAGE_Connection/.libs \
@@ -692,7 +691,7 @@ librose-lcov.info: all-lcov.info
         "$(top_srcdir)/src/midend/programTransformation/functionCallNormalization/*" \
         "$(top_srcdir)/src/midend/programTransformation/implicitCodeGeneration/*" \
         "$(top_srcdir)/src/midend/programTransformation/singleStatementToBlockNormalization/*" \
-        "$(top_srcdir)/src/roseSupport/stringify.C" \
+        "$(top_srcdir)/src/frontend/SageIII/stringify.C" \
         "$(top_srcdir)/src/frontend/SageIII/astVisualization/*" \
         "$(top_srcdir)/src/midend/astProcessing/AstProcessing.h" \
         "$(top_srcdir)/src/frontend/SageIII/sageInterface/sageGeneric.h" \
