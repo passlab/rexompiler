@@ -68,18 +68,7 @@ CXX_TEMPLATE_REPOSITORY_PATH = .
 # EXTRA_DIST = preproc.lex preproc.C astGraphTemplate.C docs
 # EXTRA_DIST = preproc.ll docs rtiHelpers.h attributeListMap.h
 #
-# The stringify.h and stringify.C files contain functions for converting an enum constant into a string. We once had
-# this configured to rebuild these two files for every fresh build, but there's no good reason that end users need to
-# run this command when developers can do it instead.  On a reasonable machine it takes around a minute; on a misconfigured
-# Ubuntu 14.04 it takes >12 hours.
-# YYH (2023/02/01). Moved this target here for future reference before completely removing stringify support, please check the
-# ticket related to this. The restringify script relies on Sawyer stringifyEnums.c code to work. 
-#.PHONY: rebuild-stringify
-rebuild-stringify:
-	$(top_srcdir)/scripts/restringify $(top_srcdir) $(top_builddir)
-
-
-EXTRA_DIST = CMakeLists.txt preproc-c.ll docs rtiHelpers.h stringify.h attributeListMap.h \
+EXTRA_DIST = CMakeLists.txt preproc-c.ll docs rtiHelpers.h attributeListMap.h \
              advanced_preprocessing_hooks.h rose_attributes_list.h \
              sage3basic.hhh fileoffsetbits.h rosedll.h PolicyControl.txt Utf8.h  \
              ompAstConstruction.h accAstConstruction.h \
@@ -128,7 +117,6 @@ libsage3Sources = \
    fixupCopy_symbols.C \
    fixupCopy_references.C \
    IncludeDirective.C \
-   stringify.C \
    rtiHelpers.C \
    rose_graph_support.C \
    $(fSageSupport_la_sources) \
@@ -223,7 +211,7 @@ pkginclude_HEADERS = \
    attachPreprocessingInfoTraversal.h \
    attach_all_info.h manglingSupport.h C++_include_files.h \
    fixupCopy.h memory-pool-snapshot.h \
-   general_token_defs.h rtiHelpers.h stringify.h \
+   general_token_defs.h rtiHelpers.h \
    ompSupport.h omp.h \
    omp_lib_kinds.h omp_lib.h sage3basic.hhh rosedefs.h  fileoffsetbits.h rosedll.h \
    $(fSageSupport_includeHeaders)

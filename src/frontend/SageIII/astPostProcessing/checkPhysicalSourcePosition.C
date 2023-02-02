@@ -1,6 +1,5 @@
 #include "sage3basic.h"
 #include "checkPhysicalSourcePosition.h"
-#include "stringify.h"
 
 using namespace Rose;
 

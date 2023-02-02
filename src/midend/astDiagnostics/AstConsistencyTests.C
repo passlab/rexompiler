@@ -31,9 +31,6 @@
 // This fixed a reported bug which caused conflicts with autoconf macros (e.g. PACKAGE_BUGREPORT).
 #include "rose_config.h"
 
-// DQ (3/19/2012): We need this for a function in calss: TestForParentsMatchingASTStructure
-#include "stringify.h"
-
 // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace std;
 using namespace Rose;
@@ -6401,7 +6398,7 @@ TestForParentsMatchingASTStructure::show_details_and_maybe_fail(SgNode *node)
           if ( SgProject::get_verbose() >= DIAGNOSTICS_VERBOSE_LEVEL )
              {
                output << prefix
-                 << "    #" << std::setw(4) << std::left << i << " " << stringifyVariantT(stack[i]->variantT(), "V_")
+                 << "    #" << std::setw(4) << std::left << i << " " << stack[i]->class_name() /* stringifyVariantT(stack[i]->variantT(), "V_") */
                  << " " << stack[i] << "; parent=" << stack[i]->get_parent()
                  << "\n";
 
@@ -6424,7 +6421,7 @@ TestForParentsMatchingASTStructure::show_details_and_maybe_fail(SgNode *node)
      if ( SgProject::get_verbose() >= DIAGNOSTICS_VERBOSE_LEVEL )
         {
           output << prefix
-            << "    #" << std::setw(4) << std::left << stack.size() << " " << stringifyVariantT(node->variantT(), "V_")
+            << "    #" << std::setw(4) << std::left << stack.size() << " " << node->class_name() /* stringifyVariantT(node->variantT(), "V_") */
             << " " << node << "; parent=" << node->get_parent()
             << " = " << ((node->get_parent() != NULL) ? node->get_parent()->class_name() : string("null"))
             << "\n";

@@ -63,7 +63,6 @@ found in the directory ROSE/TESTS/KnownBugs/AttachPreprocessingInfo.
 // This fixed a reported bug which caused conflicts with autoconf macros (e.g. PACKAGE_BUGREPORT).
 #include "rose_config.h"
 
-#include "stringify.h"
 #include "attachPreprocessingInfo.h"
 #include "attachPreprocessingInfoTraversal.h"
 

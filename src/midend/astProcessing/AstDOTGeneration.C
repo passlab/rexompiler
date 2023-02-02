@@ -9,7 +9,6 @@
 #include "sage3basic.h"
 #include "AstDOTGeneration.h"
 #include "transformationTracking.h"
-#include "stringify.h"                                  // automatic enum-to-string functions
 #include <boost/foreach.hpp>
 
 // DQ (10/21/2010):  This should only be included by source files that require it.

@@ -4,7 +4,6 @@
 // Tainted flow analysis.  See taintAnalysis.h for details.
 #include "sage3basic.h"
 #include "taintAnalysis.h"
-#include "stringify.h"
 
 using namespace Rose;
 
@@ -39,10 +38,12 @@ TaintLattice::operator==(/*const*/ Lattice *other_) /*const*/ {
 
 std::string
 TaintLattice::to_string() const {
-    std::string s = stringifyTaintLatticeVertex(vertex, "VERTEX_");
-    for (size_t i=0; i<s.size(); ++i)
-        s[i] = tolower(s[i]);
-    return s;
+    switch(vertex) {
+       case VERTEX_BOTTOM: return std::string("bottom");
+       case VERTEX_UNTAINTED:   return std::string("untainted");
+       case VERTEX_TAINTED: return std::string("tainted");
+       default: return std::string("");
+    }
 }
 
 // DQ (10/20/2015): "override" now allowed in function definitions.

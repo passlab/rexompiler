@@ -1,7 +1,6 @@
 #include "sage3basic.h"
 #include "errno.h"
 #include "rose_attributes_list.h"
-#include "stringify.h"
 
 // DQ (10/14/2010):  This should only be included by source files that require it.
 // This fixed a reported bug which caused conflicts with autoconf macros (e.g. PACKAGE_BUGREPORT).
@@ -1030,9 +1029,17 @@ PreprocessingInfo::display (const string & label) const
 std::string
 PreprocessingInfo::relativePositionName (const RelativePositionType & position)
    {
-     return stringifyPreprocessingInfoRelativePositionType(position);
+        switch (position) {
+            case defaultValue: return "defaultValue";
+            case undef: return "undef";
+            case before: return "before";
+            case after: return "after";
+            case inside: return "inside";
+            case before_syntax: return "before_syntax";
+            case after_syntax: return "after_syntax";
+            default: return "";
+        }
    }
-
 
 PreprocessingInfo::RelativePositionType
 PreprocessingInfo::getRelativePosition(void) const

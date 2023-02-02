@@ -10,9 +10,6 @@
 #include "LivenessAnalysis.h"
 #include <string>
 #include <iostream>
-#if 1 /*DEBUGGING [Robb Matzke 2012-11-07]*/
-#include "stringify.h"
-#endif
 using namespace std;
 using namespace Rose;
 

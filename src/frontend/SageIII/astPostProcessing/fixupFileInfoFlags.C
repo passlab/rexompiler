@@ -1,8 +1,6 @@
 #include "sage3basic.h"
 #include "fixupFileInfoFlags.h"
 
-// #include "stringify.h"
-
 using namespace Rose;
 
 // documented in header file

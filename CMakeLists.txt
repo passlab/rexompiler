@@ -493,18 +493,6 @@ if(enable-advanced-warnings)
   set(ROSE_USE_UNIFORM_ADVANCED_WARNINGS_SUPPORT 1)
 endif()
 
-option(enable-candl "Support for ScopLib" OFF)
-if(enable-candl)
-  find_path(with-candl "include/candl.h"
-    DOC "Path to a valid Candl installation")
-endif()
-
-option(enable-cloog "Support for Cloog" OFF)
-if(enable-cloog)
-  find_path(with-cloog "include/cloog.h"
-    DOC "Path to a valid Cloog installation")
-endif()
-
 option(enable-edg-cuda "Build EDG 4.0 with CUDA support" OFF)
 option(enable-edg-opencl "Build EDG 4.0 with OpenCL support" OFF)
 
@@ -526,28 +514,6 @@ endif()
 if(enable-fortran)
   set(enable-ofp-version "20200819-JDK8" CACHE STRING "version number for OFP")
   set($ENV{CLASSPATH} ${CMAKE_SOURCE_DIR}/src/3rdPartyLibraries/antlr-jars/antlr-3.5.2-complete.jar::${CMAKE_SOURCE_DIR}/rc/3rdPartyLibraries/fortran-parser/OpenFortranParser-${enable-ofp-version}.jar)
-endif()
-
-option(enable-ppl "Support for Parma Polyhedral Library" OFF)
-if(enable-ppl)
-  find_path(with-ppl "include/ppl.h" DOC "Path to Parma Polyhedral Library installation")
-  find_library(libppl ppl)
-endif()
-
-option(enable-purify-api "Enable purify API in code" OFF)
-if(enable-purify-api)
-  set(USE_PURIFY_API 1)
-endif()
-
-option(enable-purify-linker "Augment the linker with purify" OFF)
-if(enable-purify-linker)
-  set(USE_PURIFY 1)
-  set(USE_PURIFY_LINKER 1)
-endif()
-
-option(enable-scoplib "Support for ScopLib" OFF)
-if(enable-scoplib)
-  find_path(with-scoplib "include/scolib.h" DOC "Path to a valid ScopLib installation")
 endif()
 
 # To use Bison, set BISON_ROOT to the Bison installation prefix. To avoid Bison, use BISON_ROOT=no
@@ -576,15 +542,8 @@ endif()
 
 find_path(with-GraphViz_include graphviz.h DOC "Specify the prefix where GraphViz include files are installed")
 find_path(with-GraphViz_libs GraphViz_libs DOC "Specify the prefix where GraphViz libraries are installed")
-find_path(with-insure insure++ DOC "Specify the prefix where insure++ is installed")
 find_path(with-ltdl-include ltdl.h DOC "use the ltdl headers installed in DIR")
 find_library(with-ltdl-lib ltdl DOC "Path to ltdl library")
-
-find_path(with-purify bin/purify DOC "Specify the prefix where purify is installed")
-if(with-purify)
-  set(USE_PURIFY 1)
-endif()
-
 
 find_path(with-wine "bin/wine" DOC "Specify the prefix where Wine is installed")
 if(with-wine)
@@ -842,7 +801,6 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/ROSETTA/src/
   ${ROSE_TOP_SRC_DIR}/src
   ${ROSE_TOP_SRC_DIR}/src/frontend/CxxFrontend/EDG/EDG_SAGE_Connection/
-  ${ROSE_TOP_SRC_DIR}/src/frontend/CxxFrontend/EDG/EDG_3.3/src
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astFixup
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astPostProcessing
@@ -905,9 +863,7 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/MSTL
   ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/libharu-2.1.0/include
   ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/libharu-2.1.0/include
-  ${ROSE_TOP_SRC_DIR}/src/util/graphs
-  ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/libharu-2.1.0/win32/include/
-  ${ROSE_TOP_SRC_DIR}/src/midend/astUtil/astInterface)
+  ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/libharu-2.1.0/win32/include)
 
 if(WIN32)
   list(APPEND ROSE_INCLUDES ${ROSE_TOP_SRC_DIR}/winspecific)

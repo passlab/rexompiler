@@ -32,7 +32,6 @@ set(SAGE3_SOURCES
   fixupCopy_symbols.C
   fixupCopy_references.C
   IncludeDirective.C
-  stringify.C
   rtiHelpers.C
   rose_graph_support.C
   Utf8.C)
@@ -89,7 +88,7 @@ install(
     sage3.h sage3basic.h rose_attributes_list.h attachPreprocessingInfo.h
     attachPreprocessingInfoTraversal.h attach_all_info.h manglingSupport.h
     C++_include_files.h fixupCopy.h general_token_defs.h rtiHelpers.h
-    ompAstConstruction.h omp.h ompSupport.h stringify.h
+    ompAstConstruction.h omp.h ompSupport.h
     omp_lib_kinds.h omp_lib.h rosedll.h fileoffsetbits.h rosedefs.h
     sage3basic.hhh sage_support/cmdline.h sage_support/sage_support.h
     sage_support/utility_functions.h sage_support/utility_functionsImpl.C

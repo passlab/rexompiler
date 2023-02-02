@@ -1,6 +1,5 @@
 #include "sage3basic.h"
 #include "checkIsCompilerGeneratedFlag.h"
-#include "stringify.h"
 
 using namespace Rose;
 
@@ -29,7 +28,7 @@ checkIsCompilerGeneratedFlag(SgNode *ast)
 #ifdef ROSE_DEBUG_NEW_EDG_ROSE_CONNECTION
                 std::cerr <<finfo->get_filenameString() <<":" <<finfo->get_line() <<"." <<finfo->get_col() <<": "
                           <<"node should be marked as compiler-generated: "
-                          <<"(" <<stringifyVariantT(node->variantT(), "V_") <<"*)" <<node <<"\n";
+                          <<"(" << node->class_name() /*stringifyVariantT(node->variantT(), "V_")*/ <<"*)" <<node <<"\n";
 #endif
 #endif
                 finfo->setCompilerGenerated();

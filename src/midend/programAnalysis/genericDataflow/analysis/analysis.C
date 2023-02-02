@@ -9,7 +9,6 @@
 #include "analysis.h"
 #include "dataflow.h"
 #include "latticeFull.h"
-#include "stringify.h"
 #include <vector>
 #include <set>
 #include <map>
