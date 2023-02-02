@@ -645,28 +645,28 @@ int patchUpImplicitSharedVariables(SgFile *file) {
 } // end patchUpImplicitMappingVariables()
 
 // map variables in omp target firstprivate clause
-int normalizeOmpMapVariables(SgFile *file) {
+int normalizeOmpMapVariables(SgFile *file, VariantVector clause_vv,
+                             SgOmpClause::omp_map_operator_enum map_type) {
   int result = 0;
   ROSE_ASSERT(file != NULL);
+
+  VariantVector directive_vv = VariantVector(V_SgOmpTargetStatement);
+  directive_vv.push_back(V_SgOmpTargetTeamsStatement);
+  directive_vv.push_back(V_SgOmpTargetTeamsDistributeParallelForStatement);
+  directive_vv.push_back(V_SgOmpTargetTeamsDistributeStatement);
+  directive_vv.push_back(V_SgOmpTargetParallelStatement);
+  directive_vv.push_back(V_SgOmpTargetParallelForStatement);
   Rose_STL_Container<SgNode *> node_list =
-      NodeQuery::querySubTree(file, V_SgOmpTargetStatement);
+      NodeQuery::querySubTree(file, directive_vv);
 
   Rose_STL_Container<SgNode *>::iterator iter;
   for (iter = node_list.begin(); iter != node_list.end(); iter++) {
-    SgOmpClauseBodyStatement *target = NULL;
-    target = isSgOmpClauseBodyStatement(*iter);
+    SgOmpClauseBodyStatement *target = isSgOmpClauseBodyStatement(*iter);
     SgStatement *body = target->get_body();
     ROSE_ASSERT(body != NULL);
 
-    if (hasClause(target, V_SgOmpFirstprivateClause) == false)
-      continue;
-
-    Rose_STL_Container<SgOmpClause *> clauses =
-        getClause(target, V_SgOmpFirstprivateClause);
-    SgOmpFirstprivateClause *firstprivate_clause =
-        isSgOmpFirstprivateClause(clauses[0]);
-    SgExpressionPtrList firstprivate_symbols =
-        firstprivate_clause->get_variables()->get_expressions();
+    SgInitializedNamePtrList all_vars =
+        collectClauseVariables(target, clause_vv);
 
     SgOmpMapClause *map_clause = NULL;
     SgExprListExp *explist = NULL;
@@ -690,13 +690,15 @@ int normalizeOmpMapVariables(SgFile *file) {
     // create a new MAP TO clause if there isn't one.
     if (has_map_to_clause == false) {
       explist = buildExprListExp();
-      SgOmpClause::omp_map_operator_enum sg_type = SgOmpClause::e_omp_map_to;
+      SgOmpClause::omp_map_operator_enum sg_type = map_type;
       map_clause = new SgOmpMapClause(explist, sg_type);
     };
     bool has_mapped = false;
 
-    for (size_t i = 0; i < firstprivate_symbols.size(); i++) {
-      SgVarRefExp *var_ref = isSgVarRefExp(firstprivate_symbols[i]);
+    for (size_t i = 0; i < all_vars.size(); i++) {
+      if (isInClauseVariableList(all_vars[i], target, V_SgOmpMapClause))
+        continue;
+      SgVarRefExp *var_ref = buildVarRefExp(all_vars[i]);
       SgVariableSymbol *sym = var_ref->get_symbol();
       ROSE_ASSERT(sym != NULL);
       SgType *orig_type = sym->get_type();
@@ -707,6 +709,7 @@ int normalizeOmpMapVariables(SgFile *file) {
         has_mapped = true;
       }
     }
+
     if (has_map_to_clause == false && has_mapped == true) {
       setOneSourcePositionForTransformation(map_clause);
       explist->set_parent(map_clause);
@@ -890,9 +893,12 @@ void analyze_omp(SgSourceFile *file) {
 
   patchUpImplicitMappingVariables(file);
 
-  // Convert firstprivate clause in target directive to map clause because
-  // later only map clause will be lowered.
-  normalizeOmpMapVariables(file);
+  // Convert firstprivate/private/shared clause in target directive to map
+  // clause because later only map clause will be lowered for data transferring.
+  VariantVector clause_vv = VariantVector(V_SgOmpFirstprivateClause);
+  clause_vv.push_back(V_SgOmpPrivateClause);
+  clause_vv.push_back(V_SgOmpSharedClause);
+  normalizeOmpMapVariables(file, clause_vv, SgOmpClause::e_omp_map_to);
 
   patchUpImplicitSharedVariables(file);
 
