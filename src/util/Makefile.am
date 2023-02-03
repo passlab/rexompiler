@@ -28,8 +28,6 @@ rose_paths.C:
 noinst_LTLIBRARIES = libroseutil.la
 
 libroseutil_la_SOURCES =			\
-	compilationFileDatabase.C		\
-	LinearCongruentialGenerator.C		\
 	processSupport.C			\
 	rose_getline.C				\
 	rose_strtoull.C mlog.C
@@ -48,18 +46,12 @@ libroseutil_la_LIBADD = \
 # DISTCLEANFILES = rose_paths.C
 
 pkginclude_HEADERS =				\
-	compilationFileDatabase.h		\
-	LinearCongruentialGenerator.h		\
-	Map.h		\
 	timing.h				\
-	ParallelSort.h				\
 	processSupport.h			\
 	rose_getline.h				\
 	rose_isnan.h				\
-	rose_pragma_message.h			\
 	rose_paths.h				\
 	rose_strtoull.h				\
-	roseTraceLib.c				\
 	mlog.h
 
 EXTRA_DIST = CMakeLists.txt utilDocumentation.docs

@@ -55,23 +55,6 @@ testStringUtility.passed: $(top_srcdir)/scripts/test_exit_status testStringUtili
 		CMD="./testStringUtility"	\
 		$< $@
 
-
-###############################################################################################################################
-# Tests for parallel sorting
-###############################################################################################################################
-
-noinst_PROGRAMS += testSort
-testSort_SOURCES = testSort.C
-
-TEST_TARGETS += testSort.passed
-EXTRA_DIST += testSort.conf
-
-testSort.passed: testSort.conf testSort
-	@$(RTH_RUN)					\
-		TITLE="various parallel sorting [$@]"	\
-		CMD="$$(pwd)/testSort"			\
-		$< $@
-
 ########################################################################################################################
 # SourceLocation
 ########################################################################################################################

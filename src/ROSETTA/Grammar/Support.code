@@ -18320,7 +18320,6 @@ SgProject::initialization()
 
      p_prelink                             = false;
      p_template_instantiation_mode         = e_unknown;
-     p_projectSpecificDatabaseFile         = "";
      p_compilationPerformanceFile          = "";
      p_C_PreprocessorOnly                  = false;
 
@@ -19336,7 +19335,6 @@ SgProject::display ( const std::string & label ) const
 
      printf ("   p_template_instantiation_mode             = %d \n",p_template_instantiation_mode);
 
-     printf ("   p_projectSpecificDatabaseFile             = %s \n",p_projectSpecificDatabaseFile.c_str());
      printf ("   p_compilationPerformanceFile              = %s \n",p_compilationPerformanceFile.c_str());
 
   // DQ (1/16/2008): This is part of a ROSE supported mechanism for the

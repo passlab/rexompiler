@@ -358,7 +358,6 @@ CommandlineProcessing::isOptionTakingSecondParameter( string argument )
           argument == "-rose:excludePath" ||
           argument == "-rose:includeFile" ||
           argument == "-rose:excludeFile" ||
-          argument == "-rose:projectSpecificDatabaseFile" ||
 
           argument == "-rose:ast:graphviz:when" ||
           argument == "-rose:ast:graphviz:mode" ||
@@ -1517,18 +1516,6 @@ SgProject::processCommandLine(const vector<string>& input_argv)
           set_reportOnHeaderFileUnparsing(true);
         }
 
-   // Milind Chabbi (9/9/2013): Added an option to store all files compiled by a project.
-   // When we need to have a unique id for the same file used acroos different compilation units, this file provides such capability.
-     std::string  projectSpecificDatabaseFileParamater;
-     if ( CommandlineProcessing::isOptionWithParameter(local_commandLineArgumentList,
-          "-rose:","(projectSpecificDatabaseFile)",projectSpecificDatabaseFileParamater,true) == true )
-        {
-          printf ("-rose:projectSpecificDatabaseFile %s \n",projectSpecificDatabaseFileParamater.c_str());
-       // Make our own copy of the filename string
-       // set_astMergeCommandLineFilename(xxx);
-          p_projectSpecificDatabaseFile = projectSpecificDatabaseFileParamater;
-        }
-
   // DQ (10/28/2020): Adding option to output the compilation performance data.
   // optionCount = sla_none(local_commandLineArgumentList, "-rose:", "($)", "(performance_tracking)",1);
   // if ( optionCount > 0 )
@@ -2255,9 +2242,6 @@ SgFile::usage ()
 "     -rose:fortran:ofp:jvm_options\n"
 "                             Specifies the JVM startup options\n"
 "     -rose:strict            strict enforcement of ANSI/ISO standards\n"
-"     -rose:projectSpecificDatabaseFile FILE\n"
-"                             filename where a database of all files used in a project are stored\n"
-"                             for producing unique trace ids and retrieving the reverse mapping from trace to files"
 "     -rose:compilationPerformance\n"
 "                             Output compilation performance after compilation of input file.\n"
 "                             Reports internal phases of ROSE compilation (time and memory requirements), output to stdout.\n"
@@ -4419,7 +4403,6 @@ SgFile::stripRoseCommandLineOptions ( vector<string> & argv )
      optionCount = sla(argv, "-rose:", "($)", "(astMerge)",1);
      char* filename = NULL;
      optionCount = sla(argv, "-rose:", "($)^", "(astMergeCommandFile)",filename,1);
-     optionCount = sla(argv, "-rose:", "($)^", "(projectSpecificDatabaseFile)",filename,1);
 
   // DQ (10/28/2020): Added to support output of compile-time performance data.
      optionCount = sla(argv, "-rose:", "($)^", "(compilationPerformance)",1);
