@@ -1,7 +1,7 @@
 #ifndef ROSE_StringUtility_SplitJoin_H
 #define ROSE_StringUtility_SplitJoin_H
 
-#include <Rose/Constants.h>
+#include <Constants.h>
 #include <rosedll.h>
 
 #include <list>

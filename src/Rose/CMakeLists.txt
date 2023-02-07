@@ -4,19 +4,9 @@
 # Namespaces within ::Rose (see top comment). Every namespace will
 # have a directory listed here, and every directory here is a
 # namespace.
-add_subdirectory(StringUtility)
 add_subdirectory(AST)
 
 # needed to properly define ROSE_UTIL_API
 add_definitions(-DROSE_UTIL_EXPORTS)
 
 #add_dependencies(roseNamespace rosetta_generated)
-
-# Public header files for the ::Rose namespace (see top comment)
-install(FILES
-  BitOps.h
-  Constants.h
-  Exception.h
-  StringUtility.h
-
-  DESTINATION ${INCLUDE_INSTALL_DIR}/Rose)

@@ -1,7 +1,7 @@
 include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 bin_PROGRAMS =
 
-SUBDIRS = stringSupport commandlineProcessing support graphs
+SUBDIRS = StringUtility commandlineProcessing support graphs
 
 # AUTOMAKE_OPTIONS = subdir-objects
 
@@ -34,9 +34,11 @@ libroseutil_la_SOURCES =			\
 
 nodist_libroseutil_la_SOURCES = rose_paths.C
 libroseutil_la_LIBADD = \
-	stringSupport/libRoseStringSupport.la \
-	commandlineProcessing/libRoseCommandlineUtil.la
-
+	commandlineProcessing/libRoseCommandlineUtil.la \
+    graphs/libgraphs.la                    \
+	StringUtility/libRoseStringUtility.la \
+    support/libsupport.la
+    
 # DQ (4/5/2009): I don't think this needs to be specified using this Automake technique.
 # The use of this technique for force rose_paths.C to be built was also what was causing
 # large parts of ROSE to be rebuilt when configure was return (this appears to be fixed now).

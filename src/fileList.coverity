@@ -639,8 +639,6 @@
 ./util/commandlineProcessing/commandline_processing.h
 ./util/commandlineProcessing/sla.c
 ./util/commandlineProcessing/sla.h
-./util/stringSupport/string_functions.h
-./util/stringSupport/roseString.h
 ./midend/astQuery/roseQueryLib.h
 ./midend/astQuery/booleanQuery.h
 ./midend/astQuery/booleanQueryInheritedAttribute.h
@@ -1096,8 +1094,6 @@
 ./util/graphs/TypedFusion.C
 ./util/commandlineProcessing/commandline_processing.C
 ./util/commandlineProcessing/sla++.C
-./util/stringSupport/string_functions.C
-./util/stringSupport/roseString.C
 ./midend/astQuery/booleanQuery.C
 ./midend/astQuery/booleanQueryInheritedAttribute.C
 ./midend/astQuery/nameQuery.C

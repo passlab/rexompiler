@@ -23,7 +23,7 @@
 #include <algorithm>
 #include <map>
 #include "FileUtility.h"
-#include <Rose/StringUtility.h>
+#include <StringUtility.h>
 #include "mlog.h"
 
 // DQ (3/22/2009): Windows does not have this header.

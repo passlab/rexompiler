@@ -1,4 +1,4 @@
-#include <Rose/StringUtility/NumberToString.h>
+#include <NumberToString.h>
 
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>

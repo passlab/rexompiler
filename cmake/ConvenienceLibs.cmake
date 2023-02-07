@@ -130,8 +130,6 @@ set(sage_STAT_SRCS
 
 # src/3rdPartyLibraries/MSTL/Makefile.am: mstl
 
-# src/util/stringSupport/Makefile.am: RoseStringSupport
-
 # src/util/graphs/Makefile.am: graphs
 
 # src/util/commandlineProcessing/Makefile.am: RoseCommandlineUtil

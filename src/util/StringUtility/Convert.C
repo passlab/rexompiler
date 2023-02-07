@@ -1,7 +1,7 @@
-#include <Rose/StringUtility/Convert.h>
+#include <Convert.h>
 
-#include <Rose/StringUtility/Predicate.h>
-#include <Rose/StringUtility/SplitJoin.h>
+#include <Predicate.h>
+#include <SplitJoin.h>
 #include <integerOps.h>                                 // rose
 
 #include <boost/regex.hpp>

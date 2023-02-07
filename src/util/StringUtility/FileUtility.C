@@ -1,7 +1,7 @@
 #include <FileUtility.h>
 
 // Other ROSE includes
-#include <Rose/StringUtility.h>
+#include <StringUtility.h>
 #include <FileUtility.h>
 
 #include <rose_config.h>

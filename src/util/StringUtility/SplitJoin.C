@@ -1,6 +1,5 @@
-#include <Rose/StringUtility/SplitJoin.h>
-
-#include <Rose/StringUtility/Convert.h>
+#include <SplitJoin.h>
+#include <Convert.h>
 
 namespace Rose {
 namespace StringUtility {

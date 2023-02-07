@@ -45,10 +45,7 @@ libroseLibraries = \
    $(top_builddir)/src/midend/programTransformation/extractFunctionArgumentsNormalization/libExtractFunctionArgumentsNormalization.la \
    $(top_builddir)/src/midend/programTransformation/singleStatementToBlockNormalization/libSingleStatementToBlockNormalization.la \
    $(top_builddir)/src/midend/libmidend.la \
-   $(top_builddir)/src/util/support/libsupport.la \
-   $(top_builddir)/src/util/graphs/libgraphs.la \
    $(top_builddir)/src/util/libroseutil.la \
-   $(top_builddir)/src/Rose/librose_partial.la \
    $(top_builddir)/src/Rose/AST/libRoseAST.la
 
 if ROSE_WITH_LIBHARU
@@ -75,16 +72,7 @@ nobase_pkginclude_HEADERS=						\
 	Rose/AST/Checker.h						\
 	Rose/AST/cmdline.h						\
 	Rose/AST/Defect.h						\
-	Rose/AST/Utils.h						\
-	Rose/BitOps.h							\
-	Rose/Constants.h						\
-	Rose/StringUtility.h						\
-	Rose/StringUtility/Convert.h					\
-	Rose/StringUtility/Escape.h					\
-	Rose/StringUtility/NumberToString.h				\
-	Rose/StringUtility/Predicate.h					\
-	Rose/StringUtility/SplitJoin.h					\
-	Rose/StringUtility/StringToNumber.h
+	Rose/AST/Utils.h
 
 ########################################################################################################################
 

@@ -55,7 +55,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "Rose/Constants.h"                             // defines things like Rose::UNLIMITED, Rose::INVALID_INDEX, etc.
+#include "Constants.h"                             // defines things like Rose::UNLIMITED, Rose::INVALID_INDEX, etc.
 
 // DQ (11/12/2011): This is support to reduce the size of ROSE so that I can manage development on my laptop.
 // This option defines a subset of ROSE as required to support wotk on the new EDG front-end.
@@ -289,9 +289,9 @@
 #include "rose_attributes_list.h"
 
 // Include ROSE common utility function library
-#include <Rose/StringUtility.h>
+#include <StringUtility.h>
 #include "FileUtility.h"
-#include "escape.h"
+#include "Escape.h"
 
 // Include support for Brian Gunney's command line parser tool (nice work)
 #include "sla.h"

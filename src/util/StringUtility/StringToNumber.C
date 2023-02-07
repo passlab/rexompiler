@@ -1,4 +1,4 @@
-#include <Rose/StringUtility/StringToNumber.h>
+#include <StringToNumber.h>
 #include <ctype.h>
 namespace Rose {
 namespace StringUtility {

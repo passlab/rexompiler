@@ -5,6 +5,9 @@
 
 #include <string>
 
+ROSE_UTIL_API std::string escapeString(const std::string& s);
+ROSE_UTIL_API std::string unescapeString(const std::string& s);
+
 namespace Rose {
 namespace StringUtility {
 

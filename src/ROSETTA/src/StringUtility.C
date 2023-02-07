@@ -36,9 +36,9 @@
 // I'm deciding to go with 2.c, realizing that none of the shared dependencies include the huge ROSETTA output headers and
 // therefore should compile quickly.
 
-#include <Rose/StringUtility/Convert.C>
-#include <Rose/StringUtility/Escape.C>
-#include <Rose/StringUtility/NumberToString.C>
-#include <Rose/StringUtility/Predicate.C>
-#include <Rose/StringUtility/SplitJoin.C>
-#include <Rose/StringUtility/StringToNumber.C>
+#include <StringUtility/Convert.C>
+#include <StringUtility/Escape.C>
+#include <StringUtility/NumberToString.C>
+#include <StringUtility/Predicate.C>
+#include <StringUtility/SplitJoin.C>
+#include <StringUtility/StringToNumber.C>

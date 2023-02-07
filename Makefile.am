@@ -588,14 +588,13 @@ lcov:
 -d src/frontend/SageIII/.libs \
 -d src/ROSETTA/src/.libs \
 -d src/util/graphs/.libs \
--d src/util/stringSupport/.libs \
+-d src/util/StringUtility/.libs \
 -d src/util/commandlineProcessing/.libs \
 -d src/util/support/.libs \
 -d src/util/.libs \
 -d src/backend/.libs \
 -d src/3rdPartyLibraries/MSTL/.libs \
 -d src/3rdPartyLibraries/libharu-2.1.0/src/.libs \
--d src/Rose/StringUtility/.libs \
 -d src/Rose/CommandLine/.libs \
 -d src/Rose/CodeGen/.libs \
 -d src/Rose/Diagnostics/.libs \

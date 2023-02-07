@@ -1249,7 +1249,7 @@ src/midend/programTransformation/singleStatementToBlockNormalization/Makefile
 src/util/Makefile
 src/util/commandlineProcessing/Makefile
 src/util/graphs/Makefile
-src/util/stringSupport/Makefile
+src/util/StringUtility/Makefile
 src/util/support/Makefile
 stamp-h
 tests/Makefile
