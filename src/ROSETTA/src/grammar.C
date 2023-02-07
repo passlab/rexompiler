@@ -7,6 +7,7 @@
 #include "grammar.h"
 #include "AstNodeClass.h"
 #include "grammarString.h"
+#include "mlog.h"
 #include <cctype>
 #include <sstream>
 #include <fstream>

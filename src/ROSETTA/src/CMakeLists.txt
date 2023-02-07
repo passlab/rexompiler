@@ -31,8 +31,7 @@ set(CxxGrammarMetaProgram_SRCS
   poolBasedTraversal.C
   node.C
   buildConstructorsWithoutSourcePositionInformation.C
-  outputClassesAndFields.C
-  StringUtility.C)
+  outputClassesAndFields.C)
 
 # input files to generate source files
 set(GRAMMAR_SOURCE_FILES

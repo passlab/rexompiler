@@ -112,8 +112,7 @@ CxxGrammarMetaProgram_SOURCES = \
    poolBasedTraversal.C \
    node.C \
    buildConstructorsWithoutSourcePositionInformation.C \
-   outputClassesAndFields.C \
-   StringUtility.C
+   outputClassesAndFields.C
 
 # buildConstructorsWithoutSourcePositionInformation.o: buildConstructorsWithoutSourcePositionInformation.C
 
@@ -121,12 +120,11 @@ BoostLibraries = \
   $(BOOST_LDFLAGS) $(BOOST_DATE_TIME_LIB)           \
   $(BOOST_THREAD_LIB) $(BOOST_FILESYSTEM_LIB) $(BOOST_PROGRAM_OPTIONS_LIB)  \
   $(BOOST_REGEX_LIB)  $(BOOST_SYSTEM_LIB) $(BOOST_SERIALIZATION_LIB)    \
-  $(BOOST_WAVE_LIB) $(BOOST_IOSTREAMS_LIB) $(RT_LIBS) $(top_builddir)/src/util/libroseutil.la
+  $(BOOST_WAVE_LIB) $(BOOST_IOSTREAMS_LIB)
 
 CxxGrammarMetaProgram_LDADD = \
   $(ROSE_BOOST_LIBS) \
   $(top_builddir)/src/util/libroseutil.la \
-  $(ROSE_BOOST_LIBS) \
   $(RT_LIBS)
 
 # DQ (4/12/2016): This is required for use with clang (not clear how to compile ROSE with out it).
