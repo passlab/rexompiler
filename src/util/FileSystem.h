@@ -1,8 +1,6 @@
 #ifndef ROSE_FileSystem_H
 #define ROSE_FileSystem_H
 
-#include <Rose/Exception.h>
-
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/regex.hpp>
@@ -11,6 +9,7 @@
 #include <string>
 #include <vector>
 #include "rosedll.h"
+#include "mlog.h"
 
 namespace Rose {
 
@@ -197,11 +196,11 @@ Container readFile(const boost::filesystem::path &fileName,
     using streamIterator = std::istreambuf_iterator<char>;
     std::ifstream stream(fileName.c_str(), openMode);
     if (!stream.good())
-        throw Exception("unable to open file " + boost::lexical_cast<std::string>(fileName));
+        MLOG_ERROR_CXX("UTIL") << "unable to open file " << boost::lexical_cast<std::string>(fileName);
     Container container;
     std::copy(streamIterator(stream), streamIterator(), std::back_inserter(container));
     if (stream.fail())
-        throw Exception("unable to read from file " + boost::lexical_cast<std::string>(fileName));
+        MLOG_ERROR_CXX("UTIL") << "unable to read from file " << boost::lexical_cast<std::string>(fileName);
     return container;
 }
 
@@ -210,12 +209,12 @@ void writeFile(const boost::filesystem::path &fileName, const Container &data,
                std::ios_base::openmode openMode = std::ios_base::out | std::ios_base::binary) {
     std::ofstream stream(fileName.c_str(),openMode);
     if (!stream.good())
-        throw Exception("unable to open file " + boost::lexical_cast<std::string>(fileName));
+        MLOG_ERROR_CXX("UTIL") << "unable to open file " << boost::lexical_cast<std::string>(fileName);
     std::ostream_iterator<char> streamIterator(stream);
     std::copy(data.begin(), data.end(), streamIterator);
     stream.close();
     if (stream.fail())
-        throw Exception("unable to write to file " + boost::lexical_cast<std::string>(fileName));
+        MLOG_ERROR_CXX("UTIL") << "unable to write to file " << boost::lexical_cast<std::string>(fileName);
 }
 
 } // namespace

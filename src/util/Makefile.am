@@ -30,7 +30,7 @@ noinst_LTLIBRARIES = libroseutil.la
 libroseutil_la_SOURCES =			\
 	processSupport.C			\
 	rose_getline.C				\
-	rose_strtoull.C mlog.C
+	rose_strtoull.C mlog.C FileSystem.C
 
 nodist_libroseutil_la_SOURCES = rose_paths.C
 libroseutil_la_LIBADD = \
@@ -52,7 +52,7 @@ pkginclude_HEADERS =				\
 	rose_isnan.h				\
 	rose_paths.h				\
 	rose_strtoull.h				\
-	mlog.h
+	mlog.h FileSystem.h
 
 EXTRA_DIST = CMakeLists.txt utilDocumentation.docs
 

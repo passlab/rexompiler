@@ -10,7 +10,6 @@ SUBDIRS=AST
 AM_CPPFLAGS = $(ROSE_INCLUDES)
 noinst_LTLIBRARIES = librose_partial.la
 librose_partial_la_SOURCES =								\
-	FileSystem/FileSystem.C								\
 	StringUtility/Convert.C								\
 	StringUtility/Escape.C								\
 	StringUtility/NumberToString.C							\

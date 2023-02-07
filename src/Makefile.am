@@ -78,8 +78,6 @@ nobase_pkginclude_HEADERS=						\
 	Rose/AST/Utils.h						\
 	Rose/BitOps.h							\
 	Rose/Constants.h						\
-	Rose/Exception.h						\
-	Rose/FileSystem.h						\
 	Rose/StringUtility.h						\
 	Rose/StringUtility/Convert.h					\
 	Rose/StringUtility/Escape.h					\

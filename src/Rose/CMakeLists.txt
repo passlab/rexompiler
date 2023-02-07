@@ -4,7 +4,6 @@
 # Namespaces within ::Rose (see top comment). Every namespace will
 # have a directory listed here, and every directory here is a
 # namespace.
-add_subdirectory(FileSystem)
 add_subdirectory(StringUtility)
 add_subdirectory(AST)
 
@@ -18,7 +17,6 @@ install(FILES
   BitOps.h
   Constants.h
   Exception.h
-  FileSystem.h
   StringUtility.h
 
   DESTINATION ${INCLUDE_INSTALL_DIR}/Rose)

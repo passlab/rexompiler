@@ -12,7 +12,7 @@
 #include "keep_going.h"
 #include "cmdline.h"
 #include "processSupport.h"
-#include <Rose/FileSystem.h>
+#include <FileSystem.h>
 
 #ifdef ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
 #   include "FortranModuleInfo.h"

@@ -36,10 +36,3 @@ pkginclude_HEADERS += \
 endif
 
 EXTRA_DIST = CMakeLists.txt MSTL.docs
-
-
-
-
-
-
-

@@ -599,7 +599,6 @@ lcov:
 -d src/Rose/CommandLine/.libs \
 -d src/Rose/CodeGen/.libs \
 -d src/Rose/Diagnostics/.libs \
--d src/Rose/FileSystem/.libs \
 -d src/Rose/AST/.libs \
 -d src/Rose/Color/.libs \
 -d src/Rose/.libs \
