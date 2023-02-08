@@ -3933,7 +3933,7 @@ void collectOmpTargetUpdateInfo(SgStatement *target,
 
   if (to_clause != NULL) {
     all_mapped_vars = collectClauseVariables(target, V_SgOmpToClause);
-    array_dimensions = from_clause->get_array_dimensions();
+    array_dimensions = to_clause->get_array_dimensions();
     collectOmpFromToVariablesInfo(all_mapped_vars, array_dimensions,
                                   map_variable_list, map_variable_base_list,
                                   map_variable_size_list, body_block);
@@ -4433,6 +4433,9 @@ void transOmpTargetSpmdWorksharing(SgNode *node, SgExpression *omp_num_teams,
   SgOmpClauseBodyStatement *target = isSgOmpClauseBodyStatement(node);
   ROSE_ASSERT(target != NULL);
 
+  if (hasClause(target, V_SgOmpCollapseClause))
+    transOmpCollapse(target);
+
   // device expression
   SgExpression *device_expression = NULL;
   device_expression =
@@ -4452,8 +4455,6 @@ void transOmpTargetSpmdWorksharing(SgNode *node, SgExpression *omp_num_teams,
 
   SgStatement *body = target->get_body();
   ROSE_ASSERT(body != NULL);
-  if (hasClause(target, V_SgOmpCollapseClause))
-    transOmpCollapse(target);
   // Save preprocessing info as early as possible, avoiding mess up from the
   // outliner
   AttachedPreprocessingInfoType save_buf1, save_buf2, save_buf_inside;
@@ -6979,7 +6980,6 @@ void transOmpCollapse(SgStatement *node) {
   SgOmpClauseBodyStatement *target = isSgOmpClauseBodyStatement(node);
   ROSE_ASSERT(target != NULL);
   SgStatement *body = target->get_body();
-  ;
   ROSE_ASSERT(body != NULL);
 
   // The OpenMP syntax requires that the omp for pragma is immediately followed

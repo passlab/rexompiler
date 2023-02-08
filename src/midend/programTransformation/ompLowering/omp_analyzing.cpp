@@ -699,15 +699,9 @@ int normalizeOmpMapVariables(SgFile *file, VariantVector clause_vv,
       if (isInClauseVariableList(all_vars[i], target, V_SgOmpMapClause))
         continue;
       SgVarRefExp *var_ref = buildVarRefExp(all_vars[i]);
-      SgVariableSymbol *sym = var_ref->get_symbol();
-      ROSE_ASSERT(sym != NULL);
-      SgType *orig_type = sym->get_type();
-      SgArrayType *a_type = isSgArrayType(orig_type);
-      if (a_type == NULL && !isPointerType(orig_type)) {
-        explist->append_expression(var_ref);
-        var_ref->set_parent(map_clause);
-        has_mapped = true;
-      }
+      explist->append_expression(var_ref);
+      var_ref->set_parent(map_clause);
+      has_mapped = true;
     }
 
     if (has_map_to_clause == false && has_mapped == true) {
@@ -891,6 +885,8 @@ void analyze_omp(SgSourceFile *file) {
                                  // want to patch up private variable first!
   patchUpFirstprivateVariables(file);
 
+  patchUpImplicitSharedVariables(file);
+
   patchUpImplicitMappingVariables(file);
 
   // Convert firstprivate/private/shared clause in target directive to map
@@ -899,8 +895,6 @@ void analyze_omp(SgSourceFile *file) {
   clause_vv.push_back(V_SgOmpPrivateClause);
   clause_vv.push_back(V_SgOmpSharedClause);
   normalizeOmpMapVariables(file, clause_vv, SgOmpClause::e_omp_map_to);
-
-  patchUpImplicitSharedVariables(file);
 
   Rose_STL_Container<SgNode *> node_list =
       NodeQuery::querySubTree(file, V_SgOmpForStatement);
