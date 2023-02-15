@@ -2722,6 +2722,8 @@ void categorizeMapClauseVariables(
         atom_syms.insert(sym);
     } else if (isScalarType(type)) {
       atom_syms.insert(sym);
+    } else if (isSgTypedefType(type)) {
+      atom_syms.insert(sym);
     } else {
       cerr << "Error. transOmpMapVariables() of omp_lowering.cpp: unhandled "
               "map clause variable type:"
@@ -4433,9 +4435,6 @@ void transOmpTargetSpmdWorksharing(SgNode *node, SgExpression *omp_num_teams,
   SgOmpClauseBodyStatement *target = isSgOmpClauseBodyStatement(node);
   ROSE_ASSERT(target != NULL);
 
-  if (hasClause(target, V_SgOmpCollapseClause))
-    transOmpCollapse(target);
-
   // device expression
   SgExpression *device_expression = NULL;
   device_expression =
@@ -4455,6 +4454,20 @@ void transOmpTargetSpmdWorksharing(SgNode *node, SgExpression *omp_num_teams,
 
   SgStatement *body = target->get_body();
   ROSE_ASSERT(body != NULL);
+
+  Sg_File_Info *new_info = new Sg_File_Info(*(target->get_startOfConstruct()));
+  Sg_File_Info *old_info = body->get_startOfConstruct();
+  ROSE_ASSERT(old_info != NULL);
+  body->set_startOfConstruct(new_info);
+  new_info->set_parent(body);
+
+  if (hasClause(target, V_SgOmpCollapseClause))
+    transOmpCollapse(target);
+
+  delete (new_info);
+  body->set_startOfConstruct(old_info);
+  old_info->set_parent(body);
+
   // Save preprocessing info as early as possible, avoiding mess up from the
   // outliner
   AttachedPreprocessingInfoType save_buf1, save_buf2, save_buf_inside;
@@ -5610,6 +5623,7 @@ void transOmpTargetUpdate(SgNode *node) {
   setSourcePositionForTransformation(func_offloading_stmt);
   insertStatementAfter(device_id_decl, func_offloading_stmt);
 
+  target_data_begin_block->set_parent(target->get_parent());
   replaceStatement(target, target_data_begin_block, true);
   attachComment(func_offloading_stmt,
                 "Translated from #pragma omp target update ...");
@@ -6985,6 +6999,12 @@ void transOmpCollapse(SgStatement *node) {
   // The OpenMP syntax requires that the omp for pragma is immediately followed
   // by the for loop.
   SgForStatement *for_loop = isSgForStatement(body);
+
+  SgBasicBlock *for_bb = isSgBasicBlock(body);
+  if (for_bb) {
+    ROSE_ASSERT(for_bb->get_statements().size() == 1);
+    for_loop = isSgForStatement(for_bb->get_statements()[0]);
+  }
 
   if (for_loop == NULL)
     return;

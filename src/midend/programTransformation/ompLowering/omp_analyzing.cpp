@@ -461,6 +461,8 @@ int patchUpImplicitMappingVariables(SgFile *file) {
   ROSE_ASSERT(file != NULL);
 
   VariantVector directive_vv = VariantVector(V_SgOmpTargetStatement);
+  directive_vv.push_back(V_SgOmpTargetTeamsStatement);
+  directive_vv.push_back(V_SgOmpTargetParallelStatement);
   directive_vv.push_back(V_SgOmpTargetTeamsDistributeParallelForStatement);
   directive_vv.push_back(V_SgOmpTargetTeamsDistributeStatement);
   directive_vv.push_back(V_SgOmpTargetParallelForStatement);
