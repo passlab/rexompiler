@@ -5684,11 +5684,15 @@ void transOmpUnroll(SgNode *node) {
 
   // Get the for loop
   SgForStatement *for_loop;
-  if (body->variantT() == V_SgOmpForStatement) {
-    SgOmpForStatement *target2 = isSgOmpForStatement(body);
+  if (isSgOmpBodyStatement(body)) {
+    SgOmpBodyStatement *target2 = isSgOmpBodyStatement(body);
     SgStatement *b2 = target2->get_body();
     for_loop = isSgForStatement(b2);
-  } else {
+    if (for_loop == NULL && isSgOmpBodyStatement(b2)) {
+      target2 = isSgOmpBodyStatement(b2);
+      for_loop = isSgForStatement(target2->get_body());
+    }
+ } else {
     for_loop = isSgForStatement(body);
   }
 
@@ -5711,14 +5715,6 @@ void transOmpUnroll(SgNode *node) {
     SgOmpPartialClause *partial = static_cast<SgOmpPartialClause *>(clause);
     SgExpression *partial_expr = partial->get_expression();
     if (partial_expr->variantT() == V_SgIntVal) {
-      /*/
-      SgExprStatement *test_stmt = isSgExprStatement(for_loop->get_test());
-      SgBinaryOp *test = isSgBinaryOp(test_stmt->get_expression());
-      ROSE_ASSERT(test != NULL);
-
-      SgIntVal *val = isSgIntVal(test->get_rhs_operand());
-      ROSE_ASSERT(val != NULL);*/
-
       SgIntVal *val = static_cast<SgIntVal *>(partial_expr);
       SageInterface::loopUnrolling(for_loop, val->get_value());
     } else {
@@ -5728,6 +5724,25 @@ void transOmpUnroll(SgNode *node) {
     puts("Unknown clause in OMP unroll.");
   }
 
+//printAST(body);
+  if (isSgOmpClauseBodyStatement(body)) {
+    SgOmpClauseBodyStatement *body2 = isSgOmpClauseBodyStatement(body);
+    if (body2->get_body()->variantT() == V_SgBasicBlock) {
+      SgBasicBlock *block2 = isSgBasicBlock(body2->get_body());
+      SgStatement *stmt1 = block2->get_statements().at(0);
+      body2->set_body(stmt1);
+    } else if (isSgOmpBodyStatement(body2->get_body())) {
+      SgOmpBodyStatement *body3 = isSgOmpBodyStatement(body2->get_body());
+      if (body3->get_body()->variantT() == V_SgBasicBlock) {
+        SgBasicBlock *block3 = isSgBasicBlock(body3->get_body());
+        SgStatement *stmt1 = block3->get_statements().at(0);
+        body3->set_body(stmt1);
+      }
+    }
+  }
+//puts("POST-unroll");
+//printAST(body);
+//puts("-----");
   replaceStatement(target, body, true);
 }
 
@@ -5763,10 +5778,14 @@ void transOmpTile(SgNode *node) {
 
   // Get the for loop
   SgForStatement *for_loop;
-  if (body->variantT() == V_SgOmpForStatement) {
-    SgOmpForStatement *target2 = isSgOmpForStatement(body);
+  if (isSgOmpBodyStatement(body)) {
+    SgOmpBodyStatement *target2 = isSgOmpBodyStatement(body);
     SgStatement *b2 = target2->get_body();
     for_loop = isSgForStatement(b2);
+    if (for_loop == NULL && isSgOmpBodyStatement(b2)) {
+      target2 = isSgOmpBodyStatement(b2);
+      for_loop = isSgForStatement(target2->get_body());
+    }
   } else {
     for_loop = isSgForStatement(body);
   }
@@ -5785,21 +5804,18 @@ void transOmpTile(SgNode *node) {
 
   // Get any sub loops
   transOmpTileSub(for_loop, list, 2);
-  /*int loop_level = 2;
+printAST(for_loop);
+  if (isSgOmpClauseBodyStatement(body)) {
+    SgOmpClauseBodyStatement *ompstmt = isSgOmpClauseBodyStatement(body);
+    SgStatement *body2 = ompstmt->get_body();
+    replaceStatement(target, body2, true);
 
-  std::vector<SgNode*> loop_list =
-  NodeQuery::querySubTree(getLoopBody(for_loop), V_SgForStatement); for
-  (std::vector<SgNode *>::iterator i = loop_list.begin(); i != loop_list.end();
-  i++) {
-      //std::cout << "Loop: " << (*i)->unparseToString() << std::endl;
-      SgForStatement *loop = isSgForStatement(*i);
-      ROSE_ASSERT(loop != NULL);
-
-      tile_size = isSgIntVal(list->get_expressions().at(loop_level - 1));
-      SageInterface::loopTiling(loop, 1, tile_size->get_value());
-  }*/
-
-  replaceStatement(target, body, true);
+    std::vector<SgNode *> loop_list = NodeQuery::querySubTree(body2, V_SgForStatement);
+    ompstmt->set_body(isSgForStatement(loop_list.back()));
+    replaceStatement(isSgStatement(loop_list.back()), ompstmt, true);
+  } else {
+    replaceStatement(target, body, true);
+  }
 }
 
 //! Collect variables from OpenMP clauses: including private, firstprivate,
