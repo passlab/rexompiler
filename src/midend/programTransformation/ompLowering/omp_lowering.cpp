@@ -5673,6 +5673,8 @@ void transOmpThreadprivate(SgNode *node) {
 
 //! Lowers the OMP unroll statement
 void transOmpUnroll(SgNode *node) {
+puts("UNROLL");
+printAST(node);
   ROSE_ASSERT(node != NULL);
   SgOmpUnrollStatement *target = isSgOmpUnrollStatement(node);
   ROSE_ASSERT(target != NULL);
@@ -5692,7 +5694,7 @@ void transOmpUnroll(SgNode *node) {
  } else {
     for_loop = isSgForStatement(body);
   }
-
+  
   ROSE_ASSERT(for_loop != NULL);
   SageInterface::forLoopNormalization(for_loop);
   
@@ -5721,7 +5723,21 @@ void transOmpUnroll(SgNode *node) {
     puts("Unknown clause in OMP unroll.");
   }
   
-  replaceStatement(target, body, true);
+  //puts("--UNROLL");
+  //printAST(body);
+  //puts("-----");
+  //replaceStatement(target, body, true);
+  if (isSgOmpBodyStatement(body)) {
+    //isSgOmpBodyStatement(body)->set_body(for_loop);
+    SgOmpBodyStatement *ompstmt = isSgOmpBodyStatement(body);
+    ompstmt->set_body(for_loop);
+    replaceStatement(for_loop, ompstmt, true);
+    replaceStatement(target, body, true);
+  } else {
+    replaceStatement(target, body, true);
+  }
+  
+  //replaceStatement(target, body, true);
 }
 
 void transOmpTileSub(SgForStatement *for_loop, SgExprListExp *list,
@@ -5745,6 +5761,7 @@ void transOmpTileSub(SgForStatement *for_loop, SgExprListExp *list,
 //! Lowers the OMP tile statement
 // Yes, this is basically the same as the unroll
 void transOmpTile(SgNode *node) {
+puts("TILE");
   ROSE_ASSERT(node != NULL);
   SgOmpTileStatement *target = isSgOmpTileStatement(node);
   ROSE_ASSERT(target != NULL);
@@ -5779,22 +5796,22 @@ void transOmpTile(SgNode *node) {
 
   // Get any sub loops
   transOmpTileSub(for_loop, list, 2);
+  
   //printAST(for_loop);
-  if (isSgOmpClauseBodyStatement(body)) {
-    SgOmpClauseBodyStatement *ompstmt = isSgOmpClauseBodyStatement(body);
-    SgStatement *body2 = ompstmt->get_body();
-    replaceStatement(target, body2, true);
-
-    std::vector<SgNode *> loop_list = NodeQuery::querySubTree(body2, V_SgForStatement);
-    ompstmt->set_body(isSgForStatement(loop_list.back()));
-    replaceStatement(isSgStatement(loop_list.back()), ompstmt, true);
+  //puts("~~~");
+  //printAST(for_loop->get_parent());
+  
+  if (isSgOmpBodyStatement(body)) {
+    //isSgOmpBodyStatement(body)->set_body(for_loop);
+    SgOmpBodyStatement *ompstmt = isSgOmpBodyStatement(body);
+    ompstmt->set_body(for_loop);
+    replaceStatement(for_loop, ompstmt, true);
+    replaceStatement(target, body, true);
   } else {
     replaceStatement(target, body, true);
   }
- /* puts("-----");
-  printAST(body);
-  puts("-----");
-  replaceStatement(target, body, true);*/
+  
+  //replaceStatement(target, body, true);
 }
 
 //! Collect variables from OpenMP clauses: including private, firstprivate,
