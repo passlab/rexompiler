@@ -11656,18 +11656,28 @@ bool SageInterface::loopUnrolling(SgForStatement* target_loop, size_t unrolling_
   }
   ROSE_ASSERT(ivar&& lb && ub && step);
   ROSE_ASSERT(isSgBasicBlock(orig_body));
-
+  
    // generate the fringe loop
    bool needFringe = true;
    SgForStatement* fringe_loop = deepCopy<SgForStatement>(target_loop);
-   if (target_loop->get_parent()->variantT() == V_SgOmpForStatement) {
+
+   bool is_for = false;
+   if (target_loop->get_parent()->variantT() == V_SgBasicBlock) {
+     SgStatement *stmt = isSgBasicBlock(target_loop->get_parent())->get_statements()[0];
+     if (stmt->variantT() == V_SgOmpUnrollStatement) {
+        is_for = true;
+     }
+   }
+   
+   if (target_loop->get_parent()->variantT() == V_SgOmpForStatement || is_for) {
        insertStatementAfter(static_cast<SgStatement *>(target_loop->get_parent()),fringe_loop);
    } else {
        insertStatementAfter(target_loop,fringe_loop);
    }
    removeStatement(fringe_loop->get_for_init_stmt());
+   
    fringe_loop->set_for_init_stmt(NULL);
-
+   
   // _lu_iter_count = (ub-lb+1)%step ==0?(ub-lb+1)/step: (ub-lb+1)/step+1;
   SgExpression* raw_range_exp =buildSubtractOp(buildAddOp(copyExpression(ub),buildIntVal(1)),
             copyExpression(lb));
@@ -11684,7 +11694,7 @@ bool SageInterface::loopUnrolling(SgForStatement* target_loop, size_t unrolling_
    ROSE_ASSERT(scope != NULL);
    string fringe_name = "_lu_fringe_"+ StringUtility::numberToString(++gensym_counter);
    SgVariableDeclaration* fringe_decl = buildVariableDeclaration(fringe_name, buildIntType(),buildAssignInitializer(initor), scope);
-   if (target_loop->get_parent()->variantT() == V_SgOmpForStatement) {
+   if (target_loop->get_parent()->variantT() == V_SgOmpForStatement || is_for) {
        insertStatementBefore(static_cast<SgStatement *>(target_loop->get_parent()),fringe_decl);
    } else {
        insertStatementAfter(target_loop,fringe_decl);

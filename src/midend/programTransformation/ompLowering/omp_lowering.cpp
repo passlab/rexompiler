@@ -5686,19 +5686,16 @@ void transOmpUnroll(SgNode *node) {
   SgForStatement *for_loop;
   if (isSgOmpBodyStatement(body)) {
     SgOmpBodyStatement *target2 = isSgOmpBodyStatement(body);
-    SgStatement *b2 = target2->get_body();
-    for_loop = isSgForStatement(b2);
-    if (for_loop == NULL && isSgOmpBodyStatement(b2)) {
-      target2 = isSgOmpBodyStatement(b2);
-      for_loop = isSgForStatement(target2->get_body());
-    }
+    std::vector<SgNode *> loop_list = NodeQuery::querySubTree(target->get_body(), V_SgForStatement);
+    ROSE_ASSERT(loop_list.size() >= 1);
+    for_loop = isSgForStatement(loop_list.front());
  } else {
     for_loop = isSgForStatement(body);
   }
 
   ROSE_ASSERT(for_loop != NULL);
   SageInterface::forLoopNormalization(for_loop);
-
+  
   // Get the clause so we can figure out the unrolling factor
   SgOmpClause *clause = target->get_clauses().front();
   if (clause->variantT() == V_SgOmpFullClause) {
@@ -5723,26 +5720,7 @@ void transOmpUnroll(SgNode *node) {
   } else {
     puts("Unknown clause in OMP unroll.");
   }
-
-//printAST(body);
-  if (isSgOmpClauseBodyStatement(body)) {
-    SgOmpClauseBodyStatement *body2 = isSgOmpClauseBodyStatement(body);
-    if (body2->get_body()->variantT() == V_SgBasicBlock) {
-      SgBasicBlock *block2 = isSgBasicBlock(body2->get_body());
-      SgStatement *stmt1 = block2->get_statements().at(0);
-      body2->set_body(stmt1);
-    } else if (isSgOmpBodyStatement(body2->get_body())) {
-      SgOmpBodyStatement *body3 = isSgOmpBodyStatement(body2->get_body());
-      if (body3->get_body()->variantT() == V_SgBasicBlock) {
-        SgBasicBlock *block3 = isSgBasicBlock(body3->get_body());
-        SgStatement *stmt1 = block3->get_statements().at(0);
-        body3->set_body(stmt1);
-      }
-    }
-  }
-//puts("POST-unroll");
-//printAST(body);
-//puts("-----");
+  
   replaceStatement(target, body, true);
 }
 
@@ -5780,12 +5758,9 @@ void transOmpTile(SgNode *node) {
   SgForStatement *for_loop;
   if (isSgOmpBodyStatement(body)) {
     SgOmpBodyStatement *target2 = isSgOmpBodyStatement(body);
-    SgStatement *b2 = target2->get_body();
-    for_loop = isSgForStatement(b2);
-    if (for_loop == NULL && isSgOmpBodyStatement(b2)) {
-      target2 = isSgOmpBodyStatement(b2);
-      for_loop = isSgForStatement(target2->get_body());
-    }
+    std::vector<SgNode *> loop_list = NodeQuery::querySubTree(target->get_body(), V_SgForStatement);
+    ROSE_ASSERT(loop_list.size() >= 1);
+    for_loop = isSgForStatement(loop_list.front());
   } else {
     for_loop = isSgForStatement(body);
   }
@@ -5804,7 +5779,7 @@ void transOmpTile(SgNode *node) {
 
   // Get any sub loops
   transOmpTileSub(for_loop, list, 2);
-printAST(for_loop);
+  //printAST(for_loop);
   if (isSgOmpClauseBodyStatement(body)) {
     SgOmpClauseBodyStatement *ompstmt = isSgOmpClauseBodyStatement(body);
     SgStatement *body2 = ompstmt->get_body();
@@ -5816,6 +5791,10 @@ printAST(for_loop);
   } else {
     replaceStatement(target, body, true);
   }
+ /* puts("-----");
+  printAST(body);
+  puts("-----");
+  replaceStatement(target, body, true);*/
 }
 
 //! Collect variables from OpenMP clauses: including private, firstprivate,
