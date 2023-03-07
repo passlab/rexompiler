@@ -715,6 +715,7 @@ void OmpSimdCompiler::addIR(SgNode *ir) {
 // The entry point to the SIMD analyzer
 
 void OmpSupport::transOmpSimd(SgNode *node) {
+puts("SIMD");
     if (simd_arch == Nothing) {
         return;
     }
