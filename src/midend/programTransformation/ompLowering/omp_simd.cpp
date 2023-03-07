@@ -736,8 +736,15 @@ void OmpSupport::transOmpSimd(SgNode *node) {
     ROSE_ASSERT(body != NULL);
 
     SgForStatement *for_loop = isSgForStatement(body);
-    ROSE_ASSERT(for_loop != NULL);
+    if (for_loop == NULL) {
+        std::vector<SgNode *> loop_list = NodeQuery::querySubTree(body, V_SgForStatement);
+        ROSE_ASSERT(loop_list.size() >= 1);
+        for_loop = isSgForStatement(loop_list.front());
+    }
+    
+    //ROSE_ASSERT(for_loop != NULL);
     SageInterface::forLoopNormalization(for_loop);
+    //std::cout << for_loop->unparseToString() << std::endl;
     
     // Create the SIMD compiler object
     bool isArm = false;
