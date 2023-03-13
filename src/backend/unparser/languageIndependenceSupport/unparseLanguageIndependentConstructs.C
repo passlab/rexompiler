@@ -3809,6 +3809,8 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpParallelLoopStatement:
                     case V_SgOmpWorkshareStatement:
                     case V_SgOmpSimdStatement:
+                    case V_SgOmpTileStatement:
+                    case V_SgOmpUnrollStatement:
                     case V_SgOmpSingleStatement:
                     case V_SgOmpTaskStatement:
                     case V_SgOmpAtomicStatement: // Atomic may have clause now
@@ -10987,6 +10989,10 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     curprint(string(" safelen("));
   else if (isSgOmpSimdlenClause(c))
     curprint(string(" simdlen("));
+  else if (isSgOmpPartialClause(c))
+    curprint(string(" partial("));
+  else if (isSgOmpSizesClause(c))
+    curprint(string(" sizes("));
   else {
     cerr<<"Error: unacceptable clause type within unparseOmpExpressionClause():"<< clause->class_name()<<endl;
     ROSE_ABORT();
@@ -10994,7 +11000,18 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
 
   // unparse the expression
   SgUnparse_Info ninfo(info);
-  if (exp_clause->get_expression())
+  if (isSgOmpSizesClause(c))
+  {
+    SgExprListExp *list = static_cast<SgExprListExp *>(exp_clause->get_expression());
+    SgExpressionPtrList sizes = list->get_expressions();
+    size_t list_size = sizes.size();
+    for (size_t i = 0; i < list_size; i++) {
+      unparseExpression(sizes[i], ninfo);
+      if (i < list_size - 1)
+        curprint(string(", "));
+    }
+  }
+  else if (exp_clause->get_expression())
     unparseExpression(exp_clause->get_expression(), ninfo);
   else
   {
@@ -11296,7 +11313,8 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpSafelenClause:
     case V_SgOmpSimdlenClause:
     case V_SgOmpOrderedClause:
-      //case V_SgOmpExpressionClause: // there should be no instance for this clause
+    case V_SgOmpPartialClause:
+    case V_SgOmpSizesClause:
       {
         unparseOmpExpressionClause(isSgOmpExpressionClause(clause), info);
         break;
@@ -11786,6 +11804,16 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         case V_SgOmpSimdStatement:
       {
         curprint(string ("simd "));
+        break;
+      }
+        case V_SgOmpTileStatement:
+      {
+        curprint(string ("tile "));
+        break;
+      }
+        case V_SgOmpUnrollStatement:
+      {
+        curprint(string ("unroll "));
         break;
       }
         case V_SgOmpForSimdStatement:
