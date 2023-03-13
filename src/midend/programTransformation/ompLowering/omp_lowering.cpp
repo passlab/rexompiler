@@ -5801,6 +5801,17 @@ puts("TILE");
   //puts("~~~");
   //printAST(for_loop->get_parent());
   
+  // Temporary workaround. It should be updated according to the SgInterface tiling API.
+  SgBasicBlock *new_tile_body = isSgBasicBlock(target->get_body());
+  SgForStatement *new_for_loop = deepCopy(for_loop);
+  SgStatement *old_body = deepCopy(body);
+  replaceStatement(for_loop, old_body, true);
+  SgOmpBodyStatement *ompstmt = isSgOmpBodyStatement(old_body);
+  ompstmt->set_body(new_for_loop);
+  replaceStatement(target, new_tile_body, true);
+  removeStatement(body);
+
+  /*
   if (isSgOmpBodyStatement(body)) {
     //isSgOmpBodyStatement(body)->set_body(for_loop);
     SgOmpBodyStatement *ompstmt = isSgOmpBodyStatement(body);
@@ -5810,6 +5821,7 @@ puts("TILE");
   } else {
     replaceStatement(target, body, true);
   }
+  */
   
   //replaceStatement(target, body, true);
 }
