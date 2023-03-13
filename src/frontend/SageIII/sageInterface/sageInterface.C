@@ -11939,10 +11939,12 @@ bool SageInterface::loopTiling(SgForStatement* loopNest, size_t targetLevel, siz
   bool is_simd = false;
   std::string inc_name = "_lt_var_inc";
   SgVarRefExp *inc_var_ref = NULL;
-  
+
   // Check if the parent is a SIMD statement
-  if (loopNest->get_parent()->variantT() == V_SgOmpForStatement) {
-    if (loopNestParent->variantT() == V_SgOmpTileStatement || loopNestParent->variantT() == V_SgOmpUnrollStatement) {
+  // Why SgOmpFor is checked here?
+  // if (loopNest->get_parent()->variantT() == V_SgOmpForStatement) {
+  if (loopNestParent->variantT() == V_SgOmpSimdStatement) {
+    if (loopNestParent->get_parent()->variantT() == V_SgOmpTileStatement || loopNestParent->get_parent()->variantT() == V_SgOmpUnrollStatement) {
         // If we also have an unroll or tile statement, we should create a variable to hold the loop index
         is_simd = true;
         SgAssignInitializer *init = buildAssignInitializer(buildIntVal(1));
@@ -12019,11 +12021,16 @@ bool SageInterface::loopTiling(SgForStatement* loopNest, size_t targetLevel, siz
   } else {
       insertStatementAfter(loopNest,control_loop);
   }*/
-  if (loopNest->get_parent()->variantT() == V_SgOmpForStatement) {
-    if (loopNestParent->variantT() == V_SgOmpTileStatement || loopNestParent->variantT() == V_SgOmpUnrollStatement) {
-        insertStatementBefore(static_cast<SgStatement *>(loopNestParent),control_loop);
+
+  // Why SgOmpFor is checked here?
+  // if (loopNest->get_parent()->variantT() == V_SgOmpForStatement) {
+  if (loopNestParent->variantT() == V_SgOmpSimdStatement) {
+    // In which case, the parent of SIMD is not Tile/Unroll? It seems that loop tilling is only called when there's "omp tile" directive.
+    if (loopNestParent->get_parent()->variantT() == V_SgOmpTileStatement || loopNestParent->get_parent()->variantT() == V_SgOmpUnrollStatement) {
+        insertStatementBefore(static_cast<SgStatement *>(loopNestParent->get_parent()),control_loop);
     } else {
-        insertStatementBefore(static_cast<SgStatement *>(loopNest->get_parent()),control_loop);
+        insertStatementBefore(static_cast<SgStatement *>(loopNestParent),control_loop);
+        //insertStatementBefore(static_cast<SgStatement *>(loopNest->get_parent()),control_loop);
     }
   } else if (loopNestParent->variantT() == V_SgOmpTileStatement || loopNestParent->variantT() == V_SgOmpUnrollStatement) {
     insertStatementBefore(static_cast<SgStatement *>(loopNestParent),control_loop);
