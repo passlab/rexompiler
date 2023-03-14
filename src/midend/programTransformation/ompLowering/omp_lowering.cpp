@@ -5673,8 +5673,6 @@ void transOmpThreadprivate(SgNode *node) {
 
 //! Lowers the OMP unroll statement
 void transOmpUnroll(SgNode *node) {
-puts("UNROLL");
-printAST(node);
   ROSE_ASSERT(node != NULL);
   SgOmpUnrollStatement *target = isSgOmpUnrollStatement(node);
   ROSE_ASSERT(target != NULL);
@@ -5723,12 +5721,7 @@ printAST(node);
     puts("Unknown clause in OMP unroll.");
   }
   
-  //puts("--UNROLL");
-  //printAST(body);
-  //puts("-----");
-  //replaceStatement(target, body, true);
   if (isSgOmpBodyStatement(body)) {
-    //isSgOmpBodyStatement(body)->set_body(for_loop);
     SgOmpBodyStatement *ompstmt = isSgOmpBodyStatement(body);
     ompstmt->set_body(for_loop);
     replaceStatement(for_loop, ompstmt, true);
@@ -5736,8 +5729,6 @@ printAST(node);
   } else {
     replaceStatement(target, body, true);
   }
-  
-  //replaceStatement(target, body, true);
 }
 
 void transOmpTileSub(SgForStatement *for_loop, SgExprListExp *list,
@@ -5746,7 +5737,6 @@ void transOmpTileSub(SgForStatement *for_loop, SgExprListExp *list,
       NodeQuery::querySubTree(getLoopBody(for_loop), V_SgForStatement);
   for (std::vector<SgNode *>::iterator i = loop_list.begin();
        i != loop_list.end(); i++) {
-    // std::cout << "Loop: " << (*i)->unparseToString() << std::endl;
     SgForStatement *loop = isSgForStatement(*i);
     ROSE_ASSERT(loop != NULL);
 
@@ -5761,7 +5751,6 @@ void transOmpTileSub(SgForStatement *for_loop, SgExprListExp *list,
 //! Lowers the OMP tile statement
 // Yes, this is basically the same as the unroll
 void transOmpTile(SgNode *node) {
-puts("TILE");
   ROSE_ASSERT(node != NULL);
   SgOmpTileStatement *target = isSgOmpTileStatement(node);
   ROSE_ASSERT(target != NULL);
@@ -5797,10 +5786,6 @@ puts("TILE");
   // Get any sub loops
   transOmpTileSub(for_loop, list, 2);
   
-  //printAST(for_loop);
-  //puts("~~~");
-  //printAST(for_loop->get_parent());
-  
   // Temporary workaround. It should be updated according to the SgInterface tiling API.
   SgBasicBlock *new_tile_body = isSgBasicBlock(target->get_body());
   SgForStatement *new_for_loop = deepCopy(for_loop);
@@ -5812,20 +5797,6 @@ puts("TILE");
   replaceStatement(target, new_tile_body, true);
   if (ompstmt) removeStatement(body);
   //removeStatement(body);
-  
-  /*
-  if (isSgOmpBodyStatement(body)) {
-    //isSgOmpBodyStatement(body)->set_body(for_loop);
-    SgOmpBodyStatement *ompstmt = isSgOmpBodyStatement(body);
-    ompstmt->set_body(for_loop);
-    replaceStatement(for_loop, ompstmt, true);
-    replaceStatement(target, body, true);
-  } else {
-    replaceStatement(target, body, true);
-  }
-  */
-  
-  //replaceStatement(target, body, true);
 }
 
 //! Collect variables from OpenMP clauses: including private, firstprivate,

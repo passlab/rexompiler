@@ -183,8 +183,6 @@ void OmpSimdCompiler::omp_simd_build_scalar_assign(SgExpression *node, SgType *t
             expr = buildIntVal(0);}
     }
     
-    std::cout << std::endl;
-    
     // Build the variable declaration
     SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
     appendStatement(vd, new_block);
@@ -714,7 +712,6 @@ void OmpSimdCompiler::addIR(SgNode *ir) {
 // The entry point to the SIMD analyzer
 
 void OmpSupport::transOmpSimd(SgNode *node) {
-puts("SIMD");
     if (simd_arch == Nothing) {
         return;
     }
