@@ -289,7 +289,7 @@ SgAssignInitializer *intel_write_exp_gather(SgBinaryOp *op, SgOmpSimdStatement *
     
     std::string func_name = intel_simd_func(Load, index_pntr->get_type());
     SgExprListExp *parameters = buildExprListExp(cast);
-    SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
+    SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, target->get_scope());
     SgAssignInitializer *local_init = buildAssignInitializer(ld);
     
     SgVariableDeclaration *mask_vd = buildVariableDeclaration(vindex_name, mask_type, local_init, new_block);
@@ -331,7 +331,7 @@ SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgOmpSimdStatement *targ
     
     std::string func_name = intel_simd_func(Load, mask_pntr->get_type());
     SgExprListExp *parameters = buildExprListExp(cast);
-    SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
+    SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, target->get_scope());
     SgAssignInitializer *local_init = buildAssignInitializer(ld);
     
     SgVariableDeclaration *mask_vd = buildVariableDeclaration(vindex_name, mask_type, local_init, new_block);
@@ -356,7 +356,7 @@ SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgOmpSimdStatement *targ
     if (simd_len == 8) func_name = "_kxnor_mask8";
     
     parameters = buildExprListExp(buildVarRefExp(mask1, new_block), buildVarRefExp(mask2, new_block));
-    ld = buildFunctionCallExp(func_name, kmask_type, parameters, new_block);
+    ld = buildFunctionCallExp(func_name, kmask_type, parameters, target->get_scope());
     local_init = buildAssignInitializer(ld);
     
     SgVariableDeclaration *kmask_vd = buildVariableDeclaration(kmask, kmask_type, local_init, new_block);
@@ -366,7 +366,7 @@ SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgOmpSimdStatement *targ
     std::string zero_name = intel_gen_buf();
     
     func_name = intel_simd_func(BroadcastZero, dest->get_type());
-    ld = buildFunctionCallExp(func_name, vector_type, NULL, new_block);
+    ld = buildFunctionCallExp(func_name, vector_type, NULL, target->get_scope());
     local_init = buildAssignInitializer(ld);
     
     SgVariableDeclaration *zero_vd = buildVariableDeclaration(zero_name, vector_type, local_init, new_block);
@@ -397,7 +397,7 @@ SgAssignInitializer *intel_write_gather(SgBinaryOp *op, SgOmpSimdStatement *targ
         }
         
         parameters = buildExprListExp(mask_ref, buildIntVal(0));
-        ld = buildFunctionCallExp(extract_name, extract_type, parameters, new_block);
+        ld = buildFunctionCallExp(extract_name, extract_type, parameters, target->get_scope());
         local_init = buildAssignInitializer(ld);
         mask_vd = buildVariableDeclaration(vindex_name2, extract_type, local_init, new_block);
         appendStatement(mask_vd, new_block);
@@ -457,7 +457,7 @@ void intel_write_scatter(SgBinaryOp *op, SgOmpSimdStatement *target, SgBasicBloc
     
     std::string func_name = intel_simd_func(Load, mask_pntr->get_type());
     SgExprListExp *parameters = buildExprListExp(cast);
-    SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
+    SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, target->get_scope());
     SgAssignInitializer *local_init = buildAssignInitializer(ld);
     
     SgVariableDeclaration *mask_vd = buildVariableDeclaration(mask_name, mask_type, local_init, new_block);
@@ -486,7 +486,7 @@ void intel_write_scatter(SgBinaryOp *op, SgOmpSimdStatement *target, SgBasicBloc
         }
         
         parameters = buildExprListExp(mask_ref, buildIntVal(0));
-        ld = buildFunctionCallExp(extract_name, extract_type, parameters, new_block);
+        ld = buildFunctionCallExp(extract_name, extract_type, parameters, target->get_scope());
         local_init = buildAssignInitializer(ld);
         mask_vd = buildVariableDeclaration(mask_name2, extract_type, local_init, new_block);
         appendStatement(mask_vd, new_block);
@@ -564,7 +564,7 @@ void intel_write_scalar_store(SgBinaryOp *op, SgOmpSimdStatement *target, SgBasi
     std::string vec2 = intel_gen_buf();
     
     SgExprListExp *hadd_params;
-    
+   
     // Extract
     if (simd_len == 16) {
         std::string extract_name = intel_simd_func(Extract, vec->get_type());
@@ -591,7 +591,7 @@ void intel_write_scalar_store(SgBinaryOp *op, SgOmpSimdStatement *target, SgBasi
         
         parameters = buildExprListExp(sub1, sub2);
         std::string func_name = intel_simd_func(Add, vec->get_type(), true);
-        SgExpression *fc3 = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
+        SgExpression *fc3 = buildFunctionCallExp(func_name, vector_type, parameters, target->get_scope());
         SgExprStatement *expr = buildAssignStatement(sub2, fc3);
         to_insert.push_back(expr);
     } else if (simd_len == 8) {
