@@ -447,7 +447,6 @@ bool OmpSimdCompiler::omp_simd_pass1() {
         if (i < 0 || i >= assign_list.size()) break;
         SgAssignOp *op = assign_list.at(i);
         if (!isSgVarRefExp(op->get_lhs_operand()) || !isSgVarRefExp(op->get_rhs_operand())) {
-            std::cout << "SKIP: " << i << std::endl;
             break;
         }
         
