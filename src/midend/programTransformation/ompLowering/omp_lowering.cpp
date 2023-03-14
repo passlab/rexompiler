@@ -5807,10 +5807,12 @@ puts("TILE");
   SgStatement *old_body = deepCopy(body);
   replaceStatement(for_loop, old_body, true);
   SgOmpBodyStatement *ompstmt = isSgOmpBodyStatement(old_body);
-  ompstmt->set_body(new_for_loop);
+  if (ompstmt) ompstmt->set_body(new_for_loop);
+  //ompstmt->set_body(new_for_loop);
   replaceStatement(target, new_tile_body, true);
-  removeStatement(body);
-
+  if (ompstmt) removeStatement(body);
+  //removeStatement(body);
+  
   /*
   if (isSgOmpBodyStatement(body)) {
     //isSgOmpBodyStatement(body)->set_body(for_loop);

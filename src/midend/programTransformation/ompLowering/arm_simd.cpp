@@ -166,7 +166,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
     SgExprListExp *parameters = buildExprListExp(start, max_val);
     
     SgType *pred_type = buildOpaqueType("svbool_t", new_block);
-    SgExpression *predicate = buildFunctionCallExp(pred_func_name, pred_type, parameters, new_block);
+    SgExpression *predicate = buildFunctionCallExp(pred_func_name, pred_type, parameters, target->get_scope());
     SgAssignInitializer *init = buildAssignInitializer(predicate);
     
     SgVariableDeclaration *vd = buildVariableDeclaration(pg_name, pred_type, init, new_block);
@@ -184,7 +184,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
     if (!insertFound) insertStatementBefore(target, vd);
     
     // Build this for safe keeping
-    SgExpression *inc_fc = buildFunctionCallExp(pred_count_name, buildIntType(), NULL, for_loop);
+    SgExpression *inc_fc = buildFunctionCallExp(pred_count_name, buildIntType(), NULL, target->get_scope());
     
     // Translate the IR
     for (Rose_STL_Container<SgNode *>::iterator i = ir_block->begin(); i != ir_block->end(); i++) {
@@ -211,7 +211,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 SgAddressOfOp *addr = buildAddressOfOp(array);
                 SgExprListExp *parameters = buildExprListExp(pred_ref, addr);
                 
-                SgExpression *ld = buildFunctionCallExp("svld1", vector_type, parameters, new_block);
+                SgExpression *ld = buildFunctionCallExp("svld1", vector_type, parameters, target->get_scope());
                 init = buildAssignInitializer(ld);
             } break;
             
@@ -224,7 +224,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 SgExprListExp *parameters = buildExprListExp(src);
                 std::string func_name = arm_get_func(dest->get_type(), Broadcast);
                 
-                SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
+                SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, target->get_scope());
                 init = buildAssignInitializer(ld);
             } break;
             
@@ -243,7 +243,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 SgAddressOfOp *addr = buildAddressOfOp(mask_pntr);
                 SgExprListExp *parameters = buildExprListExp(pred_ref, addr);
                 
-                SgExpression *ld = buildFunctionCallExp("svld1", mask_type, parameters, new_block);
+                SgExpression *ld = buildFunctionCallExp("svld1", mask_type, parameters, target->get_scope());
                 SgAssignInitializer *local_init = buildAssignInitializer(ld);
                 
                 SgVariableDeclaration *mask_vd = buildVariableDeclaration(vindex_name, mask_type, local_init, new_block);
@@ -254,7 +254,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 SgVarRefExp *base_ref = static_cast<SgVarRefExp *>(element->get_lhs_operand());
                 
                 parameters = buildExprListExp(pred_ref, base_ref, mask_ref);
-                ld = buildFunctionCallExp("svld1_gather_index", vector_type, parameters, new_block);
+                ld = buildFunctionCallExp("svld1_gather_index", vector_type, parameters, target->get_scope());
                 init = buildAssignInitializer(ld);
             } break;
             
@@ -268,7 +268,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 SgAddressOfOp *addr = buildAddressOfOp(array);
                 SgExprListExp *parameters = buildExprListExp(pred_ref, addr, src);
                 
-                SgExprStatement *str = buildFunctionCallStmt("svst1", buildVoidType(), parameters, new_block);
+                SgExprStatement *str = buildFunctionCallStmt("svst1", buildVoidType(), parameters, target->get_scope());
                 appendStatement(str, new_block);
             } break;
             
@@ -294,7 +294,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                     SgExprListExp *parameters = buildExprListExp(val);
                     std::string func_name = arm_get_func(dest->get_type(), Broadcast);
                     
-                    SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
+                    SgExpression *ld = buildFunctionCallExp(func_name, vector_type, parameters, target->get_scope());
                     SgAssignInitializer *local_init = buildAssignInitializer(ld);
                     
                     SgVariableDeclaration *vd = buildVariableDeclaration(dest_name, vector_type, local_init, new_block);
@@ -321,11 +321,11 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 switch (scalar->get_type()->variantT()) {
                     case V_SgTypeInt:
                     case V_SgTypeFloat: {
-                        predicate = buildFunctionCallExp("svptrue_b32", pred_type, NULL, new_block);
+                        predicate = buildFunctionCallExp("svptrue_b32", pred_type, NULL, target->get_scope());
                     } break;
                     
                     case V_SgTypeDouble: {
-                        predicate = buildFunctionCallExp("svptrue_b64", pred_type, NULL, new_block);
+                        predicate = buildFunctionCallExp("svptrue_b64", pred_type, NULL, target->get_scope());
                     } break;
                     
                     default: {}
@@ -338,7 +338,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                 // result = svaddv(__pg0, __part0);
                 SgExprListExp *parameters = buildExprListExp(pred_var, vec);
                 SgFunctionCallExp *reductionCall = buildFunctionCallExp("svaddv",
-                                                    scalar->get_type(), parameters, new_block);
+                                                    scalar->get_type(), parameters, target->get_scope());
                 SgPlusAssignOp *scalar_add = buildPlusAssignOp(scalar, reductionCall);
                 SgExprStatement *empty = buildExprStatement(scalar_add);
                 insertStatementAfter(pred_update, empty);
@@ -364,7 +364,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
                     default: {}
                 }
                 
-                SgExpression *fc = buildFunctionCallExp(func_name, vector_type, parameters, new_block);
+                SgExpression *fc = buildFunctionCallExp(func_name, vector_type, parameters, target->get_scope());
                 
                 if (name.rfind("__part", 0) == 0) {
                     SgExprStatement *assign = buildAssignStatement(dest, fc);
@@ -414,7 +414,7 @@ void omp_simd_write_arm(SgOmpSimdStatement *target, SgForStatement *for_loop, Ro
     }
     
     parameters = buildExprListExp(loop_var, max_val);
-    predicate = buildFunctionCallExp(pred_func_name, pred_type, parameters, new_block);
+    predicate = buildFunctionCallExp(pred_func_name, pred_type, parameters, target->get_scope());
     
     SgExprStatement *pred_update = buildAssignStatement(pred_var, predicate);
     appendStatement(pred_update, new_block);
