@@ -5681,6 +5681,7 @@ void transOmpUnroll(SgNode *node) {
   ROSE_ASSERT(scope != NULL);
   SgStatement *body = target->get_body();
   ROSE_ASSERT(body != NULL);
+  SgNode *cur_parent = target->get_parent();
 
   // Get the for loop
   SgForStatement *for_loop;
@@ -5729,6 +5730,9 @@ void transOmpUnroll(SgNode *node) {
   } else {
     replaceStatement(target, body, true);
   }
+
+  removeStatement(target);
+  body->set_parent(cur_parent);
 }
 
 void transOmpTileSub(SgForStatement *for_loop, SgExprListExp *list,
@@ -5795,8 +5799,8 @@ void transOmpTile(SgNode *node) {
   if (ompstmt) ompstmt->set_body(new_for_loop);
   //ompstmt->set_body(new_for_loop);
   replaceStatement(target, new_tile_body, true);
-  if (ompstmt) removeStatement(body);
-  //removeStatement(body);
+  if (ompstmt)
+    removeStatement(body);
 }
 
 //! Collect variables from OpenMP clauses: including private, firstprivate,
@@ -7285,18 +7289,54 @@ void lower_omp(SgSourceFile *file) {
           transOmpTargetTeamsDistributeParallelFor(node);
           break;
         }
-        case V_SgOmpSimdStatement: {
-          if (hasClause(node, V_SgOmpCollapseClause))
-            transOmpCollapse(node);
-          transOmpSimd(node);
-          break;
-        }
-        case V_SgOmpUnrollStatement: {
-          transOmpUnroll(node);
-          break;
-        }
+        case V_SgOmpSimdStatement:
+        case V_SgOmpUnrollStatement:
         case V_SgOmpTileStatement: {
-          transOmpTile(node);
+          std::vector<SgStatement *> loop_trans_nodes;
+          SgStatement *frontier = node;
+          while (frontier != NULL) {
+            bool is_omp_loop_transformation = false;
+            switch (frontier->variantT()) {
+            case V_SgOmpSimdStatement:
+            case V_SgOmpUnrollStatement:
+            case V_SgOmpTileStatement:
+              loop_trans_nodes.push_back(frontier);
+              is_omp_loop_transformation = true;
+              break;
+            default:;
+            }
+            if (is_omp_loop_transformation == false)
+              break;
+
+            frontier = isSgOmpBodyStatement(frontier)->get_body();
+            // skip basic blocks if any
+            SgBasicBlock *body = isSgBasicBlock(frontier);
+            while (body != NULL) {
+              const SgStatementPtrList &bb_statements = body->get_statements();
+              if (bb_statements.size() == 1) {
+                body = isSgBasicBlock(bb_statements[0]);
+                frontier = bb_statements[0];
+              } else {
+                frontier = NULL;
+                break;
+              }
+            }
+          }
+          for (int i = loop_trans_nodes.size() - 1; i >= 0; i--) {
+            switch (loop_trans_nodes[i]->variantT()) {
+            case V_SgOmpSimdStatement:
+              if (hasClause(loop_trans_nodes[i], V_SgOmpCollapseClause))
+                transOmpCollapse(loop_trans_nodes[i]);
+              transOmpSimd(loop_trans_nodes[i]);
+              break;
+            case V_SgOmpUnrollStatement:
+              transOmpUnroll(loop_trans_nodes[i]);
+              break;
+            case V_SgOmpTileStatement:
+              transOmpTile(loop_trans_nodes[i]);
+              break;
+            }
+          }
           break;
         }
         default: {
