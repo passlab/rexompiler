@@ -5731,7 +5731,6 @@ void transOmpUnroll(SgNode *node) {
     replaceStatement(target, body, true);
   }
 
-  removeStatement(target);
   body->set_parent(cur_parent);
 }
 
