@@ -723,6 +723,7 @@ void OmpSupport::transOmpSimd(SgNode *node) {
     // Make sure the tree is correct
     SgOmpSimdStatement *target = isSgOmpSimdStatement(node);
     ROSE_ASSERT(target != NULL);
+    SgNode *cur_parent = target->get_parent();
 
     SgSourceFile *file = getEnclosingSourceFile(node);
 
@@ -784,5 +785,7 @@ void OmpSupport::transOmpSimd(SgNode *node) {
         
         replaceStatement(target, for_loop);
     }
+    removeStatement(target);
+    for_loop->set_parent(cur_parent);
 }
 
