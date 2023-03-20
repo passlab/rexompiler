@@ -785,7 +785,6 @@ void OmpSupport::transOmpSimd(SgNode *node) {
         
         replaceStatement(target, for_loop);
     }
-    removeStatement(target);
     for_loop->set_parent(cur_parent);
 }
 
