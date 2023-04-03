@@ -1,10 +1,9 @@
 [submodule "src/frontend/CxxFrontend/EDG"]
 	path = src/frontend/CxxFrontend/EDG
-	url = git@github.com:passlab/EDG.git
+	url = https://github.com/passlab/EDG.git
 [submodule "src/frontend/SageIII/ompparser"]
 	path = src/frontend/SageIII/ompparser
-	url = git@github.com:passlab/ompparser.git
+	url = https://github.com/passlab/ompparser.git
 [submodule "src/frontend/SageIII/accparser"]
 	path = src/frontend/SageIII/accparser
-	url = git@github.com:passlab/accparser.git
-
+	url = https://github.com/passlab/accparser.git
