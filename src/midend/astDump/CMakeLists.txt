@@ -1,11 +1,11 @@
-add_library( astVisualization OBJECT
+add_library( astDump OBJECT
   astGraph.C
   AstAttributeDOT.C
   wholeAST.C
   copyGraph.C
   walrus.C
   includeGraph.C)
-add_dependencies(astVisualization rosetta_generated)
+add_dependencies(astDump rosetta_generated)
 
 
 ########### install files ###############

@@ -106,7 +106,6 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH_ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT 
      -I$(top_srcdir)/src/frontend/SageIII/accparser/src \
      -I$(top_srcdir)/src/frontend/SageIII/astFixup \
      -I$(top_srcdir)/src/frontend/SageIII/astPostProcessing \
-     -I$(top_srcdir)/src/frontend/SageIII/astVisualization \
      -I$(top_srcdir)/src/frontend/SageIII/sageInterface \
      -I$(top_srcdir)/src/frontend/SageIII/includeDirectivesProcessing \
      -I$(top_srcdir)/src/frontend/SageIII/ompparser/src \
@@ -124,6 +123,7 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH_ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT 
      -I$(top_srcdir)/src/util/commandlineProcessing \
      -I$(top_srcdir)/src/midend \
      -I$(top_srcdir)/src/midend/astDiagnostics \
+     -I$(top_srcdir)/src/midend/astDump \
      -I$(top_srcdir)/src/midend/astProcessing \
      -I$(top_srcdir)/src/midend/astQuery \
      -I$(top_srcdir)/src/midend/programAnalysis \
@@ -143,7 +143,6 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/frontend/SageIII/accparser/src \
      -I$(top_srcdir)/src/frontend/SageIII/astFixup \
      -I$(top_srcdir)/src/frontend/SageIII/astPostProcessing \
-     -I$(top_srcdir)/src/frontend/SageIII/astVisualization \
      -I$(top_srcdir)/src/frontend/SageIII/ompparser/src \
      -I$(top_srcdir)/src/frontend/SageIII/sageInterface \
      -I$(top_srcdir)/src/frontend/SageIII/virtualCFG \
@@ -168,6 +167,7 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/midend \
      -I$(top_srcdir)/src/midend/abstractLayer \
      -I$(top_srcdir)/src/midend/astDiagnostics \
+     -I$(top_srcdir)/src/midend/astDump \
      -I$(top_srcdir)/src/midend/programTransformation/astInlining \
      -I$(top_srcdir)/src/midend/programTransformation/astOutlining  \
      -I$(top_srcdir)/src/midend/programTransformation/transformationTracking \

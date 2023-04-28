@@ -11,11 +11,6 @@ dotGeneratorWholeASTGraph_SOURCES = dotGeneratorWholeASTGraph.C
 
 LDADD = $(ROSE_LIBS)
 
-# changes to the templates in ../src/midend/astRewriteMechanism/rewriteTreeTraversal.C
-# should force several files using those templates to be recompiled.
-# Express this explicitly:
-# dotGenerator.o: $(top_builddir)/src/midend/astRewriteMechanism/rewriteTreeTraversal.o
-
 EXTRA_DIST = CMakeLists.txt $(TESTCODES)
 
 CLEANFILES = testdot_01.C.Preorder.dot testdot_01.C.Postorder.dot testdot_01.C.TopDown.dot testdot_01.C.BottomUp.dot testdot_01.C.TopDownBottomUp.dot
@@ -54,13 +49,3 @@ endif
 # DQ (1/4/2008): Required to cleanup for make distcheck
 distclean-local:
 	rm -rf *.dot
-
-
-
-
-
-
-
-
-
-

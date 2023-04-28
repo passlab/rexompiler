@@ -804,7 +804,6 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astFixup
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astPostProcessing
-  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astVisualization
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/includeDirectivesProcessing
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/sageInterface
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/ompparser/src
@@ -829,6 +828,7 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/midend/astDiagnostics
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/astInlining
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/astOutlining
+  ${ROSE_TOP_SRC_DIR}/src/midend/astDump
   ${ROSE_TOP_SRC_DIR}/src/midend/astProcessing
   ${ROSE_TOP_SRC_DIR}/src/midend/astQuery
   ${ROSE_TOP_SRC_DIR}/src/midend/astUtil/annotation

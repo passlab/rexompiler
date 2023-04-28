@@ -43,7 +43,7 @@ mAstQueryPath=astQuery#
 mAstUtilPath=astUtil#
 mProgramTransformationPath=programTransformation#
 
-SUBDIRS = \
+SUBDIRS = astDump \
 	programTransformation/extractFunctionArgumentsNormalization \
 	programTransformation/singleStatementToBlockNormalization
 
@@ -89,6 +89,9 @@ libmidend_la_SOURCES=\
 
 libmidend_la_DEPENDENCIES=\
 	$(mAstQuery_la_dependencies)
+
+libmidend_la_LIBADD=\
+	astDump/libastDump.la
 
 pkginclude_HEADERS = \
 	$(mAbstractLayer_includeHeaders) \

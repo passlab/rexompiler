@@ -17,9 +17,9 @@ license_string.h: $(top_srcdir)/LicenseInformation/ROSE_BSD_License.txt
 	perl $(top_srcdir)/scripts/to-c-string.pl < $< > $@
 
 # if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-#   SUBDIRS = astFixup astPostProcessing sageInterface astVisualization virtualCFG includeDirectivesProcessing
+#   SUBDIRS = astFixup astPostProcessing sageInterface virtualCFG includeDirectivesProcessing
 #else
-   SUBDIRS = astFixup astPostProcessing sageInterface virtualCFG astTokenStream astHiddenTypeAndDeclarationLists astVisualization includeDirectivesProcessing ompparser accparser
+   SUBDIRS = astFixup astPostProcessing sageInterface virtualCFG astTokenStream astHiddenTypeAndDeclarationLists includeDirectivesProcessing ompparser accparser
 #endif
 
 # DQ (12/29/2009): This is only used to handle generated code as smaller files.
@@ -143,7 +143,6 @@ libsage3_la_LIBADD= \
   astPostProcessing/libastPostProcessing.la \
   sageInterface/libsageInterface.la \
   virtualCFG/libvirtualCFG.la \
-  astVisualization/libastVisualization.la \
   astHiddenTypeAndDeclarationLists/libastHiddenTypeAndDeclarationLists.la \
   includeDirectivesProcessing/libincludeDirectivesProcessing.la \
   astTokenStream/libastTokenStream.la
@@ -155,7 +154,6 @@ libsage3_la_LIBADD= \
   astPostProcessing/libastPostProcessing.la \
   sageInterface/libsageInterface.la \
   virtualCFG/libvirtualCFG.la \
-  astVisualization/libastVisualization.la \
   astHiddenTypeAndDeclarationLists/libastHiddenTypeAndDeclarationLists.la \
   includeDirectivesProcessing/libincludeDirectivesProcessing.la
 endif

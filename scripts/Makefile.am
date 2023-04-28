@@ -17,7 +17,6 @@ distributedScripts =				 \
 	generateDirectoryGraph			 \
 	libtoolcp				 \
 	lsdot					 \
-	nmiBuildAndTestFarm			 \
 	policies-checker.sh			 \
 	policies/CaseInsensitiveFileNames.pl	 \
 	policies/EightColumnTabstops.pl.disabled \
@@ -39,7 +38,7 @@ distributedScripts =				 \
 	shtool
 
 # scripts put into the distribution
-EXTRA_DIST = CMakeLists.txt README $(distributedScripts) buildExampleRoseWorkspaceDirectory hudson \
+EXTRA_DIST = CMakeLists.txt README $(distributedScripts) buildExampleRoseWorkspaceDirectory \
 	test_exit_status test_with_answer
 
 # install the tools in 'bin' (a subsect of EXTRA_DIST)

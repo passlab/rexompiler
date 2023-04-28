@@ -583,7 +583,6 @@ lcov:
 -d src/frontend/SageIII/astFixup/.libs \
 -d src/frontend/SageIII/astHiddenTypeAndDeclarationLists/.libs \
 -d src/frontend/SageIII/astPostProcessing/.libs \
--d src/frontend/SageIII/astVisualization/.libs \
 -d src/frontend/SageIII/virtualCFG/.libs \
 -d src/frontend/SageIII/.libs \
 -d src/ROSETTA/src/.libs \
@@ -595,11 +594,7 @@ lcov:
 -d src/backend/.libs \
 -d src/3rdPartyLibraries/MSTL/.libs \
 -d src/3rdPartyLibraries/libharu-2.1.0/src/.libs \
--d src/Rose/CommandLine/.libs \
--d src/Rose/CodeGen/.libs \
--d src/Rose/Diagnostics/.libs \
 -d src/Rose/AST/.libs \
--d src/Rose/Color/.libs \
 -d src/Rose/.libs \
 -d src/.libs \
 -d src/midend/astUtil/annotation/.libs \
@@ -627,6 +622,7 @@ lcov:
 -d src/midend/programTransformation/functionCallNormalization/.libs \
 -d src/midend/astDiagnostics/.libs \
 -d src/midend/astProcessing/.libs \
+-d src/midend/astDump/.libs \
 -d src/midend/programAnalysis/.libs \
 -d src/midend/.libs \
 -d src/midend/abstractLayer/.libs \
@@ -676,7 +672,6 @@ librose-lcov.info: all-lcov.info
 	lcov --remove librose-lcov.info \
         "$(top_srcdir)/src/frontend/CxxFrontend/EDG/edgRose/debugging.*" \
         "$(top_srcdir)/src/frontend/CxxFrontend/EDG/edgRose/edgGraph.*" \
-        "$(top_srcdir)/src/midend/programAnalysis/OAWrap/*" \
         "$(top_srcdir)/src/midend/programAnalysis/OpenAnalysis/*" \
         "$(top_srcdir)/src/midend/programAnalysis/genericDataflow/*" \
         "$(top_srcdir)/src/frontend/CxxFrontend/EDG/EDG_5.0/*" \
@@ -690,7 +685,7 @@ librose-lcov.info: all-lcov.info
         "$(top_srcdir)/src/midend/programTransformation/implicitCodeGeneration/*" \
         "$(top_srcdir)/src/midend/programTransformation/singleStatementToBlockNormalization/*" \
         "$(top_srcdir)/src/frontend/SageIII/stringify.C" \
-        "$(top_srcdir)/src/frontend/SageIII/astVisualization/*" \
+        "$(top_srcdir)/src/midend/astDump/*" \
         "$(top_srcdir)/src/midend/astProcessing/AstProcessing.h" \
         "$(top_srcdir)/src/frontend/SageIII/sageInterface/sageGeneric.h" \
          -o librose-lcov.info

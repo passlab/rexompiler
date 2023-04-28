@@ -56,8 +56,6 @@ set(alternativeProgramSlicing_STAT_SRCS
 
 # src/midend/programAnalysis/CallGraphAnalysis/Makefile.am: CallGraph
 
-# src/midend/programAnalysis/OAWrap/Makefile.am: OAWrap
-
 # src/midend/programAnalysis/annotationLanguageParser/Makefile.am: annotationLanguageParser
 
 # src/midend/programAnalysis/dominatorTreesAndDominanceFrontiers/Makefile.am: dominance
@@ -96,8 +94,6 @@ set(dominance_STAT_SRCS
 # src/frontend/SageIII/sageInterface/Makefile.am: sageInterface
 
 # src/frontend/SageIII/Makefile.am: sage3
-
-# src/frontend/SageIII/astVisualization/Makefile.am: astVisualization
 
 # src/frontend/SageIII/astTokenStream/Makefile.am: astTokenStream
 

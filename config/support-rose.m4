@@ -1234,7 +1234,6 @@ src/frontend/SageIII/astFixup/Makefile
 src/frontend/SageIII/astHiddenTypeAndDeclarationLists/Makefile
 src/frontend/SageIII/astPostProcessing/Makefile
 src/frontend/SageIII/astTokenStream/Makefile
-src/frontend/SageIII/astVisualization/Makefile
 src/frontend/SageIII/includeDirectivesProcessing/Makefile
 src/frontend/SageIII/sage.docs
 src/frontend/SageIII/sageInterface/Makefile
@@ -1243,6 +1242,7 @@ src/frontend/SageIII/accparser/Makefile
 src/frontend/SageIII/virtualCFG/Makefile
 src/midend/Makefile
 src/midend/programAnalysis/Makefile
+src/midend/astDump/Makefile
 src/midend/programTransformation/extractFunctionArgumentsNormalization/Makefile
 src/midend/programTransformation/loopProcessing/Makefile
 src/midend/programTransformation/singleStatementToBlockNormalization/Makefile

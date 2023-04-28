@@ -113,7 +113,7 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:sageInterface>
   $<TARGET_OBJECTS:astTokenStream>
   $<TARGET_OBJECTS:astHiddenTypeAndDeclarationLists>
-  $<TARGET_OBJECTS:astVisualization>
+  $<TARGET_OBJECTS:astDump>
   $<TARGET_OBJECTS:includeDirectivesProcessing>
   $<TARGET_OBJECTS:astPostProcessing>
   $<TARGET_OBJECTS:trans_tracking>
