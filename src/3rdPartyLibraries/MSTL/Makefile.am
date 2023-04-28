@@ -27,7 +27,7 @@ distclean-local:
 # Some source files are included so that templates can be included
 pkginclude_HEADERS = \
    DOTGeneration.h DOTRepresentation.h \
-   Translator.h DOTSubgraphRepresentation.h DOTGraphInterface.h TreeTraversal.h \
+   DOTSubgraphRepresentation.h DOTGraphInterface.h \
    DOTRepresentationImpl.h DOTGenerationImpl.h \
    DOTSubgraphRepresentationImpl.h
 if ROSE_WITH_LIBHARU

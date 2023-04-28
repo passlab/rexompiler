@@ -9,19 +9,19 @@ CXX_TEMPLATE_REPOSITORY_PATH = .
 
 include_HEADERS = \
    AstPDFGeneration.h AstNodeVisitMapping.h AstAttributeMechanism.h \
-   AstTextAttributesHandling.h AstDOTGeneration.h AstProcessing.h \
+   AstTextAttributesHandling.h AstProcessing.h \
    AstSimpleProcessing.h AstTraverseToRoot.h AstNodePtrs.h \
    AstSuccessorsSelectors.h AstReverseProcessing.h \
    AstReverseSimpleProcessing.h AstRestructure.h AstClearVisitFlags.h \
    AstTraversal.h AstCombinedProcessing.h AstCombinedProcessingImpl.h \
    AstCombinedSimpleProcessing.h StackFrameVector.h AstSharedMemoryParallelProcessing.h \
    AstSharedMemoryParallelProcessingImpl.h AstSharedMemoryParallelSimpleProcessing.h graphProcessing.h \
-   graphTemplate.h SgGraphTemplate.h plugin.h
+   graphTemplate.h SgGraphTemplate.h TreeTraversal.h plugin.h
 
 
 libastprocessingSources = \
-   AstPDFGeneration.C AstNodeVisitMapping.C AstTextAttributesHandling.C \
-   AstDOTGeneration.C AstProcessing.C AstSimpleProcessing.C \
+   AstNodeVisitMapping.C AstTextAttributesHandling.C \
+   AstProcessing.C AstSimpleProcessing.C \
    AstNodePtrs.C AstSuccessorsSelectors.C AstAttributeMechanism.C \
    AstReverseSimpleProcessing.C AstRestructure.C AstClearVisitFlags.C \
    AstTraversal.C AstCombinedSimpleProcessing.C \
@@ -55,8 +55,3 @@ EXTRA_DIST = CMakeLists.txt AstProcessing.docs
 
 test_code_size:
 	g++ -E -I$(top_builddir) -I. $(ROSE_INCLUDES) $(srcdir)/AstNodeVisitMapping.C | wc -l
-
-
-
-
-

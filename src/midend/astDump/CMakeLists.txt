@@ -4,7 +4,9 @@ add_library( astDump OBJECT
   wholeAST.C
   copyGraph.C
   walrus.C
-  includeGraph.C)
+  includeGraph.C
+  AstDOTGeneration.C
+  AstPDFGeneration.C)
 add_dependencies(astDump rosetta_generated)
 
 
@@ -13,5 +15,5 @@ add_dependencies(astDump rosetta_generated)
 install(FILES  AstAttributeDOT.h astGraph.h astGraphTemplateImpl.h wholeAST.h
                wholeAST_API.h copyGraph.h walrus.h
                intermediateRepresentationNodeGraphs.h
-               includeGraph.h
+               includeGraph.h AstDOTGeneration.h AstPDFGeneration.h
         DESTINATION ${INCLUDE_INSTALL_DIR})

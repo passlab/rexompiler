@@ -3,7 +3,6 @@
 mAstProcessing_la_sources=\
 	$(mAstProcessingPath)/AstNodeVisitMapping.C \
 	$(mAstProcessingPath)/AstTextAttributesHandling.C \
-	$(mAstProcessingPath)/AstDOTGeneration.C \
 	$(mAstProcessingPath)/AstProcessing.C \
 	$(mAstProcessingPath)/plugin.C \
 	$(mAstProcessingPath)/AstSimpleProcessing.C \
@@ -14,13 +13,8 @@ mAstProcessing_la_sources=\
 	$(mAstProcessingPath)/AstClearVisitFlags.C \
 	$(mAstProcessingPath)/AstTraversal.C \
 	$(mAstProcessingPath)/AstCombinedSimpleProcessing.C \
-	$(mAstProcessingPath)/AstSharedMemoryParallelSimpleProcessing.C
-mAstProcessing_la_sources+=\
+	$(mAstProcessingPath)/AstSharedMemoryParallelSimpleProcessing.C \
 	$(mAstProcessingPath)/AstRestructure.C
-if ROSE_WITH_LIBHARU
-mAstProcessing_la_sources+=\
-	$(mAstProcessingPath)/AstPDFGeneration.C 
-endif
 
 mAstProcessing_libadd=\
 	$(CXX_TEMPLATE_OBJECTS)
@@ -29,7 +23,6 @@ mAstProcessing_includeHeaders=\
 	$(mAstProcessingPath)/AstNodeVisitMapping.h \
 	$(mAstProcessingPath)/AstAttributeMechanism.h \
 	$(mAstProcessingPath)/AstTextAttributesHandling.h \
-	$(mAstProcessingPath)/AstDOTGeneration.h \
 	$(mAstProcessingPath)/AstProcessing.h \
 	$(mAstProcessingPath)/plugin.h \
 	$(mAstProcessingPath)/AstSimpleProcessing.h \
@@ -51,12 +44,8 @@ mAstProcessing_includeHeaders=\
 	$(mAstProcessingPath)/graphProcessing.h \
 	$(mAstProcessingPath)/graphProcessingSgIncGraph.h \
 	$(mAstProcessingPath)/graphTemplate.h \
-        $(mAstProcessingPath)/SgGraphTemplate.h
-
-if ROSE_WITH_LIBHARU
-mAstProcessing_includeHeaders+=\
-	$(mAstProcessingPath)/AstPDFGeneration.h 
-endif
+        $(mAstProcessingPath)/SgGraphTemplate.h \
+        $(mAstProcessingPath)/TreeTraversal.h
 
 mAstProcessing_extraDist=\
 	$(mAstProcessingPath)/CMakeLists.txt \

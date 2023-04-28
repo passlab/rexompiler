@@ -7,7 +7,12 @@ noinst_LTLIBRARIES = libastDump.la
 # DQ (2/26/2009): Added copyGraph.[hC], also note that copyGraph.C has
 # a dependence on a TCLSH script that is located in the scripts directory.
 # libastDump_la_SOURCES = astGraph.C AstAttributeDOT.C wholeAST.C copyGraph.C walrus.C intermediateRepresentationNodeGraphs.C
-libastDump_la_SOURCES = astGraph.C AstAttributeDOT.C wholeAST.C copyGraph.C walrus.C intermediateRepresentationNodeGraphs.C includeGraph.C
+libastDump_la_SOURCES = astGraph.C AstAttributeDOT.C wholeAST.C copyGraph.C \
+                        walrus.C intermediateRepresentationNodeGraphs.C includeGraph.C \
+			AstDOTGeneration.C
+if ROSE_WITH_LIBHARU
+libastDump_la_SOURCES += AstPDFGeneration.C
+endif
 
 #   colorFilesTraversal.C  colorMemoryPoolTraversal.C \
 #   customAstDOTGeneration.C  customAstDOTGenerationData.C \
@@ -16,6 +21,13 @@ libastDump_la_SOURCES = astGraph.C AstAttributeDOT.C wholeAST.C copyGraph.C walr
 libastDump_la_LIBADD       =
 libastDump_la_DEPENDENCIES =
 
-pkginclude_HEADERS = AstAttributeDOT.h astGraph.h astGraphTemplateImpl.h wholeAST.h wholeAST_API.h copyGraph.h walrus.h intermediateRepresentationNodeGraphs.h includeGraph.h
+pkginclude_HEADERS = AstAttributeDOT.h astGraph.h astGraphTemplateImpl.h \
+                     wholeAST.h wholeAST_API.h copyGraph.h walrus.h \
+                     intermediateRepresentationNodeGraphs.h includeGraph.h \
+		     AstDOTGeneration.h
+
+if ROSE_WITH_LIBHARU
+pkginclude_HEADERS += AstPDFGeneration.h
+endif
 
 EXTRA_DIST = CMakeLists.txt

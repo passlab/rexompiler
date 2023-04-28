@@ -10,5 +10,5 @@ install(
   FILES
     DOTGeneration.h DOTGenerationImpl.h DOTGraphInterface.h
     DOTRepresentation.h DOTRepresentationImpl.h DOTSubgraphRepresentation.h
-    DOTSubgraphRepresentationImpl.h PDFGeneration.h Translator.h TreeTraversal.h
+    DOTSubgraphRepresentationImpl.h PDFGeneration.h
   DESTINATION ${INCLUDE_INSTALL_DIR})

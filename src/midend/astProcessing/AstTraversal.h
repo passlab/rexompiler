@@ -4,7 +4,6 @@
 #ifndef ASTTRAVERSAL_H
 #define ASTTRAVERSAL_H
 
-
 #include "TreeTraversal.h"
 //#include "sage3.h"
 
