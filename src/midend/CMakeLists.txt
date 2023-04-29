@@ -1,5 +1,6 @@
 add_subdirectory(abstractLayer)
 add_subdirectory(astDiagnostics)
+add_subdirectory(astDump)
 add_subdirectory(astProcessing)
 add_subdirectory(astQuery)
 add_subdirectory(astUtil)
