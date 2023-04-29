@@ -35,7 +35,6 @@ endif
 
 # TOO (11/22/2011): flattening midend Makefiles => TODO: move conditional compilation to Makefile.
 libroseLibraries = \
-   $(top_builddir)/src/3rdPartyLibraries/MSTL/libmstl.la \
    $(top_builddir)/src/backend/libbackend.la \
    $(top_builddir)/src/frontend/SageIII/libsage3.la \
    $(libroseCxxlibraries) \
@@ -62,8 +61,6 @@ pkginclude_HEADERS = \
      roseInternal.h \
      rose_msvc.h \
      msvc_stdint.h \
-     midend/astProcessing/AstDOTGeneration.h \
-     midend/astProcessing/AstDOTGenerationImpl.C \
      frontend/SageIII/sage3basic.h \
      frontend/SageIII/sage3basic.hhh \
      midend/astDiagnostics/AstConsistencyTests.h

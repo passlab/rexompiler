@@ -380,7 +380,6 @@ WARN_LOGFILE           =
 #                         @top_srcdir@/src/midend/astQuery \
 #                         @top_srcdir@/src \
 #                         @top_srcdir@/src/backend/unparser \
-#                         @top_srcdir@/src/3rdPartyLibraries/MSTL \
 #                         @top_srcdir@/src/util \
 #                         @top_srcdir@/docs \
 #                         @DOXYGEN_ADDED_DIRECTORY_1@ \
@@ -933,7 +932,6 @@ INCLUDE_PATH           = @top_pwd@ \
                          @top_srcdir@/src \
                          @top_srcdir@/src/backend/unparser \
                          @top_srcdir@/src/util \
-                         @top_srcdir@/src/3rdPartyLibraries/MSTL \
                          @top_srcdir@/src/midend/astQuery
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard 

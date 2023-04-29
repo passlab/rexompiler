@@ -47,7 +47,7 @@ RoseDocsDependencies = \
      $(top_srcdir)/src/midend/astQuery/QueryLib.docs \
      $(top_srcdir)/src/midend/astProcessing/AstProcessing.docs \
      $(top_srcdir)/src/backend/unparser/unparser.docs \
-     $(top_srcdir)/src/3rdPartyLibraries/MSTL/MSTL.docs
+     $(top_srcdir)/src/midend/astDump/MSTL.docs
 
 # If the generated sage source code is older than the code used to
 # generate the sage source code then regenerate the sage source code

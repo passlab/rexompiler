@@ -860,7 +860,6 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/constantFolding
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/implicitCodeGeneration
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/runtimeTransformation
-  ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/MSTL
   ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/libharu-2.1.0/include
   ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/libharu-2.1.0/include
   ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/libharu-2.1.0/win32/include)
