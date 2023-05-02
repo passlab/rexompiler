@@ -1,22 +1,12 @@
 # Non-recursive Makefile
 
 mAbstractLayer_includeHeaders=\
-	$(mAbstractLayerPath)/AstAnnotator.h \
-	$(mAbstractLayerPath)/AstTerm.h \
 	$(mAbstractLayerPath)/RoseAst.h \
-	$(mAbstractLayerPath)/Label.h \
-	$(mAbstractLayerPath)/Labeler.h \
-	$(mAbstractLayerPath)/SgNodeHelper.h \
-	$(mAbstractLayerPath)/VariableIdMapping.h
+	$(mAbstractLayerPath)/SgNodeHelper.h
 
 mAbstractLayer_la_sources=\
-	$(mAbstractLayerPath)/AstAnnotator.C \
-	$(mAbstractLayerPath)/AstTerm.C \
 	$(mAbstractLayerPath)/RoseAst.C \
-	$(mAbstractLayerPath)/Label.C \
-	$(mAbstractLayerPath)/Labeler.C \
-	$(mAbstractLayerPath)/SgNodeHelper.C \
-	$(mAbstractLayerPath)/VariableIdMapping.C
+	$(mAbstractLayerPath)/SgNodeHelper.C
 
 mAbstractLayer_extraDist=\
 	$(mAbstractLayerPath)/CMakeLists.txt \

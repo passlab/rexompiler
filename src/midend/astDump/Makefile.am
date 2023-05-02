@@ -9,8 +9,9 @@ noinst_LTLIBRARIES = libastDump.la
 # libastDump_la_SOURCES = astGraph.C AstAttributeDOT.C wholeAST.C copyGraph.C walrus.C intermediateRepresentationNodeGraphs.C
 libastDump_la_SOURCES = astGraph.C AstAttributeDOT.C wholeAST.C copyGraph.C \
                         walrus.C intermediateRepresentationNodeGraphs.C includeGraph.C \
-                        AstDOTGeneration.C \
-                        DOTGraphInterface.C
+                        AstDOTGeneration.C DOTGraphInterface.C \
+                        AstTerm.C
+
 if ROSE_WITH_LIBHARU
 libastDump_la_SOURCES += AstPDFGeneration.C PDFGeneration.C
 endif
@@ -29,7 +30,7 @@ pkginclude_HEADERS = AstAttributeDOT.h astGraph.h astGraphTemplateImpl.h \
                      DOTGeneration.h DOTRepresentation.h \
                      DOTSubgraphRepresentation.h DOTGraphInterface.h \
                      DOTRepresentationImpl.h DOTGenerationImpl.h \
-                     DOTSubgraphRepresentationImpl.h
+                     DOTSubgraphRepresentationImpl.h AstTerm.h
 
 if ROSE_WITH_LIBHARU
 pkginclude_HEADERS += AstPDFGeneration.h PDFGeneration.h
