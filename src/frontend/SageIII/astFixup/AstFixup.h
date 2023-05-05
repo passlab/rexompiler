@@ -14,6 +14,7 @@
 #include "fixupEnumValues.h"
 #include "fixupFriendTemplateDeclarations.h"
 #include "fixupPrettyFunction.h"
+#include "edge_ptr_repl.h"
 
 // Defined in AstFixup.C
 void removeEmptyElses (SgNode* top);

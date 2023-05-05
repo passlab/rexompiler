@@ -6,6 +6,7 @@ noinst_LTLIBRARIES = libastFixup.la
 
 libastFixup_la_SOURCES      = \
      AstFixup.C \
+     edge_ptr_repl.C \
      fixupforGnuBackendCompiler.C \
      fixupInClassDataInitialization.C \
      removeInitializedNamePtr.C \
@@ -23,6 +24,7 @@ libastFixup_la_DEPENDENCIES =
 
 pkginclude_HEADERS = \
      AstFixup.h \
+     edge_ptr_repl.h \
      fixupFunctionDefinitions.h \
      fixupStorageAccessOfForwardTemplateDeclarations.h \
      removeInitializedNamePtr.h \

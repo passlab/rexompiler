@@ -68,8 +68,7 @@ pkginclude_HEADERS = \
 nobase_pkginclude_HEADERS=						\
 	Rose/AST/Checker.h						\
 	Rose/AST/cmdline.h						\
-	Rose/AST/Defect.h						\
-	Rose/AST/Utils.h
+	Rose/AST/Defect.h
 
 ########################################################################################################################
 

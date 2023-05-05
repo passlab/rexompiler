@@ -1,8 +1,6 @@
 
 #include "sage3basic.h"
-#include "Rose/AST/Utils.h"
-
-namespace Rose { namespace AST { namespace Utils {
+#include "edge_ptr_repl.h"
 
 template <typename HandlerT, typename TraveralT>
 struct EdgeTraversal : public TraveralT {
@@ -51,6 +49,3 @@ void edgePointerReplacement(SgNode * subtree, replacement_map_t const & rmap) {
   EdgeTreeTraversal<EdgeReplacer> traversal(rmap);
   traversal.traverse(subtree, preorder);
 }
-
-} } }
-
