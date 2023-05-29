@@ -1817,6 +1817,14 @@ convertDirective(std::pair<SgPragmaDeclaration *, OpenMPDirective *>
     result = convertOmpDeclareSimdDirective(current_OpenMPIR_to_SageIII);
     break;
   }
+  case OMPD_declare_target: {
+    result = convertOmpDeclareTargetDirective(current_OpenMPIR_to_SageIII);
+    break;
+  }
+  case OMPD_end_declare_target: {
+    result = convertOmpEndDeclareTargetDirective(current_OpenMPIR_to_SageIII);
+    break;
+  }
   case OMPD_flush: {
     result = convertOmpFlushDirective(current_OpenMPIR_to_SageIII);
     break;
@@ -2547,6 +2555,43 @@ SgStatement *convertOmpDeclareSimdDirective(
     }
     };
   };
+  return result;
+}
+
+// Convert an OpenMPIR Declare Target Directive to a ROSE node
+SgStatement *convertOmpDeclareTargetDirective(
+    std::pair<SgPragmaDeclaration *, OpenMPDirective *>
+        current_OpenMPIR_to_SageIII) {
+  SgOmpDeclareTargetStatement *result = new SgOmpDeclareTargetStatement();
+  result->set_firstNondefiningDeclaration(result);
+
+  std::vector<OpenMPClause *> *all_clauses =
+      current_OpenMPIR_to_SageIII.second->getClausesInOriginalOrder();
+  OpenMPClauseKind clause_kind;
+  std::vector<OpenMPClause *>::iterator clause_iter;
+  for (clause_iter = all_clauses->begin(); clause_iter != all_clauses->end();
+       clause_iter++) {
+    clause_kind = (*clause_iter)->getKind();
+    switch (clause_kind) {
+    case OMPC_to:
+      convertToClause(isSgStatement(result), current_OpenMPIR_to_SageIII,
+                      *clause_iter);
+      break;
+    default:
+      convertClause(isSgStatement(result), current_OpenMPIR_to_SageIII,
+                    *clause_iter);
+    };
+  };
+  return result;
+}
+
+// Convert an OpenMPIR End Declare Target Directive to a ROSE node
+SgStatement *convertOmpEndDeclareTargetDirective(
+    std::pair<SgPragmaDeclaration *, OpenMPDirective *>
+        current_OpenMPIR_to_SageIII) {
+  SgOmpEndDeclareTargetStatement *result = new SgOmpEndDeclareTargetStatement();
+  result->set_firstNondefiningDeclaration(result);
+
   return result;
 }
 
@@ -4705,6 +4750,8 @@ bool checkOpenMPIR(OpenMPDirective *directive) {
   case OMPD_critical:
   case OMPD_declare_mapper:
   case OMPD_declare_simd:
+  case OMPD_declare_target:
+  case OMPD_end_declare_target:
   case OMPD_depobj:
   case OMPD_distribute:
   case OMPD_do:

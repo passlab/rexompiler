@@ -87,6 +87,10 @@ SgStatement *convertVariantBodyDirective(
     std::pair<SgPragmaDeclaration *, OpenMPDirective *>);
 SgStatement *convertOmpDeclareSimdDirective(
     std::pair<SgPragmaDeclaration *, OpenMPDirective *>);
+SgStatement *convertOmpDeclareTargetDirective(
+    std::pair<SgPragmaDeclaration *, OpenMPDirective *>);
+SgStatement *convertOmpEndDeclareTargetDirective(
+    std::pair<SgPragmaDeclaration *, OpenMPDirective *>);
 SgStatement *convertOmpFlushDirective(
     std::pair<SgPragmaDeclaration *, OpenMPDirective *>);
 SgStatement *convertOmpAllocateDirective(

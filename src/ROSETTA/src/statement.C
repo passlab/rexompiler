@@ -515,6 +515,8 @@ Grammar::setUpStatements ()
 
   // + variable list
      NEW_TERMINAL_MACRO (OmpDeclareSimdStatement, "OmpDeclareSimdStatement",  "OMP_DECLARE_SIMD_STMT" );
+     NEW_TERMINAL_MACRO (OmpDeclareTargetStatement, "OmpDeclareTargetStatement",  "OMP_DECLARE_TARGET_STMT" );
+     NEW_TERMINAL_MACRO (OmpEndDeclareTargetStatement, "OmpEndDeclareTargetStatement",  "OMP_END_DECLARE_TARGET_STMT" );
   // simplest directives, just one line
      NEW_TERMINAL_MACRO (OmpBarrierStatement,   "OmpBarrierStatement",   "OMP_BARRIER_STMT" );
      NEW_TERMINAL_MACRO (OmpTaskyieldStatement,   "OmpTaskyieldStatement",   "OMP_TASKYIELD_STMT" );
@@ -546,7 +548,7 @@ Grammar::setUpStatements ()
           FortranIncludeLine                      | OmpTaskwaitStatement      | StmtDeclarationStatement     |
           StaticAssertionDeclaration              | OmpDeclareSimdStatement   | MicrosoftAttributeDeclaration|
           NonrealDecl                             | EmptyDeclaration          |
-          OmpDeclareMapperStatement,
+          OmpDeclareMapperStatement               | OmpDeclareTargetStatement | OmpEndDeclareTargetStatement,
           "DeclarationStatement", "DECL_STMT", false);
 
      NEW_NONTERMINAL_MACRO (OmpExecStatement,
@@ -4276,6 +4278,10 @@ Grammar::setUpStatements ()
     OmpCriticalStatement.setFunctionSource            ("SOURCE_OMP_CRITICAL_STATEMENT", "../Grammar/Statement.code");
     OmpDeclareSimdStatement.setFunctionPrototype   ("HEADER_OMP_DECLARE_SIMD_STATEMENT", "../Grammar/Statement.code");
     OmpDeclareSimdStatement.setFunctionSource      ("SOURCE_OMP_DECLARE_SIMD_STATEMENT", "../Grammar/Statement.code");
+    OmpDeclareTargetStatement.setFunctionPrototype   ("HEADER_OMP_DECLARE_TARGET_STATEMENT", "../Grammar/Statement.code");
+    OmpDeclareTargetStatement.setFunctionSource      ("SOURCE_OMP_DECLARE_TARGET_STATEMENT", "../Grammar/Statement.code");
+    OmpEndDeclareTargetStatement.setFunctionPrototype   ("HEADER_OMP_END_DECLARE_TARGET_STATEMENT", "../Grammar/Statement.code");
+    OmpEndDeclareTargetStatement.setFunctionSource      ("SOURCE_OMP_END_DECLARE_TARGET_STATEMENT", "../Grammar/Statement.code");
 
     OmpRequiresStatement.setFunctionPrototype   ("HEADER_OMP_REQUIRES_STATEMENT", "../Grammar/Statement.code");
     OmpRequiresStatement.setFunctionSource            ("SOURCE_OMP_REQUIRES_STATEMENT", "../Grammar/Statement.code" );
@@ -4368,6 +4374,10 @@ Grammar::setUpStatements ()
 
     OmpDeclareSimdStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+    OmpDeclareTargetStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+    OmpDeclareTargetStatement.setDataPrototype("SgStatementPtrList", "statements", "",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
     OmpRequiresStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
     OmpTaskwaitStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
