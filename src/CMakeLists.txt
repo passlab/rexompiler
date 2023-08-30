@@ -115,7 +115,7 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:astDump>
   $<TARGET_OBJECTS:includeDirectivesProcessing>
   $<TARGET_OBJECTS:astPostProcessing>
-  $<TARGET_OBJECTS:trans_tracking>
+  $<TARGET_OBJECTS:trans_tracking>)
 
 if(NOT enable-internalFrontendDevelopment)
   list(APPEND rose_LIB_SRCS
