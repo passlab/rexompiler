@@ -4,7 +4,7 @@ bin_SCRIPTS =
 pkgdata_DATA =
 MOSTLYCLEANFILES =
 
-SUBDIRS = util ROSETTA Rose frontend midend backend \
+SUBDIRS = util ROSETTA frontend midend backend \
           3rdPartyLibraries
 
 # This lists a large number of directories.  If "make install"
@@ -44,8 +44,7 @@ libroseLibraries = \
    $(top_builddir)/src/midend/programTransformation/extractFunctionArgumentsNormalization/libExtractFunctionArgumentsNormalization.la \
    $(top_builddir)/src/midend/programTransformation/singleStatementToBlockNormalization/libSingleStatementToBlockNormalization.la \
    $(top_builddir)/src/midend/libmidend.la \
-   $(top_builddir)/src/util/libroseutil.la \
-   $(top_builddir)/src/Rose/AST/libRoseAST.la
+   $(top_builddir)/src/util/libroseutil.la
 
 if ROSE_WITH_LIBHARU
 libroseLibraries += \
@@ -65,10 +64,7 @@ pkginclude_HEADERS = \
      frontend/SageIII/sage3basic.hhh \
      midend/astDiagnostics/AstConsistencyTests.h
 
-nobase_pkginclude_HEADERS=						\
-	Rose/AST/Checker.h						\
-	Rose/AST/cmdline.h						\
-	Rose/AST/Defect.h
+nobase_pkginclude_HEADERS =
 
 ########################################################################################################################
 

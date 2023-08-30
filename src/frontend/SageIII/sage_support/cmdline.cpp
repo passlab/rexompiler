@@ -11,7 +11,6 @@
 #include "cmdline.h"
 #include "keep_going.h"
 #include "FileUtility.h"
-#include "Rose/AST/cmdline.h"
 #include "omp_simd.h"
 
 #include "Outliner.hh"
@@ -358,15 +357,6 @@ CommandlineProcessing::isOptionTakingSecondParameter( string argument )
           argument == "-rose:excludePath" ||
           argument == "-rose:includeFile" ||
           argument == "-rose:excludeFile" ||
-
-          argument == "-rose:ast:graphviz:when" ||
-          argument == "-rose:ast:graphviz:mode" ||
-          argument == "-rose:ast:graphviz:out" ||
-          argument == "-rose:ast:checker:when" ||
-          argument == "-rose:ast:checker:mode" ||
-          argument == "-rose:ast:checker:effect" ||
-          argument == "-rose:ast:checker:log" ||
-          argument == "-rose:ast:checker:save" ||
 
           // TOO1 (2/13/2014): Starting to refactor CLI handling into separate namespaces
           Rose::Cmdline::Unparser::OptionRequiresArgument(argument) ||
@@ -1545,107 +1535,6 @@ SgProject::processCommandLine(const vector<string>& input_argv)
           ROSE_ASSERT (get_suppressConstantFoldingPostProcessing() == true);
         }
 
-  // AST to GraphViz
-     std::string rose_ast_option_param;
-     std::vector<std::string> rose_ast_option_param_split;
-     if (CommandlineProcessing::isOptionWithParameter(local_commandLineArgumentList, "-rose:ast:graphviz:", "(when)", rose_ast_option_param, true) == true ) {
-       if (rose_ast_option_param == "both" || rose_ast_option_param=="frontend") {
-         Rose::AST::cmdline::graphviz.frontend.on = true;
-       }
-       if (rose_ast_option_param == "both" || rose_ast_option_param=="backend") {
-         Rose::AST::cmdline::graphviz.backend.on = true;
-       }
-     }
-
-     if (CommandlineProcessing::isOptionWithParameter(local_commandLineArgumentList, "-rose:ast:graphviz:", "(mode)", rose_ast_option_param, true) == true ) {
-       rose_ast_option_param_split.clear();
-       split_string(rose_ast_option_param, rose_ast_option_param_split);
-       unsigned idx = 0;
-       if (Rose::AST::cmdline::graphviz.frontend.on) {
-         Rose::AST::cmdline::graphviz.frontend.mode = Rose::AST::cmdline::graphviz_t::__mode(rose_ast_option_param_split[idx++]);
-       }
-       if (Rose::AST::cmdline::graphviz.backend.on) {
-         Rose::AST::cmdline::graphviz.backend.mode = Rose::AST::cmdline::graphviz_t::__mode(rose_ast_option_param_split[rose_ast_option_param_split.size() == 1 ? 0 : idx]);
-       }
-     }
-
-     if (CommandlineProcessing::isOptionWithParameter(local_commandLineArgumentList, "-rose:ast:graphviz:", "(out)", rose_ast_option_param, true) == true ) {
-       rose_ast_option_param_split.clear();
-       split_string(rose_ast_option_param, rose_ast_option_param_split);
-       unsigned idx = 0;
-       if (Rose::AST::cmdline::graphviz.frontend.on) {
-         Rose::AST::cmdline::graphviz.frontend.out = rose_ast_option_param_split[idx++];
-       }
-       if (Rose::AST::cmdline::graphviz.backend.on) {
-         ROSE_ASSERT(rose_ast_option_param_split.size() == idx + 1);
-         Rose::AST::cmdline::graphviz.backend.out = rose_ast_option_param_split[idx];
-       }
-     }
-
-  // AST Checker
-
-     if (CommandlineProcessing::isOptionWithParameter(local_commandLineArgumentList, "-rose:ast:checker:", "(when)", rose_ast_option_param, true) == true ) {
-       if (rose_ast_option_param == "both" || rose_ast_option_param=="frontend") {
-         Rose::AST::cmdline::checker.frontend.on = true;
-       }
-       if (rose_ast_option_param == "both" || rose_ast_option_param=="backend") {
-         Rose::AST::cmdline::checker.backend.on = true;
-       }
-     }
-
-     if (CommandlineProcessing::isOptionWithParameter(local_commandLineArgumentList, "-rose:ast:checker:", "(mode)", rose_ast_option_param, true) == true ) {
-       rose_ast_option_param_split.clear();
-       split_string(rose_ast_option_param, rose_ast_option_param_split);
-       unsigned idx = 0;
-       if (Rose::AST::cmdline::checker.frontend.on) {
-         Rose::AST::cmdline::checker.frontend.modes.clear();
-         split_string(rose_ast_option_param_split[idx++], Rose::AST::cmdline::checker.frontend.modes, ':', Rose::AST::cmdline::checker_t::__mode);
-       }
-       if (Rose::AST::cmdline::checker.backend.on) {
-         Rose::AST::cmdline::checker.backend.modes.clear();
-         idx = rose_ast_option_param_split.size() == 1 ? 0 : idx;
-         split_string(rose_ast_option_param_split[idx], Rose::AST::cmdline::checker.backend.modes, ':', Rose::AST::cmdline::checker_t::__mode);
-       }
-     }
-
-     if (CommandlineProcessing::isOptionWithParameter(local_commandLineArgumentList, "-rose:ast:checker:", "(effect)", rose_ast_option_param, true) == true ) {
-       rose_ast_option_param_split.clear();
-       split_string(rose_ast_option_param, rose_ast_option_param_split);
-       unsigned idx = 0;
-       if (Rose::AST::cmdline::checker.frontend.on) {
-         Rose::AST::cmdline::checker.frontend.effect = Rose::AST::cmdline::checker_t::__effect(rose_ast_option_param_split[idx++]);
-       }
-       if (Rose::AST::cmdline::checker.backend.on) {
-         Rose::AST::cmdline::checker.backend.effect = Rose::AST::cmdline::checker_t::__effect(rose_ast_option_param_split[rose_ast_option_param_split.size() == 1 ? 0 : idx]);
-       }
-     }
-
-     if (CommandlineProcessing::isOptionWithParameter(local_commandLineArgumentList, "-rose:ast:checker:", "(log)", rose_ast_option_param, true) == true ) {
-       rose_ast_option_param_split.clear();
-       split_string(rose_ast_option_param, rose_ast_option_param_split);
-       unsigned idx = 0;
-       if (Rose::AST::cmdline::checker.frontend.on) {
-         Rose::AST::cmdline::checker.frontend.log = rose_ast_option_param_split[idx++];
-       }
-       if (Rose::AST::cmdline::checker.backend.on) {
-         ROSE_ASSERT(rose_ast_option_param_split.size() == idx + 1);
-         Rose::AST::cmdline::checker.backend.log = rose_ast_option_param_split[idx];
-       }
-     }
-
-     if (CommandlineProcessing::isOptionWithParameter(local_commandLineArgumentList, "-rose:ast:checker:", "(save)", rose_ast_option_param, true) == true ) {
-       rose_ast_option_param_split.clear();
-       split_string(rose_ast_option_param, rose_ast_option_param_split);
-       unsigned idx = 0;
-       if (Rose::AST::cmdline::checker.frontend.on) {
-         Rose::AST::cmdline::checker.frontend.save = rose_ast_option_param_split[idx++];
-       }
-       if (Rose::AST::cmdline::checker.backend.on) {
-         ROSE_ASSERT(rose_ast_option_param_split.size() == idx + 1);
-         Rose::AST::cmdline::checker.backend.save = rose_ast_option_param_split[idx];
-       }
-     }
-
   // Verbose ?
 
      if ( get_verbose() > 1 )
@@ -2301,46 +2190,6 @@ SgFile::usage ()
 "     -rose:no_optimize_flag_for_frontend\n"
 "                             ignore use of __builtin functions in frontend processing\n"
 "                             all optimization specified is still done on ROSE generated code\n"
-"\n"
-"AST to GraphViz:\n"
-"     -rose:ast:graphviz:when off|frontend|backend|both\n"
-"                             When to generate the graph (off by default).\n"
-"                             \"frontend\" refers to after the frontend but before any midend (or plugin) runs.\n"
-"                                  It shows the AST as it was read.\n"
-"                             \"backend\" refers to after all midend (or plugin) have been run.\n"
-"                                  It shows the AST as it will be unparsed.\n"
-"     -rose:ast:graphviz:mode tree|graph\n"
-"                             Whether to generate the basic AST or the complete graph (AST + symbols + types)\n"
-"                             The graph mode will show *all* nodes: you must use self-contained reproducers\n"
-"                                 (using -DSKIP_ROSE_BUILTIN_DECLARATIONS -- can be multiple source/header but no system headers).\n"
-"     -rose:ast:graphviz:out rose-ast-frontend.dot,rose-ast-backend.dot\n"
-"                             Name of the output file (comma separted files if when=both).\n"
-"                             Default is rose-ast.dot if when is not both, else it is rose-ast-frontend.dot and rose-ast-backend.dot\n"
-"\n"
-"AST checking:\n"
-"     -rose:ast:checker:when off|frontend|backend|both\n"
-"                             When to check the AST (off by default).\n"
-"                             \"frontend\" refers to after the frontend but before any midend (or plugin) runs.\n"
-"                                  It checks the AST as it was read.\n"
-"                             \"backend\" refers to after all midend (or plugin) have been run.\n"
-"                                  It checks the AST as it will be unparsed.\n"
-"     -rose:ast:checker:mode ll,ast\n"
-"                             Comma-separated selection of checkers:\n"
-"                               * ll: low-level AST checks (pointer validity)\n"
-"                               * ast: construction rules (such as declarations, symbols, and types graphs)\n"
-"                             Default is \"ll,ast\"\n"
-"     -rose:ast:checker:effect none|summary|report|fail\n"
-"                             Control the effect of detecting defect:.\n"
-"                               * none: no visible effect but log/save might still get triggered.\n"
-"                               * summary|report: display a summary or full log on std::cerr.\n"
-"                               * fail: display a summary on std::cerr then abort.\n"
-"     -rose:ast:checker:log filename.log\n"
-"                             Output log file *iff* any defect is found (no log if missing).\n"
-"                             Comma separated if when=both.\n"
-"     -rose:ast:checker:save filename\n"
-"                             Causes the whole AST and check results to be saved as filename.ast and filename.json.\n"
-"                             *iff* any defect is found.\n"
-"                             Comma separated if when=both.\n"
 "\n"
 "Plugin Mode:\n"
 "     -rose:plugin_lib <shared_lib_filename>\n"
@@ -4524,15 +4373,6 @@ SgFile::stripRoseCommandLineOptions ( vector<string> & argv )
   // TV (11/20/2018): ROSE-1529: removed non-standard standard selection
   // Rasmussen (11/17/2018): ROSE-1584: separated "++" into single characters [+][+] for regex handling.
      optionCount = sla(argv, "-std=", "($)", "(c|c[+][+]|gnu|gnu[+][+]|fortran|upc|upcxx)",1);
-
-  // AST I/O
-     optionCount = sla(argv, "-rose:ast:", "($)", "merge",1);
-     optionCount = sla(argv, "-rose:ast:", "($)^", "(read|write)",&integerOption,1);
-
-  // AST to Graphviz
-     optionCount = sla(argv, "-rose:ast:graphviz:", "($)^", "(when|mode|out)",&integerOption,1);
-  // AST Checker
-     optionCount = sla(argv, "-rose:ast:checker:", "($)^", "(when|mode|effect|log|save)",&integerOption,1);
 
   // DQ (12/9/2016): Eliminating a warning that we want to be an error: -Werror=unused-but-set-variable.
      ROSE_ASSERT(optionCount >= 0);

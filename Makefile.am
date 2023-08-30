@@ -593,8 +593,6 @@ lcov:
 -d src/util/.libs \
 -d src/backend/.libs \
 -d src/3rdPartyLibraries/libharu-2.1.0/src/.libs \
--d src/Rose/AST/.libs \
--d src/Rose/.libs \
 -d src/.libs \
 -d src/midend/astUtil/annotation/.libs \
 -d src/midend/astUtil/astInterface/.libs \

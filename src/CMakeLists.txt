@@ -83,7 +83,6 @@ add_definitions(-DROSE_DLL_EXPORTS)
 add_subdirectory(frontend)
 add_subdirectory(midend)
 add_subdirectory(backend)
-add_subdirectory(Rose)
 
 ########################################################################################################################
 # The ROSE library
@@ -117,7 +116,6 @@ set(rose_LIB_SRCS
   $<TARGET_OBJECTS:includeDirectivesProcessing>
   $<TARGET_OBJECTS:astPostProcessing>
   $<TARGET_OBJECTS:trans_tracking>
-  $<TARGET_OBJECTS:RoseAST>)
 
 if(NOT enable-internalFrontendDevelopment)
   list(APPEND rose_LIB_SRCS

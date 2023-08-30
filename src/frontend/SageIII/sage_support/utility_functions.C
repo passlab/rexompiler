@@ -34,8 +34,6 @@
 // DQ (9/8/2017): Debugging ROSE_ASSERT. Call sighandler_t signal(int signum, sighandler_t handler);
 #include<signal.h>
 
-#include "Rose/AST/cmdline.h"
-
 // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace std;
 using namespace Rose;
@@ -481,8 +479,8 @@ frontend (const std::vector<std::string>& argv, bool frontendConstantFolding )
      if (SageBuilder::SourcePositionClassificationMode == SageBuilder::e_sourcePositionFrontendConstruction)
        SageBuilder::setSourcePositionClassificationMode(SageBuilder::e_sourcePositionTransformation);
 
-     Rose::AST::cmdline::graphviz.frontend.exec(project);
-     Rose::AST::cmdline::checker.frontend.exec(project);
+     //Rose::AST::cmdline::graphviz.frontend.exec(project);
+     //Rose::AST::cmdline::checker.frontend.exec(project);
 
   // Connect to Ast Plugin Mechanism
 #ifdef _MSC_VER
@@ -611,8 +609,8 @@ backend ( SgProject* project, UnparseFormatHelp *unparseFormatHelp, UnparseDeleg
           printf ("Inside of backend(SgProject*) \n");
         }
 
-     Rose::AST::cmdline::graphviz.backend.exec(project);
-     Rose::AST::cmdline::checker.backend.exec(project);
+     //Rose::AST::cmdline::graphviz.backend.exec(project);
+     //Rose::AST::cmdline::checker.backend.exec(project);
 
 #if 0
   // DQ (9/8/2017): Debugging ROSE_ASSERT.
