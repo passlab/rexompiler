@@ -39,32 +39,12 @@ endif
 ROSE_BOOST_PREINCLUDE_PATH        = @ROSE_BOOST_PREINCLUDE_PATH@
 ROSE_BOOST_NORMAL_INCLUDE_PATH    = @ROSE_BOOST_NORMAL_INCLUDE_PATH@
 
-# SQLite is a simpler database to use than MySQL
-if ROSE_USE_SQLITE_DATABASE
-   ROSE_SQLITE_DATABASE_INCLUDE  = $(SQLITE3_CFLAGS)
-   SQLITE_DATABASE_INCLUDE       = $(SQLITE3_CFLAGS) -I$(top_srcdir)/src/roseExtensions/sqlite3x
-   SQLITE_DATABASE_LIBS          = $(SQLITE3_LDFLAGS)
-#   ROSE_SQLITE_DATABASE_OBJS     = $(top_builddir)/src/roseExtensions/sqlite3x/*o
-   ROSE_SQLITE_DATABASE_LIB_NAME = RoseSQLite3xDatabase
-   ROSE_SQLITE_DATABASE_LIB_FILE = lib$(ROSE_SQLITE_DATABASE_LIB_NAME).la
-   ROSE_SQLITE_DATABASE_LIBS     = -l$(ROSE_SQLITE_DATABASE_LIB_NAME)
-
-   ROSE_SIDEEFFECT_INCLUDE						 = -I$(top_srcdir)/src/midend/programAnalysis/sideEffectAnalysis
-endif
-
 # This is properly handled by automake even when specified in an include file
 EDG_LIBS = @EDG_LIBS@
 
 RT_LIBS = @RT_LIBS@
 
 VALGRIND_BINARY = @VALGRIND_BINARY@
-
-# PostgreSQL C++ API
-if ROSE_HAVE_LIBPQXX
-  ROSE_LIBPQXX_INCLUDES = -I@ROSE_LIBPQXX_PREFIX@/include
-  ROSE_LIBPQXX_LIBS = -lpqxx -lpq
-  ROSE_LIBPQXX_LIBS_WITH_PATH = -L@ROSE_LIBPQXX_PREFIX@/lib -lpqxx -lpq
-endif
 
 # DQ (11/4/2016): Adding support for use of Address Sanitizer (for where the ROSE Test Handler (RTH) is used.
 # Note the quotes and escapes that are required:
@@ -73,12 +53,6 @@ ADDRESS_SANITIZER_OPTIONS = "ASAN_OPTIONS=halt_on_error=0:symbolize=1:detect_lea
 # DQ(11/4/2016): Need a version when not using the ROSE Test Handler (RTH):
 NON_RTH_ADDRESS_SANITIZER_OPTIONS = ASAN_OPTIONS=halt_on_error=1:symbolize=1:detect_leaks=0 ASAN_SYMBOLIZER_PATH=`which llvm-symbolizer`
 
-# ROSE gcrypt support (for things like md5, sha1, etc)
-if ROSE_HAVE_LIBGCRYPT
-  ROSE_GCRYPT_INCLUDES = @LIBGCRYPT_CPPFLAGS@
-  ROSE_GCRYPT_LIBS_WITH_PATH = @LIBGCRYPT_LDFLAGS@
-endif
-
 # ASR (06/09/2010): adding llvm support variables
 if ROSE_USE_LLVM
   ROSE_LLVM_INCLUDES = -I$(llvm_path)/include
@@ -86,11 +60,6 @@ if ROSE_USE_LLVM
 
 # adding all libraries for now
 
-endif
-
-# SSL support permits use of MD5 checksums internally for binary library identification.
-if ROSE_USE_SSL_SUPPORT
-  ROSE_SSL_LIBS = -lssl -lcrypto
 endif
 
 # support for precompiled headers
@@ -126,20 +95,20 @@ endif
 # installed with Linux (it is always a version too old to be used with ROSE).
 # This is used only when the ROSE configuration detects a previously installed
 # version of Boost (e.g /usr/include/boost) that we don't want to use.
-if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
+# if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 # ROSE_INCLUDES =
 #    $(ROSE_BOOST_PREINCLUDE_PATH)
-ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
-     -I$(top_builddir)/src/roseSupport \
+ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH_ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT = \
      -I$(top_builddir)/src/frontend/SageIII \
      -I$(top_srcdir)/src \
      -I$(top_srcdir)/src/frontend \
      -I$(top_srcdir)/src/frontend/SageIII \
+     -I$(top_srcdir)/src/frontend/SageIII/accparser/src \
      -I$(top_srcdir)/src/frontend/SageIII/astFixup \
      -I$(top_srcdir)/src/frontend/SageIII/astPostProcessing \
-     -I$(top_srcdir)/src/frontend/SageIII/astVisualization \
      -I$(top_srcdir)/src/frontend/SageIII/sageInterface \
      -I$(top_srcdir)/src/frontend/SageIII/includeDirectivesProcessing \
+     -I$(top_srcdir)/src/frontend/SageIII/ompparser/src \
      -I$(top_srcdir)/src/frontend/SageIII/sage_support \
      -I$(top_srcdir)/src/frontend/OpenFortranParser_SAGE_Connection \
      -I"$(JAVA_HOME)/include" \
@@ -150,40 +119,34 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/util \
      -I$(top_srcdir)/src/util/support \
      -I$(top_srcdir)/src/util/graphs  \
-     -I$(top_srcdir)/src/util/stringSupport \
+     -I$(top_srcdir)/src/util/StringUtility \
      -I$(top_srcdir)/src/util/commandlineProcessing \
      -I$(top_srcdir)/src/midend \
      -I$(top_srcdir)/src/midend/astDiagnostics \
+     -I$(top_srcdir)/src/midend/astDump \
      -I$(top_srcdir)/src/midend/astProcessing \
-     -I$(top_srcdir)/src/midend/astMatching \
      -I$(top_srcdir)/src/midend/astQuery \
      -I$(top_srcdir)/src/midend/programAnalysis \
-     -I$(top_srcdir)/src/roseSupport \
-     -I$(top_srcdir)/src/3rdPartyLibraries/MSTL \
      -I$(top_srcdir)/src/3rdPartyLibraries/json \
      -I$(top_srcdir)/src/util/graphs \
-     $(ROSE_ATERM_INCLUDE) \
      $(ROSE_FLANG_INCLUDES) \
      $(ROSE_BOOST_NORMAL_INCLUDE_PATH)
-else
+# else # ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 # ROSE_INCLUDES =
 #     $(ROSE_BOOST_PREINCLUDE_PATH)
 ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
-     -I$(top_builddir)/src/roseSupport \
      -I$(top_builddir)/src/frontend/SageIII \
      -I$(top_srcdir)/src \
      -I$(top_srcdir)/src/frontend \
      -I$(top_srcdir)/src/frontend/SageIII \
+     -I$(top_srcdir)/src/frontend/SageIII/accparser/src \
      -I$(top_srcdir)/src/frontend/SageIII/astFixup \
      -I$(top_srcdir)/src/frontend/SageIII/astPostProcessing \
-     -I$(top_srcdir)/src/frontend/SageIII/astVisualization \
-     -I$(top_srcdir)/src/frontend/SageIII/astFileIO \
+     -I$(top_srcdir)/src/frontend/SageIII/ompparser/src \
      -I$(top_srcdir)/src/frontend/SageIII/sageInterface \
      -I$(top_srcdir)/src/frontend/SageIII/virtualCFG \
      -I$(top_srcdir)/src/frontend/SageIII/astTokenStream \
      -I$(top_srcdir)/src/frontend/SageIII/astHiddenTypeAndDeclarationLists \
-     -I$(top_builddir)/src/frontend/SageIII/astFileIO \
-     -I$(top_srcdir)/src/frontend/SageIII/astFromString \
      -I$(top_srcdir)/src/frontend/SageIII/includeDirectivesProcessing \
      -I$(top_srcdir)/src/frontend/SageIII/sage_support \
      -I$(top_srcdir)/src/frontend/OpenFortranParser_SAGE_Connection \
@@ -198,20 +161,17 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/util \
      -I$(top_srcdir)/src/util/support \
      -I$(top_srcdir)/src/util/graphs  \
-     -I$(top_srcdir)/src/util/stringSupport \
+     -I$(top_srcdir)/src/util/StringUtility \
      -I$(top_srcdir)/src/util/commandlineProcessing \
      -I$(top_srcdir)/src/midend \
-     -I$(top_srcdir)/src/midend/abstractHandle \
-     -I$(top_srcdir)/src/midend/abstractMemoryObject \
      -I$(top_srcdir)/src/midend/abstractLayer \
      -I$(top_srcdir)/src/midend/astDiagnostics \
+     -I$(top_srcdir)/src/midend/astDump \
      -I$(top_srcdir)/src/midend/programTransformation/astInlining \
      -I$(top_srcdir)/src/midend/programTransformation/astOutlining  \
      -I$(top_srcdir)/src/midend/programTransformation/transformationTracking \
      -I$(top_srcdir)/src/midend/astProcessing \
-     -I$(top_srcdir)/src/midend/astMatching \
      -I$(top_srcdir)/src/midend/astQuery \
-     -I$(top_srcdir)/src/midend/astRewriteMechanism \
      -I$(top_srcdir)/src/midend/astUtil/annotation \
      -I$(top_srcdir)/src/midend/astUtil/astInterface \
      -I$(top_srcdir)/src/midend/astUtil/astSupport \
@@ -226,49 +186,33 @@ ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH = \
      -I$(top_srcdir)/src/midend/programTransformation/extractFunctionArgumentsNormalization \
      -I$(top_srcdir)/src/midend/programTransformation/singleStatementToBlockNormalization \
      -I$(top_srcdir)/src/midend/programAnalysis \
-     -I$(top_srcdir)/src/midend/programAnalysis/arithmeticIntensity \
      -I$(top_srcdir)/src/midend/programAnalysis/CFG \
-     -I$(top_srcdir)/src/midend/programAnalysis/staticSingleAssignment \
-     -I$(top_srcdir)/src/midend/programAnalysis/ssaUnfilteredCfg \
-     -I$(top_srcdir)/src/midend/programAnalysis/systemDependenceGraph \
-     -I$(top_srcdir)/src/midend/programAnalysis/systemDependenceGraph \
      -I$(top_srcdir)/src/midend/programAnalysis/CallGraphAnalysis \
      -I$(top_srcdir)/src/midend/programAnalysis/OAWrap \
      -I$(top_srcdir)/src/midend/programAnalysis/bitvectorDataflow \
      -I$(top_srcdir)/src/midend/programAnalysis/VirtualFunctionAnalysis \
      -I$(top_srcdir)/src/midend/programAnalysis/defUseAnalysis \
-     -I$(top_srcdir)/src/midend/programAnalysis/distributedMemoryAnalysis \
      -I$(top_srcdir)/src/midend/programAnalysis/dominanceAnalysis \
      -I$(top_srcdir)/src/midend/programAnalysis/pointerAnal \
      -I$(top_srcdir)/src/midend/programAnalysis/staticInterproceduralSlicing \
      -I$(top_srcdir)/src/midend/programAnalysis/valuePropagation \
      -I$(top_srcdir)/src/midend/programAnalysis/variableRenaming \
-      $(ROSE_SIDEEFFECTS_INCLUDE) \
-      $(ROSE_DATABASE_INCLUDE) \
-      $(ROSE_SQLITE_DATABASE_INCLUDE) \
-			$(ROSE_SIDEEFFECT_INCLUDE) \
-      $(SQLITE_DATABASE_INCLUDE) \
      -I$(top_srcdir)/src/midend/programTransformation/partialRedundancyElimination \
      -I$(top_srcdir)/src/midend/programTransformation/finiteDifferencing \
      -I$(top_srcdir)/src/midend/programTransformation/functionCallNormalization \
      -I$(top_srcdir)/src/midend/programTransformation/constantFolding \
      -I$(top_srcdir)/src/midend/programTransformation/implicitCodeGeneration \
-     -I$(top_srcdir)/src/roseSupport \
-     -I$(top_srcdir)/src/3rdPartyLibraries/MSTL \
      -I$(top_srcdir)/src/3rdPartyLibraries/json \
      -I$(top_srcdir)/src/3rdPartyLibraries/libharu-2.1.0/include \
      -I$(top_builddir)/src/3rdPartyLibraries/libharu-2.1.0/include \
      -I$(top_srcdir)/src/util/graphs \
      -I$(top_srcdir)/src/midend/astUtil/astInterface \
      -I$(top_srcdir)/libltdl \
-     $(ROSE_LIBPQXX_INCLUDES) \
-     $(ROSE_GCRYPT_INCLUDES) \
      $(VALGRIND_CFLAGS) \
-     $(SQLITE3_CFLAGS) \
      $(ROSE_BOOST_NORMAL_INCLUDE_PATH) \
      $(ROSE_PCH_INCLUDE) \
      $(BOOST_CPPFLAGS)
-endif
+# endif # ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 
 # DQ (10/23/2015): These paths have been replaces with the following variables.
 # These variable are empty for now (reflecting the default usage, and need to
@@ -281,12 +225,6 @@ endif
 SWIG_ROSE_INCLUDES = $(ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH)
 ROSE_INCLUDES = -I$(top_builddir) -I$(top_builddir)/src $(ROSE_BOOST_PREINCLUDE_PATH) $(ROSE_INCLUDES_WITHOUT_BOOST_ISYSTEM_PATH)
 
-# DQ (8/15/2010): I have removed these directories from the include paths since it no longer exists.
-# I expect that the directories were removed and the include list not properly cleaned up.
-# -I$(top_srcdir)/src/midend/binaryAnalyses/graph
-# -I$(top_srcdir)/src/midend/programTransformation/runtimeTransformation
-# -I$(top_srcdir)/projects/dataBase
-
 # DQ (12/22/2008): Move Boost directory to front and used "-isystem" option so
 # that a system with a previous (older) installation of boost does not interfer
 # with the use of ROSE (and the version of boost specified using "--with-boost").
@@ -297,13 +235,6 @@ ROSE_INCLUDES = -I$(top_builddir) -I$(top_builddir)/src $(ROSE_BOOST_PREINCLUDE_
 # DQ: Not used currently
 #     $(ROSE_WINE_INCLUDES)
 
-# DQ (5/3/2007): Removed from ROSE
-#     -I$(top_srcdir)/src/midend/programAnalysis/dominatorTreesAndDominanceFrontiers
-#     -I$(top_srcdir)/src/midend/programAnalysis/staticProgramSlicing
-
-# DQ (10/22/2004): Removed when I could not get annotation work to compile properly with make distcheck rule
-#     -I$(top_srcdir)/src/midend/programAnalysis/annotationLanguageParser
-
 # New way using two libraries
 # ROSE_LIBS_WITH_PATH = $(top_builddir)/src/librose.a $(top_builddir)/src/libedg.a
 # ROSE_LIBS_WITH_PATH = $(top_builddir)/src/librose.so $(top_builddir)/src/libedg.so
@@ -313,7 +244,7 @@ ROSE_INCLUDES = -I$(top_builddir) -I$(top_builddir)/src $(ROSE_BOOST_PREINCLUDE_
 # JJW 7/25/2008: This should probably just be the same as ROSE_LIBS
 ROSE_LIBS_WITH_PATH = $(ROSE_LIBS)
 
-# ROSE_LIBS = $(top_builddir)/src/librose.la -lm $(LEXLIB) $(SQLITE_DATABASE_LIBS) $(LIB_QT) $(WAVE_LDFLAGS) $(WAVE_LIBRARIES) $(WAVE_LIBS) $(JAVA_JVM_LIB) $(RT_LIBS)
+# ROSE_LIBS = $(top_builddir)/src/librose.la -lm $(LEXLIB) $(WAVE_LDFLAGS) $(WAVE_LIBRARIES) $(WAVE_LIBS) $(JAVA_JVM_LIB) $(RT_LIBS)
 
 # MS 10/19/2015: added ROSE_BOOST_LIBS variable to share exact same
 # boost libs list in ROSE an in the ROSTTA Makefiles.
@@ -323,11 +254,9 @@ ROSE_BOOST_LIBS=$(BOOST_LDFLAGS) $(BOOST_DATE_TIME_LIB) $(BOOST_CHRONO_LIB) \
   $(BOOST_WAVE_LIB) $(BOOST_IOSTREAMS_LIB) $(BOOST_ATOMIC_LIB)
 
 ROSE_LIBS = $(abspath $(top_builddir)/src/librose.la) -lm $(JAVA_JVM_LINK) \
-  $(SQLITE_DATABASE_LIBS) $(ROSE_BOOST_LIBS) \
-  $(SQLITE3_LDFLAGS)  $(RT_LIBS) \
-  $(ROSE_SSL_LIBS) \
+  $(ROSE_BOOST_LIBS) \
+  $(RT_LIBS) \
   $(ROSE_INTEL_COMPILER_MATH_LIBS) \
-  $(ROSE_GCRYPT_LIBS_WITH_PATH) $(ROSE_LIBPQXX_LIBS_WITH_PATH) \
   $(ROSE_QUAD_FLOAT_MATH)
 
 if ROSE_USE_CLANG_FRONTEND
@@ -398,7 +327,6 @@ ROSE_RPATHS =                                                                   
 if OS_MACOSX
 ROSE_LINK_RPATHS = $(addprefix -Xlinker -rpath -Xlinker , $(filter-out -R , $(ROSE_RPATHS)))
 else
-comma = ,
 ROSE_LINK_RPATHS = $(addprefix -Wl$(comma)-rpath , $(filter-out -R , $(ROSE_RPATHS)))
 endif
 
@@ -460,6 +388,6 @@ clean-test-targets:
 	rm -f $(TEST_TARGETS:.passed=.out)
 	rm -f $(TEST_TARGETS:.passed=.err)
 
-clean-local: clean-test-targets
+# clean-local: clean-test-targets
 
 .PHONY: clean-test-targets

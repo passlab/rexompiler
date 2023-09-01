@@ -4744,10 +4744,10 @@ generateFunctionRefExp( Token_t* nameToken )
           SgScopeStatement* currentScope = isSgClassDefinition(astScopeStack.front());
           if (currentScope == NULL)
              {
-               currentScope = TransformationSupport::getClassDefinition(astScopeStack.front());
+               currentScope = SageInterface::getEnclosingClassDefinition(astScopeStack.front(), true);
                if (currentScope == NULL)
                   {
-                    currentScope = TransformationSupport::getGlobalScope(astScopeStack.front());
+                    currentScope = SageInterface::getGlobalScope(astScopeStack.front());
                     ROSE_ASSERT(currentScope != NULL);
                   }
              }
@@ -5968,6 +5968,34 @@ buildIntrinsicModule_ISO_C_BINDING()
      return moduleSymbol;
    }
 
+SgClassSymbol*
+buildIntrinsicModule_OMP_LIB()
+   {
+     SgClassSymbol* moduleSymbol = NULL;
+
+     const string name = "OMP_LIB";
+
+     if ( SgProject::get_verbose() > DEBUG_COMMENT_LEVEL )
+          printf ("Building the module file for OMP_LIB \n");
+
+     return moduleSymbol;
+   }
+
+
+SgClassSymbol*
+buildIntrinsicModule_OMP_LIB_KINDS()
+   {
+     SgClassSymbol* moduleSymbol = NULL;
+
+     const string name = "OMP_LIB_KINDS";
+
+     if ( SgProject::get_verbose() > DEBUG_COMMENT_LEVEL )
+          printf ("Building the module file for OMP_LIB_KINDS \n");
+
+     return moduleSymbol;
+   }
+
+
 
 
 SgClassSymbol* 
@@ -6032,18 +6060,14 @@ buildIntrinsicModule ( const string & name )
         {
        // This is the OMP_LIB intrisic module and so there is a list of names and types that need to be inserted into the local scope.
           printf ("Insert types and variables from OMP_LIB into the local scope \n");
-
-          printf ("Error: OMP_LIB intrinsic module not defined (non-standard intrinsic module). \n");
-          ROSE_ABORT();
+          moduleSymbol = buildIntrinsicModule_OMP_LIB();
         }
 
      if (matchingName(name,"OMP_LIB_KINDS") == true)
         {
        // This is the OMP_LIB_KINDS intrisic module and so there is a list of names and types that need to be inserted into the local scope.
           printf ("Insert types and variables from OMP_LIB_KINDS into the local scope \n");
-
-          printf ("Error: OMP_LIB_KINDS intrinsic module not defined (non-standard intrinsic module). \n");
-          ROSE_ABORT();
+          moduleSymbol = buildIntrinsicModule_OMP_LIB_KINDS();
         }
 
 #if 0
@@ -6134,8 +6158,8 @@ fixup_possible_incomplete_function_return_type()
      outputState("At TOP of fixup_possible_incomplete_function_return_type()");
 #endif
 
-  // SgFunctionDefinition* functionDefinition   = TransformationSupport::getFunctionDefinition(astScopeStack.front());
-     SgFunctionDeclaration* functionDeclaration = TransformationSupport::getFunctionDeclaration(astScopeStack.front());
+  // SgFunctionDefinition* functionDefinition   = SageInterface::getEnclosingFunctionDefinition(astScopeStack.front(), true);
+     SgFunctionDeclaration* functionDeclaration = SageInterface::getEnclosingFunctionDeclaration(astScopeStack.front(), true);
 
   // printf ("functionDeclaration = %p \n",functionDeclaration);
      if (functionDeclaration != NULL)

@@ -24,6 +24,7 @@
 // This is first because it quickly brings in all the configuration-related settings that are needed by #ifdef's in the rest of
 // this header.
 #include "featureTests.h"
+#include "mlog.h"
 
 // Much of ROSE's binary support uses the intX_t and uintX_t types (where X is a bit width), so we need to have the stdc printf
 // format macros defined for portability.  We do that here because it needs to be done before <inttypes.h> is included for the
@@ -34,31 +35,6 @@
 #define __STDC_FORMAT_MACROS
 #endif
 #include <inttypes.h>
-
-// The boost::filesystem::path class has no serialization function, and boost::serialization doesn't provide a non-intrusive
-// implementation. Therefore ROSE needs to define one. This code must occur before including any headers that serialize
-// boost::filesystem::path, and specifically before defining AST node types.
-#ifdef ROSE_HAVE_BOOST_SERIALIZATION_LIB
-#include <boost/filesystem.hpp>
-#include <boost/serialization/nvp.hpp>
-namespace boost {
-    namespace serialization {
-        template<class Archive>
-        void serialize(Archive &ar, boost::filesystem::path &path, const unsigned version) {
-            if (Archive::is_saving::value) {
-                std::string nativePath = path.string();
-                ar & BOOST_SERIALIZATION_NVP(nativePath);
-            } else {
-                std::string nativePath;
-                ar & BOOST_SERIALIZATION_NVP(nativePath);
-                path = nativePath;
-            }
-        }
-    }
-}
-#endif
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -79,7 +55,7 @@ namespace boost {
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "Rose/Constants.h"                             // defines things like Rose::UNLIMITED, Rose::INVALID_INDEX, etc.
+#include "Constants.h"                             // defines things like Rose::UNLIMITED, Rose::INVALID_INDEX, etc.
 
 // DQ (11/12/2011): This is support to reduce the size of ROSE so that I can manage development on my laptop.
 // This option defines a subset of ROSE as required to support wotk on the new EDG front-end.
@@ -313,9 +289,9 @@ namespace boost {
 #include "rose_attributes_list.h"
 
 // Include ROSE common utility function library
-#include <Rose/StringUtility.h>
+#include <StringUtility.h>
 #include "FileUtility.h"
-#include "escape.h"
+#include "Escape.h"
 
 // Include support for Brian Gunney's command line parser tool (nice work)
 #include "sla.h"
@@ -391,9 +367,6 @@ namespace boost {
    #define ROSE_USING_SMALL_GENERATED_HEADER_FILES 1
 #endif
 
-namespace Rose { namespace Traits { namespace generated { template <typename NodeT> struct describe_node_t; } } }
-namespace Rose { namespace Traits { namespace generated { template <typename NodeT, typename FieldT, FieldT NodeT::* fld_ptr> struct describe_field_t; } } }
-
 // DQ (3/7/2013): I think that we need to use "" instead of <> and this may make a difference for SWIG.
 // DQ (9/21/2005): This is the simplest way to include this here
 // This is the definition of the Sage III IR classes (generated header).
@@ -441,10 +414,6 @@ namespace Rose { namespace Traits { namespace generated { template <typename Nod
 // This is located in ROSE/src/midend/astDiagnostics
 #include "AstPerformance.h"
 
-#ifdef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "transformationSupport.h"
-#endif
-
 // DQ (10/26/2016): Adding mechanism to suppress use of delete in SgType IR nodes, so 
 // that the memory pool will not be changing while we are traversing it.  I think this
 // is perhaps a fundamental problem in the memory pool traversal if operations are done
@@ -453,8 +422,6 @@ namespace Rose { namespace Traits { namespace generated { template <typename Nod
 
 // endif for ifndef ROSE_USE_SWIG_SUPPORT
 // #endif
-
-#include <Rose/Initialize.h>                                 // defines Rose::initialize
 
 // Liao, 2018/6/25, define the actual version value for OpenMP 4.5
 #define OMPVERSION 201511

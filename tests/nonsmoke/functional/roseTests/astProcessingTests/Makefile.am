@@ -334,37 +334,6 @@ EXTRA_DIST += $(sourcePTP_SPECIMENS)
 TEST_TARGETS += $(sourcePTP_TEST_TARGETS)
 MOSTLYCLEANFILES += $(addsuffix .main.dot, $(sourcePTP_SPECIMENS)) hotness0.dot
 
-#------------------------------------------------------------------------------------------------------------------------
-binaryPaths_SOURCES = binaryPaths.C
-binaryPaths_LDADD = $(ROSE_SEPARATE_LIBS)
-binaryPaths_SPECIMENS = t1 t2 t3 t4
-binaryPaths_TEST_TARGETS = $(addprefix bp_, $(addsuffix .passed, $(binaryPaths_SPECIMENS)))
-
-$(binaryPaths_TEST_TARGETS): bp_%.passed: % $(TEST_CONFIG) binaryPaths
-	@$(RTH_RUN) CMD="./binaryPaths $<" $(TEST_CONFIG) $@
-
-.PHONY: check-binaryPaths
-check-binaryPaths: $(binaryPaths_TEST_TARGETS)
-
-EXTRA_DIST += $(binaryPaths_SPECIMENS)
-MOSTLYCLEANFILES += analysis.dot hotness0.dot
-
-
-#------------------------------------------------------------------------------------------------------------------------
-bPTP_SOURCES = bPTP.C
-bPTP_LDADD = $(ROSE_SEPARATE_LIBS)
-bPTP_SPECIMENS = t1 t2 t3 t4
-bPTP_TEST_TARGETS = $(addprefix bptp_, $(addsuffix .passed, $(bPTP_SPECIMENS)))
-
-$(bPTP_TEST_TARGETS): bptp_%.passed: % $(TEST_CONFIG) bPTP
-	@$(RTH_RUN) CMD="./bPTP $<" $(TEST_CONFIG) $@
-
-.PHONY: check-bPTP
-check-bPTP: $(bPTP_TEST_TARGETS)
-
-EXTRA_DIST += $(bPTP_SPECIMENS)
-MOSTLYCLEANFILES += analysis.dot hotness0.dot
-
 ########################################################################################################################
 # Automake rules
 ########################################################################################################################

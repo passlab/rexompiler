@@ -21,9 +21,7 @@
 #include "astPostProcessing.h"
 #include <sys/stat.h>
 
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "omp_lowering.h"
-#endif
+#include "omp_lowering.h"
 
 #include "attachPreprocessingInfo.h"
 
@@ -61,10 +59,6 @@
 
 // Liao 10/8/2010, refactored OpenMP related code to ompAstConstruction.C
 #include "ompAstConstruction.h"
-
-#ifdef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "transformationSupport.h"
-#endif
 
 namespace Rose {
 namespace Frontend {

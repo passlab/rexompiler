@@ -1,7 +1,4 @@
-
-
 #include "OperatorDescriptors.h"
-#include <ROSE_ASSERT.h>
 #include <string.h>
 
 using namespace std;

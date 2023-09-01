@@ -20,8 +20,6 @@
 #include "ASTtools.hh"
 #include "PreprocessingInfo.hh"
 #include <boost/algorithm/string/trim.hpp>
-#include "abstract_handle.h"
-#include "roseAdapter.h"
 
 //! Simplest outlining directives, applied to a single statement.
 static const std::string PRAGMA_OUTLINE ("rose_outline");
@@ -34,7 +32,6 @@ typedef Rose_STL_Container<SgStatement*> TargetList_t;
 // =====================================================================
 
 using namespace std;
-using namespace AbstractHandle;
 
 // =====================================================================
 
@@ -153,7 +150,8 @@ Outliner::outline (SgPragmaDeclaration* decl)
 #if 1
        // This will search the parent for the location of decl, but this is not found
 #ifndef _MSC_VER
-	   LowLevelRewrite::remove (decl);
+	   //LowLevelRewrite::remove (decl);
+	   SageInterface::removeStatement (decl);
 #else
 	   ROSE_ASSERT(false);
 #endif
@@ -263,15 +261,15 @@ collectFortranTarget (SgProject* proj, TargetList_t& targets)
 // The assumption is that OpenMP parsing and AST creation is already turned on. 
 // The AST has normalized #pragma omp parallel for also (split into separated paralle and for AST nodes).
 static size_t
-collectOmpLoops(SgProject* proj, Rose_STL_Container<SgUpirLoopParallelStatement*> & ompfor_stmts)
+collectOmpLoops(SgProject* proj, Rose_STL_Container<SgOmpForStatement*> & ompfor_stmts)
 {
   typedef Rose_STL_Container<SgNode *> NodeList_t;
-  NodeList_t raw_list = NodeQuery::querySubTree (proj, V_SgUpirLoopParallelStatement);
+  NodeList_t raw_list = NodeQuery::querySubTree (proj, V_SgOmpForStatement);
   size_t count = 0;
   for (NodeList_t::reverse_iterator i = raw_list.rbegin ();
       i != raw_list.rend (); ++i)
   {
-    SgUpirLoopParallelStatement* decl = isSgUpirLoopParallelStatement(*i);
+    SgOmpForStatement* decl = isSgOmpForStatement(*i);
     if (decl)
     {
       ompfor_stmts.push_back (decl);
@@ -281,64 +279,23 @@ collectOmpLoops(SgProject* proj, Rose_STL_Container<SgUpirLoopParallelStatement*
   return count;
 }
 
-//! Collect outlining targets specified using abstract handles
+//! Collect outlining targets specified using source code positions, e.g. line:col
 // save them into targetList
 static size_t
-collectAbstractHandles(SgProject* proj,  TargetList_t& targets)
+collectTargetFromLines(SgProject* proj,  TargetList_t& targets, std::vector<int> &lines)
 {
   ROSE_ASSERT(proj != NULL);
   SgFilePtrList & filelist = proj->get_fileList();
   SgFilePtrList::iterator iter= filelist.begin();
   for (;iter!=filelist.end();iter++)
   {
-    SgSourceFile* sfile = isSgSourceFile(*iter);
-    if (sfile != NULL)
-    {
-      // prepare a file handle first
-      abstract_node * file_node = buildroseNode(sfile);
-      ROSE_ASSERT (file_node);
-      abstract_handle* fhandle = new abstract_handle(file_node);
-      ROSE_ASSERT (fhandle);
-      // try to match the string and get the statement handle
-      std::vector <std::string>::iterator iter2 = Outliner::handles.begin();
-      for (;iter2!=Outliner::handles.end(); iter2++)
-      {
-        std::string cur_handle = *iter2;
-        abstract_handle * shandle = new abstract_handle (fhandle,cur_handle);
-        // it is possible that a handle is created but no matching IR node is found
-        if (shandle != NULL)
-        {
-          if (shandle->getNode() != NULL)
-          { // get SgNode from the handle
-#ifdef _MSC_VER
- // tps (12/09/09) :  error C2039: 'getNode' : is not a member of 'AbstractHandle::abstract_node'
-	SgNode* target_node = NULL;
-	assert(false);
-#else
-            SgNode* target_node = (SgNode*) (shandle->getNode()->getNode());
-#endif
-			ROSE_ASSERT(isSgStatement(target_node));
-            targets.push_back(isSgStatement(target_node));
-            if (Outliner::enable_debug)
-              cout<<"Found a matching target from a handle:"<<target_node->unparseToString()<<endl;
-          }
-          else
-          {
-            if (Outliner::enable_debug)
-              cout<<"Cannot find a matching target from a handle:"<<cur_handle<<endl;
-          }
-        }
-
-      }
-      // TODO do we care about the memory leak here?
-    } //end if sfile
-  } // end for 
-#ifdef _MSC_VER
-//tps (12/09/09) : error C4716: '`anonymous namespace'::collectAbstractHandles' : must return a value
-#pragma warning "PragmaInterface: Returning arbitrary value";
-  return 0;
-#endif
-return 0;
+    SgSourceFile* sFile = isSgSourceFile(*iter);
+	for (auto i = lines.begin(); i != lines.end(); ++i) {
+		SgStatement * tgt = SageInterface::getFirstStatementAtLine(sFile, *i);
+		if (tgt != NULL) targets.push_back(tgt);
+	}
+  }
+  return targets.size();
 }
 
 //-------------------top level drivers----------------------------------------
@@ -348,16 +305,15 @@ Outliner::outlineAll (SgProject* project)
   size_t num_outlined = 0;
   TargetList_t targets;
   //generic abstract handle based target selection
-  if (Outliner::handles.size()>0)
+  if (Outliner::lines.size()>0)
   {
-    collectAbstractHandles(project,targets);
+    collectTargetFromLines(project,targets, Outliner::lines);
     for (TargetList_t::iterator i = targets.begin ();
         i != targets.end (); ++i)
       if (outline(*i).isValid())
         ++num_outlined;
 
-  } //TODO do we want to have non-exclusive abstract handle options?
-  else  if (SageInterface::is_Fortran_language ()) 
+  } else if (SageInterface::is_Fortran_language ())
   { // Search for the special source comments for Fortran input
     if (collectFortranTarget(project, targets))
     {
@@ -395,13 +351,13 @@ Outliner::outlineAll (SgProject* project)
     // New interface : OpenMP for loops, for testing purpose, only for C/C++ code
     if (select_omp_loop)
     {
-      Rose_STL_Container<SgUpirLoopParallelStatement*> ompfor_stmts;
+      Rose_STL_Container<SgOmpForStatement*> ompfor_stmts;
       if (collectOmpLoops(project, ompfor_stmts))
       {  
-        for ( Rose_STL_Container<SgUpirLoopParallelStatement*> ::iterator i = ompfor_stmts.begin (); i != ompfor_stmts.end (); ++i)
+        for ( Rose_STL_Container<SgOmpForStatement*> ::iterator i = ompfor_stmts.begin (); i != ompfor_stmts.end (); ++i)
         {  
-          SgUpirLoopParallelStatement* omp_stmt = *i;
-          SgStatement* body = ((SgUpirLoopStatement*)omp_stmt->get_loop())->get_body();
+          SgOmpForStatement* omp_stmt = *i;
+          SgStatement* body = omp_stmt->get_body();
           string func_name =  generateFuncName(body);
 
           if (outline(body, func_name).isValid ())

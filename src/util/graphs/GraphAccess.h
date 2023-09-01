@@ -6,7 +6,6 @@
 #define GRAPH_ACCESS_H
 
 #include <IteratorTmpl.h>
-#include <ROSE_ABORT.h>
 
 class GraphAccess {
  public:
@@ -17,7 +16,7 @@ class GraphAccess {
        case EdgeIn: return EdgeOut;
        case BiEdge: return BiEdge;
       }
-      ROSE_ABORT();
+      //ROSE_ABORT();
     }
 };
 

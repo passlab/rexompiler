@@ -24,7 +24,7 @@ The problem is an assertion failure:
 
 overloadedOperatorRepresentation:
 /home/bwhite/ROSE/src/roseSupport/transformationSupport.C:821: static
-std::string TransformationSupport::getTypeName(SgType*): Assertion
+std::string SageInterface::getTypeName(SgType*): Assertion
 `classDefinition != __null' failed.
 
 Which occurs because
@@ -32,7 +32,7 @@ Which occurs because
 memberFunctionType->get_struct_name()
 
 returns NULL in the V_SgMemberFunctionType case of
-TransformationSupport::getTypeName.
+SageInterface::getTypeName.
 
 As far as I (and gdb) can tell, neither set_struct_name nor any of the
 SgMemberFunctionType constructors ever set struct_name to anything but

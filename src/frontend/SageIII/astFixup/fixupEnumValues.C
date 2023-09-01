@@ -2,10 +2,6 @@
 #include "sage3basic.h"
 #include "fixupEnumValues.h"
 
-#ifdef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "transformationSupport.h"
-#endif
-
 // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace std;
 
@@ -39,7 +35,7 @@ FixupEnumValues::visit(SgNode* node)
        // printf ("Found an enum value with a NULL declaration, fixup the declaration! \n");
        // enumVal->get_startOfConstruct()->display("Found an enum value with a NULL declaration");
 
-          SgClassDefinition* enclosingClassDefinition = TransformationSupport::getClassDefinition(enumVal);
+          SgClassDefinition* enclosingClassDefinition = SageInterface::getEnclosingClassDefinition(enumVal, true);
           ROSE_ASSERT(enclosingClassDefinition != NULL);
 
        // Now search for the enumVal name in the symbol table

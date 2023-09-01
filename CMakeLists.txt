@@ -148,25 +148,6 @@ file(READ ${ROSE_SCM_DATE_FILE} ROSE_VERSION)
 message(STATUS "The ROSE version integer is ${ROSE_VERSION}")
 message(STATUS "The ROSE version string is ${ROSE_PACKAGE_VERSION}")
 
-
-
-########################################################################################################################
-# Initialize the leading part of the Rose::initialize token
-########################################################################################################################
-
-# Configuration synopsis used by Rose::initialize.  The ROSE_CONFIG_TOKEN is #define'd as a string in rose_config.h and
-# ultimately rosePublicConfig.h and the string is a synopsis of some important configuration details. This string is
-# passed by user code to the Rose::initialize function which compares it against the same macro compiled into the ROSE
-# library. If their contents differ it means that the ROSE header files being used by the user are not the same as the
-# ROSE header files that were used to compile librose being linked by the user and bad things will probably happen.
-#
-# The CMake ROSE_CONFIG_TOKEN variable is the string that becomes the eventual value of the ROSE_CONFIG_TOKEN C
-# preprocessor macro.  We initialize it here, but other parts of the CMake file might augment its value with additional
-# information (e.g., adding the boost version number).
-set(ROSE_CONFIG_TOKEN "rose-${ROSE_SCM_VERSION_ID}")
-
-
-
 ########################################################################################################################
 # Boost libraries
 ########################################################################################################################
@@ -228,17 +209,6 @@ endif()
 find_package(Boost 1.47.0
   COMPONENTS chrono date_time filesystem iostreams program_options random regex system wave thread serialization)
 include_directories(${Boost_INCLUDE_DIRS})
-set(ROSE_CONFIG_TOKEN "${ROSE_CONFIG_TOKEN} boost-${Boost_VERSION}")
-
-# If the boost is compiled with multi-thread support then we must add "-pthread" to all compile and link commands, or
-# whatever is appropriate for the system.  With GCC it is not sufficient to just add "-lpthread" to the link
-# commands--the "-pthread" switch MUST be added to the compile commands as well.
-set(Threads_FIND_QUIETLY ${QUIET})
-find_package(Threads)
-if(CMAKE_USE_PTHREADS_INIT)
-  add_definitions(-pthread)
-  set(ROSE_CONFIG_TOKEN "${ROSE_CONFIG_TOKEN} pthread")
-endif()
 
 # Paths to install header, executable, and libraries
 set(INCLUDE_INSTALL_DIR "include/rose")
@@ -506,8 +476,6 @@ set(CMAKE_REQUIRED_QUIET FALSE)
 # A collection of macros which extend the built-in cmake commands
 include(MacroLibrary)
 
-find_package(OpenSSL)
-
 find_package(Perl REQUIRED)
 
 ########################################################################################################################
@@ -523,18 +491,6 @@ option(enable-advanced-warnings "Support for an advanced uniform warning level f
 if(enable-advanced-warnings)
   message(WARNING "Using an advanced uniform warning level for ROSE development")
   set(ROSE_USE_UNIFORM_ADVANCED_WARNINGS_SUPPORT 1)
-endif()
-
-option(enable-candl "Support for ScopLib" OFF)
-if(enable-candl)
-  find_path(with-candl "include/candl.h"
-    DOC "Path to a valid Candl installation")
-endif()
-
-option(enable-cloog "Support for Cloog" OFF)
-if(enable-cloog)
-  find_path(with-cloog "include/cloog.h"
-    DOC "Path to a valid Cloog installation")
 endif()
 
 option(enable-edg-cuda "Build EDG 4.0 with CUDA support" OFF)
@@ -560,28 +516,6 @@ if(enable-fortran)
   set($ENV{CLASSPATH} ${CMAKE_SOURCE_DIR}/src/3rdPartyLibraries/antlr-jars/antlr-3.5.2-complete.jar::${CMAKE_SOURCE_DIR}/rc/3rdPartyLibraries/fortran-parser/OpenFortranParser-${enable-ofp-version}.jar)
 endif()
 
-option(enable-ppl "Support for Parma Polyhedral Library" OFF)
-if(enable-ppl)
-  find_path(with-ppl "include/ppl.h" DOC "Path to Parma Polyhedral Library installation")
-  find_library(libppl ppl)
-endif()
-
-option(enable-purify-api "Enable purify API in code" OFF)
-if(enable-purify-api)
-  set(USE_PURIFY_API 1)
-endif()
-
-option(enable-purify-linker "Augment the linker with purify" OFF)
-if(enable-purify-linker)
-  set(USE_PURIFY 1)
-  set(USE_PURIFY_LINKER 1)
-endif()
-
-option(enable-scoplib "Support for ScopLib" OFF)
-if(enable-scoplib)
-  find_path(with-scoplib "include/scolib.h" DOC "Path to a valid ScopLib installation")
-endif()
-
 # To use Bison, set BISON_ROOT to the Bison installation prefix. To avoid Bison, use BISON_ROOT=no
 include(FindBison)
 find_bison()
@@ -589,15 +523,6 @@ find_bison()
 # To use doxygen, set DOXYGEN_ROOT to the doxygen installation prefix. To avoid doxygen use DOXYGEN_ROOT=no
 include(FindDoxygen)
 find_doxygen()
-
-# To use GCrypt, set GCRYPT_ROOT to the GCrypt installation prefix. To avoid GCrypt set GCRYPT_ROOT=no
-include(FindGcrypt)
-find_gcrypt()
-if(GCRYPT_FOUND)
-  # To use GPG-Error, set GPGERROR_ROOT to the GPG-Error installation prefix. To avoid GPG-Error set GPGERROR=no
-  include(FindGpgError)
-  find_gpgerror()
-endif()
 
 # Zlib is required by Boost. To find it in a special place, set ZLIB_ROOT to its installation prefix.
 # Zlib is required by libharu
@@ -617,25 +542,12 @@ endif()
 
 find_path(with-GraphViz_include graphviz.h DOC "Specify the prefix where GraphViz include files are installed")
 find_path(with-GraphViz_libs GraphViz_libs DOC "Specify the prefix where GraphViz libraries are installed")
-find_path(with-insure insure++ DOC "Specify the prefix where insure++ is installed")
 find_path(with-ltdl-include ltdl.h DOC "use the ltdl headers installed in DIR")
 find_library(with-ltdl-lib ltdl DOC "Path to ltdl library")
-
-find_path(with-purify bin/purify DOC "Specify the prefix where purify is installed")
-if(with-purify)
-  set(USE_PURIFY 1)
-endif()
-
 
 find_path(with-wine "bin/wine" DOC "Specify the prefix where Wine is installed")
 if(with-wine)
   set(ROSE_WINE_INCLUDES -I${with-wine}/include)
-endif()
-
-if(NOT WIN32)
-  include(FindOpenSSL)
-  include(FindSqlite3)
-  find_sqlite3()
 endif()
 
 find_package(FLEX)
@@ -883,29 +795,22 @@ endif()
 set(ROSE_INCLUDES
   ${ROSE_TOP_BINARY_DIR}
   ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/
-  ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/astFileIO
   ${ROSE_TOP_SRC_DIR}
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/sage_support
   ${ROSE_TOP_SRC_DIR}/src/ROSETTA/src/
   ${ROSE_TOP_SRC_DIR}/src
   ${ROSE_TOP_SRC_DIR}/src/frontend/CxxFrontend/EDG/EDG_SAGE_Connection/
-  ${ROSE_TOP_SRC_DIR}/src/frontend/CxxFrontend/EDG/EDG_3.3/src
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astFixup
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astPostProcessing
-  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astMerge
-  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astVisualization
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/includeDirectivesProcessing
-  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astFileIO
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/sageInterface
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/ompparser/src
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/accparser/src
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/virtualCFG
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astTokenStream
   ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astHiddenTypeAndDeclarationLists
-  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astFileIO
-  ${ROSE_TOP_SRC_DIR}/src/frontend/SageIII/astFromString
   ${ROSE_TOP_SRC_DIR}/src/frontend/OpenFortranParser_SAGE_Connection
   ${ROSE_TOP_SRC_DIR}/src/frontend
   ${ROSE_TOP_SRC_DIR}/src/backend/unparser
@@ -916,19 +821,16 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/util
   ${ROSE_TOP_SRC_DIR}/src/util/support
   ${ROSE_TOP_SRC_DIR}/src/util/graphs
-  ${ROSE_TOP_SRC_DIR}/src/util/stringSupport
+  ${ROSE_TOP_SRC_DIR}/src/util/StringUtility
   ${ROSE_TOP_SRC_DIR}/src/util/commandlineProcessing
   ${ROSE_TOP_SRC_DIR}/src/midend
-  ${ROSE_TOP_SRC_DIR}/src/midend/abstractHandle
   ${ROSE_TOP_SRC_DIR}/src/midend/abstractLayer
-  ${ROSE_TOP_SRC_DIR}/src/midend/abstractMemoryObject
   ${ROSE_TOP_SRC_DIR}/src/midend/astDiagnostics
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/astInlining
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/astOutlining
+  ${ROSE_TOP_SRC_DIR}/src/midend/astDump
   ${ROSE_TOP_SRC_DIR}/src/midend/astProcessing
-  ${ROSE_TOP_SRC_DIR}/src/midend/astMatching
   ${ROSE_TOP_SRC_DIR}/src/midend/astQuery
-  ${ROSE_TOP_SRC_DIR}/src/midend/astRewriteMechanism
   ${ROSE_TOP_SRC_DIR}/src/midend/astUtil/annotation
   ${ROSE_TOP_SRC_DIR}/src/midend/astUtil/astInterface
   ${ROSE_TOP_SRC_DIR}/src/midend/astUtil/astSupport
@@ -948,10 +850,8 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/midend/programAnalysis/bitvectorDataflow
   ${ROSE_TOP_SRC_DIR}/src/midend/programAnalysis/VirtualFunctionAnalysis
   ${ROSE_TOP_SRC_DIR}/src/midend/programAnalysis/defUseAnalysis
-  ${ROSE_TOP_SRC_DIR}/src/midend/programAnalysis/distributedMemoryAnalysis
   ${ROSE_TOP_SRC_DIR}/src/midend/programAnalysis/dominanceAnalysis
   ${ROSE_TOP_SRC_DIR}/src/midend/programAnalysis/pointerAnal
-  ${ROSE_TOP_SRC_DIR}/src/midend/programAnalysis/staticSingleAssignment
   ${ROSE_TOP_SRC_DIR}/src/midend/programAnalysis/staticInterproceduralSlicing
   ${ROSE_TOP_SRC_DIR}/src/midend/programAnalysis/valuePropagation
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/partialRedundancyElimination
@@ -960,20 +860,12 @@ set(ROSE_INCLUDES
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/constantFolding
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/implicitCodeGeneration
   ${ROSE_TOP_SRC_DIR}/src/midend/programTransformation/runtimeTransformation
-  ${ROSE_TOP_SRC_DIR}/src/roseSupport
-  ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/MSTL
   ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/libharu-2.1.0/include
   ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/libharu-2.1.0/include
-  ${ROSE_TOP_SRC_DIR}/src/util/graphs
-  ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/libharu-2.1.0/win32/include/
-  ${ROSE_TOP_SRC_DIR}/src/midend/astUtil/astInterface)
+  ${ROSE_TOP_SRC_DIR}/src/3rdPartyLibraries/libharu-2.1.0/win32/include)
 
 if(WIN32)
   list(APPEND ROSE_INCLUDES ${ROSE_TOP_SRC_DIR}/winspecific)
-endif()
-
-if(SQLITE3_FOUND_LIB)
-  list(APPEND ROSE_INCLUDES ${ROSE_TOP_SRC_DIR}/src/roseExtensions/sqlite3x)
 endif()
 
 ########################################################################################################################

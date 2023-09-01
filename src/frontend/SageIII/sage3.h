@@ -35,19 +35,8 @@
 // #include "AstFixes.h"
 #include "astPostProcessing.h"
 
-
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-//Liao, 10/9/2008, support for abstract handles for language constructs
-#include "abstract_handle.h"
-#include "roseAdapter.h"
-
-#include "memory_object.h"
-//#include "memory_object_impl.h"
-#endif
-
 //Liao, 2/8/2008. SAGE III node building interface
 #include "sageBuilder.h"
-
 
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 // Liao, 11/14/2008, support for annotation-based array optimization
@@ -63,7 +52,6 @@
 #include "nodeQuery.h"
 #endif
 
-
 // JJW 10-23-2007
 // Add possibility to include Valgrind header for memcheck
 #if ROSE_USE_VALGRIND
@@ -71,26 +59,7 @@
 #include <valgrind/memcheck.h>
 #endif
 
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-// TV (05/23/2011): Add headers for the AstFromString library
-#include "AstFromString.h"
-#include "ParserBuilder.hpp"
-#endif
-
 #endif
 
 // DQ (6/25/2011): remove to isolate name qualification error
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -7,7 +7,6 @@
 #include <LoopTreeDummyNode.h>
 #include <ProcessAstTree.h>
 #include <StmtInfoCollect.h>
-#include <ROSE_ASSERT.h>
 
 LoopTreeRestrLoopRange::  LoopTreeRestrLoopRange(  LoopTreeNode *l, int align,
                           SymbolicVal _lb, SymbolicVal _ub )

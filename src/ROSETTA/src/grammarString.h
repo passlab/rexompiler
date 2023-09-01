@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string>
 #include "grammar.h"
-#include <Rose/StringUtility.h>
+#include <StringUtility.h>
 #include "FileUtility.h"
 
 #include <iostream>
@@ -95,12 +95,6 @@ class GrammarString
   const std::string& getDefaultInitializerString() const;
   // MS 2014: 
   std::string infoFieldsToString() const;
-
-  // DQ (10/8/2014): This returns the name of the type where this data member is a container.
-  // The container type is required as part of ATerm support in reading the ATerms and generating
-  // the ROSE IR.
-  std::string containerElementTypeString(AstNodeClass & node) const;
-  std::string containerAppendFunctionNameString(AstNodeClass & node) const;
 
   void setIsInConstructorParameterList(ConstructParamEnum X);
   ConstructParamEnum getIsInConstructorParameterList() const;

@@ -19,6 +19,206 @@ namespace SageInterface
   map <SgType*,string> type_string_map; 
   map <string, SgType*> string_type_map; 
 
+  //copied from TransformationSupport::getTypeName
+  std::string getTypeName ( SgType* type )
+  {
+       std::string typeName;
+
+    // printf ("In SageInterface::getTypeName(): type->sage_class_name() = %s \n",type->sage_class_name());
+
+       switch (type->variantT())
+          {
+            case V_SgTypeComplex:
+                 typeName = "complex";
+                 break;
+            case V_SgTypeImaginary:
+                 typeName = "imaginary";
+                 break;
+            case V_SgTypeBool:
+                 typeName = "bool";
+                 break;
+  #if 0
+            case V_SgEnumType:
+              // DQ (3/2/2005): This needs to be fixed, but Tom is going to send me the fix since I'm working on Kull presently.
+                 typeName = "enum";
+                 break;
+  #endif
+            case V_SgTypeChar:
+                 typeName = "char";
+                 break;
+            case V_SgTypeVoid:
+                 typeName = "void";
+                 break;
+            case V_SgTypeInt:
+                 typeName = "int";
+                 break;
+            case V_SgTypeDouble:
+                 typeName = "double";
+                 break;
+            case V_SgTypeFloat:
+                 typeName = "float";
+                 break;
+            case V_SgTypeLong:
+                 typeName = "long";
+                 break;
+            case V_SgTypeLongDouble:
+                 typeName = "long double";
+                 break;
+            case V_SgTypeEllipse:
+                 typeName = "ellipse";
+                 break;
+            case V_SgTypeGlobalVoid:
+                 typeName = "void";
+                 break;
+            case V_SgTypeLongLong:
+                 typeName = "long long";
+                 break;
+            case V_SgTypeShort:
+                 typeName = "short";
+                 break;
+            case V_SgTypeSignedChar:
+                 typeName = "signed char";
+                 break;
+            case V_SgTypeSignedInt:
+                 typeName = "signed int";
+                 break;
+            case V_SgTypeSignedLong:
+                 typeName = "signed long";
+                 break;
+            case V_SgTypeSignedShort:
+                 typeName = "signed short";
+                 break;
+            case V_SgTypeString:
+                 typeName = "string";
+                 break;
+            case V_SgTypeUnknown:
+                 typeName = "unknown";
+                 break;
+            case V_SgTypeUnsignedChar:
+                 typeName = "unsigned char";
+                 break;
+            case V_SgTypeUnsignedInt:
+                 typeName = "unsigned int";
+                 break;
+            case V_SgTypeUnsignedLong:
+                 typeName = "unsigned long";
+                 break;
+            case V_SgTypeUnsignedShort:
+                 typeName = "unsigned short";
+                 break;
+            case V_SgTypeUnsignedLongLong:
+                 typeName = "unsigned long long";
+                 break;
+            case V_SgReferenceType:
+               {
+                 ROSE_ASSERT ( isSgReferenceType(type)->get_base_type() != NULL );
+                 typeName = getTypeName(isSgReferenceType(type)->get_base_type()) + "&";
+                 break;
+               }
+            case V_SgPointerType:
+               {
+                 ROSE_ASSERT ( isSgPointerType(type)->get_base_type() != NULL );
+                 typeName = getTypeName(isSgPointerType(type)->get_base_type()) + "*";
+                 break;
+               }
+            case V_SgModifierType:
+               {
+                 ROSE_ASSERT ( isSgModifierType(type)->get_base_type() != NULL );
+                 SgModifierType *modifier = isSgModifierType(type);
+                 typeName = modifier->unparseToString();
+              // typeName = getTypeName(modifier->get_base_type());
+                 break;
+               }
+            case V_SgEnumType:
+            case V_SgNamedType:
+               {
+                 SgNamedType* sageNamedType = isSgNamedType(type);
+                 ROSE_ASSERT( sageNamedType != NULL );
+                 typeName = sageNamedType->get_name().str();
+                 break;
+               }
+            case V_SgClassType:
+               {
+                 SgClassType* sageClassType = isSgClassType(type);
+                 ROSE_ASSERT( sageClassType != NULL );
+                 typeName = sageClassType->get_name().str();
+                 break;
+               }
+            case V_SgTypedefType:
+               {
+                 SgTypedefType* sageTypedefType = isSgTypedefType(type);
+                 ROSE_ASSERT( sageTypedefType != NULL );
+                 typeName = sageTypedefType->get_name().str();
+                 break;
+               }
+            case V_SgPointerMemberType:
+               {
+                 SgPointerMemberType* pointerMemberType = isSgPointerMemberType(type);
+                 ROSE_ASSERT (pointerMemberType != NULL);
+                 SgClassType* classType = isSgClassType(pointerMemberType->get_class_type()->stripTypedefsAndModifiers());
+                 ROSE_ASSERT (classType != NULL);
+                 SgClassDeclaration* classDeclaration = isSgClassDeclaration(classType->get_declaration());
+                 ROSE_ASSERT (classDeclaration != NULL);
+                 typeName = classDeclaration->get_name().str();
+                 break;
+               }
+            case V_SgArrayType:
+               {
+                 ROSE_ASSERT ( isSgArrayType(type)->get_base_type() != NULL );
+                 typeName = getTypeName(isSgArrayType(type)->get_base_type());
+                 break;
+               }
+            case V_SgFunctionType:
+               {
+                 SgFunctionType* functionType = isSgFunctionType(type);
+                 ROSE_ASSERT(functionType != NULL);
+                 typeName = functionType->get_mangled_type().str();
+                 break;
+               }
+            case V_SgMemberFunctionType:
+               {
+                 SgMemberFunctionType* memberFunctionType = isSgMemberFunctionType(type);
+                 ROSE_ASSERT (memberFunctionType != NULL);
+                 SgClassType* classType = isSgClassType(memberFunctionType->get_class_type()->stripTypedefsAndModifiers());
+                 ROSE_ASSERT (classType != NULL);
+                 SgClassDeclaration* classDeclaration = isSgClassDeclaration(classType->get_declaration());
+                 ROSE_ASSERT (classDeclaration != NULL);
+                 typeName = classDeclaration->get_name().str();
+                 break;
+               }
+            case V_SgTypeWchar:
+                 typeName = "wchar";
+                 break;
+            case V_SgTypeDefault:
+                 typeName = "default";
+                 break;
+            default:
+               {
+                 printf ("default reached in switch within SageInterface::getTypeName type->sage_class_name() = %s variant = %d \n",
+                 type->sage_class_name(),type->variant());
+                 ROSE_ABORT();
+                 break;
+               }
+          }
+
+    // Fix for purify problem report
+    // typeName = Rose::stringDuplicate(typeName);
+
+       return typeName;
+  }
+
+
+  // by Jeremiah
+  // Return bool for C++ code, and int for C code
+  SgType* getBoolType(SgNode* n) {
+    bool isC = SageInterface::getEnclosingSourceFile(n, false)->get_outputLanguage() == SgFile::e_C_language;
+    if (isC) {
+      return SgTypeInt::createType();
+    } else {
+      return SgTypeBool::createType();
+    }
+  }
+
   //! Check if a type is an integral type, only allowing signed/unsigned short, int, long, long long.
   ////!
   ////! There is another similar function named SgType::isIntegerType(), which allows additional types char, wchar, and bool.

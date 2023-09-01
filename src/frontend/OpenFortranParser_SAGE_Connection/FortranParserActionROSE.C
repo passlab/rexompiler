@@ -9,7 +9,6 @@
 
 #define SKIP_C_ACTION_IMPLEMENTATION 0
 
-using namespace Rose::Diagnostics;
 using namespace Rose;
 using namespace std;
 
@@ -11418,10 +11417,11 @@ void c_action_label(Token_t * lbl)
  */
 void c_action_case_stmt(Token_t *label, Token_t *caseKeyword, Token_t *id, Token_t *eos)
  {
-     mlog[TRACE] << "In c_action_case_stmt()"
+     MLOG_TRACE_CXX("OpenFortranParser_SAGE_CONNECTION") << "In c_action_case_stmt()"
                  << " label = "       << label       << " = " << (label ? label->text : "NULL")
                  << " caseKeyword = " << caseKeyword << " = " << (caseKeyword ? caseKeyword->text : "NULL")
                  << " id = "          << id          << " = " << (id ? id->text : "NULL") << endl;
+
 #if 0
      // Output debugging information about saved state (stack) information.
      outputState("At TOP of R810 c_action_case_stmt()");
@@ -11495,7 +11495,7 @@ void c_action_case_stmt(Token_t *label, Token_t *caseKeyword, Token_t *id, Token
 void c_action_end_select_stmt(Token_t *label, Token_t *endKeyword,
                               Token_t *selectKeyword, Token_t *id, Token_t *eos)
  {
-    mlog[TRACE] << "In c_action_end_select_stmt()"
+    MLOG_TRACE_CXX("FortranParser") << "In c_action_end_select_stmt()"
                 << " label = "         << label         << " = " << (label ? label->text : "NULL")
                 << " endKeyword = "    << endKeyword    << " = " << (endKeyword ? endKeyword->text : "NULL")
                 << " selectKeyword = " << selectKeyword << " = " << (selectKeyword ? selectKeyword->text : "NULL")
@@ -11524,7 +11524,7 @@ void c_action_end_select_stmt(Token_t *label, Token_t *endKeyword,
  */
 void c_action_case_selector(Token_t *defaultToken)
  {
-    mlog[TRACE] << "In c_action_case_selector()"
+    MLOG_TRACE_CXX("FortranParser") << "In c_action_case_selector()"
                 << " defaultToken = " << defaultToken << " = " << (defaultToken ? defaultToken->text : "NULL") << endl;
 
     if (defaultToken != NULL)
@@ -11541,7 +11541,7 @@ void c_action_case_selector(Token_t *defaultToken)
  */
 void c_action_case_value_range(ofp_bool hasColon)
  {
-    mlog[TRACE] << "In c_action_case_value_range(): hasColon = " << hasColon << "\n";;
+    MLOG_TRACE_CXX("FortranParser") << "In c_action_case_value_range(): hasColon = " << hasColon << "\n";;
 
     SgExpression* lowerBound = NULL;
     SgExpression* upperBound = NULL;
@@ -11605,7 +11605,7 @@ void c_action_case_value_range(ofp_bool hasColon)
  */
 void c_action_case_value_range_list__begin()
  {
-    mlog[TRACE] << "In c_action_case_value_range_list__begin() \n";
+    MLOG_TRACE_CXX("FortranParser") << "In c_action_case_value_range_list__begin() \n";
 
  // An SgExprListExp (the key) is needed for the Fortran grammar case-value-range-list
     getCaseStmt()->key = SageBuilder::buildExprListExp_nfi();
@@ -11613,7 +11613,7 @@ void c_action_case_value_range_list__begin()
 
 void c_action_case_value_range_list(int count)
  {
-    mlog[TRACE] << "In c_action_case_value_range_list(): count = " << count << endl;
+    MLOG_TRACE_CXX("FortranParser") << "In c_action_case_value_range_list(): count = " << count << endl;
  }
 
 /**
@@ -11624,7 +11624,7 @@ void c_action_case_value_range_list(int count)
  */
 void c_action_case_value_range_suffix(ofp_bool hasSuffixExpr)
  {
-    mlog[TRACE] << "In c_action_case_value_range_suffix() \n";
+    MLOG_TRACE_CXX("FortranParser") << "In c_action_case_value_range_suffix() \n";
     getCaseValueRange()->hasSuffix = true;
     getCaseValueRange()->hasSuffixExpr = hasSuffixExpr;
  }
@@ -11636,7 +11636,7 @@ void c_action_case_value_range_suffix(ofp_bool hasSuffixExpr)
  */
 void c_action_case_value()
  {
-    mlog[TRACE] << "In c_action_case_value() \n";
+    MLOG_TRACE_CXX("FortranParser") << "In c_action_case_value() \n";
 
     CaseValueRange* caseValueRange = getCaseValueRange();
 
@@ -13027,7 +13027,7 @@ void c_action_case_value()
         // DQ (12/9/2007): set the scope.
         // labelStatement->set_scope(astScopeStack.front());
         SgFunctionDefinition* currentFunctionScope =
-        TransformationSupport::getFunctionDefinition(astScopeStack.front());
+        SageInterface::getEnclosingFunctionDefinition(astScopeStack.front(), true);
         ROSE_ASSERT(currentFunctionScope != NULL);
         labelStatement->set_scope(currentFunctionScope);
         ROSE_ASSERT(labelStatement->get_scope() != NULL);
@@ -16579,10 +16579,10 @@ void c_action_print_stmt(Token_t *label, Token_t *printKeyword, Token_t *eos, of
         }
 
         // This is part of a bug fix demonstrated by test2010_32.f90.
-        // DQ (8/28/2010): A function call in a module can apprea before it's declaration. This is supported by:
+        // DQ (8/28/2010): A function call in a module can appear before it's declaration. This is supported by:
         //    1) building the function declaration
         //    2) Building a function symbol
-        //    3) Put the function sysmbol into the global scope (since it is not clear where to put it)
+        //    3) Put the function symbol into the global scope (since it is not clear where to put it)
         //    4) Fixup function symbols of referenced function calls in the module
         // printf ("Now process function references in the module to match against functions defined in the module scope! \n");
         // printf ("Current scope = %p = %s \n",moduleScope,moduleScope->class_name().c_str());

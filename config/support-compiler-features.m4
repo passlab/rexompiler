@@ -1,4 +1,4 @@
-# Detects various features of the C++ compiler.
+# Detects various features of the C/C++/Fortran compiler.
 #     Arguments:
 #         $1  	     basic language, should be "c", "c++", or "fortran"
 #         $2  	     compiler command and its switches

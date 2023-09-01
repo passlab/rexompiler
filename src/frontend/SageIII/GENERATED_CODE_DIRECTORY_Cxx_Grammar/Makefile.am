@@ -30,10 +30,6 @@ nodist_libgeneratedIR_la_SOURCES = $(GENERATED_SOURCE)
 # nodist_libgeneratedIR_la_SOURCES = $(GENERATED_SOURCE)
 endif
 
-# DQ (10/18/2007): Added AST_FILE_IO.h StorageClasses.h
-# Removed sla.h (redundant with location in src/util/commandlineProcessing/sla.h)
-# include_HEADERS = *.h
-
 test:
 	echo "Force ROSETTA to regenerate the source code for the ROSE IR."
 	cd $(top_builddir)/src/ROSETTA/src; $(MAKE)
@@ -71,7 +67,7 @@ SgAndAssignOp.C                        SgClassSymbol.C                       SgG
 SgAndOp.C                              SgClassType.C                         SgGotoStatement.C                       SgOmpFirstprivateClause.C              SgOmpNontemporalClause.C       SgTryStmt.C \
 SgOmpInclusiveClause.C               SgOmpExclusiveClause.C                  SgOmpIsDevicePtrClause.C        SgOmpUseDevicePtrClause.C     SgOmpUseDevicePtrClause.C \
 SgArithmeticIfStatement.C              SgClinkageDeclarationStatement.C      SgGraph.C                               SgOmpFlushStatement.C                        SgTypeBool.C \
-SgArrayType.C                          SgClinkageEndStatement.C              SgGraphEdge.C                           SgUpirWorksharingStatement.C                          SgType.C \
+SgArrayType.C                          SgClinkageEndStatement.C              SgGraphEdge.C                           SgType.C \
 SgArrowExp.C                           SgClinkageStartStatement.C            SgGraphEdgeList.C                       SgOmpIfClause.C                              SgTypeChar.C \
 SgArrowStarOp.C                        SgCloseStatement.C                    SgGraphNode.C                           SgOmpLastprivateClause.C                     SgTypeComplex.C                  SgOmpMasterStatement.C\
 SgColonShapeExp.C                     SgGraphNodeList.C                       SgOmpTaskyieldStatement.C                       SgTypeDefault.C \
@@ -80,12 +76,12 @@ SgOmpSeqCstClause.C              SgOmpAcqRelClause.C                SgOmpRelease
 SgOmpRelaxedClause.C             SgOmpThreadsClause.C                  SgOmpSimdClause.C \
 SgOmpReverseOffloadClause.C          SgOmpUnifiedAddressClause.C           SgOmpUnifiedSharedMemoryClause.C   SgOmpAffinityClause.C\
 SgOmpDynamicAllocatorsClause.C        SgOmpAtomicDefaultMemOrderClause.C     SgOmpExtImplementationDefinedRequirementClause.C \
-SgAsmOp.C 			      SgCommonBlock.C                       SgGreaterThanOp.C                       SgUpirNumUnitsField.C                      SgTypedefSeq.C                  SgOmpNumTeamsClause.C                         SgOmpOrderClause.C SgOmpBindClause.C               SgOmpThreadLimitClause.C \
+SgAsmOp.C 			      SgCommonBlock.C                       SgGreaterThanOp.C                       SgOmpNumThreadsClause.C                      SgTypedefSeq.C                  SgOmpNumTeamsClause.C                         SgOmpOrderClause.C SgOmpBindClause.C               SgOmpThreadLimitClause.C \
 SgOmpGrainsizeClause.C                         SgOmpNumTasksClause.C            SgOmpNogroupClause.C \
 SgOmpNumParallelClause.C                 SgOmpNumSectionsClause.C                   SgOmpNumForClause.C                        SgOmpNumTaskgroupClause.C \
 SgCommonBlockObject.C                 SgIdentDirectiveStatement.C             SgOmpOrderedClause.C                         SgTypedefSymbol.C \
 SgCommonSymbol.C                      SgIfdefDirectiveStatement.C             SgOmpOrderedStatement.C                      SgTypedefType.C \
-SgIfDirectiveStatement.C      SgOmpMetadirectiveStatement.C          SgUpirSpmdStatement.C      SgOmpTeamsStatement.C    SgOmpLoopStatement.C          SgOmpTaskloopStatement.C       SgTypeDouble.C                       SgOmpScanStatement.C         SgOmpDistributeStatement.C   SgOmpTaskgroupStatement.C             SgOmpCancellationPointStatement.C       SgOmpOrderedDependStatement.C \
+SgIfDirectiveStatement.C      SgOmpMetadirectiveStatement.C          SgOmpParallelStatement.C      SgOmpTeamsStatement.C    SgOmpLoopStatement.C          SgOmpTaskloopStatement.C       SgTypeDouble.C                       SgOmpScanStatement.C         SgOmpDistributeStatement.C   SgOmpTaskgroupStatement.C             SgOmpCancellationPointStatement.C       SgOmpOrderedDependStatement.C \
 SgOmpCancelStatement.C                       SgOmpDeclareMapperStatement.C         SgOmpTargetEnterDataStatement.C           SgOmpTargetExitDataStatement.C SgOmpTargetParallelForStatement.C \
 SgOmpTargetParallelStatement.C        SgOmpTargetUpdateStatement.C              SgOmpRequiresStatement.C         SgOmpTargetParallelForSimdStatement.C        SgOmpTargetParallelLoopStatement.C        SgOmpTargetSimdStatement.C        SgOmpTargetTeamsStatement.C        SgOmpTargetTeamsDistributeStatement.C        SgOmpTargetTeamsDistributeSimdStatement.C        SgOmpTargetTeamsLoopStatement.C        SgOmpTargetTeamsDistributeParallelForStatement.C        SgOmpTargetTeamsDistributeParallelForSimdStatement.C \
 SgOmpDistributeSimdStatement.C        SgOmpDistributeParallelForStatement.C        SgOmpDistributeParallelForSimdStatement.C        SgOmpTaskloopSimdStatement.C \
@@ -164,9 +160,10 @@ SgBitXorOp.C                               SgFortranNonblockedDo.C              
 SgBlockDataStatement.C                     SgFuncDecl_attr.C                     SgNullStatement.C                       SgTemplateDeclaration.C                      SgWhereStatement.C \
 SgBoolValExp.C                             SgFunctionCallExp.C                   SgOmpAtomicStatement.C                  SgTemplateInstantiationDecl.C                SgWhileStmt.C \
 SgBreakStmt.C                              SgFunctionDeclaration.C               SgOmpBarrierStatement.C                 SgTemplateInstantiationDefn.C                SgWriteStatement.C \
-SgCaseOptionStmt.C                         SgFunctionDefinition.C                SgUpirBodyStatement.C                   SgTemplateInstantiationDirectiveStatement.C  SgXorAssignOp.C \
-SgUpirBaseStatement.C                      SgUpirLoopStatement.C                 SgUpirLoopParallelStatement.C \
-SgCastExp.C                                SgFunctionModifier.C                  SgUpirFieldBodyStatement.C              SgTemplateInstantiationFunctionDecl.C        SgHeaderFileBody.C
+SgCaseOptionStmt.C                         SgFunctionDefinition.C                SgOmpBodyStatement.C                    SgTemplateInstantiationDirectiveStatement.C  SgXorAssignOp.C \
+SgOmpForStatement.C \
+SgCastExp.C                                SgFunctionModifier.C                  SgOmpClauseBodyStatement.C              SgTemplateInstantiationFunctionDecl.C        SgHeaderFileBody.C \
+SgOmpExecStatement
 
 
 

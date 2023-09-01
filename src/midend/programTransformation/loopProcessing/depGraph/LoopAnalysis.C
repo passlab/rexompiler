@@ -5,7 +5,6 @@
 #include <DepInfo.h>
 #include <TransDepGraph.h>
 #include <DepGraph.h>
-#include <ROSE_ASSERT.h>
 
 template <class Node>
 LoopAlignInfo TransLoopFusible<Node>::

@@ -26,7 +26,7 @@ fortran_parser_tests =
 #endif
 #
 #testBafio_SOURCES = testBafio.C
-testBafio_SOURCES =
+#testBafio_SOURCES =
 
 ## Test targets
 #

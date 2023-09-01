@@ -6,7 +6,6 @@
 
 #include "roseInternal.h"
 //#include "sage3.h"
-#include "rewrite.h"
 #include <set>
 #include <utility>
 

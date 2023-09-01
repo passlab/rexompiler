@@ -2,10 +2,6 @@
 #include "sage3basic.h"
 #include "fixupDeclarations.h"
 
-#ifdef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "transformationSupport.h"
-#endif
-
 void
 fixupDeclarations( SgNode* node )
    {
@@ -269,8 +265,8 @@ FixupDeclarations::visit (SgNode* node)
              {
                if (firstDeclaration->get_definingDeclaration() != definingDeclaration)
                   {
-                    SgSourceFile* firstDeclarationSourceFile    = TransformationSupport::getSourceFile(firstDeclaration);
-                    SgSourceFile* definingDeclarationSourceFile = TransformationSupport::getSourceFile(definingDeclaration);
+                    SgSourceFile* firstDeclarationSourceFile    = SageInterface::getEnclosingSourceFile(firstDeclaration);
+                    SgSourceFile* definingDeclarationSourceFile = SageInterface::getEnclosingSourceFile(definingDeclaration);
                     printf ("Error: firstDeclaration            = %p = %s \n",firstDeclaration,firstDeclaration->class_name().c_str());
                     printf ("Error: firstDeclaration in file    = %p = %s \n",firstDeclarationSourceFile,firstDeclarationSourceFile->getFileName().c_str());
                     printf ("Error: definingDeclaration         = %p = %s \n",definingDeclaration,definingDeclaration->class_name().c_str());

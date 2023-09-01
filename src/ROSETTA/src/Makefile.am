@@ -57,13 +57,6 @@ GRAMMAR_SOURCE_FILES = \
      ../Grammar/grammarNewDeleteOperatorMacros.macro \
      ../Grammar/grammarTraverseMemoryPool.macro \
      ../Grammar/grammarCheckingIfDataMembersAreInMemoryPool.macro \
-     ../Grammar/grammarStorageClassDeclatationMacros.macro \
-     ../Grammar/grammarStorageClassDefinitionMacros.macro \
-     ../Grammar/grammarAST_FileIoHeader.code \
-     ../Grammar/grammarAST_FileIoSource.code  \
-     ../Grammar/grammarSourceOfIRNodesAstFileIOSupport.macro \
-     ../Grammar/grammarStaticDataManagingClassHeader.macro \
-     ../Grammar/grammarStaticDataManagingClassStorageClassHeader.macro \
      ../Grammar/grammarReturnDataMemberPointers.macro \
      ../Grammar/grammarProcessDataMemberReferenceToPointers.macro \
      ../Grammar/grammarGetChildIndex.macro \
@@ -99,7 +92,6 @@ $(CXX_PREPROC_CODES): CxxGrammarMetaProgram$(EXEEXT) $(GRAMMAR_SOURCE_FILES)
 #	ln -s $(top_srcdir)/src/ROSETTA/Grammar Grammar
 	@echo "Running ROSETTA to generated ROSE IR code:"
 #       Add "--verbose" if you want the old, noisy output from CxxGrammarMetaProgram
-	mkdir -p  ${top_builddir}/src/frontend/SageIII/Rose/Traits
 	$(AM_V_GEN) $(VALGRIND) ./CxxGrammarMetaProgram ${top_builddir}/src/frontend/SageIII/
 
 noinst_PROGRAMS = CxxGrammarMetaProgram
@@ -119,12 +111,8 @@ CxxGrammarMetaProgram_SOURCES = \
    visitorSupport.C \
    poolBasedTraversal.C \
    node.C \
-   buildAstFileIO.C \
-   buildRoseTraits.C \
-   buildStorageClasses.C \
    buildConstructorsWithoutSourcePositionInformation.C \
-   outputClassesAndFields.C \
-   StringUtility.C
+   outputClassesAndFields.C
 
 # buildConstructorsWithoutSourcePositionInformation.o: buildConstructorsWithoutSourcePositionInformation.C
 
@@ -132,13 +120,11 @@ BoostLibraries = \
   $(BOOST_LDFLAGS) $(BOOST_DATE_TIME_LIB)           \
   $(BOOST_THREAD_LIB) $(BOOST_FILESYSTEM_LIB) $(BOOST_PROGRAM_OPTIONS_LIB)  \
   $(BOOST_REGEX_LIB)  $(BOOST_SYSTEM_LIB) $(BOOST_SERIALIZATION_LIB)    \
-  $(BOOST_WAVE_LIB) $(BOOST_IOSTREAMS_LIB) $(RT_LIBS) $(top_builddir)/src/util/libroseutil.la
+  $(BOOST_WAVE_LIB) $(BOOST_IOSTREAMS_LIB)
 
 CxxGrammarMetaProgram_LDADD = \
   $(ROSE_BOOST_LIBS) \
   $(top_builddir)/src/util/libroseutil.la \
-  $(top_builddir)/src/util/Sawyer/libroseSawyer.la \
-  $(ROSE_BOOST_LIBS) \
   $(RT_LIBS)
 
 # DQ (4/12/2016): This is required for use with clang (not clear how to compile ROSE with out it).

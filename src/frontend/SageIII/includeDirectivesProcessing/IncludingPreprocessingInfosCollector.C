@@ -6,7 +6,6 @@
 
 #include "FileHelper.h"
 #include "IncludingPreprocessingInfosCollector.h"
-#include "IncludeDirective.h"
 
 using namespace std;
 

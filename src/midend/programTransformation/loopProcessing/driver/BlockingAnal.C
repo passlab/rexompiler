@@ -1,7 +1,6 @@
 #include <BlockingAnal.h>
 #include <LoopTreeTransform.h>
 #include <AutoTuningInterface.h>
-#include <ROSE_ASSERT.h>
 
 static int SliceNestReuseLevel(CompSliceLocalityRegistry *anal, const CompSliceNest& n)
      {

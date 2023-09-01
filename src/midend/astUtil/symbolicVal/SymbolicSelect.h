@@ -4,7 +4,6 @@
 #include "SymbolicExpr.h"
 #include "const.h"
 #include <iostream>
-#include <ROSE_ABORT.h>
 
 class SymbolicSelect : public SymbolicExpr
 {

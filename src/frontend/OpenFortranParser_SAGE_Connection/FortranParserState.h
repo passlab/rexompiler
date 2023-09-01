@@ -31,13 +31,11 @@
 #define astHasSelectionSubscriptStack (*(FortranParserState::getCurrentHasSelectionSubscriptStack()))
 #define astMultipartReferenceStack (*(FortranParserState::getCurrentMultipartReferenceStack()))
 
-
 using std::string;
 using std::map;
 using std::stack;
 using std::list;
 using std::vector;
-
 
 namespace Rose {
 

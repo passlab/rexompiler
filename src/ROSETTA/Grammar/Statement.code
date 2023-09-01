@@ -4892,10 +4892,10 @@ SgScopeStatement::insert_symbol ( const SgName& n, SgSymbol* s )
              globalScopeAcrossFiles->get_symbol_table()->insert(n, asym);
            }
          } else {
-           mprintf ("Warning: In SgScopeStatement::insert_symbol(): global_scope == globalScopeAcrossFiles: skip insertion of redundant SgAliasSymbol \n");
+           MLOG_WARN_C("ROSETTA", "Warning: In SgScopeStatement::insert_symbol(): global_scope == globalScopeAcrossFiles: skip insertion of redundant SgAliasSymbol \n");
          }
        } else {
-         mprintf ("In SgScopeStatement::insert_symbol(): project == NULL \n");
+         MLOG_WARN_C("ROSETTA", "In SgScopeStatement::insert_symbol(): project == NULL \n");
        }
      }
 
@@ -4958,10 +4958,10 @@ SgScopeStatement::insert_symbol ( const SgName& n, SgSymbol* s )
           if (classScope != thisScope)
              {
             // DQ (3/6/2017): Added support for message logging to control output from ROSE tools.
-               mprintf ("Warning: SgScopeStatement::insert_symbol(): class_declaration->get_scope() != this \n");
-               mprintf ("   --- scope = %p = %s \n",this,this->class_name().c_str());
-               mprintf ("   --- class_declaration = %p = %s \n",class_declaration,class_declaration->class_name().c_str());
-               mprintf ("   --- class_declaration->get_scope() = %p = %s \n",class_declaration->get_scope(),class_declaration->get_scope()->class_name().c_str());
+               MLOG_WARN_C("ROSETTA", "Warning: SgScopeStatement::insert_symbol(): class_declaration->get_scope() != this \n");
+               MLOG_WARN_MORE_C ("   --- scope = %p = %s \n",this,this->class_name().c_str());
+               MLOG_WARN_MORE_C ("   --- class_declaration = %p = %s \n",class_declaration,class_declaration->class_name().c_str());
+               MLOG_WARN_MORE_C ("   --- class_declaration->get_scope() = %p = %s \n",class_declaration->get_scope(),class_declaration->get_scope()->class_name().c_str());
             // class_declaration->get_file_info()->display("class_declaration: debug");
              }
        // ROSE_ASSERT(class_declaration->get_scope() == this);
@@ -18612,7 +18612,7 @@ SgDerivedTypeStatement::get_mangled_name() const
   // return SgClassDeclaration::get_mangled_name();
      SgName mangleName;
      ROSE_ASSERT(this->get_parent() != NULL);
-     SgFunctionDeclaration* functionDeclaration = TransformationSupport::getFunctionDeclaration(this->get_parent());
+     SgFunctionDeclaration* functionDeclaration = SageInterface::getEnclosingFunctionDeclaration(this->get_parent(), true);
 
      bool defineShorterName = false;
      if (functionDeclaration != NULL)
@@ -18966,15 +18966,21 @@ SOURCE_PREPROCESSOR_DIRECTIVE_STATEMENT_END
 SOURCE_LINEMARKER_PREPROCESSOR_DIRECTIVE_STATEMENT_START
 SOURCE_LINEMARKER_PREPROCESSOR_DIRECTIVE_STATEMENT_END
 
-HEADER_UPIR_SPMD_STATEMENT_START
-
-HEADER_UPIR_SPMD_STATEMENT_END
-
-SOURCE_UPIR_SPMD_STATEMENT_START
+SOURCE_OMP_EXEC_STATEMENT_START
 void
-SgUpirSpmdStatement::post_construction_initialization()
+SgOmpExecStatement::post_construction_initialization()
    {}
-SOURCE_UPIR_SPMD_STATEMENT_END
+SOURCE_OMP_EXEC_STATEMENT_END
+
+HEADER_OMP_PARALLEL_STATEMENT_START
+
+HEADER_OMP_PARALLEL_STATEMENT_END
+
+SOURCE_OMP_PARALLEL_STATEMENT_START
+void
+SgOmpParallelStatement::post_construction_initialization()
+   {}
+SOURCE_OMP_PARALLEL_STATEMENT_END
 
 SOURCE_OMP_TEAMS_STATEMENT_START
 void
@@ -18982,42 +18988,11 @@ SgOmpTeamsStatement::post_construction_initialization()
    {}
 SOURCE_OMP_TEAMS_STATEMENT_END
 
-SOURCE_UPIR_BASE_STATEMENT_START
+SOURCE_OMP_FOR_STATEMENT_START
 void
-SgUpirBaseStatement::post_construction_initialization()
+SgOmpForStatement::post_construction_initialization()
    {}
-SOURCE_UPIR_BASE_STATEMENT_END
-
-SOURCE_UPIR_LOOP_STATEMENT_START
-void
-SgUpirLoopStatement::post_construction_initialization()
-   {}
-SOURCE_UPIR_LOOP_STATEMENT_END
-
-HEADER_UPIR_LOOP_PARALLEL_STATEMENT_START
-      virtual bool replace_child(SgStatement *,SgStatement *, bool extractListFromBasicBlock = false) override;
-
-      public:
-HEADER_UPIR_LOOP_PARALLEL_STATEMENT_END
-
-SOURCE_UPIR_LOOP_PARALLEL_STATEMENT_START
-void
-SgUpirLoopParallelStatement::post_construction_initialization()
-   {}
-
-bool
-SgUpirLoopParallelStatement::replace_child(SgStatement *target,SgStatement *newstmt, bool extractBasicBlock)
-   {
-     SgStatement* upir_loop_body = ((SgUpirLoopStatement*)((SgUpirLoopParallelStatement*)this)->get_loop())->get_body();
-     return ( StatementReplace(this, upir_loop_body, target, newstmt) == true );
-   }
-SOURCE_UPIR_LOOP_PARALLEL_STATEMENT_END
-
-SOURCE_UPIR_SYNC_STATEMENT_START
-void
-SgUpirSyncStatement::post_construction_initialization()
-   {}
-SOURCE_UPIR_SYNC_STATEMENT_END
+SOURCE_OMP_FOR_STATEMENT_END
 
 SOURCE_OMP_CANCELLATION_POINT_STATEMENT_START
 void
@@ -19146,6 +19121,42 @@ SgOmpDeclareSimdStatement::get_mangled_name(void) const
 
 SOURCE_OMP_DECLARE_SIMD_STATEMENT_END
 
+HEADER_OMP_DECLARE_TARGET_STATEMENT_START
+//! Required for any declaration statement
+     virtual SgName get_mangled_name(void) const override;
+HEADER_OMP_DECLARE_TARGET_STATEMENT_END
+
+SOURCE_OMP_DECLARE_TARGET_STATEMENT_START
+void
+SgOmpDeclareTargetStatement::post_construction_initialization()
+   {}
+
+SgName
+SgOmpDeclareTargetStatement::get_mangled_name(void) const
+   {
+     SgName returnName;
+       // The semantics of get_scope is that it can never be NULL (SgGlobal returns itself as its scope!)
+     SgScopeStatement* scope = get_scope();
+     ROSE_ASSERT(scope != NULL);
+
+     returnName = scope->get_mangled_name() + SgName("_omp_declaration_target_");
+      //TODO: need more unique name adding clauses, followed function, etc.
+     return returnName;
+   }
+
+SOURCE_OMP_DECLARE_TARGET_STATEMENT_END
+
+HEADER_OMP_END_DECLARE_TARGET_STATEMENT_START
+
+HEADER_OMP_END_DECLARE_TARGET_STATEMENT_END
+
+SOURCE_OMP_END_DECLARE_TARGET_STATEMENT_START
+void
+SgOmpEndDeclareTargetStatement::post_construction_initialization()
+   {}
+
+SOURCE_OMP_END_DECLARE_TARGET_STATEMENT_END
+
 SOURCE_OMP_DO_STATEMENT_START
 void
 SgOmpDoStatement::post_construction_initialization()
@@ -19212,11 +19223,11 @@ SgOmpSectionsStatement::post_construction_initialization()
    {}
 SOURCE_OMP_SECTIONS_STATEMENT_END
 
-SOURCE_UPIR_TASK_STATEMENT_START
+SOURCE_OMP_TARGET_STATEMENT_START
 void
-SgUpirTaskStatement::post_construction_initialization()
+SgOmpTargetStatement::post_construction_initialization()
    {}
-SOURCE_UPIR_TASK_STATEMENT_END
+SOURCE_OMP_TARGET_STATEMENT_END
 
 SOURCE_OMP_TARGET_PARALLEL_FOR_STATEMENT_START
 void
@@ -19458,18 +19469,25 @@ SgOmpWorkshareStatement::post_construction_initialization()
 SOURCE_OMP_WORKSHARE_STATEMENT_END
 
 
-SOURCE_UPIR_WORKSHARING_STATEMENT_START
-void
-SgUpirWorksharingStatement::post_construction_initialization()
-   {}
-SOURCE_UPIR_WORKSHARING_STATEMENT_END
-
 SOURCE_OMP_FOR_SIMD_STATEMENT_START
 void
 SgOmpForSimdStatement::post_construction_initialization()
    {}
 SOURCE_OMP_FOR_SIMD_STATEMENT_END
 
+
+SOURCE_OMP_UNROLL_STATEMENT_START
+void
+SgOmpUnrollStatement::post_construction_initialization()
+    {}
+SOURCE_OMP_UNROLL_STATEMENT_END
+
+
+SOURCE_OMP_TILE_STATEMENT_START
+void
+SgOmpTileStatement::post_construction_initialization()
+    {}
+SOURCE_OMP_TILE_STATEMENT_END
 
 
 SOURCE_OMP_SECTION_STATEMENT_START
@@ -19485,7 +19503,7 @@ SgOmpTaskStatement::post_construction_initialization()
    {}
 SOURCE_OMP_TASK_STATEMENT_END
 
-HEADER_UPIR_BODY_STATEMENT_START
+HEADER_OMP_BODY_STATEMENT_START
       virtual bool replace_child(SgStatement *,SgStatement *, bool extractListFromBasicBlock = false) override;
 
       public:
@@ -19496,31 +19514,31 @@ HEADER_UPIR_BODY_STATEMENT_START
       virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) override;
 #endif
 
-HEADER_UPIR_BODY_STATEMENT_END
+HEADER_OMP_BODY_STATEMENT_END
 
-HEADER_UPIR_FIELD_STATEMENT_START
-HEADER_UPIR_FIELD_STATEMENT_END
+HEADER_OMP_CLAUSE_STATEMENT_START
+HEADER_OMP_CLAUSE_STATEMENT_END
 
-SOURCE_UPIR_FIELD_STATEMENT_START
+SOURCE_OMP_CLAUSE_STATEMENT_START
 void
-SgUpirFieldStatement::post_construction_initialization()
+SgOmpClauseStatement::post_construction_initialization()
    {}
-SOURCE_UPIR_FIELD_STATEMENT_END
+SOURCE_OMP_CLAUSE_STATEMENT_END
 
-SOURCE_UPIR_BODY_STATEMENT_START
+SOURCE_OMP_BODY_STATEMENT_START
 void
-SgUpirBodyStatement::post_construction_initialization()
+SgOmpBodyStatement::post_construction_initialization()
    {}
 
 bool
-SgUpirBodyStatement::replace_child(SgStatement *target,SgStatement *newstmt, bool extractBasicBlock)
+SgOmpBodyStatement::replace_child(SgStatement *target,SgStatement *newstmt, bool extractBasicBlock)
    {
      return ( StatementReplace(this, p_body, target, newstmt) == true );
    }
-SOURCE_UPIR_BODY_STATEMENT_END
+SOURCE_OMP_BODY_STATEMENT_END
 
 
-HEADER_UPIR_FIELDBODY_STATEMENT_START
+HEADER_OMP_CLAUSEBODY_STATEMENT_START
       public:
 
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
@@ -19529,13 +19547,13 @@ HEADER_UPIR_FIELDBODY_STATEMENT_START
       virtual std::vector<VirtualCFG::CFGEdge> cfgInEdges(unsigned int index) override;
 #endif
 
-HEADER_UPIR_FIELDBODY_STATEMENT_END
+HEADER_OMP_CLAUSEBODY_STATEMENT_END
 
-SOURCE_UPIR_FIELDBODY_STATEMENT_START
+SOURCE_OMP_CLAUSEBODY_STATEMENT_START
 void
-SgUpirFieldBodyStatement::post_construction_initialization()
+SgOmpClauseBodyStatement::post_construction_initialization()
    {}
-SOURCE_UPIR_FIELDBODY_STATEMENT_END
+SOURCE_OMP_CLAUSEBODY_STATEMENT_END
 
 
 SOURCE_OMP_BARRIER_STATEMENT_START
@@ -19557,11 +19575,11 @@ SgCAFWithTeamStatement::post_construction_initialization()
 
 SOURCE_WITH_TEAM_STATEMEMT_END
 
-SOURCE_UPIR_SIMD_STATEMENT_START
+SOURCE_OMP_SIMD_STATEMENT_START
 void
-SgUpirSimdStatement::post_construction_initialization()
+SgOmpSimdStatement::post_construction_initialization()
    {}
-SOURCE_UPIR_SIMD_STATEMENT_END
+SOURCE_OMP_SIMD_STATEMENT_END
 
 
 SOURCE_MICROSOFT_ATTRIBUTE_DECLARATION_STATEMENT_START

@@ -1,8 +1,5 @@
 #include "sage3basic.h"
 
-// DQ (10/14/2006): Added supporting help functions
-#include "transformationSupport.h"
-
 // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace std;
 using namespace Rose;

@@ -4,8 +4,7 @@
 
 #include <MultiGraphCreate.h>
 #include <GraphAccess.h>
-#include <assert.h>
-#include <ROSE_ABORT.h>
+#include "mlog.h"
 
 typedef MultiGraphElemTemplate<void*> BaseGraphNode;
 typedef MultiGraphElemTemplate<void*> BaseGraphEdge;

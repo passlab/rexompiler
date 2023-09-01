@@ -1,7 +1,6 @@
 
 // tps (01/14/2010) : Switching from rose.h to sage3.
 #include "sage3basic.h"
-#include "rewrite.h"
 #include "sageBuilder.h"
 #include <iostream>
 #include <string>
@@ -9,9 +8,7 @@
 // PP(14/10/20) PRE->legacy::PRE #include "pre.h"
 #include "rose_config.h" // for BOOST_FILESYSTEM_VERSION
 #include "RoseAst.h" // using AST Iterator
-#include <Rose/Diagnostics.h>
 #include <AstConsistencyTests.h>
-
 
 // DQ (8/1/2005): test use of new static function to create
 // Sg_File_Info object that are marked as transformations
@@ -281,7 +278,7 @@ doInline(SgFunctionCallExp* funcall, bool allowRecursion)
   // DQ (4/6/2015): Adding code to check for consistency of checking the isTransformed flag.
      ROSE_ASSERT(funcall != NULL);
      ROSE_ASSERT(funcall->get_parent() != NULL);
-     SgGlobal* globalScope = TransformationSupport::getGlobalScope(funcall);
+     SgGlobal* globalScope = SageInterface::getGlobalScope(funcall);
      ROSE_ASSERT(globalScope != NULL);
   // checkTransformedFlagsVisitor(funcall->get_parent());
      checkTransformedFlagsVisitor(globalScope);
@@ -494,7 +491,7 @@ doInline(SgFunctionCallExp* funcall, bool allowRecursion)
          //cout << "There is a lambda class" << endl;
          SgLambdaCaptureList* lambdaCaptureList = lambdaExp->get_lambda_capture_list();
          SgLambdaCapturePtrList captureList = lambdaCaptureList->get_capture_list();
-         BOOST_FOREACH (SgLambdaCapture* capture, captureList)
+         for (SgLambdaCapture* capture : captureList)
          {
            // get the capture variable
            SgVarRefExp* captureVarRef = isSgVarRefExp(capture->get_capture_variable());
@@ -550,7 +547,7 @@ doInline(SgFunctionCallExp* funcall, bool allowRecursion)
      SgFunctionDefinition* targetFunction = SageInterface::getEnclosingFunctionDefinition(funcall, false /* do not include self */);
      SgExpressionPtrList funargs = funcall->get_args()->get_expressions();
      funcall->get_args()->get_expressions().clear();
-     BOOST_FOREACH (SgExpression *actual, funargs)
+     for (SgExpression *actual : funargs)
          actual->set_parent(NULL);
 
      // Make a copy of the to-be-inlined function so we're not modifying and (re)inserting the original.
@@ -752,7 +749,7 @@ doInline(SgFunctionCallExp* funcall, bool allowRecursion)
            closureList->set_definingDeclaration(closureList);
            // prepare member functon parameter list for constructor initializer
            SgExprListExp* memberFuncArgList = SageBuilder::buildExprListExp_nfi();
-           BOOST_FOREACH (SgLambdaCapture* capture, captureList)
+           for (SgLambdaCapture* capture : captureList)
            {
              // capture list
              SgVarRefExp* captureVarRef = isSgVarRefExp(capture->get_capture_variable());
@@ -892,7 +889,7 @@ doInline(SgFunctionCallExp* funcall, bool allowRecursion)
   // printf ("Output the symbol table for funbody_copy \n");
   // funbody_copy->get_symbol_table()->print("debugging copy problem");
 
-     SgProject* project_copy = TransformationSupport::getProject(funbody_raw);
+     SgProject* project_copy = SageInterface::getProject(funbody_raw);
      ROSE_ASSERT(project_copy != NULL);
 
      const int MAX_NUMBER_OF_IR_NODES_TO_GRAPH_FOR_WHOLE_GRAPH = 4000;

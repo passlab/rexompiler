@@ -27,14 +27,10 @@ TEST_TRANSLATOR = ../../testTranslator
 	make -C ../.. testTranslator
 
 $(TEST_Sources): %.passed: $(srcdir)/% $(TEST_TRANSLATOR) $(top_srcdir)/scripts/test_exit_status
-if !ROSE_USE_INSURE
 	@$(RTH_RUN) \
 		CMD="$(TEST_TRANSLATOR) -rose:suppress_variable_declaration_normalization -rose:skipfinalCompileStep $(ROSE_FLAGS) $(TESTCODE_INCLUDES) -I$(srcdir) -c $<" \
 		TITLE="varDeclNorm [$(@:.passed=)]" \
 		$(top_srcdir)/scripts/test_exit_status $@
-else
-	$(VALGRIND) $(TEST_TRANSLATOR) -rose:suppress_variable_declaration_normalization -rose:skipfinalCompileStep $(ROSE_FLAGS) $(TESTCODE_INCLUDES) -I$(srcdir) -c $(@:.passed=)
-endif
 
 check-local:
 	@$(MAKE) $(PASSING_TEST_Sources)

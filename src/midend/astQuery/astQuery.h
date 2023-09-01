@@ -6,7 +6,6 @@
 //#include "sage3.h"
 #include "AstProcessing.h"
 #include "rosedll.h"
-#include <ROSE_ABORT.h>
 
 #include <functional>
 // Support for operations like (SgTypeInt | SgTypeFloat)
@@ -14,9 +13,6 @@
 // So SgType would generate (SgTypeInt | SgTypeFloat | SgTypeDouble | ... | <last type>)
 //        typedef class NodeQuery::VariantVector VariantVector;
 #include "astQueryInheritedAttribute.h"
-
-
-
 
 class ROSE_DLL_API VariantVector : public std::vector < VariantT >
 {
@@ -41,13 +37,8 @@ ROSE_DLL_API VariantVector operator+ (VariantT lhs, const VariantVector & rhs);
 ROSE_DLL_API VariantVector operator+ (const VariantVector & lhs, VariantT rhs);
 ROSE_DLL_API VariantVector operator+ (const VariantVector & lhs, const VariantVector & rhs);
 
-
-
-
-
 namespace AstQueryNamespace
 {
-
   template<typename AstQuerySynthesizedAttributeType>
     struct helpFunctionalOneParamater
     : public std::unary_function<SgNode* , Rose_STL_Container<AstQuerySynthesizedAttributeType> >

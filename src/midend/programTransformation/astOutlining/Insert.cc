@@ -91,12 +91,12 @@ generatePrototype (const SgFunctionDeclaration* full_decl, SgScopeStatement* sco
      ROSE_ASSERT(proto->get_firstNondefiningDeclaration() != NULL);
 
   // Note that the function prototype has not been inserted into the AST, so it does not have a path to SgSourceFile.
-  // ROSE_ASSERT(TransformationSupport::getSourceFile(proto) == NULL);
-     ROSE_ASSERT(TransformationSupport::getSourceFile(proto) != NULL);
-     ROSE_ASSERT(TransformationSupport::getSourceFile(scope) != NULL);
+  // ROSE_ASSERT(SageInterface::getEnclosingSourceFile(proto) == NULL);
+     ROSE_ASSERT(SageInterface::getEnclosingSourceFile(proto) != NULL);
+     ROSE_ASSERT(SageInterface::getEnclosingSourceFile(scope) != NULL);
 
-     ROSE_ASSERT(TransformationSupport::getSourceFile(proto->get_firstNondefiningDeclaration()) != NULL);
-  // printf ("TransformationSupport::getSourceFile(proto->get_firstNondefiningDeclaration())->getFileName() = %s \n",TransformationSupport::getSourceFile(proto->get_firstNondefiningDeclaration())->getFileName().c_str());
+     ROSE_ASSERT(SageInterface::getEnclosingSourceFile(proto->get_firstNondefiningDeclaration()) != NULL);
+  // printf ("SageInterface::getEnclosingSourceFile(proto->get_firstNondefiningDeclaration())->getFileName() = %s \n",SageInterface::getEnclosingSourceFile(proto->get_firstNondefiningDeclaration())->getFileName().c_str());
 
      return proto;
    }
@@ -1782,8 +1782,8 @@ Outliner::insert (SgFunctionDeclaration* func,
 
        // Make sure that internal referneces are to the same file (else the symbol table information will not be consistant).
           ROSE_ASSERT(func->get_firstNondefiningDeclaration() != NULL);
-          ROSE_ASSERT(TransformationSupport::getSourceFile(func) == TransformationSupport::getSourceFile(func->get_firstNondefiningDeclaration()));
-          ROSE_ASSERT(TransformationSupport::getSourceFile(func->get_scope()) == TransformationSupport::getSourceFile(func->get_firstNondefiningDeclaration()));
+          ROSE_ASSERT(SageInterface::getEnclosingSourceFile(func) == SageInterface::getEnclosingSourceFile(func->get_firstNondefiningDeclaration()));
+          ROSE_ASSERT(SageInterface::getEnclosingSourceFile(func->get_scope()) == SageInterface::getEnclosingSourceFile(func->get_firstNondefiningDeclaration()));
         }
        else
        {

@@ -3,9 +3,7 @@
 
 #include <ReuseAnalysis.h>
 #include <DepInfoAnal.h>
-#include <ROSE_ABORT.h>
-#include <ROSE_ASSERT.h>
-
+#include <mlog.h>
 int GetConstArrayBound( const AstNodePtr& array,
                         int dim, unsigned defaultSize)
 {
@@ -39,7 +37,7 @@ class AstRefGetAccessStride : public ProcessAstNode
    name = ivar;
    AstInterface::AstNodeList::iterator  listp = subs.begin();
    for (int i = 0; listp != subs.end() && i < dim; ++listp,++i);
-   assert(listp != subs.end());
+   ASSERT_require(listp != subs.end());
    AstNodePtr sub = *listp;
    return !ReadAstTraverse(LoopTransformInterface::getAstInterface(),
                            sub, *this, AstInterface::PreOrder);
@@ -54,7 +52,7 @@ class AstRefGetAccessStride : public ProcessAstNode
      name = _name;
      AstNodeType elemtype;
      AstNodePtr isexp = ai.IsExpression(r, &elemtype);
-     assert(isexp != AST_NULL);
+     ASSERT_require(isexp != AST_NULL);
      int typesize;
      ai.GetTypeInfo(elemtype, 0, 0, &typesize);
 
@@ -113,9 +111,9 @@ DepType TemporaryReuseRefs( DepInfoConstIterator ep, Map2Object<AstNodePtr, DepD
              continue;
        reuseType = (DepType)( reuseType | t);
      AstNodePtr src = d.SrcRef(), snk = d.SnkRef();
-     assert(src != AST_NULL && snk != AST_NULL);
+     ASSERT_require(src != AST_NULL && snk != AST_NULL);
      int loop1 = loopmap(src, DEP_SRC), loop2 = loopmap(snk, DEP_SINK);
-     assert(loop1 >= 0 && loop2 >= 0);
+     ASSERT_require(loop1 >= 0 && loop2 >= 0);
      DepRel r = d.Entry(loop1, loop2);
      int a = r.GetMaxAlign();
      if (a <= 0 && (dist == 0 || (*dist) < 0 || a >= -(*dist)) ) {

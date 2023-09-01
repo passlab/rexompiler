@@ -14,9 +14,6 @@ class visitorTraversal : public AstSimpleProcessing
 int
 main ( int argc, char* argv[] )
 {
-  // Initialize and check compatibility. See Rose::initialize
-  ROSE_INITIALIZE;
-
   SgProject* project = frontend(argc,argv);
   visitorTraversal exampleTraversal;
 

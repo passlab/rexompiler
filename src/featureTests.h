@@ -32,49 +32,6 @@
 // Configuration fixes
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// SQLite3 does not work on macOS. Jenkins tests fail with many link errors for _sqlite3_* functions.
-#if defined(__APPLE__) && defined(__MACH__)             // Apple macOS
-    #undef ROSE_HAVE_SQLITE3
-#endif
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Binary analysis features
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#ifdef ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-
-// A more traditional name than ROSE_BUILD_BINARY_ANALYSIS_SUPPORT
-#define ROSE_ENABLE_BINARY_ANALYSIS
-
-// ARM AArch64 A64 instructions (Sage nodes, disassembly, unparsing, semantics, etc.)
-#if !defined(ROSE_ENABLE_ASM_AARCH64) && defined(ROSE_HAVE_CAPSTONE)
-    #define ROSE_ENABLE_ASM_AARCH64
-#endif
-
-// ARM AArch32 instructions (Sage nodes, disassembly, unparsing, semantics, etc.)
-#if !defined(ROSE_ENABLE_ASM_AARCH32) && defined(ROSE_HAVE_CAPSTONE)
-    #define ROSE_ENABLE_ASM_AARCH32
-#endif
-
-// Whether to enable concolic testing.
-#if !defined(ROSE_ENABLE_CONCOLIC_TESTING) && \
-    defined(__linux__) && \
-    __cplusplus >= 201402L && \
-    (defined(ROSE_HAVE_SQLITE3) || defined(ROSE_HAVE_LIBPQXX)) && \
-    BOOST_VERSION >= 106400 && \
-    defined(ROSE_HAVE_BOOST_SERIALIZATION_LIB)
-#define ROSE_ENABLE_CONCOLIC_TESTING
-#endif
-
-// Whether to enable library identification.
-#if !defined(ROSE_ENABLE_LIBRARY_IDENTIFICATION) && \
-    (defined(ROSE_HAVE_SQLITE3) || defined(ROSE_HAVE_LIBPQXX)) &&                                                              \
-    !(defined(__APPLE__) && defined(__MACH__))
-#define ROSE_ENABLE_LIBRARY_IDENTIFICATION
-#endif
-
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Source code analysis in general.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86,16 +43,7 @@
     defined(ROSE_BUILD_CXX_LANGUAGE_SUPPORT) || \
     defined(ROSE_BUILD_C_LANGAUGE_SUPPORT) || \
     defined(ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT) || \
-    defined(ROSE_BUILD_JAVA_LANGUAGE_SUPPORT) || \
-    defined(ROSE_BUILD_OPENCL_LANGUAGE_SUPPORT) || \
-    defined(ROSE_BUILD_PHP_LANGUAGE_SUPPORT) || \
-    defined(ROSE_BUILD_PYTHON_LANGUAGE_SUPPORT) || \
-    defined(ROSE_EXPERIMENTAL_ADA_ROSE_CONNECTION) || \
-    defined(ROSE_EXPERIMENTAL_COBOL_ROSE_CONNECTION) || \
-    defined(ROSE_EXPERIMENTAL_CSHARP_ROSE_CONNECTION) || \
-    defined(ROSE_EXPERIMENTAL_JOVIAL_ROSE_CONNECTION) || \
-    defined(ROSE_EXPERIMENTAL_MATLAB_ROSE_CONNECTION) || \
-    defined(ROSE_EXPERIMENTAL_OFP_ROSE_CONNECTION))
+    defined(ROSE_BUILD_OPENCL_LANGUAGE_SUPPORT))
 #define ROSE_ENABLE_SOURCE_ANALYSIS
 #endif
 

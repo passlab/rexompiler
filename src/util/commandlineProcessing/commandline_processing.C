@@ -1,14 +1,12 @@
 #include <rose_config.h>
 #include <rosePublicConfig.h>
-#include <ROSE_ABORT.h>
 
-#include <Rose/StringUtility.h>
 #include <string.h>
 #include <iostream>
 #include "commandline_processing.h"
+#include "mlog.h"
 #include <vector>
 #include <algorithm>
-#include <Rose/Diagnostics.h>
 #include <boost/algorithm/string/predicate.hpp>
 #include <rose_paths.h>
 
@@ -25,7 +23,6 @@
 // DQ (12/31/2005): This is allowed in C files where it can not
 // effect the users application (just not in header files).
 using namespace std;
-using namespace Rose;
 
 Rose_STL_Container<std::string> CommandlineProcessing::extraCppSourceFileSuffixes;
 
@@ -659,12 +656,12 @@ CommandlineProcessing::isCppFileNameSuffix ( const std::string & suffix )
              || suffix == "c++"
              || suffix == "cpp"
              || suffix == "cxx"
+             || suffix == "CPP"
 //It seems that the upper-case versions of the above should also be accepted.
 //However, it does not look like GNU-g++ accepts them.
 //So, I am commenting them out
              /*
              || suffix == "CC"
-             || suffix == "CPP"
              || suffix == "C++"
              || suffix == "CP"
              || suffix == "CXX"
@@ -999,6 +996,7 @@ CommandlineProcessing::initSourceFileSuffixList ( )
           validSourceFileSuffixes.push_back(".cpp");
           validSourceFileSuffixes.push_back(".cxx");
           validSourceFileSuffixes.push_back(".C");
+          validSourceFileSuffixes.push_back(".CPP");
           validSourceFileSuffixes.push_back(".f");
           validSourceFileSuffixes.push_back(".f77");
           validSourceFileSuffixes.push_back(".f90");
@@ -1011,7 +1009,6 @@ CommandlineProcessing::initSourceFileSuffixList ( )
           validSourceFileSuffixes.push_back(".CP");
           validSourceFileSuffixes.push_back(".C++");
           validSourceFileSuffixes.push_back(".CXX");
-          validSourceFileSuffixes.push_back(".CPP");
      */
           validSourceFileSuffixes.push_back(".F");
           validSourceFileSuffixes.push_back(".F77");

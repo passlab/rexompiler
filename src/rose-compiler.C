@@ -1,34 +1,15 @@
 #include <iostream>
 #include "sage3basic.h"
-#include "omp_simd.h"
-#include "Rose/AST/IO.h"
 
 int main( int argc, char * argv[] ) {
-  ROSE_INITIALIZE;
+  MLOG_KEY_C(MLOG_DRIVER, "Entering the main program of the compiler\n");
+
+  if (argc == 1){//Direct users to usage and exit with status == 1
+	 fprintf (stderr,"Try option `--help' for more information.\n");
+     exit (1);
+  }
+
   std::vector<std::string> args(argv, argv+argc);
-  std::string simd = "";
-
-  for (unsigned int i = 0; i < args.size(); i++) {
-    std::string arg = args.at(i);
-    if (arg.find("--simd-target=") == 0) {
-        int pos = arg.find("=") + 1;
-        simd = arg.substr(pos);
-        args.erase(args.begin()+i);
-    }
-  }
-
-  if (simd == "intel-avx512") {
-    simd_arch = Intel_AVX512;
-  } else if (simd == "arm-sve") {
-    simd_arch = Arm_SVE2;
-  } else if (simd == "3addr") {
-    simd_arch = Addr3;
-  } else if (simd == "3addr-arm") {
-    simd_arch = ArmAddr3;
-  } else if (simd != "") {
-    std::cout << "Error: Unknown SIMD architecture." << std::endl;
-    simd_arch = Nothing;
-  }
 
 #if defined(ROSE_COMPILER_FOR_LANGUAGE)
   std::string language(ROSE_COMPILER_FOR_LANGUAGE);
@@ -44,14 +25,8 @@ int main( int argc, char * argv[] ) {
   }
 #endif
 
-  SgProject * project = args.size() > 1 ? frontend(args) : new SgProject(); // TODO this behavior should be part of ::frontend(std::vector<std::string> const &)
-
-  auto status = backend(project);
-
-#if !defined(_WIN32) && !defined(__CYGWIN__)
-  Rose::AST::IO::free();
-#endif
+  SgProject * project = frontend(args);
+  int status = backend(project);
 
   return status;
 }
-

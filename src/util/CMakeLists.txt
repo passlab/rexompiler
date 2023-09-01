@@ -48,15 +48,14 @@ add_definitions(-DROSE_UTIL_EXPORTS)
 ######## build sub libraries ##########
 add_subdirectory(commandlineProcessing)
 add_subdirectory(graphs)
-add_subdirectory(Sawyer)
-add_subdirectory(stringSupport)
+add_subdirectory(StringUtility)
 add_subdirectory(support)
-
 
 ######## build main library ###########
 set(rose_util_src
   ${CMAKE_BINARY_DIR}/src/util/rose_paths.C
-  LinearCongruentialGenerator.C
+  FileSystem.C
+  mlog.C
   rose_getline.C
   processSupport.C
   rose_getline.C
@@ -69,19 +68,12 @@ add_library(roseUtil INTERFACE)
 target_sources(roseUtil INTERFACE
   $<TARGET_OBJECTS:util_main>
   $<TARGET_OBJECTS:util_commandlineProcessing>
-  $<TARGET_OBJECTS:util_sawyer>
-  $<TARGET_OBJECTS:util_stringSupport>
+  $<TARGET_OBJECTS:util_StringUtility>
   $<TARGET_OBJECTS:util_support>
   $<TARGET_OBJECTS:util_graphs>)
-if(SQLITE3_FOUND_LIB)
-  target_link_libraries(roseUtil INTERFACE ${SQLITE3_LIBRARY})
-endif()
-
 
 ########### install files ###############
 install(FILES
-  setup.h processSupport.h ROSE_ABORT.h ROSE_ASSERT.h rose_paths.h
-  compilationFileDatabase.h LinearCongruentialGenerator.h
-  Map.h timing.h rose_getline.h rose_strtoull.h
-  roseTraceLib.c ParallelSort.h rose_isnan.h rose_pragma_message.h
+  processSupport.h rose_paths.h mlog.h FileSystem.h
+  timing.h rose_getline.h rose_strtoull.h rose_isnan.h
   DESTINATION ${INCLUDE_INSTALL_DIR})

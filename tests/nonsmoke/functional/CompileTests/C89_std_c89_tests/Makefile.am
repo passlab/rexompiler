@@ -155,14 +155,10 @@ ROSE_FLAGS += -w -rose:verbose 0
 # RTH test targets
 
 $(TEST_Source_passed): %.passed: $(srcdir)/% $(TEST_TRANSLATOR) $(top_srcdir)/scripts/test_exit_status
-if !ROSE_USE_INSURE
 	@$(RTH_RUN) \
 		CMD="$(TEST_TRANSLATOR) $(LANG_FLAGS) $(ROSE_FLAGS) -I$(srcdir) -c $(srcdir)/$(@:.c.passed=.c)" \
 		TITLE="TEST: $(TEST_TRANSLATOR) $(@:.c.passed=.c)" \
 		$(top_srcdir)/scripts/test_exit_status $@
-else
-	$(VALGRIND) $(TEST_TRANSLATOR) $(LANG_FLAGS) $(ROSE_FLAGS) -I$(srcdir) -c $(srcdir)/$(@:.c.passed=.c)
-endif
 
 #
 ############

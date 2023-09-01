@@ -6,17 +6,12 @@
 #include <utility>
 
 #include "rosePublicConfig.h" // for ROSE_BUILD_JAVA_LANGUAGE_SUPPORT
-#include "OmpAttribute.h"
-
+#include "nodeQuery.h" //for querySubTree
 
 #if 0   // FMZ(07/07/2010): the argument "nextErrorCode" should be call-by-reference
 SgFile* determineFileType ( std::vector<std::string> argv, int nextErrorCode, SgProject* project );
 #else
 SgFile* determineFileType ( std::vector<std::string> argv, int& nextErrorCode, SgProject* project );
-#endif
-
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-#include "rewrite.h"
 #endif
 
 // DQ (7/20/2008): Added support for unparsing abitrary strings in the unparser.
@@ -25,10 +20,10 @@ SgFile* determineFileType ( std::vector<std::string> argv, int& nextErrorCode, S
 
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 #include "LivenessAnalysis.h"
-#include "abstract_handle.h"
 #include "ClassHierarchyGraph.h"
 #endif
 
+#include "ompSupport.h"
 // DQ (8/19/2004): Moved from ROSE/src/midend/astRewriteMechanism/rewrite.h
 //! A global function for getting the string associated with an enum (which is defined in global scope)
 ROSE_DLL_API std::string getVariantName (VariantT v);
@@ -582,16 +577,16 @@ class StatementGenerator {
 //! Check if a SgNode _s is an assignment statement (any of =,+=,-=,&=,/=, ^=, etc)
 //!
 //! Return the left hand, right hand expressions and if the left hand variable is also being read
-  bool isAssignmentStatement(SgNode* _s, SgExpression** lhs=NULL, SgExpression** rhs=NULL, bool* readlhs=NULL);
+bool isAssignmentStatement(SgNode* _s, SgExpression** lhs=NULL, SgExpression** rhs=NULL, bool* readlhs=NULL);
 
 //! Variable references can be introduced by SgVarRef, SgPntrArrRefExp, SgInitializedName, SgMemberFunctionRef etc. For Dot and Arrow Expressions, their lhs is used to obtain SgInitializedName (coarse grain) by default. Otherwise, fine-grain rhs is used.
 ROSE_DLL_API SgInitializedName* convertRefToInitializedName(SgNode* current, bool coarseGrain=true);
 
-//! Build an abstract handle from an AST node, reuse previously built handle when possible
-ROSE_DLL_API AbstractHandle::abstract_handle* buildAbstractHandle(SgNode*);
+//! Obtain the first queryed statement at line of a source file
+ROSE_DLL_API SgStatement* getFirstStatementAtLine(SgSourceFile * sourceFile, int line);
 
-//! Obtain a matching SgNode from an abstract handle string
-ROSE_DLL_API SgNode* getSgNodeFromAbstractHandleString(const std::string& input_string);
+//! Obtain all the queryed statement at line of a source file
+ROSE_DLL_API void getAllStatementsAtLine(SgSourceFile * sourceFile, int line, SgStatementPtrList &returnList);
 
 //! Dump information about a SgNode for debugging
 ROSE_DLL_API void dumpInfo(SgNode* node, std::string desc="");
@@ -859,12 +854,11 @@ void setSourcePositionPointersToNull(SgNode *node);
   \brief
 */
 
-// from src/midend/astInlining/typeTraits.h
-// src/midend/astUtil/astInterface/AstInterface.h
+//! Get the string representing the type name
+ROSE_DLL_API  std::string getTypeName ( SgType* type );
 
 //! Get the right bool type according to C or C++ language input
-SgType* getBoolType(SgNode* n);
-
+ROSE_DLL_API SgType* getBoolType(SgNode* n);
 
 //! Check if a type is an integral type, only allowing signed/unsigned short, int, long, long long.
 ////!
@@ -1647,7 +1641,7 @@ NodeType* getEnclosingNode(const SgNode* astNode, const bool includingSelf = fal
    }
 
   //! Find enclosing source file node
-  ROSE_DLL_API SgSourceFile* getEnclosingSourceFile(SgNode* n, const bool includingSelf=false);
+  ROSE_DLL_API SgSourceFile* getEnclosingSourceFile(const SgNode* n, const bool includingSelf=false);
 
   //! Get the closest scope from astNode. Return astNode if it is already a scope.
   ROSE_DLL_API SgScopeStatement* getScope(const SgNode* astNode);
@@ -1674,14 +1668,15 @@ NodeType* getEnclosingNode(const SgNode* astNode, const bool includingSelf = fal
   ROSE_DLL_API SgSwitchStatement* findEnclosingSwitch(SgStatement* s);
 
   //! Find enclosing OpenMP clause body statement from s. If s is already one, return it directly.
-  ROSE_DLL_API SgUpirFieldBodyStatement* findEnclosingUpirFieldBodyStatement(SgStatement* s);
+  ROSE_DLL_API SgOmpClauseBodyStatement* findEnclosingOmpClauseBodyStatement(SgStatement* s);
 
   //! Find the closest loop outside the given statement; if fortranLabel is not empty, the Fortran label of the loop must be equal to it
   ROSE_DLL_API SgScopeStatement* findEnclosingLoop(SgStatement* s, const std::string& fortranLabel = "", bool stopOnSwitches = false);
 
   //! Find the enclosing function declaration, including its derived instances like isSgProcedureHeaderStatement, isSgProgramHeaderStatement, and isSgMemberFunctionDeclaration.
   ROSE_DLL_API SgFunctionDeclaration * getEnclosingFunctionDeclaration (SgNode * astNode, const bool includingSelf=false);
-   //roseSupport/utility_functions.h
+ 
+  //roseSupport/utility_functions.h
   //! get the SgFile node from current node
   ROSE_DLL_API SgFile* getEnclosingFileNode (SgNode* astNode );
 
@@ -1693,6 +1688,15 @@ NodeType* getEnclosingNode(const SgNode* astNode, const bool includingSelf = fal
 
   //! Get the closest class declaration enclosing the specified AST node,
   ROSE_DLL_API SgClassDeclaration* getEnclosingClassDeclaration( SgNode* astNode );
+
+  //! Get the closest module statement enclosing the specified AST node,
+  ROSE_DLL_API SgModuleStatement* getEnclosingModuleStatement( SgNode* astNode, const bool includingSelf = false);
+
+  //! Get the enclosing TemplateDeclaration statement
+  ROSE_DLL_API SgDeclarationStatement* getTemplateDeclaration( const SgNode* astNode);
+  
+  //! Get the enclosing type of this associated node, not used other than in ./src/backend/unparser/nameQualificationSupport.C
+  ROSE_DLL_API SgType* getAssociatedType( const SgNode* astNode );
 
   // DQ (2/7/2019): Adding support for name qualification of variable references associated with SgPointerMemberType function parameters.
   //! Get the enclosing SgExprListExp (used as part of function argument index evaluation in subexpressions).
@@ -1976,6 +1980,8 @@ ROSE_DLL_API void insertStatementListBeforeFirstNonDeclaration(const std::vector
 
 // DQ (11/21/2018): We need to sometimes insert something after the last statement of the collection from rose_edg_required_macros_and_functions.h.
 ROSE_DLL_API SgStatement* lastFrontEndSpecificStatement( SgGlobal* globalScope );
+
+ROSE_DLL_API bool isRemovableStatement ( SgStatement* s );
 
 //! Remove a statement from its attach point of the AST. Automatically keep its associated preprocessing information at the original place after the removal. The statement is still in memory and it is up to the users to decide if the removed one will be inserted somewhere else or released from memory (deleteAST()).
 ROSE_DLL_API void removeStatement(SgStatement* stmt, bool autoRelocatePreprocessingInfo = true);
@@ -2396,8 +2402,8 @@ ROSE_DLL_API SgBasicBlock* ensureBasicBlockAsFalseBodyOfIf(SgIfStmt* ifs, bool c
 //! Check if the body of a 'catch' statement is a SgBasicBlock, create one if not.
 ROSE_DLL_API SgBasicBlock* ensureBasicBlockAsBodyOfCatch(SgCatchOptionStmt* cos);
 
-//! Check if the body of a SgUpirBodyStatement is a SgBasicBlock, create one if not
-ROSE_DLL_API SgBasicBlock* ensureBasicBlockAsBodyOfOmpBodyStmt(SgUpirBodyStatement* ompbodyStmt);
+//! Check if the body of a SgOmpBodyStatement is a SgBasicBlock, create one if not
+ROSE_DLL_API SgBasicBlock* ensureBasicBlockAsBodyOfOmpBodyStmt(SgOmpBodyStatement* ompbodyStmt);
 
 // DQ (1/18/2015): This is added to support better quality token-based unparsing.
 //! Remove unused basic block IR nodes added as part of normalization.
@@ -2411,7 +2417,7 @@ ROSE_DLL_API void recordNormalizations(SgStatement* s);
 //! switch, If, Catch, OmpBodyStmt, etc
 bool isBodyStatement (SgStatement* s);
 
-//! Fix up ifs, loops, while, switch, Catch, UpirBodyStatement, etc. to have blocks as body components. It also adds an empty else body to if statements that don't have them.
+//! Fix up ifs, loops, while, switch, Catch, OmpBodyStatement, etc. to have blocks as body components. It also adds an empty else body to if statements that don't have them.
 void changeAllBodiesToBlocks(SgNode* top, bool createEmptyBody = true);
 
 // The same as changeAllBodiesToBlocks(SgNode* top). Phased out.

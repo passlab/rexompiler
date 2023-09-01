@@ -71,7 +71,7 @@ struct OnlyCurrentDirectory : public std::unary_function<bool, SgFunctionDeclara
         std::string srcDir = ROSE_AUTOMAKE_TOP_SRCDIR;
 
 //#if 0
-        printf("stringToFilter = %s %d\n", stringToFilter.c_str(), stringToFilter.size());
+        printf("stringToFilter = %s %zu\n", stringToFilter.c_str(), stringToFilter.size());
         printf("srcDir         = %s \n", srcDir.c_str());
 //#endif
 
@@ -193,7 +193,6 @@ main(int argc, char * argv[])
 
     printf("generatedProjectName            = %s \n", generatedProjectName.c_str());
     printf("project->get_outputFileName()   = %s \n", project->get_outputFileName().c_str());
-    printf("project->get_dataBaseFilename() = %s \n", project->get_dataBaseFilename().c_str());
 
     // DQ (7/12/2009): Modified to use string instead of ostringstream.
     string uncoloredFileName = generatedProjectName + "_callgraph.dot";

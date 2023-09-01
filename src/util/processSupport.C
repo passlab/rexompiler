@@ -20,11 +20,7 @@
 #include <cstring>
 #include "rosedll.h"
 
-// DQ (3/22/2009): This should be required, but only MSVS catches it.
-#include <assert.h>
-
 using namespace std;
-using namespace Rose;
 
 int systemFromVector(const vector<string>& argv)
    {
@@ -154,51 +150,3 @@ int pcloseFromVector(FILE* f)
      fclose(f);
      return status;
    }
-
-namespace Rose {
-
-ROSE_UTIL_API void
-abortOnFailedAssertion(const char *mesg, const char *expr, const std::string &note, const char *fileName,
-                       unsigned lineNumber, const char *functionName) {
-    abort();
-}
-
-ROSE_UTIL_API void
-exitOnFailedAssertion(const char *mesg, const char *expr, const std::string &note, const char *fileName,
-                       unsigned lineNumber, const char *functionName) {
-    exit(1);
-}
-
-ROSE_UTIL_API void
-throwOnFailedAssertion(const char *mesg, const char *expr, const std::string &note, const char *fileName,
-                       unsigned lineNumber, const char *functionName) {
-    throw FailedAssertion(mesg, expr, note, fileName, lineNumber, functionName);
-}
-
-ROSE_UTIL_API void
-failedAssertionBehavior(Sawyer::Assert::AssertFailureHandler handler) {
-
-    if (handler) {
-        Sawyer::Assert::assertFailureHandler = handler;
-    } else {
-#if !defined(ROSE_ASSERTION_BEHAVIOR)
-#           error "ROSE_ASSERTION_BEHAVIOR should have been defined by the ROSE configuration system"
-#elif ROSE_ASSERTION_BEHAVIOR == ROSE_ASSERTION_ABORT
-            Sawyer::Assert::assertFailureHandler = abortOnFailedAssertion;
-#elif ROSE_ASSERTION_BEHAVIOR == ROSE_ASSERTION_EXIT
-            Sawyer::Assert::assertFailureHandler = exitOnFailedAssertion;
-#elif ROSE_ASSERTION_BEHAVIOR == ROSE_ASSERTION_THROW
-            Sawyer::Assert::assertFailureHandler = throwOnFailedAssertion;
-#else
-#           error "ROSE_ASSERTION_BEHAVIOR has an invalid value"
-#endif
-    }
-
-}
-
-  Sawyer::Assert::AssertFailureHandler
-failedAssertionBehavior() {
-    return Sawyer::Assert::assertFailureHandler;
-}
-
-} // namespace

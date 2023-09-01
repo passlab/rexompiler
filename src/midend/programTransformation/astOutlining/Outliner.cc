@@ -45,7 +45,7 @@ namespace Outliner {
   bool enable_template=false; // Outlining code blocks inside C++ templates
   bool select_omp_loop = false;  // Find OpenMP for loops and outline them. This is used for testing purposes.
   std::string output_path=""; // default output path is the original file's directory
-  std::vector<std::string> handles; //  abstract handles of outlining targets, given by command line option -rose:outline:abstract_handle for each
+  std::vector<int> lines;   // line positions of outlining targets, given by command line option -rose:outline:line for each
 
 // DQ (3/19/2019): Suppress the output of the #include "autotuning_lib.h" since some tools will want to define there own supporting libraries and header files.
   bool suppress_autotuning_header = false; // when generating the new file to store outlined function, suppress output of #include "autotuning_lib.h".
@@ -191,80 +191,6 @@ Outliner::outline (SgStatement* s, const std::string& func_name)
   }  
 }
 
-//! Return a description of the outliner's command-line switches. When these switches are parsed, they will adjust settings
-//  in this @ref Outliner.
-Sawyer::CommandLine::SwitchGroup
-Outliner::commandLineSwitches() {
-    using namespace Sawyer::CommandLine;
-
-#if 0
-    printf ("In Outliner::commandLineSwitches(): Processing the outliner output_path \n");
-#endif
-
-    SwitchGroup switches("Outliner switches");
-    switches.doc("These switches control ROSE's outliner. ");
-    switches.name("rose:outline");
-
-    switches.insert(Switch("enable_debug")
-                    .intrinsicValue(true, enable_debug)
-                    .doc("Enable debugging ode for outlined functions."));
-
-    switches.insert(Switch("preproc-only")
-                    .intrinsicValue(true, preproc_only_)
-                    .doc("Enable preprocessing only."));
-
-    switches.insert(Switch("parameter_wrapper")
-                    .intrinsicValue(true, useParameterWrapper)
-                    .doc("Enable parameter wrapping."));
-
-    switches.insert(Switch("structure_wrapper")
-                    .intrinsicValue(true, useStructureWrapper)
-                    .doc("Enable parameter wrapping using a structure."));
-
-    switches.insert(Switch("new_file")
-                    .intrinsicValue(true, useNewFile)
-                    .doc("Enable new source file for outlined functions."));
-
-    switches.insert(Switch("exclude_headers")
-                    .intrinsicValue(true, exclude_headers)
-                    .doc("Exclude headers in the new file containing outlined functions."));
-
-    switches.insert(Switch("enable_classic")
-                    .intrinsicValue(true, enable_classic)
-                    .doc("Enable a classic way for outlined functions."));
-
-    switches.insert(Switch("temp_variable")
-                    .intrinsicValue(true, temp_variable)
-                    .doc("Enable using temp variables to reduce pointer dereferencing for outlined functions."));
-
-    switches.insert(Switch("use_dlopen")
-                    .intrinsicValue(true, use_dlopen)
-                    .doc("Use @man{dlopen}(3) to find an outlined function saved into a new source file."));
-
-    switches.insert(Switch("use_dlopen_simple")
-                    .intrinsicValue(true, use_dlopen_simple)
-                    .doc("Use @man{dlopen}(3) to find and call an outlined function saved into a new source file, through a simple call convention."));
-
-    switches.insert(Switch("enable_template")
-                    .intrinsicValue(true, enable_template)
-                    .doc("Enable outlining code blocks inside C++ templates."));
-
-    switches.insert(Switch("abstract_handle")
-                    .argument("handle", anyParser(handles))
-                    .whichValue(SAVE_ALL)               // if switch appears more than once, save all values not just last
-                    .doc("Enable using abstract handles to specify targets for outlining."));
-
-    switches.insert(Switch("output_path")
-                    .argument("name", anyParser(output_path))
-                    .doc("Use a custom output path."));
-
-    switches.insert(Switch("enable_liveness")
-                    .intrinsicValue(true, enable_liveness)
-                    .doc("This switch is only honored if @s{temp_variable} was specified."));
-
-    return switches;
-}
-
 //! Validate outliner settings. This should be called after outliner settings are adjusted (directly or by command-line
 //  parsing) and before the outliner is used to outline source code.
 void
@@ -321,7 +247,6 @@ Outliner::validateSettings()
     }
 }
 
-// Deprecated [Robb P Matzke 2016-09-11]: Use Outliner::commandLineSwitches and Sawyer::CommandLine instead.
 //! Set internal options based on command line options
 void Outliner::commandLineProcessing(std::vector<std::string> &argvList)
 {
@@ -426,15 +351,21 @@ void Outliner::commandLineProcessing(std::vector<std::string> &argvList)
   }
  
   //  else   // this option may be set by other module
-   std::string opstr;   
-  if (CommandlineProcessing::isOptionWithParameter (argvList,"-rose:outline:","abstract_handle",opstr, true))
+  std::string lineStr;
+  if (CommandlineProcessing::isOptionWithParameter (argvList,"-rose:outline:","line",lineStr, true))
   {
     if (enable_debug)
     {
-      cout<<"Enabling using abstract handles to specify targets for outlining..."<<endl;
-      cout<<"Found a handle:"<<opstr<<endl;
+      cout<<"Enabling using source code lines (line1,line2,line3,...) to specify targets for outlining."<<endl;
+      cout<<"Found position at line:"<<lineStr<<endl;
     }
-    handles.push_back(opstr);
+
+    //parse a list of line numbers in the format of line1,line2,... to actual integer line numbers
+    stringstream lineStrStream(lineStr);
+    std::string ln;
+    while(getline(lineStrStream, ln, ',')){ //use comma as delim for cutting string
+      lines.push_back(stoi(ln));
+    }
   }
 
   if (CommandlineProcessing::isOptionWithParameter (argvList,"-rose:outline:","output_path",output_path, true))
@@ -470,7 +401,7 @@ void Outliner::commandLineProcessing(std::vector<std::string> &argvList)
     cout<<"Usage: outline [OPTION]... FILENAME..."<<endl;
     cout<<"Main operation mode:"<<endl;
     cout<<"\t-rose:outline:preproc-only                     preprocessing only, no actual outlining"<<endl;
-    cout<<"\t-rose:outline:abstract_handle handle_string    using an abstract handle to specify an outlining target"<<endl;
+    cout<<"\t-rose:outline:line line_numbers                using source code lines (\"line1,line2,line3,...\") to specify targets for outlining"<<endl;
     cout<<"\t-rose:outline:parameter_wrapper                use an array of pointers to pack the variables to be passed"<<endl;
     cout<<"\t-rose:outline:structure_wrapper                use a data structure to pack the variables to be passed"<<endl;
     cout<<"\t-rose:outline:enable_classic                   use parameters directly in the outlined function body without transferring statement, C only"<<endl;

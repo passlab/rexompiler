@@ -73,9 +73,6 @@
 /* Define if z3_version.h is available. */
 #cmakedefine ROSE_HAVE_Z3_VERSION_H
 
-/* Define if libgcrypt is available. */
-#cmakedefine ROSE_HAVE_LIBGCRYPT
-
 /* Define if YAML-CPP library is available. */
 #cmakedefine ROSE_HAVE_YAMLCPP
 
@@ -316,14 +313,8 @@
 /* Include path for backend C compiler. */
 #cmakedefine C_INCLUDE_STRING @C_INCLUDE_STRING@
 
-
-/* Controls use of ROSE support for Binary SQL. */
-#undef HASH_ROSE_USE_BINARYSQL
-
-
 /* Define to 1 if you have the `clock_gettime' function. */
 #cmakedefine HAVE_CLOCK_GETTIME 1
-
 
 /* Define to 1 if you have the `dl' library (-ldl). */
 #cmakedefine HAVE_LIBDL 1
@@ -354,13 +345,6 @@
 /* Define to 1 if you have a working `mmap' system call. */
 #cmakedefine HAVE_MMAP 1
 
-/* Define to 1 if MySQL libraries are available */
-#cmakedefine MYSQL_FOUND
-#ifdef MYSQL_FOUND
-  #define HAVE_MYSQL
-#endif
-
-
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #cmakedefine HAVE_NDIR_H 1
 
@@ -379,9 +363,6 @@
 
 /* Define if you have the shl_load function. */
 #cmakedefine HAVE_SHL_LOAD 1
-
-/* Have the SQLITE3 library */
-#cmakedefine HAVE_SQLITE3
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #cmakedefine HAVE_STDINT_H 1
@@ -607,19 +588,6 @@
 /* Mark that GFORTRAN is available */
 #cmakedefine USE_GFORTRAN_IN_ROSE 1
 
-/* Link-time support for Insure. */
-//AS Don't know what to do with this
-#undef USE_INSURE
-
-/* Support for Purify */
-#cmakedefine USE_PURIFY
-
-/* Support for Purify API (Compiling with the Purify library). */
-#cmakedefine USE_PURIFY_API
-
-/* Link-time support for Purify. */
-#cmakedefine USE_PURIFY_LINKER
-
 /* Controls use of ROSE support for bddbddb (Binary decision diagrams (BDD)
    BDD-Based Deductive DataBase. */
 //AS Don't know what to do with this
@@ -663,28 +631,10 @@
 //AS don't know what to do with this
 #undef USE_ROSE_OPEN_FORTRAN_PARSER_SUPPORT
 
-/* Controls use of ROSE support for PHP. */
-//AS Don't know what to do with this
-#undef USE_ROSE_PHP_SUPPORT
-
-/* Controls use of ROSE support for RTED library. */
-//AS Don't know what to do with this
-#undef USE_ROSE_RTED_SUPPORT
-
-/* Controls use of ROSE support for SSL (libssl -- MD5) library (incompatable
-   with Java, so disables Fortran support). */
-//AS Don't know what to do with this
-#undef USE_ROSE_SSL_SUPPORT
-
 /* Wine provides access to Windows header files for analysis of windows
    applications under Linux. */
 //AS Don't know what to do with this
 #undef USE_ROSE_WINDOWS_ANALYSIS_SUPPORT
-
-/* Support for PURIFY debugging software. */
-//AS Don't know what to do with this
-
-#undef USING_PURIFY
 
 /* Version number of package */
 //AS Don't know what to do with this
@@ -781,13 +731,9 @@
 #cmakedefine ROSE_USE_UNIFORM_ADVANCED_WARNINGS_SUPPORT
 
 #cmakedefine ROSE_SUPPORT_GNU_EXTENSIONS
-#cmakedefine ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 #cmakedefine ROSE_SUPPORT_MICROSOFT_EXTENSIONS
 
 /* Detect whether our compilers are GNU or not */
 #cmakedefine CMAKE_COMPILER_IS_GNUCC
 #cmakedefine CMAKE_COMPILER_IS_GNUCXX
 #cmakedefine CMAKE_COMPILER_IS_GNUG77
-
-/* Create the configuration synopsis token for use by Rose::initialize */
-#define ROSE_CONFIG_TOKEN "${ROSE_CONFIG_TOKEN}"

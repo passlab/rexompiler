@@ -12,6 +12,8 @@
  *---------------------------------------------------------------------------*/
 // tps (01/14/2010) : Switching from rose.h to sage3.
 #include "sage_support.h"
+//This text comes directly from the LicenseInformation/ROSE_BSD_License.txt file in the source code. */
+extern const char *licenseText;
 
 namespace Rose {
 namespace Cmdline {

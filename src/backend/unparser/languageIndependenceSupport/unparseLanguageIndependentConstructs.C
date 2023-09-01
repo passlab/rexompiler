@@ -3,7 +3,7 @@
 #include "unparser.h"
 #include <limits>
 
-#include "OmpAttribute.h" // to support unparsing OpenMP constructs
+#include "ompSupport.h" // to support unparsing OpenMP constructs
 
 // DQ (10/29/2013): Adding support for unparsing from the token stream.
 #include "tokenStreamMapping.h"
@@ -17,13 +17,6 @@
 // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace std;
 using namespace Rose;
-
-// DQ (3/24/2016): Adding Robb's message logging mechanism to contrl output debug message from the EDG/ROSE connection code.
-using namespace Rose::Diagnostics;
-
-// DQ (3/24/2016): Adding Message logging mechanism.
-Sawyer::Message::Facility UnparseLanguageIndependentConstructs::mlog;
-
 
 #define OUTPUT_DEBUGGING_FUNCTION_BOUNDARIES 0
 #define OUTPUT_HIDDEN_LIST_DATA 0
@@ -42,19 +35,6 @@ bool isVariant = false;
 bool isConstruct = false;
 
 UnparseLanguageIndependentConstructs::unparsed_as_enum_type global_unparsed_as = UnparseLanguageIndependentConstructs::e_unparsed_as_error;
-
-void
-UnparseLanguageIndependentConstructs::initDiagnostics()
-   {
-     static bool initialized = false;
-     if (!initialized)
-        {
-          initialized = true;
-          Rose::Diagnostics::initAndRegister(&mlog, "Rose::UnparseLanguageIndependentConstructs");
-          mlog.comment("generating source code for language-indepentend constructs");
-        }
-   }
-
 
 std::string
 UnparseLanguageIndependentConstructs::unparsed_as_kind(unparsed_as_enum_type x)
@@ -294,7 +274,7 @@ UnparseLanguageIndependentConstructs::statementFromFile ( SgStatement* stmt, str
   // that they should not be unparsed (this fix forces the statements in a "*.rmod" file to
   // always be unparsed.  If the SgSourceFile built to represent the "*.rmod" file had been
   // constructed as a transformation then the file info objects would have been marked as
-  // part of a transforamtion and this fix would not have been required.  At some point this
+  // part of a transformation and this fix would not have been required.  At some point this
   // can be improved.  So this is a fine temporary fix for now.
      if (StringUtility::fileNameSuffix(sourceFilename) == "rmod")
         {
@@ -3784,7 +3764,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpOrderedStatement:
                     case V_SgOmpOrderedDependStatement:
                     case V_SgOmpSectionsStatement:
-                    case V_SgUpirSpmdStatement:
+                    case V_SgOmpParallelStatement:
                     case V_SgOmpTaskwaitStatement:
                     case V_SgOmpTeamsStatement:
                     case V_SgOmpCancellationPointStatement:
@@ -3797,7 +3777,7 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpTaskloopStatement:
                     case V_SgOmpTargetEnterDataStatement:
                     case V_SgOmpTargetExitDataStatement:
-                    case V_SgUpirTaskStatement:
+                    case V_SgOmpTargetStatement:
                     case V_SgOmpTargetDataStatement:
                     case V_SgOmpTargetParallelForStatement:
                     case V_SgOmpTargetParallelStatement:
@@ -3828,15 +3808,14 @@ UnparseLanguageIndependentConstructs::unparseStatement(SgStatement* stmt, SgUnpa
                     case V_SgOmpMasterTaskloopStatement:
                     case V_SgOmpParallelLoopStatement:
                     case V_SgOmpWorkshareStatement:
+                    case V_SgOmpSimdStatement:
+                    case V_SgOmpTileStatement:
+                    case V_SgOmpUnrollStatement:
                     case V_SgOmpSingleStatement:
                     case V_SgOmpTaskStatement:
                     case V_SgOmpAtomicStatement: // Atomic may have clause now
                          unparseOmpGenericStatement (stmt, info);
                          break;
-                    // UPIR statements that are only used for transformation
-                    case V_SgUpirSyncStatement:
-                         break;
-
                     default:
                       // DQ (11/4/2008): This is a bug for the case of a SgFortranDo statement, unclear what to do about this.
                       // Call the derived class implementation for C, C++, or Fortran specific language unparsing.
@@ -5046,7 +5025,7 @@ UnparseLanguageIndependentConstructs::unparseGlobalStmt (SgStatement* stmt, SgUn
 #endif
 
 #if OUTPUT_DEBUGGING_FUNCTION_BOUNDARIES || 0
-     printf ("global scope file = %s \n",TransformationSupport::getSourceFile(globalScope)->getFileName().c_str());
+     printf ("global scope file = %s \n",SageInterface::getEnclosingSourceFile(globalScope)->getFileName().c_str());
      printf ("global scope size = %ld \n",globalScope->get_declarations().size());
 #endif
 
@@ -7450,7 +7429,7 @@ UnparseLanguageIndependentConstructs::unparseBoolVal(SgExpression* expr, SgUnpar
   // Bug reported by Yarden (IBM), output for C should not use C++ keywords ("true" and "false")
   // Note that the getProject() function will use the parent pointers to traverse back to the SgProject node
      bool C_language_support = false;
-     SgFile* file = TransformationSupport::getFile(expr);
+     SgFile* file = SageInterface::getEnclosingFileNode(expr);
 
 #if 0
      printf ("In unparseBoolVal(): resolving file to be %p \n",file);
@@ -10269,24 +10248,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpUsesAllocatorsClause(SgOmpC
   curprint(string(" ) "));
 }
 
-void UnparseLanguageIndependentConstructs::unparseUpirDataField(SgOmpClause* clause, SgUnparse_Info& info)
-{
-  ROSE_ASSERT(clause != NULL);
-  SgUpirDataField* c = isSgUpirDataField(clause);
-  ROSE_ASSERT(c!= NULL);
-  curprint("");
-  // For now, SgUpirDataField is only used for unified transformation but not unparsing.
-}
-
-void UnparseLanguageIndependentConstructs::unparseUpirDataItemField(SgOmpClause* clause, SgUnparse_Info& info)
-{
-  ROSE_ASSERT(clause != NULL);
-  SgUpirDataItemField* c = isSgUpirDataItemField(clause);
-  ROSE_ASSERT(c!= NULL);
-  curprint("");
-  // For now, SgUpirDataItemField is only used for unified transformation but not unparsing.
-}
-
 // Generate dist_data(p1, p2, p3)
 void UnparseLanguageIndependentConstructs::unparseMapDistDataPoliciesToString (std::vector< std::pair< SgOmpClause::omp_map_dist_data_enum, SgExpression * > > policies, SgUnparse_Info& info)
 {
@@ -11008,7 +10969,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     curprint(string(" final("));
   else if (isSgOmpPriorityClause(c))
     curprint(string(" priority("));
-  else if (isSgUpirNumUnitsField(c))
+  else if (isSgOmpNumThreadsClause(c))
     curprint(string(" num_threads("));
   else if (isSgOmpNumTeamsClause(c))
     curprint(string(" num_teams("));
@@ -11028,6 +10989,10 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
     curprint(string(" safelen("));
   else if (isSgOmpSimdlenClause(c))
     curprint(string(" simdlen("));
+  else if (isSgOmpPartialClause(c))
+    curprint(string(" partial("));
+  else if (isSgOmpSizesClause(c))
+    curprint(string(" sizes("));
   else {
     cerr<<"Error: unacceptable clause type within unparseOmpExpressionClause():"<< clause->class_name()<<endl;
     ROSE_ABORT();
@@ -11035,7 +11000,18 @@ void UnparseLanguageIndependentConstructs::unparseOmpExpressionClause(SgOmpClaus
 
   // unparse the expression
   SgUnparse_Info ninfo(info);
-  if (exp_clause->get_expression())
+  if (isSgOmpSizesClause(c))
+  {
+    SgExprListExp *list = static_cast<SgExprListExp *>(exp_clause->get_expression());
+    SgExpressionPtrList sizes = list->get_expressions();
+    size_t list_size = sizes.size();
+    for (size_t i = 0; i < list_size; i++) {
+      unparseExpression(sizes[i], ninfo);
+      if (i < list_size - 1)
+        curprint(string(", "));
+    }
+  }
+  else if (exp_clause->get_expression())
     unparseExpression(exp_clause->get_expression(), ninfo);
   else
   {
@@ -11327,7 +11303,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpIfClause:
     case V_SgOmpFinalClause:
     case V_SgOmpPriorityClause:
-    case V_SgUpirNumUnitsField:
+    case V_SgOmpNumThreadsClause:
     case V_SgOmpGrainsizeClause:
     case V_SgOmpDetachClause:
     case V_SgOmpNumTasksClause:
@@ -11337,7 +11313,8 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
     case V_SgOmpSafelenClause:
     case V_SgOmpSimdlenClause:
     case V_SgOmpOrderedClause:
-      //case V_SgOmpExpressionClause: // there should be no instance for this clause
+    case V_SgOmpPartialClause:
+    case V_SgOmpSizesClause:
       {
         unparseOmpExpressionClause(isSgOmpExpressionClause(clause), info);
         break;
@@ -11379,16 +11356,6 @@ void UnparseLanguageIndependentConstructs::unparseOmpClause(SgOmpClause* clause,
         unparseOmpUsesAllocatorsClause(isSgOmpUsesAllocatorsClause(clause), info);
         break;
       }
-    case V_SgUpirDataField:
-      {
-        unparseUpirDataField(isSgUpirDataField(clause), info);
-        break;
-      }
-    case V_SgUpirDataItemField:
-      {
-        unparseUpirDataItemField(isSgUpirDataItemField(clause), info);
-        break;
-      }
    default:
       {
         cerr<<"Unhandled OpenMP clause type in UnparseLanguageIndependentConstructs::unparseOmpClause():"<<clause->class_name()<<endl;
@@ -11411,7 +11378,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpSimpleStatement(SgStatement
   ASSERT_not_null(stmt);
   unparseOmpDirectivePrefixAndName(stmt, info);
   unp->u_sage->curprint_newline();
-  SgUpirBodyStatement* b_stmt = isSgUpirBodyStatement(stmt);
+  SgOmpBodyStatement* b_stmt = isSgOmpBodyStatement(stmt);
   if (b_stmt)
   {
     ROSE_ASSERT (stmt->variantT() == V_SgOmpSectionStatement);
@@ -11592,7 +11559,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         curprint(string ("metadirective "));
         break;
       }
-    case V_SgUpirSpmdStatement:
+    case V_SgOmpParallelStatement:
       {
         curprint(string ("parallel "));
         break;
@@ -11657,7 +11624,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         curprint(string ("target exit data "));
         break;
       }
-    case V_SgUpirTaskStatement:
+    case V_SgOmpTargetStatement:
       {
         curprint(string ("target "));
         break;
@@ -11829,18 +11796,27 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         }
         break;
       }
-         case V_SgUpirLoopParallelStatement:
+        case V_SgOmpForStatement:
       {
-        SgUpirLoopParallelStatement* upir_node = isSgUpirLoopParallelStatement(stmt);
-        if (upir_node->get_worksharing() != NULL) {
-          curprint(string ("for "));
-        }
-        else if (upir_node->get_simd() != NULL) {
-          curprint(string ("simd "));
-        };
+        curprint(string ("for "));
         break;
       }
-         case V_SgOmpForSimdStatement:
+        case V_SgOmpSimdStatement:
+      {
+        curprint(string ("simd "));
+        break;
+      }
+        case V_SgOmpTileStatement:
+      {
+        curprint(string ("tile "));
+        break;
+      }
+        case V_SgOmpUnrollStatement:
+      {
+        curprint(string ("unroll "));
+        break;
+      }
+        case V_SgOmpForSimdStatement:
       {
         curprint(string ("for simd "));
         break;
@@ -11865,7 +11841,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpDirectivePrefixAndName (SgS
         curprint(string ("ordered "));
         break;
       }
-    case V_SgOmpWorkshareStatement:
+      case V_SgOmpWorkshareStatement:
       {
         curprint(string ("workshare "));
         break;
@@ -11937,7 +11913,7 @@ void UnparseLanguageIndependentConstructs::unparseOmpGenericStatement (SgStateme
     unp->u_sage->curprint_newline();
   };
   // unparse the body, if exists.
-  SgUpirBodyStatement* b_stmt = isSgUpirBodyStatement(stmt);
+  SgOmpBodyStatement* b_stmt = isSgOmpBodyStatement(stmt);
   if (!isVariant && b_stmt)
   {
     SgUnparse_Info ninfo(info);
@@ -12102,8 +12078,8 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
                if (functionCallExp->get_uses_operator_syntax() == true)
                   {
                  // DQ (3/5/2017): Converted to use message logging, but the mechanism is not supported here yet.
-                    mprintf ("WARNING: In getPrecedence(): case V_SgFunctionCallExp: If this is an overloaded operator then the precedence should be that of the operator being overloaded (not zero). \n");
-                    mprintf ("   --- functionCallExp = %p functionCallExp->get_uses_operator_syntax() = %s \n",functionCallExp,functionCallExp->get_uses_operator_syntax() ? "true" : "false");
+            	    MLOG_WARN_C("languageIndependenceSupport", "In getPrecedence(): case V_SgFunctionCallExp: If this is an overloaded operator then the precedence should be that of the operator being overloaded (not zero). \n");
+            	    MLOG_WARN_C("languageIndependenceSupport", "   --- functionCallExp = %p functionCallExp->get_uses_operator_syntax() = %s \n",functionCallExp,functionCallExp->get_uses_operator_syntax() ? "true" : "false");
 #if 0
                  // DQ (1/8/2020): Output a message that I can see for debugging.
                     printf ("WARNING: In getPrecedence(): case V_SgFunctionCallExp: If this is an overloaded operator then the precedence should be that of the operator being overloaded (not zero). \n");
@@ -12251,7 +12227,7 @@ UnparseLanguageIndependentConstructs::getPrecedence(SgExpression* expr)
                       // If this is compiler generated then we have to look at the precedence of the unary operator's operand.
                       // printf ("WARNING: case of overloaded cast operator: If this is compiler generated then we have to look at the precedence of the unary operator's operand (returning 1) \n");
                       // return 1;
-                         mprintf ("WARNING: case of overloaded cast operator: If this is compiler generated then we have to look at the precedence of the unary operator's operand (returning 16) \n");
+                    	  MLOG_WARN_C("languageIndependenceSupport", "case of overloaded cast operator: If this is compiler generated then we have to look at the precedence of the unary operator's operand (returning 16) \n");
                       // return 16;
                          precedence_value = 16;
                        }

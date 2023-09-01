@@ -3,8 +3,6 @@
 #include <sstream>
 #include <stdio.h>
 #include "CommandOptions.h"
-#include <ROSE_ABORT.h>
-#include <ROSE_ASSERT.h>
 
 bool SymbolicTerm::CombineWith( const SymbolicTerm &that)
          { if (v == that.v) {

@@ -12,22 +12,6 @@ AM_LDFLAGS = $(ROSE_RPATHS)
 LDADD = $(ROSE_LIBS)
 
 ########################################################################################################################
-# Test BitFlags
-########################################################################################################################
-
-noinst_PROGRAMS += bitFlags
-bitFlags_SOURCES = bitFlags.C
-
-TEST_TARGETS += bitFlags.passed
-
-bitFlags.passed: $(top_srcdir)/scripts/test_exit_status bitFlags
-	@$(RTH_RUN)				\
-		TITLE="bit flags [$@]"		\
-		USE_SUBIDR=yes			\
-		CMD="$$(pwd)/bitFlags"		\
-		$< $@
-
-########################################################################################################################
 # Test that Rose::FileSystem::copyFile works
 ########################################################################################################################
 
@@ -60,7 +44,6 @@ testFileNameClassifier.passed: $(top_srcdir)/scripts/test_exit_status testFileNa
 		CMD="$$(pwd)/testFileNameClassifier"	\
 		$< $@
 
-
 ########################################################################################################################
 # Test file name support
 ########################################################################################################################
@@ -90,68 +73,6 @@ directorySupport.passed: $(top_srcdir)/scripts/test_exit_status directorySupport
 	@$(RTH_RUN)									\
 		TITLE="directory support [$@]"						\
 		CMD="./directorySupport -c -rose:verbose 0 $(__minimal_input_code)"	\
-		$< $@
-
-
-########################################################################################################################
-# Tests performance of various graph implementations
-########################################################################################################################
-
-noinst_PROGRAMS += graphPerformance
-graphPerformance_SOURCES = graphPerformance.C
-
-TEST_TARGETS += graphPerformance.passed
-
-graphPerformance.passed: $(top_srcdir)/scripts/test_exit_status graphPerformance
-	@$(RTH_RUN)				\
-		TITLE="graph performance [$@]"	\
-		CMD="./graphPerformance"	\
-		$< $@
-
-
-########################################################################################################################
-# Tests and demonstrates one way to serialize and deserialize a graph
-########################################################################################################################
-
-noinst_PROGRAMS += graphIO
-graphIO_SOURCES = graphIO.C
-
-TEST_TARGETS += graphIO.passed
-
-graphIO.passed: $(top_srcdir)/scripts/test_exit_status graphIO
-	@$(RTH_RUN)				\
-		TITLE="graph I/O [$@]"		\
-		CMD="./graphIO"			\
-		$< $@
-
-########################################################################################################################
-# Test asynchronous progress reporting
-########################################################################################################################
-
-noinst_PROGRAMS += progressReports
-progressReports_SOURCES = progressReports.C
-
-TEST_TARGETS += progressReports.passed
-
-progressReports.passed: $(top_srcdir)/scripts/test_exit_status progressReports
-	@$(RTH_RUN)						\
-		TITLE="asynchronous progress reports [$@]"	\
-		CMD="./progressReports"				\
-		$< $@
-
-########################################################################################################################
-# Test hash functions
-########################################################################################################################
-
-noinst_PROGRAMS += hash
-hash_SOURCES = hash.C
-
-TEST_TARGETS += hash.passed
-
-hash.passed: $(top_srcdir)/scripts/test_exit_status progressReports
-	@$(RTH_RUN)						\
-		TITLE="hash algorithms [$@]"			\
-		CMD="./hash"					\
 		$< $@
 
 ########################################################################################################################

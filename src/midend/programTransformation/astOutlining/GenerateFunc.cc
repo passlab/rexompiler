@@ -34,6 +34,7 @@
 //! Stores a variable symbol remapping.
 typedef std::map<const SgVariableSymbol *, SgVariableSymbol *> VarSymRemap_t;
 
+extern std::map<SgOmpExecStatement*, std::map<SgInitializedName*, SgExpression*>*> clause_variable_renaming_record;
 // =====================================================================
 
 using namespace std;
@@ -999,7 +1000,19 @@ remapVarSyms (const VarSymRemap_t& vsym_remap,  // regular shared variables
         {
           SgPointerDerefExp * deref_exp = SageBuilder::buildPointerDerefExp(buildVarRefExp(sym_new));
           deref_exp->set_need_paren(true);
-          SageInterface::replaceExpression(isSgExpression(ref_orig),isSgExpression(deref_exp));
+          // We can't rename variables in omp clauses, e.g. reduction(+ : sum) -> reduction(+ : *sum)
+          // Instead, the mapping between old and new names is stored in a map for now.
+          // When those clauses are transformed later, necessary renaming is performed based on this map.
+          if (isSgOmpClause(ref_orig->get_parent())) {
+              SgOmpExecStatement* directive = isSgOmpExecStatement(isSgOmpClause(ref_orig->get_parent())->get_parent());
+              ROSE_ASSERT(directive != NULL);
+              if (!clause_variable_renaming_record.count(directive))
+                  clause_variable_renaming_record[directive] = new std::map<SgInitializedName*, SgExpression*>();
+              std::map<SgInitializedName*, SgExpression*>* name_mapping = clause_variable_renaming_record[directive];
+              (*name_mapping)[ref_orig->get_symbol()->get_declaration()] = deref_exp;
+          } else {
+            SageInterface::replaceExpression(isSgExpression(ref_orig),isSgExpression(deref_exp));
+          }
         }
         else
           ref_orig->set_symbol (sym_new);
@@ -1534,7 +1547,7 @@ Outliner::generateFunction ( SgBasicBlock* s,  // block to be outlined
     if (Outliner::copy_origFile) // we only do the symbol resetting when copy_origFile is turned on.
     {
       SgGlobal* new_global = isSgGlobal(scope); 
-      SgGlobal* old_global = const_cast<SgGlobal *> (TransformationSupport::getGlobalScope (s));
+      SgGlobal* old_global = const_cast<SgGlobal *> (SageInterface::getGlobalScope (s));
       ROSE_ASSERT (new_global != old_global);
 
       RoseAst ast(func_body);

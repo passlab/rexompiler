@@ -5,11 +5,10 @@
 #include <CountRefHandle.h>
 #include <FunctionObject.h>
 #include <DoublyLinkedList.h>
-#include <assert.h>
 #include <map>
 #include <sstream>
 #include "rosedll.h"
-#include <ROSE_ABORT.h>
+#include <util/mlog.h>
 
 class BitVectorReprImpl {
   unsigned* impl;

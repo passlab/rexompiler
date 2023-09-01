@@ -7,7 +7,6 @@
 #include <DomainInfo.h>
 
 #include <LoopTransformInterface.h>
-#include <ROSE_ASSERT.h>
 
 extern bool DebugDep();
 

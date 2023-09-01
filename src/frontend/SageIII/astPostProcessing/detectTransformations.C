@@ -2,10 +2,6 @@
 #include "sage3basic.h"
 #include "detectTransformations.h"
 
-// #ifdef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-//    #include "transformationSupport.h"
-// #endif
-
 void
 detectTransformations( SgNode* node )
    {

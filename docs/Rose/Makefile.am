@@ -42,13 +42,12 @@ RoseDocsDependencies = \
      $(top_builddir)/src/frontend/SageIII/sage.docs \
      $(top_srcdir)/src/frontend/SageIII/sage.docs.in \
      $(top_srcdir)/src/extra.docs \
-     $(top_srcdir)/src/util/stringSupport/stringSupportDocumentation.docs \
+     $(top_srcdir)/src/util/StringUtility/stringSupportDocumentation.docs \
      $(top_srcdir)/src/util/utilDocumentation.docs \
      $(top_srcdir)/src/midend/astQuery/QueryLib.docs \
-     $(top_srcdir)/src/midend/astRewriteMechanism/ASTRewrite.docs \
      $(top_srcdir)/src/midend/astProcessing/AstProcessing.docs \
      $(top_srcdir)/src/backend/unparser/unparser.docs \
-     $(top_srcdir)/src/3rdPartyLibraries/MSTL/MSTL.docs
+     $(top_srcdir)/src/midend/astDump/MSTL.docs
 
 # If the generated sage source code is older than the code used to
 # generate the sage source code then regenerate the sage source code

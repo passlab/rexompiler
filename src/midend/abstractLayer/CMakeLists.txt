@@ -1,26 +1,12 @@
 
 add_library(abstractLayer OBJECT
-  AstAnnotator.C
-  CodeThornException.C
-  CPAstAttributeInterface.C
-  DFAstAttribute.C
-  Label.C
-  Labeler.C
-  RDAstAttributeInterface.C
+  RoseAst.C
   SgNodeHelper.C
-  VariableIdMapping.C
   )
 
 add_dependencies(abstractLayer rosetta_generated)
 
 install(FILES
-  AstAnnotator.h
-  CodeThornException.h
-  CPAstAttributeInterface.h
-  DFAstAttribute.h
-  Label.h
-  Labeler.h
-  RDAstAttributeInterface.h
+  RoseAst.h
   SgNodeHelper.h
-  VariableIdMapping.h
   DESTINATION ${INCLUDE_INSTALL_DIR})

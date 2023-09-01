@@ -1,8 +1,6 @@
 set(astProcessing_SRC
-  AstPDFGeneration.C
   AstNodeVisitMapping.C
   AstTextAttributesHandling.C
-  AstDOTGeneration.C
   AstProcessing.C
   AstSimpleProcessing.C
   AstNodePtrs.C
@@ -27,17 +25,17 @@ add_dependencies(astProcessing rosetta_generated)
 ########### install files ###############
 
 set(files_to_install
-  AstPDFGeneration.h AstNodeVisitMapping.h AstAttributeMechanism.h
-  AstTextAttributesHandling.h AstDOTGeneration.h AstProcessing.h
+  AstNodeVisitMapping.h AstAttributeMechanism.h
+  AstTextAttributesHandling.h AstProcessing.h
   AstSimpleProcessing.h AstTraverseToRoot.h AstNodePtrs.h
   AstSuccessorsSelectors.h AstReverseProcessing.h
   AstReverseSimpleProcessing.h AstRestructure.h AstClearVisitFlags.h
   AstTraversal.h AstCombinedProcessing.h AstCombinedProcessingImpl.h
-  AstCombinedSimpleProcessing.h StackFrameVector.h AstDOTGenerationImpl.C
+  AstCombinedSimpleProcessing.h StackFrameVector.h
   graphProcessing.h graphProcessingSgIncGraph.h graphTemplate.h
   AstSharedMemoryParallelProcessing.h AstSharedMemoryParallelProcessingImpl.h
   AstSharedMemoryParallelSimpleProcessing.h
-  SgGraphTemplate.h)
+  SgGraphTemplate.h TreeTraversal.h)
 
 if(NOT WIN32)
   #tps commented out AstSharedMemoryParallelProcessing.h for Windows

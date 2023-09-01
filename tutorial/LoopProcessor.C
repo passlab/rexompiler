@@ -8,7 +8,6 @@
 // DQ (1/2/2008): I think this is no longer used!
 // #include "copy_unparser.h"
 
-#include "rewrite.h"
 #include <CommandOptions.h>
 #include <AstInterface_ROSE.h>
 #include <LoopTransformInterface.h>
@@ -50,9 +49,6 @@ bool GenerateObj()
 int
 main ( int argc,  char * argv[] )
 {
-  // Initialize and check compatibility. See Rose::initialize
-  ROSE_INITIALIZE;
-
   if (argc <= 1) {
       PrintUsage(argv[0]);
       return -1;

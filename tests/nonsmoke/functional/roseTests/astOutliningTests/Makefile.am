@@ -545,7 +545,7 @@ complexStruct_flags = \
 	-rose:outline:new_file \
 	-rose:outline:temp_variable \
 	-rose:outline:exclude_headers \
-	-rose:outline:abstract_handle 'ForStatement<numbering,1>'
+	-rose:outline:line 201
 
 C_CXX_RESULTS += complexStruct.passed
 

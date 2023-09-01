@@ -2,9 +2,7 @@
 #include <DepInfoAnal.h>
 #include <SinglyLinkedList.h>
 #include <LoopTransformInterface.h>
-#include <assert.h>
 #include <CommandOptions.h>
-#include <ROSE_ASSERT.h>
 
 size_t BreakupStatement::breaksize = 0;
 

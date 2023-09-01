@@ -2105,7 +2105,7 @@ Unparse_ExprStmt::unparseLanguageSpecificStatement(SgStatement* stmt, SgUnparse_
           case V_SgUpcForAllStatement:                  unparseUpcForAllStatement(stmt, info);    break; 
 
        // Liao, 5/31/2009, add OpenMP support, TODO refactor some code to language independent part
-          case V_SgUpirLoopParallelStatement:           unparseUpirLoopParallelStatement(stmt, info); break;
+          case V_SgOmpForStatement:           unparseOmpForStatement(stmt, info); break;
           case V_SgOmpForSimdStatement:                  unparseOmpForSimdStatement(stmt, info); break;
 
        // DQ (7/25/2014): Adding support for C11 static assertions.
@@ -3773,7 +3773,7 @@ Unparse_ExprStmt::unparseBasicBlockStmt(SgStatement* stmt, SgUnparse_Info& info)
   // header file processing since the header file will have a copy of the trnslation unit's global scope.
   // DQ (9/28/2018): We need to get the SgSourceFile so that we can use the correct map from the map 
   // of maps in the modified implementation that supports multiple files for token based unparsing.
-  // SgSourceFile* sourceFile = TransformationSupport::getSourceFile(basic_stmt);
+  // SgSourceFile* sourceFile = SageInterface::getEnclosingSourceFile(basic_stmt);
      SgSourceFile* sourceFile = info.get_current_source_file();
 
   // DQ (10/31/2018): This is not always non-null (e.g. when used with the unparseToString() function).
@@ -5507,18 +5507,18 @@ Unparse_ExprStmt::unparseFuncDeclStmt(SgStatement* stmt, SgUnparse_Info& info)
                printf ("firstNondefiningFunction->get_scope()                       = %p \n",firstNondefiningFunction->get_scope());
 #endif
 #if 0
-               SgSourceFile* sourceFile = TransformationSupport::getSourceFile(funcdecl_stmt);
+               SgSourceFile* sourceFile = SageInterface::getEnclosingSourceFile(funcdecl_stmt);
                printf ("sourceFile->getFileName() = %s \n",sourceFile->getFileName().c_str());
 #endif
 
                if (firstNondefiningFunction != NULL)
                   {
-                    ASSERT_not_null(TransformationSupport::getSourceFile(funcdecl_stmt));
-                    ASSERT_not_null(TransformationSupport::getSourceFile(firstNondefiningFunction));
+                    ASSERT_not_null(SageInterface::getEnclosingSourceFile(funcdecl_stmt));
+                    ASSERT_not_null(SageInterface::getEnclosingSourceFile(firstNondefiningFunction));
 #if 0
                  // DQ (7/24/2018): This will be output spew from the Cxx_tests test_multiple_files rule (compiling two files with "void foo();" in each file.
                  // I am guessing that if comes from the use of a common global scope across the two files.
-                    if (TransformationSupport::getSourceFile(funcdecl_stmt) != TransformationSupport::getSourceFile(firstNondefiningFunction))
+                    if (SageInterface::getEnclosingSourceFile(funcdecl_stmt) != SageInterface::getEnclosingSourceFile(firstNondefiningFunction))
                        {
                          printf ("firstNondefiningFunction = %p \n",firstNondefiningFunction);
                          printf ("funcdecl_stmt = %p funcdecl_stmt->get_scope()                                        = %p \n",funcdecl_stmt,funcdecl_stmt->get_scope());
@@ -5526,19 +5526,19 @@ Unparse_ExprStmt::unparseFuncDeclStmt(SgStatement* stmt, SgUnparse_Info& info)
                               funcdecl_stmt,funcdecl_stmt->get_declarationModifier().isFriend() ? "true" : "false");
                          printf ("firstNondefiningFunction = %p firstNondefiningFunction->get_declarationModifier().isFriend() = %s \n",
                               firstNondefiningFunction,firstNondefiningFunction->get_declarationModifier().isFriend() ? "true" : "false");
-                         printf ("TransformationSupport::getSourceFile(funcdecl_stmt = %p)->getFileName()              = %s \n",
-                              funcdecl_stmt,TransformationSupport::getSourceFile(funcdecl_stmt)->getFileName().c_str());
-                         printf ("TransformationSupport::getSourceFile(funcdecl_stmt->get_scope() = %p)->getFileName() = %s \n",
-                              funcdecl_stmt->get_scope(),TransformationSupport::getSourceFile(funcdecl_stmt->get_scope())->getFileName().c_str());
-                         printf ("TransformationSupport::getSourceFile(firstNondefiningFunction = %p)->getFileName()   = %s \n",
-                              firstNondefiningFunction,TransformationSupport::getSourceFile(firstNondefiningFunction)->getFileName().c_str());
-                         printf ("TransformationSupport::getSourceFile(firstNondefiningFunction->get_scope() = %p)->getFileName() = %s \n",
-                              firstNondefiningFunction->get_scope(),TransformationSupport::getSourceFile(firstNondefiningFunction->get_scope())->getFileName().c_str());
+                         printf ("SageInterface::getEnclosingSourceFile(funcdecl_stmt = %p)->getFileName()              = %s \n",
+                              funcdecl_stmt,SageInterface::getEnclosingSourceFile(funcdecl_stmt)->getFileName().c_str());
+                         printf ("SageInterface::getEnclosingSourceFile(funcdecl_stmt->get_scope() = %p)->getFileName() = %s \n",
+                              funcdecl_stmt->get_scope(),SageInterface::getEnclosingSourceFile(funcdecl_stmt->get_scope())->getFileName().c_str());
+                         printf ("SageInterface::getEnclosingSourceFile(firstNondefiningFunction = %p)->getFileName()   = %s \n",
+                              firstNondefiningFunction,SageInterface::getEnclosingSourceFile(firstNondefiningFunction)->getFileName().c_str());
+                         printf ("SageInterface::getEnclosingSourceFile(firstNondefiningFunction->get_scope() = %p)->getFileName() = %s \n",
+                              firstNondefiningFunction->get_scope(),SageInterface::getEnclosingSourceFile(firstNondefiningFunction->get_scope())->getFileName().c_str());
 
-                         printf ("TransformationSupport::getSourceFile(funcdecl_stmt = %p)->getFileName()            = %s \n",
-                              funcdecl_stmt,TransformationSupport::getSourceFile(funcdecl_stmt)->getFileName().c_str());
-                         printf ("TransformationSupport::getSourceFile(firstNondefiningFunction = %p)->getFileName() = %s \n",
-                              firstNondefiningFunction,TransformationSupport::getSourceFile(firstNondefiningFunction)->getFileName().c_str());
+                         printf ("SageInterface::getEnclosingSourceFile(funcdecl_stmt = %p)->getFileName()            = %s \n",
+                              funcdecl_stmt,SageInterface::getEnclosingSourceFile(funcdecl_stmt)->getFileName().c_str());
+                         printf ("SageInterface::getEnclosingSourceFile(firstNondefiningFunction = %p)->getFileName() = %s \n",
+                              firstNondefiningFunction,SageInterface::getEnclosingSourceFile(firstNondefiningFunction)->getFileName().c_str());
                        }
 #endif
 
@@ -5548,13 +5548,13 @@ Unparse_ExprStmt::unparseFuncDeclStmt(SgStatement* stmt, SgUnparse_Info& info)
                  // ast into a different file.  Granted, this isn't a robust way to copy code from one AST into another
                  // because it doesn't try to resolve any conflicts with symbols, but if the following assertion is
                  // commented out it at least works.
-                    //ROSE_ASSERT(TransformationSupport::getSourceFile(funcdecl_stmt) == TransformationSupport::getSourceFile(firstNondefiningFunction));
+                    //ROSE_ASSERT(SageInterface::getEnclosingSourceFile(funcdecl_stmt) == SageInterface::getEnclosingSourceFile(firstNondefiningFunction));
 
 #if 0
                  // DQ (7/24/2018): This will be output spew from the Cxx_tests test_multiple_files rule (compiling two files with "void foo();" in each file.
                  // I am guessing that if comes from the use of a common global scope across the two files.
                  // DQ (2/26/2009): Commented out because moreTest3.cpp fails for outlining to a separate file.
-                    if (TransformationSupport::getSourceFile(funcdecl_stmt->get_scope()) != TransformationSupport::getSourceFile(firstNondefiningFunction))
+                    if (SageInterface::getEnclosingSourceFile(funcdecl_stmt->get_scope()) != SageInterface::getEnclosingSourceFile(firstNondefiningFunction))
                        {
                          printf ("firstNondefiningFunction = %p \n",firstNondefiningFunction);
                          printf ("firstNondefiningFunction = %s \n",firstNondefiningFunction->get_name().str());
@@ -5563,14 +5563,14 @@ Unparse_ExprStmt::unparseFuncDeclStmt(SgStatement* stmt, SgUnparse_Info& info)
                               funcdecl_stmt,funcdecl_stmt->get_declarationModifier().isFriend() ? "true" : "false");
                          printf ("firstNondefiningFunction = %p firstNondefiningFunction->get_declarationModifier().isFriend() = %s \n",
                               firstNondefiningFunction,firstNondefiningFunction->get_declarationModifier().isFriend() ? "true" : "false");
-                         printf ("TransformationSupport::getSourceFile(funcdecl_stmt = %p)->getFileName()              = %s \n",
-                              funcdecl_stmt,TransformationSupport::getSourceFile(funcdecl_stmt)->getFileName().c_str());
-                         printf ("TransformationSupport::getSourceFile(funcdecl_stmt->get_scope() = %p)->getFileName() = %s \n",
-                              funcdecl_stmt->get_scope(),TransformationSupport::getSourceFile(funcdecl_stmt->get_scope())->getFileName().c_str());
-                         printf ("TransformationSupport::getSourceFile(firstNondefiningFunction = %p)->getFileName()   = %s \n",
-                              firstNondefiningFunction,TransformationSupport::getSourceFile(firstNondefiningFunction)->getFileName().c_str());
-                         printf ("TransformationSupport::getSourceFile(firstNondefiningFunction->get_scope() = %p)->getFileName() = %s \n",
-                              firstNondefiningFunction->get_scope(),TransformationSupport::getSourceFile(firstNondefiningFunction->get_scope())->getFileName().c_str());
+                         printf ("SageInterface::getEnclosingSourceFile(funcdecl_stmt = %p)->getFileName()              = %s \n",
+                              funcdecl_stmt,SageInterface::getEnclosingSourceFile(funcdecl_stmt)->getFileName().c_str());
+                         printf ("SageInterface::getEnclosingSourceFile(funcdecl_stmt->get_scope() = %p)->getFileName() = %s \n",
+                              funcdecl_stmt->get_scope(),SageInterface::getEnclosingSourceFile(funcdecl_stmt->get_scope())->getFileName().c_str());
+                         printf ("SageInterface::getEnclosingSourceFile(firstNondefiningFunction = %p)->getFileName()   = %s \n",
+                              firstNondefiningFunction,SageInterface::getEnclosingSourceFile(firstNondefiningFunction)->getFileName().c_str());
+                         printf ("SageInterface::getEnclosingSourceFile(firstNondefiningFunction->get_scope() = %p)->getFileName() = %s \n",
+                              firstNondefiningFunction->get_scope(),SageInterface::getEnclosingSourceFile(firstNondefiningFunction->get_scope())->getFileName().c_str());
                        }
 #endif
 
@@ -5578,7 +5578,7 @@ Unparse_ExprStmt::unparseFuncDeclStmt(SgStatement* stmt, SgUnparse_Info& info)
                  // RPM (12/10/2013): Commented out because this fails for astSnippetTests which deep-copy a function
                  // forward declaration and SageInterface::insertStatementBefore() the decl into a different file. The
                  // copied-and-inserted declaration is unparsed correctly if this assert is commented out.
-                    //ROSE_ASSERT(TransformationSupport::getSourceFile(funcdecl_stmt->get_scope()) == TransformationSupport::getSourceFile(firstNondefiningFunction));
+                    //ROSE_ASSERT(SageInterface::getEnclosingSourceFile(funcdecl_stmt->get_scope()) == SageInterface::getEnclosingSourceFile(firstNondefiningFunction));
                   }
 #if 0
                printf ("Unparser: firstNondefiningFunction = %p \n",firstNondefiningFunction);
@@ -5620,7 +5620,7 @@ Unparse_ExprStmt::unparseFuncDeclStmt(SgStatement* stmt, SgUnparse_Info& info)
             // ROSE_ASSERT (funcdecl_stmt->get_definingDeclaration() == funcdecl_stmt || isSgBasicBlock(funcdecl_stmt->get_scope()) != NULL);
                ROSE_ASSERT (funcdecl_stmt->get_definingDeclaration() == funcdecl_stmt || isSgBasicBlock(funcdecl_stmt->get_parent()) != NULL);
 #if 0
-               printf ("TransformationSupport::getSourceFile(funcdecl_stmt = %p)->getFileName() = %s \n",funcdecl_stmt,TransformationSupport::getSourceFile(funcdecl_stmt)->getFileName().c_str());
+               printf ("SageInterface::getEnclosingSourceFile(funcdecl_stmt = %p)->getFileName() = %s \n",funcdecl_stmt,SageInterface::getEnclosingSourceFile(funcdecl_stmt)->getFileName().c_str());
 #endif
                ASSERT_not_null(funcdecl_stmt->get_symbol_from_symbol_table());
              }
@@ -7449,7 +7449,7 @@ Unparse_ExprStmt::unparseVarDeclStmt(SgStatement* stmt, SgUnparse_Info& info)
   // DQ (5/24/2015): Moved to output specifier after the "extern" and "static" keywords.
      if (usingGxx)
         {
-          SgFile* file = TransformationSupport::getFile(vardecl_stmt);
+          SgFile* file = SageInterface::getEnclosingFileNode(vardecl_stmt);
 #if 0
           printf ("In unparseVarDeclStmt(): resolving file to be %p \n",file);
 #endif
@@ -7463,7 +7463,7 @@ Unparse_ExprStmt::unparseVarDeclStmt(SgStatement* stmt, SgUnparse_Info& info)
             else
              {
             // DQ (3/6/2017): Added support for message logging to control output from ROSE tools.
-               mprintf ("Warning: TransformationSupport::getFile(vardecl_stmt) == NULL \n");
+               MLOG_WARN_C("CxxCodeGeneration", "SageInterface::getEnclosingFileNode(vardecl_stmt) == NULL \n");
              }
 
        // For C we need to use the GNU 4.9 compiler.
@@ -7948,7 +7948,7 @@ Unparse_ExprStmt::unparseVarDeclStmt(SgStatement* stmt, SgUnparse_Info& info)
 #endif
 
 #if 1
-               SgFile* file = TransformationSupport::getFile(vardecl_stmt);
+               SgFile* file = SageInterface::getEnclosingFileNode(vardecl_stmt);
 #if 0
                printf ("In unparseVarDeclStmt(): resolving file to be %p \n",file);
 #endif
@@ -7962,7 +7962,7 @@ Unparse_ExprStmt::unparseVarDeclStmt(SgStatement* stmt, SgUnparse_Info& info)
                  else
                   {
                  // DQ (3/6/2017): Added support for message logging to control output from ROSE tools.
-                    mprintf ("Warning: TransformationSupport::getFile(vardecl_stmt) == NULL \n");
+                    MLOG_WARN_C("CxxCodeGeneration",  "SageInterface::getEnclosingFileNode(vardecl_stmt) == NULL \n");
                   }
 #if 0
                printf ("In unparseVarDeclStmt(): is_C_Compiler = %s is_Cxx_Compiler = %s \n",is_C_Compiler ? "true" : "false",is_Cxx_Compiler ? "true" : "false");
@@ -7972,7 +7972,7 @@ Unparse_ExprStmt::unparseVarDeclStmt(SgStatement* stmt, SgUnparse_Info& info)
                if (usingGxx)
                   {
 #if 0
-                    SgFile* file = TransformationSupport::getFile(vardecl_stmt);
+                    SgFile* file = SageInterface::getEnclosingFileNode(vardecl_stmt);
 #if 0
                     printf ("In unparseVarDeclStmt(): resolving file to be %p \n",file);
 #endif
@@ -7985,7 +7985,7 @@ Unparse_ExprStmt::unparseVarDeclStmt(SgStatement* stmt, SgUnparse_Info& info)
                        }
                       else
                        {
-                         printf ("Warning: TransformationSupport::getFile(vardecl_stmt) == NULL \n");
+                         printf ("Warning: SageInterface::getEnclosingFileNode(vardecl_stmt) == NULL \n");
                        }
 #if 0
                     printf ("In unparseVarDeclStmt(): is_C_Compiler = %s is_Cxx_Compiler = %s \n",is_C_Compiler ? "true" : "false",is_Cxx_Compiler ? "true" : "false");
@@ -11102,7 +11102,7 @@ Unparse_ExprStmt::unparseAsmStmt(SgStatement* stmt, SgUnparse_Info& info)
   // a GNU statement expression in a typeof operator. Not clear yet what to do about this case.
   // See test2015_141.c for an example of this. One solution might be to make the 
   // skip_unparse_asm_commands variable a static data member.
-  // SgSourceFile* sourceFile = TransformationSupport::getSourceFile(stmt);
+  // SgSourceFile* sourceFile = SageInterface::getEnclosingSourceFile(stmt);
   // ASSERT_not_null(sourceFile);
 
   // DQ (1/10/2009): The C language ASM statements are providing significant trouble, they are
@@ -12938,10 +12938,10 @@ void Unparse_ExprStmt::unparseOmpPrefix(SgUnparse_Info& info)
 }
 
 
-void Unparse_ExprStmt::unparseUpirLoopParallelStatement (SgStatement* stmt,     SgUnparse_Info& info)
+void Unparse_ExprStmt::unparseOmpForStatement (SgStatement* stmt,     SgUnparse_Info& info)
 {
   ASSERT_not_null(stmt);
-  SgUpirLoopParallelStatement * f_stmt = isSgUpirLoopParallelStatement (stmt);
+  SgOmpForStatement * f_stmt = isSgOmpForStatement (stmt);
   ASSERT_not_null(f_stmt);
 
   unparseOmpDirectivePrefixAndName(stmt, info);
@@ -12950,7 +12950,7 @@ void Unparse_ExprStmt::unparseUpirLoopParallelStatement (SgStatement* stmt,     
   // TODO a better way to new line? and add indentation 
   curprint (string ("\n"));
 
-  SgStatement* body = ((SgUpirLoopStatement*)f_stmt->get_loop())->get_body();
+  SgStatement* body = f_stmt->get_body();
   SgUnparse_Info ninfo(info);
   if (body)
   {
@@ -12993,14 +12993,14 @@ Unparse_ExprStmt::unparseOmpBeginDirectiveClauses (SgStatement* stmt,     SgUnpa
 {
   ASSERT_not_null(stmt);
   // optional clauses
-  SgUpirFieldBodyStatement* bodystmt= isSgUpirFieldBodyStatement(stmt);
+  SgOmpClauseBodyStatement* bodystmt= isSgOmpClauseBodyStatement(stmt);
   SgOmpDeclareSimdStatement* simdstmt= isSgOmpDeclareSimdStatement(stmt);
   SgOmpRequiresStatement* requires_stmt= isSgOmpRequiresStatement(stmt);
   SgOmpTaskwaitStatement* taskwait_stmt= isSgOmpTaskwaitStatement(stmt);
   SgOmpFlushStatement* flush_stmt= isSgOmpFlushStatement(stmt);
   SgOmpAllocateStatement* allocate_stmt= isSgOmpAllocateStatement(stmt);
   //if (bodystmt||simdstmt)
-  SgUpirFieldStatement* clausestmt= isSgUpirFieldStatement(stmt);
+  SgOmpClauseStatement* clausestmt= isSgOmpClauseStatement(stmt);
   if (bodystmt||simdstmt||clausestmt||requires_stmt||taskwait_stmt||allocate_stmt)
   {
     //const SgOmpClausePtrList& clause_ptr_list = bodystmt?bodystmt->get_clauses():simdstmt->get_clauses();

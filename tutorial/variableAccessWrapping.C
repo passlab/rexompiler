@@ -99,9 +99,9 @@ SimpleInstrumentation::buildNewFunctionDeclaration ( SgStatement* statementLocat
 
   // Put the new function declaration before the function containing the input statementLocation
      bool inFront = true;
-     SgGlobal* globalScope = TransformationSupport::getGlobalScope(statementLocation);
+     SgGlobal* globalScope = SageInterface::getGlobalScope(statementLocation);
      SgFunctionDeclaration* functionDeclarationInGlobalScope = 
-          TransformationSupport::getFunctionDeclaration(statementLocation);
+          SageInterface::getEnclosingFunctionDeclaration(statementLocation, true);
      ROSE_ASSERT(globalScope != NULL);
      ROSE_ASSERT(functionDeclarationInGlobalScope != NULL);
      globalScope->insert_statement(functionDeclarationInGlobalScope,functionDeclaration,inFront);
@@ -146,9 +146,6 @@ void SimpleInstrumentation::visit ( SgNode* astNode )
 int
 main ( int argc, char * argv[] )
    {
-  // Initialize and check compatibility. See Rose::initialize
-     ROSE_INITIALIZE;
-
   // Build ROSE AST
      SgProject* project = frontend(argc,argv);
      ROSE_ASSERT(project != NULL);

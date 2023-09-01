@@ -38,6 +38,7 @@ Grammar::setUpNodes ()
          Class hierarchy
            SgOmpClause  {define all enum types here}
              // simplest clause
+           * SgOmpFullClause
            * SgOmpOrderedClause
            * SgOmpNowaitClause
            * SgOmpUntiedClause
@@ -52,7 +53,8 @@ Grammar::setUpNodes ()
            * SgOmpExpressionClause
            ** SgOmpCollapseClause
            ** SgOmpIfClause
-           ** SgUpirNumUnitsField
+           ** SgOmpNumThreadsClause
+           ** SgOmpPartialClause
              // with variable list
            * SgOmpVariablesClause
            ** SgOmpCopyprivateClause
@@ -106,7 +108,7 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpIfClause, "OmpIfClause", "OmpIfClauseTag" );
      NEW_TERMINAL_MACRO (OmpFinalClause, "OmpFinalClause", "OmpFinalClauseTag" );
      NEW_TERMINAL_MACRO (OmpPriorityClause, "OmpPriorityClause", "OmpPriorityClauseTag" );
-     NEW_TERMINAL_MACRO (UpirNumUnitsField, "UpirNumUnitsField", "UpirNumUnitsFieldTag" );
+     NEW_TERMINAL_MACRO (OmpNumThreadsClause, "OmpNumThreadsClause", "OmpNumThreadsClauseTag" );
      NEW_TERMINAL_MACRO (OmpNumTeamsClause, "OmpNumTeamsClause", "OmpNumTeamsClauseTag" );
      NEW_TERMINAL_MACRO (OmpGrainsizeClause, "OmpGrainsizeClause", "OmpGrainsizeClauseTag" );
      NEW_TERMINAL_MACRO (OmpDetachClause, "OmpDetachClause", "OmpDetachClauseTag" );
@@ -122,18 +124,13 @@ Grammar::setUpNodes ()
      NEW_TERMINAL_MACRO (OmpDeviceClause, "OmpDeviceClause", "OmpIfDeviceTag" );
      NEW_TERMINAL_MACRO (OmpSafelenClause, "OmpSafelenClause", "OmpSafelenTag" );
      NEW_TERMINAL_MACRO (OmpSimdlenClause, "OmpSimdlenClause", "OmpSimdlenTag" );
+     NEW_TERMINAL_MACRO (OmpPartialClause, "OmpPartialClause", "OmpPartialTag" );
+     NEW_TERMINAL_MACRO (OmpFullClause, "OmpFullClause", "OmpFullTag" );
+     NEW_TERMINAL_MACRO (OmpSizesClause, "OmpSizesClause", "OmpSizesTag" );
 
-     NEW_TERMINAL_MACRO (UpirBranchField, "UpirBranchField", "UpirBranchFieldTag" );
-     NEW_TERMINAL_MACRO (UpirNestedLevelField, "UpirNestedLevelField", "UpirNestedLevelFieldTag" );
-     NEW_TERMINAL_MACRO (UpirNestedParentField, "UpirNestedParentField", "UpirNestedParentFieldTag" );
-     NEW_TERMINAL_MACRO (UpirNestedChildField, "UpirNestedChildField", "UpirNestedChildFieldTag" );
-     NEW_TERMINAL_MACRO (UpirSyncField, "UpirSyncField", "UpirSyncFieldTag" );
-     NEW_TERMINAL_MACRO (UpirDataField, "UpirDataField", "UpirDataFieldTag" );
-     NEW_TERMINAL_MACRO (UpirTargetField, "UpirTargetField", "UpirTargetFieldTag" );
-     NEW_TERMINAL_MACRO (UpirDataItemField, "UpirDataItemField", "UpirDataItemFieldTag" );
 
-     NEW_NONTERMINAL_MACRO (OmpExpressionClause, OmpOrderedClause | OmpCollapseClause | OmpIfClause | UpirNumUnitsField | OmpNumTeamsClause | OmpThreadLimitClause | OmpDeviceClause | OmpHintClause | OmpGrainsizeClause | OmpNumTasksClause | OmpDetachClause |
-                            OmpSafelenClause | OmpSimdlenClause | OmpFinalClause | OmpPriorityClause
+     NEW_NONTERMINAL_MACRO (OmpExpressionClause, OmpOrderedClause | OmpCollapseClause | OmpIfClause | OmpNumThreadsClause | OmpNumTeamsClause | OmpThreadLimitClause | OmpDeviceClause | OmpHintClause | OmpGrainsizeClause | OmpNumTasksClause | OmpDetachClause |
+                            OmpSafelenClause | OmpSimdlenClause | OmpFinalClause | OmpPriorityClause | OmpPartialClause | OmpSizesClause
          ,"OmpExpressionClause", "OmpExpressionClauseTag",false );
 
 
@@ -171,8 +168,7 @@ Grammar::setUpNodes ()
      NEW_NONTERMINAL_MACRO (OmpClause, OmpNowaitClause | OmpReadClause | OmpThreadsClause | OmpSimdClause | OmpWriteClause | OmpUpdateClause | OmpDepobjUpdateClause | OmpDestroyClause | OmpCaptureClause | OmpBeginClause |OmpEndClause | OmpUntiedClause | OmpSeqCstClause | OmpAcqRelClause | OmpReleaseClause | OmpAcquireClause | OmpRelaxedClause | OmpReverseOffloadClause | OmpUnifiedAddressClause | OmpUnifiedSharedMemoryClause | OmpDynamicAllocatorsClause |
          OmpParallelClause | OmpSectionsClause | OmpForClause | OmpTaskgroupClause | OmpNogroupClause |
          OmpDefaultClause | OmpAllocatorClause | OmpAtomicClause | OmpProcBindClause | OmpBindClause | OmpOrderClause | OmpDistScheduleClause | OmpExpressionClause | OmpInbranchClause | OmpNotinbranchClause | OmpDefaultmapClause | OmpAtomicDefaultMemOrderClause | OmpExtImplementationDefinedRequirementClause | OmpUsesAllocatorsDefination |
-         OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause | OmpUsesAllocatorsClause |
-         UpirBranchField | UpirNestedLevelField | UpirNestedParentField | UpirNestedChildField | UpirSyncField | UpirDataField | UpirTargetField | UpirDataItemField,
+         OmpVariablesClause | OmpScheduleClause | OmpMergeableClause | OmpWhenClause | OmpUsesAllocatorsClause | OmpFullClause,
          "OmpClause", "OmpClauseTag", false);
 #endif
 
@@ -1181,70 +1177,6 @@ Grammar::setUpNodes ()
      // update(in|out|inout|mutexinoutset|depobj)
      OmpDepobjUpdateClause.setDataPrototype("SgOmpClause::omp_depobj_modifier_enum", "modifier", "=e_omp_depobj_modifier_unknown",
                           CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     // branch((node1, node2), (node3, node4, node5), ...)
-     // branch1: node1, node2
-     // branch2: node3, node4, node5
-     UpirBranchField.setDataPrototype("std::list<std::list<SgStatement*> >", "branches", "",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     // nested-level(int)
-     UpirNestedLevelField.setDataPrototype("int", "nested_level", "= 0",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     // nested-parent(node1)
-     UpirNestedParentField.setDataPrototype("SgStatement*", "nested_parent", "= NULL",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     // nested-child(node2)
-     UpirNestedChildField.setDataPrototype("SgStatement*", "nested_child", "= NULL",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     // sync(node)
-     UpirSyncField.setDataPrototype("SgStatement*", "sync", "= NULL",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     // data(node1, node2, ...)
-     UpirDataField.setDataPrototype("std::list<SgUpirDataItemField*>", "data", "",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     // symbol(sharing, mapping, access, distribution-list, allocator, deallocator, memcpy)
-     // foo(shared(implicit), tofrom(explicit), read-write, section(0:20:2), allocator(default_mem_alloc), deallocator(default_mem_dealloc), memcpy(goo))
-     UpirDataItemField.setDataPrototype("SgSymbol*", "symbol", "= NULL",
-                          CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-     UpirDataItemField.setDataPrototype("SgOmpClause::upir_data_sharing_enum", "sharing_property", "= e_upir_data_sharing_unspecified",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     UpirDataItemField.setDataPrototype("SgOmpClause::upir_property_visibility_enum", "sharing_visibility", "= e_upir_property_visibility_unspecified",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     UpirDataItemField.setDataPrototype("SgOmpClause::upir_data_mapping_enum", "mapping_property", "= e_upir_data_mapping_unspecified",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     UpirDataItemField.setDataPrototype("SgOmpClause::upir_property_visibility_enum", "mapping_visibility", "= e_upir_property_visibility_unspecified",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     UpirDataItemField.setDataPrototype("SgExpression*", "mapper", "= NULL",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-     UpirDataItemField.setDataPrototype("SgOmpClause::upir_data_access_enum", "access_property", "= e_upir_data_access_unspecified",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     UpirDataItemField.setDataPrototype("SgExpression*", "unit_id", "= NULL",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-     UpirDataItemField.setDataPrototype("SgOmpClause::upir_data_distribution_pattern_enum", "distribution_pattern", "= e_upir_data_distribution_pattern_unspecified",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     UpirDataItemField.setDataPrototype("std::list<std::list<SgExpression*>>", "section", "",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     UpirDataItemField.setDataPrototype("SgOmpClause::upir_data_allocator_enum", "allocator", "= e_upir_data_allocator_unspecified",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     UpirDataItemField.setDataPrototype("SgExpression*", "user_defined_allocator", "= NULL",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-     UpirDataItemField.setDataPrototype("SgOmpClause::upir_data_deallocator_enum", "deallocator", "= e_upir_data_deallocator_unspecified",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-     UpirDataItemField.setDataPrototype("SgExpression*", "user_defined_deallocator", "= NULL",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-     UpirDataItemField.setDataPrototype("SgExpression*", "memcpy_helper", "= NULL",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE, CLONE_PTR);
-
-     // target(cpu, gpu, cluster)
-     UpirTargetField.setDataPrototype("std::set<SgOmpClause::upir_target_type_enum>", "target_type", "",
-                          NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
 #endif
 
 

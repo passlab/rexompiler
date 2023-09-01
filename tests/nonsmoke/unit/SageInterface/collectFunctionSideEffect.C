@@ -5,9 +5,6 @@
 
 #include "CommandOptions.h"
     
-//OpenMP attribute for OpenMP 3.0
-#include "OmpAttribute.h"
-    
 //Array Annotation headers
 #include <CPPAstInterface.h>
 #include <ArrayAnnot.h>

@@ -142,16 +142,9 @@ ROSE_SUPPORT_ROSE_PART_5
 ROSE_SUPPORT_ROSE_PART_6
 ROSE_SUPPORT_ROSE_PART_7
 
-# Last minute changes to the ROSE_CONFIG_TOKEN shell variable, and then make sure it's
-# output as a C preprocessor macro.
-if echo "$BOOST_CPPFLAGS" |grep -- -pthread >/dev/null; then
-   ROSE_CONFIG_TOKEN="$ROSE_CONFIG_TOKEN pthread"
-fi
-AC_DEFINE_UNQUOTED(ROSE_CONFIG_TOKEN, ["$ROSE_CONFIG_TOKEN"],
-    [Encapsulates some important configuration details for Rose::initialize])
-
 dnl Fail gracefully for blacklisted dependencies and other situations
 ROSE_SUPPORT_BLACKLIST
+ROSE_SUPPORT_SUMMARY
 
 dnl Now generate all the output files (specified above)
 ROSE_CONFIGURE_SECTION([Generating files])

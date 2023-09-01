@@ -31,7 +31,7 @@ SUBDIRS += testSupport
 
 SUBDIRS += RunTests
 if ROSE_BUILD_CXX_LANGUAGE_SUPPORT
-   SUBDIRS += PerformanceTests CompilerOptionsTests translatorTests moveDeclarationTool
+   SUBDIRS += CompilerOptionsTests translatorTests moveDeclarationTool
 endif
 
 endif
@@ -67,11 +67,6 @@ noinst_PROGRAMS = \
 
 if ROSE_WITH_LIBHARU
    noinst_PROGRAMS += testPDFGeneration
-endif
-
-# DQ (1/16/2012): This test code is not supported when compiling for simple front-end testing (smallest subset of ROSE that can be built).
-if !ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   noinst_PROGRAMS += testAstFileIO
 endif
 
 # Phase 0 tests code:
@@ -145,8 +140,6 @@ AM_LDFLAGS  = $(ROSE_RPATHS)
 LDADD       = $(ROSE_LIBS)
 # LDADD       = $(ROSE_LIBS) --Wl,--no-undefined
 # LDADD       = $(ROSE_LIBS) --no-undefined
-
-testAtermGraphGeneration_LDADD = $(ROSE_LIBS)
 
 EXTRA_DIST = CMakeLists.txt input_codes inputFile.C tests.tex
 
@@ -389,18 +382,10 @@ endif
 
 # Rule to run all the example translator tests
 # test: test_testAnalysis test_testCodeGeneration test_testTranslator testSimpleLinkFileTranslator
-if ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-if ROSE_WITH_LIBHARU
-   test: test_testTokenGeneration test_testAnalysis test_testCodeGeneration test_testTranslator test_testTemplates test_testGraphGeneration test_testPDFGeneration testSimpleLinkFileTranslator testTranslatorFoldedConstants testTranslatorUnfoldedConstants testKeepGoingTranslator test_readFileTwice
-else
-   test: test_testTokenGeneration test_testAnalysis test_testCodeGeneration test_testTranslator test_testTemplates test_testGraphGeneration testSimpleLinkFileTranslator testTranslatorFoldedConstants testTranslatorUnfoldedConstants testKeepGoingTranslator test_readFileTwice
-endif
-else
 if ROSE_WITH_LIBHARU
    test: test_testTokenGeneration test_testAnalysis test_testCodeGeneration test_testTranslator test_testTemplates test_testGraphGeneration test_testPDFGeneration testSimpleLinkFileTranslator testTranslatorFoldedConstants testTranslatorUnfoldedConstants testKeepGoingTranslator test_exampleIdentityTranslator test_readFileTwice
 else
    test: test_testTokenGeneration test_testAnalysis test_testCodeGeneration test_testTranslator test_testTemplates test_testGraphGeneration testSimpleLinkFileTranslator testTranslatorFoldedConstants testTranslatorUnfoldedConstants testKeepGoingTranslator test_exampleIdentityTranslator test_readFileTwice
-endif
 endif
 
 # Liao, 4/12/2017 restrict_template_parameter.C will trigger frontend error.

@@ -8,19 +8,6 @@
 int
 main ( int argc, char** argv )
 {
-#if 0
-  CppToCppTranslator c;
-  return c.translate(argc,argv);
-#else    
-  //alternative:
-  /*
-    return backend(frontend(argc,argv));
-  */
-
-  // DQ (4/6/2017): This will not fail if we skip calling ROSE_INITIALIZE (but
-  // any warning message using the message looging feature in ROSE will fail).
-     ROSE_INITIALIZE;
-
   // Build the AST used by ROSE
      SgProject* project = frontend(argc,argv);
 
@@ -31,19 +18,4 @@ main ( int argc, char** argv )
 
   // Generate source code from AST and call the vendor's compiler
      return backend(project);
-
-#endif
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

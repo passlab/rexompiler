@@ -89,7 +89,6 @@
 */
 
 #include "rose.h"
-#include <Rose/CommandLine.h>
 #include "wholeAST_API.h"
 #include "transformationTracking.h"
 #include <iostream>
@@ -97,11 +96,9 @@
 #include <stack> // used for a worklist of declarations to be moved , first found, last processing
 #include <boost/foreach.hpp>
 #include <map> // used to store special var reference's scope
-#include <Sawyer/CommandLine.h>
 
 // another level of control over transformation tracking code
 #define ENABLE_TRANS_TRACKING 1
-
 
 static const char *purpose = "This tool moves variable declarations to their innermost possible scopes";
 static const char *description =
@@ -145,9 +142,6 @@ bool decl_mover_conservative = true;
 
 //! If we further merge a naked variable declaration (without initialization) with a followed variable assignment within the same scope
 bool merge_decl_assign = false; 
-
-//! This function creates a description of command-line switches that are recognized by the too. 
-Sawyer::CommandLine::SwitchGroup commandLineSwitches();
 
 //--------------end of internal flags ----------------
 
@@ -614,123 +608,62 @@ GetSourceFilenamesFromCommandline(const std::vector<std::string>& argv)
   return filenames;
 }
 
-//! Initialize the switch group and its switches.
-Sawyer::CommandLine::SwitchGroup commandLineSwitches() {
-  using namespace Sawyer::CommandLine;
-
-  SwitchGroup switches("The move tool switches");
-  switches.doc("These switches control the move tool. ");
-  switches.name("rose"); // be backwards compatible with -rose:optionX 
-
-  switches.insert(Switch("debug")
-      .intrinsicValue(true, debug)
-      .doc("Enable the debugging mode."));
-
-  switches.insert(Switch("identity")
-      .intrinsicValue(true, isIdentity)
-      .doc("Enable acting like an identity translator, not doing any transformation at all."));
-
-  switches.insert(Switch("trans-tracking")
-      .intrinsicValue(true, transTracking)
-      .doc("Enable tracking of transformation steps."));
-
-  switches.insert(Switch("keep_going")   //TODO: how to keep this option to be used by later phases?
-      .intrinsicValue(true, tool_keep_going)
-      .doc("Allow the tool to proceed without being stopped by assertions."));
-
-  switches.insert(Switch("aggressive")
-      .intrinsicValue(true, decl_mover_conservative)
-      .doc("Enable aggressive mode: declarations with initializers will be moved."));
-
-  switches.insert(Switch("merge_decl_assign")
-      .intrinsicValue(true, merge_decl_assign)
-      .doc("After the move, further merge the moved naked variable declaration (without initialization) with a followed variable assignment."));
-
-  return switches;
-}
-
-//! Command line processing
-static std::vector<std::string> parseCommandLine(std::vector< std::string > & argvList) // this will cause trouble, not sure why.
-//static std::vector<std::string> parseCommandLine(int argc, char* argv[]) 
-{
-  using namespace Sawyer::CommandLine;
-  Parser p = Rose::CommandLine::createEmptyParserStage(purpose, description);
-  p.doc("Synopsis", "@prop{programName} @v{switches} @v{files}...");
-  p.longPrefix("-");
-
-// initialize generic Sawyer switches: assertion, logging, threads, etc.
-  p.with(Rose::CommandLine::genericSwitches()); 
-
-// initialize tool switches
-  p.with(commandLineSwitches());  
-
-// switches to be passed to ROSE, somehow not working yet. TODO
-  SwitchGroup tool("ROSE's built-in switches");
-  // We want the "--rose:help" switch to appear in the Sawyer documentation but we have to pass it to the next stage also. We
-  // could do this two different ways. 
-  // 1. The older way (that still works) is to have Sawyer process the switch and then we
-  // prepend it into the returned vector for processing by later stages.  
-
-#if 0
-  // 2. The newer way is to set the switch's "skipping"
-  // property that causes Sawyer to treat it as a skipped (unrecognized) switch.  We'll use SKIP_STRONG, but SKIP_WEAK is
-  // sort of a cross between Sawyer recognizing it and not recognizing it.
-  tool.insert(Switch("rose:help")
-      .skipping(SKIP_STRONG)                  // appears in documentation and is parsed, but treated as skipped
-      .doc("Show the ROSE switch documentation.")
-      .action(showHelpAndExit(0)) );
-#else
-  bool showRoseHelp = false;
-  tool.insert(Switch("rose:help")
-             .longPrefix("-")
-             .intrinsicValue(true, showRoseHelp)
-             .doc("Show the old-style ROSE help.")); 
-
-#endif
-
-
-  // Copy this tool's switches into the parser.
-  p.with(tool);
-
-  // Parse the command-line, stopping at the first "--" or positional argument. Return the unparsed stuff so it can be passed
-  // to the next stage.  ROSE's frontend expects arg[0] to be the name of the command, which Sawyer has already processed, so
-  // we need to add it back again.
-//  std::vector<std::string> remainingArgs = p.parse(argc, argv).apply().unparsedArgs(true);
-//  remainingArgs.insert(remainingArgs.begin(), argv[0]);
-  std::vector<std::string> remainingArgs = p.parse(argvList).apply().unparsedArgs(true);
-//  remainingArgs.insert(remainingArgs.begin(), argvList[0]); // somehow this is not needed if I use the vector argument version of parse()
-
-  if (showRoseHelp)
-    SgFile::usage(0); 
-
-#if 0 // DEBUGGING [Robb P Matzke 2016-09-27]
-  std::cerr <<"These are the arguments after parsing with Sawyer:\n";
-  BOOST_FOREACH (const std::string &s, remainingArgs)
-    std::cerr <<"    \"" <<s <<"\"\n";
-#endif
-
-  return remainingArgs;
-}
-
 int main(int argc, char * argv[])
 {
-  ROSE_INITIALIZE;
-
   //! Command line process begin --------------------------
-  vector <string> argvList (argv, argv+argc)  ; 
-  //argvList =  parseCommandLine (argc, argv);
-  argvList =  parseCommandLine (argvList);
+
+  vector <string> argvList (argv, argv + argc);
+  // acting like an identity translator, used for debugging
+  if (CommandlineProcessing::isOption (argvList,"-rose:identity","",true))
+  {
+    isIdentity = true;
+    cout<<"Acting as an identity translator ..."<<endl;
+  }
+
+  // pass -rose:debug to turn on debugging mode
+  if (CommandlineProcessing::isOption (argvList,"-rose:debug","",true))
+  {
+    debug = true;
+    cout<<"Turing on debugging model..."<<endl;
+  }
+
+  if (CommandlineProcessing::isOption (argvList,"-rose:trans-tracking","",true))
+  {
+    transTracking = true;
+    cout<<"Turing on transformation tracking model..."<<endl;
+  }
+
   // TOO1 (2014/12/05): Temporarily added this to support keep-going in rose-sh.
   if (CommandlineProcessing::isOption (argvList,"--list-filenames","",true))
   {
-    std::vector<std::string> filenames =
-      GetSourceFilenamesFromCommandline(
-          std::vector<std::string>(argv, argv + argc));
-    BOOST_FOREACH(std::string filename, filenames)
-    {
-      std::cout << filename << std::endl;
-    }
-    return 0;
+      std::vector<std::string> filenames =
+          GetSourceFilenamesFromCommandline(
+    	  std::vector<std::string>(argv, argv + argc));
+      BOOST_FOREACH(std::string filename, filenames)
+      {
+          std::cout << filename << std::endl;
+      }
+      return 0;
+  }
+
+  // We don't remove this option since it is used later by other logic
+  if (CommandlineProcessing::isOption (argvList,"-rose:keep_going","",false))
+  {
+    tool_keep_going = true;
+    cout<<"Turing on the keep going model, ignore assertions as much as possible..."<<endl;
+  }
+
+  if (CommandlineProcessing::isOption (argvList,"-rose:merge_decl_assign","",true))
+  {
+    merge_decl_assign = true;
+    cout<<"Turing on the merge feature, merge decl with assign when possible ..."<<endl;
+  }
+
+  // ROSE base does not use this option. remove it after use.
+  if (CommandlineProcessing::isOption (argvList,"-rose:aggressive","",true))
+  {
+    decl_mover_conservative = false;
+    cout<<"Turing on the aggressive model, allowing moving declarations with initializers and cross loop boundaries, but will send out warnings..."<<endl;
   }
 
   // -------------end of command line processing -------------------

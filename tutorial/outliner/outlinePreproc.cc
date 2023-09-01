@@ -9,9 +9,6 @@ using namespace std;
 int
 main (int argc, char* argv[])
 {
-  // Initialize and check compatibility. See Rose::initialize
-  ROSE_INITIALIZE;
-
   SgProject* proj = frontend (argc, argv);
   ROSE_ASSERT (proj);
 

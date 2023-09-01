@@ -10,8 +10,7 @@
 
 // #include "rose.h"
 #include "unparser.h"
-#include <Sawyer/Callbacks.h>
-#include <Rose/FileSystem.h>
+#include <FileSystem.h>
 
 class SgUnparse_Info;
 class SgLocatedNode;
@@ -55,7 +54,8 @@ class ROSE_DLL_API UnparseFormatHelp
          };
              
       // User-defined callbacks invoked immediately after output file is created.
-         Sawyer::Callbacks<PostOutputCallback*> postOutputCallbacks;
+      // yanyh15: 2023-01-19 need a callback mechanisms when this becomes the need
+       //  Sawyer::Callbacks<PostOutputCallback*> postOutputCallbacks;
    };
 
 

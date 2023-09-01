@@ -39,7 +39,7 @@ CPreproc::findIfDirectiveContext (const SgLocatedNode* target,
                                   CPreproc::If::Case*& bottom)
 {
   SgGlobal* root =
-    TransformationSupport::getGlobalScope (const_cast<SgLocatedNode *> (target));
+    SageInterface::getGlobalScope (const_cast<SgLocatedNode *> (target));
   if (!root) return;
 
   IfDirectiveContextFinder finder (ifs, target);

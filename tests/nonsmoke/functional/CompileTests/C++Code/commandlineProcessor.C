@@ -69,7 +69,7 @@ main ( int argc, char* argv[] )
           CommandlineProcessing::isOption(argc,argv,"--","(h|help)",true) )
         {
           printf ("\nROSE (pre-release alpha version: %s) \n",VERSION);
-          Rose::usage(0);
+          Rose::usage();
           exit(0);
         }
 

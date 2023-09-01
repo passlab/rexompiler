@@ -83,9 +83,6 @@ protected:
 
 int main(int argc, char **argv)
 {
- // Initialize and check compatibility. See Rose::initialize
-    ROSE_INITIALIZE;
-
  // Read the AST.
     SgProject *project = frontend(argc, argv);
 

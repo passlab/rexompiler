@@ -1,7 +1,5 @@
 #include <stdlib.h>
 
-#include <ROSE_ASSERT.h>
-
 #include <DepRel.h>
 #include <DepInfoSet.h>
 

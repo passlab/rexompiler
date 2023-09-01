@@ -2,10 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
-#include <assert.h>
-
-#include <ROSE_ABORT.h>
-#include <ROSE_ASSERT.h>
+#include <mlog.h>
 
 #include <DepRel.h>
 

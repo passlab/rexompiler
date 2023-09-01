@@ -12,7 +12,6 @@ AC_DEFUN([ROSE_SUPPORT_BLACKLIST],[
     # trying to figure out why their configuration is blacklisted. These are the versions they
     # HAVE. The versions that are PROHIBITED will be emitted later in this function.  The version
     # number variables should be set wherever we're detecting the dependency, not here.
-    ROSE_SUPPORT_SUMMARY
 
     # -----------------------
     #  Versions we PROHIBIT

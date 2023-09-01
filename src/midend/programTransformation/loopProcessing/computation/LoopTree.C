@@ -8,7 +8,6 @@
 #include <CommandOptions.h>
 #include <LoopTransformInterface.h>
 #include <SymbolicBound.h>
-#include <ROSE_ASSERT.h>
 
 bool LoopTreeLoopNode :: SelfRemove()
 {

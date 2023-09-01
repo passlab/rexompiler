@@ -5,7 +5,6 @@
 #include <CFG.h>
 #include <sstream>
 #include <list>
-#include <ROSE_ABORT.h>
 
 template <class Node, class Edge>
 class CFGImplTemplate 

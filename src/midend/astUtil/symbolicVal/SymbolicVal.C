@@ -3,8 +3,6 @@
 #include "SymbolicMultiply.h"
 #include "SymbolicPlus.h"
 #include "SymbolicSelect.h"
-#include <ROSE_ABORT.h>
-#include <ROSE_ASSERT.h>
 
 #include <list>
 #include <stdio.h>

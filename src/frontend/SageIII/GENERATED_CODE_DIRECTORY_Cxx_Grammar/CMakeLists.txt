@@ -459,8 +459,8 @@ if(enable-smaller-generated-files)
     SgNullStatement.C
     SgOmpAtomicStatement.C
     SgOmpBarrierStatement.C
-    SgUpirBodyStatement.C
-    SgUpirFieldBodyStatement.C
+    SgOmpBodyStatement.C
+    SgOmpClauseBodyStatement.C
     SgOmpClause.C
     SgOmpCollapseClause.C
     SgOmpCopyinClause.C
@@ -471,15 +471,14 @@ if(enable-smaller-generated-files)
     SgOmpExpressionClause.C
     SgOmpFirstprivateClause.C
     SgOmpFlushStatement.C
-    SgUpirWorksharingStatement.C
     SgOmpIfClause.C
     SgOmpLastprivateClause.C
     SgOmpMasterStatement.C
     SgOmpNowaitClause.C
-    SgUpirNumUnitsField.C
+    SgOmpNumThreadsClause.C
     SgOmpOrderedClause.C
     SgOmpOrderedStatement.C
-    SgUpirSpmdStatement.C
+    SgOmpParallelStatement.C
     SgOmpPrivateClause.C
     SgOmpReductionClause.C
     SgOmpScheduleClause.C
@@ -659,7 +658,6 @@ if(enable-smaller-generated-files)
     # We need to copy the input files  to the build tree since 
     # the code generator will output the generated source files into the same directory as where the input files locate
     COMMAND ${CMAKE_COMMAND} -E make_directory ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/Grammar
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/astFileIO
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${ROSE_TOP_SRC_DIR}/src/ROSETTA/Grammar/ ${ROSE_TOP_BINARY_DIR}/src/frontend/SageIII/Grammar/
     # create this directory is needed since a few generated files will be put there        
     COMMAND ${META_EXE_LOC}

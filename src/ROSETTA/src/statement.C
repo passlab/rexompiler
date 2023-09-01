@@ -278,7 +278,7 @@ Grammar::setUpStatements ()
      // define terminals and non-terminals  and their hierarchy
      //------------------------------------------------------------
     // +body+ clauses
-    NEW_TERMINAL_MACRO (UpirSpmdStatement,  "UpirSpmdStatement",   "UPIR_SPMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpParallelStatement,  "OmpParallelStatement",   "OMP_PARALLEL_STMT" );
     NEW_TERMINAL_MACRO (OmpLoopStatement,  "OmpLoopStatement",   "OMP_LOOP_STMT" );
     NEW_TERMINAL_MACRO (OmpScanStatement,  "OmpScanStatement",   "OMP_SCAN_STMT" );
     NEW_TERMINAL_MACRO (OmpTaskloopStatement,  "OmpTaskloopStatement",   "OMP_TASKLOOP_STMT" );
@@ -294,15 +294,15 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpTaskStatement,      "OmpTaskStatement",       "OMP_TASK_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetEnterDataStatement,      "OmpTargetEnterDataStatement",       "OMP_TARGET_ENTER_DATA_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetExitDataStatement,      "OmpTargetExitDataStatement",       "OMP_TARGET_EXIT_DATA_STMT" );
-    NEW_TERMINAL_MACRO (UpirWorksharingStatement,       "UpirWorksharingStatement",        "UPIR_WORKSHARING_STMT" );
     NEW_TERMINAL_MACRO (OmpForSimdStatement,   "OmpForSimdStatement",     "OMP_FOR_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpForStatement, "OmpForStatement", "OMP_FOR_STMT");
     NEW_TERMINAL_MACRO (OmpDoStatement,        "OmpDoStatement",         "OMP_DO_STMT" );
     NEW_TERMINAL_MACRO (OmpSectionsStatement,  "OmpSectionsStatement",   "OMP_SECTIONS_STMT" );
     // OpenMP 4.x : atomic can have clause now.
     NEW_TERMINAL_MACRO (OmpAtomicStatement,    "OmpAtomicStatement",    "OMP_ATOMIC_STMT" );
      // experimental omp target directive, Liao 1/22/2012
      // use for testing OpenMP accelerator model
-    NEW_TERMINAL_MACRO (UpirTaskStatement,  "UpirTaskStatement",   "UPIR_TASK_STMT" );
+    NEW_TERMINAL_MACRO (OmpTargetStatement,  "OmpTargetStatement",   "OMP_TARGET_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetDataStatement,  "OmpTargetDataStatement",   "OMP_TARGET_DATA_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetParallelForStatement,  "OmpTargetParallelForStatement",   "OMP_TARGET_PARALLEL_FOR_STMT" );
     NEW_TERMINAL_MACRO (OmpTargetParallelStatement,  "OmpTargetParallelStatement",   "OMP_TARGET_PARALLEL_STMT" );
@@ -332,24 +332,23 @@ Grammar::setUpStatements ()
     NEW_TERMINAL_MACRO (OmpMasterTaskloopStatement,  "OmpMasterTaskloopStatement",   "OMP_MASTER_TASKLOOP_STMT" );
     NEW_TERMINAL_MACRO (OmpParallelLoopStatement,  "OmpParallelLoopStatement",   "OMP_PARALLEL_LOOP_STMT" );
 
-    NEW_TERMINAL_MACRO (UpirSimdStatement,    "UpirSimdStatement",     "UPIR_SIMD_STMT" );
+    NEW_TERMINAL_MACRO (OmpUnrollStatement, "OmpUnrollStatement", "OMP_UNROLL_STMT" );
+    NEW_TERMINAL_MACRO (OmpTileStatement, "OmpTileStatement", "OMP_TILE_STMT" );
+
+    NEW_TERMINAL_MACRO (OmpSimdStatement,    "OmpSimdStatement",     "OMP_SIMD_STMT" );
     NEW_TERMINAL_MACRO (OmpCriticalStatement,  "OmpCriticalStatement",   "OMP_CRITICAL_STMT" );
     NEW_TERMINAL_MACRO (OmpOrderedStatement,   "OmpOrderedStatement",   "OMP_ORDERED_STMT" );
 
-    // UPIR statements
-    NEW_TERMINAL_MACRO (UpirLoopStatement, "UpirLoopStatement", "UPIR_LOOP_STMT");
-    NEW_TERMINAL_MACRO (UpirLoopParallelStatement, "UpirLoopParallelStatement", "UPIR_LOOP_PARALLEL_STMT");
-    NEW_TERMINAL_MACRO (UpirSyncStatement, "UpirSyncStatement", "UPIR_SYNC_STMT");
 
     // A base class for the most commonly formed directives with both clauses and a structured body
     // We treat OmpSectionsStatement separatedly by move the body to a list of SgOmpSectionStatement
     // sensitive to
-    NEW_NONTERMINAL_MACRO (UpirFieldBodyStatement,  UpirSpmdStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement | OmpOrderedStatement | OmpTaskgroupStatement | OmpTaskloopStatement | OmpDepobjStatement | OmpTargetEnterDataStatement | OmpTargetExitDataStatement | OmpParallelMasterStatement | OmpMasterTaskloopStatement |
-              OmpTaskStatement | OmpDoStatement | OmpSectionsStatement | UpirTaskStatement | OmpTargetDataStatement | OmpTargetParallelForStatement | OmpParallelLoopStatement |
+    NEW_NONTERMINAL_MACRO (OmpClauseBodyStatement,  OmpParallelStatement | OmpTeamsStatement | OmpSingleStatement | OmpAtomicStatement | OmpScanStatement | OmpMetadirectiveStatement | OmpLoopStatement | OmpOrderedStatement | OmpTaskgroupStatement | OmpTaskloopStatement | OmpDepobjStatement | OmpTargetEnterDataStatement | OmpTargetExitDataStatement | OmpParallelMasterStatement | OmpMasterTaskloopStatement |
+              OmpTaskStatement | OmpForStatement | OmpDoStatement | OmpSectionsStatement | OmpTargetStatement | OmpTargetDataStatement | OmpTargetParallelForStatement | OmpParallelLoopStatement |
               OmpTargetParallelStatement | OmpTargetParallelForSimdStatement | OmpTargetParallelLoopStatement | OmpTargetSimdStatement | OmpTargetTeamsStatement | OmpTargetTeamsDistributeStatement | OmpTargetTeamsDistributeSimdStatement | OmpTargetTeamsLoopStatement | OmpTargetTeamsDistributeParallelForStatement | OmpTargetTeamsDistributeParallelForSimdStatement | OmpDistributeSimdStatement | OmpDistributeParallelForStatement | OmpDistributeParallelForSimdStatement | OmpTaskloopSimdStatement |
               OmpMasterTaskloopSimdStatement | OmpParallelMasterTaskloopStatement | OmpParallelMasterTaskloopSimdStatement | OmpTeamsDistributeStatement | OmpTeamsDistributeSimdStatement | OmpTeamsDistributeParallelForStatement | OmpTeamsDistributeParallelForSimdStatement | OmpTeamsLoopStatement |
-              OmpForSimdStatement | OmpCriticalStatement | OmpDistributeStatement | UpirLoopStatement,
-        "UpirFieldBodyStatement",   "UPIR_FIELDBODY_STMT", false );
+              OmpSimdStatement | OmpForSimdStatement | OmpCriticalStatement | OmpDistributeStatement | OmpUnrollStatement | OmpTileStatement,
+        "OmpClauseBodyStatement",   "OMP_CLAUSEBODY_STMT", false );
 
     // + a statement / block
     NEW_TERMINAL_MACRO (OmpMasterStatement,    "OmpMasterStatement",    "OMP_MASTER_STMT" );
@@ -362,12 +361,12 @@ Grammar::setUpStatements ()
 
     //NEW_TERMINAL_MACRO (OmpCriticalStatement,  "OmpCriticalStatement",   "OMP_CRITICAL_STMT" );
     // A base class for all directives with a body/statement
-    NEW_NONTERMINAL_MACRO (UpirBodyStatement,  OmpMasterStatement
-        | OmpSectionStatement | OmpWorkshareStatement  | UpirFieldBodyStatement,
-        "UpirBodyStatement",      "UPIR_BODY_STMT", false );
+    NEW_NONTERMINAL_MACRO (OmpBodyStatement,  OmpMasterStatement
+        | OmpSectionStatement | OmpWorkshareStatement  | OmpClauseBodyStatement,
+        "OmpBodyStatement",      "OMP_BODY_STMT", false );
 
-    NEW_NONTERMINAL_MACRO (UpirFieldStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement | OmpOrderedDependStatement | UpirSyncStatement | UpirLoopParallelStatement | UpirWorksharingStatement | UpirSimdStatement,
-        "UpirFieldStatement",      "UPIR_FIELD_STMT", false );
+    NEW_NONTERMINAL_MACRO (OmpClauseStatement,  OmpCancelStatement | OmpCancellationPointStatement | OmpTargetUpdateStatement | OmpFlushStatement | OmpAllocateStatement | OmpOrderedDependStatement,
+        "OmpClauseStatement",      "OMP_CLAUSE_STMT", false );
 
 #endif
 
@@ -475,16 +474,6 @@ Grammar::setUpStatements ()
           TemplateFunctionDeclaration | MemberFunctionDeclaration | TemplateInstantiationFunctionDecl | ProgramHeaderStatement | ProcedureHeaderStatement | EntryStatement,
           "FunctionDeclaration","FUNC_DECL_STMT", true);
 
-#if 0
-  // DQ (11/23/2008): Note that we could have F77 and F90 stype comments here, but we are not separating out comments as IR nodes.
-     NEW_TERMINAL_MACRO (C_StyleCommentStatement, "C_StyleCommentStatement", "C_STYLE_COMMENT_STMT" );
-     NEW_TERMINAL_MACRO (CxxStyleCommentStatement, "CxxStyleCommentStatement", "CXX_STYLE_COMMENT_STMT" );
-
-     NEW_NONTERMINAL_MACRO (CommentStatement,
-          C_StyleCommentStatement | CxxStyleCommentStatement ,
-          "CommentStatement", "COMMENT_STMT" );
-#endif
-
   // DQ (8/17/2007): Added CPP directives back into the IR to better support analysis and transformations.
      NEW_TERMINAL_MACRO (IncludeDirectiveStatement,     "IncludeDirectiveStatement", "INCLUDE_DIRECTIVE_STMT" );
      NEW_TERMINAL_MACRO (DefineDirectiveStatement,      "DefineDirectiveStatement",      "DEFINE_DIRECTIVE_STMT"  );
@@ -526,6 +515,8 @@ Grammar::setUpStatements ()
 
   // + variable list
      NEW_TERMINAL_MACRO (OmpDeclareSimdStatement, "OmpDeclareSimdStatement",  "OMP_DECLARE_SIMD_STMT" );
+     NEW_TERMINAL_MACRO (OmpDeclareTargetStatement, "OmpDeclareTargetStatement",  "OMP_DECLARE_TARGET_STMT" );
+     NEW_TERMINAL_MACRO (OmpEndDeclareTargetStatement, "OmpEndDeclareTargetStatement",  "OMP_END_DECLARE_TARGET_STMT" );
   // simplest directives, just one line
      NEW_TERMINAL_MACRO (OmpBarrierStatement,   "OmpBarrierStatement",   "OMP_BARRIER_STMT" );
      NEW_TERMINAL_MACRO (OmpTaskyieldStatement,   "OmpTaskyieldStatement",   "OMP_TASKYIELD_STMT" );
@@ -544,7 +535,7 @@ Grammar::setUpStatements ()
 
      NEW_NONTERMINAL_MACRO (DeclarationStatement,
           FunctionParameterList                   | VariableDeclaration       | VariableDefinition           |
-          ClinkageDeclarationStatement            | EnumDeclaration           | /* StronglyTypedEnumDeclaration | */  AsmStmt                  |
+          ClinkageDeclarationStatement            | EnumDeclaration           | AsmStmt                      |
           AttributeSpecificationStatement         | FormatStatement           | TemplateDeclaration          |
           TemplateInstantiationDirectiveStatement | UseStatement              | ParameterStatement           |
           NamespaceDeclarationStatement           | EquivalenceStatement      | InterfaceStatement           |
@@ -556,14 +547,13 @@ Grammar::setUpStatements ()
           C_PreprocessorDirectiveStatement        | OmpThreadprivateStatement | OmpRequiresStatement         |
           FortranIncludeLine                      | OmpTaskwaitStatement      | StmtDeclarationStatement     |
           StaticAssertionDeclaration              | OmpDeclareSimdStatement   | MicrosoftAttributeDeclaration|
-          NonrealDecl               | EmptyDeclaration
-        /*| ClassPropertyList |*/,
+          NonrealDecl                             | EmptyDeclaration          |
+          OmpDeclareMapperStatement               | OmpDeclareTargetStatement | OmpEndDeclareTargetStatement,
           "DeclarationStatement", "DECL_STMT", false);
 
-     NEW_NONTERMINAL_MACRO (UpirBaseStatement,
-             OmpTaskyieldStatement     | OmpBarrierStatement    | UpirBodyStatement               | UpirFieldStatement    |
-             OmpDeclareMapperStatement,
-             "UpirBaseStatement","UpirBaseStatementTag", false);
+     NEW_NONTERMINAL_MACRO (OmpExecStatement,
+             OmpTaskyieldStatement     | OmpBarrierStatement    | OmpBodyStatement                | OmpClauseStatement,
+             "OmpExecStatement","OmpExecStatementTag", false);
 
   // Rasmussen (9/20/2018): Added ImageControlStatement
   //           (7/11/2020): Changed StopOrPauseStatement to ProcessControlStatement to allow more variants
@@ -576,10 +566,10 @@ Grammar::setUpStatements ()
              WhereStatement            | ElseWhereStatement     | NullifyStatement                | ArithmeticIfStatement |
              AssignStatement           | ComputedGotoStatement  | AssignedGotoStatement           |
           /* FortranDo                 | */ AllocateStatement   | DeallocateStatement             | UpcNotifyStatement    |
-             UpcWaitStatement          | UpcBarrierStatement    | UpcFenceStatement               | UpirBaseStatement     |
+             UpcWaitStatement          | UpcBarrierStatement    | UpcFenceStatement               |
              SequenceStatement         | WithStatement          | PassStatement                   |
-             AssertStmt                | ExecStatement          |
-	     ImageControlStatement /* | JavaPackageDeclaration */,
+             AssertStmt                | ExecStatement          | OmpExecStatement                |
+	         ImageControlStatement /* | JavaPackageDeclaration */,
              "Statement","StatementTag", false);
 
   // DQ (11/24/2007): These have been moved to be declarations, so they can appear where only declaration statements are allowed
@@ -4270,31 +4260,34 @@ Grammar::setUpStatements ()
      //------------------------------------------------------------
     // every statement needs post_construction_initialization(){} but why ???
 
+    // Base class of OpenMP executable directives
+    OmpExecStatement.setFunctionSource             ( "SOURCE_OMP_EXEC_STATEMENT", "../Grammar/Statement.code" );
+
     OmpDoStatement.setFunctionSource            ("SOURCE_OMP_DO_STATEMENT", "../Grammar/Statement.code" );
     OmpWorkshareStatement.setFunctionSource            ("SOURCE_OMP_WORKSHARE_STATEMENT", "../Grammar/Statement.code" );
-    UpirFieldBodyStatement.setFunctionPrototype         ( "HEADER_UPIR_FIELDBODY_STATEMENT", "../Grammar/Statement.code" );
-    UpirFieldBodyStatement.setFunctionSource            ("SOURCE_UPIR_FIELDBODY_STATEMENT", "../Grammar/Statement.code" );
+    OmpClauseBodyStatement.setFunctionPrototype         ( "HEADER_OMP_CLAUSEBODY_STATEMENT", "../Grammar/Statement.code" );
+    OmpClauseBodyStatement.setFunctionSource            ("SOURCE_OMP_CLAUSEBODY_STATEMENT", "../Grammar/Statement.code" );
 
-    UpirFieldStatement.setFunctionPrototype         ( "HEADER_UPIR_FIELD_STATEMENT", "../Grammar/Statement.code" );
-    UpirFieldStatement.setFunctionSource            ("SOURCE_UPIR_FIELD_STATEMENT", "../Grammar/Statement.code" );
+    OmpClauseStatement.setFunctionPrototype         ( "HEADER_OMP_CLAUSE_STATEMENT", "../Grammar/Statement.code" );
+    OmpClauseStatement.setFunctionSource            ("SOURCE_OMP_CLAUSE_STATEMENT", "../Grammar/Statement.code" );
 
-    UpirBaseStatement.setFunctionSource             ( "SOURCE_UPIR_BASE_STATEMENT", "../Grammar/Statement.code" );
-    UpirLoopStatement.setFunctionSource             ( "SOURCE_UPIR_LOOP_STATEMENT", "../Grammar/Statement.code" );
-    UpirLoopParallelStatement.setFunctionPrototype  ( "HEADER_UPIR_LOOP_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
-    UpirLoopParallelStatement.setFunctionSource     ( "SOURCE_UPIR_LOOP_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
-    UpirSyncStatement.setFunctionSource             ( "SOURCE_UPIR_SYNC_STATEMENT", "../Grammar/Statement.code" );
+    OmpForStatement.setFunctionSource     ( "SOURCE_OMP_FOR_STATEMENT", "../Grammar/Statement.code" );
 
-    UpirBodyStatement.setFunctionPrototype         ("HEADER_UPIR_BODY_STATEMENT", "../Grammar/Statement.code");
-    UpirBodyStatement.setFunctionSource            ("SOURCE_UPIR_BODY_STATEMENT", "../Grammar/Statement.code");
+    OmpBodyStatement.setFunctionPrototype         ("HEADER_OMP_BODY_STATEMENT", "../Grammar/Statement.code");
+    OmpBodyStatement.setFunctionSource            ("SOURCE_OMP_BODY_STATEMENT", "../Grammar/Statement.code");
     OmpCriticalStatement.setFunctionSource            ("SOURCE_OMP_CRITICAL_STATEMENT", "../Grammar/Statement.code");
     OmpDeclareSimdStatement.setFunctionPrototype   ("HEADER_OMP_DECLARE_SIMD_STATEMENT", "../Grammar/Statement.code");
     OmpDeclareSimdStatement.setFunctionSource      ("SOURCE_OMP_DECLARE_SIMD_STATEMENT", "../Grammar/Statement.code");
+    OmpDeclareTargetStatement.setFunctionPrototype   ("HEADER_OMP_DECLARE_TARGET_STATEMENT", "../Grammar/Statement.code");
+    OmpDeclareTargetStatement.setFunctionSource      ("SOURCE_OMP_DECLARE_TARGET_STATEMENT", "../Grammar/Statement.code");
+    OmpEndDeclareTargetStatement.setFunctionPrototype   ("HEADER_OMP_END_DECLARE_TARGET_STATEMENT", "../Grammar/Statement.code");
+    OmpEndDeclareTargetStatement.setFunctionSource      ("SOURCE_OMP_END_DECLARE_TARGET_STATEMENT", "../Grammar/Statement.code");
 
     OmpRequiresStatement.setFunctionPrototype   ("HEADER_OMP_REQUIRES_STATEMENT", "../Grammar/Statement.code");
     OmpRequiresStatement.setFunctionSource            ("SOURCE_OMP_REQUIRES_STATEMENT", "../Grammar/Statement.code" );
     OmpTaskwaitStatement.setFunctionPrototype   ("HEADER_OMP_TASKWAIT_STATEMENT", "../Grammar/Statement.code");
     OmpTaskwaitStatement.setFunctionSource            ("SOURCE_OMP_TASKWAIT_STATEMENT", "../Grammar/Statement.code" );
-    UpirSpmdStatement.setFunctionSource            ("SOURCE_UPIR_SPMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpParallelStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
     OmpTeamsStatement.setFunctionSource            ("SOURCE_OMP_TEAMS_STATEMENT", "../Grammar/Statement.code" );
     OmpCancellationPointStatement.setFunctionSource            ("SOURCE_OMP_CANCELLATION_POINT_STATEMENT", "../Grammar/Statement.code" );
     OmpOrderedDependStatement.setFunctionSource            ("SOURCE_OMP_ORDERED_DEPEND_STATEMENT", "../Grammar/Statement.code" );
@@ -4318,7 +4311,6 @@ Grammar::setUpStatements ()
     OmpThreadprivateStatement.setFunctionSource            ("SOURCE_OMP_THREADPRIVATE_STATEMENT", "../Grammar/Statement.code" );
     OmpFlushStatement.setFunctionSource            ("SOURCE_OMP_FLUSH_STATEMENT", "../Grammar/Statement.code" );
     OmpAllocateStatement.setFunctionSource            ("SOURCE_OMP_ALLOCATE_STATEMENT", "../Grammar/Statement.code" );
-    UpirWorksharingStatement.setFunctionSource            ("SOURCE_UPIR_WORKSHARING_STATEMENT", "../Grammar/Statement.code" );
     OmpForSimdStatement.setFunctionSource            ("SOURCE_OMP_FOR_SIMD_STATEMENT", "../Grammar/Statement.code" );
     OmpAtomicStatement.setFunctionSource            ("SOURCE_OMP_ATOMIC_STATEMENT", "../Grammar/Statement.code" );
     OmpBarrierStatement.setFunctionSource            ("SOURCE_OMP_BARRIER_STATEMENT", "../Grammar/Statement.code" );
@@ -4326,7 +4318,7 @@ Grammar::setUpStatements ()
     OmpTaskyieldStatement.setFunctionSource            ("SOURCE_OMP_TASKYIELD_STATEMENT", "../Grammar/Statement.code" );
     OmpOrderedStatement.setFunctionSource            ("SOURCE_OMP_ORDERED_STATEMENT", "../Grammar/Statement.code" );
 
-    UpirTaskStatement.setFunctionSource            ("SOURCE_UPIR_TASK_STATEMENT", "../Grammar/Statement.code" );
+    OmpTargetStatement.setFunctionSource            ("SOURCE_OMP_TARGET_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetDataStatement.setFunctionSource            ("SOURCE_OMP_TARGET_DATA_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetParallelForStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_FOR_STATEMENT", "../Grammar/Statement.code" );
     OmpTargetParallelStatement.setFunctionSource            ("SOURCE_OMP_TARGET_PARALLEL_STATEMENT", "../Grammar/Statement.code" );
@@ -4355,7 +4347,15 @@ Grammar::setUpStatements ()
     OmpParallelMasterStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_MASTER_STATEMENT", "../Grammar/Statement.code" );
     OmpMasterTaskloopStatement.setFunctionSource            ("SOURCE_OMP_MASTER_TASKLOOP_STATEMENT", "../Grammar/Statement.code" );
     OmpParallelLoopStatement.setFunctionSource            ("SOURCE_OMP_PARALLEL_LOOP_STATEMENT", "../Grammar/Statement.code" );
-    UpirSimdStatement.setFunctionSource            ("SOURCE_UPIR_SIMD_STATEMENT", "../Grammar/Statement.code" );
+    OmpUnrollStatement.setFunctionSource            ("SOURCE_OMP_UNROLL_STATEMENT", "../Grammar/Statement.code");
+    OmpTileStatement.setFunctionSource              ("SOURCE_OMP_TILE_STATEMENT", "../Grammar/Statement.code");
+    OmpSimdStatement.setFunctionSource            ("SOURCE_OMP_SIMD_STATEMENT", "../Grammar/Statement.code" );
+
+    // Base class of OpenMP executable directives
+    OmpExecStatement.setDataPrototype("SgStatement*", "omp_parent", "= NULL",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
+    OmpExecStatement.setDataPrototype("SgStatementPtrList", "omp_children", "",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
 
    // sections {section, section} // `containerSuccessors >1 is not allowed in ROSETTA's traversal
    // We hack the code to handle this special case
@@ -4374,6 +4374,10 @@ Grammar::setUpStatements ()
 
     OmpDeclareSimdStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+    OmpDeclareTargetStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
+    OmpDeclareTargetStatement.setDataPrototype("SgStatementPtrList", "statements", "",
+                              NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
     OmpRequiresStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
     OmpTaskwaitStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
@@ -4384,32 +4388,10 @@ Grammar::setUpStatements ()
                                                 NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
    // Directives with a statement/ structured body
-    UpirBaseStatement.setDataPrototype("SgStatement*", "upir_parent", "= NULL",
-                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirBaseStatement.setDataPrototype("SgStatementPtrList", "upir_children", "",
-                              NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirBodyStatement.setDataPrototype("SgStatement*", "body", "= NULL",
+    OmpBodyStatement.setDataPrototype("SgStatement*", "body", "= NULL",
                               CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
-    UpirFieldStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
+    OmpClauseStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirLoopStatement.setDataPrototype("SgInitializedName*", "induction", "= NULL",
-                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirLoopStatement.setDataPrototype("SgExpression*", "lower_bound", "= NULL",
-                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirLoopStatement.setDataPrototype("SgExpression*", "upper_bound", "= NULL",
-                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirLoopStatement.setDataPrototype("SgExpression*", "step", "= NULL",
-                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirLoopStatement.setDataPrototype("bool", "incremental", "= true",
-                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirLoopParallelStatement.setDataPrototype("SgStatement*", "worksharing", "= NULL",
-                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirLoopParallelStatement.setDataPrototype("SgStatement*", "simd", "= NULL",
-                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirLoopParallelStatement.setDataPrototype("SgStatement*", "taskloop", "= NULL",
-                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-    UpirLoopParallelStatement.setDataPrototype("SgStatement*", "loop", "= NULL",
-                              NO_CONSTRUCTOR_PARAMETER, BUILD_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
     // Directive with a body + a name:
         // omp critical [name]  \n structured_block
     OmpCriticalStatement.setDataPrototype ( "SgName", "name", "= \"\"",
@@ -4421,10 +4403,10 @@ Grammar::setUpStatements ()
 
     // omp clause-body : e.g: parallel clause \n  body
     // having both
-    UpirFieldBodyStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
+    OmpClauseBodyStatement.setDataPrototype("SgOmpClausePtrList", "clauses", "",
                               NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, DEF_TRAVERSAL, NO_DELETE);
 
-//    UpirFieldBodyStatement.setAutomaticGenerationOfDestructor(false);
+//    OmpClauseBodyStatement.setAutomaticGenerationOfDestructor(false);
 #endif
 
      MicrosoftAttributeDeclaration.setFunctionSource ( "SOURCE_MICROSOFT_ATTRIBUTE_DECLARATION_STATEMENT", "../Grammar/Statement.code" );

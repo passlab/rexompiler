@@ -19,8 +19,6 @@
 
 #include "sageInterface.h"
 
-#include <Rose/Diagnostics.h>
-
 // forward declarations required for templated functions using those functions
 namespace SageInterface {
   ROSE_DLL_API void setOneSourcePositionForTransformation (SgNode * root);
@@ -30,11 +28,6 @@ namespace SageInterface {
 /** Functions that build an AST. */
 namespace SageBuilder
 {
-
-// DQ (3/24/2016): Adding Robb's meageage mechanism (data member and function).
-  extern Sawyer::Message::Facility mlog;
-  void initDiagnostics();
-
 
 #if 0
 //---------------------AST creation/building/construction-----------------
@@ -1535,9 +1528,6 @@ ROSE_DLL_API SgStaticAssertionDeclaration* buildStaticAssertionDeclaration(SgExp
 //! DQ (8/17/2014): Adding support for Microsoft MSVC specific attributes.
 ROSE_DLL_API SgMicrosoftAttributeDeclaration* buildMicrosoftAttributeDeclaration (const SgName & name);
 
-//! Liao (9/18/2015): experimental support of building a statement from a string
-ROSE_DLL_API SgStatement* buildStatementFromString(const std::string & stmt_str, SgScopeStatement* scope);
-
 //! Build a using directive statement
 ROSE_DLL_API SgUsingDirectiveStatement* buildUsingDirectiveStatement(SgNamespaceDeclarationStatement * ns_decl);
 //@}
@@ -1587,17 +1577,10 @@ ROSE_DLL_API PreprocessingInfo* buildHeader(const std::string& header_filename,
                PreprocessingInfo::RelativePositionType position=PreprocessingInfo::before,
                bool isSystemHeader =false);
 
-
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-//! Build an abstract handle from a SgNode
-ROSE_DLL_API AbstractHandle::abstract_handle * buildAbstractHandle(SgNode* n);
-#endif
-
 // 03/17/2014 PHL
 // //! Build an equivalence statement from two expression operands
 ROSE_DLL_API SgEquivalenceStatement*
 buildEquivalenceStatement(SgExpression* lhs,SgExpression* rhs);
-
 
 //! Fixup any AST moved from one file two another (references to symbols, types, etc.).
 ROSE_DLL_API void fixupCopyOfAstFromSeparateFileInNewTargetAst(SgStatement *insertionPoint, bool insertionPointIsScope,

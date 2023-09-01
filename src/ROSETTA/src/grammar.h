@@ -377,8 +377,6 @@ class Grammar
           Rose::StringUtility::FileWithLineNumbers buildDataMemberVariableDeclarations ( AstNodeClass & node );
           Rose::StringUtility::FileWithLineNumbers buildMemberAccessFunctionPrototypesAndConstuctorPrototype ( AstNodeClass & node );
 
-          Rose::StringUtility::FileWithLineNumbers buildFriendDeclarations ( AstNodeClass & node );
-
           Rose::StringUtility::FileWithLineNumbers buildConstructor ( AstNodeClass & node );
           Rose::StringUtility::FileWithLineNumbers buildConstructorForEssentialDataMembers ( AstNodeClass & node);
 
@@ -441,9 +439,6 @@ class Grammar
           void setUpSupport ();
           void setUpNodes ();
 
-       // DQ (3/15/2007): Added support for binaries
-          void setUpBinaryInstructions ();
-
        // setup connection to parent grammar (part of building hierarchy of grammars)
           const Grammar* getParentGrammar ();
           void setParentGrammar ( const Grammar & GrammarPointer );
@@ -493,12 +488,6 @@ class Grammar
           GrammarSynthesizedAttribute generateRTIImplementation(AstNodeClass* grammarnode,
                                                                  std::vector<GrammarSynthesizedAttribute> v);
 
-          // JJW (10/16/2008): Factor this code into a separate header file
-          void buildStringForMemoryPoolSupport(AstNodeClass* rootNode, Rose::StringUtility::FileWithLineNumbers& file);
-          void buildStringForMemoryPoolSupportSource(AstNodeClass* rootNode, Rose::StringUtility::FileWithLineNumbers& file);
-          GrammarSynthesizedAttribute generateMemoryPoolSupportImplementation(AstNodeClass* grammarnode, std::vector<GrammarSynthesizedAttribute> v);
-          GrammarSynthesizedAttribute generateMemoryPoolSupportImplementationSource(AstNodeClass* grammarnode, std::vector<GrammarSynthesizedAttribute> v);
-
           // MS: auxiliary function
           std::string typeStringOfGrammarString(GrammarString* gs);
 
@@ -524,9 +513,6 @@ class Grammar
 
        // MS: build Variants for use in tree traversal (access with getVariantT())
           std::string buildVariantEnums();
-
-       // Build functions for boost::serialization support
-          void buildSerializationSupport(std::ostream &decls, std::ostream &defns, const std::string &headerName);
 
        // PC: build ReferenceToPointerHandler and related classes
           std::string buildReferenceToPointerHandlerCode();
@@ -556,9 +542,6 @@ class Grammar
 
        // MS: build VariantEnumnames 
           std::string buildVariantEnumNames();
-
-       // DQ (11/27/2005): Support for generation of code to be used for automating name changes and interface fixes in ROSE.
-          std::string buildTransformationSupport();
 
        // MS: creates Include list (used by buildImplementationForTerminal and travMemberAccessEnums)
           std::vector<GrammarString*> classMemberIncludeList(AstNodeClass& node);
@@ -600,45 +583,6 @@ class Grammar
           std::set<std::string> sdfTreeGrammarContainerTypes;
    // JH (01/13/2006) Added to build code for ast file IO
      public:
-       // JH (11/04/2005): declaration of methods, needed to build the code for the
-       // StorageClasses, after generation of the code located in SageIII/astFileIO/StorageClasses.C
-          std::string myBuildHeaderStringAfterMarker  ( const std::string& marker, const std::string& fileName );
-
-          void buildStorageClassSourceFiles ( AstNodeClass & node, Rose::StringUtility::FileWithLineNumbers & outputFile );
-          void buildStorageClassHeaderFiles ( AstNodeClass & node, Rose::StringUtility::FileWithLineNumbers & outputFile );
-          void buildIRNodeConstructorOfStorageClassSource ( AstNodeClass & node, Rose::StringUtility::FileWithLineNumbers & outputFile );
-          std::string buildStringForStorageClassSource ( AstNodeClass & node );
-          std::string buildStorageClassDeclarations ( );
-
-       // DQ (4/6/2006): Added in Jochen's new version
-          std::string buildStaticDataMemberListClassEntries( AstNodeClass & node);
-          std::string buildAccessFunctionsOfClassEntries( AstNodeClass & node);
-          std::string buildAccessFunctionSources( AstNodeClass & node);
-          std::string buildDataMemberStorageClass( AstNodeClass & node);
-          std::string buildStaticStorageClassPickOutSource( AstNodeClass & node);
-          std::string generateStaticDataConstructorSource(AstNodeClass & node);
-          std::string generateStaticDataWriteEasyStorageDataToFileSource(AstNodeClass & node);
-          std::string generateStaticDataReadEasyStorageDataFromFileSource(AstNodeClass & node);
-          std::string generateStaticDataArrangeEasyStorageInOnePoolSource(AstNodeClass & node);
-          std::string generateStaticDataDeleteEasyStorageMemoryPoolSource(AstNodeClass & node);
-          std::string buildStaticDataMemberListSetStaticDataSource(AstNodeClass & node);
-          std::string buildStaticDataMemberListDeleteStaticDataSource(AstNodeClass & node);
-          std::string buildStaticDataMemberListClassConstructor(AstNodeClass & node);
-
-          void  generateAST_FILE_IOFiles ( );
-          void  generateStorageClassesFiles ( );
-          std::vector<std::string>& getListOfBuiltinTypes();
-
-          void generateRoseTraits();
-
-       // DQ (4/6/2006): Added in Jochen's new version
-          std::vector<std::string>& getListOfAbstractClasses();
-
-       // JH(10/25/2005): declaration of the grammar functions that build the header and the source of the
-       // AstFileIO class, loacated after the generation in SageIII/astFileIO/AstFileIO.(hC)
-          std::string build_header_AST_FILE_IO_CLASS();
-          std::string build_source_AST_FILE_IO_CLASS();
-
        // DQ (5/18/2007): support for documentation to handle mapping to KDM
           std::string outputClassesAndFields ( AstNodeClass & node );
    private:

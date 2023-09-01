@@ -1,7 +1,7 @@
 include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 bin_PROGRAMS =
 
-SUBDIRS = stringSupport commandlineProcessing support graphs Sawyer
+SUBDIRS = StringUtility commandlineProcessing support graphs
 
 # AUTOMAKE_OPTIONS = subdir-objects
 
@@ -28,17 +28,17 @@ rose_paths.C:
 noinst_LTLIBRARIES = libroseutil.la
 
 libroseutil_la_SOURCES =			\
-	compilationFileDatabase.C		\
-	LinearCongruentialGenerator.C		\
 	processSupport.C			\
 	rose_getline.C				\
-	rose_strtoull.C
+	rose_strtoull.C mlog.C FileSystem.C
 
 nodist_libroseutil_la_SOURCES = rose_paths.C
 libroseutil_la_LIBADD = \
-	stringSupport/libRoseStringSupport.la \
-	commandlineProcessing/libRoseCommandlineUtil.la
-
+	commandlineProcessing/libRoseCommandlineUtil.la \
+    graphs/libgraphs.la                    \
+	StringUtility/libRoseStringUtility.la \
+    support/libsupport.la
+    
 # DQ (4/5/2009): I don't think this needs to be specified using this Automake technique.
 # The use of this technique for force rose_paths.C to be built was also what was causing
 # large parts of ROSE to be rebuilt when configure was return (this appears to be fixed now).
@@ -48,23 +48,15 @@ libroseutil_la_LIBADD = \
 # DISTCLEANFILES = rose_paths.C
 
 pkginclude_HEADERS =				\
-	compilationFileDatabase.h		\
-	LinearCongruentialGenerator.h		\
-	Map.h					\
 	timing.h				\
-	ParallelSort.h				\
 	processSupport.h			\
-	ROSE_ABORT.h				\
-	ROSE_ASSERT.h                           \
 	rose_getline.h				\
 	rose_isnan.h				\
-	rose_pragma_message.h			\
 	rose_paths.h				\
 	rose_strtoull.h				\
-	roseTraceLib.c				\
-	setup.h
+	mlog.h FileSystem.h
 
-EXTRA_DIST = CMakeLists.txt setup.h utilDocumentation.docs
+EXTRA_DIST = CMakeLists.txt utilDocumentation.docs
 
 
 ########################################################################################################################

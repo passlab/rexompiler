@@ -14,8 +14,6 @@ static void buildVariableList(SgOmpVariablesClause *);
 
 extern bool copyStartFileInfo(SgNode *, SgNode *);
 extern bool copyEndFileInfo(SgNode *, SgNode *);
-extern void replaceOmpPragmaWithOmpStatement(SgPragmaDeclaration *,
-                                             SgStatement *);
 extern SgExpression *checkOmpExpressionClause(SgExpression *, SgGlobal *,
                                               OmpSupport::omp_construct_enum);
 
@@ -58,15 +56,22 @@ convertOpenACCDirective(std::pair<SgPragmaDeclaration *, OpenACCDirective *>
     printf("Unknown directive is found.\n");
   }
   }
+
   SageInterface::setOneSourcePositionForTransformation(result);
-  copyStartFileInfo(current_OpenACCIR_to_SageIII.first, result);
-  copyEndFileInfo(current_OpenACCIR_to_SageIII.first, result);
-  replaceOmpPragmaWithOmpStatement(current_OpenACCIR_to_SageIII.first, result);
+  SgPragmaDeclaration* pdecl = current_OpenACCIR_to_SageIII.first;
+  copyStartFileInfo (pdecl, result);
+  copyEndFileInfo (pdecl, result);
+
+  //! For C/C++ replace OpenMP pragma declaration with an SgOmpxxStatement
+  SgScopeStatement* scope = pdecl ->get_scope();
+  ROSE_ASSERT(scope !=NULL);
+  SageInterface::moveUpPreprocessingInfo(result, pdecl); // keep #ifdef etc attached to the pragma
+  SageInterface::replaceStatement(pdecl, result);
 
   return result;
 }
 
-SgUpirBodyStatement *
+SgOmpBodyStatement *
 convertOpenACCBodyDirective(std::pair<SgPragmaDeclaration *, OpenACCDirective *>
                                 current_OpenACCIR_to_SageIII) {
 
@@ -77,13 +82,13 @@ convertOpenACCBodyDirective(std::pair<SgPragmaDeclaration *, OpenACCDirective *>
   SgStatement *body =
       SageInterface::getNextStatement(current_OpenACCIR_to_SageIII.first);
   SageInterface::removeStatement(body, false);
-  SgUpirBodyStatement *result = NULL;
+  SgOmpBodyStatement *result = NULL;
   OpenACCClauseKind clause_kind;
 
   switch (directive_kind) {
-  // TODO: insert SgUpirTaskStatement first
+  // TODO: insert SgOmpTargetStatement first
   case ACCD_parallel: {
-    result = new SgUpirSpmdStatement(NULL, body);
+    result = new SgOmpParallelStatement(NULL, body);
     // not correct
     // should be target teams + parallel
     break;
@@ -111,7 +116,7 @@ convertOpenACCBodyDirective(std::pair<SgPragmaDeclaration *, OpenACCDirective *>
     case ACCC_num_gangs:
     case ACCC_num_workers:
     case ACCC_vector_length: {
-      convertOpenACCExpressionClause(isSgUpirFieldBodyStatement(result),
+      convertOpenACCExpressionClause(isSgOmpClauseBodyStatement(result),
                                      current_OpenACCIR_to_SageIII,
                                      *clause_iter);
       break;
@@ -119,7 +124,7 @@ convertOpenACCBodyDirective(std::pair<SgPragmaDeclaration *, OpenACCDirective *>
     case ACCC_copyin:
     case ACCC_copyout:
     case ACCC_copy: {
-      convertOpenACCClause(isSgUpirFieldBodyStatement(result),
+      convertOpenACCClause(isSgOmpClauseBodyStatement(result),
                            current_OpenACCIR_to_SageIII, *clause_iter);
       break;
     }
@@ -165,7 +170,7 @@ SgOmpExpressionClause *convertOpenACCExpressionClause(
     break;
   }
   case ACCC_num_workers: {
-    result = new SgUpirNumUnitsField(clause_expression);
+    result = new SgOmpNumThreadsClause(clause_expression);
     printf("num_units Clause added!\n");
     break;
   }
@@ -181,7 +186,7 @@ SgOmpExpressionClause *convertOpenACCExpressionClause(
   SageInterface::setOneSourcePositionForTransformation(result);
 
   SgOmpClause *sg_clause = result;
-  ((SgUpirFieldBodyStatement *)directive)->get_clauses().push_back(sg_clause);
+  ((SgOmpClauseBodyStatement *)directive)->get_clauses().push_back(sg_clause);
 
   sg_clause->set_parent(directive);
 
@@ -195,7 +200,7 @@ convertOpenACCClause(SgStatement *directive,
                      OpenACCClause *current_acc_clause) {
   printf("accparser variables clause is ready.\n");
   SgOmpClause *result = NULL;
-  SgUpirFieldBodyStatement *target = isSgUpirFieldBodyStatement(directive);
+  SgOmpClauseBodyStatement *target = isSgOmpClauseBodyStatement(directive);
   ROSE_ASSERT(target != NULL);
 
   OpenACCClauseKind clause_kind = current_acc_clause->getKind();
@@ -247,6 +252,7 @@ convertOpenACCClause(SgStatement *directive,
     variables.push_back(variable_symbol);
   }
 
+  /*
   Rose_STL_Container<SgOmpClause *> data_fields =
       OmpSupport::getClause(target, V_SgUpirDataField);
 
@@ -260,12 +266,10 @@ convertOpenACCClause(SgStatement *directive,
   } else {
     ROSE_ASSERT(data_fields.size() == 1);
     upir_data = isSgUpirDataField(data_fields[0]);
-    /*
     if (isInUpirDataList(upir_data, data_item->get_symbol())) {
       ROSE_ASSERT(0);
       return upir_data;
     }
-    */
   };
   std::list<SgUpirDataItemField *> data_items = upir_data->get_data();
 
@@ -297,6 +301,7 @@ convertOpenACCClause(SgStatement *directive,
   upir_data->set_data(data_items);
 
   result = upir_data;
+  */
   acc_variable_list->clear();
   array_dimensions.clear();
   return result;

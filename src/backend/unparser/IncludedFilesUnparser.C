@@ -2170,7 +2170,7 @@ void IncludedFilesUnparser::visit(SgNode* node)
 #if 0
                printf ("ERROR: normalizedFileName = %s \n",normalizedFileName.c_str());
 #endif
-               SgSourceFile* sourceFile = TransformationSupport::getSourceFile(node);
+               SgSourceFile* sourceFile = SageInterface::getEnclosingSourceFile(node);
                ASSERT_not_null(sourceFile);
                normalizedFileName = sourceFile->getFileName();
 #if 0
@@ -2326,7 +2326,7 @@ void IncludedFilesUnparser::visit(SgNode* node)
                   {
                  // DQ (6/8/2019): Added error checking.
                     ASSERT_not_null(node);
-                    SgStatement* enclosingStatement = TransformationSupport::getStatement(node);
+                    SgStatement* enclosingStatement = SageInterface::getEnclosingStatement(node);
                     if (enclosingStatement == NULL)
                        {
                          printf ("Error: enclosingStatement == NULL: computed from node = %p = %s \n",node,node->class_name().c_str());

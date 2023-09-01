@@ -194,40 +194,15 @@ if ROSE_USE_LONG_MAKE_CHECK_RULE
 else
 	@echo "Automake conditional ROSE_USE_LONG_MAKE_CHECK_RULE: NOT defined"
 endif
-if ROSE_USE_MYSQL
-	@echo "Automake conditional ROSE_USE_MYSQL: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_MYSQL: NOT defined"
-endif
-if ROSE_USE_OMNI_OPENMP
-	@echo "Automake conditional ROSE_USE_OMNI_OPENMP: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_OMNI_OPENMP: NOT defined"
-endif
 #if ROSE_USE_OPEN_FORTRAN_PARSER
 #	@echo "Automake conditional ROSE_USE_OPEN_FORTRAN_PARSER: DEFINED"
 #else
 #	@echo "Automake conditional ROSE_USE_OPEN_FORTRAN_PARSER: NOT defined"
 #endif
-if ROSE_USE_PPL
-	@echo "Automake conditional ROSE_USE_PPL: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_PPL: NOT defined"
-endif
 if ROSE_USE_SMALLER_GENERATED_FILES
 	@echo "Automake conditional ROSE_USE_SMALLER_GENERATED_FILES: DEFINED"
 else
 	@echo "Automake conditional ROSE_USE_SMALLER_GENERATED_FILES: NOT defined"
-endif
-if ROSE_USE_SQLITE_DATABASE
-	@echo "Automake conditional ROSE_USE_SQLITE_DATABASE: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_SQLITE_DATABASE: NOT defined"
-endif
-if ROSE_USE_SSL_SUPPORT
-	@echo "Automake conditional ROSE_USE_SSL_SUPPORT: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_SSL_SUPPORT: NOT defined"
 endif
 if ROSE_USE_TCLSH
 	@echo "Automake conditional ROSE_USE_TCLSH: DEFINED"
@@ -323,11 +298,6 @@ if ROSE_USING_ROSE_ANALYSIS
 	@echo "Automake conditional ROSE_USING_ROSE_ANALYSIS: DEFINED"
 else
 	@echo "Automake conditional ROSE_USING_ROSE_ANALYSIS: NOT defined"
-endif
-if ROSE_USING_ROSE_AST_FILE_IO
-	@echo "Automake conditional ROSE_USING_ROSE_AST_FILE_IO: DEFINED"
-else
-	@echo "Automake conditional ROSE_USING_ROSE_AST_FILE_IO: NOT defined"
 endif
 if ROSE_USING_ROSE_CODE_GENERATION
 	@echo "Automake conditional ROSE_USING_ROSE_CODE_GENERATION: DEFINED"

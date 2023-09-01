@@ -6,9 +6,6 @@ HEADER_NODE_PREDECLARATION_START
 // tps (01/27/10): Added essential files..
 //#include "sage3basic.h"
 #include <rosePublicConfig.h>
-#include "setup.h"
-#include "rangemap.h"
-#include "Map.h"
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
@@ -18,15 +15,10 @@ HEADER_NODE_PREDECLARATION_START
 #include <boost/serialization/version.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/unordered_set.hpp>
-#include <Sawyer/CommandLine.h>
-#include <Sawyer/Interval.h>
-#include <Sawyer/IntervalSet.h>
 
 #include "Cxx_Grammar.h"
 
-#include "processSupport.h"
 #define __builtin_constant_p(exp) (0)
-
 
 class PreprocessingInfo;
 class AstRegExAttribute;
@@ -491,11 +483,6 @@ class rose_graph_string_node_hash_multimap : public rose_graph_string_node_hash_
 
                parent = NULL;
              }
-
-
-        friend class AST_FILE_IO;
-        friend class SgSymbolTableStorageClass;
-        friend class EasyStorage<rose_graph_string_node_hash_multimap*>;
    };
 
 std::ostream & operator<< ( std::ostream & os, const rose_graph_string_node_hash_multimap::iterator & rhm_it );
@@ -556,10 +543,6 @@ class rose_graph_node_edge_hash_multimap : public rose_graph_node_edge_hash_mult
              {
                delete_elements();
              }
-
-        friend class AST_FILE_IO;
-        friend class SgSymbolTableStorageClass;
-        friend class EasyStorage<rose_graph_node_edge_hash_multimap*>;
    };
 
 std::ostream & operator<< ( std::ostream & os, const rose_graph_node_edge_hash_multimap::iterator & rhm_it );
@@ -617,10 +600,6 @@ class rose_graph_integer_node_hash_map : public rose_graph_integer_node_hash_map
              {
                delete_elements();
              }
-
-        friend class AST_FILE_IO;
-        friend class SgSymbolTableStorageClass;
-        friend class EasyStorage<rose_graph_integer_node_hash_map*>;
    };
 
 std::ostream & operator<< ( std::ostream & os, const rose_graph_integer_node_hash_map::iterator & rhm_it );
@@ -680,10 +659,6 @@ class rose_graph_integer_edge_hash_map : public rose_graph_integer_edge_hash_map
              {
                delete_elements();
              }
-
-        friend class AST_FILE_IO;
-        friend class SgSymbolTableStorageClass;
-        friend class EasyStorage<rose_graph_integer_edge_hash_map*>;
    };
 
 std::ostream & operator<< ( std::ostream & os, const rose_graph_integer_edge_hash_map::iterator & rhm_it );
@@ -738,10 +713,6 @@ class rose_graph_integer_edge_hash_multimap : public rose_graph_integer_edge_has
              {
                delete_elements();
              }
-
-        friend class AST_FILE_IO;
-        friend class SgSymbolTableStorageClass;
-        friend class EasyStorage<rose_graph_integer_edge_hash_multimap*>;
    };
 
 std::ostream & operator<< ( std::ostream & os, const rose_graph_integer_edge_hash_multimap::iterator & rhm_it );
@@ -793,10 +764,6 @@ class rose_graph_integerpair_edge_hash_multimap : public rose_graph_integerpair_
              {
                delete_elements();
              }
-
-        friend class AST_FILE_IO;
-        friend class SgSymbolTableStorageClass;
-        friend class EasyStorage<rose_graph_integerpair_edge_hash_multimap*>;
    };
 
 std::ostream & operator<< ( std::ostream & os, const rose_graph_integerpair_edge_hash_multimap::iterator & rhm_it );
@@ -851,10 +818,6 @@ class rose_graph_string_integer_hash_multimap : public rose_graph_string_integer
 
                parent = NULL;
              }
-
-        friend class AST_FILE_IO;
-        friend class SgSymbolTableStorageClass;
-        friend class EasyStorage<rose_graph_string_integer_hash_multimap*>;
    };
 
 std::ostream & operator<< ( std::ostream & os, const rose_graph_string_integer_hash_multimap::iterator & rhm_it );
@@ -1148,9 +1111,6 @@ class UnparseFormatHelp;
 // a Sg_File_Info object (to record the filename of the comments and
 // CPP directoves).
 // class PreprocessingInfo;
-
-// DQ (4/32/2006): g++ 4.0.2 requires a forward declaration for this (a friend class declaration is not sufficient!)
-class AstSpecificDataManagingClassStorageClass;
 
 // DQ (4/23/2006): The friend declaration the SgProject class is not enough this must be defined outside of the class (for g++ 4.1.0).
 std::ostream & operator<< ( std::ostream & os, const Rose_STL_Container<std::string> & l );
@@ -1679,34 +1639,6 @@ int SAGE_DEBUG = 0;  // default value is zero
 // ###############################
 // Start of source code for SgNode
 // ###############################
-
-// Specialize printing for ROSE addresses.  A better place for this would be ExtentMap.C along
-// with all the other Extent-related methods.  Unfortunately, that file is compiled only if
-// ROSE is configured with binary support.
-template<>
-void Range<rose_addr_t>::print(std::ostream &o) const
-{
-    if (empty()) {
-        o <<"<empty>";
-    } else if (1==size()) {
-        char buf[64];
-     // DQ (10/20/2015): Note that whitespace is required before PRIx64 (to avoid compiler warning).
-        sprintf(buf, "0x%08" PRIx64, first());
-        o << buf;
-    } else {
-        char buf[64];
-     // DQ (10/20/2015): Note that whitespace is required before PRIx64 (to avoid compiler warning).
-        sprintf(buf, "0x%08" PRIx64 "+0x%08" PRIx64 "=0x%08" PRIx64, first(), size(), first()+size());
-        o <<buf;
-    }
-}
-
-// This resolves a linker error when building ROSE with Visual Studio.
-// If the above function is not called within the same file, the compiler
-// fails to generate the symbol, so we use explicit instantiation.
-#ifdef _MSC_VER
-template class Range<rose_addr_t>;
-#endif
 
 // Support for global function type symbol table (moved to be static data pointer)
 // DQ (1/31/2006): Modified to build all types in the memory pools

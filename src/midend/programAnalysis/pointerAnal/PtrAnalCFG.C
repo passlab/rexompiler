@@ -1,5 +1,4 @@
 #include <PtrAnal.h>
-#include <ROSE_ASSERT.h>
 
 
 class PtrAnalBuildCFG

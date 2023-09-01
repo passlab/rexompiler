@@ -3,7 +3,6 @@
 #include "CommandOptions.h"
 #include "GraphUtils.h"
 #include "GraphIO.h"
-#include <ROSE_ASSERT.h>
 
 bool DebugReachingDef()
 {

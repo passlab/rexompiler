@@ -2188,7 +2188,7 @@ globalUnparseToString_OpenMPSafe ( const SgNode* astNode, const SgTemplateArgume
 #if 1
                     fileNameOfStatementsToUnparse = Rose::getFileNameByTraversalBackToFileNode(locatedNode);
 #else
-                    SgSourceFile* sourceFile = TransformationSupport::getSourceFile(locatedNode);
+                    SgSourceFile* sourceFile = SageInterface::getEnclosingSourceFile(locatedNode);
                     ASSERT_not_null(sourceFile);
 #error "DEAD CODE!"
                     fileNameOfStatementsToUnparse = sourceFile->getFileName();
@@ -2262,7 +2262,7 @@ globalUnparseToString_OpenMPSafe ( const SgNode* astNode, const SgTemplateArgume
           if ( (isSgProject(astNode) != NULL || isSgFile(astNode) != NULL ) == false )
              {
             // This will be set to NULL where astNode is a SgType!
-               inheritedAttributeInfoPointer->set_current_scope(TransformationSupport::getGlobalScope(astNode));
+               inheritedAttributeInfoPointer->set_current_scope(SageInterface::getGlobalScope(astNode));
              }
 #endif
 
@@ -2271,13 +2271,13 @@ globalUnparseToString_OpenMPSafe ( const SgNode* astNode, const SgTemplateArgume
 
        // DQ (1/10/2015): Add initialization of the current_source_file.
        // This is required where this function is called from the name qualification support.
-          SgSourceFile* sourceFile = TransformationSupport::getSourceFile(astNode);
+          SgSourceFile* sourceFile = SageInterface::getEnclosingSourceFile(astNode);
        // ASSERT_not_null(sourceFile);
           if (sourceFile == NULL)
              {
 #if 0
             // DQ (1/12/2015): This message it commented out, it is frequently triggered for expression IR nodes (SgNullExpression, SgIntVal, SgTemplateParameterVal, SgAddOp, etc.).
-               printf ("NOTE: in globalUnparseToString(): TransformationSupport::getSourceFile(astNode = %p = %s) == NULL \n",astNode,astNode->class_name().c_str());
+               printf ("NOTE: in globalUnparseToString(): SageInterface::getEnclosingSourceFile(astNode = %p = %s) == NULL \n",astNode,astNode->class_name().c_str());
 #endif
              }
 
@@ -2300,7 +2300,7 @@ globalUnparseToString_OpenMPSafe ( const SgNode* astNode, const SgTemplateArgume
           printf ("In globalUnparseToString(): inheritedAttributeInfo.get_current_scope() == NULL astNode = %p = %s \n",astNode,astNode->class_name().c_str());
 #endif
        // DQ (6/2/2007): Find the nearest containing scope so that we can fill in the current_scope, so that the name qualification can work.
-          SgStatement* stmt = TransformationSupport::getStatement(astNode);
+          SgStatement* stmt = SageInterface::getEnclosingStatement((SgNode*)astNode);
 
 #if 0
        // DQ (1/3/2020): Handle the case of a type (see Cxx11_tests/test2020_07.C).
@@ -2868,7 +2868,7 @@ unparseFile ( SgFile* file, UnparseFormatHelp *unparseHelp, UnparseDelegate* unp
           printf ("In unparseFile(SgFile* file): outputFilename not set using default: outputFilename = %s \n",outputFilename.c_str());
 #endif
        // DQ (9/15/2013): Added support for generated file to be placed into the same directory as the source file.
-          SgProject* project = TransformationSupport::getProject(file);
+          SgProject* project = SageInterface::getProject(file);
        // ASSERT_not_null(project);
           if (project != NULL)
              {
@@ -3173,7 +3173,7 @@ unparseFile ( SgFile* file, UnparseFormatHelp *unparseHelp, UnparseDelegate* unp
 #endif
 
        // DQ (9/7/2017): Added support for generated file to be placed into the same directory as the source file.
-          SgProject* project = TransformationSupport::getProject(file);
+          SgProject* project = SageInterface::getProject(file);
 
           if (project != NULL)
              {
@@ -3304,7 +3304,7 @@ unparseFile ( SgFile* file, UnparseFormatHelp *unparseHelp, UnparseDelegate* unp
                     printf ("In unparseFile(SgFile*): (outputFilename) output file exists = %s \n",output_file.string().c_str());
                   }
 
-               SgProject* project = TransformationSupport::getProject(file);
+               SgProject* project = SageInterface::getProject(file);
                ASSERT_not_null(project);
 
                if (project->get_noclobber_output_file() == true)
@@ -3518,7 +3518,8 @@ unparseFile ( SgFile* file, UnparseFormatHelp *unparseHelp, UnparseDelegate* unp
           if (unparseHelp != NULL) {
               Rose::FileSystem::Path fullOutputName = Rose::FileSystem::makeAbsolute(outputFilename);
               UnparseFormatHelp::PostOutputCallback::Args args(file, fullOutputName);
-              unparseHelp->postOutputCallbacks.apply(true, args);
+              //unparseHelp->postOutputCallbacks.apply(true, args);
+	      MLOG_FATAL_CXX(MLOG_UNPARSER) << "Need callback mechanisms that were supported by Sawyer before\n";
           }
 
        // DQ (3/19/2014): If -rose:noclobber_if_different_output, then test the generated file against the original file.

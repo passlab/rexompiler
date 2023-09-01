@@ -6,7 +6,6 @@
 
 #include "CallGraphTraverse.h"
 #include "cfgUtils.h"
-#include "stringify.h"
 
 #include <set>
 using namespace std;

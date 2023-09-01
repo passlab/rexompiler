@@ -54,7 +54,7 @@ checkType (const SgStatement* s)
       case V_SgWhereStatement:
       case V_SgWhileStmt:
       case V_SgWriteStatement: 
-      case V_SgUpirLoopParallelStatement:
+      case V_SgOmpForStatement:
        return true;
       default:
         break;
@@ -307,10 +307,10 @@ Outliner::isOutlineable (const SgStatement* s, bool verbose)
   // A minor excuse is that if the BB is the body of a function definition, 
   // replacing it with a call statement will cause some problem.
   // But we can easily extend SageInterface::replaceStatement() to handle it 
-  if (isSgBasicBlock (s) && (!isSgBasicBlock (s->get_parent ())&& !isSgUpirBodyStatement(s->get_parent ())))
+  if (isSgBasicBlock (s) && (!isSgBasicBlock (s->get_parent ())&& !isSgOmpBodyStatement(s->get_parent ())))
   {
     if (verbose)
-      cerr << "*** Basic blocks must be secondary (nested) or body of SgUpirBodyStatement. ***" << endl;
+      cerr << "*** Basic blocks must be secondary (nested) or body of SgOmpBodyStatement. ***" << endl;
     return false;
   }
 

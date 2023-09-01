@@ -341,10 +341,6 @@ namespace Exec { namespace ELF { class ElfFileHeader; }; };
    #endif
 #endif
 
-#ifdef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "transformationSupport.h"
-#endif
-
 // DQ (1/30/2013): Make this a smaller file.
 #endif
 

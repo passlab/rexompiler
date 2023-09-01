@@ -531,9 +531,7 @@ AC_MSG_NOTICE([START: Setup characteristics of the frontend compiler])
         "$backendCompilerBaseName" = roseCodeGeneration -o \
         "$backendCompilerBaseName" = testCodeGeneration -o \
         "$backendCompilerBaseName" = roseAnalysis -o \
-        "$backendCompilerBaseName" = testAnalysis -o \
-        "$backendCompilerBaseName" = roseAstFileIO -o \
-        "$backendCompilerBaseName" = testAstFileIO; then
+        "$backendCompilerBaseName" = testAnalysis; then
         ROSE_USING_ROSE=yes
     else
         ROSE_USING_ROSE=
@@ -547,9 +545,7 @@ AC_MSG_NOTICE([START: Setup characteristics of the frontend compiler])
     dnl generation as well.
     if test \
         "$backendCompilerBaseName" = roseCodeGeneration -o \
-        "$backendCompilerBaseName" = testCodeGeneration -o \
-        "$backendCompilerBaseName" = roseAstFileIO -o \
-        "$backendCompilerBaseName" = testAstFileIO; then
+        "$backendCompilerBaseName" = testCodeGeneration; then 
         ROSE_USING_ROSE_CODE_GENERATION=yes
     else
         ROSE_USING_ROSE_CODE_GENERATION=
@@ -561,37 +557,15 @@ AC_MSG_NOTICE([START: Setup characteristics of the frontend compiler])
         "$backendCompilerBaseName" = roseAnalysis -o \
         "$backendCompilerBaseName" = testAnalysis -o \
         "$backendCompilerBaseName" = roseCodeGeneration -o \
-        "$backendCompilerBaseName" = testCodeGeneration -o \
-        "$backendCompilerBaseName" = roseAstFileIO -o \
-        "$backendCompilerBaseName" = testAstFileIO; then
+        "$backendCompilerBaseName" = testCodeGeneration; then
         ROSE_USING_ROSE_ANALYSIS=yes
     else
         ROSE_USING_ROSE_ANALYSIS=
     fi
     AM_CONDITIONAL(ROSE_USING_ROSE_ANALYSIS, [test "$ROSE_USING_ROSE_ANALYSIS" != ""])
 
-    if test \
-        "$backendCompilerBaseName" = roseAstFileIO -o \
-        "$backendCompilerBaseName" = testAstFileIO; then
-        ROSE_USING_ROSE_AST_FILE_IO=yes
-    else
-        ROSE_USING_ROSE_AST_FILE_IO=
-    fi
-    AM_CONDITIONAL(ROSE_USING_ROSE_AST_FILE_IO, [test "$ROSE_USING_ROSE_AST_FILE_IO" != ""])
-
     if test "$backendCompilerBaseName" = roseAnalysis -o "$backendCompilerBaseName" = testAnalysis; then
         AC_MSG_NOTICE([found the ROSE analysis tool being used as compiler for ROSE source code])
-        AC_DEFINE(CXX_IS_ROSE_ANALYSIS, 1,
-            [Is this the ROSE Analizer (part of tests to compile ROSE for analysis only using ROSE)])
-    fi
-
-    dnl DQ (2/20/2010): Support for testing AST File I/O.
-    if test "$backendCompilerBaseName" = roseAstFileIO -o "$backendCompilerBaseName" = testAstFileIO; then
-        AC_MSG_NOTICE([found the ROSE analysis tool being used as compiler for ROSE source code])
-        AC_DEFINE(CXX_IS_ROSE_AST_FILE_IO, 1,
-            [Is this the ROSE AST File IO (part of tests to compile ROSE for AST File IO only using ROSE)])
-        AC_DEFINE(CXX_IS_ROSE_CODE_GENERATION, 1,
-            [Is this the ROSE Code Generator (part of tests to compile ROSE and generate code using ROSE)])
         AC_DEFINE(CXX_IS_ROSE_ANALYSIS, 1,
             [Is this the ROSE Analizer (part of tests to compile ROSE for analysis only using ROSE)])
     fi

@@ -15,7 +15,6 @@
 // DQ (11/29/2013): Added to support marking of redundant mappings of statements to token streams.
 // #include "tokenStreamMapping.h"
 
-
 using namespace std;
 
 // DQ (12/1/2013): Added switch to control testing mode for token unparsing.
@@ -205,7 +204,7 @@ SimpleFrontierDetectionForTokenStreamMapping::evaluateInheritedAttribute(SgNode*
 #endif
 
             // DQ (4/14/2015): We need to detect modified IR nodes and then set there coresponding parent statement as being transformed.
-               SgStatement* statement = TransformationSupport::getStatement(locatedNode);
+               SgStatement* statement = SageInterface::getEnclosingStatement(locatedNode);
 
             // DQ (4/16/2015): I want to verify that we have not returned a statement at
             // a higher position in the AST than the locatedNode if it was a SgStatement.

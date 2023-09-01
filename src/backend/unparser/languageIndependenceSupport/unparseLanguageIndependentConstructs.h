@@ -11,8 +11,6 @@
 #include "unparser.h"
 #include "modified_sage.h"
 
-#include <Rose/Diagnostics.h>
-
 /* support for handling precedence and associativity */
 typedef int PrecedenceSpecifier;
 #define ROSE_UNPARSER_NO_PRECEDENCE -1
@@ -37,11 +35,6 @@ class UnparseLanguageIndependentConstructs
           std::string currentOutputFileName;
 
      public:
-
-       // DQ (3/24/2016): Adding Robb's meageage mechanism (data member and function).
-          static Sawyer::Message::Facility mlog;
-          static void initDiagnostics();
-
        // DQ (12/6/2014): This type permits specification of what bounds to use in the specifiation of token stream subsequence boundaries.
           enum token_sequence_position_enum_type
              {
@@ -399,10 +392,6 @@ class UnparseLanguageIndependentConstructs
           virtual void unparseOmpAllocateStatement           (SgStatement* stmt,     SgUnparse_Info& info);
           virtual void unparseOmpDeclareSimdStatement        (SgStatement* stmt,     SgUnparse_Info& info);
         
-          // UPIR unparsing
-          virtual void unparseUpirDataField                 (SgOmpClause* clause, SgUnparse_Info& info);
-          virtual void unparseUpirDataItemField             (SgOmpClause* clause, SgUnparse_Info& info);
-
           // This is necessary since some clauses should only appear with the begin part of a directive
           virtual void unparseOmpDirectivePrefixAndName     (SgStatement* stmt,     SgUnparse_Info& info);
           virtual void unparseOmpEndDirectivePrefixAndName  (SgStatement* stmt,     SgUnparse_Info& info);

@@ -1,6 +1,5 @@
 // tps (01/14/2010) : Switching from rose.h to sage3.
 #include "sage3basic.h"
-#include "transformationSupport.h"
 #include "resolveFortranReferences.h"
 
 using namespace Rose;
@@ -34,7 +33,7 @@ FixupFortranReferences::visit ( SgNode* node )
         {
        // printf ("Found the SgUnknownArrayOrFunctionReference \n");
 
-       // SgStatement* currentStatement = TransformationSupport::getStatement(unknownArrayOrFunctionReference);
+       // SgStatement* currentStatement = SageInterface::getEnclosingStatement(unknownArrayOrFunctionReference);
           ROSE_ASSERT(unknownArrayOrFunctionReference->get_parent() != NULL);
           SgExprStatement* currentExpressionStatement = isSgExprStatement(unknownArrayOrFunctionReference->get_parent());
 
@@ -106,7 +105,7 @@ FixupFortranReferences::visit ( SgNode* node )
                          printf ("Looking up SgLabelSymbol from symbol table for numeric label = %d \n",numericLabel);
 
                       // fortran labels have a scope in the function where they are defined, I think.
-                         SgFunctionDeclaration* functionDeclaration = TransformationSupport::getFunctionDeclaration(fortranStatement);
+                         SgFunctionDeclaration* functionDeclaration = SageInterface::getEnclosingFunctionDeclaration(fortranStatement, true);
                          ROSE_ASSERT(functionDeclaration != NULL);
                          SgFunctionDefinition* functionDefinition = functionDeclaration->get_definition();
                          ROSE_ASSERT(functionDefinition != NULL);

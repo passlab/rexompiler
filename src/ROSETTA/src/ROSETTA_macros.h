@@ -8,6 +8,7 @@
 // added to the abstract C++ grammar.
 //#define HL_GRAMMARS
 
+#include <mlog.h>
 
 // DQ (1/20/2010): This allows compatability with the older STL list of SgFile pointers.
 // The newer approach uses a pointer to a SgFileList IR node and this design permits
@@ -25,9 +26,6 @@
 #ifndef HAVE_EXPLICIT_TEMPLATE_INSTANTIATION   
 #define HAVE_EXPLICIT_TEMPLATE_INSTANTIATION
 #endif
-
-#include <ROSE_ASSERT.h>
-#include <ROSE_ABORT.h>
 
 #define MAX_NUMBER_OF_TERMINALS    50
 #define MAX_NUMBER_OF_NONTERMINALS 50

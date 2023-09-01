@@ -10,9 +10,6 @@
 #include "LivenessAnalysis.h"
 #include <string>
 #include <iostream>
-#if 1 /*DEBUGGING [Robb Matzke 2012-11-07]*/
-#include "stringify.h"
-#endif
 using namespace std;
 using namespace Rose;
 
@@ -331,7 +328,7 @@ void runCurrentFile(vector<string> &argvList, bool debug, bool debug_map) {
   delete defuse;
 }
 
-void usage() {
+void thisUsage() {
   cout << " Usage: " << endl;
   cout << "   runTest all [startNr] [stopNr]  --- to test all buildin testcases, need SRCDIR env variable set to find them" << endl;
   cout << "   runTest [file]          --- to test one file" << endl;
@@ -348,11 +345,11 @@ int strToInt(string str) {
 int main( int argc, char * argv[] )
 {
   if (argc==1) {
-    usage();
+    thisUsage();
   }
   string pass = argv[1];
   if (pass=="--help") {
-    usage();
+    thisUsage();
   }
   bool allTests=false;
   if (pass=="all") {

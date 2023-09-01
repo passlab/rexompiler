@@ -23,7 +23,6 @@
 #include <string>
 #include <ASTtools.hh>
 #include <VarSym.hh>
-#include <Sawyer/CommandLine.h>
 //! \name Forward declarations to relevant Sage classes.
 //@{
 class SgProject;
@@ -66,7 +65,7 @@ namespace Outliner
   ROSE_DLL_API extern bool useNewFile; // Generate the outlined function into a separated new source file
                           // -rose:outline:new_file
   ROSE_DLL_API extern bool copy_origFile; // when generating the new file to store outlined function, copy entire original file to it.
-  ROSE_DLL_API extern std::vector<std::string> handles;   // abstract handles of outlining targets, given by command line option -rose:outline:abstract_handle for each
+  ROSE_DLL_API extern std::vector<int> lines;  // line positions of outlining targets, given by command line option -rose:outline:line for each
   ROSE_DLL_API extern bool enable_debug; // output debug information for outliner
   ROSE_DLL_API extern bool exclude_headers; // exclude headers from the new file containing outlined functions
   ROSE_DLL_API extern bool enable_liveness; // enable liveness analysis to reduce restoring statements when temp variables are used
@@ -162,13 +161,6 @@ namespace Outliner
     ROSE_DLL_API ~Result (void) {}; //! Shallow; does not delete fields.
     ROSE_DLL_API bool isValid (void) const; //! Returns true iff result is usable
   };
-
-  /** Description of outliner command-line.
-   *
-   *  This function creates a description of command-line switches that are recognized by the outliner. This description can be
-   *  incorporated into a @ref Sawyer::CommandLine::Parser by tools that need to create a parser that recognizes outliner
-   *  switches. When the command-line is parsed with these descriptions, various settings in this object are adjusted. */
-ROSE_DLL_API Sawyer::CommandLine::SwitchGroup commandLineSwitches();
 
   /** Validate and adjust analysis settings.
    *

@@ -6,7 +6,6 @@ if(enable-c)
   add_subdirectory (astPerformanceTests)
   add_subdirectory (astProcessingTests)
   add_subdirectory (astQueryTests)
-  add_subdirectory (astRewriteTests)
   add_subdirectory (astSymbolTableTests)
   add_subdirectory (astTokenStreamTests)
   if (NOT CYGWIN)
@@ -15,11 +14,6 @@ if(enable-c)
   #add_subdirectory (graph_tests)
   #add_subdirectory (mergeTraversal_tests)
   #add_subdirectory (astLValueTests)
-  #add_subdirectory (abstractMemoryObjectTests)
-
-  if (NOT with-insure)
-    #add_subdirectory (roseHPCToolkitTests)
-  endif ()
 
   # TOO (2/16/2011): Errors with Thrifty (GCC 3.4.4) backend compiler. We can
   # gradually enable these tests at a later stage if necessary.
@@ -31,8 +25,6 @@ if(enable-c)
 
     # TOO (2/17/11): Errors with Tensilica's Xtensa compilers.
     if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Xtensa")
-      #add_subdirectory (astFileIOTests)
-
       if (NOT with-insure)
         #add_subdirectory (astInterfaceTests)
         #add_subdirectory (astInliningTests)

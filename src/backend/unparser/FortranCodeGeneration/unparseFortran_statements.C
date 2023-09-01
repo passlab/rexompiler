@@ -843,7 +843,7 @@ unparseDimensionStatement(SgStatement* stmt)
             // This is a function parameter, so get the function scope and look for the symbol there
             // attributeSpecificationStatement->get_file_info()->display("Error: variableSymbol == NULL");
 
-               SgScopeStatement* functionScope = TransformationSupport::getFunctionDefinition(currentScope);
+               SgScopeStatement* functionScope = SageInterface::getEnclosingFunctionDefinition(currentScope, true);
                ASSERT_not_null(functionScope);
                variableSymbol = functionScope->lookup_variable_symbol(name);
 
@@ -4047,8 +4047,11 @@ FortranCodeGeneration_locatedNode::unparsePragmaDeclStmt (SgStatement* stmt, SgU
   ASSERT_not_null(pragma);
   
   string txt = pragma->get_pragma();
-  AstAttribute* att = stmt->getAttribute("OmpAttributeList");
-  if (att)
+  // Check the leading keyword
+  istringstream istr(txt);
+  std::string key;
+  istr >> key;
+  if (key == "omp")
     curprint("!$");
   else
     curprint("!pragma ");
@@ -4056,60 +4059,6 @@ FortranCodeGeneration_locatedNode::unparsePragmaDeclStmt (SgStatement* stmt, SgU
   curprint("\n");
 }
 
-
-#if 0
-//----------------------------------------------------------------------------
-//  FortranCodeGeneration_locatedNode::unparseAttachedPreprocessingInfo
-//----------------------------------------------------------------------------
-
-// DQ (8/19/2008): This is defined in the base class and is language independent.
-
-void
-FortranCodeGeneration_locatedNode::unparseAttachedPreprocessingInfo(SgStatement* stmt,SgUnparse_Info& info,PreprocessingInfo::RelativePositionType whereToUnparse)
-   {
-     AttachedPreprocessingInfoType *ppInfo = stmt->getAttachedPreprocessingInfo();
-  if (!ppInfo) {
-    return;
-  }
-
-  // Continue only if options indicate
-  if (info.SkipComments()) {
-    return;
-  }
-  
-  // Traverse the container of PreprocessingInfo objects, unparsing if
-  // necessary.
-  AttachedPreprocessingInfoType::iterator i;
-  for (i = ppInfo->begin(); i != ppInfo->end(); ++i) {
-    // Assert that i points to a valid preprocssingInfo object
-    ASSERT_not_null((*i));
-    ROSE_ASSERT ((*i)->getTypeOfDirective()  != PreprocessingInfo::CpreprocessorUnknownDeclaration);
-    ROSE_ASSERT ((*i)->getRelativePosition() == PreprocessingInfo::before || 
-                 (*i)->getRelativePosition() == PreprocessingInfo::after);
-    
-    // Check and see if the statement should be printed.
-    if ((*i)->getRelativePosition() == whereToUnparse) {
-      unp->cur.format(stmt, info, FORMAT_BEFORE_DIRECTIVE);
-      
-      switch ((*i)->getTypeOfDirective()) {
-        // Comments don't have to be further commented
-      case PreprocessingInfo::C_StyleComment:
-      case PreprocessingInfo::CplusplusStyleComment:
-        if ( !info.SkipComments() ) {
-          curprint("! ");
-     curprint((*i)->getString());
-        }
-        break;
-        
-      default:
-        printf ("Error: FortranCodeGeneration_locatedNode::unparseAttachedPreprocessingInfo(): default switch reached\n");
-        ROSE_ABORT();
-      }
-      unp->cur.format(stmt, info, FORMAT_AFTER_DIRECTIVE);      
-    }
-  }
-}
-#endif
 
 //----------------------------------------------------------------------------
 //  Program unit helpers
@@ -4368,7 +4317,7 @@ FortranCodeGeneration_locatedNode::unparseVarDecl(SgStatement* stmt, SgInitializ
           if (variableDeclaration->get_declarationModifier().get_accessModifier().isPublic() == true)
              {
             // The PUBLIC keyword is only permitted within Modules
-               if ( TransformationSupport::getModuleStatement(variableDeclaration) != NULL )
+               if ( SageInterface::getEnclosingModuleStatement(variableDeclaration) != NULL )
                   {
                     curprint(", PUBLIC");
                   }
@@ -4386,7 +4335,7 @@ FortranCodeGeneration_locatedNode::unparseVarDecl(SgStatement* stmt, SgInitializ
           if (variableDeclaration->get_declarationModifier().get_accessModifier().isPrivate() == true)
              {
             // The PRIVATE keyword is only permitted within Modules
-               if ( TransformationSupport::getModuleStatement(variableDeclaration) != NULL )
+               if ( SageInterface::getEnclosingModuleStatement(variableDeclaration) != NULL )
                   {
                     curprint(", PRIVATE");
                   }
@@ -5524,7 +5473,7 @@ FortranCodeGeneration_locatedNode::unparseClassDeclStmt_derivedType(SgStatement*
           if (classdecl_stmt->get_declarationModifier().get_accessModifier().isPublic() == true)
              {
             // The PUBLIC keyword is only permitted within Modules
-               if ( TransformationSupport::getModuleStatement(classdecl_stmt) != NULL )
+               if ( SageInterface::getEnclosingModuleStatement(classdecl_stmt, true) != NULL )
                   {
                     curprint(", PUBLIC");
                   }
@@ -5538,7 +5487,7 @@ FortranCodeGeneration_locatedNode::unparseClassDeclStmt_derivedType(SgStatement*
           if (classdecl_stmt->get_declarationModifier().get_accessModifier().isPrivate() == true)
              {
             // The PRIVATE keyword is only permitted within Modules
-               if ( TransformationSupport::getModuleStatement(classdecl_stmt) != NULL )
+               if ( SageInterface::getEnclosingModuleStatement(classdecl_stmt, true) != NULL )
                   {
                     curprint(", PRIVATE");
                   }
@@ -5552,7 +5501,7 @@ FortranCodeGeneration_locatedNode::unparseClassDeclStmt_derivedType(SgStatement*
           if (classdecl_stmt->get_declarationModifier().get_typeModifier().isBind() == true)
              {
             // The BIND keyword is only permitted within Modules
-               if ( TransformationSupport::getModuleStatement(classdecl_stmt) != NULL )
+               if ( SageInterface::getEnclosingModuleStatement(classdecl_stmt, true) != NULL )
                   {
                  // I think that bind implies "BIND(C)"
                     curprint(", BIND(C)");
@@ -5567,7 +5516,7 @@ FortranCodeGeneration_locatedNode::unparseClassDeclStmt_derivedType(SgStatement*
           if (classdecl_stmt->get_declarationModifier().get_typeModifier().isExtends() == true)
              {
             // The EXTENDS keyword is only permitted within Modules
-               if ( TransformationSupport::getModuleStatement(classdecl_stmt) != NULL )
+               if ( SageInterface::getEnclosingModuleStatement(classdecl_stmt, true) != NULL )
                   {
                     curprint(", EXTENDS(PARENT-TYPE-NAME-NOT-IMPLEMENTED)");
                   }
@@ -5581,7 +5530,7 @@ FortranCodeGeneration_locatedNode::unparseClassDeclStmt_derivedType(SgStatement*
           if (classdecl_stmt->get_declarationModifier().get_typeModifier().isAbstract() == true)
              {
             // The ABSTRACT keyword is only permitted within Modules
-               if ( TransformationSupport::getModuleStatement(classdecl_stmt) != NULL )
+               if ( SageInterface::getEnclosingModuleStatement(classdecl_stmt, true) != NULL )
                   {
                     curprint(", ABSTRACT");
                   }
@@ -6009,9 +5958,9 @@ FortranCodeGeneration_locatedNode::unparseOmpBeginDirectiveClauses (SgStatement*
 {
   ASSERT_not_null(stmt);
   // optional clauses
-  if (isSgUpirFieldBodyStatement(stmt) || isSgDeclarationStatement(stmt))
+  if (isSgOmpClauseBodyStatement(stmt) || isSgDeclarationStatement(stmt))
   {
-    const SgOmpClausePtrList& clause_ptr_list = isSgUpirFieldBodyStatement(stmt)->get_clauses();
+    const SgOmpClausePtrList& clause_ptr_list = isSgOmpClauseBodyStatement(stmt)->get_clauses();
     SgOmpClausePtrList::const_iterator i;
     for (i= clause_ptr_list.begin(); i!= clause_ptr_list.end(); i++)
     {
@@ -6022,7 +5971,7 @@ FortranCodeGeneration_locatedNode::unparseOmpBeginDirectiveClauses (SgStatement*
     }
     unp->u_sage->curprint_newline();
   }
-  else if (isSgUpirFieldStatement(stmt))
+  else if (isSgOmpClauseStatement(stmt))
   { 
     const SgOmpClausePtrList& clause_ptr_list = isSgOmpFlushStatement(stmt)->get_clauses();
     SgOmpClausePtrList::const_iterator i;
@@ -6040,9 +5989,9 @@ FortranCodeGeneration_locatedNode::unparseOmpEndDirectiveClauses(SgStatement* st
 {
   ASSERT_not_null(stmt);
   // optional clauses
-  if (isSgUpirFieldBodyStatement(stmt))
+  if (isSgOmpClauseBodyStatement(stmt))
   {
-    const SgOmpClausePtrList& clause_ptr_list = isSgUpirFieldBodyStatement(stmt)->get_clauses();
+    const SgOmpClausePtrList& clause_ptr_list = isSgOmpClauseBodyStatement(stmt)->get_clauses();
     SgOmpClausePtrList::const_iterator i;
     for (i= clause_ptr_list.begin(); i!= clause_ptr_list.end(); i++)
     {
@@ -6060,7 +6009,7 @@ void FortranCodeGeneration_locatedNode::unparseOmpEndDirectivePrefixAndName (SgS
   unp->u_sage->curprint_newline();
   switch (stmt->variantT())
   {
-    case V_SgUpirSpmdStatement:
+    case V_SgOmpParallelStatement:
       {
         unparseOmpPrefix(info);
         curprint(string ("end parallel "));

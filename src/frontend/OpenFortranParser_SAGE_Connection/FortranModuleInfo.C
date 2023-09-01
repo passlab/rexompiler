@@ -4,7 +4,6 @@
 #include "boost/filesystem.hpp"
 #include "boost/algorithm/string/replace.hpp"
 
-
 using namespace std;
 using std::string;
 using std::map;
@@ -92,11 +91,7 @@ FortranModuleInfo::set_inputDirs(SgProject* project) {
                 inputDirs.push_back(rmodDir_no_quotes);
           } else 
              {
-            // DQ (3/15/2017): Fixed to use mlog message logging.
-               if (Rose::ir_node_mlog[Rose::Diagnostics::DEBUG])
-                  {
-                    cout << "WARNING: the input directory does not exist (rose): " << rmodDir<< endl;
-                  }
+               MLOG_DEBUG_CXX("FortranModuleInfo") << "The input directory does not exist (rose): " << rmodDir<< endl;
              }
      } 
 #endif
@@ -191,7 +186,7 @@ FortranModuleInfo::getModule(string modName)
 #if 1
        // DQ (10/1/2010): This is a work-around for OFP 0.8.2 failing to call the c_action_end_module_stmt() 
        // rule for an included module (from use statement) that includes another module (again, using 
-       // a use statment).  The first module using the use statment will not have its 
+       // a use statement).  The first module using the use statement will not have its
        // c_action_end_module_stmt() rule called. See the test_forcing.F90 example test code.
 
        // Extract the pointer to the SgModule from the SgSourceFile
@@ -288,10 +283,10 @@ FortranModuleInfo::createSgSourceFile(string modName)
      ROSE_ASSERT(newFile != NULL);
 
 #if 0
-     printf ("In FortranModuleInfo::createSgSourceFile(): Calling the fronend explicitly! \n");
+     printf ("In FortranModuleInfo::createSgSourceFile(): Calling the frontend explicitly! \n");
 #endif
 
-   // DQ (6/13/2013): Since we seperated the construction of the SgFile IR nodes from the invocation of the frontend, we have to call the frontend explicitly.
+   // DQ (6/13/2013): Since we separated the construction of the SgFile IR nodes from the invocation of the frontend, we have to call the frontend explicitly.
      newFile->runFrontend(errorCode);
 
   // DQ (6/13/2013): At least report that the error code is not checked, this is just something that I noticed but don't want to modify just now.

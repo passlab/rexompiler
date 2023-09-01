@@ -67,7 +67,6 @@ FILES_NOT_REQUIRED_FOR_DISTRIBUTIONS = \
      support-gcc-omp.m4 \
      support-purify.m4 \
      support-rpath.m4 \
-     support-sqlite.m4 \
      support-visualization.m4 \
      use_edg_source_code.m4 \
      wave.m4 \

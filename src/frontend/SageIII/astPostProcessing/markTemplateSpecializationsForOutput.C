@@ -3,10 +3,6 @@
 #include "markTemplateSpecializationsForOutput.h"
 #include "markTemplateInstantiationsForOutput.h"
 
-#ifdef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "transformationSupport.h"
-#endif
-
 void
 markTemplateSpecializationsForOutput( SgNode* node )
    {
@@ -55,7 +51,7 @@ markTemplateSpecializationsForOutput( SgNode* node )
 #if 0
           printf ("In markTemplateSpecializationsForOutput(): Getting the SgFile from the AST node \n");
 #endif
-          file = TransformationSupport::getSourceFile(node);
+          file = SageInterface::getEnclosingSourceFile(node, false);
        // When processing templates we need to get the SgFile so that we can check the command line options.
        // ROSE_ASSERT(file != NULL);
 

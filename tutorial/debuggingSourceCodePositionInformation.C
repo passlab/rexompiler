@@ -8,8 +8,6 @@ using namespace std;
 int
 main ( int argc, char* argv[] )
    {
-     ROSE_INITIALIZE;
-
      if (SgProject::get_verbose() > 0)
           printf ("In preprocessor.C: main() \n");
 

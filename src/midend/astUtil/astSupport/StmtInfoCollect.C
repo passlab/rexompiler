@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <sstream>
 
@@ -6,8 +5,6 @@
 #include "AnalysisInterface.h"
 #include <assert.h>
 #include "CommandOptions.h"
-#include <ROSE_ABORT.h>
-#include <ROSE_ASSERT.h>
 
 bool DebugLocalInfoCollect ()
 {

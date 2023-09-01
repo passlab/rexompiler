@@ -1,10 +1,6 @@
 
 #former libtool convenience libraries:
 
-# src/roseSupport/Makefile.am: roseSupport
-
-# src/backend/asmUnparser/Makefile.am: roseAsmUnparser
-
 # src/backend/unparser/Makefile.am: unparse
 
 # src/backend/unparser/FortranCodeGeneration/Makefile.am: unparseFortran
@@ -13,89 +9,7 @@
 
 # src/backend/unparser/formatSupport/Makefile.am: unparseFormatSupport
 
-# src/backend/unparser/PHPCodeGeneration/Makefile.am: unparsePHP
-
 # src/backend/unparser/languageIndependenceSupport/Makefile.am: unparseLanguageIndependenceSupport
-
-# src/roseExtensions/roseHPCToolkit/src/xml2profir/Makefile.am: xml2profir
-
-# src/roseExtensions/roseHPCToolkit/src/profir2sage/Makefile.am: profir2sage
-
-# src/roseExtensions/roseHPCToolkit/src/xml/Makefile.am: xml
-
-# src/roseExtensions/roseHPCToolkit/src/sage/Makefile.am: sage
-
-# src/roseExtensions/roseHPCToolkit/src/util/Makefile.am: util
-
-# src/roseExtensions/roseHPCToolkit/src/profir/Makefile.am: profir
-
-# src/roseExtensions/roseHPCToolkit/src/gprof/Makefile.am: gprof
-
-# src/roseExtensions/SQLiteConnection/Makefile.am: RoseSQLiteDatabase
-
-# src/roseExtensions/databaseConnection/Makefile.am: rosedatabase
-
-# src/roseExtensions/qtWidgets/NodeInfoWidget/Makefile.am: NodeInfoWidget
-
-# src/roseExtensions/qtWidgets/QCodeEditWidget/QCodeEdit/document/Makefile.am: document
-
-# src/roseExtensions/qtWidgets/QCodeEditWidget/QCodeEdit/Makefile.am: QCodeEdit
-
-# src/roseExtensions/qtWidgets/QCodeEditWidget/QCodeEdit/qnfa/Makefile.am: qnfa
-
-# src/roseExtensions/qtWidgets/QCodeEditWidget/QCodeEdit/widgets/Makefile.am: widgets
-
-# src/roseExtensions/qtWidgets/QCodeEditWidget/Makefile.am: QCodeEditWidget
-
-# src/roseExtensions/qtWidgets/AstGraphWidget/Makefile.am: AstGraphWidget
-
-# src/roseExtensions/qtWidgets/AsmView/Makefile.am: AsmView
-
-# src/roseExtensions/qtWidgets/AstBrowserWidget/Makefile.am: AstBrowserWidget
-
-# src/roseExtensions/qtWidgets/Makefile.am: RoseQtWidgets
-
-# src/roseExtensions/qtWidgets/KiviatView/Makefile.am: KiviatView
-
-# src/roseExtensions/qtWidgets/FlopCounter/Makefile.am: FlopCounter
-
-# src/roseExtensions/qtWidgets/AstProcessing/Makefile.am: AstProcessing
-
-# src/roseExtensions/qtWidgets/RoseCodeEdit/Makefile.am: RoseCodeEdit
-
-# src/roseExtensions/qtWidgets/MetricsKiviat/Makefile.am: MetricsKiviat
-
-# src/roseExtensions/qtWidgets/TreeModel/Makefile.am: TreeModel
-
-# src/roseExtensions/qtWidgets/MetricsConfig/Makefile.am: MetricsConfig
-
-# src/roseExtensions/qtWidgets/SrcBinView/Makefile.am: SrcBinView
-
-# src/roseExtensions/qtWidgets/ProjectManager/Makefile.am: ProjectManager
-
-# src/roseExtensions/qtWidgets/BeautifiedAst/Makefile.am: BeautifiedAst
-
-# src/roseExtensions/qtWidgets/AsmInstructionBar/Makefile.am: AsmInstructionBar
-
-# src/roseExtensions/qtWidgets/PropertyTreeWidget/Makefile.am: PropertyTreeWidget
-
-# src/roseExtensions/qtWidgets/WidgetCreator/Makefile.am: WidgetCreator
-
-# src/roseExtensions/qtWidgets/QtGradientEditor/Makefile.am: QtGradientEditor
-
-# src/roseExtensions/qtWidgets/InstructionCountAnnotator/Makefile.am: InstructionCountAnnotator
-
-# src/roseExtensions/qtWidgets/util/Makefile.am: util
-
-# src/roseExtensions/qtWidgets/TaskSystem/Makefile.am: TaskSystem
-
-# src/roseExtensions/qtWidgets/MetricFilter/Makefile.am: MetricFilter
-
-# src/roseExtensions/qtWidgets/RoseFileSelector/Makefile.am: RoseFileSelector
-
-# src/roseExtensions/sqlite3x/Makefile.am: RoseSQLite3xDatabase
-
-# src/midend/abstractHandle/Makefile.am: abstractHandle
 
 # src/midend/astUtil/annotation/Makefile.am: annotation
 
@@ -104,8 +18,6 @@
 # src/midend/astUtil/astSupport/Makefile.am: astSupport
 
 # src/midend/astUtil/symbolicVal/Makefile.am: symbolicVal
-
-# src/midend/binaryAnalyses/Makefile.am: binaryMidend
 
 # src/midend/loopProcessing/slicing/Makefile.am: slicing
 
@@ -144,16 +56,12 @@ set(alternativeProgramSlicing_STAT_SRCS
 
 # src/midend/programAnalysis/CallGraphAnalysis/Makefile.am: CallGraph
 
-# src/midend/programAnalysis/OAWrap/Makefile.am: OAWrap
-
 # src/midend/programAnalysis/annotationLanguageParser/Makefile.am: annotationLanguageParser
 
 # src/midend/programAnalysis/dominatorTreesAndDominanceFrontiers/Makefile.am: dominance
 
 set(dominance_STAT_SRCS
 )
-
-# src/midend/astRewriteMechanism/Makefile.am: rewrite
 
 # src/midend/astQuery/Makefile.am: query
 
@@ -187,15 +95,9 @@ set(dominance_STAT_SRCS
 
 # src/frontend/SageIII/Makefile.am: sage3
 
-# src/frontend/SageIII/astVisualization/Makefile.am: astVisualization
-
 # src/frontend/SageIII/astTokenStream/Makefile.am: astTokenStream
 
 # src/frontend/SageIII/virtualCFG/Makefile.am: virtualCFG
-
-# src/frontend/PHPFrontend/Makefile.am: rosePHPFrontend
-
-# src/frontend/Disassemblers/Makefile.am: roseDisassemblers
 
 # src/frontend/OpenFortranParser_SAGE_Connection/Makefile.am: roseFortran
 
@@ -222,27 +124,9 @@ set(sage_STAT_SRCS
 
 # src/frontend/CxxFrontend/EDG_SAGE_Connection/Makefile.am: newsage
 
-# src/frontend/ExecFormats/Makefile.am: roseExecFormats
-
-# src/3rdPartyLibraries/qrose/Framework/Makefile.am: qrframework
-
-# src/3rdPartyLibraries/qrose/Components/SourceBox/Makefile.am: qrsourcebox
-
-# src/3rdPartyLibraries/qrose/Components/QueryBox/Makefile.am: qrquerybox
-
-# src/3rdPartyLibraries/qrose/Components/TreeBox/Makefile.am: qrtreebox
-
-# src/3rdPartyLibraries/qrose/Components/Common/Makefile.am: qrcommon
-
-# src/3rdPartyLibraries/qrose/Widgets/Makefile.am: qrwidgets
-
 # src/3rdPartyLibraries/MSTL/Makefile.am: mstl
 
-# src/util/stringSupport/Makefile.am: RoseStringSupport
-
 # src/util/graphs/Makefile.am: graphs
-
-# src/util/Makefile.am: roseutil
 
 # src/util/commandlineProcessing/Makefile.am: RoseCommandlineUtil
 

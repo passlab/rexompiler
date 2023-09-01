@@ -1,7 +1,8 @@
 
 #include <iostream>
 #include <stack>
-#include <stdio.h>
+#include <cstdio>
+#include <map>
 
 #include "sage3basic.h"
 #include "sageBuilder.h"
@@ -19,6 +20,7 @@ SimdType simd_arch = Intel_AVX512;
 
 // For generating names
 int name_pos = 0;
+std::map<std::string, std::string> reduction_map;
 
 std::string simdGenName(int type = 0) {
     char str[5];
@@ -33,7 +35,7 @@ std::string simdGenName(int type = 0) {
     return name;
 }
 
-SgPntrArrRefExp *omp_simd_convert_ptr(SgExpression *pntr_exp, SgBasicBlock *new_block) {
+SgPntrArrRefExp *OmpSimdCompiler::omp_simd_convert_ptr(SgExpression *pntr_exp) {
     // Perform a check and convert a multi-dimensional array to a 1-D array reference
     SgPntrArrRefExp *pntr = static_cast<SgPntrArrRefExp *>(pntr_exp);
     SgExpression *lval = pntr->get_lhs_operand();
@@ -92,12 +94,36 @@ SgPntrArrRefExp *omp_simd_convert_ptr(SgExpression *pntr_exp, SgBasicBlock *new_
     return array;
 }
 
-void omp_simd_build_ptr_assign(SgExpression *pntr_exp, SgBasicBlock *new_block, std::stack<std::string> *nameStack, SgType *type) {
-    SgPntrArrRefExp *array = omp_simd_convert_ptr(pntr_exp, new_block);
+//
+// An array reference is strided if the last element is not equal to the loop index
+//
+bool OmpSimdCompiler::isStridedLoadStore(SgExpression *pntr_exp) {
+    // Get the last index of the pointer expression
+    SgPntrArrRefExp *array = isSgPntrArrRefExp(pntr_exp);
+    SgVarRefExp *top_var_ref = isSgVarRefExp(array->get_rhs_operand());
+    if (!top_var_ref) return false;
+    SgName top_var_name = top_var_ref->get_symbol()->get_name();
+    
+    // Get the loop index variable
+    SgBinaryOp *inc = isSgBinaryOp(this->for_loop->get_increment());
+    SgVarRefExp *inc_var = isSgVarRefExp(inc->get_lhs_operand());
+    SgName inc_var_name = inc_var->get_symbol()->get_name();
+    
+    if (top_var_name != inc_var_name) return true;
+    return false;
+}
+
+void OmpSimdCompiler::omp_simd_build_ptr_assign(SgExpression *pntr_exp, SgType *type) {
+    SgPntrArrRefExp *array = nullptr;
+    if (isStridedLoadStore(pntr_exp)) {
+        array = isSgPntrArrRefExp(pntr_exp);
+    } else {
+        array = omp_simd_convert_ptr(pntr_exp);
+    }
     
     // Now that we are done, build the assignment
     std::string name = simdGenName();
-    nameStack->push(name);
+    nameStack.push(name);
     
     SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
     appendStatement(vd, new_block);
@@ -107,19 +133,19 @@ void omp_simd_build_ptr_assign(SgExpression *pntr_exp, SgBasicBlock *new_block, 
     appendStatement(expr, new_block);
 }
 
-void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, std::stack<std::string> *nameStack, SgType *type) {
+void OmpSimdCompiler::omp_simd_build_scalar_assign(SgExpression *node, SgType *type) {
     if (node->variantT() == V_SgVarRefExp) {
         SgVarRefExp *ref = static_cast<SgVarRefExp *>(node);
         std::string name = ref->get_symbol()->get_name().getString();
         
         if (name.rfind("__part", 0) == 0) {
-            nameStack->push(name);
+            nameStack.push(name);
             return;
         }
     }
 
     std::string name = simdGenName();
-    nameStack->push(name);
+    nameStack.push(name);
 
     // Build the assignment
     SgExpression *expr = NULL;
@@ -157,8 +183,6 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
             expr = buildIntVal(0);}
     }
     
-    std::cout << std::endl;
-    
     // Build the variable declaration
     SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
     appendStatement(vd, new_block);
@@ -170,7 +194,7 @@ void omp_simd_build_scalar_assign(SgExpression *node, SgBasicBlock *new_block, s
 }
 
 // Builds the math operations
-void omp_simd_build_math(SgBasicBlock *new_block, std::stack<std::string> *nameStack, VariantT op_type, SgType *type) {
+void OmpSimdCompiler::omp_simd_build_math(VariantT op_type, SgType *type) {
     std::string name = simdGenName();
     
     SgVariableDeclaration *vd = buildVariableDeclaration(name, type, NULL, new_block);
@@ -178,11 +202,11 @@ void omp_simd_build_math(SgBasicBlock *new_block, std::stack<std::string> *nameS
     
     // Build the assignment
     // The variables
-    std::string name1 = nameStack->top();
-    nameStack->pop();
+    std::string name1 = nameStack.top();
+    nameStack.pop();
     
-    std::string name2 = nameStack->top();
-    nameStack->pop();
+    std::string name2 = nameStack.top();
+    nameStack.pop();
     
     SgVarRefExp *var1 = buildVarRefExp(name1, new_block);
     SgVarRefExp *var2 = buildVarRefExp(name2, new_block);
@@ -204,10 +228,10 @@ void omp_simd_build_math(SgBasicBlock *new_block, std::stack<std::string> *nameS
     SgExprStatement *expr = buildAssignStatement(va, exprList);
     appendStatement(expr, new_block);
     
-    nameStack->push(name);
+    nameStack.push(name);
 }
 
-void omp_simd_build_3addr(SgExpression *rval, SgBasicBlock *new_block, std::stack<std::string> *nameStack, SgType *type) {
+void OmpSimdCompiler::omp_simd_build_3addr(SgExpression *rval, SgType *type) {
     switch (rval->variantT()) {
         case V_SgAddOp:
         case V_SgSubtractOp:
@@ -215,25 +239,25 @@ void omp_simd_build_3addr(SgExpression *rval, SgBasicBlock *new_block, std::stac
         case V_SgDivideOp: {
             // Build math
             SgBinaryOp *op = static_cast<SgBinaryOp *>(rval);
-            omp_simd_build_3addr(op->get_lhs_operand(), new_block, nameStack, type);
-            omp_simd_build_3addr(op->get_rhs_operand(), new_block, nameStack, type);
-            omp_simd_build_math(new_block, nameStack, rval->variantT(), type);
+            omp_simd_build_3addr(op->get_lhs_operand(), type);
+            omp_simd_build_3addr(op->get_rhs_operand(), type);
+            omp_simd_build_math(rval->variantT(), type);
         } break;
         
         case V_SgPntrArrRefExp: {
-            omp_simd_build_ptr_assign(rval, new_block, nameStack, type);
+            omp_simd_build_ptr_assign(rval, type);
         } break;
         
         case V_SgVarRefExp:
         case V_SgIntVal: 
         case V_SgFloatVal: 
         case V_SgDoubleVal: {
-            omp_simd_build_scalar_assign(rval, new_block, nameStack, type);
+            omp_simd_build_scalar_assign(rval, type);
         } break;
         
         case V_SgCastExp: {
             SgCastExp *cast = static_cast<SgCastExp *>(rval);
-            omp_simd_build_scalar_assign(cast->get_operand(), new_block, nameStack, type);
+            omp_simd_build_scalar_assign(cast->get_operand(), type);
         } break;
 
         default: {
@@ -247,7 +271,7 @@ void omp_simd_build_3addr(SgExpression *rval, SgBasicBlock *new_block, std::stac
 // If it is found, the modifier (operator) is converted to a char for easier processing, and
 // returned
 //
-char omp_simd_get_reduction_mod(SgUpirLoopParallelStatement *target, SgVarRefExp *var) {
+char OmpSimdCompiler::omp_simd_get_reduction_mod(SgVarRefExp *var) {
     SgOmpClausePtrList clauses = target->get_clauses();
     for (size_t i = 0; i<clauses.size(); i++) {
         if (clauses.at(i)->variantT() != V_SgOmpReductionClause)
@@ -286,11 +310,12 @@ char omp_simd_get_reduction_mod(SgUpirLoopParallelStatement *target, SgVarRefExp
 // and then converts the statements to 3-address scalar code
 //
 // The main purpose of this function is to break each expression between the load and store
-bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loop, SgBasicBlock *new_block, bool isArm = false) {
-
+bool OmpSimdCompiler::omp_simd_pass1() {
     // Get the loop body
     SgStatement *loop_body = getLoopBody(for_loop);
     Rose_STL_Container<SgNode *> bodyList = NodeQuery::querySubTree(loop_body, V_SgExprStatement);
+    std::vector<SgAssignOp *> assign_list;
+    std::vector<SgStatement *> reduction_statements;
     
     for (Rose_STL_Container<SgNode *>::iterator i = bodyList.begin(); i != bodyList.end(); i++) {
         SgExpression *expr = static_cast<SgExprStatement *>((*i))->get_expression();
@@ -304,7 +329,6 @@ bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loo
         }
         
         SgBinaryOp *op = static_cast<SgBinaryOp *>(line);
-        std::stack<std::string> nameStack;
         
         // Copy the store expression and determine the proper type
         SgExpression *orig = static_cast<SgExpression *>(op->get_lhs_operand());
@@ -313,7 +337,7 @@ bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loo
         
         char reduction_mod = 0;
         bool need_partial = false;
-        bool armReduction = false;
+        std::string reduction_name = "";
         
         // If we have a variable, we need to indicate a partial sum variable
         // These are prefixed with __part, and in this step, they are simply assigned
@@ -323,24 +347,21 @@ bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loo
             type = var->get_type();
             
             // Make sure we have a valid reduction clause
-            reduction_mod = omp_simd_get_reduction_mod(target, var);
+            reduction_mod = omp_simd_get_reduction_mod(var);
             if (reduction_mod == 0) {
+                std::cerr << "Invalid reduction modifier." << std::endl;
                 return false;
             } else {
-                if (reduction_mod == '+' && isArm) {
-                    dest = orig;
-                    armReduction = true;
-                } else {
-                    need_partial = true;
-                    dest = var;
-                }
+                reduction_name = var->get_symbol()->get_name();
+                need_partial = true;
+                dest = var;
             }
             
         // Otherwise, we just have a conventional store
         } else {
             SgPntrArrRefExp *array = static_cast<SgPntrArrRefExp *>(copyExpression(orig));
             type = array->get_type();
-            dest = omp_simd_convert_ptr(copyExpression(orig), new_block);
+            dest = omp_simd_convert_ptr(copyExpression(orig));
         }
         
         switch (type->variantT()) {
@@ -352,9 +373,14 @@ bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loo
         
         std::string partial_vec = "";
         if (need_partial) {
-            partial_vec = simdGenName(2);
-            SgVariableDeclaration *vd = buildVariableDeclaration(partial_vec, type, NULL, new_block);
-            appendStatement(vd, new_block);
+            if (reduction_map.find(reduction_name) == reduction_map.end()) {
+                partial_vec = simdGenName(2);
+                SgVariableDeclaration *vd = buildVariableDeclaration(partial_vec, type, NULL, new_block);
+                appendStatement(vd, new_block);
+                reduction_map[reduction_name] = partial_vec;
+            } else {
+                partial_vec = reduction_map[reduction_name];
+            }
         }
         
         SgExpression *lhs = copyExpression(op->get_lhs_operand());
@@ -385,20 +411,8 @@ bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loo
             op->set_rhs_operand(add);
         }
         
-        if (op->get_rhs_operand()->variantT() == V_SgAddOp && armReduction) {
-            SgAddOp *addOP = static_cast<SgAddOp *>(op->get_rhs_operand());
-            omp_simd_build_3addr(addOP->get_rhs_operand(), new_block, &nameStack, type);
-            
-            std::string name = nameStack.top();
-            SgVarRefExp *var = buildVarRefExp(name, new_block);
-            SgExprStatement *storeExpr = buildExprStatement(buildBinaryExpression<SgPlusAssignOp>(dest, var));
-            appendStatement(storeExpr, new_block);
-            
-            return true;
-        }
-        
         // Build the rval (the expression)
-        omp_simd_build_3addr(op->get_rhs_operand(), new_block, &nameStack, type);
+        omp_simd_build_3addr(op->get_rhs_operand(), type);
         
         // Build the lval (the store/assignment)
         std::string name = nameStack.top();
@@ -419,6 +433,31 @@ bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loo
         SgVarRefExp *var = buildVarRefExp(name, new_block);
         SgExprStatement *storeExpr = buildAssignStatement(dest, var);
         appendStatement(storeExpr, new_block);
+        
+        SgExpression *expr2 = storeExpr->get_expression();
+        if (isSgAssignOp(expr2)) assign_list.push_back(isSgAssignOp(expr2));
+        reduction_statements.push_back(storeExpr);
+    }
+    
+    std::map<std::string, std::string> reduction_map2;
+    
+    for (size_t i = assign_list.size() - 1; i >= 0; i--) {
+        if (i < 0 || i >= assign_list.size()) break;
+        SgAssignOp *op = assign_list.at(i);
+        if (!isSgVarRefExp(op->get_lhs_operand()) || !isSgVarRefExp(op->get_rhs_operand())) {
+            break;
+        }
+        
+        SgVarRefExp *lval = isSgVarRefExp(op->get_lhs_operand());
+        SgVarRefExp *rval = isSgVarRefExp(op->get_rhs_operand());
+        std::string lval_name = lval->get_symbol()->get_name();
+        std::string rval_name = rval->get_symbol()->get_name();
+        
+        if (reduction_map2.find(lval_name) == reduction_map2.end()) {
+            reduction_map2[lval_name] = rval_name;
+        } else {
+            removeStatement(reduction_statements.at(i));
+        }
     }
     
     return true;
@@ -427,7 +466,7 @@ bool omp_simd_pass1(SgUpirLoopParallelStatement *target, SgForStatement *for_loo
 ////////////////////////////////////////////////////////////////////////////////////
 // Pass 2-> Convert to SIMD IR
 
-bool omp_simd_is_load_operand(VariantT val) {
+bool OmpSimdCompiler::omp_simd_is_load_operand(VariantT val) {
     switch (val) {
         case V_SgPntrArrRefExp:
         case V_SgVarRefExp:
@@ -441,8 +480,8 @@ bool omp_simd_is_load_operand(VariantT val) {
 }
 
 // The main pass2 loop
-void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_block) {
-    Rose_STL_Container<SgStatement *> bodyList = old_block->get_statements();
+void OmpSimdCompiler::omp_simd_pass2() {
+    Rose_STL_Container<SgStatement *> bodyList = new_block->get_statements();
     
     for (Rose_STL_Container<SgStatement *>::iterator i = bodyList.begin(); i != bodyList.end(); i++) {
         if ((*i)->variantT() != V_SgExprStatement) {
@@ -471,6 +510,9 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
                 if (pntr->get_rhs_operand()->variantT() == V_SgPntrArrRefExp) {
                     SgSIMDGather *ld = buildBinaryExpression<SgSIMDGather>(deepCopy(lval), deepCopy(rval));
                     ir_block->push_back(ld);
+                } else if (pntr->get_lhs_operand()->variantT() == V_SgPntrArrRefExp) {
+                    SgSIMDExplicitGather *ld = buildBinaryExpression<SgSIMDExplicitGather>(deepCopy(lval), deepCopy(rval));
+                    ir_block->push_back(ld);
                 } else {
                     SgSIMDLoad *ld = buildBinaryExpression<SgSIMDLoad>(deepCopy(lval), deepCopy(rval));
                     ir_block->push_back(ld);
@@ -494,19 +536,13 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
                 
             // Otherwise, we have a scalar store
             } else {
-                if (expr_statement->get_expression()->variantT() == V_SgPlusAssignOp) {
-                    SgSIMDSVAddV *addv = buildBinaryExpression<SgSIMDSVAddV>(deepCopy(lval), deepCopy(rval));
-                    ir_block->push_back(addv);
-                } else {
-                    SgSIMDScalarStore *str = buildBinaryExpression<SgSIMDScalarStore>(deepCopy(lval), deepCopy(rval));
-                    ir_block->push_back(str);
-                }
+                SgSIMDScalarStore *str = buildBinaryExpression<SgSIMDScalarStore>(deepCopy(lval), deepCopy(rval));
+                ir_block->push_back(str);
             }
             
         // Broadcast
         // TODO: This is not the most elegent piece of code...
-        } else if (lval->variantT() == V_SgVarRefExp &&
-                    (/*rval->variantT() == V_SgVarRefExp ||*/ rval->variantT() == V_SgIntVal
+        } else if (lval->variantT() == V_SgVarRefExp && (rval->variantT() == V_SgIntVal
                     || rval->variantT() == V_SgFloatVal || rval->variantT() == V_SgDoubleVal)) {
             SgSIMDBroadcast *ld = buildBinaryExpression<SgSIMDBroadcast>(deepCopy(lval), deepCopy(rval));
             ir_block->push_back(ld);
@@ -528,9 +564,6 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
             SgExprListExp *expr_list = static_cast<SgExprListExp *>(rval);
             SgExpression *first = expr_list->get_expressions().front();
             if (!isSgBinaryOp(first)) {
-                //SgSIMDPartialStore *str = buildBinaryExpression<SgSIMDPartialStore>(deepCopy(lval), deepCopy(rval));
-                //ir_block->push_back(str);
-                //ir_block->push_back(deepCopy(*i));
                 continue;
             }
             
@@ -573,7 +606,7 @@ void omp_simd_pass2(SgBasicBlock *old_block, Rose_STL_Container<SgNode *> *ir_bl
 // Scans an OMP SIMD statement for a simdlen clause
 // If none is provided, we return -1, which means the compiler should use the default length
 // If we return -2, an error has occurred
-int omp_simd_get_simdlen(SgUpirLoopParallelStatement *target, bool safelen) {
+int OmpSimdCompiler::omp_simd_get_simdlen(bool safelen) {
     SgOmpClausePtrList clauses = target->get_clauses();
     for (size_t i = 0; i<clauses.size(); i++) {
         if (safelen) {
@@ -612,9 +645,9 @@ int omp_simd_get_simdlen(SgUpirLoopParallelStatement *target, bool safelen) {
 // > 4 <= 8 -> AVX2
 // > 8 <= 16 -> AVX-512
 // For now, ignore anything greater than 16. At some point, we may want to implement some kind of lowering
-int omp_simd_get_length(SgUpirLoopParallelStatement *target) {
-    int simdlen = omp_simd_get_simdlen(target, false);
-    int safelen = omp_simd_get_simdlen(target, true);
+int OmpSimdCompiler::omp_simd_get_length() {
+    int simdlen = omp_simd_get_simdlen(false);
+    int safelen = omp_simd_get_simdlen(true);
     
     if (simdlen < 0 && safelen < 0) {
         return 0;
@@ -636,6 +669,46 @@ int omp_simd_get_length(SgUpirLoopParallelStatement *target) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
+// The helper functions for the SIMD compiler
+OmpSimdCompiler::OmpSimdCompiler(bool isArm) {
+    this->new_block = SageBuilder::buildBasicBlock();
+    this->ir_block = new Rose_STL_Container<SgNode *>();
+    this->arm = isArm;
+}
+
+SgBasicBlock *OmpSimdCompiler::getBlock() {
+    return new_block;
+}
+
+SgOmpSimdStatement *OmpSimdCompiler::getTarget() {
+    return target;
+}
+
+SgForStatement *OmpSimdCompiler::getForLoop() {
+    return for_loop;
+}
+
+Rose_STL_Container<SgNode *> *OmpSimdCompiler::getIR() {
+    return ir_block;
+}
+
+bool OmpSimdCompiler::isArm() {
+    return arm;
+}
+
+void OmpSimdCompiler::setTarget(SgOmpSimdStatement *target) {
+    this->target = target;
+}
+
+void OmpSimdCompiler::setForLoop(SgForStatement *for_loop) {
+    this->for_loop = for_loop;
+}
+
+void OmpSimdCompiler::addIR(SgNode *ir) {
+    ir_block->push_back(ir);
+}
+
+////////////////////////////////////////////////////////////////////////////////////
 // The entry point to the SIMD analyzer
 
 void OmpSupport::transOmpSimd(SgNode *node) {
@@ -648,54 +721,70 @@ void OmpSupport::transOmpSimd(SgNode *node) {
     //insertHeader(file, "arm_sve.h", true, true);
     
     // Make sure the tree is correct
-    SgUpirLoopParallelStatement *target = isSgUpirLoopParallelStatement(node);
+    SgOmpSimdStatement *target = isSgOmpSimdStatement(node);
     ROSE_ASSERT(target != NULL);
+    SgNode *cur_parent = target->get_parent();
 
     SgSourceFile *file = getEnclosingSourceFile(node);
 
     SgScopeStatement* p_scope = target->get_scope();
     ROSE_ASSERT (p_scope != NULL);
 
-    SgStatement *body =  ((SgUpirLoopStatement*)target->get_loop())->get_body();
+    SgStatement *body =  target->get_body();
     ROSE_ASSERT(body != NULL);
 
     SgForStatement *for_loop = isSgForStatement(body);
-    ROSE_ASSERT(for_loop != NULL);
-    SageInterface::forLoopNormalization(for_loop);
-
-    // Now work on the body. Run the first two passes
-    SgBasicBlock *new_block = SageBuilder::buildBasicBlock();
-    Rose_STL_Container<SgNode *> *ir_block = new Rose_STL_Container<SgNode *>();
+    if (for_loop == NULL) {
+        std::vector<SgNode *> loop_list = NodeQuery::querySubTree(body, V_SgForStatement);
+        ROSE_ASSERT(loop_list.size() >= 1);
+        for_loop = isSgForStatement(loop_list.front());
+    }
     
+    //ROSE_ASSERT(for_loop != NULL);
+    SageInterface::forLoopNormalization(for_loop);
+    //std::cout << for_loop->unparseToString() << std::endl;
+    
+    // Create the SIMD compiler object
     bool isArm = false;
     if (simd_arch == ArmAddr3 || simd_arch == Arm_SVE2) isArm = true;
     
-    if (!omp_simd_pass1(target, for_loop, new_block, isArm)) {
-        delete ir_block;
+    OmpSimdCompiler *cc = new OmpSimdCompiler(isArm);
+    cc->setTarget(target);
+    cc->setForLoop(for_loop);
+
+    // Now work on the body. Run the first two passes
+    //SgBasicBlock *new_block = SageBuilder::buildBasicBlock();
+    //Rose_STL_Container<SgNode *> *ir_block = new Rose_STL_Container<SgNode *>();
+    
+    if (!cc->omp_simd_pass1()) {
+        //delete ir_block;
+        replaceStatement(target, for_loop);
         return;
     }
     
-    omp_simd_pass2(new_block, ir_block);
+    cc->omp_simd_pass2();
     
     // Output the final result
     if (simd_arch == Addr3 || simd_arch == ArmAddr3) {
         SgStatement *loop_body = getLoopBody(for_loop);
-        replaceStatement(loop_body, new_block, true);
+        replaceStatement(loop_body, cc->getBlock(), true);
+        replaceStatement(target, for_loop);
     } else {
         if (simd_arch == Intel_AVX512) {
-            int simd_length = omp_simd_get_length(target);
+            int simd_length = cc->omp_simd_get_length();
             if (simd_length > 0) {
                 std::cout << "Using SIMD Length of: " << simd_length << std::endl;
             }
             
             insertHeader(file, "immintrin.h", true, true);
-            omp_simd_write_intel(target, for_loop, ir_block, simd_length);
+            omp_simd_write_intel(target, for_loop, cc->getIR(), simd_length);
         } else if (simd_arch == Arm_SVE2) {
             insertHeader(file, "arm_sve.h", true, true);
-            omp_simd_write_arm(target, for_loop, ir_block);
+            omp_simd_write_arm(target, for_loop, cc->getIR());
         }
         
         replaceStatement(target, for_loop);
     }
+    for_loop->set_parent(cur_parent);
 }
 

@@ -15,9 +15,7 @@
 
 #include "AstNodePtrs.h"
 
-#ifdef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "AstReverseProcessing.h"
-#endif
+#include "AstReverseProcessing.h"
 
 class TestAstPropertiesSA 
    {
@@ -94,7 +92,6 @@ class TestAstNullPointers : public AstNodePtrs {
     void visit(SgNode*) {}
   };
 
-// #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
   class DummyISTestQuery2 : public AstReversePrefixInhSynProcessing<DI,DS> {
     DI evaluateInheritedAttribute(SgNode*, DI inh) { return inh; }
     DS evaluateSynthesizedAttribute(SgNode*, DI, SubTreeSynthesizedAttributes) { DS syn; return syn; }
@@ -124,7 +121,6 @@ class TestAstNullPointers : public AstNodePtrs {
   class DummyTestQuery3 : public AstReverseBranchSimpleProcessing {
     void visit(SgNode*) {}
   };
-// #endif
 
 // DQ (3/30/2004): Added tests on templates!
 // class TestAstTemplateProperties : public AstPreOrderTraversal
@@ -337,10 +333,6 @@ class TestChildPointersInMemoryPool : public ROSE_VisitTraversal
       //! static function to do test on any IR node
           static void test();
 
-       // DQ (3/24/2016): Adding Robb's meageage mechanism (data member and function).
-          static Sawyer::Message::Facility mlog;
-          static void initDiagnostics();
-
           virtual void visit( SgNode * );
    };
 
@@ -452,17 +444,6 @@ class TestForDisconnectedAST
       //! static function to do trigger the test
           static void test(SgNode* node);
    };
-
-
-class MemoryCheckingTraversalForAstFileIO : public ROSE_VisitTraversal
-   {
-     public:
-          int counter;
-          void visit ( SgNode* node );
-   };
-
-
-
 
 
 class TestForProperLanguageAndSymbolTableCaseSensitivity_InheritedAttribute : AstInheritedAttribute

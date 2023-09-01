@@ -36,7 +36,6 @@
 #include "AstDOTGeneration.h"
 #include "AstDiagnostics.h"
 // #include "AstStatistics.h"
-#include "RoseAst.h"
 
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 // DQ (6/3/2007): added internal support for AST visualization
@@ -51,11 +50,6 @@
 // which has not defined yet (circular reference in the header files)
 // #include "AstRestructure.h"
 
-#ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-#include "rewrite.h"
-#endif
-#include "roseTranslators.h"
-
 // this is a temporary fix (will become obsolete)
 #include "AstClearVisitFlags.h"
 
@@ -65,7 +59,6 @@
 
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
 // JH (01/18/2006): adding the include file for the AST file I/O (by Jochen)
-#include "AST_FILE_IO.h"
 // DQ (9/9/2007): Can't use astVisualization/ prefix since it then does not permit use from the install tree
 // DQ (5/27/2007): Added astVisualization/ prefix to the header file
 // DQ (2/22/2006): Added Andreas' work to graph the AST.
@@ -123,10 +116,6 @@
 
 // DQ (4/20/2009): Added support to optionally get more information out about new delete operators.
 #define COMPILE_DEBUG_STATEMENTS 1
-
-#include <Rose/AST.h>
-
-#include <Rose/Initialize.h>
 
 /******************************************************************************************************************************
  *                            THIS CHECK SHOULD BE THE LAST THING IN THIS FILE!

@@ -25,13 +25,13 @@ if(NOT disable-tutorial-directory)
     commandlineProcessing interveneAtVariables changeFunction classHierarchyGraph
     dataBaseUsage 
     loopNestingInfoProcessing tauInstrumenter typeTransformation
-    astFileIO_GenerateBinaryFile generatingUniqueNamesFromDeclaration
+    generatingUniqueNamesFromDeclaration
     symbolTableHandling scopeInformation customGraphGeneration inlineTransformations
     addComments addArbitraryTextForUnparser collectComments
     collectDefineDirectives partialRedundancyElimination
     codeGenerationFormatControl dataFlowGraph customGraphGenerationWithFiltering
     graphTraversal wholeGraphAST traversalShortCircuit
-    customGraphGenerationWithColors astFileIO_ReadMultipleASTs
+    customGraphGenerationWithColors
     constantFoldingTransformation constantUnFoldingTransformation
     selectedFileTranslation wholeGraphFilterOnPersistantAttributes
     graphGenerationOfSubtree virtualCFG interproceduralCFG
@@ -61,10 +61,4 @@ if(NOT disable-tutorial-directory)
     add_executable(codeCoverage codeCoverage.C coverageCodeFromShmuel.c)
     target_link_libraries(codeCoverage ROSE_DLL ${Boost_LIBRARIES})
   endif()
-
-  add_executable(abstractHandle1 abstractHandle1.cpp)
-  target_link_libraries(abstractHandle1 ROSE_DLL ${Boost_LIBRARIES})
-
-  add_executable(abstractHandle2 abstractHandle2.cpp)
-  target_link_libraries(abstractHandle2 ROSE_DLL ${Boost_LIBRARIES})
 endif()

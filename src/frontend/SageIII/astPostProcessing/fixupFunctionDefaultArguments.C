@@ -3,13 +3,6 @@
 
 #include "fixupFunctionDefaultArguments.h"
 
-#ifdef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
-   #include "transformationSupport.h"
-#endif
-
-
-
-
 bool
 containsLambdaSupportForFixupFunctionDefaultArguments (SgExpression* node)
    {
@@ -97,7 +90,7 @@ fixupFunctionDefaultArguments( SgNode* node )
 #if 0
           printf ("In fixupFunctionDefaultArguments(): Getting the SgFile from the AST node \n");
 #endif
-          file = TransformationSupport::getSourceFile(node);
+          file = SageInterface::getEnclosingSourceFile(node);
        // When processing templates we need to get the SgFile so that we can check the command line options.
        // ROSE_ASSERT(file != NULL);
 #if 0

@@ -99,9 +99,6 @@ Here we summarize the separate sub-directoies of this directory:
       elaboration. Each case is held in a separate list in each scope. This work
       supports the name qualification within the unparser (code generation).
 
-   astFileIO
-      This is the support for binary file I/O on the AST (much of which is generated code).
-
    astFixup
       This is the location of code which makes corrections to the AST after construction.
       Most of these eventually make there way into the generation of the AST so that is 

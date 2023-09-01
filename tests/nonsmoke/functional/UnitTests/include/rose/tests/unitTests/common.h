@@ -2,7 +2,6 @@
 #define ROSE_UNIT_TESTS_COMMON_H_
 
 #include <rose.h>
-#include <Sawyer/Assert.h>
 
 namespace Rose {
 namespace Tests {
@@ -17,8 +16,8 @@ namespace Tests {
  **/
 namespace UnitTests {
 
-#define check(COND) ASSERT_always_require(COND)
-#define check2(COND, MESG) ASSERT_always_require2(COND, MESG)
+#define check(COND) ASSERT_require(COND)
+#define check2(COND, MESG) ASSERT_require2(COND, MESG)
 
 template<typename T>
 bool is(SgNode* t){
@@ -29,17 +28,7 @@ bool isNull(SgNode* n) {
   return (n == NULL);
 }
 
-namespace Diagnostics {
-using namespace Rose::Diagnostics;
-
-void initialize() {
-  Rose::Diagnostics::initialize();
-  Rose::Diagnostics::mfacilities.control("all");
-}
-
-}//::Rose::Tests::UnitTests::Diagnostics
-
-using namespace UnitTests::Diagnostics;
+//using namespace UnitTests::Diagnostics;
 }//::Rose::Tests::UnitTests
 }//::Rose::Tests
 }//::Rose

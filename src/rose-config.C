@@ -33,25 +33,19 @@ static const char *description =
   "subdirectories (among others) where the ROSE library and its headers are installed.}";
 
 #include <rose.h>                                       // POLICY_OK -- this is not a ROSE library source file
-#include <Rose/CommandLine.h>
-#include <Rose/Diagnostics.h>
 #include <rose_getline.h>
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
-#include <Sawyer/CommandLine.h>
 #include <map>
 #include <string>
 #include <vector>
 
 using namespace Rose;
-using namespace Sawyer::Message::Common;
 
 typedef std::map<std::string, std::string> Configuration;
-
-Sawyer::Message::Facility mlog;
 
 struct Settings {
   std::string searchDirs;
@@ -101,55 +95,6 @@ std::string toOldKeyFormat(std::string& key)
     
 }
 
-// Parse switches and return the single positional KEY argument.
-static std::string
-parseCommandLine(int argc, char *argv[], Settings &settings /*in,out*/) {
-  using namespace Sawyer::CommandLine;
-
-    Parser parser = Rose::CommandLine::createEmptyParser(purpose, description);
-    parser.errorStream(mlog[FATAL]);
-    parser.doc("Synopsis", "@prop{programName} [@v{switches}] @v{variable}");
-    parser.with(Rose::CommandLine::genericSwitches());
-
-  SwitchGroup tool("Tool-specific switches");
-  tool.insert(Switch("config")
-              .argument("file", anyParser(settings.configFile))
-              .doc("Use the specified file instead of the " CONFIG_NAME " file installed as part of installing ROSE."));
-
-  std::string requiredVersion;
-  tool.insert(Switch("check-version")
-              .argument("vers", anyParser(requiredVersion))
-              .doc("Check that the ROSE library is the specified version or later. Exits with an error message and non-zero "
-                   "status if the ROSE version is older."));
-
-  parser.with(tool);
-                
-  std::vector<std::string> args = parser.parse(argc, argv).apply().unreachedArgs();
-
-  //  Check version number
-  if (!requiredVersion.empty()) {
-    if (!Rose::checkVersionNumber(requiredVersion)) {
-#if defined(ROSE_PACKAGE_VERSION)                       // automake
-      std::string haveVersion = ROSE_PACKAGE_VERSION;
-#elif defined(VERSION)                                  // cmake
-      std::string haveVersion = VERSION;
-#else
-      std::string haveVersion = "unknown";
-#endif
-      mlog[FATAL] <<"ROSE library version (" <<haveVersion <<") is too old; need " <<requiredVersion <<"\n";
-      exit(1);
-    }
-    if (args.empty())
-      exit(0);
-  }
-    
-  if (args.size() != 1) {
-    mlog[FATAL] <<"incorrect usage; see --help\n";
-    exit(1);
-  }
-  return args[0];
-}
-
 // Read a specific configuration file
 static Configuration
 readConfigFile(const boost::filesystem::path &configName) {
@@ -172,7 +117,7 @@ readConfigFile(const boost::filesystem::path &configName) {
   Configuration retval;
 
   if (NULL == (r.file = fopen(configName.string().c_str(), "r"))) {
-    mlog[FATAL] <<strerror(errno) <<": \"" <<configName <<"\"\n";
+    MLOG_FATAL_CXX("rose-config") <<strerror(errno) <<": \"" <<configName <<"\"\n";
     exit(1);
   }
 
@@ -182,7 +127,7 @@ readConfigFile(const boost::filesystem::path &configName) {
     ++lineNumber;
     if (nchars < 0) {
       if (errno) {
-        mlog[FATAL] <<configName <<":" <<lineNumber <<": " <<strerror(errno) <<"\n";
+    	MLOG_FATAL_CXX("rose-config") <<configName <<":" <<lineNumber <<": " <<strerror(errno) <<"\n";
         exit(1);
       }
       break;                                      // EOF
@@ -200,19 +145,19 @@ readConfigFile(const boost::filesystem::path &configName) {
     std::string value = equal == std::string::npos ? std::string() : s.substr(equal+1);
     boost::trim(value);
     if (equal == std::string::npos || !boost::regex_match(key, keyRe)) {
-      mlog[FATAL] <<configName <<":" <<lineNumber <<": syntax error: expected KEY = VALUE\n";
+      MLOG_FATAL_CXX("rose-config")  <<configName <<":" <<lineNumber <<": syntax error: expected KEY = VALUE\n";
       exit(1);
     }
 
     // Save the key and value for returning later
     if (!retval.insert(std::make_pair(key, value)).second) {
-      mlog[FATAL] <<configName <<":" <<lineNumber <<": duplicate key \"" <<StringUtility::cEscape(key) <<"\"\n";
+      MLOG_FATAL_CXX("rose-config")  <<configName <<":" <<lineNumber <<": duplicate key \"" <<StringUtility::cEscape(key) <<"\"\n";
       exit(1);
     }
     
     //Add the old format key to the database as well
     if (!retval.insert(std::make_pair(toOldKeyFormat(key), value)).second) {
-      mlog[FATAL] <<configName <<":" <<lineNumber <<": duplicate key \"" <<StringUtility::cEscape(key) <<"\"\n";
+      MLOG_FATAL_CXX("rose-config") <<configName <<":" <<lineNumber <<": duplicate key \"" <<StringUtility::cEscape(key) <<"\"\n";
       exit(1);
     }
 
@@ -222,7 +167,7 @@ readConfigFile(const boost::filesystem::path &configName) {
   bool hadError = false;
   BOOST_FOREACH (const std::string &key, requiredKeys()) {
     if (retval.find(key) == retval.end()) {
-      mlog[FATAL] <<configName <<":" <<lineNumber <<": required key \"" <<key <<"\" is not defined\n";
+      MLOG_FATAL_CXX("rose-config") <<configName <<":" <<lineNumber <<": required key \"" <<key <<"\" is not defined\n";
       hadError = true;
     }
   }
@@ -246,10 +191,10 @@ readConfigFile(const Settings &settings) {
       return readConfigFile(configFile);
   }
 
-  mlog[FATAL] <<"cannot find file \"" <<StringUtility::cEscape(CONFIG_NAME) <<"\"\n";
-  mlog[FATAL] <<"searched in these directories:\n";
+  MLOG_FATAL_CXX("rose-config") <<"cannot find file \"" <<StringUtility::cEscape(CONFIG_NAME) <<"\"\n";
+  MLOG_FATAL_CXX("rose-config")  <<"searched in these directories:\n";
   BOOST_FOREACH (const std::string &dir, dirs)
-    mlog[FATAL] <<"  \"" <<StringUtility::cEscape(dir) <<"\"\n";
+    MLOG_FATAL_CXX("rose-config") <<"  \"" <<StringUtility::cEscape(dir) <<"\"\n";
   exit(1);
 }
 
@@ -313,11 +258,34 @@ makefileEscape(const std::string &s) {
 
 int
 main(int argc, char *argv[]) {
-  ROSE_INITIALIZE;
-  Diagnostics::initAndRegister(&mlog, "tool");
-
   Settings settings;
-  std::string key = parseCommandLine(argc, argv, settings);
+  std::string key;
+  if (argc == 2) { //--help or <key>
+	  std::string helpflag ("--help");
+	  std::string versionflag ("--version");
+	  if (helpflag.compare(argv[1]) == 0) {
+		  std::cout << purpose << "\n" << description << "\n";
+		  exit(0);
+	  } else if (versionflag.compare(argv[1]) == 0){
+		  std::cout << version_message() << "\n";
+		  exit(0);
+	  } else {
+	    MLOG_FATAL_C("rose-config", "incorrect usage; see --help\n");
+	    exit(1);
+	  }
+  } else if (argc == 4) { //--config <file> <key>
+	  std::string configflag ("--config");
+	  if (configflag.compare(argv[1]) == 0) {
+		  settings.configFile = boost::filesystem::path(argv[2]);
+		  key = std::string(argv[3]);
+	  } else {
+	    MLOG_FATAL_C("rose-config", "incorrect usage; see --help\n");
+	    exit(1);
+	  }
+  } else { //argc == 1 || argc > 4
+    MLOG_FATAL_C("rose-config", "incorrect usage; see --help\n");
+    exit(1);
+  }
   Configuration config = readConfigFile(settings);
 
   // Print the value
@@ -332,6 +300,6 @@ main(int argc, char *argv[]) {
   }
 
   // Errors
-  mlog[FATAL] <<"unknown key \"" <<StringUtility::cEscape(key) <<"\"\n";
+  MLOG_FATAL_CXX("rose-config") <<"unknown key \"" <<StringUtility::cEscape(key) <<"\"\n";
   exit(1);
 }
