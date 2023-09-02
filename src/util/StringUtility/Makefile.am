@@ -12,6 +12,7 @@ libRoseStringUtility_la_SOURCES =  \
 	FileUtility.C								\
 	NumberToString.C							\
 	Predicate.C							\
+	Replace.C							\
 	SplitJoin.C							\
 	StringToNumber.C
 
@@ -24,6 +25,7 @@ pkginclude_HEADERS = \
 	FileUtility.h								\
 	NumberToString.h				\
 	Predicate.h					\
+	Replace.h					\
 	SplitJoin.h					\
 	StringToNumber.h
 
@@ -35,4 +37,3 @@ distclean-local:
 	rm -rf Templates.DB
 
 EXTRA_DIST = CMakeLists.txt stringSupportDocumentation.docs
-

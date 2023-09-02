@@ -3,8 +3,8 @@
 #include <sstream>
 #include <iomanip>
 #include <cassert>
+#include <Replace.h>
 #include <boost/algorithm/string/case_conv.hpp>
-#include <boost/algorithm/string/replace.hpp>
 
 namespace Rose {
 namespace StringUtility {
@@ -187,7 +187,7 @@ bourneEscape(const std::string &s) {
     // and escape backslashes.
     for (char ch: s) {
         if (!::isalnum(ch) && !strchr("_-+./", ch))
-            return "'" + boost::replace_all_copy(s, "\\", "\\\\") + "'";
+            return "'" + Rose::StringUtility::replaceAllCopy(s, "\\", "\\\\") + "'";
     }
 
     // No quoting or escaping necessary
@@ -214,7 +214,7 @@ yamlEscape(const std::string &s) {
 std::string
 csvEscape(const std::string &s) {
     const std::string quote = s.find_first_of(",\r\n\"") == std::string::npos ? "" : "\"";
-    return quote + boost::replace_all_copy(s, "\"", "\"\"") + quote;
+    return quote + Rose::StringUtility::replaceAllCopy(s, "\"", "\"\"") + quote;
 }
 
 // DQ (12/8/2016): This version fixed most of the issues that Robb raised with the escapeNewLineCharaters() function.

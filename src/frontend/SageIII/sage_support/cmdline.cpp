@@ -11,12 +11,12 @@
 #include "cmdline.h"
 #include "keep_going.h"
 #include "FileUtility.h"
+#include "Replace.h"
 #include "omp_simd.h"
 
 #include "Outliner.hh"
 
 #include <boost/foreach.hpp>
-#include <boost/algorithm/string/replace.hpp>
 
 using namespace Rose;                                   // temporary, until this file lives in namespace Rose
 
@@ -1463,7 +1463,7 @@ SgProject::processCommandLine(const vector<string>& input_argv)
 
                p_includeDirectorySpecifierList.push_back("-I" + include_path);
 
-               std::string include_path_no_quotes = boost::replace_all_copy(include_path, "\"", "");
+               std::string include_path_no_quotes = Rose::StringUtility::replaceAllCopy(include_path, "\"", "");
                try
                   {
                     bool is_directory = boost::filesystem::is_directory(include_path_no_quotes);

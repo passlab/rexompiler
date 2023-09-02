@@ -5,6 +5,7 @@
 #include <Escape.h>
 #include <NumberToString.h>
 #include <Predicate.h>
+#include <Replace.h>
 #include <SplitJoin.h>
 
 namespace Rose {
