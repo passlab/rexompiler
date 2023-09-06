@@ -1,9 +1,8 @@
 #ifndef ROSE_FileSystem_H
 #define ROSE_FileSystem_H
 
-#include <boost/filesystem.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/regex.hpp>
+#include <filesystem>
+#include <regex>
 #include <fstream>
 #include <streambuf>
 #include <string>
@@ -20,13 +19,13 @@ namespace FileSystem {
 extern const char *tempNamePattern;
 
 /** Name of entities in a filesystem. */
-typedef boost::filesystem::path Path;
+typedef std::filesystem::path Path;
 
 /** Iterate over directory contents non-recursively. */
-typedef boost::filesystem::directory_iterator DirectoryIterator;
+typedef std::filesystem::directory_iterator DirectoryIterator;
 
 /** Iterate recursively into subdirectories. */
-typedef boost::filesystem::recursive_directory_iterator RecursiveDirectoryIterator;
+typedef std::filesystem::recursive_directory_iterator RecursiveDirectoryIterator;
 
 /** Predicate returning true if path exists. */
 ROSE_UTIL_API bool isExisting(const Path &path);
@@ -56,9 +55,9 @@ ROSE_UTIL_API bool isNotSymbolicLink(const Path &path);
  *  std::vector<Path> roseFiles = findAllNames(top, baseNameMatches(boost::regex("rose_.*")));
  * @endcode */
 class ROSE_UTIL_API baseNameMatches {
-    const boost::regex &re_;
+    const std::regex &re_;
 public:
-    baseNameMatches(const boost::regex &re): re_(re) {}
+    baseNameMatches(const std::regex &re): re_(re) {}
     bool operator()(const Path &path);
 };
 
@@ -66,7 +65,7 @@ public:
  *
  *  The temporary directory is created as a subdirectory of the directory which is suitable for temporary files under the
  *  conventions of the operating system.  The specifics of how this path is determined are implementation defined (see
- *  <code>boost::filesystem::temp_directory_path</code>).  The created subdirectory has a name of the form
+ *  <code>std::filesystem::temp_directory_path</code>).  The created subdirectory has a name of the form
  *  "rose-%%%%%%%%-%%%%%%%%" where each "%" is a random hexadecimal digit.  Returns the path to this directory. */
 ROSE_UTIL_API Path createTemporaryDirectory();
 
@@ -83,13 +82,13 @@ ROSE_UTIL_API Path makeNormal(const Path&);
 /** Make path relative.
  *
  *  Makes the specified path relative to another path or the current working directory. */
-ROSE_UTIL_API Path makeRelative(const Path &path, const Path &root = boost::filesystem::current_path());
+ROSE_UTIL_API Path makeRelative(const Path &path, const Path &root = std::filesystem::current_path());
 
 /** Make path absolute.
  *
  *  Makes the specified path an absolute path if it is a relative path.  If relative, then assume @p root is what the path is
  *  relative to. */
-ROSE_UTIL_API Path makeAbsolute(const Path &path, const Path &root = boost::filesystem::current_path());
+ROSE_UTIL_API Path makeAbsolute(const Path &path, const Path &root = std::filesystem::current_path());
 
 /** Entries within a directory.
  *
@@ -138,7 +137,7 @@ std::vector<Path> findNamesRecursively(const Path &root, Select select, Descend 
         if (select(dentry->path()))
             matching.push_back(dentry->path());
         if (!descend(dentry->path()))
-            dentry.no_push();
+            dentry.disable_recursion_pending();
     }
     std::sort(matching.begin(), matching.end());
     return matching;
@@ -166,7 +165,7 @@ ROSE_UTIL_API void copyFile(const Path &sourceFileName, const Path &destinationF
  *  For instance, copyFiles(["bar/baz"], "foo", "frob") will copy "bar/baz" to "frob/../bar/baz" since "bar" is apparently
  *  a sibling of "foo", and therefore must be a sibling of "frob".
  *
- *  Throws a <code>boost::filesystem::filesystem_error</code> on failure. */
+ *  Throws a <code>std::filesystem::filesystem_error</code> on failure. */
 ROSE_UTIL_API void copyFiles(const std::vector<Path> &files, const Path &root, const Path &destinationDirectory);
 
 /** Recursively copy files.
@@ -191,30 +190,30 @@ ROSE_UTIL_API std::string toString(const Path&);
 
 /** Load an entire file into an STL container. */
 template<class Container>
-Container readFile(const boost::filesystem::path &fileName,
+Container readFile(const std::filesystem::path &fileName,
                    std::ios_base::openmode openMode = std::ios_base::in | std::ios_base::binary) {
     using streamIterator = std::istreambuf_iterator<char>;
     std::ifstream stream(fileName.c_str(), openMode);
     if (!stream.good())
-        MLOG_ERROR_CXX("UTIL") << "unable to open file " << boost::lexical_cast<std::string>(fileName);
+        MLOG_ERROR_CXX("UTIL") << "unable to open file " << fileName.string();
     Container container;
     std::copy(streamIterator(stream), streamIterator(), std::back_inserter(container));
     if (stream.fail())
-        MLOG_ERROR_CXX("UTIL") << "unable to read from file " << boost::lexical_cast<std::string>(fileName);
+        MLOG_ERROR_CXX("UTIL") << "unable to read from file " << fileName.string();
     return container;
 }
 
 template<class Container>
-void writeFile(const boost::filesystem::path &fileName, const Container &data,
+void writeFile(const std::filesystem::path &fileName, const Container &data,
                std::ios_base::openmode openMode = std::ios_base::out | std::ios_base::binary) {
     std::ofstream stream(fileName.c_str(),openMode);
     if (!stream.good())
-        MLOG_ERROR_CXX("UTIL") << "unable to open file " << boost::lexical_cast<std::string>(fileName);
+        MLOG_ERROR_CXX("UTIL") << "unable to open file " << fileName.string();
     std::ostream_iterator<char> streamIterator(stream);
     std::copy(data.begin(), data.end(), streamIterator);
     stream.close();
     if (stream.fail())
-        MLOG_ERROR_CXX("UTIL") << "unable to write to file " << boost::lexical_cast<std::string>(fileName);
+        MLOG_ERROR_CXX("UTIL") << "unable to write to file " << fileName.string();
 }
 
 } // namespace

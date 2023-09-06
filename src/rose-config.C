@@ -49,7 +49,7 @@ typedef std::map<std::string, std::string> Configuration;
 
 struct Settings {
   std::string searchDirs;
-  boost::filesystem::path configFile;
+  std::filesystem::path configFile;
 
   // When compiling this program, LIBDIR C preprocessor symbol should be the name of the installation path for libraries.
   Settings()
@@ -97,7 +97,7 @@ std::string toOldKeyFormat(std::string& key)
 
 // Read a specific configuration file
 static Configuration
-readConfigFile(const boost::filesystem::path &configName) {
+readConfigFile(const std::filesystem::path &configName) {
   struct Resources {
     FILE *file;
     char *line;
@@ -186,8 +186,8 @@ readConfigFile(const Settings &settings) {
   std::vector<std::string> dirs;
   boost::split(dirs, settings.searchDirs, boost::is_any_of(":;"));
   BOOST_FOREACH (const std::string &dir, dirs) {
-    boost::filesystem::path configFile = boost::filesystem::path(dir) / CONFIG_NAME;
-    if (boost::filesystem::exists(configFile))
+    std::filesystem::path configFile = std::filesystem::path(dir) / CONFIG_NAME;
+    if (std::filesystem::exists(configFile))
       return readConfigFile(configFile);
   }
 
@@ -276,7 +276,7 @@ main(int argc, char *argv[]) {
   } else if (argc == 4) { //--config <file> <key>
 	  std::string configflag ("--config");
 	  if (configflag.compare(argv[1]) == 0) {
-		  settings.configFile = boost::filesystem::path(argv[2]);
+		  settings.configFile = std::filesystem::path(argv[2]);
 		  key = std::string(argv[3]);
 	  } else {
 	    MLOG_FATAL_C("rose-config", "incorrect usage; see --help\n");

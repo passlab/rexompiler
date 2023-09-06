@@ -1,8 +1,8 @@
+#include <filesystem>
 
 #include "sage3basic.h"
 #include "Replace.h"
 #include "FortranModuleInfo.h"
-#include "boost/filesystem.hpp"
 
 using namespace std;
 using std::string;
@@ -45,7 +45,7 @@ FortranModuleInfo::find_file_from_inputDirs(string basename ) {
        name = dir+"/"+ basename;
 
        string tmp = name + module_file_suffix();
-       if (boost::filesystem::exists(tmp.c_str())) {
+       if (std::filesystem::exists(tmp.c_str())) {
              return name;
        }
     }
@@ -76,7 +76,7 @@ FortranModuleInfo::set_inputDirs(SgProject* project) {
 
           rmodDir = args[i+1];
 
-          if (boost::filesystem::exists(rmodDir.c_str())) {
+          if (std::filesystem::exists(rmodDir.c_str())) {
                 inputDirs.push_back(rmodDir);
           } else 
                 cout << "WARNING: the input directory is not exist : " << rmodDir<< endl;
@@ -87,7 +87,7 @@ FortranModuleInfo::set_inputDirs(SgProject* project) {
            std::string rmodDir_no_quotes =
                 Rose::StringUtility::replaceAllCopy(rmodDir, "\"", "");
 
-           if (boost::filesystem::exists(rmodDir_no_quotes.c_str())) {
+           if (std::filesystem::exists(rmodDir_no_quotes.c_str())) {
                 inputDirs.push_back(rmodDir_no_quotes);
           } else 
              {
@@ -259,10 +259,10 @@ FortranModuleInfo::createSgSourceFile(string modName)
 
 #if 0
      printf ("In FortranModuleInfo::createSgSourceFile(): Searching for file rmodFileName = %s \n",rmodFileName.c_str());
-     printf ("In FortranModuleInfo::createSgSourceFile(): boost::filesystem::exists(rmodFileName.c_str()) = %s \n",boost::filesystem::exists(rmodFileName.c_str()) ? "true" : "false");
+     printf ("In FortranModuleInfo::createSgSourceFile(): std::filesystem::exists(rmodFileName.c_str()) = %s \n",std::filesystem::exists(rmodFileName.c_str()) ? "true" : "false");
 #endif
 
-     if (boost::filesystem::exists(rmodFileName.c_str()) == false)
+        if (std::filesystem::exists(rmodFileName.c_str()) == false)
         {
           printf ("File rmodFileName = %s NOT FOUND (expected to be present) \n",rmodFileName.c_str());
           return NULL;

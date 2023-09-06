@@ -96,7 +96,7 @@ else()
   set(CMAKE_VERBOSE_MAKEFILE FALSE)
 endif()
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(BUILD_SHARED_LIBS "Build all libraries shared" FALSE)
@@ -201,13 +201,13 @@ endif(WIN32)
 # second can check again including optional components.  If the version of cmake is high enough you can use an
 # OPTIONAL_COMPONENTS clause instead, but that wasn't introduced until 3.11."
 find_package(Boost 1.47.0
-  COMPONENTS chrono date_time filesystem iostreams program_options random regex system wave thread
+  COMPONENTS chrono date_time iostreams program_options random regex system wave thread
   REQUIRED)
 if(NOT Boost_FOUND)
   message(FATAL_ERROR "Could not find Boost version 1.35.0 or newer command")
 endif()
 find_package(Boost 1.47.0
-  COMPONENTS chrono date_time filesystem iostreams program_options random regex system wave thread serialization)
+  COMPONENTS chrono date_time iostreams program_options random regex system wave thread serialization)
 include_directories(${Boost_INCLUDE_DIRS})
 
 # Paths to install header, executable, and libraries

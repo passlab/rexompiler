@@ -18,6 +18,7 @@
 #include "rose_config.h"
 
 #include <string.h>
+#include <filesystem>
 #if _MSC_VER
 #include <direct.h>
 #include <process.h>
@@ -2971,8 +2972,8 @@ unparseFile ( SgFile* file, UnparseFormatHelp *unparseHelp, UnparseDelegate* unp
             outFolder += package_name;
             outFolder += (package_name.size() > 0 ? "/" : "");
             // Create package folder structure
-            boost::filesystem::create_directories(outFolder);
-            ROSE_ASSERT(boost::filesystem::exists(outFolder));
+            std::filesystem::create_directories(outFolder);
+            ROSE_ASSERT(std::filesystem::exists(outFolder));
             outputFilename = outFolder + file -> get_sourceFileNameWithoutPath();
             // Convert Windows-style paths to POSIX-style.
             #ifdef _MSC_VER
@@ -3290,14 +3291,14 @@ unparseFile ( SgFile* file, UnparseFormatHelp *unparseHelp, UnparseDelegate* unp
           printf ("In unparseFile(SgFile*): open file for output of generated source code: outputFilename = %s \n",outputFilename.c_str());
 #endif
        // DQ (3/19/2014): Added support for noclobber option.
-          boost::filesystem::path output_file = outputFilename;
+          std::filesystem::path output_file = outputFilename;
 
           bool trigger_file_comparision = false;
 
           string saved_filename       = outputFilename;
           string alternative_filename = outputFilename + ".noclobber_compare";
 
-          if (boost::filesystem::exists(output_file))
+          if (std::filesystem::exists(output_file))
              {
                if ( SgProject::get_verbose() > 0 )
                   {
@@ -3530,13 +3531,13 @@ unparseFile ( SgFile* file, UnparseFormatHelp *unparseHelp, UnparseDelegate* unp
 
                if ( SgProject::get_verbose() > 0 )
                   {
-                    printf ("Testing saved_filename against alternative_filename (using boost::filesystem::equivalent()): \n");
+                    printf ("Testing saved_filename against alternative_filename (using std::filesystem::equivalent()): \n");
                     printf ("   --- saved_filename       = %s \n",saved_filename.c_str());
                     printf ("   --- alternative_filename = %s \n",alternative_filename.c_str());
                   }
 
-               boost::filesystem::path saved_output_file       = saved_filename;
-               boost::filesystem::path alternative_output_file = alternative_filename;
+               std::filesystem::path saved_output_file       = saved_filename;
+               std::filesystem::path alternative_output_file = alternative_filename;
 
                std::ifstream ifs1(saved_filename.c_str());
                std::ifstream ifs2(alternative_filename.c_str());
@@ -3601,7 +3602,7 @@ unparseFile ( SgFile* file, UnparseFormatHelp *unparseHelp, UnparseDelegate* unp
                     printf ("****************************************************************************************************** \n\n\n");
 
                  // remove the generated file or leave in place to allow users to examine file differences.
-                 // boost::filesystem::remove(unparsed_file);
+                 // std::filesystem::remove(unparsed_file);
 
                     ROSE_ABORT();
                   }
@@ -4786,11 +4787,11 @@ void unparseIncludedFiles ( SgProject* project, UnparseFormatHelp *unparseFormat
 #endif
                     string newFileName = adjusted_header_file_directory + filenameWithOutPath;
 
-                    boost::filesystem::path pathPrefix(adjusted_header_file_directory);
+                    std::filesystem::path pathPrefix(adjusted_header_file_directory);
                     create_directories(pathPrefix);
 
-                    boost::filesystem::path originalFileNamePath(originalFileName);
-                    boost::filesystem::path newFileNamePath(newFileName);
+                    std::filesystem::path originalFileNamePath(originalFileName);
+                    std::filesystem::path newFileNamePath(newFileName);
 #if 0
                  // printf ("Copy this file: \n");
                  // printf ("Copy this file: unparsedFile          = %p filename = %s \n",unparsedFile,unparsedFile->getFileName().c_str());
@@ -4809,7 +4810,7 @@ void unparseIncludedFiles ( SgProject* project, UnparseFormatHelp *unparseFormat
                          printf ("Copying file = %s to newFileName = %s \n",originalFileName.c_str(),newFileName.c_str());
 #endif
                       // syntax: copy_file(from, to, copy_option::fail_if_exists);
-                         copy_file(originalFileNamePath, newFileNamePath, boost::filesystem::copy_option::fail_if_exists);
+                         copy_file(originalFileNamePath, newFileNamePath, std::filesystem::copy_options::none);
                        }
                       else
                        {
@@ -4875,11 +4876,11 @@ void unparseIncludedFiles ( SgProject* project, UnparseFormatHelp *unparseFormat
 
                     if (isApplicationFile == true)
                        {
-                         boost::filesystem::path pathPrefix(adjusted_header_file_directory);
+                         std::filesystem::path pathPrefix(adjusted_header_file_directory);
                          create_directories(pathPrefix);
 
-                         boost::filesystem::path originalFileNamePath(originalFileName);
-                         boost::filesystem::path newFileNamePath(newFileName);
+                         std::filesystem::path originalFileNamePath(originalFileName);
+                         std::filesystem::path newFileNamePath(newFileName);
 
                          if (exists(newFileNamePath) == true)
                             {
@@ -4895,7 +4896,7 @@ void unparseIncludedFiles ( SgProject* project, UnparseFormatHelp *unparseFormat
                            else
                             {
                            // syntax: copy_file(from, to, copy_option::fail_if_exists);
-                              copy_file(originalFileNamePath, newFileNamePath, boost::filesystem::copy_option::fail_if_exists);
+                              copy_file(originalFileNamePath, newFileNamePath, std::filesystem::copy_options::none);
                             }
                        }
                       else
@@ -5213,7 +5214,7 @@ void unparseIncludedFiles ( SgProject* project, UnparseFormatHelp *unparseFormat
                               printf ("Modified adjusted_header_file_directory = %s (part 2) \n",adjusted_header_file_directory.c_str());
 #endif
                            // DQ (11/6/2018): Build the path.
-                              boost::filesystem::path pathPrefix(adjusted_header_file_directory);
+                              std::filesystem::path pathPrefix(adjusted_header_file_directory);
                               create_directories(pathPrefix);
 
                            // DQ (11/8/2018): Adding the "-I" prefix required for use on the command line.
@@ -5273,8 +5274,8 @@ void unparseIncludedFiles ( SgProject* project, UnparseFormatHelp *unparseFormat
                          printf ("applicationRootDirectory = %s \n",applicationRootDirectory.c_str());
                        }
 #endif
-                    boost::filesystem::path applicationRootDirectoryPath(applicationRootDirectory);
-                    boost::filesystem::path currentDirectoryPath(adjusted_header_file_directory);
+                    std::filesystem::path applicationRootDirectoryPath(applicationRootDirectory);
+                    std::filesystem::path currentDirectoryPath(adjusted_header_file_directory);
 
                     string source_filename = unparsedFile->getFileName();
                     string source_file_directory = Rose::getPathFromFileName(source_filename);
@@ -5287,7 +5288,7 @@ void unparseIncludedFiles ( SgProject* project, UnparseFormatHelp *unparseFormat
                          printf ("adjusted_header_file_directory = %s \n",adjusted_header_file_directory.c_str());
                        }
 #endif
-                    boost::filesystem::path source_file_directory_path(source_file_directory);
+                    std::filesystem::path source_file_directory_path(source_file_directory);
 #if 1
                  // DQ (4/4/2020): Added header file unparsing feature specific debug level.
                     if (SgProject::get_unparseHeaderFilesDebug() >= 4)
@@ -5297,7 +5298,7 @@ void unparseIncludedFiles ( SgProject* project, UnparseFormatHelp *unparseFormat
                        }
 #endif
 #if 0
-                    string canonical_path = boost::filesystem::canonical(source_file_directory_path).string();
+                    string canonical_path = std::filesystem::canonical(source_file_directory_path).string();
                     printf ("canonical_path = %s \n",canonical_path.c_str());
 #endif
 
@@ -5353,7 +5354,7 @@ void unparseIncludedFiles ( SgProject* project, UnparseFormatHelp *unparseFormat
 #endif
                       // We might need to build the added directory.
 
-                         boost::filesystem::path adjusted_header_file_directory_path(adjusted_header_file_directory);
+                         std::filesystem::path adjusted_header_file_directory_path(adjusted_header_file_directory);
                          create_directories(adjusted_header_file_directory_path);
 #if 0
                          printf ("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ \n");

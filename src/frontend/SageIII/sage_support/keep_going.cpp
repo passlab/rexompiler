@@ -6,6 +6,7 @@
 #include "sage3basic.h"
 
 #include <iostream>
+#include <filesystem>
 
 #include "keep_going.h"
 #include "processSupport.h" // ROSE_ASSERT in ROSE/src/util
@@ -393,7 +394,7 @@ void Rose::KeepGoing::commandLineProcessing
         else
         {
           expectations_filename__fail = arg;
-          if (!boost::filesystem::exists(expectations_filename__fail))
+          if (!std::filesystem::exists(expectations_filename__fail))
           {
             std::cerr
               << "[FATAL] "
@@ -420,7 +421,7 @@ void Rose::KeepGoing::commandLineProcessing
         else
         {
           expectations_filename__pass = arg;
-          if (!boost::filesystem::exists(expectations_filename__pass))
+          if (!std::filesystem::exists(expectations_filename__pass))
           {
             std::cerr
               << "[FATAL] "
@@ -857,7 +858,7 @@ Rose::KeepGoing::AppendToFile(const std::string& filename, const std::string& ms
       fout.close();
     }
   } // end scope for the scoped lock
-  boost::filesystem::remove (lock_file_name);
+  std::filesystem::remove (lock_file_name);
 }
 
 std::map<std::string, std::string>

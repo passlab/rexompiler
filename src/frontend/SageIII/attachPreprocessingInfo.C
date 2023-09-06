@@ -10,6 +10,8 @@
 // This fixed a reported bug which caused conflicts with autoconf macros (e.g. PACKAGE_BUGREPORT).
 #include "rose_config.h"
 
+#include <filesystem>
+
 // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace std;
 
@@ -128,7 +130,7 @@ attachPreprocessingInfoUsingWave (SgSourceFile *sageFilePtr, AttributeMapType& a
      //SageInterface::buildFile(..) generates files in memory where the source file has not yet 
      //been written to disk. We consider any case where the file does not exist on disk to be this
      //case.
-     if( ! boost::filesystem::exists(sourceFileName) ) 
+     if( ! std::filesystem::exists(sourceFileName) ) 
        return;
 
   // DQ (11/30/2008): 

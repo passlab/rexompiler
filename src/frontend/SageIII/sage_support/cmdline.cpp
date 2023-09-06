@@ -7,6 +7,8 @@
 /*-----------------------------------------------------------------------------
  *  Dependencies
  *---------------------------------------------------------------------------*/
+#include <filesystem>
+ 
 #include "sage3basic.h"
 #include "cmdline.h"
 #include "keep_going.h"
@@ -283,7 +285,7 @@ CommandlineProcessing::isValidFileWithExecutableFileSuffixes ( string name )
                printf ("In CommandlineProcessing::isValidFileWithExecutableFileSuffixes(): name = %s \n",name.c_str());
 #endif
             // Open file for reading
-               if ( boost::filesystem::exists(name.c_str()) )
+               if ( std::filesystem::exists(name.c_str()) )
                   {
                     returnValue = true;
 
@@ -1466,7 +1468,7 @@ SgProject::processCommandLine(const vector<string>& input_argv)
                std::string include_path_no_quotes = Rose::StringUtility::replaceAllCopy(include_path, "\"", "");
                try
                   {
-                    bool is_directory = boost::filesystem::is_directory(include_path_no_quotes);
+                    bool is_directory = std::filesystem::is_directory(include_path_no_quotes);
                     if (false == is_directory)
                        {
                       // DQ (3/15/2017): Fixed to use mlog message logging.
@@ -1476,7 +1478,7 @@ SgProject::processCommandLine(const vector<string>& input_argv)
                                          << std::endl;
                        }
                   }
-               catch (const boost::filesystem::filesystem_error& ex)
+               catch (const std::filesystem::filesystem_error& ex)
                   {
                        MLOG_ERROR_CXX("sage_support")
                                << "Exception processing argument to -I: "
@@ -1575,7 +1577,7 @@ NormalizeIncludePathOptions (std::vector<std::string>& argv)
           looking_for_include_path_arg = false; // reset for next iteration
 
           // Sanity check
-          bool is_directory = boost::filesystem::is_directory(arg);
+          bool is_directory = std::filesystem::is_directory(arg);
           if (false == is_directory)
           {
           // DQ (3/15/2017): Fixed to use mlog message logging.

@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <map>
+#include <filesystem>
 #include "FileUtility.h"
 #include <StringUtility.h>
 #include "mlog.h"
@@ -33,9 +34,6 @@
 #endif
 
 #include <boost/foreach.hpp>
-
-// CH (1/29/2010): Needed for boost::filesystem::exists(...)
-#include <boost/filesystem.hpp>
 
 #include <boost/version.hpp>
 #if BOOST_VERSION >= 103600
@@ -325,7 +323,7 @@ using namespace Rose;
             classifyLibrary(const string& fileName)
             {
 #ifndef CXX_IS_ROSE_CODE_GENERATION
-                using namespace boost::filesystem;
+                using namespace std::filesystem;
 
                 if (charListMatches(LINUX_INCLUDES, "include/", fileName))
                 {
@@ -363,9 +361,9 @@ using namespace Rose;
                 }
 
                 path p = fileName;
-                while (p.BOOST_HAS_BRANCH_PATH())
+                while (!p.empty())
                 {
-                    p = p.branch_path();
+                    p = p.parent_path();
                     if(exists(p / path("rose.h")))
                         return Rose::StringUtility::FILENAME_LIBRARY_ROSE;
 
@@ -514,7 +512,7 @@ Rose::StringUtility::homeDir(string& dir)
         {
             // First, check if this file exists. Filename may be changed 
             // into an illegal one by #line directive
-            if(!boost::filesystem::exists(fileName))
+            if(!std::filesystem::exists(fileName))
                 return FileNameClassification(FILENAME_LOCATION_NOT_EXIST,
                         "Unknown",
                         0);

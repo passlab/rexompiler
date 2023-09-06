@@ -14,8 +14,8 @@ namespace StringUtility {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // This part of the StringUtility API deals with file names and should be moved to some other name space. In particular, it
 // provides no definitions for "path", "filename", "extension", etc. and many of these functions won't work properly on a
-// non-POSIX system. Therefore, consider using Rose::FileSystem, which is mostly a thin wrapper around boost::filesystem. The
-// boost::filesystem documentation has good definitions for what the various terms should mean and works on non-POSIX file
+// non-POSIX system. Therefore, consider using Rose::FileSystem, which is mostly a thin wrapper around std::filesystem. The
+// std::filesystem documentation has good definitions for what the various terms should mean and works on non-POSIX file
 // systems.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -90,7 +90,7 @@ ROSE_UTIL_API void homeDir(std::string& dir);
  *
  *  Removes the "path" part of a "filename" (if there is one) and returns just the file name.
  *
- *  Terms are loosely defined and not likely to work for non-POSIX systems; consider using boost::filesystem instead. */
+ *  Terms are loosely defined and not likely to work for non-POSIX systems; consider using std::filesystem instead. */
 ROSE_UTIL_API std::string stripPathFromFileName(const std::string &fileNameWithPath);
 
 /** Returns all but the last component of a path in a filesystem.
@@ -99,18 +99,18 @@ ROSE_UTIL_API std::string stripPathFromFileName(const std::string &fileNameWithP
  *  Make it safe to input a filename without a path name (return the filename).
  *
  *  Terms are loosely defined and this function possibly doesn't work for non-POSIX file systems; consider using
- *  boost::filesystem instead. */
+ *  std::filesystem instead. */
 ROSE_UTIL_API std::string getPathFromFileName(const std::string &fileNameWithPath);
 
 /** Get the file name without the ".suffix".
  *
  *  Terms are loosely defined and it's not clear what happens for inputs like ".", ".foo", "..", ".foo.bar", "/.",
- *  etc. Consider using boost::filesystem instead. */
+ *  etc. Consider using std::filesystem instead. */
 ROSE_UTIL_API std::string stripFileSuffixFromFileName(const std::string & fileNameWithSuffix);
 
 /** Get the absolute path from the relative path.
  *
- *  Terms are loosely defined and this function is not likely to work on non-POSIX systems. Consider using boost::filesystem
+ *  Terms are loosely defined and this function is not likely to work on non-POSIX systems. Consider using std::filesystem
  *  instead. */
 ROSE_UTIL_API std::string getAbsolutePathFromRelativePath(const std::string &relativePath, bool printErrorIfAny = false);
 
@@ -120,7 +120,7 @@ ROSE_UTIL_API std::string getAbsolutePathFromRelativePath(const std::string &rel
  *  returns the original fileName.
  *
  *  Terms are loosely defined and this function is not likely to work correctly in some situations, such as when the "." is not
- *  in the last component of the file name.  Consider using boost::filesystem instead. */
+ *  in the last component of the file name.  Consider using std::filesystem instead. */
 ROSE_UTIL_API std::string fileNameSuffix(const std::string &fileName);
 
 
@@ -136,7 +136,7 @@ ROSE_UTIL_API std::string fileNameSuffix(const std::string &fileName);
  *  substring of their name. Note that @p patternString is not a glob or regular expression.  The return value strings are
  *  formed by concatenating the @p pathString and the file name with an intervening slash.
  *
- *  This function does not work for non-POSIX systems. Consider using boost::filesystem instead, which has a directory iterator
+ *  This function does not work for non-POSIX systems. Consider using std::filesystem instead, which has a directory iterator
  *  that works for non-POSIX systems also. */
 //ROSE_UTIL_API std::list<std::string> findfile(std::string patternString, std::string pathString)
     //SAWYER_DEPRECATED("use Rose::FileSystem functions instead"); // ROSE_DEPRECATED is not defined here

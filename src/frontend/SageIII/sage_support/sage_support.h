@@ -53,8 +53,8 @@
    #include <dlfcn.h>
 #endif
 
-// Needed for boost::filesystem::exists(...)
-#include "boost/filesystem.hpp"
+// Needed for std::filesystem::exists(...)
+#include <filesystem>
 #include <stdio.h>
 
 // Liao 10/8/2010, refactored OpenMP related code to ompAstConstruction.C

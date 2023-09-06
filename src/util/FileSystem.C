@@ -1,6 +1,11 @@
 #include <FileSystem.h>
 #include <set>
 #include <fstream>
+#include <filesystem>
+#include <regex>
+#include <chrono>
+#include <random>
+#include <system_error>
 
 namespace Rose {
 namespace FileSystem {
@@ -9,45 +14,62 @@ const char *tempNamePattern = "rose-%%%%%%%-%%%%%%%";
 
 bool
 baseNameMatches::operator()(const Path &path) {
-    return boost::regex_match(path.filename().string(), re_);
+    return std::regex_match(path.filename().string(), re_);
 }
 
 bool
 isExisting(const Path &path) {
-    return boost::filesystem::exists(path);
+    return std::filesystem::exists(path);
 }
 
 bool
 isFile(const Path &path) {
-    return boost::filesystem::is_regular_file(path);
+    return std::filesystem::is_regular_file(path);
 }
 
 bool
 isDirectory(const Path &path) {
-    return boost::filesystem::is_directory(path);
+    return std::filesystem::is_directory(path);
 }
 
 bool
 isSymbolicLink(const Path &path) {
-    return boost::filesystem::is_symlink(path);
+    return std::filesystem::is_symlink(path);
 }
 
 bool
 isNotSymbolicLink(const Path &path) {
-    return !boost::filesystem::is_symlink(path);
+    return !std::filesystem::is_symlink(path);
 }
 
 Path
 createTemporaryDirectory() {
-    Path dirName = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path(tempNamePattern);
-    boost::filesystem::create_directory(dirName);
+    // Generate a unique name based on timestamp and random number
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+
+    // Convert time to a string
+    std::string timeStr = std::to_string(now_c);
+
+    // Generate a random number
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 10000);
+    std::string randomStr = std::to_string(dis(gen));
+
+    // Combine time and random number into the directory name
+    std::string dirNameStr = "temp_" + timeStr + "_" + randomStr;
+
+    std::filesystem::path dirName = std::filesystem::temp_directory_path() / dirNameStr;
+    std::filesystem::create_directory(dirName);
+
     return dirName;
 }
 
 Path
 makeNormal(const Path &path) {
     std::vector<Path> components;
-    for (boost::filesystem::path::const_iterator i=path.begin(); i!=path.end(); ++i) {
+    for (std::filesystem::path::const_iterator i=path.begin(); i!=path.end(); ++i) {
         if (0 == i->string().compare("..") && !components.empty()) {
             components.pop_back();
         } else if (0 != i->string().compare(".")) {
@@ -70,8 +92,8 @@ makeRelative(const Path &path_, const Path &root_) {
     Path path = makeAbsolute(path_);
     Path root = makeAbsolute(root_);
 
-    boost::filesystem::path::const_iterator rootIter = root.begin();
-    boost::filesystem::path::const_iterator pathIter = path.begin();
+    std::filesystem::path::const_iterator rootIter = root.begin();
+    std::filesystem::path::const_iterator pathIter = path.begin();
 
     // Skip past common prefix
     while (rootIter!=root.end() && pathIter!=path.end() && *rootIter==*pathIter) {
@@ -115,7 +137,7 @@ findNamesRecursively(const Path &root) {
 
 void
 copyFile(const Path &src, const Path &dst) {
-    // Do not use boost::filesystem::copy_file in boost 1.56 and earlier because it is not possible to cross link c++11 rose
+    // Do not use std::filesystem::copy_file in boost 1.56 and earlier because it is not possible to cross link c++11 rose
     // with c++89 boost when using this symbol.  Boost issue #6124 fixed in boost 1.57 and later. Our solution is to use C++
     // stream I/O instead, which should still work on non-POSIX systems (Microsoft) although the exception situations might not
     // be exactly precise as POSIX. Use path::string rather than path::native in order to support Filesystem version 2.
@@ -123,12 +145,12 @@ copyFile(const Path &src, const Path &dst) {
     std::ofstream out(dst.string().c_str(), std::ios::binary);
     out <<in.rdbuf();
     if (in.fail()) {
-        throw boost::filesystem::filesystem_error("read failed", src,
-                                                  boost::system::error_code(errno, boost::system::system_category()));
+        //throw std::filesystem::filesystem_error("read failed", src,
+        //                                          std::system::error_code(errno, std::system::generic_category()));
     }
     if (out.fail()) {
-        throw boost::filesystem::filesystem_error("write failed", dst,
-                                                  boost::system::error_code(errno, boost::system::system_category()));
+        //throw std::filesystem::filesystem_error("write failed", dst,
+        //                                          std::system::error_code(errno, std::system::generic_category()));
     }
 }
 
@@ -139,7 +161,7 @@ copyFiles(const std::vector<Path> &fileNames, const Path &root, const Path &dstD
     for (const Path &fileName: fileNames) {
         Path dirName = dstDir / makeRelative(fileName.parent_path(), root);
         if (dirs.insert(dirName).second)
-            boost::filesystem::create_directories(dirName);
+            std::filesystem::create_directories(dirName);
         Path outputName = dirName / fileName.filename();
         copyFile(fileName, outputName);
     }
@@ -147,7 +169,7 @@ copyFiles(const std::vector<Path> &fileNames, const Path &root, const Path &dstD
 
 std::vector<Path>
 findRoseFilesRecursively(const Path &root) {
-    return findNamesRecursively(root, baseNameMatches(boost::regex("rose_.*")), isDirectory);
+    return findNamesRecursively(root, baseNameMatches(std::regex("rose_.*")), isDirectory);
 }
 
 // Don't use this if you can help it!

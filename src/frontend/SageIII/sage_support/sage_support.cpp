@@ -21,9 +21,9 @@
 #endif
 
 #include <algorithm>
+#include <filesystem>
 
 #include <boost/algorithm/string/join.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 
 // DQ (12/22/2019): I don't need this now, and it is an issue for some compilers (e.g. GNU 4.9.4).
@@ -556,7 +556,7 @@ bool roseInstallPrefix(std::string& result) {
     pathToCache += "/CMakeCache.txt";
     if ( SgProject::get_verbose() > 1 )
           printf ("Inside of roseInstallPrefix libdir = %s pathToCache = %s \n",libdir, pathToCache.c_str());
-    if (boost::filesystem::exists(pathToCache)) {
+    if (std::filesystem::exists(pathToCache)) {
       return false;
     } else {
       result = ROSE_AUTOMAKE_PREFIX;
@@ -3619,7 +3619,7 @@ SgSourceFile::build_Fortran_AST( vector<string> argv, vector<string> inputComman
           FileSystem::Path abs_path = FileSystem::makeAbsolute(this->get_unparse_output_filename());
           FileSystem::Path abs_dir = abs_path.parent_path();
           FileSystem::Path base = abs_dir.filename().stem();
-          string preprocessFilename = (abs_dir / boost::filesystem::unique_path(base.string() + "-%%%%%%%%.F90")).string();
+          string preprocessFilename = (abs_dir / std::filesystem::unique_path(base.string() + "-%%%%%%%%.F90")).string();
 
           // The Sawyer::FileSystem::TemporaryFile d'tor will delete the file. We close the file after it's created because
           // Rose::FileSystem::copyFile will reopen it in binary mode anyway.
@@ -4947,8 +4947,8 @@ SgFile::compileOutput ( vector<string>& argv, int fileNameIndex )
              }
             else
              {
-               boost::filesystem::path original_file = outputFilename;
-               boost::filesystem::path unparsed_file = get_unparse_output_filename();
+               std::filesystem::path original_file = outputFilename;
+               std::filesystem::path unparsed_file = get_unparse_output_filename();
 
                if (SgProject::get_verbose() >= 2)
                   {
@@ -4958,7 +4958,7 @@ SgFile::compileOutput ( vector<string>& argv, int fileNameIndex )
                       << "'" << unparsed_file << "' "
                       << "exists = "
                       << std::boolalpha
-                      << boost::filesystem::exists(unparsed_file)
+                      << std::filesystem::exists(unparsed_file)
                       << std::endl;
                   }
               // Don't replace the original input file with itself
@@ -4977,9 +4977,9 @@ SgFile::compileOutput ( vector<string>& argv, int fileNameIndex )
 
                   // copy_file will only completely override the existing file in Boost 1.46+
                   // http://stackoverflow.com/questions/14628836/boost-copy-file-has-inconsistent-behavior-when-overwrite-if-exists-is-used
-                    if (boost::filesystem::exists(unparsed_file))
+                    if (std::filesystem::exists(unparsed_file))
                        {
-                         boost::filesystem::remove(unparsed_file);
+                         std::filesystem::remove(unparsed_file);
                        }
 #if 0
                     printf ("NOTE: keep_going option supporting direct copy of original input file to overwrite the unparsed file \n");

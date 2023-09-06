@@ -1,24 +1,24 @@
 // Consider using $ROSE/src/util/FileSystem.h since that one is documented and uses a proper path type and supports both
-// version 2 and version 3 of boost::filesystem.
+// version 2 and version 3 of std::filesystem.
 
 // UNDER NO CIRCUMSTANCES SHOULD BOOST_FILESYSTEM_VERSION BE SET!!!
 //
-// The boost::filesystem version is not dependent on which compiler we're using, but rather which version
+// The std::filesystem version is not dependent on which compiler we're using, but rather which version
 // of boost is installed.  Hard-coding a boost version number based on the compiler version has a couple of problems:
 //  1. We don't know whether that filesystem version is available on a user's machine since ROSE supports multiple
 //     versions of boost (e.g., filesystem 3 is not available before boost 1.44)
 //  2. It pollutes things for the user, who might not want the version we select here (e.g., most users of recent
 //     versions of boost will almost certainly want version 3, not the version 2 we select).
 // Therefore, we should never select a filesystem version explicitly here, but rather be prepared to handle any version
-// that is installed.  If ROSE cannot support a particular version of boost::filesystem on a particular architecture with a
+// that is installed.  If ROSE cannot support a particular version of std::filesystem on a particular architecture with a
 // particular file then that should be documented where we state which versions of boost are supported, and possibly
 // checked during configuration. [Matzke 11/17/2014]: 
 
 #include <FileSystem.h>
 
-#include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <string>
+#include <filesystem>
 
 class FileHelper {
 public:
@@ -31,12 +31,12 @@ public:
     }
     
     static void ensureFolderExists(const std::string& folder){
-        boost::filesystem::path boostPath(folder);
+        std::filesystem::path boostPath(folder);
         create_directories(boostPath);
     }
     
     static void eraseFolder(const std::string& folder) {
-        boost::filesystem::path boostPath(folder);
+        std::filesystem::path boostPath(folder);
         remove_all(boostPath);
     }
     
@@ -51,12 +51,12 @@ public:
     }
 
     static std::string getParentFolder(const std::string& aPath) {
-        boost::filesystem::path boostPath(aPath);
+        std::filesystem::path boostPath(aPath);
         return boostPath.parent_path().string();
     }
 
     static std::string getFileName(const std::string& aPath) {
-        return Rose::FileSystem::toString(boost::filesystem::path(aPath).filename());
+        return Rose::FileSystem::toString(std::filesystem::path(aPath).filename());
     }
 
     static std::string makeAbsoluteNormalizedPath(const std::string& path, const std::string& workingDirectory) {
@@ -74,7 +74,7 @@ public:
     
     //Expects both paths to be absolute.
     static bool areEquivalentPaths(const std::string& path1, const std::string& path2) {
-        //Note: Do not use boost::filesystem::equivalent since the compared paths might not exist, which will cause an error.        
+        //Note: Do not use std::filesystem::equivalent since the compared paths might not exist, which will cause an error.        
         return normalizePath(path1).compare(normalizePath(path2)) == 0;
     }
 
@@ -96,16 +96,16 @@ public:
     }
     
     static bool fileExists(const std::string& fullFileName) {
-        return boost::filesystem::exists(fullFileName);
+        return std::filesystem::exists(fullFileName);
     }
 
     static bool isNotEmptyFolder(const std::string& fullFolderName) {
-        return boost::filesystem::exists(fullFolderName) && !boost::filesystem::is_empty(fullFolderName);
+        return std::filesystem::exists(fullFolderName) && !std::filesystem::is_empty(fullFolderName);
     }
     
     static std::string normalizePath(const std::string& aPath) {
-        boost::filesystem::path boostPath(aPath);
-        std::string normalizedPath = boostPath.normalize().string();
+        std::filesystem::path boostPath(aPath);
+        std::string normalizedPath = std::filesystem::canonical(boostPath).string();
         return normalizedPath;
     }
 

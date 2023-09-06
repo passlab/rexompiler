@@ -7,7 +7,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-
+#include <filesystem>
 
 
 #include "NameGenerator.hh"
@@ -15,8 +15,8 @@
 #include "Preprocess.hh"
 //#include "Transform.hh"
 #include "commandline_processing.h"
-#include "boost/filesystem.hpp"
-namespace bfs=boost::filesystem;
+
+namespace bfs=std::filesystem;
 // =====================================================================
 
 using namespace std;
