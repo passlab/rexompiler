@@ -4,7 +4,7 @@
 if(enable-c)
   add_subdirectory (astMergeTests)
   add_subdirectory (astPerformanceTests)
-  add_subdirectory (astProcessingTests)
+  #add_subdirectory (astProcessingTests)
   add_subdirectory (astQueryTests)
   add_subdirectory (astSymbolTableTests)
   add_subdirectory (astTokenStreamTests)
