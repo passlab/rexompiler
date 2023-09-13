@@ -112,7 +112,7 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-add_definitions(-DBOOST_ALL_NO_LIB=1)
+#add_definitions(-DBOOST_ALL_NO_LIB=1)
 
 # FIXME: Why do we have to have a copy of some standard built-in modules inside rose?
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/modules"  ${CMAKE_MODULE_PATH})
@@ -148,93 +148,14 @@ file(READ ${ROSE_SCM_DATE_FILE} ROSE_VERSION)
 message(STATUS "The ROSE version integer is ${ROSE_VERSION}")
 message(STATUS "The ROSE version string is ${ROSE_PACKAGE_VERSION}")
 
-########################################################################################################################
-# Boost libraries
-########################################################################################################################
-
-message(STATUS
-  "If you get a whole bunch of warnings saying 'New Boost version may have incorrect or missing dependencies and "
-  "imported targets' it is probably because you're using a Boost version that was released after your CMake version. "
-  "See [https://github.com/Kitware/CMake/commits/master/Modules/FindBoost.cmake] to see latest supported version and "
-  "[https://github.com/Microsoft/vcpkg/issues/2459] for a description of the problem. Note that CMake versions "
-  "3.11.0 through 3.13.2 and possibly later) cannot be compiled (syntax errors) with a GNU C++ compiler that's "
-  "configured to use a non-default language standard (e.g., C++11 with GCC-5.4 whose default is GNU++03).")
-
-set(Boost_USE_STATIC_LIBS FALSE)
-set(Boost_DEBUG ${VERBOSE})
-
-# Honor BOOST_HOME environment variable
-if(DEFINED ENV{BOOST_HOME})
-  set(BOOST_ROOT "$ENV{BOOST_HOME}")
-endif()
-
-option(Boost_USE_MULTITHREADED "Should Boost multithreaded libraries be used?" OFF)
-
-if(WIN32)
-  find_package(Boost REQUIRED)
-  set(BOOST_LIBRARYDIR ${Boost_LIBRARY_DIRS})
-  set(BOOST_INCLUDEDIR ${Boost_INCLUDE_DIRS}/)
-
-  message("Boost information:")
-  message("  BOOST_ROOT: ${BOOST_ROOT}")
-  message("  Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
-  message("  Boost_LIBRARIES: ${Boost_LIBRARIES}")
-  message("  Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}")
-  message("  BOOST_LIBRARYDIR : ${BOOST_LIBRARYDIR}")
-  message("  BOOST_INCLUDEDIR : ${BOOST_INCLUDEDIR}")
-
-  include_directories(${Boost_INCLUDE_DIRS})
-  link_directories(${Boost_LIBRARY_DIRS})
-endif(WIN32)
-
-# FIXME: 1.47 is no longer supported by ROSE, but is what's installed on Jenkins' CMake test machine. This should
-#        be changed to the actual minimum supported version once Pei-Hung upgrades the machine. [Matzke 2019-01-21]
-#
-# First look for the Boost libraries that are required in order to compile ROSE, then additionally look for any optional
-# libraries that are useful to ROSE but not required. From a user: "The find_package() change is required for boost
-# 1.70 or above on any system when using a recent enough version of cmake.  Without it, serialization support will not
-# be used.  Before boost 1.70, the findBoost() in cmake is used directly, and it will look for boost components that are
-# not in the find_package clause.  Since 1.70, cmake will load the findBoost() provided by the boost package itself.
-# Unfortunately, that findBoost() will only check for components in the find_package() clause.  This means that
-# serialization is considered not to exist, even if it is there.  My change calls find_package again without the
-# REQUIRED clause after the first one has succeeded.  That way the first clause checks for requires components, and the
-# second can check again including optional components.  If the version of cmake is high enough you can use an
-# OPTIONAL_COMPONENTS clause instead, but that wasn't introduced until 3.11."
-#find_package(Boost 1.47.0
-#  COMPONENTS chrono date_time
-#  REQUIRED)
-#if(NOT Boost_FOUND)
-#  message(FATAL_ERROR "Could not find Boost version 1.35.0 or newer command")
-#endif()
-#find_package(Boost 1.47.0
-#  COMPONENTS chrono date_time)
-#include_directories(${Boost_INCLUDE_DIRS})
-
 # Paths to install header, executable, and libraries
 set(INCLUDE_INSTALL_DIR "include/rose")
 set(BIN_INSTALL_DIR     "bin")
 set(LIB_INSTALL_DIR     "${ROSE_LIB_DIR_NAME}")
 
-#set(INSTALL_TARGETS_DEFAULT_ARGS
-#  RUNTIME DESTINATION "${BIN_INSTALL_DIR}"
-#  LIBRARY DESTINATION "${LIB_INSTALL_DIR}"
-#  ARCHIVE DESTINATION "${LIB_INSTALL_DIR}"
-#  COMPONENT Devel)
-
 # A new definition to tweak code for cmake
 set(USE_CMAKE 1)
 
-# ROSE configuration variables for Boost
-#set(HAVE_BOOST ${Boost_FOUND})
-#set(HAVE_BOOST_SERIALIZATION_LIB ${Boost_SERIALIZATION_FOUND})
-#set(HAVE_BOOST_DATE_TIME ${Boost_DATE_TIME_FOUND})
-#set(HAVE_BOOST_FILESYSTEM ${Boost_FILESYSTEM_FOUND})
-#set(HAVE_BOOST_PROGRAM_OPTIONS ${Boost_PROGRAM_OPTIONS_FOUND})
-#set(HAVE_BOOST_REGEX ${Boost_REGEX_FOUND})
-#set(HAVE_BOOST_SYSTEM ${Boost_SYSTEM_FOUND})
-#set(HAVE_BOOST_THREAD ${Boost_THREAD_FOUND})
-#set(HAVE_BOOST_WAVE ${Boost_WAVE_FOUND})
-#set(USE_ROSE_BOOST_WAVE_SUPPORT ${Boost_WAVE_FOUND})
 
 ########################################################################################################################
 # ROSETTA
@@ -621,12 +542,12 @@ endif()
 # define a global variable to collect all common linked third-party libraries for rose
 if(NOT WIN32)
   if(NOT APPLE)
-    set(link_with_libraries ${Boost_LIBRARIES} ${M_LIB} ${RT_LIB} ${CMAKE_THREAD_LIBS_INIT})
+    set(link_with_libraries ${M_LIB} ${RT_LIB} ${CMAKE_THREAD_LIBS_INIT})
   else()
-    set(link_with_libraries ${Boost_LIBRARIES} ${M_LIB} ${CMAKE_THREAD_LIBS_INIT})
+    set(link_with_libraries ${M_LIB} ${CMAKE_THREAD_LIBS_INIT})
   endif()
 else()
-  set(link_with_libraries ${Boost_LIBRARIES} shlwapi.lib psapi.lib)
+  set(link_with_libraries shlwapi.lib psapi.lib)
 endif()
 
 # Check compilers and version numbers. The module is located in src/cmake/modules.
