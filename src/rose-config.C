@@ -35,13 +35,13 @@ static const char *description =
 #include <rose.h>                                       // POLICY_OK -- this is not a ROSE library source file
 #include <rose_getline.h>
 
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/trim.hpp>
 #include <boost/foreach.hpp>
-#include <boost/regex.hpp>
+#include <regex>
 #include <map>
 #include <string>
 #include <vector>
+
+#include <util/StringUtility/Trim.h>
 
 using namespace Rose;
 
@@ -121,7 +121,7 @@ readConfigFile(const std::filesystem::path &configName) {
     exit(1);
   }
 
-  boost::regex keyRe("[a-zA-Z][a-zA-Z_0-9]*");
+  std::regex keyRe("[a-zA-Z][a-zA-Z_0-9]*");
   size_t lineNumber = 0;
   while (ssize_t nchars = rose_getline(&r.line, &r.linesz, r.file)) {
     ++lineNumber;
@@ -134,17 +134,17 @@ readConfigFile(const std::filesystem::path &configName) {
     }
 
     std::string s = r.line;
-    boost::trim(s);
+    s = trim(s);
     if (s.empty() || '#' == s[0])
       continue;
 
     // Parse the "key=value" line
     size_t equal = s.find('=');
     std::string key = s.substr(0, equal);
-    boost::trim(key);
+    key = trim(key);
     std::string value = equal == std::string::npos ? std::string() : s.substr(equal+1);
-    boost::trim(value);
-    if (equal == std::string::npos || !boost::regex_match(key, keyRe)) {
+    value = trim(value);
+    if (equal == std::string::npos || !std::regex_match(key, keyRe)) {
       MLOG_FATAL_CXX("rose-config")  <<configName <<":" <<lineNumber <<": syntax error: expected KEY = VALUE\n";
       exit(1);
     }
@@ -184,7 +184,8 @@ readConfigFile(const Settings &settings) {
     return readConfigFile(settings.configFile);
 
   std::vector<std::string> dirs;
-  boost::split(dirs, settings.searchDirs, boost::is_any_of(":;"));
+  //boost::split(dirs, settings.searchDirs, boost::is_any_of(":;"));
+  dirs = Rose::StringUtility::split(settings.searchDirs, ":;");
   BOOST_FOREACH (const std::string &dir, dirs) {
     std::filesystem::path configFile = std::filesystem::path(dir) / CONFIG_NAME;
     if (std::filesystem::exists(configFile))

@@ -4,7 +4,7 @@
 #include <SplitJoin.h>
 #include <integerOps.h>                                 // rose
 
-#include <boost/regex.hpp>
+#include <regex>
 #include <cassert>
 #include <list>
 
@@ -188,13 +188,13 @@ removeRedundantSubstrings(const std::string &s) {
 
 std::string
 removeAnsiEscapes(const std::string &s) {
-    boost::regex csiSequences("\\033\\[[\\x30-\\x3f]*[\\x20-\\x2f]*[\\x40-x7e]");
+    std::regex csiSequences("\\033\\[[\\x30-\\x3f]*[\\x20-\\x2f]*[\\x40-x7e]");
     std::string retval;
 
     const char *iter = s.c_str();
     const char *end = s.c_str() + s.size();
-    boost::cmatch found;
-    while (boost::regex_search(iter, end, found, csiSequences)) {
+    std::cmatch found;
+    while (std::regex_search(iter, end, found, csiSequences)) {
         retval += std::string(iter, iter + found.position());
         iter += found.position() + found.length();
     }
