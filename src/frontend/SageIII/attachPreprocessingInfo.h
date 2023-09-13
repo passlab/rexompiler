@@ -31,8 +31,6 @@ ROSEAttributesList *getPreprocessorDirectives( std::string fileName, std::string
 // void attachPreprocessingInfo(SgSourceFile *sageFile);
 void attachPreprocessingInfo(SgSourceFile *sageFile, const std::string & new_filename = "");
 
-// DQ (11/30/2008): Part of refactoring of code specific to Wave.
-void attachPreprocessingInfoUsingWave(SgSourceFile *sageFile);
 
 #if 0
 // DQ (12/16/2008): comment out while I debug the non-wave support.
