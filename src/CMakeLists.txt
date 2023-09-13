@@ -26,7 +26,7 @@ add_custom_target(
 
 # Header files needed to build ROSETTA
 include_directories(
-  ${Boost_INCLUDE_DIRS}
+  #${Boost_INCLUDE_DIRS}
   ${CMAKE_SOURCE_DIR}/src/midend/programTransformation/transformationTracking
   ${CMAKE_BINARY_DIR}/src/3rdPartyLibraries/fortran-parser
   ${JAVA_INCLUDE_PATH}
@@ -241,7 +241,8 @@ install(TARGETS rose-compiler DESTINATION bin)
 set(rose_config_installed_cppflags "-I${CMAKE_INSTALL_PREFIX}/include/rose")
 
 set(rose_library_dir_list "${CMAKE_INSTALL_PREFIX}/${ROSE_LIB_DIR_NAME}")
-set(rose_library_dir_list "${rose_library_dir_list};${Boost_LIBRARY_DIRS}")
+#set(rose_library_dir_list "${rose_library_dir_list};${Boost_LIBRARY_DIRS}")
+set(rose_library_dir_list "${rose_library_dir_list}")
 foreach(X IN LISTS rose_library_dir_list)
   set(rose_config_installed_ldflags "${rose_config_installed_ldflags} -L${X}")
 endforeach()
@@ -249,7 +250,8 @@ set(rose_config_installed_cppflags "${rose_config_installed_cppflags} -I/usr/inc
 
 
 set(rose_library_list "rose")
-set(rose_library_list "${rose_library_list};${Boost_LIBRARIES}")
+#set(rose_library_list "${rose_library_list};${Boost_LIBRARIES}")
+set(rose_library_list "${rose_library_list}")
 set(rose_library_list "${rose_library_list};m;quadmath")
 
 foreach(X IN LISTS rose_library_list)

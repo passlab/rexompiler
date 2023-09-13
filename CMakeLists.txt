@@ -200,34 +200,34 @@ endif(WIN32)
 # REQUIRED clause after the first one has succeeded.  That way the first clause checks for requires components, and the
 # second can check again including optional components.  If the version of cmake is high enough you can use an
 # OPTIONAL_COMPONENTS clause instead, but that wasn't introduced until 3.11."
-find_package(Boost 1.47.0
-  COMPONENTS chrono date_time
-  REQUIRED)
-if(NOT Boost_FOUND)
-  message(FATAL_ERROR "Could not find Boost version 1.35.0 or newer command")
-endif()
-find_package(Boost 1.47.0
-  COMPONENTS chrono date_time)
-include_directories(${Boost_INCLUDE_DIRS})
+#find_package(Boost 1.47.0
+#  COMPONENTS chrono date_time
+#  REQUIRED)
+#if(NOT Boost_FOUND)
+#  message(FATAL_ERROR "Could not find Boost version 1.35.0 or newer command")
+#endif()
+#find_package(Boost 1.47.0
+#  COMPONENTS chrono date_time)
+#include_directories(${Boost_INCLUDE_DIRS})
 
 # Paths to install header, executable, and libraries
 set(INCLUDE_INSTALL_DIR "include/rose")
 set(BIN_INSTALL_DIR     "bin")
 set(LIB_INSTALL_DIR     "${ROSE_LIB_DIR_NAME}")
 
-set(INSTALL_TARGETS_DEFAULT_ARGS
-  RUNTIME DESTINATION "${BIN_INSTALL_DIR}"
-  LIBRARY DESTINATION "${LIB_INSTALL_DIR}"
-  ARCHIVE DESTINATION "${LIB_INSTALL_DIR}"
-  COMPONENT Devel)
+#set(INSTALL_TARGETS_DEFAULT_ARGS
+#  RUNTIME DESTINATION "${BIN_INSTALL_DIR}"
+#  LIBRARY DESTINATION "${LIB_INSTALL_DIR}"
+#  ARCHIVE DESTINATION "${LIB_INSTALL_DIR}"
+#  COMPONENT Devel)
 
 # A new definition to tweak code for cmake
 set(USE_CMAKE 1)
 
 # ROSE configuration variables for Boost
-set(HAVE_BOOST ${Boost_FOUND})
+#set(HAVE_BOOST ${Boost_FOUND})
 #set(HAVE_BOOST_SERIALIZATION_LIB ${Boost_SERIALIZATION_FOUND})
-set(HAVE_BOOST_DATE_TIME ${Boost_DATE_TIME_FOUND})
+#set(HAVE_BOOST_DATE_TIME ${Boost_DATE_TIME_FOUND})
 #set(HAVE_BOOST_FILESYSTEM ${Boost_FILESYSTEM_FOUND})
 #set(HAVE_BOOST_PROGRAM_OPTIONS ${Boost_PROGRAM_OPTIONS_FOUND})
 #set(HAVE_BOOST_REGEX ${Boost_REGEX_FOUND})
