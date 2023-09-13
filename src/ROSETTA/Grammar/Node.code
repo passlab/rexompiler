@@ -3,18 +3,17 @@ HEADER_NODE_PREDECLARATION_START
 
 #include <semaphore.h>
 
-// tps (01/27/10): Added essential files..
-//#include "sage3basic.h"
-#include <rosePublicConfig.h>
+#include <unordered_map>
+#include <unordered_set>
+#include <functional>
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
-#include <boost/serialization/map.hpp>
-#include <boost/serialization/set.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/version.hpp>
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
+#include <boost/serialization/nvp.hpp>
+
+// tps (01/27/10): Added essential files..
+//#include "sage3basic.h"
+#include <rosePublicConfig.h>
 
 #include "Cxx_Grammar.h"
 
@@ -350,12 +349,11 @@ typedef SgTokenPtrList* SgTokenPtrListPtr;
 // DQ (11/4/2009): Trying to use the boost hash_map support
 namespace rose_hash
    {
-  // The condition here is not needed for GCC 4.2, but is needed (and does not completely work) for earlier versions
-     using boost::unordered_map;
-     using boost::unordered_multimap;
-     using boost::unordered_set;
-     using boost::hash;
-
+   using std::unordered_map;
+   using std::unordered_multimap;
+   using std::unordered_set;
+   using std::hash;
+   
   // DQ (4/23/2009): These should be put into this namespace so that we don't contaminate the global scope.
   // DQ (8/19/2008): This is already defined in src/frontend/SageIII/astMerge/buildMangledNameMap.h
      struct eqstr_string
