@@ -22,7 +22,6 @@
 #include <sstream>
 #include <set>
 #include <map>
-#include <unordered_map>
 
 #include "Outliner.hh"
 #include "ASTtools.hh"
@@ -1398,8 +1397,8 @@ class SymbolMapOfTwoFiles
           dict[i1->second]=i2->second;
 #endif          
         rose_hash_multimap::iterator i1, i2;
-        std::unordered_map<string, SgVariableSymbol*> varSymDict; 
-        std::unordered_map<string, SgFunctionSymbol*> funcSymDict; 
+        boost::unordered_map<string, SgVariableSymbol*> varSymDict; 
+        boost::unordered_map<string, SgFunctionSymbol*> funcSymDict; 
 
         // cache mapping of new symbols,indexed by qualified name : qualified name to symbol
         for (i2=set2->begin(); i2!=set2->end(); i2++)
