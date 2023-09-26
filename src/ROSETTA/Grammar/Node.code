@@ -7,10 +7,6 @@ HEADER_NODE_PREDECLARATION_START
 #include <unordered_set>
 #include <functional>
 
-#include <boost/serialization/access.hpp>
-#include <boost/serialization/base_object.hpp>
-#include <boost/serialization/nvp.hpp>
-
 // tps (01/27/10): Added essential files..
 //#include "sage3basic.h"
 #include <rosePublicConfig.h>

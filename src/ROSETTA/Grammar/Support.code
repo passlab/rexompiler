@@ -8,16 +8,6 @@ HEADER_START
      private:
           $CLASSNAME(const $CLASSNAME &); /* private so it can't be used. */
           $CLASSNAME & operator= ( const $CLASSNAME & X );
-
-        private:
-                friend class boost::serialization::access;
-                template<class S>
-                void serialize(S &s, const unsigned /*version*/) {
-                        s & BOOST_SERIALIZATION_BASE_OBJECT_NVP(SgNode);
-                        // No data members are serialized at this time, but this serialization function needs to be
-                        // defined because SgSupport is an indirect base class of SgBinaryComposite, which is
-                        // serializable.
-                }
 HEADER_END
 
 
@@ -6117,16 +6107,6 @@ HEADER_APPLICATION_FILE_PREDECLARATION_START
 HEADER_APPLICATION_FILE_PREDECLARATION_END
 
 HEADER_APPLICATION_FILE_START
-
-private:
-        friend class boost::serialization::access;
-
-        template<class S>
-        void serialize(S &s, const unsigned /*version*/) {
-             s & BOOST_SERIALIZATION_BASE_OBJECT_NVP(SgSupport);
-             // Most data members are not serialized yet, but this is here because SgFile is a base class of
-             // SgBinaryComposite whose fields are serialized.
-        }
 
 public:
 
