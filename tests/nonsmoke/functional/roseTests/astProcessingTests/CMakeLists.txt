@@ -161,18 +161,18 @@ if (HAVE_SYS_TIME_H)
   endforeach()
 
   #-----------------------------------------------------------------------------
-  #add_executable(processnew3Down4SgIncGraph3 processnew3Down4SgIncGraph3.C)
-  #target_link_libraries(processnew3Down4SgIncGraph3
-  #  ROSE_DLL EDG ${link_with_libraries})
-  #set(processnew3Down4SgIncGraph3_SPECIMENS test11.C test12.C test13.C test14.C)
+  add_executable(processnew3Down4SgIncGraph3 processnew3Down4SgIncGraph3.C)
+  target_link_libraries(processnew3Down4SgIncGraph3
+    ROSE_DLL EDG ${link_with_libraries})
+  set(processnew3Down4SgIncGraph3_SPECIMENS test11.C test12.C test13.C test14.C)
 
-  #set(processnew3Down4SgIncGraph3_SPECIMENS eif.C eif2.C eif3.C eif4.C)
-  #foreach(specimen ${processnew3Down4SgIncGraph3_SPECIMENS})
-  #  add_test(
-  #    NAME pnew2_${specimen}
-  #    COMMAND processnew3Down4SgIncGraph3 ${CMAKE_CURRENT_SOURCE_DIR}/${specimen}
-  #  )
-  #endforeach()
+  set(processnew3Down4SgIncGraph3_SPECIMENS eif.C eif2.C eif3.C eif4.C)
+  foreach(specimen ${processnew3Down4SgIncGraph3_SPECIMENS})
+    add_test(
+      NAME pnew2_${specimen}
+      COMMAND processnew3Down4SgIncGraph3 ${CMAKE_CURRENT_SOURCE_DIR}/${specimen}
+    )
+  endforeach()
 
   if (enable-binary-analysis)
     #---------------------------------------------------------------------------
