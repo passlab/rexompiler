@@ -3,7 +3,6 @@
 #include "rose.h"
 #include "AstDOTGeneration.h"
 #include "utility_functions.h"
-#include <boost/foreach.hpp>
 
 struct ExtraNodeInfo
 {

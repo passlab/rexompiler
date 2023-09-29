@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 
     vector<SgFunctionDeclaration*> funcs = SageInterface::querySubTree<SgFunctionDeclaration>(project,
 V_SgFunctionDeclaration);
-    BOOST_FOREACH (SgFunctionDeclaration* func, funcs)
+    for (SgFunctionDeclaration* func: funcs)
     {
         if (func->get_name() != "foo")
             continue;

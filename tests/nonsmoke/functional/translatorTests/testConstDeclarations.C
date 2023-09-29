@@ -4,7 +4,6 @@
 // directory which demonstrates input codes that demonstrate bugs in ROSE.
 
 #include "rose.h"
-#include <boost/foreach.hpp>
 
 // using namespace SageBuilder;
 // using namespace SageInterface;
@@ -17,7 +16,7 @@ main(int argc, char* argv[])
      SgProject* project = frontend(argc, argv);
 
      std::vector<SgIfStmt*> ifs = SageInterface::querySubTree<SgIfStmt>(project, V_SgIfStmt);
-     BOOST_FOREACH(SgIfStmt* if_stmt, ifs)
+     for(SgIfStmt* if_stmt: ifs)
         {
           if (SgExpression *se = isSgExprStatement(if_stmt->get_conditional())->get_expression())
              {

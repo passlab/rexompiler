@@ -33,7 +33,6 @@
 #include <sys/utsname.h>
 #endif
 
-#include <boost/foreach.hpp>
 
 #include <boost/version.hpp>
 #if BOOST_VERSION >= 103600

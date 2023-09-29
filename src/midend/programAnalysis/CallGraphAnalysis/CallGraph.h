@@ -13,7 +13,6 @@
 #include <string>
 #include <functional>
 #include <queue>
-#include <boost/foreach.hpp>
 #include <boost/unordered_map.hpp>
 
 class FunctionData;
@@ -211,7 +210,7 @@ CallGraphBuilder::buildCallGraph(Predicate pred)
     VariantVector vv(V_SgFunctionDeclaration);
     GetOneFuncDeclarationPerFunction defFunc;
     std::vector<SgNode*> fdecl_nodes = NodeQuery::queryMemoryPool(defFunc, &vv);
-    BOOST_FOREACH(SgNode *node, fdecl_nodes) {
+    for(SgNode *node: fdecl_nodes) {
         SgFunctionDeclaration *fdecl = isSgFunctionDeclaration(node);
         SgFunctionDeclaration *unique = isSgFunctionDeclaration(fdecl->get_firstNondefiningDeclaration());
 #if 0 //debug
@@ -243,13 +242,13 @@ CallGraphBuilder::buildCallGraph(Predicate pred)
     }
 
     // Add edges to the graph
-    BOOST_FOREACH(FunctionData &currentFunction, callGraphData) {
+    for(FunctionData &currentFunction: callGraphData) {
         SgFunctionDeclaration* curFuncDecl = currentFunction.functionDeclaration;
         std::string curFuncName = curFuncDecl->get_qualified_name().getString();
         SgGraphNode * srcNode = hasGraphNodeFor(currentFunction.functionDeclaration);
         ROSE_ASSERT(srcNode != NULL);
         std::vector<SgFunctionDeclaration*> & callees = currentFunction.functionList;
-        BOOST_FOREACH(SgFunctionDeclaration * callee, callees) {
+        for(SgFunctionDeclaration * callee: callees) {
             if (isSelected(pred)(callee)) {
                 SgGraphNode * dstNode = getGraphNodeFor(callee); //getGraphNode here, see function comment
                 ROSE_ASSERT(dstNode != NULL);

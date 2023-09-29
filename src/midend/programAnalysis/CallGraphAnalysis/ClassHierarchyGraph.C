@@ -1,13 +1,8 @@
 // tps : Switching from rose.h to sage3 changed size from 17,7 MB to 7,3MB
 #include "sage3basic.h"
-
 #include "CallGraph.h"
-#include <boost/foreach.hpp>
-#include <boost/tuple/tuple.hpp>
 
-#define foreach BOOST_FOREACH
 using namespace std;
-using namespace boost;
 
 ClassHierarchyWrapper::ClassHierarchyWrapper(SgNode *node)
    {
@@ -150,7 +145,7 @@ void findParents(const string& classMangledName,
     ClassHierarchyWrapper::ClassDefSet& currentTransitiveParents = transitiveParents[classMangledName];
 
     //Our transitive parents are simply the union of our parents' transitive parents
-    foreach(SgClassDefinition* parent, currentParents->second)
+    for(SgClassDefinition* parent: currentParents->second)
     {
         std::string parentName = parent->get_declaration()->get_mangled_name();
 

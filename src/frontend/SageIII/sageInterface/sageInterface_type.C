@@ -3,10 +3,8 @@
 #include <iostream>
 #include "sageInterface.h"
 #include <map>
-#include <boost/foreach.hpp>
 using namespace std;
 
-#define foreach BOOST_FOREACH
 
 #define DEBUG_QUADRATIC_BEHAVIOR 0
 
@@ -822,7 +820,7 @@ bool isCopyConstructible(SgType* type)
             }
             
             //Check that all the bases classes are copy constructible
-            foreach (SgBaseClass* baseClass, defn->get_inheritances())
+            for (SgBaseClass* baseClass: defn->get_inheritances())
             {
                 SgClassDeclaration* baseClassDecl = baseClass->get_base_class();
                 if (!isCopyConstructible(baseClassDecl->get_type()))
@@ -1570,9 +1568,9 @@ bool isPureVirtualClass(SgType* type, const ClassHierarchyWrapper& classHierarch
     
     //Find all virtual and concrete functions
     set<SgMemberFunctionDeclaration*> concreteFunctions, pureVirtualFunctions;
-    foreach(SgClassDefinition* c, inclusiveAncestors)
+    for(SgClassDefinition* c: inclusiveAncestors)
     {
-        foreach(SgDeclarationStatement* memberDeclaration, c->get_members())
+        for(SgDeclarationStatement* memberDeclaration: c->get_members())
         {
             if (SgMemberFunctionDeclaration* memberFunction = isSgMemberFunctionDeclaration(memberDeclaration))
             {
@@ -1589,11 +1587,11 @@ bool isPureVirtualClass(SgType* type, const ClassHierarchyWrapper& classHierarch
     }
     
     //Check if each virtual function is implemented somewhere
-    foreach (SgMemberFunctionDeclaration* virtualFunction, pureVirtualFunctions)
+    for (SgMemberFunctionDeclaration* virtualFunction: pureVirtualFunctions)
     {
         bool foundConcrete = false;
         
-        foreach (SgMemberFunctionDeclaration* concreteFunction, concreteFunctions)
+        for (SgMemberFunctionDeclaration* concreteFunction: concreteFunctions)
         {
             if (concreteFunction->get_name() != virtualFunction->get_name())
                 continue;
@@ -1680,8 +1678,8 @@ if (!sgClassType) { \
         inclusiveAncestors.insert(classDef);
         
         //Find all member functions
-        foreach(SgClassDefinition* c, inclusiveAncestors) {
-            foreach(SgDeclarationStatement* memberDeclaration, c->get_members()) {
+        for(SgClassDefinition* c: inclusiveAncestors) {
+            for(SgDeclarationStatement* memberDeclaration: c->get_members()) {
                 if (SgMemberFunctionDeclaration* memberFunction = isSgMemberFunctionDeclaration(memberDeclaration)) {
                     allMemberFunctions.push_back(memberFunction);
                 }
@@ -1713,8 +1711,8 @@ if (!sgClassType) { \
         set<SgClassDefinition*> exclusiveAncestors(ancestors.begin(), ancestors.end());
         
         //Find all data members
-        foreach(SgClassDefinition* c, exclusiveAncestors) {
-            foreach(SgDeclarationStatement* memberDeclaration, c->get_members()) {
+        for(SgClassDefinition* c: exclusiveAncestors) {
+            for(SgDeclarationStatement* memberDeclaration: c->get_members()) {
                 if (SgVariableDeclaration * sgVariableDeclaration = isSgVariableDeclaration(memberDeclaration)) {
                     allVariableDeclarations.push_back(sgVariableDeclaration);
                 }
@@ -1783,7 +1781,7 @@ if (!sgClassType) { \
 #if DEBUG_QUADRATIC_BEHAVIOR
         printf ("In HasNoThrowAssign(): allMemberFunctions.size() = %zu \n",allMemberFunctions.size());
 #endif
-        foreach(SgMemberFunctionDeclaration* memberFunction,allMemberFunctions) {
+        for(SgMemberFunctionDeclaration* memberFunction:allMemberFunctions) {
             if (memberFunction->get_specialFunctionModifier().isOperator() && memberFunction->get_name().getString()=="operator="){
                 // check if the function has nothrow attribute
                 //TODO: C++11 accepts noexcept expression which we need to check when we support it.
@@ -1812,7 +1810,7 @@ if (!sgClassType) { \
 #if DEBUG_QUADRATIC_BEHAVIOR
         printf ("In HasNoThrowCopy(): allMemberFunctions.size() = %zu \n",allMemberFunctions.size());
 #endif
-        foreach(SgMemberFunctionDeclaration* memberFunction,allMemberFunctions) {
+        for(SgMemberFunctionDeclaration* memberFunction:allMemberFunctions) {
             if (memberFunction->get_specialFunctionModifier().isConstructor()){
                 // function must have exactly one argument and the argument type must match class type after stripping typedef, const, and ref
                 if(CheckIfFunctionAcceptsArgumentIgnoreConstRefAndTypedef(memberFunction)) {
@@ -1842,7 +1840,7 @@ if (!sgClassType) { \
 #if DEBUG_QUADRATIC_BEHAVIOR
         printf ("In HasNoThrowConstructor(): allMemberFunctions.size() = %zu \n",allMemberFunctions.size());
 #endif
-        foreach(SgMemberFunctionDeclaration* memberFunction,allMemberFunctions) {
+        for(SgMemberFunctionDeclaration* memberFunction:allMemberFunctions) {
             if (memberFunction->get_specialFunctionModifier().isConstructor()){
                 // function must have no args
                 if(memberFunction->get_args().size() == 0) {
@@ -1879,7 +1877,7 @@ if (!sgClassType) { \
 #if DEBUG_QUADRATIC_BEHAVIOR
         printf ("In HasTrivialAssign(): allMemberFunctions.size() = %zu \n",allMemberFunctions.size());
 #endif
-        foreach(SgMemberFunctionDeclaration* memberFunction,allMemberFunctions) {
+        for(SgMemberFunctionDeclaration* memberFunction:allMemberFunctions) {
             if (memberFunction->get_specialFunctionModifier().isOperator() && memberFunction->get_name().getString()=="operator="){
                 // function must have exactly one argument and the argument type after stripping typedef, const, and ref must match class type
                 if(CheckIfFunctionAcceptsArgumentIgnoreConstRefAndTypedef(memberFunction))
@@ -1915,7 +1913,7 @@ if (!sgClassType) { \
 #if DEBUG_QUADRATIC_BEHAVIOR
         printf ("In HasTrivialCopy(): allMemberFunctions.size() = %zu \n",allMemberFunctions.size());
 #endif
-        foreach(SgMemberFunctionDeclaration* memberFunction,allMemberFunctions) {
+        for(SgMemberFunctionDeclaration* memberFunction:allMemberFunctions) {
             if (memberFunction->get_specialFunctionModifier().isConstructor()){
                 // function must have exactly one argument and the argument type after stripping typedef, const, and ref must match passed-in type
                 if(CheckIfFunctionAcceptsArgumentIgnoreConstRefAndTypedef(memberFunction))
@@ -1947,7 +1945,7 @@ if (!sgClassType) { \
 #if DEBUG_QUADRATIC_BEHAVIOR
         printf ("In HasTrivialConstructor(): allMemberFunctions.size() = %zu \n",allMemberFunctions.size());
 #endif
-        foreach(SgMemberFunctionDeclaration* memberFunction,allMemberFunctions) {
+        for(SgMemberFunctionDeclaration* memberFunction:allMemberFunctions) {
             if (memberFunction->get_specialFunctionModifier().isConstructor()){
                 return false;
             }
@@ -1979,7 +1977,7 @@ if (!sgClassType) { \
 #if DEBUG_QUADRATIC_BEHAVIOR
         printf ("In HasTrivialDestructor(): allMemberFunctions.size() = %zu \n",allMemberFunctions.size());
 #endif
-        foreach(SgMemberFunctionDeclaration* memberFunction,allMemberFunctions) {
+        for(SgMemberFunctionDeclaration* memberFunction:allMemberFunctions) {
             if (memberFunction->get_specialFunctionModifier().isDestructor()){
                 return false;
             }
@@ -2011,7 +2009,7 @@ if (!sgClassType) { \
 #if DEBUG_QUADRATIC_BEHAVIOR
         printf ("In HasVirtualDestructor(): allMemberFunctions.size() = %zu \n",allMemberFunctions.size());
 #endif
-        foreach(SgMemberFunctionDeclaration* memberFunction,allMemberFunctions) {
+        for(SgMemberFunctionDeclaration* memberFunction:allMemberFunctions) {
             if (memberFunction->get_functionModifier().isVirtual() && memberFunction->get_specialFunctionModifier().isDestructor())
                 return true;
         }
@@ -2079,7 +2077,7 @@ if (!sgClassType) { \
 #endif
         
         // Match types
-        foreach(SgClassDefinition* c, inclusiveAncestors) {
+        for(SgClassDefinition* c: inclusiveAncestors) {
             if(c->get_declaration()->get_type()->stripType(SgType::STRIP_TYPEDEF_TYPE | SgType::STRIP_ARRAY_TYPE  | SgType::STRIP_MODIFIER_TYPE ) == baseClassType)
                 return true;
         }
@@ -2262,7 +2260,7 @@ if (!sgClassType) { \
 #if DEBUG_QUADRATIC_BEHAVIOR
         printf ("In IsPolymorphic(): allMemberFunctions.size() = %zu \n",allMemberFunctions.size());
 #endif
-        foreach(SgMemberFunctionDeclaration* memberFunction,allMemberFunctions) {
+        for(SgMemberFunctionDeclaration* memberFunction:allMemberFunctions) {
             if (memberFunction->get_functionModifier().isVirtual())
                 return true;
         }
@@ -2304,7 +2302,7 @@ if (!sgClassType) { \
         
         
         //If we have a virtual function, then it not OK
-        foreach(SgDeclarationStatement* memberDeclaration, classDef->get_members()) {
+        for(SgDeclarationStatement* memberDeclaration: classDef->get_members()) {
             if (SgMemberFunctionDeclaration* memberFunction = isSgMemberFunctionDeclaration(memberDeclaration)) {
                 if (memberFunction->get_functionModifier().isVirtual())
                     return false;
@@ -2329,7 +2327,7 @@ if (!sgClassType) { \
         //same access control (private, protected, public) for all its non-static data members
         bool first = true;
         SgAccessModifier::access_modifier_enum prevModifier=SgAccessModifier::e_unknown;
-        foreach(SgDeclarationStatement* memberDeclaration, classDef->get_members()) {
+        for(SgDeclarationStatement* memberDeclaration: classDef->get_members()) {
             //has no non-static data members with brace- or equal- initializers.
             if (SgVariableDeclaration* memberVariable = isSgVariableDeclaration(memberDeclaration)) {
                 if (memberVariable->get_declarationModifier().get_storageModifier().isStatic())
@@ -2343,7 +2341,7 @@ if (!sgClassType) { \
                 if (first) {
                     first = false;
                     firstNonStaticDataMember = NULL;
-                    foreach(SgInitializedName* name, memberVariable->get_variables ()) {
+                    for(SgInitializedName* name: memberVariable->get_variables ()) {
                         firstNonStaticDataMember = name->get_type();
                         break;
                     }
@@ -2360,7 +2358,7 @@ if (!sgClassType) { \
 #if DEBUG_QUADRATIC_BEHAVIOR
             printf ("In IsStandardLayout(): allVariableDeclarations.size() = %zu \n",allVariableDeclarations.size());
 #endif
-            foreach(SgVariableDeclaration* memberVariable, allVariableDeclarations) {
+            for(SgVariableDeclaration* memberVariable: allVariableDeclarations) {
                 if (memberVariable->get_declarationModifier().get_storageModifier().isStatic())
                     continue;
                 // ok, we have atleast one non-static data member in the ancestry
@@ -2380,8 +2378,8 @@ if (!sgClassType) { \
             
             // There can be atmost 1 base class with non-static data members
             int baseClassesWithNonStaticData = 0;
-            foreach(SgClassDefinition* c, exclusiveAncestors) {
-                foreach(SgDeclarationStatement* baseMemberDeclaration, c->get_members()) {
+            for(SgClassDefinition* c: exclusiveAncestors) {
+                for(SgDeclarationStatement* baseMemberDeclaration: c->get_members()) {
                     if (SgVariableDeclaration* baseMemberVariable = isSgVariableDeclaration(baseMemberDeclaration)) {
                         if (!baseMemberVariable->get_declarationModifier().get_storageModifier().isStatic()) {
                             baseClassesWithNonStaticData ++;
@@ -2395,7 +2393,7 @@ if (!sgClassType) { \
         }
         
         // All base classes have to be standard layout
-        foreach(SgBaseClass* baseClass, classDef->get_inheritances()) {
+        for(SgBaseClass* baseClass: classDef->get_inheritances()) {
             if(!IsStandardLayout(baseClass->get_base_class()->get_type()))
                 return false;
         }
@@ -2410,7 +2408,7 @@ if (!sgClassType) { \
 #if DEBUG_QUADRATIC_BEHAVIOR
             printf ("In IsStandardLayout(): exclusiveAncestors.size() = %zu \n",exclusiveAncestors.size());
 #endif
-            foreach(SgClassDefinition* c, exclusiveAncestors) {
+            for(SgClassDefinition* c: exclusiveAncestors) {
                 if(c->get_declaration()->get_type()->stripType(SgType::STRIP_TYPEDEF_TYPE) ==  firstNonStaticDataMember->stripType(SgType::STRIP_TYPEDEF_TYPE))
                     return false;
             }
@@ -2465,7 +2463,7 @@ if (!sgClassType) { \
             return false;
         
         
-        foreach(SgDeclarationStatement* memberDeclaration, classDef->get_members()) {
+        for(SgDeclarationStatement* memberDeclaration: classDef->get_members()) {
             // No virtual functions
             if (SgMemberFunctionDeclaration* memberFunction = isSgMemberFunctionDeclaration(memberDeclaration)) {
                 if (memberFunction->get_functionModifier().isVirtual())
@@ -2478,7 +2476,7 @@ if (!sgClassType) { \
                     continue;
                 
                 // each variable must be Trivial and must not have initializers
-                foreach(SgInitializedName* name, memberVariable->get_variables ()) {
+                for(SgInitializedName* name: memberVariable->get_variables ()) {
                     if(name->get_initializer())
                         return false;
                     if(!IsTrivial(name->get_type()))
@@ -2489,7 +2487,7 @@ if (!sgClassType) { \
         }
         
         // Base classes must be trivial too
-        foreach(SgBaseClass* baseClass, classDef->get_inheritances()) {
+        for(SgBaseClass* baseClass: classDef->get_inheritances()) {
             if(!IsTrivial(baseClass->get_base_class()->get_type()))
                 return false;
         }

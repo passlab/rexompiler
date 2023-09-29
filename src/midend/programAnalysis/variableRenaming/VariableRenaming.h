@@ -11,7 +11,6 @@
 #include <ostream>
 #include <fstream>
 #include <sstream>
-#include <boost/foreach.hpp>
 #include "filteredCFG.h"
 #include <boost/unordered_map.hpp>
 
@@ -603,7 +602,7 @@ public:
         std::vector<T*> res;
         T* temp = NULL;
 
-        BOOST_FOREACH(NodeVec::value_type& val, vec)
+        for(NodeVec::value_type& val: vec)
         {
             temp = dynamic_cast<T*>(val);
             if(temp != NULL)

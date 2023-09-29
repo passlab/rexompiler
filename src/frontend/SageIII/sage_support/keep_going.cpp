@@ -22,7 +22,6 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 
@@ -316,7 +315,7 @@ void Rose::KeepGoing::commandLineProcessing
           std::vector<std::string> filenames =
             GetSourceFilenamesFromCommandline(
                 std::vector<std::string>(argv, argv + argc));
-          BOOST_FOREACH(std::string filename, filenames)
+          for(std::string filename: filenames)
           {
             std::cout << filename << std::endl;
           }
@@ -477,7 +476,7 @@ void Rose::KeepGoing::setMidendErrorCode (SgProject* project, int errorCode)
   project->set_midendErrorCode(errorCode);
 
   SgFilePtrList files = project->get_files();
-  BOOST_FOREACH(SgFile* file, files)
+  for(SgFile* file: files)
   {
     file->set_midendErrorCode(errorCode);
   }
@@ -511,7 +510,7 @@ void Rose::KeepGoing::generate_reports(SgProject* project,
 
     AppendToFile (report_filename__fail, orig_command_str);
 
-    BOOST_FOREACH(SgFile* file, files_with_errors)
+    for(SgFile* file: files_with_errors)
     {
       std::string filename = file->getFileName();
       filename = StripPrefix(path_prefix, filename);
@@ -569,7 +568,7 @@ void Rose::KeepGoing::generate_reports(SgProject* project,
     ostamp << GetTimestamp()  << " " << getpid() << std::endl;
     AppendToFile (report_filename__pass, ostamp.str());
 
-    BOOST_FOREACH(SgFile* file, files_without_errors)
+    for(SgFile* file: files_without_errors)
     {
       std::string full_filename = file->getFileName();
       std::string filename = StripPrefix(path_prefix, full_filename);
@@ -607,7 +606,7 @@ void Rose::KeepGoing::generate_reports(SgProject* project,
     std::ostringstream ostamp;
     ostamp << GetTimestamp()  << " " << getpid() << std::endl;
 
-    BOOST_FOREACH(SgFile* file, files_with_errors)
+    for(SgFile* file: files_with_errors)
     {
       std::string filename = file->getFileName();
 
@@ -647,7 +646,7 @@ void Rose::KeepGoing::generate_reports(SgProject* project,
       //    exit(1);
       //}
 
-      BOOST_FOREACH(SgFile* file, files_with_errors)
+      for(SgFile* file: files_with_errors)
       {
           std::string filename = file->getFileName();
           filename = StripPrefix(path_prefix, filename);
@@ -694,7 +693,7 @@ void Rose::KeepGoing::generate_reports(SgProject* project,
       //    exit(1);
       //}
 
-      BOOST_FOREACH(SgFile* file, files_without_errors)
+      for(SgFile* file: files_without_errors)
       {
           std::string filename = file->getFileName();
           filename = StripPrefix(path_prefix, filename);

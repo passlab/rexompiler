@@ -2,11 +2,6 @@
 #include <CallGraph.h>
 #include "PtrAliasAnalysis.h"
 
-// warning: poor practice and possible name conflicts according to Boost documentation
-#define foreach BOOST_FOREACH
-#define reverse_foreach BOOST_REVERSE_FOREACH
-
-
 struct FunctionFilter
 {
         bool operator()(SgFunctionDeclaration* funcDecl)
@@ -69,7 +64,7 @@ struct OnlyNonCompilerGenerated : public std::unary_function<bool, SgFunctionDec
         dotgen.writeIncidenceGraphToDOTFile(cgBuilder->getGraph(), "init_call_graph.dot");
 #if 0        
         typedef boost::unordered_map<SgFunctionDeclaration*, SgGraphNode*> res_map;    
-        foreach (res_map::value_type it, cg2.getGraphNodesMapping()) {
+        for (res_map::value_type it: cg2.getGraphNodesMapping()) {
             std::cout << it.first <<" - "<< isSgFunctionDeclaration(it.first->get_definingDeclaration()) << " - " << it.first->get_name().getString() << std::endl;
         }
 #endif        
@@ -77,7 +72,7 @@ struct OnlyNonCompilerGenerated : public std::unary_function<bool, SgFunctionDec
  PtrAliasAnalysis::~PtrAliasAnalysis() {
 
         typedef boost::unordered_map<SgFunctionDeclaration *, IntraProcAliasAnalysis *> map;
-        foreach (map::value_type it, intraAliases) {
+        for (map::value_type it: intraAliases) {
                 delete ((IntraProcAliasAnalysis *)it.second);
         }
 }
@@ -145,7 +140,7 @@ void PtrAliasAnalysis:: SortCallGraphRecursive(SgFunctionDeclaration* targetFunc
         callGraph->getSuccessors(graphNode, callees);
 
         //Recursively process all the callees before adding this function to the list
-        foreach(SgGraphNode* calleeNode, callees)
+        for(SgGraphNode* calleeNode: callees)
         {
             if(colors.at(calleeNode)  == WHITE) {
                 SgFunctionDeclaration* calleeDecl = isSgFunctionDeclaration(calleeNode->get_SgNode());
@@ -181,7 +176,7 @@ void PtrAliasAnalysis::SortCallGraphNodes(SgFunctionDeclaration* targetFunction,
         boost::unordered_map<SgGraphNode*, COLOR> colors;
         typedef boost::unordered_map<SgFunctionDeclaration*, SgGraphNode*> my_map;
         
-        foreach(my_map::value_type item, graphNodeToFunction) {
+        for(my_map::value_type item: graphNodeToFunction) {
             colors[item.second] = WHITE;
         }
         
@@ -209,7 +204,7 @@ void PtrAliasAnalysis::run()  {
         std::set<SgGraphNode *>allNodes =  fullCallGraph.getGraph()->computeNodeSet();
 
         int counter = 0;
-        foreach(SgGraphNode *node, allNodes) {
+        for(SgGraphNode *node: allNodes) {
 #if 0
           printf ("In PtrAliasAnalysis::run(): in loop body: counter = %d \n",counter);
 #endif

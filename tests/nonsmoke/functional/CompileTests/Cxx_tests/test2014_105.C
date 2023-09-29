@@ -1,5 +1,3 @@
-
-
 #include <vector>
 
 #include "boost/foreach.hpp"
@@ -19,7 +17,7 @@ uint64_t getNumberOfZones(const vector<Block>& blocks)
    {
      uint64_t numZones = 0;
 
-     BOOST_FOREACH(const Block& block, blocks) 
+     for(const Block& block: blocks) 
         {
           numZones += block.getSize();
         }

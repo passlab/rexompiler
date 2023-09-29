@@ -1,10 +1,8 @@
 // ROSE Translator to make sure that Fortran parameters come through as const
 #include "rose.h"
-#include <boost/foreach.hpp>
 using namespace SageBuilder;
 using namespace SageInterface;
 
-#define foreach BOOST_FOREACH
 
 int main(int argc, char* argv[])
 {
@@ -13,7 +11,7 @@ int main(int argc, char* argv[])
 	std::vector<SgInitializedName*> names = SageInterface::querySubTree<SgInitializedName>(project, V_SgInitializedName);
 	std::vector<SgInitializedName*> pnames;
 
-	foreach(SgInitializedName* name, names)
+	for(SgInitializedName* name: names)
 	{
 		std::cout << name->get_qualified_name().getString();
 		if (name->get_protected_declaration())
@@ -45,7 +43,7 @@ int main(int argc, char* argv[])
 	}
 
 	std::vector<SgAssignOp*> assigns = SageInterface::querySubTree<SgAssignOp>(project);
-	foreach(SgAssignOp* op, assigns)
+	for(SgAssignOp* op: assigns)
 	{
 		SgVarRefExp* var = isSgVarRefExp(op->get_lhs_operand());
 		SgInitializedName* decl = var->get_symbol()->get_declaration();

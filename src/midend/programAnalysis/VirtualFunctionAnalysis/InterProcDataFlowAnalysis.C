@@ -1,8 +1,5 @@
 #include "sage3basic.h"
 #include "InterProcDataFlowAnalysis.h"
-#include <boost/foreach.hpp>
-#define foreach BOOST_FOREACH
-
 
 void InterProcDataFlowAnalysis::run () {
 
@@ -15,7 +12,7 @@ void InterProcDataFlowAnalysis::run () {
 
             getFunctionDeclarations(processingOrder);
            
-            foreach (SgFunctionDeclaration* funcDecl, processingOrder) {
+            for (SgFunctionDeclaration* funcDecl: processingOrder) {
 
                 change |= runAndCheckIntraProcAnalysis(funcDecl);
             

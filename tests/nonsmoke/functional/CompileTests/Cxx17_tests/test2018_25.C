@@ -6,7 +6,7 @@ class Work
           void do_something() const
              {
             // for ( int i = 0 ; i < N ; ++i )
-               foreach( Parallel , 0 , N , [=,tmp=*this]( int i )
+               for( Parallel : 0 , N , [=,tmp=*this]( int i )
                   {
                  // A modestly long loop body where
                  // every reference to a member must be modified

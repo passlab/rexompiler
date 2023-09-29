@@ -1,11 +1,7 @@
 #include "sage3basic.h"
 #include "CallGraph.h"
 #include "interproceduralCFG.h"
-#include <boost/foreach.hpp>
 #include <vector>
-
-#define foreach BOOST_FOREACH
-
 
 namespace StaticCFG
 {
@@ -113,7 +109,7 @@ void InterproceduralCFG::buildCFG(CFGNode n,
                       << std::endl;
             outEdges = n.outEdges();
           } else {
-            foreach (SgFunctionDefinition* def, defs) {
+            for (SgFunctionDefinition* def: defs) {
               addEdge(n, def->cfgForBeginning(), outEdges);
               addEdge(def->cfgForEnd(), CFGNode(sgnode, idx+1), outEdges);
             }
@@ -124,7 +120,7 @@ void InterproceduralCFG::buildCFG(CFGNode n,
     }
 
     std::set<CFGNode> targets; 
-    foreach (const CFGEdge& edge, outEdges)
+    for (const CFGEdge& edge: outEdges)
     {
         CFGNode tar = edge.target();
         targets.insert(tar);
@@ -146,7 +142,7 @@ void InterproceduralCFG::buildCFG(CFGNode n,
         graph_->addDirectedEdge(new_edge);
     }
 
-    foreach (const CFGNode& target, targets)
+    for (const CFGNode& target: targets)
     {
         buildCFG(target, all_nodes, explored, classHierarchy);
     }

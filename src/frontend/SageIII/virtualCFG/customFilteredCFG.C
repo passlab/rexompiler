@@ -1,6 +1,4 @@
 #include "customFilteredCFG.h"
-#include <boost/foreach.hpp>
-#define foreach BOOST_FOREACH
 
 namespace StaticCFG
 {
@@ -32,7 +30,7 @@ namespace StaticCFG
                 (start_->cfgForBeginning(), all_nodes, explored);
 
         typedef std::pair<VirtualCFG::FilteredCFGNode<_filter>, SgGraphNode*> pair_t;
-        foreach (const pair_t& p, all_nodes)
+        for (const pair_t& p: all_nodes)
             all_nodes_[VirtualCFG::CFGNode(p.first.getNode(), 0)] = p.second; 
     }
 
@@ -71,7 +69,7 @@ void CustomFilteredCFG<_filter>::buildTemplatedCFG(NodeT n, std::map<NodeT, SgGr
     }
 
     std::vector<EdgeT> outEdges = n.outEdges();
-    foreach (const EdgeT& edge, outEdges)
+    for (const EdgeT& edge: outEdges)
     {
         NodeT tar = edge.target();
 
@@ -102,14 +100,14 @@ void CustomFilteredCFG<_filter>::buildTemplatedCFG(NodeT n, std::map<NodeT, SgGr
         graph_->addDirectedEdge(new_edge);
     }
 
-    foreach (const EdgeT& edge, outEdges)
+    for (const EdgeT& edge: outEdges)
     {
         ROSE_ASSERT(edge.source() == n);
         buildTemplatedCFG<NodeT, EdgeT>(edge.target(), all_nodes, explored);
     }
 
     std::vector<EdgeT> inEdges = n.inEdges();
-    foreach (const EdgeT& edge, inEdges)
+    for (const EdgeT& edge: inEdges)
     {
         ROSE_ASSERT(edge.target() == n);
         buildTemplatedCFG<NodeT, EdgeT>(edge.source(), all_nodes, explored);

@@ -1,7 +1,6 @@
 #ifndef POINTERALIAS_ANALYSIS_H
 #define POINTERALIAS_ANALYSIS_H
 
-#include <boost/foreach.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
 #include <algorithm>

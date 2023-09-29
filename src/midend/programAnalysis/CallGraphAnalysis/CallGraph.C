@@ -11,8 +11,6 @@
 #ifndef _MSC_VER
 #include <err.h>
 #endif
-#include <boost/foreach.hpp>
-#define foreach BOOST_FOREACH
 
 using namespace std;
 using namespace Rose;
@@ -1075,7 +1073,7 @@ CallTargetSet::solveConstructorInitializer(SgConstructorInitializer* sgCtorInit)
                 continue;
             }
             
-            foreach(SgBaseClass* baseClass, currClass->get_inheritances())
+            for(SgBaseClass* baseClass: currClass->get_inheritances())
             {
                 ROSE_ASSERT(baseClass->get_base_class() != NULL);
                 SgMemberFunctionDeclaration* constructorCalled = SageInterface::getDefaultConstructor(baseClass->get_base_class());
@@ -1376,7 +1374,7 @@ void CallTargetSet::getDeclarationsForExpression(SgExpression* exp,
         Rose_STL_Container<SgFunctionDeclaration*> props;
         CallTargetSet::getPropertiesForExpression(exp, classHierarchy, props, includePureVirtualFunc);
 
-        foreach(SgFunctionDeclaration* candidateDecl, props)
+        for(SgFunctionDeclaration* candidateDecl: props)
         {
                 ROSE_ASSERT(candidateDecl);
                 assert(!isSgTemplateFunctionDeclaration(candidateDecl));
@@ -1392,7 +1390,7 @@ CallTargetSet::getDefinitionsForExpression(SgExpression* sgexp,
     Rose_STL_Container<SgFunctionDeclaration*> props;
     CallTargetSet::getPropertiesForExpression(sgexp, classHierarchy, props);
 
-    foreach(SgFunctionDeclaration* candidateDecl, props)
+    for(SgFunctionDeclaration* candidateDecl: props)
     {
         ROSE_ASSERT(candidateDecl);
         assert(!isSgTemplateFunctionDeclaration(candidateDecl));
@@ -1414,11 +1412,11 @@ CallTargetSet::getExpressionsForDefinition(SgFunctionDefinition* targetDef,
                                            Rose_STL_Container<SgExpression*>& exps) {
   VariantVector vv(V_SgFunctionCallExp);
   Rose_STL_Container<SgNode*> callCandidates = NodeQuery::queryMemoryPool(vv);
-  foreach (SgNode* callCandidate, callCandidates) {
+  for (SgNode* callCandidate: callCandidates) {
     SgFunctionCallExp* callexp = isSgFunctionCallExp(callCandidate);
     Rose_STL_Container<SgFunctionDefinition*> candidateDefs;
     CallTargetSet::getDefinitionsForExpression(callexp, classHierarchy, candidateDefs);
-    foreach (SgFunctionDefinition* candidateDef, candidateDefs) {
+    for (SgFunctionDefinition* candidateDef: candidateDefs) {
       if (candidateDef == targetDef) {
         exps.push_back(callexp);
         break;
@@ -1427,11 +1425,11 @@ CallTargetSet::getExpressionsForDefinition(SgFunctionDefinition* targetDef,
   }
   VariantVector vv2(V_SgConstructorInitializer);
   Rose_STL_Container<SgNode*> ctorCandidates = NodeQuery::queryMemoryPool(vv2);
-  foreach (SgNode* ctorCandidate, ctorCandidates) {
+  for (SgNode* ctorCandidate: ctorCandidates) {
     SgConstructorInitializer* ctorInit = isSgConstructorInitializer(ctorCandidate);
     Rose_STL_Container<SgFunctionDefinition*> candidateDefs;
     CallTargetSet::getDefinitionsForExpression(ctorInit, classHierarchy, candidateDefs);
-    foreach (SgFunctionDefinition* candidateDef, candidateDefs) {
+    for (SgFunctionDefinition* candidateDef: candidateDefs) {
       if (candidateDef == targetDef) {
         exps.push_back(ctorInit);
         break;
@@ -1470,13 +1468,13 @@ FunctionData::FunctionData ( SgFunctionDeclaration* inputFunctionDeclaration,
         hasDefinition = true;
 
         Rose_STL_Container<SgNode*> functionCallExpList = NodeQuery::querySubTree(defDecl, V_SgFunctionCallExp);
-        foreach(SgNode* functionCallExp, functionCallExpList)
+        for(SgNode* functionCallExp: functionCallExpList)
         {
             CallTargetSet::getPropertiesForExpression(isSgExpression(functionCallExp), classHierarchy,  functionList);
         }
 
         Rose_STL_Container<SgNode*> ctorInitList = NodeQuery::querySubTree(defDecl, V_SgConstructorInitializer);
-        foreach(SgNode* ctorInit, ctorInitList)
+        for(SgNode* ctorInit: ctorInitList)
         {
             CallTargetSet::getPropertiesForExpression(isSgExpression(ctorInit), classHierarchy, functionList);
         }

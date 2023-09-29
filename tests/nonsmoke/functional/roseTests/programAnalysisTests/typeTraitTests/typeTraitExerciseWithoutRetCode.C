@@ -8,13 +8,11 @@
 // #include <map>
 // #include <boost/tokenizer.hpp>
 // #include <boost/algorithm/string.hpp>
-// #include <boost/foreach.hpp>
 
 using namespace std;
 
 // using namespace boost::algorithm;
 // using namespace SageInterface;
-// #define foreach BOOST_FOREACH
 
 #define DEBUG_QUADRATIC_BEHAVIOR 0
 

@@ -153,7 +153,7 @@ main (int argc, char* argv[]) {
     for (int count=0; count<10; ++count) 
     {
       bool changed = false;
-      //    BOOST_FOREACH (SgFunctionCallExp *call, SageInterface::querySubTree<SgFunctionCallExp>(sageProject)) 
+      //    for (SgFunctionCallExp *call: SageInterface::querySubTree<SgFunctionCallExp>(sageProject)) 
       // interesting user loops are often located in the end of the source file    
       //BOOST_REVERSE_FOREACH (SgFunctionCallExp *call, SageInterface::querySubTree<SgFunctionCallExp>(sageProject)) 
       MLOG_WARN_C("astInliningTests", "reverse_foreach, e.g., BOOST_REVERSE_FOREACH should be used.\n"); 

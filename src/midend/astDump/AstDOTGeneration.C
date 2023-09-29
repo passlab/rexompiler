@@ -9,7 +9,6 @@
 #include "sage3basic.h"
 #include "AstDOTGeneration.h"
 #include "transformationTracking.h"
-#include <boost/foreach.hpp>
 
 // DQ (10/21/2010):  This should only be included by source files that require it.
 // This fixed a reported bug which caused conflicts with autoconf macros (e.g. PACKAGE_BUGREPORT).
@@ -251,7 +250,7 @@ void AstDOTGeneration::addAdditionalNodesAndEdges(SgNode* node)
      if (astAttributeContainer != NULL)
         {
        // Loop over all the attributes at this IR node
-          BOOST_FOREACH (const std::string &name, astAttributeContainer->getAttributeIdentifiers())
+          for (const std::string &name: astAttributeContainer->getAttributeIdentifiers())
              {
                AstAttribute* attribute = astAttributeContainer->operator[](name);
                ROSE_ASSERT(attribute != NULL);
@@ -759,7 +758,7 @@ AstDOTGeneration::evaluateSynthesizedAttribute(SgNode* node, DOTInheritedAttribu
      if (astAttributeContainer != NULL)
         {
        // Loop over all the attributes at this IR node
-          BOOST_FOREACH (const std::string &name, astAttributeContainer->getAttributeIdentifiers())
+          for (const std::string &name: astAttributeContainer->getAttributeIdentifiers())
              {
                AstAttribute* attribute = astAttributeContainer->operator[](name);
                ROSE_ASSERT(attribute != NULL);
@@ -1159,7 +1158,7 @@ AstDOTGeneration::additionalNodeInfo(SgNode* node)
      if (astAttributeContainer != NULL)
         {
           ss << "Attribute list (size=" << astAttributeContainer->size() << "):" << "\\n";
-          BOOST_FOREACH (const std::string &name, astAttributeContainer->getAttributeIdentifiers())
+          for (const std::string &name: astAttributeContainer->getAttributeIdentifiers())
              {
             // pair<std::string,AstAttribute*>
                AstAttribute* attribute = astAttributeContainer->operator[](name);
@@ -1219,7 +1218,7 @@ AstDOTGeneration::additionalNodeOptions(SgNode* node)
 #if 0
           printf ("In AstDOTGeneration::additionalNodeOptions(): astAttributeContainer = %p for node = %p = %s \n",astAttributeContainer,node,node->class_name().c_str());
 #endif
-          BOOST_FOREACH (const std::string &name, astAttributeContainer->getAttributeIdentifiers())
+          for (const std::string &name: astAttributeContainer->getAttributeIdentifiers())
              {
             // std::string name = i->first;
                AstAttribute* attribute = astAttributeContainer->operator[](name);
@@ -1257,7 +1256,7 @@ AstDOTGeneration::commentOutNodeInGraph(SgNode* node)
      AstAttributeMechanism* astAttributeContainer = node->get_attributeMechanism();
      if (astAttributeContainer != NULL)
         {
-          BOOST_FOREACH (const std::string &name, astAttributeContainer->getAttributeIdentifiers())
+          for (const std::string &name: astAttributeContainer->getAttributeIdentifiers())
              {
             // std::string name = i->first;
                AstAttribute* attribute = astAttributeContainer->operator[](name);

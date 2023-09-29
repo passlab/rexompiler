@@ -24,7 +24,6 @@
 #include <filesystem>
 
 #include <boost/algorithm/string/join.hpp>
-#include <boost/foreach.hpp>
 
 // DQ (12/22/2019): I don't need this now, and it is an issue for some compilers (e.g. GNU 4.9.4).
 // DQ (12/21/2019): Require hash table support for determining the shared nodes in the ASTs.
@@ -1801,7 +1800,7 @@ SgProject::parse()
 
 #if 0
   // DQ (4/24/2021): Debugging the handling of header_file_unparsing_optimization for non-optimized case.
-     BOOST_FOREACH(SgFile* file, files)
+     for(SgFile* file: files)
         {
           printf ("file = %s \n",file->getFileName().c_str());
           printf (" --- file->get_header_file_unparsing_optimization()             = %s \n",file->get_header_file_unparsing_optimization() ? "true" : "false");
@@ -1812,7 +1811,7 @@ SgProject::parse()
 
      bool unparse_using_tokens = false;
 
-     BOOST_FOREACH(SgFile* file, files)
+     for(SgFile* file: files)
         {
           ASSERT_not_null(file);
 
@@ -4456,7 +4455,7 @@ Rose::Frontend::RunSerial(SgProject* project)
               }
 #endif
           }
-      }//BOOST_FOREACH
+      }
   }//all_files->callFrontEnd
 
   ASSERT_not_null(project);

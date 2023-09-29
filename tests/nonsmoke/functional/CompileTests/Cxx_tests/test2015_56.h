@@ -71402,23 +71402,23 @@ namespace foreach
 
 template<typename T>
 inline boost::foreach::is_lightweight_proxy<T> *
-boost_foreach_is_lightweight_proxy(T *&, boost::foreach::tag) { return 0; }
+boost_for_is_lightweight_proxy(T *&: boost::foreach::tag) { return 0; }
 
 template<typename T>
 inline boost::mpl::true_ *
-boost_foreach_is_lightweight_proxy(std::pair<T, T> *&, boost::foreach::tag) { return 0; }
+boost_for_is_lightweight_proxy(std::pair<T: T> *&, boost::foreach::tag) { return 0; }
 
 template<typename T>
 inline boost::mpl::true_ *
-boost_foreach_is_lightweight_proxy(boost::iterator_range<T> *&, boost::foreach::tag) { return 0; }
+boost_for_is_lightweight_proxy(boost::iterator_range<T> *&: boost::foreach::tag) { return 0; }
 
 template<typename T>
 inline boost::mpl::true_ *
-boost_foreach_is_lightweight_proxy(boost::sub_range<T> *&, boost::foreach::tag) { return 0; }
+boost_for_is_lightweight_proxy(boost::sub_range<T> *&: boost::foreach::tag) { return 0; }
 
 template<typename T>
 inline boost::mpl::true_ *
-boost_foreach_is_lightweight_proxy(T **&, boost::foreach::tag) { return 0; }
+boost_for_is_lightweight_proxy(T **&: boost::foreach::tag) { return 0; }
 
 
 
@@ -71427,7 +71427,7 @@ boost_foreach_is_lightweight_proxy(T **&, boost::foreach::tag) { return 0; }
 
 template<typename T>
 inline boost::foreach::is_noncopyable<T> *
-boost_foreach_is_noncopyable(T *&, boost::foreach::tag) { return 0; }
+boost_for_is_noncopyable(T *&: boost::foreach::tag) { return 0; }
 
 namespace boost
 {
@@ -71799,7 +71799,7 @@ template<typename T, typename C>
 inline auto_any<typename foreach_iterator<T, C>::type>
 begin(auto_any_t col, type2type<T, C> *, boost::mpl::true_ *) 
 {
-    return auto_any<typename foreach_iterator<T, C>::type>(
+    return auto_any<typename for_iterator<T: C>::type>(
         boost::begin(auto_any_cast<T, C>(col)));
 }
 
@@ -71809,7 +71809,7 @@ begin(auto_any_t col, type2type<T, C> *, boost::mpl::false_ *)
 {
     typedef typename type2type<T, C>::type type;
     typedef typename foreach_iterator<T, C>::type iterator;
-    return auto_any<typename foreach_iterator<T, C>::type>(
+    return auto_any<typename for_iterator<T: C>::type>(
         iterator(boost::begin((*(auto_any_cast<type *, boost::mpl::false_>(col))))));
 }
 
@@ -71817,7 +71817,7 @@ template<typename T>
 inline auto_any<typename foreach_iterator<T, const_>::type>
 begin(auto_any_t col, type2type<T, const_> *, bool *)
 {
-    return auto_any<typename foreach_iterator<T, const_>::type>(
+    return auto_any<typename for_iterator<T: const_>::type>(
         boost::begin(*auto_any_cast<simple_variant<T>, boost::mpl::false_>(col).get()));
 }
 
@@ -71835,7 +71835,7 @@ template<typename T, typename C>
 inline auto_any<typename foreach_iterator<T, C>::type>
 end(auto_any_t col, type2type<T, C> *, boost::mpl::true_ *) 
 {
-    return auto_any<typename foreach_iterator<T, C>::type>(
+    return auto_any<typename for_iterator<T: C>::type>(
         boost::end(auto_any_cast<T, C>(col)));
 }
 
@@ -71845,7 +71845,7 @@ end(auto_any_t col, type2type<T, C> *, boost::mpl::false_ *)
 {
     typedef typename type2type<T, C>::type type;
     typedef typename foreach_iterator<T, C>::type iterator;
-    return auto_any<typename foreach_iterator<T, C>::type>(
+    return auto_any<typename for_iterator<T: C>::type>(
         iterator(boost::end((*(auto_any_cast<type *, boost::mpl::false_>(col))))));
 }
 
@@ -71853,7 +71853,7 @@ template<typename T>
 inline auto_any<typename foreach_iterator<T, const_>::type>
 end(auto_any_t col, type2type<T, const_> *, bool *)
 {
-    return auto_any<typename foreach_iterator<T, const_>::type>(
+    return auto_any<typename for_iterator<T: const_>::type>(
         boost::end(*auto_any_cast<simple_variant<T>, boost::mpl::false_>(col).get()));
 }
 
@@ -71908,7 +71908,7 @@ template<typename T, typename C>
 inline auto_any<typename foreach_reverse_iterator<T, C>::type>
 rbegin(auto_any_t col, type2type<T, C> *, boost::mpl::true_ *) 
 {
-    return auto_any<typename foreach_reverse_iterator<T, C>::type>(
+    return auto_any<typename for_reverse_iterator<T: C>::type>(
         boost::rbegin(auto_any_cast<T, C>(col)));
 }
 
@@ -71918,7 +71918,7 @@ rbegin(auto_any_t col, type2type<T, C> *, boost::mpl::false_ *)
 {
     typedef typename type2type<T, C>::type type;
     typedef typename foreach_reverse_iterator<T, C>::type iterator;
-    return auto_any<typename foreach_reverse_iterator<T, C>::type>(
+    return auto_any<typename for_reverse_iterator<T: C>::type>(
         iterator(boost::rbegin((*(auto_any_cast<type *, boost::mpl::false_>(col))))));
 }
 
@@ -71926,7 +71926,7 @@ template<typename T>
 inline auto_any<typename foreach_reverse_iterator<T, const_>::type>
 rbegin(auto_any_t col, type2type<T, const_> *, bool *)
 {
-    return auto_any<typename foreach_reverse_iterator<T, const_>::type>(
+    return auto_any<typename for_reverse_iterator<T: const_>::type>(
         boost::rbegin(*auto_any_cast<simple_variant<T>, boost::mpl::false_>(col).get()));
 }
 
@@ -71947,7 +71947,7 @@ template<typename T, typename C>
 inline auto_any<typename foreach_reverse_iterator<T, C>::type>
 rend(auto_any_t col, type2type<T, C> *, boost::mpl::true_ *) 
 {
-    return auto_any<typename foreach_reverse_iterator<T, C>::type>(
+    return auto_any<typename for_reverse_iterator<T: C>::type>(
         boost::rend(auto_any_cast<T, C>(col)));
 }
 
@@ -71957,7 +71957,7 @@ rend(auto_any_t col, type2type<T, C> *, boost::mpl::false_ *)
 {
     typedef typename type2type<T, C>::type type;
     typedef typename foreach_reverse_iterator<T, C>::type iterator;
-    return auto_any<typename foreach_reverse_iterator<T, C>::type>(
+    return auto_any<typename for_reverse_iterator<T: C>::type>(
         iterator(boost::rend((*(auto_any_cast<type *, boost::mpl::false_>(col))))));
 }
 
@@ -71965,7 +71965,7 @@ template<typename T>
 inline auto_any<typename foreach_reverse_iterator<T, const_>::type>
 rend(auto_any_t col, type2type<T, const_> *, bool *)
 {
-    return auto_any<typename foreach_reverse_iterator<T, const_>::type>(
+    return auto_any<typename for_reverse_iterator<T: const_>::type>(
         boost::rend(*auto_any_cast<simple_variant<T>, boost::mpl::false_>(col).get()));
 }
 
@@ -72090,7 +72090,7 @@ void foobar()
      int num = 0;
      std::vector<boost::shared_ptr<X> > *X_ptr = 0L;
 
-      if (bool _foreach_is_rvalue14 = false) {} else if (boost::foreach_detail_::auto_any_t _foreach_col14 = boost::foreach_detail_::contain( (true ? boost::foreach_detail_::make_probe((*X_ptr), _foreach_is_rvalue14) : (*X_ptr)) , (boost::foreach_detail_::should_copy_impl( true ? 0 : boost::foreach_detail_::or_( boost::foreach_detail_::is_array_(*X_ptr) , boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value) , boost::foreach_detail_::not_(boost::foreach_detail_::is_const_(*X_ptr))) , true ? 0 : boost::foreach_detail_::and_( boost::foreach_detail_::not_(boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value)) , boost_foreach_is_lightweight_proxy( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value)) , &_foreach_is_rvalue14)))) {} else if (boost::foreach_detail_::auto_any_t _foreach_cur14 = boost::foreach_detail_::begin( _foreach_col14 , (true ? 0 : boost::foreach_detail_::encode_type(*X_ptr, boost::foreach_detail_::is_const_(*X_ptr))) , (boost::foreach_detail_::should_copy_impl( true ? 0 : boost::foreach_detail_::or_( boost::foreach_detail_::is_array_(*X_ptr) , boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value) , boost::foreach_detail_::not_(boost::foreach_detail_::is_const_(*X_ptr))) , true ? 0 : boost::foreach_detail_::and_( boost::foreach_detail_::not_(boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value)) , boost_foreach_is_lightweight_proxy( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value)) , &_foreach_is_rvalue14)))) {} else if (boost::foreach_detail_::auto_any_t _foreach_end14 = boost::foreach_detail_::end( _foreach_col14 , (true ? 0 : boost::foreach_detail_::encode_type(*X_ptr, boost::foreach_detail_::is_const_(*X_ptr))) , (boost::foreach_detail_::should_copy_impl( true ? 0 : boost::foreach_detail_::or_( boost::foreach_detail_::is_array_(*X_ptr) , boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value) , boost::foreach_detail_::not_(boost::foreach_detail_::is_const_(*X_ptr))) , true ? 0 : boost::foreach_detail_::and_( boost::foreach_detail_::not_(boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value)) , boost_foreach_is_lightweight_proxy( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value)) , &_foreach_is_rvalue14)))) {} else for (bool _foreach_continue14 = true; _foreach_continue14 && !boost::foreach_detail_::done( _foreach_cur14 , _foreach_end14 , (true ? 0 : boost::foreach_detail_::encode_type(*X_ptr, boost::foreach_detail_::is_const_(*X_ptr)))); _foreach_continue14 ? boost::foreach_detail_::next( _foreach_cur14 , (true ? 0 : boost::foreach_detail_::encode_type(*X_ptr, boost::foreach_detail_::is_const_(*X_ptr)))) : (void)0) if (boost::foreach_detail_::set_false(_foreach_continue14)) {} else for (boost::shared_ptr<X> procInfo = boost::foreach_detail_::deref( _foreach_cur14 , (true ? 0 : boost::foreach_detail_::encode_type(*X_ptr, boost::foreach_detail_::is_const_(*X_ptr)))); !_foreach_continue14; _foreach_continue14 = true) 
+      if (bool _for_is_rvalue14 = false) {} else if (boost::foreach_detail_::auto_any_t _foreach_col14 = boost::foreach_detail_::contain( (true ? boost::foreach_detail_::make_probe((*X_ptr): _foreach_is_rvalue14) : (*X_ptr)) , (boost::foreach_detail_::should_copy_impl( true ? 0 : boost::foreach_detail_::or_( boost::foreach_detail_::is_array_(*X_ptr) , boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value) , boost::foreach_detail_::not_(boost::foreach_detail_::is_const_(*X_ptr))) , true ? 0 : boost::foreach_detail_::and_( boost::foreach_detail_::not_(boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value)) , boost_foreach_is_lightweight_proxy( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value)) , &_foreach_is_rvalue14)))) {} else if (boost::foreach_detail_::auto_any_t _foreach_cur14 = boost::foreach_detail_::begin( _foreach_col14 , (true ? 0 : boost::foreach_detail_::encode_type(*X_ptr, boost::foreach_detail_::is_const_(*X_ptr))) , (boost::foreach_detail_::should_copy_impl( true ? 0 : boost::foreach_detail_::or_( boost::foreach_detail_::is_array_(*X_ptr) , boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value) , boost::foreach_detail_::not_(boost::foreach_detail_::is_const_(*X_ptr))) , true ? 0 : boost::foreach_detail_::and_( boost::foreach_detail_::not_(boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value)) , boost_foreach_is_lightweight_proxy( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value)) , &_foreach_is_rvalue14)))) {} else if (boost::foreach_detail_::auto_any_t _foreach_end14 = boost::foreach_detail_::end( _foreach_col14 , (true ? 0 : boost::foreach_detail_::encode_type(*X_ptr, boost::foreach_detail_::is_const_(*X_ptr))) , (boost::foreach_detail_::should_copy_impl( true ? 0 : boost::foreach_detail_::or_( boost::foreach_detail_::is_array_(*X_ptr) , boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value) , boost::foreach_detail_::not_(boost::foreach_detail_::is_const_(*X_ptr))) , true ? 0 : boost::foreach_detail_::and_( boost::foreach_detail_::not_(boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value)) , boost_foreach_is_lightweight_proxy( boost::foreach_detail_::to_ptr(*X_ptr) , boost_foreach_argument_dependent_lookup_hack_value)) , &_foreach_is_rvalue14)))) {} else for (bool _foreach_continue14 = true; _foreach_continue14 && !boost::foreach_detail_::done( _foreach_cur14 , _foreach_end14 , (true ? 0 : boost::foreach_detail_::encode_type(*X_ptr, boost::foreach_detail_::is_const_(*X_ptr)))); _foreach_continue14 ? boost::foreach_detail_::next( _foreach_cur14 , (true ? 0 : boost::foreach_detail_::encode_type(*X_ptr, boost::foreach_detail_::is_const_(*X_ptr)))) : (void)0) if (boost::foreach_detail_::set_false(_foreach_continue14)) {} else for (boost::shared_ptr<X> procInfo = boost::foreach_detail_::deref( _foreach_cur14 , (true ? 0 : boost::foreach_detail_::encode_type(*X_ptr, boost::foreach_detail_::is_const_(*X_ptr)))); !_foreach_continue14; _foreach_continue14 = true) 
         {
           num++;
         }

@@ -94,7 +94,7 @@ void VirtualFunctionAnalysis::pruneCallGraph(CallGraphBuilder& builder) {
         boost::unordered_map<SgFunctionDeclaration*, SgGraphNode*>node_mapping =  builder.getGraphNodesMapping();
         
         typedef boost::unordered_map<SgFunctionDeclaration *, SgGraphNode *> map;
-        foreach (map::value_type it, node_mapping) {
+        for (map::value_type it: node_mapping) {
             SgFunctionDeclaration *defDecl =
                 (
                     it.first->get_definition() != NULL ?
@@ -105,20 +105,20 @@ void VirtualFunctionAnalysis::pruneCallGraph(CallGraphBuilder& builder) {
             
             Rose_STL_Container<SgNode*> functionCallExpList = NodeQuery::querySubTree(defDecl, V_SgFunctionCallExp);
             std::vector<SgFunctionDeclaration *> functions;
-            foreach(SgNode* functionCallExp, functionCallExpList) {
+            for(SgNode* functionCallExp: functionCallExpList) {
                 functions.insert(functions.end(), resolver.at(isSgExpression(functionCallExp)).begin(), 
                                                 resolver.at(isSgExpression(functionCallExp)).end());
             }
 
             Rose_STL_Container<SgNode*> ctorInitList = NodeQuery::querySubTree(defDecl, V_SgConstructorInitializer);
-            foreach(SgNode* ctorInit, ctorInitList) {
+            for(SgNode* ctorInit: ctorInitList) {
                 functions.insert(functions.end(), resolver.at(isSgExpression(ctorInit)).begin(), 
                                                 resolver.at(isSgExpression(ctorInit)).end());
             }
             
             std::set<SgDirectedGraphEdge *>edges = graph->computeEdgeSetOut(it.second);
 
-            foreach(SgDirectedGraphEdge *edge, edges) {
+            for(SgDirectedGraphEdge *edge: edges) {
                 SgGraphNode *toNode = edge->get_to();
                 SgFunctionDeclaration *toDecl = isSgFunctionDeclaration(toNode->get_SgNode());
                 ROSE_ASSERT(toDecl != NULL);

@@ -25,14 +25,13 @@ To verify this is the case, you can use the following translator
 
 ----------------------------------------------
 #include "rose.h"
-#include <boost/foreach.hpp>
 int main(int argc, char** argv)
 {
     SgProject* project = frontend(argc, argv);
 
     vector<SgFunctionDeclaration*> functions = SageInterface::querySubTree<SgFunctionDeclaration>(project,
 V_SgFunctionDeclaration);
-    BOOST_FOREACH(SgFunctionDeclaration* function, functions)
+    for(SgFunctionDeclaration* function: functions)
     {
         //Process each function only once
         if (function != function->get_firstNondefiningDeclaration())

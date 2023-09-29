@@ -1793,6 +1793,7 @@ class  SharedObject { };
 
 
 enum boost_foreach_argument_dependent_lookup_hack
+#include "boost/foreach.hpp"
 {
     boost_foreach_argument_dependent_lookup_hack_value
 };
@@ -2044,25 +2045,25 @@ contain(T const &t, bool *rvalue);
 template<typename T>
 inline auto_any<typename foreach_iterator<T, const_>::type>
 begin(auto_any_t col, type2type<T, const_> *, bool *);
-// { return auto_any<typename foreach_iterator<T, const_>::type>(boost::begin(*auto_any_cast<simple_variant<T>, boost::mpl::false_>(col).get())); }
+// { return auto_any<typename for_iterator<T: const_>::type>(boost::begin(*auto_any_cast<simple_variant<T>, boost::mpl::false_>(col).get())); }
 
 template<typename T>
 inline auto_any<typename foreach_iterator<T, const_>::type>
 end(auto_any_t col, type2type<T, const_> *, bool *);
-  // { return auto_any<typename foreach_iterator<T, const_>::type>(boost::end(*auto_any_cast<simple_variant<T>, boost::mpl::false_>(col).get())); }
+  // { return auto_any<typename for_iterator<T: const_>::type>(boost::end(*auto_any_cast<simple_variant<T>, boost::mpl::false_>(col).get())); }
 
 template<typename T, typename C>
 inline bool done(auto_any_t cur, auto_any_t end, type2type<T, C> *);
-  // { typedef typename foreach_iterator<T, C>::type iter_t; return auto_any_cast<iter_t, boost::mpl::false_>(cur) == auto_any_cast<iter_t, boost::mpl::false_>(end); }
+  // { typedef typename for_iterator<T: C>::type iter_t; return auto_any_cast<iter_t, boost::mpl::false_>(cur) == auto_any_cast<iter_t, boost::mpl::false_>(end); }
 
 template<typename T, typename C>
 inline void next(auto_any_t cur, type2type<T, C> *);
-// { typedef typename foreach_iterator<T, C>::type iter_t; ++auto_any_cast<iter_t, boost::mpl::false_>(cur); }
+// { typedef typename for_iterator<T: C>::type iter_t; ++auto_any_cast<iter_t, boost::mpl::false_>(cur); }
 
 template<typename T, typename C>
 inline typename foreach_reference<T, C>::type
 deref(auto_any_t cur, type2type<T, C> *);
-// { typedef typename foreach_iterator<T, C>::type iter_t; return *auto_any_cast<iter_t, boost::mpl::false_>(cur); }
+// { typedef typename for_iterator<T: C>::type iter_t; return *auto_any_cast<iter_t, boost::mpl::false_>(cur); }
 
 } 
 } 
@@ -2150,7 +2151,7 @@ void fromDecimal(Word *vec, const std::string &input)
      boost::uint64_t v = 0;
 
 #if 1
-     if (bool _foreach_is_rvalue1401 = false) {} else if (boost::foreach_detail_::auto_any_t _foreach_col1401 = boost::foreach_detail_::contain( (true ? boost::foreach_detail_::make_probe((input), _foreach_is_rvalue1401) : (input)) , (boost::foreach_detail_::should_copy_impl( true ? 0 : boost::foreach_detail_::or_( boost::foreach_detail_::is_array_(input) , boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value) , boost::foreach_detail_::not_(boost::foreach_detail_::is_const_(input))) , true ? 0 : boost::foreach_detail_::and_( boost::foreach_detail_::not_(boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value)) , boost_foreach_is_lightweight_proxy( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value)) , &_foreach_is_rvalue1401)))) {} else if (boost::foreach_detail_::auto_any_t _foreach_cur1401 = boost::foreach_detail_::begin( _foreach_col1401 , (true ? 0 : boost::foreach_detail_::encode_type(input, boost::foreach_detail_::is_const_(input))) , (boost::foreach_detail_::should_copy_impl( true ? 0 : boost::foreach_detail_::or_( boost::foreach_detail_::is_array_(input) , boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value) , boost::foreach_detail_::not_(boost::foreach_detail_::is_const_(input))) , true ? 0 : boost::foreach_detail_::and_( boost::foreach_detail_::not_(boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value)) , boost_foreach_is_lightweight_proxy( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value)) , &_foreach_is_rvalue1401)))) {} else if (boost::foreach_detail_::auto_any_t _foreach_end1401 = boost::foreach_detail_::end( _foreach_col1401 , (true ? 0 : boost::foreach_detail_::encode_type(input, boost::foreach_detail_::is_const_(input))) , (boost::foreach_detail_::should_copy_impl( true ? 0 : boost::foreach_detail_::or_( boost::foreach_detail_::is_array_(input) , boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value) , boost::foreach_detail_::not_(boost::foreach_detail_::is_const_(input))) , true ? 0 : boost::foreach_detail_::and_( boost::foreach_detail_::not_(boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value)) , boost_foreach_is_lightweight_proxy( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value)) , &_foreach_is_rvalue1401)))) {} else for (bool _foreach_continue1401 = true; _foreach_continue1401 && !boost::foreach_detail_::done( _foreach_cur1401 , _foreach_end1401 , (true ? 0 : boost::foreach_detail_::encode_type(input, boost::foreach_detail_::is_const_(input)))); _foreach_continue1401 ? boost::foreach_detail_::next( _foreach_cur1401 , (true ? 0 : boost::foreach_detail_::encode_type(input, boost::foreach_detail_::is_const_(input)))) : (void)0) if (boost::foreach_detail_::set_false(_foreach_continue1401)) {} else for (char ch = boost::foreach_detail_::deref( _foreach_cur1401 , (true ? 0 : boost::foreach_detail_::encode_type(input, boost::foreach_detail_::is_const_(input)))); !_foreach_continue1401; _foreach_continue1401 = true) {
+     if (bool _for_is_rvalue1401 = false) {} else if (boost::foreach_detail_::auto_any_t _foreach_col1401 = boost::foreach_detail_::contain( (true ? boost::foreach_detail_::make_probe((input): _foreach_is_rvalue1401) : (input)) , (boost::foreach_detail_::should_copy_impl( true ? 0 : boost::foreach_detail_::or_( boost::foreach_detail_::is_array_(input) , boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value) , boost::foreach_detail_::not_(boost::foreach_detail_::is_const_(input))) , true ? 0 : boost::foreach_detail_::and_( boost::foreach_detail_::not_(boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value)) , boost_foreach_is_lightweight_proxy( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value)) , &_foreach_is_rvalue1401)))) {} else if (boost::foreach_detail_::auto_any_t _foreach_cur1401 = boost::foreach_detail_::begin( _foreach_col1401 , (true ? 0 : boost::foreach_detail_::encode_type(input, boost::foreach_detail_::is_const_(input))) , (boost::foreach_detail_::should_copy_impl( true ? 0 : boost::foreach_detail_::or_( boost::foreach_detail_::is_array_(input) , boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value) , boost::foreach_detail_::not_(boost::foreach_detail_::is_const_(input))) , true ? 0 : boost::foreach_detail_::and_( boost::foreach_detail_::not_(boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value)) , boost_foreach_is_lightweight_proxy( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value)) , &_foreach_is_rvalue1401)))) {} else if (boost::foreach_detail_::auto_any_t _foreach_end1401 = boost::foreach_detail_::end( _foreach_col1401 , (true ? 0 : boost::foreach_detail_::encode_type(input, boost::foreach_detail_::is_const_(input))) , (boost::foreach_detail_::should_copy_impl( true ? 0 : boost::foreach_detail_::or_( boost::foreach_detail_::is_array_(input) , boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value) , boost::foreach_detail_::not_(boost::foreach_detail_::is_const_(input))) , true ? 0 : boost::foreach_detail_::and_( boost::foreach_detail_::not_(boost_foreach_is_noncopyable( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value)) , boost_foreach_is_lightweight_proxy( boost::foreach_detail_::to_ptr(input) , boost_foreach_argument_dependent_lookup_hack_value)) , &_foreach_is_rvalue1401)))) {} else for (bool _foreach_continue1401 = true; _foreach_continue1401 && !boost::foreach_detail_::done( _foreach_cur1401 , _foreach_end1401 , (true ? 0 : boost::foreach_detail_::encode_type(input, boost::foreach_detail_::is_const_(input)))); _foreach_continue1401 ? boost::foreach_detail_::next( _foreach_cur1401 , (true ? 0 : boost::foreach_detail_::encode_type(input, boost::foreach_detail_::is_const_(input)))) : (void)0) if (boost::foreach_detail_::set_false(_foreach_continue1401)) {} else for (char ch = boost::foreach_detail_::deref( _foreach_cur1401 , (true ? 0 : boost::foreach_detail_::encode_type(input, boost::foreach_detail_::is_const_(input)))); !_foreach_continue1401; _foreach_continue1401 = true) {
 
     }
 #endif

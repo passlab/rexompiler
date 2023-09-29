@@ -5,7 +5,6 @@
 #include <rose.h>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/bind.hpp>
-#include <boost/foreach.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/dominator_tree.hpp>
@@ -17,7 +16,6 @@
 namespace Backstroke
 {
 
-#define foreach BOOST_FOREACH
 
 
 //! This function helps to write the DOT file for vertices.
@@ -310,7 +308,7 @@ void CFG<CFGNodeFilter>::build(SgFunctionDefinition* funcDef)
 template <class CFGNodeFilter>
 void CFG<CFGNodeFilter>::setEntryAndExit()
 {
-    foreach (Vertex v, boost::vertices(*this))
+    for (Vertex v: boost::vertices(*this))
         {
                 CFGNodePtr node = (*this)[v];
                 if (isSgFunctionDefinition(node->getNode()))
@@ -371,7 +369,7 @@ void CFG<CFGNodeFilter>::buildCFG(
 
         std::vector<CFGEdgeType> outEdges = node.outEdges();
 
-        foreach(const CFGEdgeType& cfgEdge, outEdges)
+        for(const CFGEdgeType& cfgEdge: outEdges)
         {
                 // For each out edge, add the target node.
                 CFGNodeType tar = cfgEdge.target();
@@ -446,7 +444,7 @@ std::vector<typename CFG<CFGNodeFilter>::CFGNodePtr>
 CFG<CFGNodeFilter>::getAllNodes() const
 {
         std::vector<CFGNodePtr> allNodes;
-    foreach (Vertex v, boost::vertices(*this))
+    for (Vertex v: boost::vertices(*this))
                 allNodes.push_back((*this)[v]);
         return allNodes;
 }
@@ -457,7 +455,7 @@ std::vector<typename CFG<CFGNodeFilter>::CFGNodeType>
 CFG<CFGNodeFilter>::getAllNodesNoPtrs() const
 {
         std::vector<CFGNodeType> allNodes;
-    foreach (Vertex v, boost::vertices(*this))
+    for (Vertex v: boost::vertices(*this))
                 allNodes.push_back(&((*this)[v]));
         return allNodes;
 }
@@ -468,7 +466,7 @@ std::vector<typename CFG<CFGNodeFilter>::CFGEdgePtr>
 CFG<CFGNodeFilter>::getAllEdges() const
 {
         std::vector<CFGEdgePtr> allEdges;
-    foreach (const Edge& e, boost::edges(*this))
+    for (const Edge& e: boost::edges(*this))
                 allEdges.push_back((*this)[e]);
         return allEdges;
 }
@@ -494,7 +492,7 @@ std::vector<typename CFG<CFGNodeFilter>::Edge> CFG<CFGNodeFilter>::getAllBackEdg
     // If the dominator tree is not built yet, build it now.
     getDominatorTree();
 
-    foreach (const Edge& e, boost::edges(*this))
+    for (const Edge& e: boost::edges(*this))
     {
         Vertex src = boost::source(e, *this);
         Vertex tar = boost::target(e, *this);
@@ -520,7 +518,7 @@ std::vector<typename CFG<CFGNodeFilter>::Vertex> CFG<CFGNodeFilter>::getAllLoopH
 {
     std::vector<Edge> backEdges = getAllBackEdges();
     std::vector<Vertex> headers;
-    foreach (Edge e, backEdges)
+    for (Edge e: backEdges)
         headers.push_back(boost::target(e, *this));
     return headers;
 }

@@ -12,13 +12,11 @@
 // #include "sageBuilder.h"
    #include <fstream>
    #include <boost/algorithm/string/trim.hpp>
-   #include <boost/foreach.hpp>
    #include "Outliner.hh"
 #else
 // #include "sageBuilder.h"
    #include <fstream>
    #include <boost/algorithm/string/trim.hpp>
-   #include <boost/foreach.hpp>
 #endif
 
 // DQ (4/3/2012): Added so that I can enforce some rules as the AST is constructed.
@@ -28,7 +26,6 @@
 #include "RoseAst.h"
 
 // DQ (3/31/2012): Is this going to be an issue for C++11 use with ROSE?
-#define foreach BOOST_FOREACH
 
 
 

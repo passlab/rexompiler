@@ -1,9 +1,7 @@
 #include "rose.h"
 #include <ExtractFunctionArguments.h>
-#include <boost/foreach.hpp>
 #include <iostream>
 
-#define foreach BOOST_FOREACH
 
 int main(int argc, char** argv)
    {
@@ -12,7 +10,7 @@ int main(int argc, char** argv)
 	AstTests::runAllTests(project);
 	
 	std::vector<SgFunctionDefinition*> functions = SageInterface::querySubTree<SgFunctionDefinition>(project, V_SgFunctionDefinition);
-	foreach(SgFunctionDefinition* function, functions)
+	for(SgFunctionDefinition* function: functions)
       {
         ExtractFunctionArguments e;
 #if 0

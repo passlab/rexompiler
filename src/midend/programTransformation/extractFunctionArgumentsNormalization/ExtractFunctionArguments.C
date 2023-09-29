@@ -1,14 +1,9 @@
 #include "ExtractFunctionArguments.h"
-#include <boost/foreach.hpp>
-#include <boost/tuple/tuple.hpp>
 #include <functionEvaluationOrderTraversal.h>
 #include "SingleStatementToBlockNormalization.h"
 
-#define foreach BOOST_FOREACH
-
 using namespace std;
 using namespace boost;
-
 
 /** Performs the function argument extraction on all function calls in the given subtree of the AST. */
 /** It does not do transofrmations in places where it is not safe. If you pass doUnsafeNormalization= true, we will normalize all callsites ignoring the safety (Suggested by Markus Schordan) */
@@ -29,13 +24,13 @@ void ExtractFunctionArguments::NormalizeTree(SgNode* tree, bool doUnsafeNormaliz
     this->functionCalls = FunctionEvaluationOrderTraversal::GetFunctionCalls(tree);
     
     // Normalize each function from safe place
-    foreach(const FunctionCallInfo& functionCallInfo, this->functionCalls.first) {
+    for(const FunctionCallInfo& functionCallInfo: this->functionCalls.first) {
         RewriteFunctionCallArguments(functionCallInfo);
     }
     
     // if doUnsafeNormalization is true, we will normalize calls which are not safe
     if(doUnsafeNormalization){
-        foreach(const FunctionCallInfo& functionCallInfo, this->functionCalls.second) {
+        for(const FunctionCallInfo& functionCallInfo: this->functionCalls.second) {
             RewriteFunctionCallArguments(functionCallInfo);
         }        
     }
@@ -118,8 +113,8 @@ bool ExtractFunctionArguments::IsFunctionArgumentTrivial(SgExpression* argument)
     (IsFunctionArgumentTrivial). Such functions don't need to be normalized.
  */
 bool ExtractFunctionArguments::AreAllFunctionCallsTrivial(std::vector<FunctionCallInfo> functions){
-    foreach(FunctionCallInfo functionCallInfo, functions){
-        foreach(SgExpression* arg, functionCallInfo.functionCall->get_args()->get_expressions()){
+    for(FunctionCallInfo functionCallInfo: functions){
+        for(SgExpression* arg: functionCallInfo.functionCall->get_args()->get_expressions()){
             if (!IsFunctionArgumentTrivial(arg)) {
                 return false;
             }
@@ -132,8 +127,8 @@ bool ExtractFunctionArguments::AreAllFunctionCallsTrivial(std::vector<FunctionCa
    at every function call site is either trivial (IsFunctionArgumentTrivial) or can be normalized (FunctionArgumentCanBeNormalized).
  */
 bool ExtractFunctionArguments::AreAllFunctionCallsNormalizable(std::vector<FunctionCallInfo> functions){
-    foreach(FunctionCallInfo functionCallInfo, functions){
-        foreach(SgExpression* arg, functionCallInfo.functionCall->get_args()->get_expressions()){
+    for(FunctionCallInfo functionCallInfo: functions){
+        for(SgExpression* arg: functionCallInfo.functionCall->get_args()->get_expressions()){
             if (!IsFunctionArgumentTrivial(arg) && !FunctionArgumentCanBeNormalized(arg)) {
                 return false;
             }
@@ -210,7 +205,7 @@ void ExtractFunctionArguments::RewriteFunctionCallArguments(const FunctionCallIn
     
     //Go over all the function arguments, pull them out
     
-    foreach(SgExpression* arg, argumentList)
+    for(SgExpression* arg: argumentList)
     {
         //No need to pull out parameters that are not complex expressions and
         //thus don't have side effects
@@ -311,7 +306,7 @@ bool ExtractFunctionArguments::FunctionArgsNeedNormalization(SgExprListExp* func
     ROSE_ASSERT(functionArgs != NULL);
     SgExpressionPtrList& argumentList = functionArgs->get_expressions();
     
-    foreach(SgExpression* functionArgument, argumentList)
+    for(SgExpression* functionArgument: argumentList)
     {
         if (FunctionArgumentNeedsNormalization(functionArgument))
             return true;

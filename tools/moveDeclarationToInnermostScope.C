@@ -94,7 +94,6 @@
 #include <iostream>
 #include <queue> // used for a worklist of declarations to be moved 
 #include <stack> // used for a worklist of declarations to be moved , first found, last processing
-#include <boost/foreach.hpp>
 #include <map> // used to store special var reference's scope
 
 // another level of control over transformation tracking code
@@ -639,7 +638,7 @@ int main(int argc, char * argv[])
       std::vector<std::string> filenames =
           GetSourceFilenamesFromCommandline(
     	  std::vector<std::string>(argv, argv + argc));
-      BOOST_FOREACH(std::string filename, filenames)
+      for(std::string filename: filenames)
       {
           std::cout << filename << std::endl;
       }

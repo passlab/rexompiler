@@ -4,13 +4,7 @@
 #include <iostream>
 #include <CommandOptions.h>
 #include <CallGraph.h>
-
 #include "VirtualFunctionAnalysis.h"
-using namespace boost;
-
-// warning: poor practice and possible name conflicts according to Boost documentation
-#define foreach BOOST_FOREACH
-#define reverse_foreach BOOST_REVERSE_FOREACH
 
 using namespace std;
 using namespace boost;

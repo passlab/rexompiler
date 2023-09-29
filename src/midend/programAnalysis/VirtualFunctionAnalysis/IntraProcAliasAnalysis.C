@@ -11,7 +11,7 @@ void CompactRepresentation::computeAliases (SgGraphNode *node, int derefLevel, v
     } else {
         
         std::set<SgDirectedGraphEdge *> edges = graph->computeEdgeSetOut(node);
-        foreach(SgDirectedGraphEdge *ed, edges) {
+        for(SgDirectedGraphEdge *ed: edges) {
             computeAliases(ed->get_to(), derefLevel-1, sol);
         }
         
@@ -38,10 +38,10 @@ void CompactRepresentation::merge(SgIncidenceDirectedGraph *thatGraph) {
         set<SgGraphNode *> nodes = thatGraph->computeNodeSet();
         SgGraphNode *g_from;
         
-        BOOST_FOREACH(SgGraphNode *node, nodes) {
+        for(SgGraphNode *node: nodes) {
             std::set<SgDirectedGraphEdge *> edges = thatGraph->computeEdgeSetOut(node);
             g_from = getGraphNode(node->get_SgNode());
-            BOOST_FOREACH(SgDirectedGraphEdge *ed, edges) {
+            for(SgDirectedGraphEdge *ed: edges) {
                 addEdge(g_from, getGraphNode(ed->get_to()->get_SgNode()));
             }
         }
@@ -196,7 +196,7 @@ void CompactRepresentation::toDot(const std::string& file_name) {
         
         ofile << "digraph defaultName {\n";
         std::set<SgGraphNode*> explored;
-        foreach(SgGraphNode *node, nodes)
+        for(SgGraphNode *node: nodes)
                 processNodes(ofile, node, explored);
                 
         ofile << "}\n";
@@ -210,11 +210,11 @@ void CompactRepresentation::processNodes(std::ostream & o, SgGraphNode* n, std::
         printNodePlusEdges(o, n);
 
         std::set<SgDirectedGraphEdge*> out_edges = graph->computeEdgeSetOut(n);
-        foreach (SgDirectedGraphEdge* e, out_edges)
+        for (SgDirectedGraphEdge* e: out_edges)
             processNodes(o, e->get_to(), explored);
 
         std::set<SgDirectedGraphEdge*> in_edges = graph->computeEdgeSetIn(n);
-        foreach (SgDirectedGraphEdge* e, in_edges)
+        for (SgDirectedGraphEdge* e: in_edges)
             processNodes(o, e->get_from(), explored);
     }
 
@@ -225,7 +225,7 @@ void CompactRepresentation::printNodePlusEdges(std::ostream & o, SgGraphNode* no
     printNode(o, node);
 
     std::set<SgDirectedGraphEdge*> out_edges = graph->computeEdgeSetOut(node);
-    foreach (SgDirectedGraphEdge* e, out_edges)
+    for (SgDirectedGraphEdge* e: out_edges)
         printEdge(o, e, false);
 
 }
@@ -1195,7 +1195,7 @@ void CollectAliasRelations::run() {
     
     boost::unordered_map<SgGraphNode*, COLOR> colors;
 
-    foreach(SgGraphNode *node, allNodes) {
+    for(SgGraphNode *node: allNodes) {
             colors[node] = WHITE;
     }
     

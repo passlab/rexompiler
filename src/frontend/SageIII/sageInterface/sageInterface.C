@@ -49,7 +49,6 @@
 #endif
 
 #include <boost/lexical_cast.hpp>
-#include <boost/foreach.hpp>
 #include <sstream>
 #include <iostream>
 #include <algorithm> // for set operations
@@ -10610,7 +10609,7 @@ string SageInterface::generateUniqueVariableName(SgScopeStatement* scope, std::s
         //Look up the name in the children scopes
         Rose_STL_Container<SgNode*> childScopes = NodeQuery::querySubTree(scope, V_SgScopeStatement);
 
-        BOOST_FOREACH(SgNode* childScope, childScopes)
+        for(SgNode* childScope: childScopes)
         {
             SgScopeStatement* childScopeStatement = isSgScopeStatement(childScope);
 
@@ -14416,7 +14415,7 @@ void SageInterface::insertStatementBeforeFirstNonDeclaration(SgStatement *newStm
 {
     ROSE_ASSERT(newStmt!=NULL);
     ROSE_ASSERT(scope!=NULL);
-    BOOST_FOREACH (SgStatement *targetStmt, scope->generateStatementList()) {
+    for (SgStatement *targetStmt: scope->generateStatementList()) {
         if (!isSgDeclarationStatement(targetStmt)) {
             insertStatementBefore(targetStmt, newStmt, movePreprocessingInfo);
             return;
@@ -14428,7 +14427,7 @@ void SageInterface::insertStatementBeforeFirstNonDeclaration(SgStatement *newStm
 void SageInterface::insertStatementListBeforeFirstNonDeclaration(const std::vector<SgStatement*> &newStmts,SgScopeStatement *scope)
 {
     ROSE_ASSERT(scope!=NULL);
-    BOOST_FOREACH (SgStatement *targetStmt, scope->generateStatementList()) {
+    for (SgStatement *targetStmt: scope->generateStatementList()) {
         if (!isSgDeclarationStatement(targetStmt)) {
             insertStatementListBefore(targetStmt, newStmts);
             return;
@@ -18096,7 +18095,7 @@ void SageInterface::replaceSubexpressionWithStatement(SgExpression* from, Statem
   std::vector<SgInitializedName*> SageInterface::getInParameters(const SgInitializedNamePtrList &params)
   {
     std::vector<SgInitializedName*> in_params;
-    BOOST_FOREACH (SgInitializedName* name, params)
+    for (SgInitializedName* name: params)
       {
         if (!isMutable(name)) in_params.push_back(name);
       }
@@ -18108,7 +18107,7 @@ void SageInterface::replaceSubexpressionWithStatement(SgExpression* from, Statem
   std::vector<SgInitializedName*> SageInterface::getOutParameters(const SgInitializedNamePtrList &params)
   {
     std::vector<SgInitializedName*> out_params;
-    BOOST_FOREACH (SgInitializedName* name, params)
+    for (SgInitializedName* name: params)
       {
         if (isMutable(name)) out_params.push_back(name);
       }
@@ -20359,7 +20358,7 @@ SageInterface::deleteAST ( SgNode* n )
                                                         SgDeclarationStatement * template_decl1 = ((SgDeclarationStatement*)node)->get_definingDeclaration();
                                                         if((template_decl==templateInstantiate_defining||template_decl1==templateInstantiate_defining) && node!=templateInstantiate_defining){
                                                                 /*vector<SgTemplateArgument*> tempargs=  ((SgTemplateInstantiationDecl*)node)->get_templateArguments();
-                                                                foreach (SgTemplateArgument* element, tempargs){
+                                                                for (SgTemplateArgument* element: tempargs){
                                                                         SgTemplateArgument* temparg = isSgTemplateArgument(element);
                                                                         if(temparg){
                                                                                 delete temparg;
@@ -20996,7 +20995,7 @@ SageInterface::deleteAST ( SgNode* n )
                                         }
 
                                         vector<SgTemplateArgument*> tempargs=  ((SgTemplateInstantiationDecl*)node)->get_templateArguments();
-                                        foreach (SgTemplateArgument* element, tempargs){
+                                        for (SgTemplateArgument* element: tempargs){
                                                 SgTemplateArgument* temparg = isSgTemplateArgument(element);
                                                 if(temparg){
                                                         delete temparg;
@@ -21277,7 +21276,7 @@ static void moveOneStatement(SgScopeStatement* sourceBlock, SgScopeStatement* ta
           if (enum_decl) // Rasmussen (12/23/2020)
             {
               // Set the scope of the enumerators
-              BOOST_FOREACH (SgInitializedName* name, enum_decl->get_enumerators())
+              for (SgInitializedName* name: enum_decl->get_enumerators())
                 {
                   name->set_scope(targetBlock);
                 }

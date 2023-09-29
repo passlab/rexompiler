@@ -35,7 +35,6 @@ static const char *description =
 #include <rose.h>                                       // POLICY_OK -- this is not a ROSE library source file
 #include <rose_getline.h>
 
-#include <boost/foreach.hpp>
 #include <regex>
 #include <map>
 #include <string>
@@ -165,7 +164,7 @@ readConfigFile(const std::filesystem::path &configName) {
   }
 
   bool hadError = false;
-  BOOST_FOREACH (const std::string &key, requiredKeys()) {
+  for (const std::string &key: requiredKeys()) {
     if (retval.find(key) == retval.end()) {
       MLOG_FATAL_CXX("rose-config") <<configName <<":" <<lineNumber <<": required key \"" <<key <<"\" is not defined\n";
       hadError = true;
@@ -186,7 +185,7 @@ readConfigFile(const Settings &settings) {
   std::vector<std::string> dirs;
   //boost::split(dirs, settings.searchDirs, boost::is_any_of(":;"));
   dirs = Rose::StringUtility::split(settings.searchDirs, ":;");
-  BOOST_FOREACH (const std::string &dir, dirs) {
+  for (const std::string &dir: dirs) {
     std::filesystem::path configFile = std::filesystem::path(dir) / CONFIG_NAME;
     if (std::filesystem::exists(configFile))
       return readConfigFile(configFile);
@@ -194,7 +193,7 @@ readConfigFile(const Settings &settings) {
 
   MLOG_FATAL_CXX("rose-config") <<"cannot find file \"" <<StringUtility::cEscape(CONFIG_NAME) <<"\"\n";
   MLOG_FATAL_CXX("rose-config")  <<"searched in these directories:\n";
-  BOOST_FOREACH (const std::string &dir, dirs)
+  for (const std::string &dir: dirs)
     MLOG_FATAL_CXX("rose-config") <<"  \"" <<StringUtility::cEscape(dir) <<"\"\n";
   exit(1);
 }

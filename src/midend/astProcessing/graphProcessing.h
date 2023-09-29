@@ -55,7 +55,6 @@ AS WRITTEN, THESE FUNCTIONS WILL ONLY WORK WITH GRAPHS THAT ARE IMPLEMENTED IN T
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/bind.hpp>
-#include <boost/foreach.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/dominator_tree.hpp>

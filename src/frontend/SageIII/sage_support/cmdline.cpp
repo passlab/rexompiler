@@ -18,7 +18,6 @@
 
 #include "Outliner.hh"
 
-#include <boost/foreach.hpp>
 
 using namespace Rose;                                   // temporary, until this file lives in namespace Rose
 
@@ -1567,7 +1566,7 @@ NormalizeIncludePathOptions (std::vector<std::string>& argv)
   std::vector<std::string> r_argv;
 
   bool looking_for_include_path_arg = false;
-  BOOST_FOREACH(std::string arg, argv)
+  for(std::string arg: argv)
   {
       // Must be first since there could be, for example, "-I -I",
       // in which case, the else if branch checking for -I would
@@ -1801,7 +1800,7 @@ StripRoseOptions (std::vector<std::string>& argv)
           Cmdline::Fortran::option_prefix,    // Current prefix, e.g. "-rose:fortran:"
           "-");                               // New prefix, e.g. "-"
 
-  BOOST_FOREACH(std::string fortran_option, fortran_options)
+  for(std::string fortran_option: fortran_options)
   {
       // TOO1 (2/13/2014): There are no ROSE-specific Fortran options yet.
       // Skip ROSE-specific Fortran options
@@ -1879,7 +1878,7 @@ StripRoseOptions (std::vector<std::string>& argv)
   // TOO1 (2/13/2014): Skip ALL ROSE-specific OFP options;
   //                   at this stage, we only have "-rose:fortran:ofp:jvm_options",
   //                   and this is only inteded for the OFP frontend's JVM.
-  BOOST_FOREACH(std::string ofp_option, ofp_options)
+  for(std::string ofp_option: ofp_options)
   {
       if (SgProject::get_verbose() > 1)
       {

@@ -11,12 +11,7 @@
 #include <queue>
 #include <fstream>
 #include <stack>
-#include <boost/foreach.hpp>
 #include <boost/unordered_set.hpp>
-
-// warning: poor practice and possible name conflicts according to Boost documentation
-#define foreach BOOST_FOREACH
-#define reverse_foreach BOOST_REVERSE_FOREACH
 
 using namespace std;
 using namespace Rose;
@@ -34,7 +29,7 @@ std::string VariableRenaming::keyToString(const VarName& vec)
 {
     std::string name = "";
 
-    foreach(const VarName::value_type& iter, vec)
+    for(const VarName::value_type& iter: vec)
     {
         if (iter != vec.front())
         {
@@ -50,11 +45,11 @@ void VariableRenaming::printDefs(SgNode* node)
 {
     std::cout << "Def Table for [" << node->class_name() << ":" << node << "]:" << std::endl;
 
-    foreach(TableEntry::value_type& entry, defTable[node])
+    for(TableEntry::value_type& entry: defTable[node])
     {
         std::cout << "  Defs for [" << keyToString(entry.first) << "]:" << std::endl;
 
-        foreach(NodeVec::value_type& iter, entry.second)
+        for(NodeVec::value_type& iter: entry.second)
         {
             std::cout << "    -[" << iter->class_name() << ":" << iter << "]" << std::endl;
         }
@@ -65,11 +60,11 @@ void VariableRenaming::printDefs(const std::map< std::vector<SgInitializedName*>
 {
     std::cout << "Def Table:" << std::endl;
 
-    foreach(const TableEntry::value_type& entry, table)
+    for(const TableEntry::value_type& entry: table)
     {
         std::cout << "  Defs for [" << keyToString(entry.first) << "]:" << std::endl;
 
-        foreach(const NodeVec::value_type& iter, entry.second)
+        for(const NodeVec::value_type& iter: entry.second)
         {
             std::cout << "    -[" << iter->class_name() << ":" << iter << "]" << std::endl;
         }
@@ -80,11 +75,11 @@ void VariableRenaming::printOriginalDefs(SgNode* node)
 {
     std::cout << "Original Def Table for [" << node->class_name() << ":" << node << "]:" << std::endl;
 
-    foreach(TableEntry::value_type& entry, originalDefTable[node])
+    for(TableEntry::value_type& entry: originalDefTable[node])
     {
         std::cout << "  Defs for [" << keyToString(entry.first) << "]:" << std::endl;
 
-        foreach(NodeVec::value_type& iter, entry.second)
+        for(NodeVec::value_type& iter: entry.second)
         {
             std::cout << "    -[" << iter->class_name() << ":" << iter << "]" << std::endl;
         }
@@ -95,15 +90,15 @@ void VariableRenaming::printOriginalDefTable()
 {
     std::cout << "Original Def Table:" << endl;
 
-    foreach(DefUseTable::value_type& node, originalDefTable)
+    for(DefUseTable::value_type& node: originalDefTable)
     {
         std::cout << "  Original Def Table for [" << node.first->class_name() << ":" << node.first << "]:" << std::endl;
 
-        foreach(TableEntry::value_type& entry, originalDefTable[node.first])
+        for(TableEntry::value_type& entry: originalDefTable[node.first])
         {
             std::cout << "    Defs for [" << keyToString(entry.first) << "]:" << std::endl;
 
-            foreach(NodeVec::value_type& iter, entry.second)
+            for(NodeVec::value_type& iter: entry.second)
             {
                 std::cout << "      -[" << iter->class_name() << ":" << iter << "]" << std::endl;
             }
@@ -115,11 +110,11 @@ void VariableRenaming::printUses(SgNode* node)
 {
     std::cout << "Use Table for [" << node->class_name() << ":" << node << "]:" << std::endl;
 
-    foreach(TableEntry::value_type& entry, useTable[node])
+    for(TableEntry::value_type& entry: useTable[node])
     {
         std::cout << "  Uses for [" << keyToString(entry.first) << "]:" << std::endl;
 
-        foreach(NodeVec::value_type& iter, entry.second)
+        for(NodeVec::value_type& iter: entry.second)
         {
             std::cout << "    -[" << iter->class_name() << ":" << iter << "]" << std::endl;
         }
@@ -130,11 +125,11 @@ void VariableRenaming::printUses(const std::map< std::vector<SgInitializedName*>
 {
     std::cout << "Use Table:" << std::endl;
 
-    foreach(const TableEntry::value_type& entry, table)
+    for(const TableEntry::value_type& entry: table)
     {
         std::cout << "  Uses for [" << keyToString(entry.first) << "]:" << std::endl;
 
-        foreach(const NodeVec::value_type& iter, entry.second)
+        for(const NodeVec::value_type& iter: entry.second)
         {
             std::cout << "    -[" << iter->class_name() << ":" << iter << "]" << std::endl;
         }
@@ -159,7 +154,7 @@ void VariableRenaming::printRenameTable(const NodeNumRenameTable& table)
 
     //Iterate the table
 
-    foreach(const NodeNumRenameTable::value_type& entry, table)
+    for(const NodeNumRenameTable::value_type& entry: table)
     {
         cout << "  Names for [" << keyToString(entry.first) << "]:" << endl;
 
@@ -174,7 +169,7 @@ void VariableRenaming::printRenameTable(const NumNodeRenameTable& table)
 
     //Iterate the table
 
-    foreach(const NumNodeRenameTable::value_type& entry, table)
+    for(const NumNodeRenameTable::value_type& entry: table)
     {
         std::cout << "  Names for [" << keyToString(entry.first) << "]:" << std::endl;
 
@@ -190,7 +185,7 @@ void VariableRenaming::printRenameEntry(const NodeNumRenameEntry& entry)
 
     //Iterate the entry
 
-    foreach(const NodeNumRenameEntry::value_type& iter, entry)
+    for(const NodeNumRenameEntry::value_type& iter: entry)
     {
         if (start == 0 && end == 0)
         {
@@ -215,7 +210,7 @@ void VariableRenaming::printRenameEntry(const NodeNumRenameEntry& entry)
         SgNode* current = NULL;
         //Find the entry for start if it exists
 
-        foreach(const NodeNumRenameEntry::value_type& iter, entry)
+        for(const NodeNumRenameEntry::value_type& iter: entry)
         {
             if (iter.second == start)
             {
@@ -237,7 +232,7 @@ void VariableRenaming::printRenameEntry(const NumNodeRenameEntry& entry)
 {
     //Iterate the entry
 
-    foreach(const NumNodeRenameEntry::value_type& iter, entry)
+    for(const NumNodeRenameEntry::value_type& iter: entry)
     {
         cout << "      " << iter.first << ": " << iter.second << endl;
     }
@@ -402,7 +397,7 @@ void VariableRenaming::insertDefsForExternalVariables(SgFunctionDeclaration* fun
 
     //Iterate over each used variable and check it it is declared outside of the function scope
 
-    foreach(const VarName& usedVar, usedNames)
+    for(const VarName& usedVar: usedNames)
     {
         VarName rootName;
         rootName.assign(1, usedVar[0]);
@@ -476,7 +471,7 @@ set<VariableRenaming::VarName> VariableRenaming::getVarsUsedInSubtree(SgNode* ro
             if (defEntry != ssa->useTable.end())
             {
 
-                foreach(TableEntry::value_type& varDefsPair, ssa->useTable[node])
+                for(TableEntry::value_type& varDefsPair: ssa->useTable[node])
                 {
                     usedNames.insert(varDefsPair.first);
                 }
@@ -486,7 +481,7 @@ set<VariableRenaming::VarName> VariableRenaming::getVarsUsedInSubtree(SgNode* ro
             if (defEntry != ssa->originalDefTable.end())
             {
 
-                foreach(TableEntry::value_type& varDefsPair, ssa->originalDefTable[node])
+                for(TableEntry::value_type& varDefsPair: ssa->originalDefTable[node])
                 {
                     usedNames.insert(varDefsPair.first);
                 }
@@ -509,7 +504,7 @@ void VariableRenaming::toDOT(const std::string fileName)
 
     //print all the functions in each file
 
-    foreach(fileVec::value_type& file, files)
+    for(fileVec::value_type& file: files)
     {
         ofstream outFile((StringUtility::stripPathFromFileName(file->getFileName())
                 + "_" + fileName).c_str());
@@ -536,7 +531,7 @@ void VariableRenaming::toFilteredDOT(const std::string fileName)
 
     //print all the functions in each file
 
-    foreach(fileVec::value_type& file, files)
+    for(fileVec::value_type& file: files)
     {
         ofstream outFile((StringUtility::stripPathFromFileName(file->getFileName())
                 + "_filtered_" + fileName).c_str());
@@ -574,7 +569,7 @@ void VariableRenaming::printToDOT(SgSourceFile* source, std::ofstream &outFile)
 
     //Iterate all the functions and print them in the same file.
 
-    foreach(funcDefVec::value_type& func, funcs)
+    for(funcDefVec::value_type& func: funcs)
     {
         vector<cfgNode> visited;
         stack<cfgNode> traverse;
@@ -616,11 +611,11 @@ void VariableRenaming::printToDOT(SgSourceFile* source, std::ofstream &outFile)
                 //Print the defs to a string
                 std::stringstream defUse;
 
-                foreach(TableEntry::value_type& entry, defTable[current.getNode()])
+                for(TableEntry::value_type& entry: defTable[current.getNode()])
                 {
                     defUse << "Def [" << keyToString(entry.first) << "]: ";
 
-                    foreach(NodeVec::value_type& val, entry.second)
+                    for(NodeVec::value_type& val: entry.second)
                     {
                         defUse << getRenameNumberForNode(entry.first, val) << ": " << val << ", ";
                     }
@@ -628,11 +623,11 @@ void VariableRenaming::printToDOT(SgSourceFile* source, std::ofstream &outFile)
                 }
                 //Print the uses to a string
 
-                foreach(TableEntry::value_type& entry, useTable[current.getNode()])
+                for(TableEntry::value_type& entry: useTable[current.getNode()])
                 {
                     defUse << "Use [" << keyToString(entry.first) << "]: ";
 
-                    foreach(NodeVec::value_type& val, entry.second)
+                    for(NodeVec::value_type& val: entry.second)
                     {
                         defUse << getRenameNumberForNode(entry.first, val) << ": " << val << ", ";
                     }
@@ -654,7 +649,7 @@ void VariableRenaming::printToDOT(SgSourceFile* source, std::ofstream &outFile)
                 //Now print the out edges
                 std::vector<cfgEdge> outEdges = current.outEdges();
 
-                foreach(std::vector<cfgEdge>::value_type& edge, outEdges)
+                for(std::vector<cfgEdge>::value_type& edge: outEdges)
                 {
                     outFile << edge.source().id() << " -> " << edge.target().id()
                             << " [label=\"" << escapeString(edge.toString())
@@ -666,7 +661,7 @@ void VariableRenaming::printToDOT(SgSourceFile* source, std::ofstream &outFile)
 
             std::vector<cfgEdge> outEdges = current.outEdges();
 
-            foreach(std::vector<cfgEdge>::value_type& edge, outEdges)
+            for(std::vector<cfgEdge>::value_type& edge: outEdges)
             {
                 //If we haven't seen the target of this node yet, process the node
                 if (std::count(visited.begin(), visited.end(), edge.target()) == 0)
@@ -681,7 +676,7 @@ void VariableRenaming::printToDOT(SgSourceFile* source, std::ofstream &outFile)
             {
                 std::vector<cfgEdge> inEdges = current.inEdges();
 
-                foreach(std::vector<cfgEdge>::value_type& edge, inEdges)
+                for(std::vector<cfgEdge>::value_type& edge: inEdges)
                 {
                     //If we haven't seen the target of this node yet, process the node
                     if (std::count(visited.begin(), visited.end(), edge.target()) == 0)
@@ -724,7 +719,7 @@ void VariableRenaming::printToFilteredDOT(SgSourceFile* source, std::ofstream& o
 
     //Iterate all the functions and print them in the same file.
 
-    foreach(funcDefVec::value_type& func, funcs)
+    for(funcDefVec::value_type& func: funcs)
     {
         vector<cfgNode> visited;
         stack<cfgNode> traverse;
@@ -766,11 +761,11 @@ void VariableRenaming::printToFilteredDOT(SgSourceFile* source, std::ofstream& o
                 //Print the defs to a string
                 std::stringstream defUse;
 
-                foreach(TableEntry::value_type& entry, defTable[current.getNode()])
+                for(TableEntry::value_type& entry: defTable[current.getNode()])
                 {
                     defUse << "Def [" << keyToString(entry.first) << "]: ";
 
-                    foreach(NodeVec::value_type& val, entry.second)
+                    for(NodeVec::value_type& val: entry.second)
                     {
                         defUse << getRenameNumberForNode(entry.first, val) << ": " << val << ", ";
                     }
@@ -778,11 +773,11 @@ void VariableRenaming::printToFilteredDOT(SgSourceFile* source, std::ofstream& o
                 }
                 //Print the uses to a string
 
-                foreach(TableEntry::value_type& entry, useTable[current.getNode()])
+                for(TableEntry::value_type& entry: useTable[current.getNode()])
                 {
                     defUse << "Use [" << keyToString(entry.first) << "]: ";
 
-                    foreach(NodeVec::value_type& val, entry.second)
+                    for(NodeVec::value_type& val: entry.second)
                     {
                         defUse << getRenameNumberForNode(entry.first, val) << ": " << val << ", ";
                     }
@@ -804,7 +799,7 @@ void VariableRenaming::printToFilteredDOT(SgSourceFile* source, std::ofstream& o
                 //Now print the out edges
                 std::vector<cfgEdge> outEdges = current.outEdges();
 
-                foreach(std::vector<cfgEdge>::value_type& edge, outEdges)
+                for(std::vector<cfgEdge>::value_type& edge: outEdges)
                 {
                     outFile << edge.source().id() << " -> " << edge.target().id()
                             << " [label=\"" << escapeString(edge.toString())
@@ -816,7 +811,7 @@ void VariableRenaming::printToFilteredDOT(SgSourceFile* source, std::ofstream& o
 
             std::vector<cfgEdge> outEdges = current.outEdges();
 
-            foreach(std::vector<cfgEdge>::value_type& edge, outEdges)
+            for(std::vector<cfgEdge>::value_type& edge: outEdges)
             {
                 //If we haven't seen the target of this node yet, process the node
                 if (std::count(visited.begin(), visited.end(), edge.target()) == 0)
@@ -831,7 +826,7 @@ void VariableRenaming::printToFilteredDOT(SgSourceFile* source, std::ofstream& o
             {
                 std::vector<cfgEdge> inEdges = current.inEdges();
 
-                foreach(std::vector<cfgEdge>::value_type& edge, inEdges)
+                for(std::vector<cfgEdge>::value_type& edge: inEdges)
                 {
                     //If we haven't seen the target of this node yet, process the node
                     if (std::count(visited.begin(), visited.end(), edge.target()) == 0)
@@ -860,7 +855,7 @@ SgInitializedName* VariableRenaming::UniqueNameTraversal::resolveTemporaryInitNa
     if (isSgVarRefExp(name->get_parent()))
     {
 
-        foreach(SgInitializedName* otherName, allInitNames)
+        for(SgInitializedName* otherName: allInitNames)
         {
             if (otherName->get_prev_decl_item() == name)
                 return otherName;
@@ -1196,7 +1191,7 @@ void VariableRenaming::runDefUse(SgFunctionDefinition* func)
 
             //Insert each changed node into the list
 
-            foreach(SgNode* chNode, changedNodes)
+            for(SgNode* chNode: changedNodes)
             {
                 //Get the cfg node for this AST node
                 cfgNode nextNode;
@@ -1226,8 +1221,10 @@ void VariableRenaming::runDefUse(SgFunctionDefinition* func)
 
         //For every edge, add it to the worklist if it is not seen or something has changed
 
-        reverse_foreach(cfgEdgeVec::value_type& edge, outEdges)
+        //reverse_foreach(cfgEdgeVec::value_type& edge, outEdges)
+        for (auto it = outEdges.rbegin(); it != outEdges.rend(); ++it)
         {
+        	cfgEdgeVec::value_type& edge = *it;
             cfgNode nextNode = edge.target();
 
             //Only insert the node in the worklist if it isn't there already.
@@ -1338,7 +1335,7 @@ bool VariableRenaming::mergeDefs(cfgNode curNode, bool *memberRefInserted, NodeV
     if (!isSgFunctionDefinition(node) && (!isSgInitializedName(node) || isSgCtorInitializerList(node->get_parent())))
     {
 
-        foreach(TableEntry::value_type& entry, originalDefTable[node])
+        for(TableEntry::value_type& entry: originalDefTable[node])
         {
             if (propDefs.find(entry.first) == propDefs.end())
             {
@@ -1352,7 +1349,7 @@ bool VariableRenaming::mergeDefs(cfgNode curNode, bool *memberRefInserted, NodeV
     //Replace every entry in staging table that has definition in original defs
     //Also assign renaming numbers to any new definitions
 
-    foreach(TableEntry::value_type& entry, originalDefTable[node])
+    for(TableEntry::value_type& entry: originalDefTable[node])
     {
         //Replace the entry for this variable with the definitions at this node.
         propDefs[entry.first] = entry.second;
@@ -1360,7 +1357,7 @@ bool VariableRenaming::mergeDefs(cfgNode curNode, bool *memberRefInserted, NodeV
         //Now, iterate the definition vector for this node
         ROSE_ASSERT(entry.second.size() == 1);
 
-        foreach(NodeVec::value_type& defNode, entry.second)
+        for(NodeVec::value_type& defNode: entry.second)
         {
             //Assign a number to each new definition. The function will prevent duplicates
             addRenameNumberForNode(entry.first, defNode);
@@ -1371,10 +1368,10 @@ bool VariableRenaming::mergeDefs(cfgNode curNode, bool *memberRefInserted, NodeV
     //that have an originalDef as a prefix
     VarName expVar;
 
-    foreach(TableEntry::value_type& entry, originalDefTable[node])
+    for(TableEntry::value_type& entry: originalDefTable[node])
     {
 
-        foreach(TableEntry::value_type& propEntry, propDefs)
+        for(TableEntry::value_type& propEntry: propDefs)
         {
             //Don't insert a def if it is already originally defined.
             if (originalDefTable[node].count(propEntry.first) != 0)
@@ -1399,13 +1396,13 @@ bool VariableRenaming::mergeDefs(cfgNode curNode, bool *memberRefInserted, NodeV
     //Replace every entry in staging table that has definition in expandedDefs
     //Also assign renaming numbers to any new definitions
 
-    foreach(TableEntry::value_type& entry, expandedDefTable[node])
+    for(TableEntry::value_type& entry: expandedDefTable[node])
     {
         propDefs[entry.first] = entry.second;
 
         //Now, iterate the definition vector for this node
 
-        foreach(NodeVec::value_type& defNode, entry.second)
+        for(NodeVec::value_type& defNode: entry.second)
         {
             //Assign a number to each new definition. The function will prevent duplicates
             addRenameNumberForNode(entry.first, defNode);
@@ -1414,7 +1411,7 @@ bool VariableRenaming::mergeDefs(cfgNode curNode, bool *memberRefInserted, NodeV
 
     //If there is an initial definition of a name at this node, we should insert it in the table
 
-    foreach(TableEntry::value_type& entry, originalDefTable[node])
+    for(TableEntry::value_type& entry: originalDefTable[node])
     {
         //If the given variable name is not present in the first def table
         if (firstDefList.count(entry.first) == 0)
@@ -1492,7 +1489,7 @@ void VariableRenaming::aggregatePreviousDefs(cfgNode curNode, TableEntry& result
 
             //Perform the union of all the infoming definitions.
 
-            foreach(TableEntry::value_type& entry, defTable[prev])
+            for(TableEntry::value_type& entry: defTable[prev])
             {
                 //Insert the definitions for this node at the end of the list
                 results[entry.first].insert(results[entry.first].end(), entry.second.begin(), entry.second.end());
@@ -1502,7 +1499,7 @@ void VariableRenaming::aggregatePreviousDefs(cfgNode curNode, TableEntry& result
 
     //Sort every vector in propDefs and remove duplicates
 
-    foreach(TableEntry::value_type& entry, results)
+    for(TableEntry::value_type& entry: results)
     {
         std::sort(entry.second.begin(), entry.second.end());
         //Create new sequence of unique elements and remove duplicate ones
@@ -1534,7 +1531,7 @@ bool VariableRenaming::expandMemberDefinitions(cfgNode curNode)
 
     //We want to iterate the vars defined on this node, and expand them
 
-    foreach(TableEntry::value_type& entry, originalDefTable[node])
+    for(TableEntry::value_type& entry: originalDefTable[node])
     {
         if (DEBUG_MODE_EXTRA)
         {
@@ -1602,7 +1599,7 @@ bool VariableRenaming::resolveUses(FilteredCFGNode<IsDefUseFilter> curNode, bool
 
     //Iterate every use at the current node
 
-    foreach(TableEntry::value_type& entry, useTable[node])
+    for(TableEntry::value_type& entry: useTable[node])
     {
         //Check the defs that are active at the current node to find the reaching definition
         //We want to check if there is a definition entry for this use at the current node
@@ -1636,7 +1633,7 @@ bool VariableRenaming::resolveUses(FilteredCFGNode<IsDefUseFilter> curNode, bool
 
     //Iterate every use at the current node
 
-    foreach(TableEntry::value_type& entry, useTable[node])
+    for(TableEntry::value_type& entry: useTable[node])
     {
         //If any of these uses are for a variable defined at this node, we will
         //set the flag and correct it later.
@@ -1667,7 +1664,7 @@ bool VariableRenaming::expandMemberUses(cfgNode curNode)
 
     //We want to iterate the vars used on this node, and expand them
 
-    foreach(TableEntry::value_type& entry, useTable[node])
+    for(TableEntry::value_type& entry: useTable[node])
     {
         if (DEBUG_MODE_EXTRA)
         {
@@ -1955,7 +1952,7 @@ VariableRenaming::NodeVec VariableRenaming::getAllUsesForDef(const VarName& var,
 
     //Traverse the use Table looking for locations where the def is used
 
-    foreach(DefUseTable::value_type& entry, useTable)
+    for(DefUseTable::value_type& entry: useTable)
     {
         //If this entry contains the variable that we want
         if (entry.second.count(var) != 0)
@@ -1980,11 +1977,11 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getReachingDefsAtNode(SgN
 
     //Iterate every variable definition reaching this node
 
-    foreach(TableEntry::value_type& entry, defTable[node])
+    for(TableEntry::value_type& entry: defTable[node])
     {
         //Iterate every definition site for this variable
 
-        foreach(NodeVec::value_type& defEntry, entry.second)
+        for(NodeVec::value_type& defEntry: entry.second)
         {
             //Get the rename number for the current variable at the current def site
             int renameNum = getRenameNumberForNode(entry.first, defEntry);
@@ -2023,7 +2020,7 @@ VariableRenaming::NumNodeRenameEntry VariableRenaming::getReachingDefsAtNodeForN
 
     //Iterate every variable definition reaching this node
 
-    foreach(TableEntry::value_type& entry, defTable[node])
+    for(TableEntry::value_type& entry: defTable[node])
     {
         //Check that the current var is the one we want.
         if (entry.first != var)
@@ -2033,7 +2030,7 @@ VariableRenaming::NumNodeRenameEntry VariableRenaming::getReachingDefsAtNodeForN
 
         //Iterate every definition site for this variable
 
-        foreach(NodeVec::value_type& defEntry, entry.second)
+        for(NodeVec::value_type& defEntry: entry.second)
         {
             //Get the rename number for the current variable at the current def site
             int renameNum = getRenameNumberForNode(entry.first, defEntry);
@@ -2072,11 +2069,11 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getUsesAtNode(SgNode* nod
 
     //Iterate every variable definition used at this node
 
-    foreach(TableEntry::value_type& entry, useTable[node])
+    for(TableEntry::value_type& entry: useTable[node])
     {
         //Iterate every definition site for this variable
 
-        foreach(NodeVec::value_type& defEntry, entry.second)
+        for(NodeVec::value_type& defEntry: entry.second)
         {
             //Get the rename number for the current variable at the current def site
             int renameNum = getRenameNumberForNode(entry.first, defEntry);
@@ -2128,7 +2125,7 @@ VariableRenaming::NumNodeRenameEntry VariableRenaming::getUsesAtNodeForName(SgNo
 
     //Iterate every variable use at this node
 
-    foreach(TableEntry::value_type& entry, useTable[node])
+    for(TableEntry::value_type& entry: useTable[node])
     {
         //Check that the current var is the one we want.
         if (entry.first != var)
@@ -2138,7 +2135,7 @@ VariableRenaming::NumNodeRenameEntry VariableRenaming::getUsesAtNodeForName(SgNo
 
         //Iterate every definition site for this variable
 
-        foreach(NodeVec::value_type& defEntry, entry.second)
+        for(NodeVec::value_type& defEntry: entry.second)
         {
             //Get the rename number for the current variable at the current def site
             int renameNum = getRenameNumberForNode(entry.first, defEntry);
@@ -2217,7 +2214,7 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getOriginalUsesAtNode(SgN
 
     VariableRenaming::NumNodeRenameTable result;
 
-    foreach(VariableRenaming::VarName varName, originalVariableUsesTraversal.originalVariablesUsed)
+    for(VariableRenaming::VarName varName: originalVariableUsesTraversal.originalVariablesUsed)
     {
         ROSE_ASSERT(result.count(varName) == 0);
         VariableRenaming::NumNodeRenameEntry varDefs = getUsesAtNodeForName(node, varName);
@@ -2234,7 +2231,7 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getDefsAtNode(SgNode* nod
 
     //Loop the expanded table and insert it into the original table
 
-    foreach(NumNodeRenameTable::value_type& entry, expanded)
+    for(NumNodeRenameTable::value_type& entry: expanded)
     {
         //Insert the entry wholesale
         if (original.count(entry.first) == 0)
@@ -2245,7 +2242,7 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getDefsAtNode(SgNode* nod
         else
         {
 
-            foreach(NumNodeRenameEntry::value_type& tableEntry, entry.second)
+            for(NumNodeRenameEntry::value_type& tableEntry: entry.second)
             {
                 //Insert the entry wholesale
                 if (original[entry.first].count(tableEntry.first) == 0)
@@ -2276,7 +2273,7 @@ VariableRenaming::NumNodeRenameEntry VariableRenaming::getDefsAtNodeForName(SgNo
 
     //Loop the expanded table and insert it into the original table
 
-    foreach(NumNodeRenameEntry::value_type& tableEntry, expanded)
+    for(NumNodeRenameEntry::value_type& tableEntry: expanded)
     {
         //Insert the entry wholesale
         if (original.count(tableEntry.first) == 0)
@@ -2301,11 +2298,11 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getOriginalDefsAtNode(SgN
 
     //Iterate every variable definition reaching this node
 
-    foreach(TableEntry::value_type& entry, originalDefTable[node])
+    for(TableEntry::value_type& entry: originalDefTable[node])
     {
         //Iterate every definition site for this variable
 
-        foreach(NodeVec::value_type& defEntry, entry.second)
+        for(NodeVec::value_type& defEntry: entry.second)
         {
             //Get the rename number for the current variable at the current def site
             int renameNum = getRenameNumberForNode(entry.first, defEntry);
@@ -2357,7 +2354,7 @@ VariableRenaming::NumNodeRenameEntry VariableRenaming::getOriginalDefsAtNodeForN
 
     //Iterate every variable use at this node
 
-    foreach(TableEntry::value_type& entry, originalDefTable[node])
+    for(TableEntry::value_type& entry: originalDefTable[node])
     {
         //Check that the current var is the one we want.
         if (entry.first != var)
@@ -2367,7 +2364,7 @@ VariableRenaming::NumNodeRenameEntry VariableRenaming::getOriginalDefsAtNodeForN
 
         //Iterate every definition site for this variable
 
-        foreach(NodeVec::value_type& defEntry, entry.second)
+        for(NodeVec::value_type& defEntry: entry.second)
         {
             //Get the rename number for the current variable at the current def site
             int renameNum = getRenameNumberForNode(entry.first, defEntry);
@@ -2419,11 +2416,11 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getExpandedDefsAtNode(SgN
 
     //Iterate every variable definition expanded on this node
 
-    foreach(TableEntry::value_type& entry, expandedDefTable[node])
+    for(TableEntry::value_type& entry: expandedDefTable[node])
     {
         //Iterate every definition site for this variable
 
-        foreach(NodeVec::value_type& defEntry, entry.second)
+        for(NodeVec::value_type& defEntry: entry.second)
         {
             //Get the rename number for the current variable at the current def site
             int renameNum = getRenameNumberForNode(entry.first, defEntry);
@@ -2462,7 +2459,7 @@ VariableRenaming::NumNodeRenameEntry VariableRenaming::getExpandedDefsAtNodeForN
 
     //Iterate every variable use at this node
 
-    foreach(TableEntry::value_type& entry, expandedDefTable[node])
+    for(TableEntry::value_type& entry: expandedDefTable[node])
     {
         //Check that the current var is the one we want.
         if (entry.first != var)
@@ -2472,7 +2469,7 @@ VariableRenaming::NumNodeRenameEntry VariableRenaming::getExpandedDefsAtNodeForN
 
         //Iterate every definition site for this variable
 
-        foreach(NodeVec::value_type& defEntry, entry.second)
+        for(NodeVec::value_type& defEntry: entry.second)
         {
             //Get the rename number for the current variable at the current def site
             int renameNum = getRenameNumberForNode(entry.first, defEntry);
@@ -2519,7 +2516,7 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getDefsForSubtree(SgNode*
 
             //Traverse the defs
 
-            foreach(VariableRenaming::NumNodeRenameTable::value_type& entry, defsAtNode)
+            for(VariableRenaming::NumNodeRenameTable::value_type& entry: defsAtNode)
             {
                 //If this is the first time the var has been seen, add it wholesale
                 if (result.count(entry.first) == 0)
@@ -2529,7 +2526,7 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getDefsForSubtree(SgNode*
                 }
                 //Traverse each definition of the variable
 
-                foreach(VariableRenaming::NumNodeRenameEntry::value_type& tableEntry, entry.second)
+                for(VariableRenaming::NumNodeRenameEntry::value_type& tableEntry: entry.second)
                 {
                     if (result[entry.first].count(tableEntry.first) == 0)
                     {
@@ -2568,7 +2565,7 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getOriginalDefsForSubtree
 
             //Traverse the defs
 
-            foreach(VariableRenaming::NumNodeRenameTable::value_type& entry, defsAtNode)
+            for(VariableRenaming::NumNodeRenameTable::value_type& entry: defsAtNode)
             {
                 //If this is the first time the var has been seen, add it wholesale
                 if (result.count(entry.first) == 0)
@@ -2578,7 +2575,7 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getOriginalDefsForSubtree
                 }
                 //Traverse each definition of the variable
 
-                foreach(VariableRenaming::NumNodeRenameEntry::value_type& tableEntry, entry.second)
+                for(VariableRenaming::NumNodeRenameEntry::value_type& tableEntry: entry.second)
                 {
                     if (result[entry.first].count(tableEntry.first) == 0)
                     {
@@ -2631,7 +2628,7 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getReachingDefsAtScopeEnd
         //Find if any of the children exit the basic block.
         cfgEdgeVec outEdges = current.outEdges();
 
-        foreach(cfgEdge edge, outEdges)
+        for(cfgEdge edge: outEdges)
         {
             SgNode* targetNode = edge.target().getNode();
 
@@ -2648,7 +2645,7 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getReachingDefsAtScopeEnd
 
                 //Merge the tables
 
-                foreach(NumNodeRenameTable::value_type& entry, temp)
+                for(NumNodeRenameTable::value_type& entry: temp)
                 {
                     //Insert the entry wholesale
                     if (result.count(entry.first) == 0)
@@ -2659,7 +2656,7 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getReachingDefsAtScopeEnd
                     else
                     {
 
-                        foreach(NumNodeRenameEntry::value_type& tableEntry, entry.second)
+                        for(NumNodeRenameEntry::value_type& tableEntry: entry.second)
                         {
                             //Insert the entry wholesale
                             if (result[entry.first].count(tableEntry.first) == 0)
@@ -2710,13 +2707,13 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getReachingDefsAtFunction
     {
         //Iterate and merge each edge
 
-        foreach(cfgEdgeVec::value_type& edge, lastEdges)
+        for(cfgEdgeVec::value_type& edge: lastEdges)
         {
             NumNodeRenameTable temp = getReachingDefsAtNode(edge.source().getNode());
 
             //Merge the tables
 
-            foreach(NumNodeRenameTable::value_type& entry, temp)
+            for(NumNodeRenameTable::value_type& entry: temp)
             {
                 //Insert the entry wholesale
                 if (result.count(entry.first) == 0)
@@ -2727,7 +2724,7 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getReachingDefsAtFunction
                 else
                 {
 
-                    foreach(NumNodeRenameEntry::value_type& tableEntry, entry.second)
+                    for(NumNodeRenameEntry::value_type& tableEntry: entry.second)
                     {
                         //Insert the entry wholesale
                         if (result[entry.first].count(tableEntry.first) == 0)
@@ -2779,11 +2776,11 @@ VariableRenaming::NumNodeRenameEntry VariableRenaming::getReachingDefsAtFunction
     {
         //Iterate and merge each edge
 
-        foreach(cfgEdgeVec::value_type& edge, lastEdges)
+        for(cfgEdgeVec::value_type& edge: lastEdges)
         {
             NumNodeRenameEntry temp = getReachingDefsAtNodeForName(edge.source().getNode(), var);
 
-            foreach(NumNodeRenameEntry::value_type& tableEntry, temp)
+            for(NumNodeRenameEntry::value_type& tableEntry: temp)
             {
                 //Insert the entry wholesale
                 if (result.count(tableEntry.first) == 0)
@@ -2828,7 +2825,7 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getReachingDefsAtStatemen
 
     //Add all the unfiltered inEdges to the initial worklist
 
-    foreach(CFGEdge inEdge, inEdges)
+    for(CFGEdge inEdge: inEdges)
     {
         unfilteredNodes.push(inEdge.source());
     }
@@ -2849,7 +2846,7 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getReachingDefsAtStatemen
         else
         {
 
-            foreach(CFGEdge inEdge, node.inEdges())
+            for(CFGEdge inEdge: node.inEdges())
             {
                 CFGNode parentNode = inEdge.source();
                 if (visited.count(parentNode) == 0)
@@ -2862,7 +2859,7 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getReachingDefsAtStatemen
 
     //Merge in the defs from the reaching CFG nodes that are not children of the current statement
 
-    foreach(CFGNode cfgNode, filteredNodes)
+    for(CFGNode cfgNode: filteredNodes)
     {
         SgNode* sourceNode = cfgNode.getNode();
         if (statement == sourceNode || SageInterface::isAncestor(statement, sourceNode))
@@ -2875,7 +2872,7 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getReachingDefsAtStatemen
         //Merge the tables
         //TODO: Factor this out into a function
 
-        foreach(NumNodeRenameTable::value_type& entry, temp)
+        for(NumNodeRenameTable::value_type& entry: temp)
         {
             //Insert the entry wholesale
             if (result.count(entry.first) == 0)
@@ -2886,7 +2883,7 @@ VariableRenaming::NumNodeRenameTable VariableRenaming::getReachingDefsAtStatemen
             else
             {
 
-                foreach(NumNodeRenameEntry::value_type& tableEntry, entry.second)
+                for(NumNodeRenameEntry::value_type& tableEntry: entry.second)
                 {
                     //Insert the entry wholesale
                     if (result[entry.first].count(tableEntry.first) == 0)
@@ -3112,7 +3109,7 @@ VariableRenaming::ChildUses VariableRenaming::DefsAndUsesTraversal::evaluateSynt
             //In this case, there are no uses in the operand. We also want to delete any uses for the children
             vector<SgNode*> successors = SageInterface::querySubTree<SgNode > (unaryOp);
 
-            foreach(SgNode* successor, successors)
+            for(SgNode* successor: successors)
             {
                 ssa->getUseTable()[successor].clear();
             }
@@ -3203,7 +3200,7 @@ VariableRenaming::ChildUses VariableRenaming::DefsAndUsesTraversal::evaluateSynt
 void VariableRenaming::DefsAndUsesTraversal::addUsesToNode(SgNode* node, std::vector<SgNode*> uses)
 {
 
-    foreach(SgNode* useNode, uses)
+    for(SgNode* useNode: uses)
     {
         //Get the unique name of the def.
         VarUniqueName * uName = VariableRenaming::getUniqueName(useNode);

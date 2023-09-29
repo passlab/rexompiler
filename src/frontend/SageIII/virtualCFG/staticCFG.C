@@ -1,7 +1,5 @@
 #include "staticCFG.h"
-#include <boost/foreach.hpp>
 
-#define foreach BOOST_FOREACH
 
 
 namespace StaticCFG
@@ -27,9 +25,9 @@ void CFG::clearNodesAndEdges()
 {
     if (graph_ != NULL)
     {
-        foreach (SgGraphNode* node, graph_->computeNodeSet())
+        for (SgGraphNode* node: graph_->computeNodeSet())
         {
-            foreach (SgDirectedGraphEdge* edge, graph_->computeEdgeSetOut(node))
+            for (SgDirectedGraphEdge* edge: graph_->computeEdgeSetOut(node))
             {
                 // This would be so much simpler if the attribute used container-owns-attribute paradigm. In any case, we
                 // cannot delete the attribute without first removing it from the container because the container needs to be
@@ -121,7 +119,7 @@ void CFG::buildFilteredCFG()
             (VirtualCFG::makeInterestingCfg(start_), all_nodes, explored);
 
     typedef std::pair<VirtualCFG::InterestingNode, SgGraphNode*> pair_t;
-    foreach (const pair_t& p, all_nodes)
+    for (const pair_t& p: all_nodes)
         all_nodes_[VirtualCFG::CFGNode(p.first.getNode(), 0)] = p.second;
 }
 
@@ -149,7 +147,7 @@ void CFG::buildCFG(CFGNode n)
     }
 
     std::vector<VirtualCFG::CFGEdge> outEdges = n.outEdges();
-    foreach (const VirtualCFG::CFGEdge& edge, outEdges)
+    for (const VirtualCFG::CFGEdge& edge: outEdges)
     {
         CFGNode tar = edge.target();
 
@@ -168,7 +166,7 @@ void CFG::buildCFG(CFGNode n)
         graph_->addDirectedEdge(new SgDirectedGraphEdge(from, to));
     }
 
-    foreach (const VirtualCFG::CFGEdge& edge, outEdges)
+    for (const VirtualCFG::CFGEdge& edge: outEdges)
     {
         ROSE_ASSERT(edge.source() == n);
         buildCFG(edge.target());
@@ -176,7 +174,7 @@ void CFG::buildCFG(CFGNode n)
 
 #if 1
     std::vector<CFGEdge> inEdges = n.inEdges();
-    foreach (const VirtualCFG::CFGEdge& edge, inEdges)
+    for (const VirtualCFG::CFGEdge& edge: inEdges)
     {
         ROSE_ASSERT(edge.target() == n);
         buildCFG(edge.source());
@@ -241,7 +239,7 @@ void CFG::buildCFG(NodeT n, std::map<NodeT, SgGraphNode*>& all_nodes, std::set<N
     printf ("In CFG::buildCFG(): loop 1.1 \n");
 #endif
 
-    foreach (const EdgeT& edge, outEdges)
+    for (const EdgeT& edge: outEdges)
     {
         NodeT tar = edge.target();
 #if 0
@@ -293,7 +291,7 @@ void CFG::buildCFG(NodeT n, std::map<NodeT, SgGraphNode*>& all_nodes, std::set<N
     printf ("In CFG::buildCFG(): loop 2 \n");
 #endif
 
-    foreach (const EdgeT& edge, outEdges)
+    for (const EdgeT& edge: outEdges)
     {
         ROSE_ASSERT(edge.source() == n);
         buildCFG<NodeT, EdgeT>(edge.target(), all_nodes, explored);
@@ -304,7 +302,7 @@ void CFG::buildCFG(NodeT n, std::map<NodeT, SgGraphNode*>& all_nodes, std::set<N
 #endif
 
     std::vector<EdgeT> inEdges = n.inEdges();
-    foreach (const EdgeT& edge, inEdges)
+    for (const EdgeT& edge: inEdges)
     {
         ROSE_ASSERT(edge.target() == n);
         buildCFG<NodeT, EdgeT>(edge.source(), all_nodes, explored);
@@ -368,11 +366,11 @@ void CFG::processNodes(std::ostream & o, SgGraphNode* n, std::set<SgGraphNode*>&
     printNodePlusEdges(o, n);
 
     std::set<SgDirectedGraphEdge*> out_edges = graph_->computeEdgeSetOut(n);
-    foreach (SgDirectedGraphEdge* e, out_edges)
+    for (SgDirectedGraphEdge* e: out_edges)
         processNodes(o, e->get_to(), explored);
 
     std::set<SgDirectedGraphEdge*> in_edges = graph_->computeEdgeSetIn(n);
-    foreach (SgDirectedGraphEdge* e, in_edges)
+    for (SgDirectedGraphEdge* e: in_edges)
         processNodes(o, e->get_from(), explored);
 }
 
@@ -381,12 +379,12 @@ void CFG::printNodePlusEdges(std::ostream & o, SgGraphNode* node)
     printNode(o, node);
 
     std::set<SgDirectedGraphEdge*> out_edges = graph_->computeEdgeSetOut(node);
-    foreach (SgDirectedGraphEdge* e, out_edges)
+    for (SgDirectedGraphEdge* e: out_edges)
         printEdge(o, e, false);
 
 #ifdef DEBUG
     std::set<SgDirectedGraphEdge*> in_edges = graph_->computeEdgeSetIn(node);
-    foreach (SgDirectedGraphEdge* e, in_edges)
+    for (SgDirectedGraphEdge* e: in_edges)
         printEdge(o, e, true);
 #endif
 }

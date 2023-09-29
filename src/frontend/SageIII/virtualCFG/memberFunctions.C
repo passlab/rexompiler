@@ -7,8 +7,6 @@
 #endif
 
 #include <vector>
-#include <boost/foreach.hpp>
-#define foreach BOOST_FOREACH
 using namespace std;
 
 #ifndef ROSE_USE_INTERNAL_FRONTEND_DEVELOPMENT
@@ -1170,7 +1168,7 @@ SgFunctionDefinition::cfgInEdges(unsigned int idx) {
         ClassHierarchyWrapper classHierarchy( SageInterface::getProject() );
         Rose_STL_Container<SgExpression*> exps;
         CallTargetSet::getExpressionsForDefinition(this, &classHierarchy, exps);
-        foreach (SgExpression* exp, exps)
+        for (SgExpression* exp: exps)
           makeEdge(exp->cfgForEnd(), CFGNode(this, idx), result);
       }
       break;
@@ -4139,7 +4137,7 @@ SgPseudoDestructorRefExp::cfgInEdges(unsigned int idx)
                   ClassHierarchyWrapper classHierarchy( SageInterface::getProject() );
                   Rose_STL_Container<SgFunctionDefinition*> defs;
                   CallTargetSet::getDefinitionsForExpression(this, &classHierarchy, defs);
-                  foreach (SgFunctionDefinition* def, defs)
+                  for (SgFunctionDefinition* def: defs)
                     makeEdge(CFGNode(this, idx), def->cfgForBeginning(), result);
                 }
                 else {
@@ -4165,7 +4163,7 @@ SgPseudoDestructorRefExp::cfgInEdges(unsigned int idx)
                   ClassHierarchyWrapper classHierarchy( SageInterface::getProject() );
                   Rose_STL_Container<SgFunctionDefinition*> defs;
                   CallTargetSet::getDefinitionsForExpression(this, &classHierarchy, defs);
-                  foreach (SgFunctionDefinition* def, defs)
+                  for (SgFunctionDefinition* def: defs)
                     makeEdge(def->cfgForEnd(), CFGNode(this, idx), result);
                 }
                 else
