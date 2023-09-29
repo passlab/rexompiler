@@ -14,22 +14,6 @@
 // #if (CAN_NOT_COMPILE_WITH_ROSE == 0)
 // #ifndef USE_ROSE
 
-///////////////////////////////////////////////////////////////////////////////
-//  Include the token class from Wave
-///////////////////////////////////////////////////////////////////////////////
-
-#ifndef ROSE_SKIP_COMPILATION_OF_WAVE
-//  Include Wave itself
-#include <boost/wave.hpp>
-
-token_container wave_tokenStream;
-#endif
-
-// #include <boost/wave/grammars/cpp_xpression_grammar.hpp> //as_string
-
-// #endif
-
-
 // DQ (9/30/2013): This global variable is used in only the initial accumulation of
 // the CPP directives, comments and tokens by file name in the src/frontend/SageIII/preproc-c.ll
 // file.  Later after processin it is an empty map (e.g. in the unparsing phase).
@@ -38,8 +22,6 @@ token_container wave_tokenStream;
 // AS(01/04/07) Global map of filenames to PreprocessingInfo*'s as it is inefficient
 // to get this by a traversal of the AST
 std::map<std::string,ROSEAttributesList* > mapFilenameToAttributes;
-
-
 
 // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace std;

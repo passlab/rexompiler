@@ -90,12 +90,7 @@ endif
 
 librose_la_SOURCES = dummyCppFileForLibrose.C
 
-librose_la_LIBADD = $(BOOST_LDFLAGS) $(libroseLibraries) $(JAVA_JVM_FLAGS) -lm $(RT_LIBS) \
-          $(BOOST_DATE_TIME_LIB) \
-          $(BOOST_THREAD_LIB) $(BOOST_FILESYSTEM_LIB) \
-          $(BOOST_PROGRAM_OPTIONS_LIB) $(BOOST_REGEX_LIB) \
-          $(BOOST_SYSTEM_LIB) $(BOOST_SERIALIZATION_LIB) \
-          $(BOOST_WAVE_LIB) $(BOOST_IOSTREAMS_LIB)
+librose_la_LIBADD = $(libroseLibraries) $(JAVA_JVM_FLAGS) -lm $(RT_LIBS)
 
 if ROSE_USE_GCC_OMP
    librose_la_LIBADD += lgomp
@@ -143,22 +138,10 @@ rose_config_LDFLAGS += -fno-rtti
 
 rose_config_installed_cppflags =		\
 	-I@includedir@/rose			\
-	$(ROSE_PCH_INCLUDE)			\
-	$(BOOST_CPPFLAGS)
+	$(ROSE_PCH_INCLUDE)
 
 rose_config_installed_ldflags =			\
 	-L@libdir@ -lrose			\
-	$(BOOST_LDFLAGS)			\
-	$(BOOST_DATE_TIME_LIB)			\
-	$(BOOST_THREAD_LIB)			\
-	$(BOOST_FILESYSTEM_LIB)			\
-	$(BOOST_PROGRAM_OPTIONS_LIB)		\
-	$(BOOST_REGEX_LIB)			\
-	$(BOOST_SYSTEM_LIB)			\
-	$(BOOST_SERIALIZATION_LIB)		\
-	$(BOOST_WAVE_LIB)			\
-	$(BOOST_IOSTREAMS_LIB)			\
-	$(BOOST_CHRONO_LIB)			\
 	$(JAVA_JVM_LINK)			\
 	$(RT_LIBS)				\
 	$(ROSE_INTEL_COMPILER_MATH_LIBS)	\
@@ -237,10 +220,6 @@ rose_fortran_LDADD        = $(LDADD_ROSEBIN)
 ########################################################################################################################
 # Test that a simple ROSE program can run, and as a side effect, print some version numbers.
 
-check-boost:
-	@echo "  TEST     boost shared linkage [rose-compiler]"
-	${AM_V_at}$(top_srcdir)/scripts/check_boost_linkage.sh .libs/rose-compiler >&2
-
 check-dynload:
 	@echo "  TEST     whether a trivial ROSE program runs [rose-compiler]"
 	${AM_V_at}if ! ./rose-compiler --version; then                                           \
@@ -295,7 +274,6 @@ check-hello-fortran:
 endif
 
 check-local: $(bin_PROGRAMS)
-	${AM_V_at}$(MAKE) check-boost
 	${AM_V_at}$(MAKE) check-dynload
 	${AM_V_at}$(MAKE) check-config
 if ROSE_BUILD_C_LANGUAGE_SUPPORT

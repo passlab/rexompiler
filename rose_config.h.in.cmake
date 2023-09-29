@@ -36,34 +36,6 @@
 /* Define to 1 if you have the <argz.h> header file. */
 #cmakedefine HAVE_ARGZ_H 1
 
-/* define if the Boost library is available , convert the cmake output Boost_FOUND to our custom HAVE_BOOST */
-#cmakedefine HAVE_BOOST
-
-/* define if the Boost::Date_Time library is available */
-#cmakedefine HAVE_BOOST_DATE_TIME
-
-/* define if the Boost::Filesystem library is available */
-#cmakedefine HAVE_BOOST_FILESYSTEM
-
-/* define if the Boost::PROGRAM_OPTIONS library is available */
-#cmakedefine HAVE_BOOST_PROGRAM_OPTIONS
-
-/* define if the Boost::Regex library is available */
-#cmakedefine HAVE_BOOST_REGEX
-
-/* define if the Boost::System library is available */
-#cmakedefine HAVE_BOOST_SYSTEM
-
-/* define if the Boost::Thread library is available */
-#cmakedefine HAVE_BOOST_THREAD
-
-/* define if the Boost::Wave library is available */
-#cmakedefine HAVE_BOOST_WAVE
-#cmakedefine USE_ROSE_BOOST_WAVE_SUPPORT
-
-/* Define if the boost::serialization library is available */
-#cmakedefine HAVE_BOOST_SERIALIZATION_LIB 1
-
 /* Define if Z3 library is available */
 #cmakedefine ROSE_HAVE_Z3
 
@@ -509,9 +481,6 @@
 /* Define as the return type of signal handlers (`int' or `void'). */
 //AS Don't know what to do with this
 #undef RETSIGTYPE
-
-/* Location (unquoted) of Boost specified on configure line. */
-#define ROSE_BOOST_PATH "${BOOST_ROOT}"
 
 /* Location of ROSE Compile Tree. */
 #define ROSE_COMPILE_TREE_PATH ${ROSE_TOP_BINARY_DIR}

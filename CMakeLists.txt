@@ -24,6 +24,7 @@
 # 8. If a CMakefile file needs to be conditionally enabled, do it in that CMake file rather than around the
 #    add_subdirectory in the level above. This keeps all the logic for a directory in a single file rather than
 #    split across two files. It is a bit unfortunate that CMake can't find the lower-level CMakeList files
+
 #    on its own, so some of the logic is still necessarily in the level above.  There are exceptions to this rule,
 #    and they're pretty obvious when they occur--as when a single if() protects a whole bunch of add_subdirectory.
 
@@ -111,8 +112,6 @@ endif()
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
-
-#add_definitions(-DBOOST_ALL_NO_LIB=1)
 
 # FIXME: Why do we have to have a copy of some standard built-in modules inside rose?
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/modules"  ${CMAKE_MODULE_PATH})

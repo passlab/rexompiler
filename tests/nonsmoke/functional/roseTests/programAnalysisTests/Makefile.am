@@ -13,9 +13,9 @@ SUBDIRS = 					\
 
 # DQ (4/4/2017): Note that Boost 1.62 version is problematic and Boost suggests using an older version.
 # There is nothing that ROSE can do about this except skip some tests that require problem features of Boost 1.62.
-if !ROSE_USING_BOOST_VERSION_1_62
+#if !ROSE_USING_BOOST_VERSION_1_62
 SUBDIRS += staticInterproceduralSlicingTests
-endif
+#endif
 
 # ROSE Test Harness scripts
 #CHECK_ANSWER = $(top_srcdir)/scripts/test_against_answer

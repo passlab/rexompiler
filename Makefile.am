@@ -253,12 +253,7 @@ endif
 	@echo '***** make install-data rule complete (terminated normally) *****'
 	@echo '*****************************************************************'
 
-# DQ (4/22/2005): Set this so that make distcheck will use the same 
-# --with-edg_source_code=true/false option as were used at configure.
-# JJW (5/14/2008): Add the Boost flag the same way, using an internal
-# variable from AX_BOOST_* to find the argument to --with-boost when
-# this copy of ROSE was originally configured.
-DISTCHECK_CONFIGURE_FLAGS = --with-boost=$(ac_boost_path)
+DISTCHECK_CONFIGURE_FLAGS =
 
 # DQ (7/25/2008): If ROSE was originallly configured with Fortran (by tuning 
 # on the java support) then make sure it is tested as part of the distcheck rule.

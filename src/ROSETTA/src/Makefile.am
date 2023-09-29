@@ -116,14 +116,7 @@ CxxGrammarMetaProgram_SOURCES = \
 
 # buildConstructorsWithoutSourcePositionInformation.o: buildConstructorsWithoutSourcePositionInformation.C
 
-BoostLibraries = \
-  $(BOOST_LDFLAGS) $(BOOST_DATE_TIME_LIB)           \
-  $(BOOST_THREAD_LIB) $(BOOST_FILESYSTEM_LIB) $(BOOST_PROGRAM_OPTIONS_LIB)  \
-  $(BOOST_REGEX_LIB)  $(BOOST_SYSTEM_LIB) $(BOOST_SERIALIZATION_LIB)    \
-  $(BOOST_WAVE_LIB) $(BOOST_IOSTREAMS_LIB)
-
 CxxGrammarMetaProgram_LDADD = \
-  $(ROSE_BOOST_LIBS) \
   $(top_builddir)/src/util/libroseutil.la \
   $(RT_LIBS)
 

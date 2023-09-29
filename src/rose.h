@@ -9,7 +9,6 @@
 
 #include "sage3basic.hhh"
 // DQ (4/21/2009): Andreas needs to add a comment about what this is for...
-#define BOOST_WAVE_PREPROCESS_PRAGMA_BODY 1
 
 #include "rosedefs.h"
 

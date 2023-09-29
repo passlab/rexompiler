@@ -59,29 +59,6 @@ ROSE_COMPILER_FEATURES([fortran], [$FC $FCLAGS], [HOST_FC_])
     echo "    OpenCL                           ${support_opencl_frontend:-no}"
 
     #--------------------------------------------------------------------------------
-    ROSE_SUMMARY_HEADING([Boost library])
-    echo "    location                         ${ac_boost_path:-unknown}"
-    echo "    version constant                 ${rose_boost_version:-unknown}"
-    echo "    asio library                     ${BOOST_ASIO_LIB:-none}"
-    echo "    atomic library                   ${BOOST_ATOMIC_LIB:-none}"
-    echo "    chrono library                   ${BOOST_CHRONO_LIB:-none}"
-    echo "    date/time library                ${BOOST_DATE_TIME_LIB:-none}"
-    echo "    filesystem library               ${BOOST_FILESYSTEM_LIB:-none}"
-    echo "    iostreams library                ${BOOST_IOSTREAMS_LIB:-none}"
-    echo "    program options library          ${BOOST_PROGRAM_OPTIONS_LIB:-none}"
-    echo "    python library                   ${BOOST_PYTHON_LIB:-none}"
-    echo "    random library                   ${BOOST_RANDOM_LIB:-none}"
-    echo "    regex library                    ${BOOST_REGEX_LIB:-none}"
-    echo "    serialization library            ${BOOST_SERIALIZATION_LIB:-none}"
-    echo "    signals library                  ${BOOST_SIGNALS_LIB:-none}"
-    echo "    system library                   ${BOOST_SYSTEM_LIB:-none}"
-    echo "    test exec monitor library        ${BOOST_TEST_EXEC_MONITOR_LIB:-none}"
-    echo "    thread library                   ${BOOST_THREAD_LIB:-none}"
-    echo "    unit test framework library      ${BOOST_UNIT_TEST_FRAMEWORK_LIB:-none}"
-    echo "    wave library                     ${BOOST_WAVE_LIB:-none}"
-    echo "    wserialization library           ${BOOST_WSERIALIZATION_LIB:-none}"
-
-    #--------------------------------------------------------------------------------
     if test -n "$support_cxx_frontend" -o -n "$verbose"; then
         ROSE_SUMMARY_HEADING([C/C++ analysis support])
 	echo "    frontend C++ parser              EDG-${edg_major_version_number}.${edg_minor_version_number}"

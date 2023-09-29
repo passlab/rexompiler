@@ -143,7 +143,6 @@ ROSE_SUPPORT_ROSE_PART_6
 ROSE_SUPPORT_ROSE_PART_7
 
 dnl Fail gracefully for blacklisted dependencies and other situations
-ROSE_SUPPORT_BLACKLIST
 ROSE_SUPPORT_SUMMARY
 
 dnl Now generate all the output files (specified above)

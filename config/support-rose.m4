@@ -392,8 +392,6 @@ AC_SUBST(ROSE_HOME)
 
 AC_LANG(C++)
 
-ROSE_SUPPORT_BOOST
-
 # Rasmussen (12/16/2017): Added test for Bison version (Mac OSX Bison version may be too old)
 ROSE_SUPPORT_BISON
 
@@ -692,8 +690,6 @@ AC_PROG_MAKE_SET
 # DQ (9/21/2009): Debugging for RH release 5
 AC_MSG_NOTICE([testing the value of CC: (CC = "$CC")])
 AC_MSG_NOTICE([testing the value of CPPFLAGS: (CPPFLAGS = "$CPPFLAGS")])
-
-AX_BOOST_IOSTREAMS
 
 ROSE_SUPPORT_VECTORIZATION
 

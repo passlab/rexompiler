@@ -159,11 +159,6 @@ if ROSE_PCH
 else
 	@echo "Automake conditional ROSE_PCH: NOT defined"
 endif
-if ROSE_USE_BOOST_WAVE
-	@echo "Automake conditional ROSE_USE_BOOST_WAVE: DEFINED"
-else
-	@echo "Automake conditional ROSE_USE_BOOST_WAVE: NOT defined"
-endif
 if ROSE_USE_GCC_OMP
 	@echo "Automake conditional ROSE_USE_GCC_OMP: DEFINED"
 else
@@ -218,61 +213,6 @@ if ROSE_USE_WGET
 	@echo "Automake conditional ROSE_USE_WGET: DEFINED"
 else
 	@echo "Automake conditional ROSE_USE_WGET: NOT defined"
-endif
-if ROSE_USING_BOOST_VERSION_1_35
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_35: DEFINED"
-else
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_35: NOT defined"
-endif
-if ROSE_USING_BOOST_VERSION_1_36
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_36: DEFINED"
-else
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_36: NOT defined"
-endif
-if ROSE_USING_BOOST_VERSION_1_37
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_37: DEFINED"
-else
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_37: NOT defined"
-endif
-if ROSE_USING_BOOST_VERSION_1_38
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_38: DEFINED"
-else
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_38: NOT defined"
-endif
-if ROSE_USING_BOOST_VERSION_1_39
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_39: DEFINED"
-else
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_39: NOT defined"
-endif
-if ROSE_USING_BOOST_VERSION_1_40
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_40: DEFINED"
-else
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_40: NOT defined"
-endif
-if ROSE_USING_BOOST_VERSION_1_41
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_41: DEFINED"
-else
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_41: NOT defined"
-endif
-if ROSE_USING_BOOST_VERSION_1_42
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_42: DEFINED"
-else
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_42: NOT defined"
-endif
-if ROSE_USING_BOOST_VERSION_1_43
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_43: DEFINED"
-else
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_43: NOT defined"
-endif
-if ROSE_USING_BOOST_VERSION_1_44
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_44: DEFINED"
-else
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_44: NOT defined"
-endif
-if ROSE_USING_BOOST_VERSION_1_45
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_45: DEFINED"
-else
-	@echo "Automake conditional ROSE_USING_BOOST_VERSION_1_45: NOT defined"
 endif
 if ROSE_USING_GFORTRAN_VERSION_4_0
 	@echo "Automake conditional ROSE_USING_GFORTRAN_VERSION_4_0: DEFINED"

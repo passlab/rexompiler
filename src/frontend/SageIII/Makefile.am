@@ -135,8 +135,8 @@ libsage3_la_SOURCES = $(libsage3Sources) preproc-c.ll omp_exprparser_lexer.ll om
 # nodist_libsage3_la_SOURCES = $(ROSETTA_GENERATED_SOURCE) $(top_builddir)/rose_config.h
 nodist_libsage3_la_SOURCES = $(ROSETTA_GENERATED_SOURCE) license_string.h
 
-if ROSE_USE_BOOST_WAVE
-libsage3_la_LIBADD= \
+#if ROSE_USE_BOOST_WAVE
+libsage3_la_LIBADD_not_used= \
   astFixup/libastFixup.la \
   accparser/libaccparser.la \
   ompparser/libompparser.la \
@@ -146,7 +146,7 @@ libsage3_la_LIBADD= \
   astHiddenTypeAndDeclarationLists/libastHiddenTypeAndDeclarationLists.la \
   includeDirectivesProcessing/libincludeDirectivesProcessing.la \
   astTokenStream/libastTokenStream.la
-else
+#else
 libsage3_la_LIBADD= \
   astFixup/libastFixup.la \
   accparser/libaccparser.la \
@@ -156,7 +156,7 @@ libsage3_la_LIBADD= \
   virtualCFG/libvirtualCFG.la \
   astHiddenTypeAndDeclarationLists/libastHiddenTypeAndDeclarationLists.la \
   includeDirectivesProcessing/libincludeDirectivesProcessing.la
-endif
+#endif
 
 # DQ (6/25/2011): Readded this directory so that we can support the older behavior as a default
 # although this will likely fail at least some of the nearly one hundred new name qualification tests.
