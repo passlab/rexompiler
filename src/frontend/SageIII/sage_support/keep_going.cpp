@@ -19,7 +19,8 @@
 #include <ctime>
 #include <iomanip>
 #include <string>
-#include <string>
+#include <cstring>
+#include <signal.h>  // For signal constants like SIGSEGV, SIGINT, etc.
 #include <vector>
 #ifdef __linux__
 #include <utime.h>

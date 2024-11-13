@@ -11,7 +11,8 @@
 #include <queue>
 #include <fstream>
 #include <stack>
-#include <boost/unordered_set.hpp>
+#include <unordered_set>
+#include <unordered_map>
 
 using namespace std;
 using namespace Rose;
@@ -1149,7 +1150,7 @@ VariableRenaming::VarRefSynthAttr VariableRenaming::UniqueNameTraversal::evaluat
 void VariableRenaming::runDefUse(SgFunctionDefinition* func)
 {
     //Keep track of visited nodes
-    boost::unordered_set<SgNode*> visited;
+    std::unordered_set<SgNode*> visited;
 
     //Reset the first def list to prevent errors with global vars.
     firstDefList.clear();

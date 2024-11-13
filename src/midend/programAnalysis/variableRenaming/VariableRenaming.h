@@ -12,7 +12,7 @@
 #include <fstream>
 #include <sstream>
 #include "filteredCFG.h"
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 /** Class holding a unique name for a variable. Is attached to varRefs as a persistent attribute.
  * This is used to assign absolute names to VarRefExp nodes during VariableRenaming.
@@ -181,6 +181,18 @@ struct IsDefUseFilter
         }
 };
 
+template <typename T>
+struct VectorHash {
+    std::size_t operator()(const std::vector<T>& vec) const {
+        std::hash<T> hasher;
+        std::size_t seed = 0;
+        for (const T& elem : vec) {
+            seed ^= hasher(elem) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        }
+        return seed;
+    }
+};
+
 /** Class that defines an VariableRenaming of a program
  *
  * Contains all the functionality to implement variable renaming on a given program.
@@ -210,10 +222,10 @@ public:
     typedef std::map<VarName, NodeVec> TableEntry;
     /** A table storing the name->node mappings for every node in the program.
      */
-    typedef boost::unordered_map<SgNode*, TableEntry> DefUseTable;
+    typedef std::unordered_map<SgNode*, TableEntry> DefUseTable;
     /** A table mapping a name to a single node.
      */
-    typedef boost::unordered_map<VarName, SgNode*> FirstDefTable;
+    typedef std::unordered_map<VarName, SgNode*, VectorHash<SgInitializedName*>> FirstDefTable;
 
     /** A vector of SgInitializedName*
      */
@@ -235,13 +247,13 @@ public:
     typedef std::map<SgNode*, int> NodeNumRenameEntry;
     /** A table that maps a name to it's node->number renamings.
      */
-    typedef boost::unordered_map<VarName, NodeNumRenameEntry> NodeNumRenameTable;
+    typedef std::unordered_map<VarName, NodeNumRenameEntry, VectorHash<SgInitializedName*>> NodeNumRenameTable;
     /** An entry in the rename table that maps a number to a node.
      */
     typedef std::map<int, SgNode*> NumNodeRenameEntry;
     /** A table that maps a name to it's number->node renamings.
      */
-    typedef boost::unordered_map<VarName, NumNodeRenameEntry> NumNodeRenameTable;
+    typedef std::unordered_map<VarName, NumNodeRenameEntry, VectorHash<SgInitializedName*>> NumNodeRenameTable;
 
 
 private:

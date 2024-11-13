@@ -4,11 +4,10 @@
 #include "customFilteredCFG.h"
 #include "ClassHierarchyGraph.h"
 #include "CallGraph.h"
-#include <boost/shared_ptr.hpp>
-#include <boost/unordered_map.hpp>
+#include <memory>
+#include <unordered_map>
 #include <algorithm>
 
-using namespace boost;
 using namespace std;
 
 //! A struct to hold the information about an alias node
@@ -110,7 +109,7 @@ protected:
 class CompactRepresentation : public CompReprBase{
     
     //! A Map to hold the SgNode to SgGraphNode mapping
-    boost::unordered_map<SgNode *,SgGraphNode *> all_nodes;
+    std::unordered_map<SgNode *,SgGraphNode *> all_nodes;
     
     //! Get Graph Node from SgNode
     SgGraphNode * getGraphNode(SgNode *node);
@@ -142,7 +141,7 @@ class CompactRepresentation : public CompReprBase{
     
 public:
     //! Get the Mapping from SgNode to SgGraphNode
-    boost::unordered_map<SgNode *,SgGraphNode *>  getNodesMapping(){ return all_nodes;}
+    std::unordered_map<SgNode *,SgGraphNode *>  getNodesMapping(){ return all_nodes;}
     CompactRepresentation() {  init(); }
     
     //! Get the Graph
@@ -185,13 +184,13 @@ public:
 //! A Shared Pointer Wrapper for CompactRepresentation
 class CompReprPtr  {
     //! The shared pointer holding th CompactRepresentation
-     boost::shared_ptr<CompReprBase> ptr;
+     std::shared_ptr<CompReprBase> ptr;
 public:
     //! Constructor
-    CompReprPtr() { ptr = boost::shared_ptr<CompReprBase>(); }
+    CompReprPtr() { ptr = std::shared_ptr<CompReprBase>(); }
     
     //! Constructor
-    CompReprPtr(CompactRepresentation *repr)   { ptr = boost::shared_ptr<CompReprBase>(repr);  }
+    CompReprPtr(CompactRepresentation *repr)   { ptr = std::shared_ptr<CompReprBase>(repr);  }
     
     //! get the actual pointer to compact representation
     CompReprBase * get() const{ return ptr.get();  }
@@ -209,16 +208,16 @@ public:
 //! Helper class to hold Alias Information
 class AliasInfoGenerator {
     //!  IN of every CFG Node
-    boost::unordered_map<SgGraphNode *, CompReprPtr> ins;
+    std::unordered_map<SgGraphNode *, CompReprPtr> ins;
     
     //!  OUT of every CFG Node
-    boost::unordered_map<SgGraphNode *, CompReprPtr> outs;
+    std::unordered_map<SgGraphNode *, CompReprPtr> outs;
     
     //! All the Return Stmts
     std::vector <AliasRelationNode > returnStmts;
     
     //! All the AliasRelations for every CFG Node 
-    boost::unordered_map<SgGraphNode *, std::vector <std::pair<AliasRelationNode, AliasRelationNode> > >aliasRelations;    
+    std::unordered_map<SgGraphNode *, std::vector <std::pair<AliasRelationNode, AliasRelationNode> > >aliasRelations;    
     
 public :
     AliasInfoGenerator();
@@ -278,7 +277,7 @@ class CollectAliasRelations {
       void run();
   private:
       //! recursively Collect Alias Information from the CFG Nodes
-      void recursiveCollect(SgGraphNode *, boost::unordered_map<SgGraphNode*, CollectAliasRelations::COLOR> &);
+      void recursiveCollect(SgGraphNode *, std::unordered_map<SgGraphNode*, CollectAliasRelations::COLOR> &);
 };
 
 //! IntraProcedurial DataFlow Analysis to compute exit and entry from all the function which
@@ -316,10 +315,10 @@ protected:
    virtual void buildCFG() ;
    
    //! A mapping to hold SgFunctionDeclaration to IntraProcAliasAnalysis 
-   boost::unordered_map<SgFunctionDeclaration *, IntraProcAliasAnalysis *> &mapping;
+   std::unordered_map<SgFunctionDeclaration *, IntraProcAliasAnalysis *> &mapping;
    
    //! A mapping to hold function resolve data
-   boost::unordered_map<SgExpression*, std::vector<SgFunctionDeclaration*> > &resolver;
+   std::unordered_map<SgExpression*, std::vector<SgFunctionDeclaration*> > &resolver;
    
    //! Retrieve Alias Relations from Function Parameters. Map data between actual and formal parameters.
    //! Handles return values as well.
@@ -343,8 +342,8 @@ protected:
 public:
     //ReachingDefinitionAnalysis(SgNode *head) : DataFlowAnalysis<ReachingDefNode, ReachingDefinitions>(head),  g(0) {
     IntraProcAliasAnalysis(SgNode *head, ClassHierarchyWrapper *_classHierarchy, CallGraphBuilder *_cgB, 
-                boost::unordered_map<SgFunctionDeclaration *, IntraProcAliasAnalysis *> &mapping,
-                boost::unordered_map<SgExpression*, std::vector<SgFunctionDeclaration*> > &resolver);
+                std::unordered_map<SgFunctionDeclaration *, IntraProcAliasAnalysis *> &mapping,
+                std::unordered_map<SgExpression*, std::vector<SgFunctionDeclaration*> > &resolver);
     
     //! Get the Entry CompactRepresentation Graph for the function
     CompReprPtr getFunctionEntry() {return entry;}

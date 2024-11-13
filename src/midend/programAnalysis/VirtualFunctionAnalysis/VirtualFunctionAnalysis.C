@@ -91,9 +91,9 @@ void VirtualFunctionAnalysis::pruneCallGraph(CallGraphBuilder& builder) {
         SgIncidenceDirectedGraph *graph =  builder.getGraph();
               
         ROSE_ASSERT(graph != NULL);
-        boost::unordered_map<SgFunctionDeclaration*, SgGraphNode*>node_mapping =  builder.getGraphNodesMapping();
+        std::unordered_map<SgFunctionDeclaration*, SgGraphNode*>node_mapping =  builder.getGraphNodesMapping();
         
-        typedef boost::unordered_map<SgFunctionDeclaration *, SgGraphNode *> map;
+        typedef std::unordered_map<SgFunctionDeclaration *, SgGraphNode *> map;
         for (map::value_type it: node_mapping) {
             SgFunctionDeclaration *defDecl =
                 (

@@ -4,9 +4,7 @@
 #include "InterProcDataFlowAnalysis.h"
 #include "IntraProcAliasAnalysis.h"
 
-
 using namespace std;
-using namespace boost;
 
 //! PtrAliasAnalysis computes Alias Information, which is used for 
 //! Virtual Function Resolving.
@@ -17,10 +15,10 @@ protected:
     SgIncidenceDirectedGraph *callGraph;
     
     //! A map from SgFunctionDeclaration to IntraProcAliasAnalysis
-    boost::unordered_map<SgFunctionDeclaration *, IntraProcAliasAnalysis *> intraAliases;
+    std::unordered_map<SgFunctionDeclaration *, IntraProcAliasAnalysis *> intraAliases;
     
     //! A map which stores the function call resolve information 
-    boost::unordered_map<SgExpression *, std::vector<SgFunctionDeclaration*> > resolver;
+    std::unordered_map<SgExpression *, std::vector<SgFunctionDeclaration*> > resolver;
     
     //! ClassHierarchy of the project
     ClassHierarchyWrapper *classHierarchy;
@@ -42,12 +40,12 @@ public:
 
 private:
     void SortCallGraphRecursive(SgFunctionDeclaration* targetFunction, SgIncidenceDirectedGraph* callGraph,
-                boost::unordered_map<SgFunctionDeclaration*, SgGraphNode*> &graphNodeToFunction, boost::unordered_map<SgGraphNode*, 
+                std::unordered_map<SgFunctionDeclaration*, SgGraphNode*> &graphNodeToFunction, std::unordered_map<SgGraphNode*, 
                 PtrAliasAnalysis::COLOR> &colors, std::vector<SgFunctionDeclaration*> &processingOrder, 
                 PtrAliasAnalysis::TRAVERSAL_TYPE order) ;
     
     void SortCallGraphNodes(SgFunctionDeclaration* targetFunction, SgIncidenceDirectedGraph* callGraph,
-                boost::unordered_map<SgFunctionDeclaration*, SgGraphNode*> &graphNodeToFunction,
+                std::unordered_map<SgFunctionDeclaration*, SgGraphNode*> &graphNodeToFunction,
                 std::vector<SgFunctionDeclaration*> &processingOrder, PtrAliasAnalysis::TRAVERSAL_TYPE order);
 
     void computeCallGraphNodes(SgFunctionDeclaration* targetFunction, SgIncidenceDirectedGraph* callGraph,

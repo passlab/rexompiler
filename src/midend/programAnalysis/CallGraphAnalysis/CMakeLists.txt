@@ -17,7 +17,7 @@ install(FILES  CallGraph.h ClassHierarchyGraph.h DESTINATION ${INCLUDE_INSTALL_D
 #
 #
 #
-#INCLUDES = $(ROSE_INCLUDES) $(BOOST_CPPFLAGS) 
+#INCLUDES = $(ROSE_INCLUDES)
 #libCallGraphSources =  CallGraph.C ClassHierarchyGraph.C
 #
 #noinst_LTLIBRARIES = libCallGraph.la

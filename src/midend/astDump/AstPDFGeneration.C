@@ -12,8 +12,8 @@
 #include <assert.h>
 #include <iostream>
 
-// #include <string>
-// #include <sstream>
+#include <cstring>
+#include <sstream>
 
 #include "PDFGeneration.h"
 #include "AstPDFGeneration.h"

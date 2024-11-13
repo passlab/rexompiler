@@ -12,9 +12,6 @@ using std::auto_ptr;
 using std::pair;
 using std::make_pair;
 
-#include <boost/mem_fn.hpp>
-using boost::mem_fn;
-
 NodeState* IntraBWDataflow::initializeFunctionNodeState(const Function &func, NodeState *fState)
 {
 // DQ (12/10/2016): Eliminating a warning that we want to be an error: -Werror=unused-but-set-variable.
@@ -161,7 +158,7 @@ vector<DataflowNode> IntraUniDirectionalDataflow::gatherDescendants(vector<Dataf
 
   for(vector<DataflowEdge>::const_iterator ei = edges.begin(); ei!=edges.end(); ei++)
   {
-    descendants.push_back(mem_fn(edgeFn)(*ei));
+    descendants.push_back(std::mem_fn(edgeFn)(*ei));
   }
 
   return descendants;
@@ -308,7 +305,7 @@ bool IntraUniDirectionalDataflow::runAnalysis(const Function& func, NodeState* f
                         if (isSgFunctionCallExp(sgn))
                           transferFunctionCall(func, n, state);
 
-                        boost::shared_ptr<IntraDFTransferVisitor> transferVisitor = getTransferVisitor(func, n, *state, dfInfoPost);
+                        std::shared_ptr<IntraDFTransferVisitor> transferVisitor = getTransferVisitor(func, n, *state, dfInfoPost);
                         sgn->accept(*transferVisitor);
                         modified = transferVisitor->finish() || modified;
 

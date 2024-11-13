@@ -19,7 +19,6 @@
 #include "Outliner.hh"
 #include "ASTtools.hh"
 #include "PreprocessingInfo.hh"
-#include "Trim.h"
 
 //! Simplest outlining directives, applied to a single statement.
 static const std::string PRAGMA_OUTLINE ("rose_outline");
@@ -89,7 +88,7 @@ processFortranComment(SgLocatedNode* node)
     if ((*i)->getTypeOfDirective() == PreprocessingInfo::FortranStyleComment)
     {
       string commentString = (*i)->getString();
-      trim(commentString);
+      Rose::StringUtility::trim(commentString);
       if (   (commentString == "!$"+PRAGMA_OUTLINE) 
           || (commentString == "c$"+PRAGMA_OUTLINE) 
           || (commentString == "*$"+PRAGMA_OUTLINE)) 

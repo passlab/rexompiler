@@ -16,7 +16,6 @@
 // #include "sageBuilder.h"
    #include <fstream>
 #endif
-#include "Trim.h"
 
 // DQ (4/3/2012): Added so that I can enforce some rules as the AST is constructed.
 #include "AstConsistencyTests.h"
@@ -16945,7 +16944,7 @@ PreprocessingInfo* SageBuilder::buildCpreprocessorDefineDeclaration(SgLocatedNod
     ROSE_ASSERT(target != NULL); //dangling #define xxx is not allowed in the ROSE AST
     // simple input verification
     std::string content2 = content;
-    trim(content2);
+    Rose::StringUtility::trim(content2);
     string prefix = "#define";
     string::size_type pos = content2.find(prefix, 0);
     ROSE_ASSERT (pos == 0);

@@ -16,6 +16,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <cstring>
 #include <unistd.h>
 #ifndef _MSC_VER
 #include <sys/resource.h>
@@ -24,8 +25,6 @@
 #include "timing.h"             // gettimeofday()
 #endif
 #endif
-
-#include <boost/thread.hpp>     // sleep()
 
 #define DEBUG_CALLGRAPH 0
 

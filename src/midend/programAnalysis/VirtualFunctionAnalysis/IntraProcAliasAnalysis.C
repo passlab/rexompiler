@@ -1,6 +1,6 @@
 #include "sage3basic.h"
 #include "IntraProcAliasAnalysis.h"
-
+#include <unordered_map>
 
 void CompactRepresentation::computeAliases (SgGraphNode *node, int derefLevel, vector<SgGraphNode *> & sol) {
     
@@ -333,7 +333,7 @@ void IntraProcAliasAnalysis::buildCFG() {
         // run a bfs and list the nodes
         cfgNodes.clear();
         std::queue<SgGraphNode *> workQ;
-        //boost::unordered_map<SgGraphNode* , bool> visited;
+        //std::unordered_map<SgGraphNode* , bool> visited;
         vector<SgGraphNode *>visited;
         workQ.push(cfg->getEntry());
         visited.push_back(cfg->getEntry());
@@ -364,8 +364,8 @@ void IntraProcAliasAnalysis::buildCFG() {
 
 
 IntraProcAliasAnalysis::IntraProcAliasAnalysis(SgNode *head, ClassHierarchyWrapper *_classHierarchy, CallGraphBuilder *_cgBuilder,
-                    boost::unordered_map<SgFunctionDeclaration *, IntraProcAliasAnalysis *> &_mapping,
-                    boost::unordered_map<SgExpression*, std::vector<SgFunctionDeclaration*> > &_resolver) :
+                    std::unordered_map<SgFunctionDeclaration *, IntraProcAliasAnalysis *> &_mapping,
+                    std::unordered_map<SgExpression*, std::vector<SgFunctionDeclaration*> > &_resolver) :
            IntraProcDataFlowAnalysis<SgGraphNode, CompReprPtr>(head), classHierarchy(_classHierarchy), cfg(0), cgBuilder(_cgBuilder), mapping(_mapping), resolver(_resolver) {
 
         ROSE_ASSERT(isSgFunctionDeclaration(head));    
@@ -952,7 +952,7 @@ void ProcessExpression::processRHS(SgNode *node, struct AliasRelationNode &arNod
     SgVarRefExp *var_exp;
     int derefLevel = 0;
     static int new_index;
-    static boost::unordered_map<SgExpression*, SgVariableSymbol *> new_variables;
+    static std::unordered_map<SgExpression*, SgVariableSymbol *> new_variables;
     
     switch (node->variantT()) {
     
@@ -1162,7 +1162,7 @@ void CollectAliasRelations::processNode(SgGraphNode* g_node){
 
 }
 
-void CollectAliasRelations::recursiveCollect(SgGraphNode *node, boost::unordered_map<SgGraphNode*, COLOR> &colors){
+void CollectAliasRelations::recursiveCollect(SgGraphNode *node, std::unordered_map<SgGraphNode*, COLOR> &colors){
 
     if(node == NULL) return;
     
@@ -1193,7 +1193,7 @@ void CollectAliasRelations::run() {
     
     set<SgGraphNode*> allNodes = graph->computeNodeSet();
     
-    boost::unordered_map<SgGraphNode*, COLOR> colors;
+    std::unordered_map<SgGraphNode*, COLOR> colors;
 
     for(SgGraphNode *node: allNodes) {
             colors[node] = WHITE;

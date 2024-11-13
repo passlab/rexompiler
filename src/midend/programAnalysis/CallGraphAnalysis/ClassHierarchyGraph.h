@@ -3,17 +3,17 @@
 
 #include <vector>
 #include <map>
-#include <boost/unordered_set.hpp>
+#include <unordered_map>
+#include <unordered_set>
 
 class ROSE_DLL_API ClassHierarchyWrapper
 {
 public:
-    typedef boost::unordered_set<SgClassDefinition*> ClassDefSet;
+    typedef std::unordered_set<SgClassDefinition*> ClassDefSet;
 
-    typedef boost::unordered_map<std::string, ClassDefSet> MangledNameToClassDefsMap;
+    typedef std::unordered_map<std::string, ClassDefSet> MangledNameToClassDefsMap;
 
 private:
-
 
     /** Map from each class to all its immediate superclasses. */
     MangledNameToClassDefsMap directParents;

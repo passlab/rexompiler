@@ -127,6 +127,8 @@
 //#include <cstdlib> // For abort()
 #include <algorithm>
 #include <fstream>
+#include <cstring>
+#include <unistd.h>
 
 // DQ (8/25/2014): Added logic to isTemplateDeclaration(a_routine_ptr) to force isTemplateDeclaration 
 // in ROSE/EDG connection to be false where the topScopeStack() is a template class instantaition scope.

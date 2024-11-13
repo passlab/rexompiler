@@ -10,7 +10,7 @@
 #include "analysis.h"
 #include "lattice.h"
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <vector>
 #include <set>
 #include <map>
@@ -135,7 +135,7 @@ class IntraUnitDataflow : virtual public IntraProceduralDataflow
     // \todo \pp IMO. the function getTransferVisitor is not necessary and can be removed.
     //           Users wanting to write the analysis based on visitors can do so
     //           in the transfer function. (This safes one memory allocation, deallocation,
-    //           and boost::shared_pointer management overhead per transfer).
+    //           and std::shared_pointer management overhead per transfer).
     //           A transfer function using the visitor would look like (if desired this can be
     //           simplified by providing a convenience function taking a visitor as argument):
     // \code
@@ -146,9 +146,9 @@ class IntraUnitDataflow : virtual public IntraProceduralDataflow
     //             return visitor.finish();
     //           }
     // \endcode
-    virtual boost::shared_ptr<IntraDFTransferVisitor> getTransferVisitor(const Function& func, const DataflowNode& n,
+    virtual std::shared_ptr<IntraDFTransferVisitor> getTransferVisitor(const Function& func, const DataflowNode& n,
                                                                   NodeState& state, const std::vector<Lattice*>& dfInfo)
-  { return boost::shared_ptr<IntraDFTransferVisitor>(new DefaultTransfer(func, n, state, dfInfo, this)); }
+  { return std::shared_ptr<IntraDFTransferVisitor>(new DefaultTransfer(func, n, state, dfInfo, this)); }
 };
 
 class InterProceduralDataflow : virtual public InterProceduralAnalysis

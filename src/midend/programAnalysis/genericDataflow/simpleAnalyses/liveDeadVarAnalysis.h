@@ -19,6 +19,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <memory>
 
 extern int liveDeadAnalysisDebugLevel;
 
@@ -171,9 +172,9 @@ class LiveDeadVarsAnalysis : public IntraBWDataflow
         void genInitState(const Function& func, const DataflowNode& n, const NodeState& state,
                           std::vector<Lattice*>& initLattices, std::vector<NodeFact*>& initFacts);
         
-  boost::shared_ptr<IntraDFTransferVisitor> getTransferVisitor(const Function& func, const DataflowNode& n,
-                                                               NodeState& state, const std::vector<Lattice*>& dfInfo)
-  { return boost::shared_ptr<IntraDFTransferVisitor>(new LiveDeadVarsTransfer(func, n, state, dfInfo, fseu)); }
+  std::shared_ptr<IntraDFTransferVisitor> getTransferVisitor(const Function& func, const DataflowNode& n,
+                                                             NodeState& state, const std::vector<Lattice*>& dfInfo)
+  { return std::shared_ptr<IntraDFTransferVisitor>(new LiveDeadVarsTransfer(func, n, state, dfInfo, fseu)); }
 
   bool transfer(const Function& func, const DataflowNode& n, NodeState& state, const std::vector<Lattice*>& dfInfo) { ROSE_ABORT(); }
 };

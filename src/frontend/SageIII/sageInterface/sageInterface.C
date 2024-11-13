@@ -53,6 +53,7 @@
 #include <algorithm> // for set operations
 #include <numeric>   // for std::accumulate
 #include <map>
+#include <cstring>
 
 // DQ (11/5/2019): Added to support SageInterface::statementCanBeTransformed().
 namespace EDG_ROSE_Translation

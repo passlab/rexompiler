@@ -9,9 +9,7 @@
 #include "DefUseAnalysis.h"
 #include "DefUseAnalysis_perFunction.h"
 #include "GlobalVarAnalysis.h"
-#include <boost/config.hpp>
-#include <boost/bind.hpp>
-
+#include <functional>
 
 using namespace std;
 // static counter for the node numbering (for visualization)
@@ -123,7 +121,10 @@ void DefUseAnalysis::replaceElement(SgNode* sgNode,
     //    table[sgNode].insert(make_pair(initName,sgNode));
 
     multitype& map = table[sgNode];
-    map.erase(std::remove_if(map.begin(), map.end(), boost::bind(boost::type<bool>(), DefUseAnalysismycond, _1, initName)), map.end());
+    //map.erase(std::remove_if(map.begin(), map.end(), std::bind(boost::type<bool>(), DefUseAnalysismycond, std::placeholders::_1, initName)), map.end());
+    map.erase(std::remove_if(map.begin(), map.end(), [initName](const auto& pair) {
+            return DefUseAnalysismycond(pair, initName);
+        }), map.end());
     //         table[sgNode].erase(it);
 
     table[sgNode].push_back(make_pair(initName,sgNode));
@@ -142,7 +143,9 @@ void DefUseAnalysis::clearUseOfElement(SgNode* sgNode,
   //  usetable[sgNode].erase(initName);
 
     multitype& map = usetable[sgNode];
-    map.erase(std::remove_if(map.begin(), map.end(), boost::bind(boost::type<bool>(), DefUseAnalysismycond, _1, initName)), map.end());
+    map.erase(std::remove_if(map.begin(), map.end(), [initName](const auto& pair) {
+      return DefUseAnalysismycond(pair, initName);
+    }), map.end());
 
   }
 }

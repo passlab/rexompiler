@@ -2,7 +2,7 @@ include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 
 
 
-AM_CPPFLAGS = $(ROSE_INCLUDES) $(BOOST_CPPFLAGS) 
+AM_CPPFLAGS = $(ROSE_INCLUDES)
 libCallGraphSources =  newCallGraph.C CallGraph.C ClassHierarchyGraph.C
 
 noinst_LTLIBRARIES = libCallGraph.la

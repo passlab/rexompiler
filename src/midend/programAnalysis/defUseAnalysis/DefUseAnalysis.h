@@ -15,10 +15,6 @@
 
 #include <iostream>
 
-// CH (4/9/2010): Use boost::unordered instead
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
-
 #if 0
 #ifdef _MSC_VER
 #include <hash_map>
@@ -73,7 +69,6 @@ class ROSE_DLL_API DefUseAnalysis : public DFAnalysis, Support {
 
   typedef std::map< SgNode* , multitype > tabletype;
   // typedef std::map< SgNode* , int > convtype;
-// CH (4/9/2010): Use boost::unordered instead  
 //#ifdef _MSC_VER
 #if 0
   typedef hash_map< SgNode* , int > convtype;

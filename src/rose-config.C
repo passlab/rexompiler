@@ -40,8 +40,6 @@ static const char *description =
 #include <string>
 #include <vector>
 
-#include <util/StringUtility/Trim.h>
-
 using namespace Rose;
 
 typedef std::map<std::string, std::string> Configuration;
@@ -133,16 +131,16 @@ readConfigFile(const std::filesystem::path &configName) {
     }
 
     std::string s = r.line;
-    s = trim(s);
+    s = Rose::StringUtility::trim(s);
     if (s.empty() || '#' == s[0])
       continue;
 
     // Parse the "key=value" line
     size_t equal = s.find('=');
     std::string key = s.substr(0, equal);
-    key = trim(key);
+    key = Rose::StringUtility::trim(key);
     std::string value = equal == std::string::npos ? std::string() : s.substr(equal+1);
-    value = trim(value);
+    value = Rose::StringUtility::trim(value);
     if (equal == std::string::npos || !std::regex_match(key, keyRe)) {
       MLOG_FATAL_CXX("rose-config")  <<configName <<":" <<lineNumber <<": syntax error: expected KEY = VALUE\n";
       exit(1);

@@ -3,8 +3,7 @@
 
 #include "divAnalysis.h"
 
-#include <boost/bind.hpp>
-#include <boost/mem_fn.hpp>
+#include <functional>
 
 int divAnalysisDebugLevel=0;
 
@@ -598,10 +597,10 @@ void DivAnalysisTransfer::transferAdditive(DivLattice *arg1Lat, DivLattice *arg2
   else   // Else => Top
     updateModified(resLat->setTop());
 }
-void DivAnalysisTransfer::visit(SgPlusAssignOp *sgn)  { transferArith(sgn, boost::bind(&DivAnalysisTransfer::transferAdditive, _1, _2, _3, _4, true )); }
-void DivAnalysisTransfer::visit(SgMinusAssignOp *sgn) { transferArith(sgn, boost::bind(&DivAnalysisTransfer::transferAdditive, _1, _2, _3, _4, false)); }
-void DivAnalysisTransfer::visit(SgAddOp *sgn)         { transferArith(sgn, boost::bind(&DivAnalysisTransfer::transferAdditive, _1, _2, _3, _4, true )); }
-void DivAnalysisTransfer::visit(SgSubtractOp *sgn)    { transferArith(sgn, boost::bind(&DivAnalysisTransfer::transferAdditive, _1, _2, _3, _4, false)); }
+void DivAnalysisTransfer::visit(SgPlusAssignOp *sgn)  { transferArith(sgn, std::bind(&DivAnalysisTransfer::transferAdditive, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, true )); }
+void DivAnalysisTransfer::visit(SgMinusAssignOp *sgn) { transferArith(sgn, std::bind(&DivAnalysisTransfer::transferAdditive, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, false)); }
+void DivAnalysisTransfer::visit(SgAddOp *sgn)         { transferArith(sgn, std::bind(&DivAnalysisTransfer::transferAdditive, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, true )); }
+void DivAnalysisTransfer::visit(SgSubtractOp *sgn)    { transferArith(sgn, std::bind(&DivAnalysisTransfer::transferAdditive, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, false)); }
 
 void DivAnalysisTransfer::transferIncrement(SgUnaryOp *sgn) {
   DivLattice *arg1Lat, *arg2Lat, *resLat;
@@ -736,7 +735,7 @@ void DivAnalysisTransfer::transferArith(SgBinaryOp *sgn, T transferOp) {
       arg1Lat->copy(resLat);
   }
 }
-void DivAnalysisTransfer::transferArith(SgBinaryOp *sgn, TransferOp transferOp) { transferArith(sgn, boost::mem_fn(transferOp)); }
+void DivAnalysisTransfer::transferArith(SgBinaryOp *sgn, TransferOp transferOp) { transferArith(sgn, std::mem_fn(transferOp)); }
 
 void DivAnalysisTransfer::transferMod(DivLattice *arg1Lat, DivLattice *arg2Lat, DivLattice *resLat) {
   if(divAnalysisDebugLevel>=1) Dbg::dbg << "   case i = j %% k\n";

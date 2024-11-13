@@ -4,7 +4,8 @@
 #include <list>
 #include <sstream>
 #include "SgNodeHelper.h"
-#include "limits.h"
+#include <limits>
+#include <climits>
 #include "RoseAst.h"
 
 using namespace std;

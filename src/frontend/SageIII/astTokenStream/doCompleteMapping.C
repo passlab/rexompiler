@@ -3,10 +3,7 @@
 #include "sage3basic.h"
 #include "doCompleteMapping.h"
 
-
-
 using namespace std;
-using namespace boost;
 
 separator::separator(int bp, int ep){
         begin_pos = bp;

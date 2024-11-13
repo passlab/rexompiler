@@ -1,7 +1,6 @@
 # Non-recursive Makefile
 
-mpaCallGraphAnalysis_includes=\
-	$(BOOST_CPPFLAGS)
+mpaCallGraphAnalysis_includes=
 
 
 mpaCallGraphAnalysis_la_sources=\

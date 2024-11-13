@@ -63,7 +63,7 @@ struct OnlyNonCompilerGenerated : public std::unary_function<bool, SgFunctionDec
         AstDOTGeneration dotgen;
         dotgen.writeIncidenceGraphToDOTFile(cgBuilder->getGraph(), "init_call_graph.dot");
 #if 0        
-        typedef boost::unordered_map<SgFunctionDeclaration*, SgGraphNode*> res_map;    
+        typedef std::unordered_map<SgFunctionDeclaration*, SgGraphNode*> res_map;    
         for (res_map::value_type it: cg2.getGraphNodesMapping()) {
             std::cout << it.first <<" - "<< isSgFunctionDeclaration(it.first->get_definingDeclaration()) << " - " << it.first->get_name().getString() << std::endl;
         }
@@ -71,7 +71,7 @@ struct OnlyNonCompilerGenerated : public std::unary_function<bool, SgFunctionDec
  }
  PtrAliasAnalysis::~PtrAliasAnalysis() {
 
-        typedef boost::unordered_map<SgFunctionDeclaration *, IntraProcAliasAnalysis *> map;
+        typedef std::unordered_map<SgFunctionDeclaration *, IntraProcAliasAnalysis *> map;
         for (map::value_type it: intraAliases) {
                 delete ((IntraProcAliasAnalysis *)it.second);
         }
@@ -105,7 +105,7 @@ struct OnlyNonCompilerGenerated : public std::unary_function<bool, SgFunctionDec
  }
 
 void PtrAliasAnalysis:: SortCallGraphRecursive(SgFunctionDeclaration* targetFunction, SgIncidenceDirectedGraph* callGraph,
-               boost::unordered_map<SgFunctionDeclaration*, SgGraphNode*> &graphNodeToFunction, boost::unordered_map<SgGraphNode*, COLOR> &colors,
+               std::unordered_map<SgFunctionDeclaration*, SgGraphNode*> &graphNodeToFunction, std::unordered_map<SgGraphNode*, COLOR> &colors,
                vector<SgFunctionDeclaration*> &processingOrder, TRAVERSAL_TYPE order) {
         
                 //If the function is already in the list of functions to be processed, don't add it again.
@@ -116,7 +116,7 @@ void PtrAliasAnalysis:: SortCallGraphRecursive(SgFunctionDeclaration* targetFunc
         {
           printf("The function %s has no vertex in the call graph!\n", targetFunction->get_name().str());
           printf("graphNodeToFunction contains:\n");
-          boost::unordered_map<SgFunctionDeclaration*, SgGraphNode*>::const_iterator iter;
+          std::unordered_map<SgFunctionDeclaration*, SgGraphNode*>::const_iterator iter;
           for (iter= graphNodeToFunction.begin(); iter != graphNodeToFunction.end(); iter ++)
           {
             SgFunctionDeclaration* func = (*iter).first;
@@ -170,11 +170,11 @@ void PtrAliasAnalysis:: SortCallGraphRecursive(SgFunctionDeclaration* targetFunc
  * @param order: 0-topological, 1- reverse
  */
 void PtrAliasAnalysis::SortCallGraphNodes(SgFunctionDeclaration* targetFunction, SgIncidenceDirectedGraph* callGraph,
-                boost::unordered_map<SgFunctionDeclaration*, SgGraphNode*> &graphNodeToFunction,
+                std::unordered_map<SgFunctionDeclaration*, SgGraphNode*> &graphNodeToFunction,
                 vector<SgFunctionDeclaration*> &processingOrder, TRAVERSAL_TYPE order) {
         
-        boost::unordered_map<SgGraphNode*, COLOR> colors;
-        typedef boost::unordered_map<SgFunctionDeclaration*, SgGraphNode*> my_map;
+        std::unordered_map<SgGraphNode*, COLOR> colors;
+        typedef std::unordered_map<SgFunctionDeclaration*, SgGraphNode*> my_map;
         
         for(my_map::value_type item: graphNodeToFunction) {
             colors[item.second] = WHITE;
@@ -188,7 +188,7 @@ void PtrAliasAnalysis::SortCallGraphNodes(SgFunctionDeclaration* targetFunction,
 void PtrAliasAnalysis::computeCallGraphNodes(SgFunctionDeclaration* targetFunction, SgIncidenceDirectedGraph* callGraph,
                 vector<SgFunctionDeclaration*> &processingOrder, TRAVERSAL_TYPE order) {
 
-        boost::unordered_map<SgFunctionDeclaration*, SgGraphNode*> graphNodeToFunction ;
+        std::unordered_map<SgFunctionDeclaration*, SgGraphNode*> graphNodeToFunction ;
 
         SortCallGraphNodes(targetFunction, callGraph, cgBuilder->getGraphNodesMapping(), processingOrder, order);
 

@@ -2987,36 +2987,6 @@ unparseFile ( SgFile* file, UnparseFormatHelp *unparseHelp, UnparseDelegate* unp
             outputFilename = StringUtility::stripFileSuffixFromFileName (outputFilename);
             outputFilename += ".cu";
         }
-        else if (file->get_X10_only())
-        {
-            // X10 is Java source code; see Java file/class naming conventions.
-            // Filenames are based on the Java Class name contained in the file.
-            SgSourceFile *sourcefile = isSgSourceFile(file);
-            ROSE_ASSERT(sourcefile && "Try to unparse an SgFile not being an SgSourceFile using the x10 unparser");
-
-            SgProject *project = sourcefile -> get_project();
-            ASSERT_not_null(project);
-
-            SgJavaPackageStatement *package_statement = sourcefile -> get_package();
-            string package_name = (package_statement ? package_statement -> get_name().getString() : "");
-            //NOTE: Default package equals the empty string ""
-            //ROSE_ASSERT((packageDecl != NULL) && "Couldn't find the package definition of the java source file");
-            string outFolder = "";
-            string ds = project -> get_Java_source_destdir();
-            if (ds != "") {
-                outFolder = ds;
-                outFolder += "/";
-            }
-            outFolder += "rose-output/";
-            boost::replace_all(package_name, ".", "/");
-            outFolder += package_name;
-            outFolder += (package_name.size() > 0 ? "/" : "");
-            // Create package folder structure
-            string mkdirCommand = string("mkdir -p ") + outFolder;
-            int status = system (mkdirCommand.c_str());
-            ROSE_ASSERT(status == 0);
-            outputFilename = outFolder + file -> get_sourceFileNameWithoutPath();
-        }
         else
         {
             //ROSE_ASSERT (! "Not implemented, or unknown file type");

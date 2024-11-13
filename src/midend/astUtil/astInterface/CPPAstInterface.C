@@ -8,6 +8,7 @@
 
 #include "CPPAstInterface.h"
 #include "AstInterface_ROSE.h"
+#include <cstring>
 using namespace std;
 //! Check if a node is a data member access function for an object, 
 // such as dot (object.a) or arrow (objectptr->a)expression

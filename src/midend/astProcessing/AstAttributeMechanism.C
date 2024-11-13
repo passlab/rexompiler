@@ -4,6 +4,7 @@
 #include "roseInternal.h"
 #include <sstream>
 #include <cstddef>
+#include <cstring>
 
 using namespace Rose;
 

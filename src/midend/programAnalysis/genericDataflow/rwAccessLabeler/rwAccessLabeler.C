@@ -3,6 +3,7 @@
 
 #include "sage3basic.h"
 #include "rwAccessLabeler.h"
+#include <cstring>
 
 using namespace std;
 

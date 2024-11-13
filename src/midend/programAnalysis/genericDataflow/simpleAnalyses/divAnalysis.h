@@ -19,6 +19,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <memory>
 
 extern int divAnalysisDebugLevel;
 
@@ -233,9 +234,9 @@ class DivAnalysis : public IntraFWDataflow
                 
   bool transfer(const Function& func, const DataflowNode& n, NodeState& state, const std::vector<Lattice*>& dfInfo)
   { ROSE_ABORT(); }
-  boost::shared_ptr<IntraDFTransferVisitor> getTransferVisitor(const Function& func, const DataflowNode& n,
-                                                            NodeState& state, const std::vector<Lattice*>& dfInfo)
-  { return boost::shared_ptr<IntraDFTransferVisitor>(new DivAnalysisTransfer(func, n, state, dfInfo)); }
+std::shared_ptr<IntraDFTransferVisitor> getTransferVisitor(const Function& func, const DataflowNode& n,
+                                                                                                                                                                                                                                        NodeState& state, const std::vector<Lattice*>& dfInfo)
+{ return std::shared_ptr<IntraDFTransferVisitor>(new DivAnalysisTransfer(func, n, state, dfInfo)); }
 };
 
 // prints the Lattices set by the given DivAnalysis 

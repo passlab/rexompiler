@@ -13,7 +13,7 @@
 #include <string>
 #include <functional>
 #include <queue>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 class FunctionData;
 
@@ -153,7 +153,7 @@ class ROSE_DLL_API CallGraphBuilder
     //void classifyCallGraph();
 
     //We map each function to the corresponding graph node
-    boost::unordered_map<SgFunctionDeclaration*, SgGraphNode*>& getGraphNodesMapping(){ return graphNodes; }
+    std::unordered_map<SgFunctionDeclaration*, SgGraphNode*>& getGraphNodesMapping(){ return graphNodes; }
 
     //! Retrieve the node matching a function declaration using firstNondefiningDeclaration (does not work across translation units)
     SgGraphNode * hasGraphNodeFor(SgFunctionDeclaration * fdecl) const;
@@ -164,7 +164,7 @@ class ROSE_DLL_API CallGraphBuilder
     SgProject *project;
     SgIncidenceDirectedGraph *graph;
     //We map each function to the corresponding graph node
-    typedef boost::unordered_map<SgFunctionDeclaration*, SgGraphNode*> GraphNodes;
+    typedef std::unordered_map<SgFunctionDeclaration*, SgGraphNode*> GraphNodes;
     GraphNodes graphNodes;
 
 };

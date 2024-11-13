@@ -9,6 +9,8 @@
 #ifndef ROSE_CONSTANT_FOLDING_H
 #define ROSE_CONSTANT_FOLDING_H
 
+#include <cmath>
+
 namespace ConstantFolding {
 
 // Build an inherited attribute for the tree traversal to skip constant folded expressions
