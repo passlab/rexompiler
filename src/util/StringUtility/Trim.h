@@ -3,7 +3,6 @@
 #include <string>
 #include <algorithm>
 
-// To replace boost::trim
 std::string trim(const std::string& str) {
     size_t start = str.find_first_not_of(" \t\n\r");
     if (start == std::string::npos)

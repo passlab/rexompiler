@@ -7,8 +7,28 @@ namespace StringUtility {
 //                                     Replace
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 std::string replaceAllCopy(const std::string& input, const std::string& search, const std::string & replacedWith) {
-	return boost::replace_all_copy(input, search, replacedWith);
-	//TODO: for deBoost, this can be replaced with std::replace_copy when the compiler bumps to support c++17 by default
+	if (search.empty()) return input;  // Avoid infinite loop if 'search' is empty
+
+	std::string result;
+	result.reserve(input.size());  // Reserve space to avoid multiple allocations
+
+	std::size_t start_pos = 0;
+	std::size_t found_pos;
+
+	// Iterate through the input string
+	while ((found_pos = input.find(search, start_pos)) != std::string::npos) {
+	    // Append the part before the found substring
+	    result.append(input, start_pos, found_pos - start_pos);
+	    // Append the replacement substring
+	    result.append(replacedWith);
+	    // Update start position to continue after the found substring
+	    start_pos = found_pos + search.size();
+	}
+
+	// Append the rest of the string after the last found position
+	result.append(input, start_pos, input.size() - start_pos);
+
+	return result;
 }
 
 } // namespace

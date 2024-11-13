@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <cassert>
 #include <Replace.h>
-#include <boost/algorithm/string/case_conv.hpp>
+#include <cstring>
 
 namespace Rose {
 namespace StringUtility {
@@ -202,7 +202,8 @@ yamlEscape(const std::string &s) {
     } else if (s.find(':') != std::string::npos) {
         return "\"" + s + "\"";
     } else {
-        const std::string lc = boost::to_lower_copy(s);
+        std::string lc = s;
+        for (char&c: lc) c = std::tolower(c); //convert to lower case
         if ("yes" == lc || "true" == lc || "no" == lc || "false" == lc) {
             return"\"" + s + "\"";
         } else {

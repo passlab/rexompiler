@@ -1,8 +1,5 @@
 #include <NumberToString.h>
 
-#include <boost/format.hpp>
-#include <boost/lexical_cast.hpp>
-
 namespace Rose {
 namespace StringUtility {
 
@@ -12,32 +9,32 @@ namespace StringUtility {
 
 std::string
 numberToString(long long x) {
-    return boost::lexical_cast<std::string>(x);
+    return std::to_string(x);
 }
 
 std::string
 numberToString(unsigned long long x) {
-    return boost::lexical_cast<std::string>(x);
+    return std::to_string(x);
 }
 
 std::string
 numberToString(long x) {
-    return boost::lexical_cast<std::string>(x);
+    return std::to_string(x);
 }
 
 std::string
 numberToString(unsigned long x) {
-    return boost::lexical_cast<std::string>(x);
+    return std::to_string(x);
 }
 
 std::string
 numberToString(int x) {
-    return boost::lexical_cast<std::string>(x);
+    return std::to_string(x);
 }
 
 std::string
 numberToString(unsigned int x) {
-    return boost::lexical_cast<std::string>(x);
+    return std::to_string(x);
 }
 
 std::string
@@ -61,16 +58,14 @@ numberToString(double x) {
     __WORDSIZE == 64
 std::string
 numberToString( __int128 x) {
-    // DQ (2/22/2014): I don't think that the boost::lexical_cast can support __int128 yet.
     long long temp_x = (long long) x;
-    return boost::lexical_cast<std::string>(temp_x);
+    return std::to_string(temp_x);
 }
 
 std::string
 numberToString(unsigned __int128 x) {
-    // DQ (2/22/2014): I don't think that the boost::lexical_cast can support __int128 yet.
     unsigned long long temp_x = (unsigned long long) x;
-    return boost::lexical_cast<std::string>(temp_x);
+    return std::to_string(temp_x);
 }
 #endif
 
@@ -98,10 +93,15 @@ toHex2(uint64_t value, size_t nbits, bool show_unsigned_decimal, bool show_signe
     uint64_t sign_bit = ((uint64_t)1 << (nbits-1));
 
     // Hexadecimal value
-    std::string retval;
-    int nnibbles = (nbits+3)/4;
-    std::string fmt = "0x%0" + boost::lexical_cast<std::string>(nnibbles) + "x";
-    retval = (boost::format(fmt) % value).str();
+
+    //std::string retval;
+    //int nnibbles = (nbits+3)/4;
+    //std::string fmt = "0x%0" + std::to_string(nnibbles) + "x";
+    //retval = (boost::format(fmt) % value).str();
+
+    std::stringstream ss;
+    ss << "0x" << std::setw((nbits + 3) / 4) << std::setfill('0') << std::hex << value;
+    std::string retval = ss.str();
 
     // unsigned decimal
     bool showed_unsigned = false;

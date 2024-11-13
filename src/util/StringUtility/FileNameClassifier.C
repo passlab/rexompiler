@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <map>
 #include <filesystem>
+#include <cassert>
 #include "FileUtility.h"
 #include <StringUtility.h>
 #include "mlog.h"
@@ -31,14 +32,6 @@
 #if ROSE_MICROSOFT_OS
 #else
 #include <sys/utsname.h>
-#endif
-
-
-#include <boost/version.hpp>
-#if BOOST_VERSION >= 103600
-#  define BOOST_HAS_BRANCH_PATH has_parent_path
-#else
-#  define BOOST_HAS_BRANCH_PATH has_branch_path
 #endif
 
 using namespace std;
@@ -116,7 +109,7 @@ using namespace Rose;
             "execinfo.h", 
             "fcntl.h", 
             "features.h", 
-            "fenv.h", 
+            "fenv.h",
             "fmtmsg.h", 
             "fnmatch.h", 
             "fpu_control.h", 

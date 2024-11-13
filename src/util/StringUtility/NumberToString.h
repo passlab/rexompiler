@@ -5,6 +5,9 @@
 #include <rosedll.h>
 
 #include <string>
+#include <sstream>
+#include <iomanip>
+#include <cassert>
 
 namespace Rose {
 namespace StringUtility {
@@ -15,7 +18,6 @@ namespace StringUtility {
 
 /** Convert an integer to a string.
  *
- *  These functions are wrappers around <code>boost::lexical_cast<std::string></code>.
  *
  *  @{ */
 ROSE_UTIL_API std::string numberToString(long long);

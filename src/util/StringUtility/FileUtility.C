@@ -10,7 +10,6 @@
 #include "mlog.h"
 
 // Other includes
-#include <boost/lexical_cast.hpp>
 #include <cstring>
 #include <errno.h>                                      // DQ (9/29/2006): This is required for 64-bit g++ 3.4.4 compiler.
 #include <inttypes.h>
