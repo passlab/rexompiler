@@ -7,14 +7,12 @@
 #include "mlog.h"
 #include <vector>
 #include <algorithm>
-#include <boost/algorithm/string/predicate.hpp>
 #include <rose_paths.h>
 
 // Use Brian Gunney's String List Assignent (SLA) library
 #include "sla.h"
 
 #ifdef _MSC_VER
-# include <boost/lexical_cast.hpp>
 #else
 # include <time.h>
 #endif

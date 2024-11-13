@@ -16,7 +16,6 @@
 
 #include <FileSystem.h>
 
-#include <boost/algorithm/string.hpp>
 #include <string>
 #include <filesystem>
 
@@ -152,7 +151,7 @@ public:
     }
 
     static bool endsWith(const std::string& str1, const std::string& str2) { //checks that str1 ends with str2
-        return boost::ends_with(str1, str2);
+        if (str2.size() > str1.size()) return false;
+        return str1.compare(str1.size() - str2.size(), str2.size(), str2) == 0;
     }
-
 };

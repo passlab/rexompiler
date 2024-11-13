@@ -55,6 +55,7 @@ add_subdirectory(support)
 set(rose_util_src
   ${CMAKE_BINARY_DIR}/src/util/rose_paths.C
   FileSystem.C
+  Unique.C
   mlog.C
   rose_getline.C
   processSupport.C
@@ -74,6 +75,6 @@ target_sources(roseUtil INTERFACE
 
 ########### install files ###############
 install(FILES
-  processSupport.h rose_paths.h mlog.h FileSystem.h
+  processSupport.h rose_paths.h mlog.h FileSystem.h Unique.h
   timing.h rose_getline.h rose_strtoull.h rose_isnan.h
   DESTINATION ${INCLUDE_INSTALL_DIR})
