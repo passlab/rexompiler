@@ -12,14 +12,12 @@
 #include <unistd.h>
 #ifndef _MSC_VER
 #include <sys/resource.h>
+#include <sys/time.h>
 #else
 #include <windows.h>            // getpagesize()
 #include "timing.h"             // gettimeofday()
 #endif
 #endif
-
-
-#include <boost/thread.hpp>     // sleep()
 
 #include "AstStatistics.h"
 

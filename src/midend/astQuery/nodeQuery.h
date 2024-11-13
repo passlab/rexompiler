@@ -186,8 +186,6 @@ namespace NodeQuery
   // Functions supporting the query of variants
   void pushNewNode ( NodeQuerySynthesizedAttributeType* nodeList, const VariantVector & targetVariantVector, SgNode * astNode);
   void* querySolverGrammarElementFromVariantVector ( SgNode * astNode, VariantVector targetVariantVector,  NodeQuerySynthesizedAttributeType* returnNodeList );
-  NodeQuerySynthesizedAttributeType querySolverGrammarElementFromVariantVector ( SgNode * astNode, VariantVector targetVariantVector );
-
 
    /********************************************************************************************
    *
