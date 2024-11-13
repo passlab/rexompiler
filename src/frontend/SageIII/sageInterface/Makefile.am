@@ -21,7 +21,6 @@ pkginclude_HEADERS = \
      sageBuilder.h \
      sageGeneric.h \
      sageFunctors.h \
-     integerOps.h \
      abiStuff.h
 
 EXTRA_DIST = CMakeLists.txt

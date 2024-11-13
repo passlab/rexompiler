@@ -23,6 +23,7 @@ pkginclude_HEADERS = \
 	Convert.h					\
 	Escape.h					\
 	FileUtility.h								\
+	IntegerOps.h								\
 	NumberToString.h				\
 	Predicate.h					\
 	Replace.h					\

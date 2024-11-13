@@ -13,6 +13,7 @@
 #include "cmdline.h"
 #include "processSupport.h"
 #include <FileSystem.h>
+#include "Unique.h"
 
 #ifdef ROSE_BUILD_FORTRAN_LANGUAGE_SUPPORT
 #   include "FortranModuleInfo.h"
@@ -22,8 +23,6 @@
 
 #include <algorithm>
 #include <filesystem>
-
-#include <boost/algorithm/string/join.hpp>
 
 // DQ (12/22/2019): I don't need this now, and it is an issue for some compilers (e.g. GNU 4.9.4).
 // DQ (12/21/2019): Require hash table support for determining the shared nodes in the ASTs.
@@ -3607,7 +3606,6 @@ SgSourceFile::build_Fortran_AST( vector<string> argv, vector<string> inputComman
 #elif BACKEND_FORTRAN_IS_PGI_COMPILER
      // Pei-Hung 12/09/2019 This is for PGI Fortran compiler, add others if necessary
           fortran_C_preprocessor_commandLine.push_back("-Mcpp");
-
 #endif
 
        // add source file name
@@ -3618,7 +3616,7 @@ SgSourceFile::build_Fortran_AST( vector<string> argv, vector<string> inputComman
           FileSystem::Path abs_path = FileSystem::makeAbsolute(this->get_unparse_output_filename());
           FileSystem::Path abs_dir = abs_path.parent_path();
           FileSystem::Path base = abs_dir.filename().stem();
-          string preprocessFilename = (abs_dir / std::filesystem::unique_path(base.string() + "-%%%%%%%%.F90")).string();
+          string preprocessFilename = (abs_dir / (base.string() + "-" + Rose::Unique::genUniqueID() + ".F90")).string();
 
           // The Sawyer::FileSystem::TemporaryFile d'tor will delete the file. We close the file after it's created because
           // Rose::FileSystem::copyFile will reopen it in binary mode anyway.

@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <filesystem>
+#include <fcntl.h>
 
 #include "keep_going.h"
 #include "processSupport.h" // ROSE_ASSERT in ROSE/src/util
@@ -14,19 +15,17 @@
 #include <map>
 #include <fstream>
 #include <sstream>
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <string>
 #include <string>
 #include <vector>
 #ifdef __linux__
 #include <utime.h>
 #endif
-#include <boost/algorithm/string/join.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/interprocess/sync/file_lock.hpp>
-#include <boost/interprocess/sync/scoped_lock.hpp>
 
 using namespace std; 
-using namespace boost::interprocess; 
 
 namespace Rose {
 namespace KeepGoing {
@@ -462,10 +461,13 @@ void Rose::KeepGoing::commandLineProcessing
 
     if (verbose)
     {
-      std::cout
-        << "[INFO] ROSE Commandline: "
-        << boost::algorithm::join(rose_cmdline, " ")
-        << std::endl;
+      std::ostringstream oss;
+      for (size_t i = 0; i < rose_cmdline.size(); ++i) {
+         if (i != 0) oss << " ";
+         oss << rose_cmdline[i];
+      }
+
+      std::cout << "[INFO] ROSE Commandline: " << oss.str() << std::endl;
     }
   }// CLI
 
@@ -763,18 +765,14 @@ Rose::KeepGoing::StripPrefix(const std::string& prefix, const std::string& str)
 std::string
 Rose::KeepGoing::GetTimestamp(const std::string& format)
 {
-  using namespace boost::posix_time;
+  // Get the current time
+  auto now = std::chrono::system_clock::now();
+  std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+  std::tm local_tm = *std::localtime(&now_c);  // Use local time for user-friendliness
 
-  //ptime now = second_clock::universal_time();
-  // Using local time instead to be user-friendly.
-  ptime now = second_clock::local_time();
-
-  static std::locale loc(std::cout.getloc(),
-                         new time_facet(format.c_str()));
-
-  std::basic_stringstream<char> ss;
-  ss.imbue(loc);
-  ss << now;
+  // Create a stringstream to format the output
+  std::ostringstream ss;
+  ss << std::put_time(&local_tm, format.c_str());
 
   return ss.str();
 }
@@ -828,12 +826,10 @@ Rose::KeepGoing::AppendToFile(const std::string& filename, const std::string& ms
  // use a separated file for the file lock
   string lock_file_name = filename+".lock"; 
   touch(filename);
-  touch(lock_file_name); //this lock file must exist. Or later flock() will fail.
 
-  boost::interprocess::file_lock flock (lock_file_name.c_str());
-  // introduce a scope to use the scoped lock, which automatically unlock when existing the scope
+  while (std::filesystem::exists(lock_file_name)); //busy wait until it acquires lock
+  touch(lock_file_name); //acquire the lock file
   {
-    boost::interprocess::scoped_lock<file_lock> e_lock(flock);
     std::ofstream fout(filename.c_str(), std::ios::app);
     if(!fout.is_open())
     {
@@ -857,7 +853,7 @@ Rose::KeepGoing::AppendToFile(const std::string& filename, const std::string& ms
       fout.close();
     }
   } // end scope for the scoped lock
-  std::filesystem::remove (lock_file_name);
+  std::filesystem::remove (lock_file_name); //release the lock by deleting the file
 }
 
 std::map<std::string, std::string>

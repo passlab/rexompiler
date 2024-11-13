@@ -4,7 +4,6 @@
 #include <functional>
 #include "linearizeAST.h"
 #include <vector>
-#include <boost/tuple/tuple.hpp>
 
 struct separator
    {

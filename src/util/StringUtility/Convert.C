@@ -2,7 +2,7 @@
 
 #include <Predicate.h>
 #include <SplitJoin.h>
-#include <integerOps.h>                                 // rose
+#include <IntegerOps.h>                                 // rose
 
 #include <regex>
 #include <cassert>

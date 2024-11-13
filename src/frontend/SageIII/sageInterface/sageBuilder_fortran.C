@@ -6,7 +6,6 @@
 #include "markLhsValues.h"
 #include "sageBuilder.h"
 #include <fstream>
-#include <boost/algorithm/string/trim.hpp>
 #include "Outliner.hh"
 #endif
 

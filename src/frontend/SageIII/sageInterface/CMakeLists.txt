@@ -11,7 +11,7 @@ add_library(sageInterface OBJECT
 add_dependencies(sageInterface rosetta_generated)
 
 install(
-  FILES  sageInterface.h sageBuilder.h integerOps.h abiStuff.h
+  FILES  sageInterface.h sageBuilder.h abiStuff.h
          sageFunctors.h sageGeneric.h
   DESTINATION ${INCLUDE_INSTALL_DIR}
   )

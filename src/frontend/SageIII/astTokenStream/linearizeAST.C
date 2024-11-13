@@ -9,7 +9,6 @@
 #include "rose_config.h"
 
 #include "linearizeAST.h"
-#include <boost/lexical_cast.hpp>
 
 class PostSynthesizedAttribute
    {
@@ -41,11 +40,11 @@ class PostAST : public SgBottomUpProcessing<PostSynthesizedAttribute>
             {
               std::string correspondingString =astNode->class_name()+ " ";
               correspondingString+=(astNode)->unparseToString()+" ";
-              correspondingString+=boost::lexical_cast<std::string>((astNode)->get_file_info()->get_filenameString());
+              correspondingString+=(astNode)->get_file_info()->get_filenameString();
               correspondingString+= " ";
-              correspondingString+=boost::lexical_cast<std::string>((astNode)->get_file_info()->get_line());
+              correspondingString+=std::to_string((astNode)->get_file_info()->get_line());
               correspondingString+= " ";
-              correspondingString+=boost::lexical_cast<std::string>((astNode)->get_file_info()->get_col());
+              correspondingString+=std::to_string((astNode)->get_file_info()->get_col());
 
               if(isSgConditionalExp(astNode) != NULL)
                 std::cout << "Found conditional exp" << std::endl;

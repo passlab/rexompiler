@@ -10,17 +10,13 @@ HEADER_START
           $CLASSNAME & operator= ( const $CLASSNAME & X );
 HEADER_END
 
+#define ROSE_SKIP_COMPILATION_OF_WAVE 1
 
 // ****************************************************
 // ************ Support for Graph IR nodes ************
 // ****************************************************
 HEADER_GRAPH_PREDECLARATION_START
 
-#if 0
-// Required for Boost Spanning Tree support.
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/kruskal_min_spanning_tree.hpp>
-#endif
 /*!
     Doxygen documentation for graph class (should maybe be put with the rest of the
 doxygen documentation in docs/testDoxygen directory instead).
@@ -516,23 +512,6 @@ HEADER_GRAPH_START
                dfa_bufferoverflow,  /*!< indicates buffer overflow */
                e_last_property      /*!< last value (unused, serves as upper bound on values) */
              };
-
-
-
-#if 0
-
-  // DQ (4/29/2009): Boost graph Type
- //! Boost Graph Type used to represent ROSE graphs within Boost Graph Algorithms.
-     typedef boost::adjacency_list < boost::vecS, boost::vecS, boost::undirectedS, boost::no_property, boost::property < boost::edge_weight_t, int > > BoostGraphType;
-
- //! Supporting graph types required by Boost Graph Library.
-     typedef boost::graph_traits < BoostGraphType >::edge_descriptor   BoostEdgeDescriptor;
-
-  // DQ (4/29/2009): We might need this in the future, but not now!
-  // typedef boost::graph_traits < BoostGraphType >::vertex_descriptor BoostVertexDescriptor;
-
-#endif
-
 
  //! Simple edge type used to input data to Boost algorithms
      typedef std::pair<int, int> BoostEdgeType;
@@ -4634,7 +4613,8 @@ class rose_hash_multimap : public rose_hash::unordered_multimap<SgName, SgSymbol
        // DQ (11/27/2010): Older version of code before adding support for case insensitive behavior.
           rose_hash_multimap(bool case_insensitive_semantics = false)
           // : rose_hash::unordered_multimap<SgName, SgSymbol*, hash_Name, eqstr>(), parent(NULL)
-             : rose_hash::unordered_multimap<SgName, SgSymbol*, hash_Name, eqstr>(boost::unordered_detail::default_bucket_count,hash_Name(),eqstr(case_insensitive_semantics)), parent(NULL)
+          // : rose_hash::unordered_multimap<SgName, SgSymbol*, hash_Name, eqstr>(boost::unordered_detail::default_bucket_count,hash_Name(),eqstr(case_insensitive_semantics)), parent(NULL)
+             : rose_hash::unordered_multimap<SgName, SgSymbol*, hash_Name, eqstr>(11,hash_Name(),eqstr(case_insensitive_semantics)), parent(NULL)
              {}
 
          rose_hash_multimap(int sz, bool case_insensitive_semantics = false)

@@ -16,16 +16,9 @@ std::string version_message();
 // returns a string containing the current version number
 std::string version_number();
 
-//! Boost version identifier (numeric)
-unsigned int rose_boost_version_id();
-
-//! Boost version path
-std::string rose_boost_version_path();
-
 // DQ (7/3/2013): Added support to output pre-defined macro settings.
 //! Output at least some of the predefined macro settings.
 void outputPredefinedMacros();
-
 
 // Simple interface for ROSE (error codes are in SgProject.frontendErrorCode(), backendErrorCode() )
 // tps : Need to make this function (DLL) public 

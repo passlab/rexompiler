@@ -3,15 +3,14 @@
 
 #include <cassert>
 #include <limits>
-#include <boost/static_assert.hpp>
-#include <boost/optional.hpp>
+#include <optional>
 
 namespace IntegerOpsPrivate {
 
     template <typename T>
     struct NumBits {
-        BOOST_STATIC_ASSERT (std::numeric_limits<T>::radix == 2);
-        BOOST_STATIC_ASSERT (std::numeric_limits<T>::is_integer);
+        static_assert (std::numeric_limits<T>::radix == 2);
+        static_assert (std::numeric_limits<T>::is_integer);
         static const size_t value = std::numeric_limits<T>::digits;
     };
 
@@ -300,15 +299,15 @@ inline size_t countClear(T val)
 
 /** Optionally returns the zero-origin position of the most significant set bit.  Returns nothing if no bits are set. */
 template<typename T>
-inline boost::optional<size_t> msb_set(T val)
+inline std::optional<size_t> msb_set(T val)
 {
     if (val!=0) {
         for (size_t bitno = 8*sizeof(T); bitno>0; --bitno) {
             if (0 != (val & shl1<T>(bitno-1)))
-                return boost::optional<size_t>(bitno-1);
+                return std::optional<size_t>(bitno-1);
         }
     }
-    return boost::optional<size_t>();
+    return std::optional<size_t>();
 }
 
 } // namespace

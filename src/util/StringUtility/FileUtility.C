@@ -5,7 +5,7 @@
 #include <FileUtility.h>
 
 #include <rose_config.h>
-#include <integerOps.h>
+#include <IntegerOps.h>
 #include "rose_msvc.h"                                  // DQ (3/22/2009): Added MSVS support for ROSE.
 #include "mlog.h"
 

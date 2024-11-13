@@ -15,7 +15,6 @@
 // and fast as possible because its purpose is to be able to quickly compile (by skipping over) source code that's not
 // necessary in a particular ROSE configuration.
 #include <rosePublicConfig.h>
-#include <boost/version.hpp>
 
 #if defined(_MSC_VER)
     // Microsoft Visual C++ Compiler erroneously advertises that it's a C++98 compiler. The "fix" for Visual Studio 2017
