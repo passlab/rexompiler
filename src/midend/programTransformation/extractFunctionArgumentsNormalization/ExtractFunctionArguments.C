@@ -3,7 +3,6 @@
 #include "SingleStatementToBlockNormalization.h"
 
 using namespace std;
-using namespace boost;
 
 /** Performs the function argument extraction on all function calls in the given subtree of the AST. */
 /** It does not do transofrmations in places where it is not safe. If you pass doUnsafeNormalization= true, we will normalize all callsites ignoring the safety (Suggested by Markus Schordan) */
