@@ -4,11 +4,8 @@
 #include <iostream>
 
 #include "VirtualFunctionAnalysis.h"
-using namespace boost;
-
 
 using namespace std;
-using namespace boost;
 // A Function object used as a predicate that determines which functions are 
 // to be represented in the call graph.
 // Liao 1/23/2013. It turns out there is another FunctionFilter used in src/midend/programAnalysis/VirtualFunctionAnalysis/PtrAliasAnalysis.C
