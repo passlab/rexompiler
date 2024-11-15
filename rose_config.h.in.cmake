@@ -501,10 +501,6 @@
 //AS Don't know what to do with this
 #undef ROSE_USE_VALGRIND
 
-/* Whether to use the new graph IR nodes compatability option with older API
-   */
-//#undef ROSE_USING_GRAPH_IR_NODES_FOR_BACKWARD_COMPATABILITY
-
 /* Simple preprocessor as default in ROSE */
 //AS Need configure option to allow wave to be default
 #define ROSE_WAVE_DEFAULT false

@@ -262,15 +262,6 @@ fi
 #  AC_DEFINE([ROSE_USE_NEW_GRAPH_NODES], [], [Whether to use the new graph IR nodes])
 #fi
 
-# DQ (5/2/2009): Added support for backward compatability of new IR nodes with older API.
-AC_ARG_ENABLE(use_new_graph_node_backward_compatability,
-    AS_HELP_STRING([--enable-use_new_graph_node_backward_compatability], [Enable new (experimental) graph IR nodes backward compatability API]))
-AM_CONDITIONAL(ROSE_USING_GRAPH_IR_NODES_FOR_BACKWARD_COMPATABILITY, [test "x$enable_use_new_graph_node_backward_compatability" = xyes])
-if test "x$enable_use_new_graph_node_backward_compatability" = "xyes"; then
-  AC_MSG_WARN([using the new graph IR nodes in ROSE (experimental)!])
-  AC_DEFINE([ROSE_USING_GRAPH_IR_NODES_FOR_BACKWARD_COMPATABILITY], [], [Whether to use the new graph IR nodes compatability option with older API])
-fi
-
 # Set the value of srcdir so that it will be an absolute path instead of a relative path
 # srcdir=`dirname "$0"`
 # echo "In ROSE/con figure: srcdir = $srcdir"

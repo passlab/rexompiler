@@ -1548,13 +1548,6 @@ Grammar::setUpSupport ()
 //       in favor of the same API, but implemented using a map of maps at
 //       the SgGraph indexed by integer values.
 
-// DQ (5/2/2009): This is put into rose_paths.h
-// the warning macro is causing problems in Windows
-#if !_MSC_VER
-#ifndef ROSE_USING_GRAPH_IR_NODES_FOR_BACKWARD_COMPATABILITY
-#warning "ROSE_USING_GRAPH_IR_NODES_FOR_BACKWARD_COMPATABILITY not set"
-#endif
-#endif
   // ******************************************************************************
   //                                SgGraphNode
   // ******************************************************************************
@@ -1651,21 +1644,6 @@ Grammar::setUpSupport ()
 
      DirectedGraphEdge.setFunctionPrototype   ( "HEADER_DIRECTED_GRAPH_EDGE"  , "../Grammar/Support.code");
      UndirectedGraphEdge.setFunctionPrototype ( "HEADER_UNDIRECTED_GRAPH_EDGE", "../Grammar/Support.code");
-
-
-
-  // These IR nodes might be eliminated in favor of just a function to generate the same level
-  // of support using a combination of two maps in SgGraph.
-
-#ifdef ROSE_USING_GRAPH_IR_NODES_FOR_BACKWARD_COMPATABILITY
-     GraphNodeList.setFunctionPrototype ( "HEADER_GRAPH_NODE_LIST", "../Grammar/Support.code");
-     GraphNodeList.setDataPrototype("rose_graph_hash_multimap","nodes","",
-                           NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-
-     GraphEdgeList.setFunctionPrototype ( "HEADER_GRAPH_EDGE_LIST", "../Grammar/Support.code");
-     GraphEdgeList.setDataPrototype("rose_graph_node_edge_hash_multimap","edges","",
-                           NO_CONSTRUCTOR_PARAMETER, BUILD_LIST_ACCESS_FUNCTIONS, NO_TRAVERSAL, NO_DELETE);
-#endif
 
 
   // ******************************************************************************

@@ -601,11 +601,6 @@ HEADER_GRAPH_START
      void display_string_to_node_index_multimap() const;
      void display_string_to_edge_index_multimap() const;
 
-#ifdef ROSE_USING_GRAPH_IR_NODES_FOR_BACKWARD_COMPATABILITY
-     void display_nodes() const;
-     void display_edges() const;
-#endif
-
 //! Resize the internal hash tables based on the number of nodes (hash_maps and hash_multimaps for edges are made larger by multiplying by the value "numberOfEdges" ).
      void resize_hash_maps( size_t numberOfNodes, size_t numberOfEdges = 10 );
 
@@ -22182,15 +22177,8 @@ SOURCE_GRAPHEDGE_END
 
 SOURCE_GRAPH_START
 
-//#if defined(ROSE_USE_NEW_GRAPH_NODES) && !defined(ROSE_USING_GRAPH_IR_NODES_FOR_BACKWARD_COMPATABILITY)
-//#warning "ROSE_USING_GRAPH_IR_NODES_FOR_BACKWARD_COMPATABILITY not set"
-//#endif
-
-
 // DQ (4/29/2009): Declaration of space for static data member.
 int SgGraph::p_index_counter = 0;
-
-
 
 // tps : todo : remove me -----------------------------------------
 void
