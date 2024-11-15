@@ -10,7 +10,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <boost/optional.hpp>
+#include <optional>
 
 namespace Rose {
   namespace builder {
@@ -67,15 +67,15 @@ public:
   TokenStream() = delete;
   TokenStream(std::istringstream &);
 
-  boost::optional<const Token&> const getNextToken() {
+  std::optional<const Token&> const getNextToken() {
     if (next_ < tokens_.size()) {
-      return boost::optional<const Token&>(tokens_[next_]);
+      return std::optional<const Token&>(tokens_[next_]);
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<const Token&> consumeNextToken() {
-    boost::optional<const Token&> nextToken{getNextToken()};
+  std::optional<const Token&> consumeNextToken() {
+    std::optional<const Token&> nextToken{getNextToken()};
     next_ += 1;
     return nextToken;
   }

@@ -41,10 +41,6 @@ mAstProcessing_includeHeaders=\
 	$(mAstProcessingPath)/AstSharedMemoryParallelProcessing.h \
 	$(mAstProcessingPath)/AstSharedMemoryParallelProcessingImpl.h \
 	$(mAstProcessingPath)/AstSharedMemoryParallelSimpleProcessing.h \
-	$(mAstProcessingPath)/graphProcessing.h \
-	$(mAstProcessingPath)/graphProcessingSgIncGraph.h \
-	$(mAstProcessingPath)/graphTemplate.h \
-        $(mAstProcessingPath)/SgGraphTemplate.h \
         $(mAstProcessingPath)/TreeTraversal.h
 
 mAstProcessing_extraDist=\
