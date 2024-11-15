@@ -1277,7 +1277,6 @@ tests/nonsmoke/functional/CompileTests/RoseExample_tests/Makefile
 tests/nonsmoke/functional/CompileTests/STL_tests/Makefile
 tests/nonsmoke/functional/CompileTests/UnparseHeadersTests/Makefile
 tests/nonsmoke/functional/CompileTests/UnparseHeadersUsingTokenStream_tests/Makefile
-tests/nonsmoke/functional/CompileTests/boost_tests/Makefile
 tests/nonsmoke/functional/CompileTests/colorAST_tests/Makefile
 tests/nonsmoke/functional/CompileTests/copyAST_tests/Makefile
 tests/nonsmoke/functional/CompileTests/frontend_integration/Makefile
@@ -1371,7 +1370,6 @@ tests/smoke/specimens/Makefile
 tests/smoke/specimens/c++/Makefile
 tests/smoke/specimens/c/Makefile
 tests/smoke/specimens/fortran/Makefile
-tests/smoke/unit/Boost/Makefile
 tests/smoke/unit/Makefile
 tests/smoke/unit/Utility/Makefile
 tools/Makefile

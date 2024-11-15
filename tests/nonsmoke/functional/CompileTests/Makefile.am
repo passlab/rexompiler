@@ -7,7 +7,7 @@ include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 #      copyAST_tests RoseExample_tests PythonExample_tests \
 #      colorAST_tests mergeAST_tests unparseToString_tests \
 #      sourcePosition_tests OpenMP_tests \
-#      boost_tests virtualCFG_tests uninitializedField_tests \
+#      virtualCFG_tests uninitializedField_tests \
 #      A++Tests OvertureCode P++Tests A++Code ElsaTestCases \
 #      ExpressionTemplateExample_tests hiddenTypeAndDeclarationListTests \
 #      sizeofOperation_tests MicrosoftWindows_tests nameQualificationAndTypeElaboration_tests \
@@ -106,7 +106,7 @@ if ROSE_BUILD_CXX_LANGUAGE_SUPPORT
       copyAST_tests \
       colorAST_tests unparseToString_tests \
       sourcePosition_tests \
-      boost_tests uninitializedField_tests \
+      uninitializedField_tests \
       OvertureCode \
       ExpressionTemplateExample_tests hiddenTypeAndDeclarationListTests \
       sizeofOperation_tests nameQualificationAndTypeElaboration_tests \

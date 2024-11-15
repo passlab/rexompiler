@@ -7,7 +7,6 @@ distributedScripts =				 \
 	Git.pm					 \
 	buildExampleRoseWorkspaceScript.sh	 \
 	check-dist-file dotgenLetter		 \
-	check_boost_linkage.sh			 \
 	dotgen					 \
 	dotgen2					 \
 	dotgenLetterPDF				 \

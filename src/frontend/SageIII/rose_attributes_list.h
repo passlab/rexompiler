@@ -6,10 +6,11 @@
 //#include <list>
 //#include <vector>
 #include <map>
-
+#include <boost/wave.hpp>
+#include <boost/wave/cpplexer/cpp_lex_token.hpp>
 // Include the ROSE lex specific definitions of tokens
 #include "general_token_defs.h"
-#define ROSE_SKIP_COMPILATION_OF_WAVE 1
+//#define ROSE_SKIP_COMPILATION_OF_WAVE 1
 
 // #ifdef CAN_NOT_COMPILE_WITH_ROSE
 //    #warning "CAN_NOT_COMPILE_WITH_ROSE IS defined"

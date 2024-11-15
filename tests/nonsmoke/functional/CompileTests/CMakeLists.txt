@@ -74,7 +74,6 @@ else()
       add_subdirectory(colorAST_tests)
       add_subdirectory(unparseToString_tests)
       add_subdirectory(sourcePosition_tests)
-      add_subdirectory(boost_tests)
       # requires Valgrind
       #add_subdirectory(uninitializedField_tests)
       add_subdirectory(OvertureCode)

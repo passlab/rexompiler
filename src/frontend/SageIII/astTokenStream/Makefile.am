@@ -33,7 +33,5 @@ pkginclude_HEADERS = createMap.h  doCompleteMapping.h  linearizeAST.h unparseMac
    tokenStreamMapping.h frontierDetection.h simpleFrontierDetection.h previousAndNextNode.h \
    maxExtents.h detectMacroOrIncludeFileExpansions.h detectMacroExpansionsToBeUnparsedAsAstTransformations.h
 
-
-
 EXTRA_DIST = CMakeLists.txt
 

@@ -155,7 +155,8 @@ libsage3_la_LIBADD= \
   sageInterface/libsageInterface.la \
   virtualCFG/libvirtualCFG.la \
   astHiddenTypeAndDeclarationLists/libastHiddenTypeAndDeclarationLists.la \
-  includeDirectivesProcessing/libincludeDirectivesProcessing.la
+  includeDirectivesProcessing/libincludeDirectivesProcessing.la \
+  astTokenStream/libastTokenStream.la
 #endif
 
 # DQ (6/25/2011): Readded this directory so that we can support the older behavior as a default

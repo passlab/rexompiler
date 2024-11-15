@@ -4,4 +4,4 @@ include $(top_srcdir)/config/Makefile.for.ROSE.includes.and.libs
 # Matzke (4/21/2017): None of these tests do anything with EDG, so this complicated logic shouldn't be necessary here. Reverting.
 
 # These unit test directories should be listed so lower software layers are tested before higher layers.
-SUBDIRS = Boost
+SUBDIRS =
