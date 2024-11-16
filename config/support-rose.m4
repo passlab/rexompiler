@@ -1184,7 +1184,6 @@ docs/Rose/leftmenu.html
 docs/Rose/manual.tex
 docs/Rose/rose-install-demo.cfg
 docs/Rose/rose.cfg
-docs/Rose/roseQtWidgets.doxygen
 docs/Rose/sage.cfg
 docs/testDoxygen/Makefile
 docs/testDoxygen/test.cfg

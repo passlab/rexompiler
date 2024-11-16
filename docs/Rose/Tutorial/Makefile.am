@@ -11,14 +11,14 @@ latexFiles = \
    traversal.tex loopRecognition.tex typeInfoFromFunctionParameters.tex resolveOverloadedFunction.tex \
    templateParameter.tex \
    buildCFG.tex parallelChecker.tex defuseAnalysis.tex \
-   binaryAnalysis.tex GenericDFA.tex buildCallGraph.tex buildVFA.tex classHierarchyGraph.tex loopOptimization.tex inliner.tex outliner.tex \
+   GenericDFA.tex buildCallGraph.tex buildVFA.tex classHierarchyGraph.tex loopOptimization.tex inliner.tex outliner.tex \
    parser-docs.tex codeCoverage.tex scopeInformation.tex sideeffect-docs.tex \
    tauInstrumentation.tex templateSupport.tex dataBaseSupport.tex recognitionOfAbstractions.tex \
    debuggingSupport.tex commandlineProcessing.tex customGraphs.tex tutorialMakefile.tex wrapup.tex \
    appendix.tex astFileIO.tex uniqueNames.tex wholeGraphAST.tex addingComments.tex \
    partialRedundancyElimination.tex codeGenerationFormatControl.tex copyHelp.tex \
-   roseHPCT.tex sharedMemoryTraversals.tex distributedMemoryTraversals.tex bugSeeding.tex \
-   modifiers.tex howToContribute.tex virtualCFG.tex binaryConstruction.tex reductionRecognition.tex \
+   sharedMemoryTraversals.tex distributedMemoryTraversals.tex bugSeeding.tex \
+   modifiers.tex howToContribute.tex virtualCFG.tex reductionRecognition.tex \
    livenessAnalysis.tex CFGTraversalTutorial.tex parserBuildingBlocks.tex astConstruction.tex
 
 # This is an evolving list, but these are a few of the required files
@@ -35,7 +35,6 @@ generatedCodeExamples = \
    $(top_builddir)/tutorial/codeCoverage.out \
    $(top_builddir)/tutorial/vcfg.pdf \
    $(top_builddir)/tutorial/rose_inputCode_inlineTransformations.C \
-   $(top_builddir)/tutorial/roseHPCT/profiled.out \
    $(top_builddir)/tutorial/sourceTraversalTutorial.C \
    $(top_builddir)/tutorial/binaryTraversalTutorial.C
 

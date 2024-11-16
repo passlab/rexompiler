@@ -332,18 +332,6 @@ debugging.}
 \input{bugSeeding}
 
 %-----------------------------------------------------------
-%          Binary Support
-%-----------------------------------------------------------
-\part[Binary Support]{ Binary Support \\
-\vspace{1.0in}
-\normalsize{Tutorials of using ROSE to handle binary executable files.}
-}
-\input{instructionSemantics}
-\input{binaryAnalysis}
-\input{binaryConstruction}
-\input{dwarfDebugSupport}
-
-%-----------------------------------------------------------
 %          Interacting with Other Tools
 %-----------------------------------------------------------
 \part[Interacting with Other Tools]{ Interacting with Other Tools \\
@@ -351,8 +339,6 @@ debugging.}
 \normalsize{How to build interoperable tools using ROSE.}
 }
 \input{abstractHandle}
-\input{roseHPCT}
-\input{tauInstrumentation}
 
 %-----------------------------------------------------------
 %          Parallelism

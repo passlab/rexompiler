@@ -93,25 +93,6 @@ Start using the example from the source code analysis and substitute:
 
 
 
-% *******************************************************
-%               Binary Code Transformation
-% *******************************************************
-\section{Binary Code Transformations}
-   This subsection tests your ability to rewrite parts of the binary
-AST and regenerate the binary.  Note that depending on the transformation
-the resulting binary may or may not be executable.
-
-\subsection{NOP Translation}
-   Rewrite sequences of single byte x86 NOP instructions to use the newer 
-Intel x86 multi-byte NOP instructions.  Verify that the resulting binary 
-is executable. Use only the space provided by the sequence of single byte NOP 
-instructions else your generated executable will may not run properly.
-{\em Hint: replace each instruction with the appropriate NOP instruction 
-using the build interface function to NOP construction.}
-
-
-
-
 \commentout{
 Start using:
 \begin{verbatim}

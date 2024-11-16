@@ -23,14 +23,14 @@ include_directories(${KDE4_INCLUDES} ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} )
 #   templateParameter.tex instrumentationExample.tex addVariableDeclaration.tex \
 #   addAssignmentStmt.tex addExpression.tex\
 #   addFunctionDeclaration.tex buildCFG.tex parallelChecker.tex defuseAnalysis.tex \
-#   binaryAnalysis.tex buildCallGraph.tex classHierarchyGraph.tex loopOptimization.tex inliner.tex outliner.tex \
+#   buildCallGraph.tex classHierarchyGraph.tex loopOptimization.tex inliner.tex outliner.tex \
 #   parser-docs.tex codeCoverage.tex globalVariableHandling.tex scopeInformation.tex sideeffect-docs.tex \
 #   tauInstrumentation.tex templateSupport.tex dataBaseSupport.tex recognitionOfAbstractions.tex \
 #   debuggingSupport.tex commandlineProcessing.tex customGraphs.tex tutorialMakefile.tex wrapup.tex \
 #   appendix.tex astFileIO.tex uniqueNames.tex wholeGraphAST.tex addingComments.tex \
 #   partialRedundancyElimination.tex codeGenerationFormatControl.tex copyHelp.tex \
 #   roseHPCT.tex sharedMemoryTraversals.tex distributedMemoryTraversals.tex bugSeeding.tex \
-#   modifiers.tex howToContribute.tex virtualCFG.tex binaryConstruction.tex reductionRecognition.tex \
+#   modifiers.tex howToContribute.tex virtualCFG.tex reductionRecognition.tex \
 #   haskell.tex
 #
 ## This is an evolving list, but these are a few of the required files
