@@ -1151,6 +1151,11 @@ src/frontend/CxxFrontend/EDG/EDG_6.3/misc/Makefile
 src/frontend/CxxFrontend/EDG/EDG_6.3/src/Makefile
 src/frontend/CxxFrontend/EDG/EDG_6.3/src/disp/Makefile
 src/frontend/CxxFrontend/EDG/EDG_6.3/lib/Makefile
+src/frontend/CxxFrontend/EDG/EDG_6.6/Makefile
+src/frontend/CxxFrontend/EDG/EDG_6.6/misc/Makefile
+src/frontend/CxxFrontend/EDG/EDG_6.6/src/Makefile
+src/frontend/CxxFrontend/EDG/EDG_6.6/src/disp/Makefile
+src/frontend/CxxFrontend/EDG/EDG_6.6/lib/Makefile
 src/frontend/CxxFrontend/EDG/edgRose/Makefile
 ])], [])
 
