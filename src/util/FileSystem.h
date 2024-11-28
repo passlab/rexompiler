@@ -7,6 +7,7 @@
 #include <streambuf>
 #include <string>
 #include <vector>
+#include <iterator>
 #include "rosedll.h"
 #include "mlog.h"
 
