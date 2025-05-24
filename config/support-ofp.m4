@@ -90,8 +90,16 @@ AC_DEFINE_UNQUOTED([ROSE_OFP_JAR_FILE], $ofp_jar_file , [OFP jar file])
 
 # DQ (4/5/2010): Moved the specification of CLASSPATH to after the specification 
 # of OFP version number so that we can use it to set the class path.
+ROSE_CLASSPATH=${ABSOLUTE_SRCDIR}/src/3rdPartyLibraries/antlr-jars/antlr-3.5.2-complete.jar:${ABSOLUTE_SRCDIR}${OPEN_FORTRAN_PARSER_PATH}/${ROSE_OFP_JAR_FILE}
 
-CLASSPATH=${ABSOLUTE_SRCDIR}/src/3rdPartyLibraries/antlr-jars/antlr-3.5.2-complete.jar:${ABSOLUTE_SRCDIR}${OPEN_FORTRAN_PARSER_PATH}/${ROSE_OFP_JAR_FILE}
+# Prepend ROSE_CLASSPATH to CLASSPATH if already set; otherwise initialize CLASSPATH
+AS_IF([test -n "$CLASSPATH"],
+    [
+        CLASSPATH="${ROSE_CLASSPATH}:${CLASSPATH}"
+    ],
+    [
+        CLASSPATH="${ROSE_CLASSPATH}"
+    ])
 
 export CLASSPATH
 AC_SUBST(CLASSPATH)
