@@ -25,19 +25,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+        token: ${{ secrets.SUBMODULE_TOKEN }}
+
     - uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '11'
     # NOTE: Ubuntu 24.04 ships antlr4 v4.9 but antlr4-cpp-runtime v4.10, which are API-incompatible; manually install the matching antlr4 v4.10.
     - uses: StoneMoe/setup-antlr4@v4.10.1
-
-    - name: Checkout submodules
-      shell: bash
-      run: |
-        git submodule sync --recursive
-        git -c "http.extraheader=Authorization: basic ${{ secrets.SUBMODULE_TOKEN }}" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-        git submodule status
 
     - name: Install dependencies
       run: |
