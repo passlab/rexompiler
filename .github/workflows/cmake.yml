@@ -21,7 +21,7 @@ jobs:
     env:
       CC: /usr/bin/gcc-${{ matrix.gnu }}
       CXX: /usr/bin/g++-${{ matrix.gnu }}
-      LD_LIBRARY_PATH: /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server:/usr/lib/x86_64-linux-gnu
+      LD_LIBRARY_PATH: /usr/lib/jvm/java-11-openjdk-amd64/jre/lib/amd64/server:/usr/lib/x86_64-linux-gnu
 
     steps:
     - uses: actions/checkout@v4
