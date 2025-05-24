@@ -32,10 +32,9 @@ set(files_to_install
   AstReverseSimpleProcessing.h AstRestructure.h AstClearVisitFlags.h
   AstTraversal.h AstCombinedProcessing.h AstCombinedProcessingImpl.h
   AstCombinedSimpleProcessing.h StackFrameVector.h
-  graphProcessing.h graphProcessingSgIncGraph.h graphTemplate.h
   AstSharedMemoryParallelProcessing.h AstSharedMemoryParallelProcessingImpl.h
   AstSharedMemoryParallelSimpleProcessing.h
-  SgGraphTemplate.h TreeTraversal.h)
+  TreeTraversal.h)
 
 if(NOT WIN32)
   #tps commented out AstSharedMemoryParallelProcessing.h for Windows

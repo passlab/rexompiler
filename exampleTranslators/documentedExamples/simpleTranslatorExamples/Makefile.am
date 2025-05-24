@@ -7,7 +7,7 @@ all: exampleMakefile
 
 bin_PROGRAMS = identityTranslator
 
-identityTranslator_SOURCES = identityTranslator.C
+identityTranslator_SOURCES = identityTranslator.cpp
 
 LDADD = $(ROSE_LIBS)
 

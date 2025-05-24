@@ -32,6 +32,9 @@ if USE_ROSE_IN_BUILD_TREE_VAR
 export ROSE_IN_BUILD_TREE=$(top_builddir)
 endif
 
+# Force C++17 (-std=c++17) to enable modern language features across all compilers.
+AM_CXXFLAGS = -std=c++17
+
 # This is properly handled by automake even when specified in an include file
 EDG_LIBS = @EDG_LIBS@
 

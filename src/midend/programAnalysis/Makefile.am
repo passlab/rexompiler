@@ -43,7 +43,7 @@ mpaVariableRenamingPath=$(srcdir)/variableRenaming#
 ###############################################################################
 
 # Taken from midend/programAnalysis/annotationLanguageParser
-AM_CXXFLAGS=\
+AM_CXXFLAGS+=\
 	-D__LOCALSTL_H
 
 
