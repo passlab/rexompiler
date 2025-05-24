@@ -30,6 +30,10 @@ jobs:
         submodules: 'recursive'
         token: ${{ secrets.SUBMODULE_TOKEN }}
 
+    - uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '11'
     # NOTE: Ubuntu 24.04 ships antlr4 v4.9 but antlr4-cpp-runtime v4.10, which are API-incompatible; manually install the matching antlr4 v4.10.
     - uses: StoneMoe/setup-antlr4@v4.10.1
 

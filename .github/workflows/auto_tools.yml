@@ -30,6 +30,10 @@ jobs:
         submodules: 'recursive'
         token: ${{ secrets.SUBMODULE_TOKEN }}
 
+    - uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '11'
     # NOTE: Ubuntu 24.04 ships antlr4 v4.9 but antlr4-cpp-runtime v4.10, which are API-incompatible; manually install the matching antlr4 v4.10.
     - uses: StoneMoe/setup-antlr4@v4.10.1
 
@@ -62,7 +66,7 @@ jobs:
         ./build
         mkdir ../rex_build
         cd ../rex_build
-        $GITHUB_WORKSPACE/configure --prefix=$GITHUB_WORKSPACE/../rex_install --with-boost=/usr --with-boost-libdir=/usr/lib/x86_64-linux-gnu --enable-languages=c,c++,fortran --disable-tests-directory --disable-tutorial-directory
+        $GITHUB_WORKSPACE/configure --prefix=$GITHUB_WORKSPACE/../rex_install --with-boost=/usr --with-boost-libdir=/usr/lib/x86_64-linux-gnu --enable-languages=c,c++,fortran
 
     - name: Build
       run: |
@@ -73,8 +77,4 @@ jobs:
     - name: Test
       run: |
         cd $GITHUB_WORKSPACE/../rex_build
-        make check-core -j2
-        cd $GITHUB_WORKSPACE/../rex_build/tests/nonsmoke/functional/CompileTests/OpenMP_tests
-        make check -j2
-        cd $GITHUB_WORKSPACE/../rex_build/tests/nonsmoke/functional/roseTests/astInterfaceTests
-        make check -j2
+        make check-rex -j2
