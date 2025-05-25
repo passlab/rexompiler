@@ -1,5 +1,5 @@
 if(enable-fortran)
-  set(enable-ofp-version "20200819-JDK8" CACHE STRING "version number for OFP")
+  set(enable-ofp-version "20200704" CACHE STRING "version number for OFP")
 
   ########### install files ###############
   set(jar_file
@@ -13,7 +13,7 @@ if(enable-fortran)
   endif()
 
 install(
-  FILES OpenFortranParser-20200819-JDK8.jar
+  FILES OpenFortranParser-20200704.jar
         ${jar_file}
   DESTINATION ${ROSE_LIB_DIR_NAME})
 

@@ -7,7 +7,7 @@ ROSE_CONFIGURE_SECTION([Checking Open Fortran Parser (OFP)])
 # Used in ../src/3rdPartyLibraries/fortran-parser/Makefile.am
 # and     ../src/frontend/SageIII/sageSupport.C
 #
-default_ofp_version=20200819-JDK8
+default_ofp_version=20200704
 
 ofp_major_version_number=0
 ofp_minor_version_number=8

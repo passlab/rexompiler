@@ -18,6 +18,8 @@ jobs:
         gnu: [9]
 
     runs-on: ${{ matrix.os }}
+    env:
+      LD_LIBRARY_PATH: /usr/lib/jvm/java-17-openjdk-amd64/lib/server
 
     steps:
     - uses: actions/checkout@v4
@@ -25,10 +27,6 @@ jobs:
         submodules: 'recursive'
         token: ${{ secrets.SUBMODULE_TOKEN }}
 
-    - uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '11'
     # NOTE: Ubuntu 24.04 ships antlr4 v4.9 but antlr4-cpp-runtime v4.10, which are API-incompatible; manually install the matching antlr4 v4.10.
     - uses: StoneMoe/setup-antlr4@v4.10.1
 
@@ -52,6 +50,7 @@ jobs:
           libantlr4-runtime-dev \
           libboost-all-dev \
           libtool \
+          openjdk-17-jdk \
           python3-dev
 
     - name: Configure
@@ -61,7 +60,7 @@ jobs:
         mkdir ../rex_build
         cd ../rex_build
         CC=gcc-${{ matrix.gnu }} CXX=g++-${{ matrix.gnu }} FC=gfortran-${{ matrix.gnu }} \
-        $GITHUB_WORKSPACE/configure --prefix=$GITHUB_WORKSPACE/../rex_install --with-boost=/usr --with-boost-libdir=/usr/lib/x86_64-linux-gnu --enable-languages=c,c++,fortran
+          $GITHUB_WORKSPACE/configure --prefix=$GITHUB_WORKSPACE/../rex_install --with-boost=/usr --with-boost-libdir=/usr/lib/x86_64-linux-gnu --enable-languages=c,c++,fortran
 
     - name: Build
       run: |
