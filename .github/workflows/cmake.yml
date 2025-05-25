@@ -18,11 +18,6 @@ jobs:
         gnu: [9]
 
     runs-on: ${{ matrix.os }}
-    env:
-      CC: /usr/bin/gcc-${{ matrix.gnu }}
-      CXX: /usr/bin/g++-${{ matrix.gnu }}
-      FC: /usr/bin/gfortran-${{ matrix.gnu }}
-      LD_LIBRARY_PATH: /usr/lib/jvm/java-11-openjdk-amd64/lib/server:/usr/lib/x86_64-linux-gnu
 
     steps:
     - uses: actions/checkout@v4
@@ -40,7 +35,6 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y openjdk-11-jdk && \
         sudo apt-get install -y \
           automake \
           autotools-dev \
@@ -65,6 +59,7 @@ jobs:
         cd $GITHUB_WORKSPACE
         mkdir ../rex_build
         cd ../rex_build
+        CC=gcc-${{ matrix.gnu }} CXX=g++-${{ matrix.gnu }} FC=gfortran-${{ matrix.gnu }} \
         cmake -Denable-c=ON -Denable-fortran=ON -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/../rex_install -Ddisable-tests-directory=ON $GITHUB_WORKSPACE
 
     - name: Build
