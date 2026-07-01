@@ -1,16 +1,19 @@
 #ifndef __ROSEAttributesList_H__
 #define __ROSEAttributesList_H__
 
+// DQ (6/2026): Define this macro so all #ifndef ROSE_SKIP_COMPILATION_OF_WAVE blocks are excluded.
+// The boost::wave runtime path has been disabled since 2020 (see attachPreprocessingInfo.C).
+// Defining this here is the single change that removes the compile-time boost_wave dependency.
+#define ROSE_SKIP_COMPILATION_OF_WAVE 1
+
 //#include "setup.h"
 
-//#include <list>
-//#include <vector>
+#include <list>
+#include <vector>
 #include <map>
-#include <boost/wave.hpp>
-#include <boost/wave/cpplexer/cpp_lex_token.hpp>
+#include <string>
 // Include the ROSE lex specific definitions of tokens
 #include "general_token_defs.h"
-//#define ROSE_SKIP_COMPILATION_OF_WAVE 1
 
 // #ifdef CAN_NOT_COMPILE_WITH_ROSE
 //    #warning "CAN_NOT_COMPILE_WITH_ROSE IS defined"
@@ -46,16 +49,34 @@ class Sg_File_Info;
 // DQ (1/21/2008): Need forward declaration
 class SgFile;
 
-// #if !CAN_NOT_COMPILE_WITH_ROSE
-// #ifndef USE_ROSE
-#ifndef ROSE_SKIP_COMPILATION_OF_WAVE
+// Minimal token representation replacing the former boost::wave::cpplexer::lex_token<>.
+// Stores the text value and source position; no runtime wave dependency required.
+struct ROSE_DLL_API RoseToken {
+    struct Position {
+        std::string file;
+        int line;
+        int column;
+        const std::string& get_file()   const { return file; }
+        int                get_line()   const { return line; }
+        int                get_column() const { return column; }
+    };
 
-typedef boost::wave::cpplexer::lex_token<>  token_type;
+    RoseToken() : pos_{"", 0, 0} {}
+    RoseToken(const std::string& value, const std::string& file, int line, int col)
+        : value_(value), pos_{file, line, col} {}
+
+    std::string get_value()    const { return value_; }
+    Position    get_position() const { return pos_; }
+
+private:
+    std::string value_;
+    Position    pos_;
+};
+
+typedef RoseToken                           token_type;
 typedef std::vector<token_type>             token_container;
 typedef std::list<token_type>               token_list_container;
 typedef std::vector<std::list<token_type> > token_container_container;
-
-#endif
 
 //! For preprocessing information including source comments, #include , #if, #define, etc
 class PreprocessingInfo
@@ -589,12 +610,5 @@ class ROSEAttributesListContainer
           void display ( const std::string & label );          // DQ 02/18/2001 -- For debugging.
    };
 
-
-// #ifndef USE_ROSE
-#ifndef ROSE_SKIP_COMPILATION_OF_WAVE
-
-extern token_container wave_tokenStream;
-
-#endif
 
 #endif
