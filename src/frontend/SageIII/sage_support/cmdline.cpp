@@ -5935,7 +5935,7 @@ SgFile::build_EDG_CommandLine ( vector<string> & inputCommandLine, vector<string
           autoInstantiation = true;
         }
 
-     if ( CommandlineProcessing::isOption(argv,"-rose:","wave",ROSE_WAVE_DEFAULT) == true )
+     if ( CommandlineProcessing::isOption(argv,"-rose:","wave",false) == true )
         {
        // printf ("Option -rose:wave found (use of Boost wave library)! \n");
           set_wave(true);
