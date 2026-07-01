@@ -8,7 +8,6 @@
 // Interestingly it must be at the top of the list of include files.
 #include "rose_config.h"
 
-
 //Preorder travesal to find smallest subtrees containing macro call
 // Build an inherited attribute for the tree traversal to test the rewrite mechanism
 
@@ -38,15 +37,11 @@ class FindSmallestStatements : public AstTopDownProcessing<FindSmallestStatement
 
     std::vector<SgNode*> traverseSubTree(SgNode* n, PreprocessingInfo* macroCall );
     
-
-
 };
 
 FindSmallestStatementsInh
 FindSmallestStatements::evaluateInheritedAttribute(SgNode* n, FindSmallestStatementsInh inheritedAttribute)
 {
-
-
 
   //If the node should be consired as a topmost node
   if(inheritedAttribute.inSubtreeOfStatement == false && isSgLocatedNode(n))
@@ -83,9 +78,7 @@ FindSmallestStatements::evaluateInheritedAttribute(SgNode* n, FindSmallestStatem
           break;
         }
 
-
     }
-
 
   }
 
@@ -101,7 +94,6 @@ FindSmallestStatements::traverseSubTree(SgNode* n, PreprocessingInfo* macroCall)
   FindSmallestStatementsInh inh(false);
   this->traverse(n, inh);
 
- 
   return matchingCalls;
 }
 
@@ -140,10 +132,7 @@ void findPreprocInfo::visit(SgNode* n)
     }
   }
 
-
 }
-
-
 
 namespace UnparseMacro {
 
@@ -167,7 +156,6 @@ did_removal:
     std::cout << "Size of subtree:" << matchingSubtree.size() << std::endl;
     for(unsigned int i = 0 ; i < matchingSubtree.size(); i++)
         std::cout  << matchingSubtree[i]->unparseToString() << std::endl;
-
 
     for(unsigned int i = 0 ; i < matchingSubtree.size(); i++)
     {
@@ -212,8 +200,6 @@ did_removal:
 
     //Do some fancy check to see if macro really matches either a subtree or a set of subtrees
 
-
-
    return macroMatchesSubtrees;
   };
 
@@ -248,13 +234,6 @@ did_removal:
           if( isSgExpression(macroNode) == NULL )
           {
 #ifndef USE_ROSE
-#ifndef ROSE_SKIP_COMPILATION_OF_WAVE
-         // If we are using ROSE to compile ROSE source code then the Wave support is not present.
-            PreprocessingInfo::rose_macro_call* macroCall = curPreproc->get_macro_call();
-
-            if(macroCall->expanded_macro.size() > 0 && boost::wave::token_id(macroCall->expanded_macro.back()) != boost::wave::T_COLON)
-              replacementString +=";";
-#endif
 #endif
           }
 
@@ -270,10 +249,7 @@ did_removal:
                 replacementString,macroNode->get_file_info()->get_filenameString(),1,1,1,PreprocessingInfo::before));
         }
 
-        
       };
-
-       
 
     }
     

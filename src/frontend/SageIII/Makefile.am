@@ -68,8 +68,7 @@ CXX_TEMPLATE_REPOSITORY_PATH = .
 # EXTRA_DIST = preproc.lex preproc.C astGraphTemplate.C docs
 # EXTRA_DIST = preproc.ll docs rtiHelpers.h attributeListMap.h
 #
-EXTRA_DIST = CMakeLists.txt preproc-c.ll docs rtiHelpers.h attributeListMap.h \
-             advanced_preprocessing_hooks.h rose_attributes_list.h \
+EXTRA_DIST = CMakeLists.txt preproc-c.ll docs rtiHelpers.h rose_attributes_list.h \
              sage3basic.hhh fileoffsetbits.h rosedll.h PolicyControl.txt Utf8.h  \
              ompAstConstruction.h accAstConstruction.h \
              omp_exprparser_lexer.cc omp_exprparser_parser.cc omp_exprparser_parser.hh
@@ -111,7 +110,6 @@ libsage3Sources = \
    rose_attributes_list.C \
    attachPreprocessingInfo.C \
    attachPreprocessingInfoTraversal.C \
-   attributeListMap.C \
    manglingSupport.C \
    fixupCopy_scopes.C \
    fixupCopy_symbols.C \

@@ -658,11 +658,6 @@ AC_CHECK_HEADERS([byteswap.h machine/endian.h])
 
 ROSE_SUPPORT_VALGRIND
 
-AC_ARG_WITH(wave-default, [  --with-wave-default     Use Wave as the default preprocessor],
-            [AC_DEFINE([ROSE_WAVE_DEFAULT], true, [Use Wave as default in ROSE])],
-            [AC_DEFINE([ROSE_WAVE_DEFAULT], false, [Simple preprocessor as default in ROSE])]
-            )
-
 # Figure out what version of lex we have available
 # flex works better than lex (this gives a preference to flex (flex is gnu))
 AM_PROG_LEX
