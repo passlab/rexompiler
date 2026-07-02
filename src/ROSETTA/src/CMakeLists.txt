@@ -72,7 +72,7 @@ add_executable(CxxGrammarMetaProgram ${CxxGrammarMetaProgram_SRCS})
 add_dependencies(CxxGrammarMetaProgram roseUtil)
 
 # build ROSETTA code generator
-set(link_libs ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+set(link_libs ${CMAKE_THREAD_LIBS_INIT})
 if(WIN32)
   list(APPEND link_libs shlwapi.lib)
 endif()

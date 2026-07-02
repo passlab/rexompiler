@@ -15,8 +15,6 @@
 // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace std;
 
-#include <boost/filesystem.hpp>         // exsits()
-
 //Include files to get the current path
 #include <unistd.h>
 
