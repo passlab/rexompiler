@@ -2,7 +2,7 @@
 foreach(include ${ROSE_INCLUDES})
   list(APPEND ROSE_INCLUDE_FLAGS "-I${include}")
 endforeach()
-foreach(include ${Boost_INCLUDE_DIRS})
+foreach(include)
   list(APPEND ROSE_INCLUDE_FLAGS "-I${include}")
 endforeach()
 

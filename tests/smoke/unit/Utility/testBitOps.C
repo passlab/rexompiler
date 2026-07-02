@@ -1,13 +1,13 @@
 #include <Rose/BitOps.h>
 
-#include <boost/lexical_cast.hpp>
+
 #include <string>
 
 #define check(FUNC, ANS) do {                                                                                                  \
     ASSERT_always_require2(FUNC == ANS, "expected " + binary(ANS) + " but got " + binary(FUNC));                               \
     ASSERT_always_require2(sizeof(FUNC) == sizeof(ANS),                                                                        \
-                           "expected result is " + boost::lexical_cast<std::string>(8*sizeof(ANS)) +                           \
-                           " bits but actual result is " + boost::lexical_cast<std::string>(8*sizeof(FUNC)) + " bits");        \
+                           "expected result is " + std::to_string(8*sizeof(ANS)) +                           \
+                           " bits but actual result is " + std::to_string(8*sizeof(FUNC)) + " bits");        \
 } while(0);
 
 using namespace Rose::BitOps;

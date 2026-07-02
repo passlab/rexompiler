@@ -45,7 +45,7 @@ if(NOT disable-tutorial-directory)
 
   foreach(tutorial ${tutorials})
     add_executable(${tutorial}Tutorial "${tutorial}.C")
-    target_link_libraries(${tutorial}Tutorial ROSE_DLL ${Boost_LIBRARIES})
+    target_link_libraries(${tutorial}Tutorial ROSE_DLL)
   #  install(TARGETS ${tutorial}Tutorial DESTINATION bin)
   endforeach()
 
@@ -59,6 +59,6 @@ if(NOT disable-tutorial-directory)
 
   if(HAVE_SYS_TIME_H)
     add_executable(codeCoverage codeCoverage.C coverageCodeFromShmuel.c)
-    target_link_libraries(codeCoverage ROSE_DLL ${Boost_LIBRARIES})
+    target_link_libraries(codeCoverage ROSE_DLL)
   endif()
 endif()

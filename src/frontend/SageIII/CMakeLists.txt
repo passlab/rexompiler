@@ -21,7 +21,6 @@ set(SAGE3_SOURCES
   rose_attributes_list.C
   attachPreprocessingInfo.C
   attachPreprocessingInfoTraversal.C
-  attributeListMap.C
   manglingSupport.C
   sage_support/sage_support.cpp
   sage_support/cmdline.cpp

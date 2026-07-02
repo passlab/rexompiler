@@ -7,7 +7,6 @@
 #include <set>
 #include <sstream>
 #include <iomanip>
-#include <boost/lexical_cast.hpp>
 
 // Helpful functions for Cxx_GrammarRTI.C
 // Probably should not be included anywhere else

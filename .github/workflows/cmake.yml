@@ -48,7 +48,6 @@ jobs:
           git \
           graphviz \
           libantlr4-runtime-dev \
-          libboost-all-dev \
           libtool \
           openjdk-17-jdk \
           python3-dev

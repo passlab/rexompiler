@@ -1,4 +1,4 @@
-include_directories(${Boost_INCLUDE_DIRS} ${ROSE_INCLUDES})
+include_directories( ${ROSE_INCLUDES})
 
 add_executable(testTranslator testTranslator.C)
 add_dependencies(testTranslator roseUtil)

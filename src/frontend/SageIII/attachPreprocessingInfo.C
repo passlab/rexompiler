@@ -15,38 +15,6 @@
 // DQ (12/31/2005): This is OK if not declared in a header file
 using namespace std;
 
-#ifndef ROSE_SKIP_COMPILATION_OF_WAVE
-// #ifndef USE_ROSE
-// Local typedefs used in this file only...
-typedef boost::wave::cpplexer::lex_token<>  token_type;
-typedef std::vector<token_type>             token_container;
-typedef std::list<token_type>               token_list_container;
-typedef std::vector<std::list<token_type> > token_container_container;
-// #endif
-#endif
-
-// DQ (11/28/2009): I think this is equivalent to "USE_ROSE"
-// DQ (11/28/2008): What does this evaluate to???  Does this mix C++ constants with CPP values (does this make sense? Is "true" defined?)
-// #if CAN_NOT_COMPILE_WITH_ROSE != true
-// #if !CAN_NOT_COMPILE_WITH_ROSE
-#ifndef USE_ROSE
-#endif
-
-#ifndef ROSE_SKIP_COMPILATION_OF_WAVE
-///////////////////////////////////////////////////////////////////////////////
-//  Include Wave itself
-#include <boost/wave.hpp>
-///////////////////////////////////////////////////////////////////////////////
-// Include the lexer stuff
-#include <boost/wave/cpplexer/cpp_lex_token.hpp>    // token class
-#include <boost/wave/cpplexer/cpp_lex_iterator.hpp> // lexer class
-
-#include "advanced_preprocessing_hooks.h"
-#include "attributeListMap.h"
-#endif
-
-#include <boost/filesystem.hpp>         // exsits()
-
 //Include files to get the current path
 #include <unistd.h>
 
@@ -198,11 +166,7 @@ void attachPreprocessingInfo(SgSourceFile *sageFilePtr, const std::string & new_
 
   // DQ (1/4/2021): Adding support for comments and CPP directives and tokens to use new_filename.
   // DQ (7/4/2020): This function should not be called for binaries (only for C/C++ code).
-  // commentAndCppDirectiveList = getPreprocessorDirectives(filename);
-     bool usingWave = false;
-  // commentAndCppDirectiveList = AttachPreprocessingInfoTreeTrav::buildCommentAndCppDirectiveList(usingWave,filename);
-  // commentAndCppDirectiveList = AttachPreprocessingInfoTreeTrav::buildCommentAndCppDirectiveList(usingWave,sageFilePtr,filename);
-     commentAndCppDirectiveList = AttachPreprocessingInfoTreeTrav::buildCommentAndCppDirectiveList(usingWave,sageFilePtr,filename,new_filename);
+     commentAndCppDirectiveList = AttachPreprocessingInfoTreeTrav::buildCommentAndCppDirectiveList(sageFilePtr,filename,new_filename);
 
      ROSE_ASSERT(commentAndCppDirectiveList != NULL);
 
@@ -375,19 +339,6 @@ void attachPreprocessingInfo(SgSourceFile *sageFilePtr, const std::string & new_
      printf ("Exiting as a test after AttachPreprocessingInfoTreeTrav constructor call! \n");
      ROSE_ABORT();
 #endif
-
-  // When using Wave get all the preprocessing dirctives for all the files.
-     if ( sageFilePtr->get_wave() == true )
-        {
-#ifndef ROSE_SKIP_COMPILATION_OF_WAVE
-       // DQ (5/4/2020): Disabled use of WAVE (at least for now).
-          printf ("Disabled use of WAVE (at least for now) \n");
-       // attachPreprocessingInfoUsingWave(sageFilePtr, tt.get_attributeMapForAllFiles() );
-#else
-          printf ("Boost wave is not available within this configuration \n");
-          ROSE_ABORT();
-#endif
-        }
 
 #if 0
   // Note that this only builds the include graph starting at the first header file not the input source file.

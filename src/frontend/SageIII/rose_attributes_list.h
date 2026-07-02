@@ -3,14 +3,12 @@
 
 //#include "setup.h"
 
-//#include <list>
-//#include <vector>
+#include <list>
+#include <vector>
 #include <map>
-#include <boost/wave.hpp>
-#include <boost/wave/cpplexer/cpp_lex_token.hpp>
+#include <string>
 // Include the ROSE lex specific definitions of tokens
 #include "general_token_defs.h"
-//#define ROSE_SKIP_COMPILATION_OF_WAVE 1
 
 // #ifdef CAN_NOT_COMPILE_WITH_ROSE
 //    #warning "CAN_NOT_COMPILE_WITH_ROSE IS defined"
@@ -46,16 +44,34 @@ class Sg_File_Info;
 // DQ (1/21/2008): Need forward declaration
 class SgFile;
 
-// #if !CAN_NOT_COMPILE_WITH_ROSE
-// #ifndef USE_ROSE
-#ifndef ROSE_SKIP_COMPILATION_OF_WAVE
+// Minimal token representation replacing the former boost::wave::cpplexer::lex_token<>.
+// Stores the text value and source position; no runtime wave dependency required.
+struct ROSE_DLL_API RoseToken {
+    struct Position {
+        std::string file;
+        int line;
+        int column;
+        const std::string& get_file()   const { return file; }
+        int                get_line()   const { return line; }
+        int                get_column() const { return column; }
+    };
 
-typedef boost::wave::cpplexer::lex_token<>  token_type;
+    RoseToken() : pos_{"", 0, 0} {}
+    RoseToken(const std::string& value, const std::string& file, int line, int col)
+        : value_(value), pos_{file, line, col} {}
+
+    std::string get_value()    const { return value_; }
+    Position    get_position() const { return pos_; }
+
+private:
+    std::string value_;
+    Position    pos_;
+};
+
+typedef RoseToken                           token_type;
 typedef std::vector<token_type>             token_container;
 typedef std::list<token_type>               token_list_container;
 typedef std::vector<std::list<token_type> > token_container_container;
-
-#endif
 
 //! For preprocessing information including source comments, #include , #if, #define, etc
 class PreprocessingInfo
@@ -201,115 +217,12 @@ class PreprocessingInfo
        // a flag here is not going to work for that.  so we have to also record that the ROSEAttributesList has changed.
           bool p_isTransformation;
 
-// This is part of Wave support in ROSE.
-// #ifndef USE_ROSE
-     public:
-/*
-       // AS using the lexer_token from boost_wave in order to store structures
-          typedef boost::wave::cpplexer::lex_token<> token_type;
-          typedef std::vector<token_type>            token_container;
-          typedef std::list<token_type>              token_list_container;
-          typedef std::vector<std::list<token_type> >       token_container_container;
-*/
      private:
-       // FIXME: To support Jochens AST binary save work the tokenSteam must
-       // have a pointer type.
-
-#ifndef ROSE_SKIP_COMPILATION_OF_WAVE
-       // A stream of tokens representing the current prerpocessing info
-       // object. This is equivalent to the internal string, but of cause
-       // contains more information since it is a tokenized stream.
-          token_container* tokenStream;
-
-     public:
-          typedef struct r_include_directive
-             {
-            // The parameter 'directive' contains the (expanded) file name found after
-            // the #include directive. This has the format '<file>', '"file"' or 'file'.
-               token_type directive;
-            // The paths plus name to the include directive filename
-               std::string absname;
-               std::string relname;
-             } rose_include_directive;
-
-       // Internal representation of a macro #define directive
-          typedef struct r_macro_def
-             {
-               bool is_functionlike;
-               bool is_predefined;
-               token_type macro_name;
-               token_container paramaters;
-               token_list_container definition;
-               r_macro_def() : macro_name(), paramaters(),definition() {}
-             } rose_macro_definition;
-
-       // Internal representation of a macro call
-       // e.g #define MACRO_CALL int x;
-       // MACRO_CALL
-#if 0
-          typedef struct r_macro_call
-             {
-               bool is_functionlike;
-               PreprocessingInfo* macro_def;
-               token_type macro_call;
-               token_container_container arguments;
-               token_container expanded_macro;
-
-            // Get string representation of the expanded macro
-               std::string get_expanded_string()
-                  {
-                    std::ostringstream os;
-                    token_container::const_iterator iter;
-                    for (iter=expanded_macro.begin(); iter!=expanded_macro.end(); iter++)
-                         os << (*iter).get_value();
-                    return os.str();
-                  }
-
-               r_macro_call() : macro_call(), arguments(),expanded_macro() {}
-             } rose_macro_call;
-#else
-       // DQ (3/9/2013): Modified to address SWIG error.
-          struct rose_macro_call
-             {
-               bool is_functionlike;
-               PreprocessingInfo* macro_def;
-               token_type macro_call;
-               token_container_container arguments;
-               token_container expanded_macro;
-
-            // DQ (3/9/2013): The function definition is moved to the source file to get around SWIG error.
-            // Get string representation of the expanded macro
-               std::string get_expanded_string();
-
-            // DQ (3/9/2013): The function definition is moved to the source file to get around SWIG error.
-               rose_macro_call();
-             };
-#endif
-
-     private:
-       // AS add macro definition
-          rose_macro_definition*  macroDef;
-       // AS add macro call
-          rose_macro_call*        macroCall;
-       // AS include directive
-          rose_include_directive* includeDirective;
-
-#endif
 
   // member functions
      public:
          ~PreprocessingInfo();
           PreprocessingInfo();
-
-// #ifndef USE_ROSE
-#ifndef ROSE_SKIP_COMPILATION_OF_WAVE
-       // AS (112105) Added constructors to support macros
-          PreprocessingInfo(token_container, DirectiveType, RelativePositionType);
-          PreprocessingInfo(rose_macro_call*, RelativePositionType);
-          PreprocessingInfo(rose_macro_definition*, RelativePositionType);
-          PreprocessingInfo(token_type, token_list_container, bool, DirectiveType,RelativePositionType);
-          PreprocessingInfo(rose_include_directive*, RelativePositionType);
-#endif
 
        // This constructor is called from the C++ code generated from the lex file (preproc.lex)
        // PreprocessingInfo(DirectiveType, const char *inputStringPointer, int line_no , int col_no,
@@ -388,23 +301,6 @@ class PreprocessingInfo
           void set_lineNumberForCompilerGeneratedLinemarker( int x );
           void set_filenameForCompilerGeneratedLinemarker( std::string x );
           void set_optionalflagsForCompilerGeneratedLinemarker( std::string x );
-
-// #ifndef USE_ROSE
-#ifndef ROSE_SKIP_COMPILATION_OF_WAVE
-  // Wave specific member functions.
-     public:
-       // Access functions to get the macro call or macro definition.
-       // These are NULL if the type is not CMacroCall or
-       // CpreprocessorDefineDeclaration
-          rose_macro_call* get_macro_call();
-          rose_macro_definition* get_macro_def();
-          rose_include_directive* get_include_directive();
-
-          const token_container* get_token_stream();
-          void push_front_token_stream(token_type tok);
-          void push_back_token_stream(token_type tok);
-
-#endif
 
       // DQ (12/30/2013): Adding support to supress output of macros that are self-referential.
       // e.g. "#define foo X->foo", which would be expanded a second time in the backend processing.
@@ -589,12 +485,5 @@ class ROSEAttributesListContainer
           void display ( const std::string & label );          // DQ 02/18/2001 -- For debugging.
    };
 
-
-// #ifndef USE_ROSE
-#ifndef ROSE_SKIP_COMPILATION_OF_WAVE
-
-extern token_container wave_tokenStream;
-
-#endif
 
 #endif
