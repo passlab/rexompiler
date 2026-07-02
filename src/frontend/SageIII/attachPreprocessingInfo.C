@@ -168,11 +168,7 @@ void attachPreprocessingInfo(SgSourceFile *sageFilePtr, const std::string & new_
 
   // DQ (1/4/2021): Adding support for comments and CPP directives and tokens to use new_filename.
   // DQ (7/4/2020): This function should not be called for binaries (only for C/C++ code).
-  // commentAndCppDirectiveList = getPreprocessorDirectives(filename);
-     bool usingWave = false;
-  // commentAndCppDirectiveList = AttachPreprocessingInfoTreeTrav::buildCommentAndCppDirectiveList(usingWave,filename);
-  // commentAndCppDirectiveList = AttachPreprocessingInfoTreeTrav::buildCommentAndCppDirectiveList(usingWave,sageFilePtr,filename);
-     commentAndCppDirectiveList = AttachPreprocessingInfoTreeTrav::buildCommentAndCppDirectiveList(usingWave,sageFilePtr,filename,new_filename);
+     commentAndCppDirectiveList = AttachPreprocessingInfoTreeTrav::buildCommentAndCppDirectiveList(sageFilePtr,filename,new_filename);
 
      ROSE_ASSERT(commentAndCppDirectiveList != NULL);
 
@@ -345,13 +341,6 @@ void attachPreprocessingInfo(SgSourceFile *sageFilePtr, const std::string & new_
      printf ("Exiting as a test after AttachPreprocessingInfoTreeTrav constructor call! \n");
      ROSE_ABORT();
 #endif
-
-  // When using Wave get all the preprocessing dirctives for all the files.
-     if ( sageFilePtr->get_wave() == true )
-        {
-          printf ("Boost wave support has been removed from this build \n");
-          ROSE_ABORT();
-        }
 
 #if 0
   // Note that this only builds the include graph starting at the first header file not the input source file.

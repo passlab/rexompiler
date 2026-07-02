@@ -1053,20 +1053,6 @@ SgProject::processCommandLine(const vector<string>& input_argv)
           set_Cxx_only(true);
         }
 
-#if 0
-     printf ("In SgProject: before processing option: (get_wave() == %s) \n",get_wave() ? "true" : "false");
-#endif
-     if ( CommandlineProcessing::isOption(local_commandLineArgumentList,"-rose:","wave",false) == true )
-        {
-          if ( SgProject::get_verbose() >= 1 )
-               printf ("Option -rose:wave found! (get_wave() == %s) \n",get_wave() ? "true" : "false");
-
-          set_wave(true);
-
-          if ( SgProject::get_verbose() >= 1 )
-               printf ("   --- after calling set_wave(true) (get_wave() == %s) \n",get_wave() ? "true" : "false");
-        }
-
   // Liao 6/29/2012: support linking flags for OpenMP lowering when no SgFile is available
      set_openmp_linking(false);
      if ( CommandlineProcessing::isOption(local_commandLineArgumentList,"-rose:OpenMP:","lowering",true) == true
@@ -5933,12 +5919,6 @@ SgFile::build_EDG_CommandLine ( vector<string> & inputCommandLine, vector<string
         {
        // printf ("In build_EDG_CommandLine(): Option -c not found (compile AND link) set autoInstantiation = true ... \n");
           autoInstantiation = true;
-        }
-
-     if ( CommandlineProcessing::isOption(argv,"-rose:","wave",false) == true )
-        {
-       // printf ("Option -rose:wave found (use of Boost wave library)! \n");
-          set_wave(true);
         }
 
      if (isPrelinkPhase() == true)

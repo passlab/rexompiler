@@ -134,12 +134,8 @@ class AttachPreprocessingInfoTreeTrav
        // For now I will not touch the Wave specific implementation.
        // std::map<std::string,ROSEAttributesList*>* currentMapOfAttributes;
 
-      //! Use_Wave == true specifies if a wave preprocessor is used
-          bool use_Wave;
-
       //  The mapOfAttributes declaration is specific to wave usage.
-      //! Map of filenames to list of attributes as found by WAVE.  
-       //   std::map<std::string,ROSEAttributesList*>* mapOfAttributes; 
+       //   std::map<std::string,ROSEAttributesList*>* mapOfAttributes;
 
        // DQ (4/30/2020): We no long need this in the new simplified support for CPP directivces and comments and unparsing of header files.
       //! AS(092107) Optimization variable to avoid n^2 complexity in 
@@ -208,11 +204,7 @@ class AttachPreprocessingInfoTreeTrav
        // DQ (1/4/2021): Adding support for comments and CPP directives and tokens to use new_filename.
        // DQ (7/4/2020): Make this a static function to support Fortran handling.
        // DQ (11/30/2008): Refactored code to isolate this from the inherited attribute evaluation.
-       // static ROSEAttributesList* buildCommentAndCppDirectiveList ( SgFile *currentFilePtr, std::map<std::string,ROSEAttributesList*>* mapOfAttributes, bool use_Wave );
-       // ROSEAttributesList* buildCommentAndCppDirectiveList ( bool use_Wave, std::string currentFilename );
-       // static ROSEAttributesList* buildCommentAndCppDirectiveList ( bool use_Wave, std::string currentFilename );
-       // static ROSEAttributesList* buildCommentAndCppDirectiveList ( bool use_Wave, SgSourceFile* sourceFile, std::string currentFilename );
-          static ROSEAttributesList* buildCommentAndCppDirectiveList ( bool use_Wave, SgSourceFile* sourceFile, std::string currentFilename, std::string new_filename );
+          static ROSEAttributesList* buildCommentAndCppDirectiveList ( SgSourceFile* sourceFile, std::string currentFilename, std::string new_filename );
    };
 
 #endif
